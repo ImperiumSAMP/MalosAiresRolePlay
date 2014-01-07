@@ -8,4 +8,4 @@ Instalacion y ejecucion del GM para desarrollo
 
 Se necesita un servidor MYSQL para poder ejecutar el GM.
 En la carpeta database hay un backup de la base de datos de testing con algunos valores de prueba ya cargados
-Debe configurar el archivo scriptfiles/xxxxxx.cfg
+Debe configurar el archivo scriptfiles/db.cfg
