@@ -1,0 +1,7 @@
+RemoveBuildingForPlayer(playerid, 3364, 77.3203, 2456.2500, 15.2813, 0.25);
+CreateObject(19380, 2.27655, 2501.87720, 20.91503,   0.00000, 0.00000, 0.00000);
+CreateDynamicObject(19380, 1.69727, 2490.54419, 20.91503,   0.00000, 0.00000, 0.00000);
+CreateObject(19380, 1.86466, 2478.68652, 20.91503,   0.00000, 0.00000, 0.00000);
+SetObjectMaterial(0, 16165, "des_n", "parking2", -1);
+CreateDynamicObject(19380, 1.82228, 2467.97021, 20.91503,   0.00000, 0.00000, 0.00000);
+SetDynamicObjectMaterial(0, 16165, "des_n", "parking2", -1);
