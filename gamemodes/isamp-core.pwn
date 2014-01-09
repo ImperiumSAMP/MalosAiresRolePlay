@@ -9,6 +9,8 @@
 #include <zcmd>
 #include <streamer>
 #include <Dini>
+#include "isamp_map.inc"
+#include "isamp_keychain.inc"
 //#include <mapandreas>
 
 #define TIMER:%1(%2) forward %1(%2); public %1(%2)
