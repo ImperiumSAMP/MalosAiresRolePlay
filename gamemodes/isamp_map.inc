@@ -17,7 +17,7 @@ new buildingsToRemove[MAX_BUILDINGS_TO_REMOVE][BuildingToRemove];
 new buildingsToRemoveCount=0;
 new __lastObject;
 
-AddBuildingToRemove(build[BuildingToRemove]){
+stock AddBuildingToRemove(build[BuildingToRemove]){
 	if(buildingsToRemoveCount<MAX_BUILDINGS_TO_REMOVE){
 		buildingsToRemove[buildingsToRemoveCount][b_modelid]=build[b_modelid];
 		buildingsToRemove[buildingsToRemoveCount][b_fX]=build[b_fX];
@@ -28,17 +28,17 @@ AddBuildingToRemove(build[BuildingToRemove]){
  	}
 }
 
-RemoveBuildingsForPlayer(playerid){
+stock RemoveBuildingsForPlayer(playerid){
 	for(new i=0; i< buildingsToRemoveCount;i++){
 		RemoveBuildingForPlayerImp(playerid,buildingsToRemove[i]);
 	}
 }
 
-RemoveBuildingForPlayerImp(playerid,building[BuildingToRemove]){
+stock RemoveBuildingForPlayerImp(playerid,building[BuildingToRemove]){
 	RemoveBuildingForPlayer(playerid,building[b_modelid],building[b_fX],building[b_fY],building[b_fZ],building[b_fRadius]);
 }
 
-imp_strtok(string[],&idx,seperator = ' ')
+stock imp_strtok(string[],&idx,seperator = ' ')
 {
 	new ret[128], i = 0, len = strlen(string);
 	while(string[idx] == seperator && idx < len) idx++;
@@ -52,7 +52,7 @@ imp_strtok(string[],&idx,seperator = ' ')
 	return ret;
 }
 
-LoadMapFiles(index[]){
+stock LoadMapFiles(index[]){
 
 	new mapname[256],
 	File:hIndex, i;
@@ -68,7 +68,7 @@ LoadMapFiles(index[]){
 
 }
 
-LoadMapFromFile(mapname[]){
+stock LoadMapFromFile(mapname[]){
 	new File:hMap,
 		currentObject[256];
 
@@ -83,7 +83,7 @@ LoadMapFromFile(mapname[]){
 	}
 }
 
-ParseMapLine(line[]){
+stock ParseMapLine(line[]){
 	new funcName[256],idx;
 
 	#if defined DEBUG
@@ -139,7 +139,7 @@ stock ParseObject(line[],idx){
 		return CreateObject(objectid,x,y,z,rx,ry,rz);
 }
 
-ParseDynamicObjectMaterial(line[],idx,oid){
+stock ParseDynamicObjectMaterial(line[],idx,oid){
         new matidx,modelid,txdname[256],texturename[256],materialcolor;
 
 		matidx=strval(imp_strtok(line,idx,','));
@@ -151,7 +151,7 @@ ParseDynamicObjectMaterial(line[],idx,oid){
 		SetDynamicObjectMaterial(oid,matidx,modelid,txdname,texturename,materialcolor);
 }
 
-ParseObjectMaterial(line[],idx,oid){
+stock ParseObjectMaterial(line[],idx,oid){
         new matidx,modelid,txdname[256],texturename[256],materialcolor;
 
 		matidx=strval(imp_strtok(line,idx,','));
@@ -163,7 +163,7 @@ ParseObjectMaterial(line[],idx,oid){
 		SetObjectMaterial(oid,matidx,modelid,txdname,texturename,materialcolor);
 }
 
-ParseDynamicObjectMaterialText(line[],idx,oid){
+stock ParseDynamicObjectMaterialText(line[],idx,oid){
         new matidx,text[256],fontface[256],size,fontsize,bold,fontcolor,backcolor,textalignment;
 
 		matidx=strval(imp_strtok(line,idx,','));
@@ -179,7 +179,7 @@ ParseDynamicObjectMaterialText(line[],idx,oid){
 		SetDynamicObjectMaterialText(oid,matidx,text,size,fontface,fontsize,bold,fontcolor,backcolor,textalignment);
 }
 
-ParseObjectMaterialText(line[],idx,oid){
+stock ParseObjectMaterialText(line[],idx,oid){
         new matidx,text[256],fontface[256],size,fontsize,bold,fontcolor,backcolor,textalignment;
 
 		matidx=strval(imp_strtok(line,idx,','));
@@ -195,7 +195,7 @@ ParseObjectMaterialText(line[],idx,oid){
 		SetObjectMaterialText(oid,text,matidx,size,fontface,fontsize,bold,fontcolor,backcolor,textalignment);
 }
 
-ParseRemoveBuildingForPlayer(line[],idx){
+stock ParseRemoveBuildingForPlayer(line[],idx){
         new b[BuildingToRemove];
 
         //descarto el playerid
