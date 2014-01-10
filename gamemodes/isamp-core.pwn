@@ -24607,24 +24607,24 @@ CMD:cponer(playerid,params[])
         return 1;
 
 	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
 
     new cant;
 	cant = PlayerCantConos[playerid];
 	if( cant >= MAX_CONOS_PERSONA)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes conos [MAX 10], quita algunos! (/cquitar) (cquitartodo)");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes conos [MAX 10], quita algunos! (/cquitar) (cquitartodo).");
 	new Float:x, Float:y, Float:z;
 	GetPlayerPos(playerid, x, y, z);
 	cant++;
 	Conos[playerid][cant-1] = CreateObject(1238, x, y, z-0.7, 0.0, 0.0, 0.0);
 	SetPlayerPosFindZ(playerid, x, y-0.7, z);
-	PlayerActionMessage(playerid, 15.0, "ubica un cono policial");
+	PlayerActionMessage(playerid, 15.0, "ubica un cono policial.");
 	PlayerCantConos[playerid] = cant;
 
 	return 1;
@@ -24636,20 +24636,20 @@ CMD:cquitar(playerid,params[])
         return 1;
 
 	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
 
     new cant = PlayerCantConos[playerid];
 	if(cant > 0)
     {
     	DestroyObject(Conos[playerid][cant-1]);
 		PlayerCantConos[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira un cono policial");
+        PlayerActionMessage(playerid, 15.0, "retira un cono policial.");
 	}
 	else
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto conos!");
@@ -24676,7 +24676,7 @@ CMD:cquitartodo(playerid, params[])
 					PlayerCantConos[i] = 0;
 				}
 			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todos los conos puestos por la policia");
+			SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todos los conos puestos por la policia.");
 		} else
 		    {
 				cant = PlayerCantConos[playerid];
@@ -24687,14 +24687,14 @@ CMD:cquitartodo(playerid, params[])
 						DestroyObject(Conos[playerid][b]);
 					}
 					PlayerCantConos[playerid] = 0;
-			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todos los conos que pusiste");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todos los conos que pusiste.");
 				}
 				else
 					return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto conos!");
 			}
 	} else
 		if (PlayerInfo[playerid][pFaction] == FAC_PMA)
-			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie");
+			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
 	return 1;
 }
 
@@ -24717,25 +24717,25 @@ CMD:bponer(playerid,params[])
         return 1;
 
 	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
 
     new cant;
 	cant = PlayerCantBarricadas[playerid];
 	if( cant >= MAX_BARRICADAS_PERSONA)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes barricadas [MAX 5], quita algunas! (/bquitar) (bquitartodo)");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes barricadas [MAX 5], quita algunas! (/bquitar) (bquitartodo).");
 	new Float:x, Float:y, Float:z, Float:facingAngle;
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, facingAngle);
 	cant++;
 	Barricadas[playerid][cant-1] = CreateObject(1459, x, y, z-0.7, 0.0, 0.0, facingAngle);
 	SetPlayerPosFindZ(playerid, x, y-0.7, z);
-	PlayerActionMessage(playerid, 15.0, "ubica una barricada policial");
+	PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 	PlayerCantBarricadas[playerid] = cant;
 
 	return 1;
@@ -24747,20 +24747,20 @@ CMD:bquitar(playerid,params[])
         return 1;
 
 	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
 
     new cant = PlayerCantBarricadas[playerid];
 	if(cant > 0)
     {
     	DestroyObject(Barricadas[playerid][cant-1]);
 		PlayerCantBarricadas[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira una barricada policial");
+        PlayerActionMessage(playerid, 15.0, "retira una barricada policial.");
 	}
 	else
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto barricadas!");
@@ -24787,7 +24787,7 @@ CMD:bquitartodo(playerid, params[])
 					PlayerCantBarricadas[i] = 0;
 				}
 			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todas las barricadas puestas por la policia");
+			SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todas las barricadas puestas por la policia.");
 		} else
 		    {
 				cant = PlayerCantBarricadas[playerid];
@@ -24798,14 +24798,14 @@ CMD:bquitartodo(playerid, params[])
 						DestroyObject(Barricadas[playerid][b]);
 					}
 					PlayerCantBarricadas[playerid] = 0;
-			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todas las barricadas que pusiste");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todas las barricadas que pusiste.");
 				}
 				else
 					return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto barricadas!");
 			}
 	} else
 		if (PlayerInfo[playerid][pFaction] == FAC_PMA)
-			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie");
+			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
 	return 1;
 }
 
