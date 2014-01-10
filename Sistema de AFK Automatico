@@ -1,0 +1,131 @@
+#define cAFKTime 				600000 //10 MIN.
+
+new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
+	cAFKTimer[MAX_PLAYERS],
+	cAFK[MAX_PLAYERS],
+	TAFKT[MAX_PLAYERS],
+	cTomarVW[MAX_PLAYERS];
+	
+	
+forward AFKc(playerid);
+forward AFKText(playerid);
+
+// en public ResetStats agregar.
+
+cAFK[playerid] = 0; //Sistema de AFK
+
+// en OnPlayerDisconnect matamos el timer.
+
+KillTimer(cAFKTimer[playerid]);
+
+// agregamos un if en OnPlayerDisconnect para que devuelva el mundo virtual que tenia si deslogea en modo AFK.
+
+if(cAFK[playerid] == 1) {
+	SetPlayerVirtualWorld(playerid, (cTomarVW[playerid]));
+}
+
+// En OnPlayerSpawn agregamos.
+
+KillTimer(cAFKTimer[playerid]);
+cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
+
+// en el public GlobalUpdate cambiamos
+
+/* 
+SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") + 1);
+	if(GetPVarInt(playerid, "pPayTime") >= 3600) {
+	SetPVarInt(playerid, "pPayTime", 0);
+	PayDay(playerid);
+}*/
+
+// por el siguiente para que si esta en modo AFK no corra el tiempo del payday.
+
+if(cAFK[playerid] == 0){
+	SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") + 1);
+	if(GetPVarInt(playerid, "pPayTime") >= 3600) {
+		SetPVarInt(playerid, "pPayTime", 0);
+		PayDay(playerid);
+	}
+}
+
+// y abajo de ese agregamos lo siguiente para que chekee que si mueve la camara y esta en modo AFK lo devuelva a donde estaba.
+
+GetPlayerCameraPos(playerid, cAFKPos[playerid][6], cAFKPos[playerid][7], cAFKPos[playerid][8]);
+	if(cAFKPos[playerid][6] != cAFKPos[playerid][3] && cAFKPos[playerid][7] != cAFKPos[playerid][4] && cAFKPos[playerid][8] != cAFKPos[playerid][5])
+	{
+		if(cAFK[playerid] == 1)
+		{
+			SetPlayerVirtualWorld(playerid, (cTomarVW[playerid]));
+			cAFK[playerid] = 0;
+			KillTimer(cAFKTimer[playerid]);
+			KillTimer(TAFKT[playerid]);
+			cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
+		}
+	}
+	
+// en el public JailTimer encerramos lo siguiente con un if que detecte si no esta afk para que corra el tiempo de jail.
+
+/*
+
+PlayerInfo[i][pJailTime]--;
+format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
+GameTextForPlayer(i, string, 999, 3);
+
+*/
+
+if(cAFK[i] == 0) {
+	PlayerInfo[i][pJailTime]--;
+	format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
+	GameTextForPlayer(i, string, 999, 3);
+}
+
+// agregamos los public del sistema de AFK.
+
+//---------------------------SISTEMA DE AFK-------------------------------------
+//---------------------------SISTEMA DE AFK-------------------------------------
+
+public AFKc(playerid)
+{
+    GetPlayerCameraPos(playerid, cAFKPos[playerid][0], cAFKPos[playerid][1], cAFKPos[playerid][2]);
+	if(cAFKPos[playerid][0] == cAFKPos[playerid][3] && cAFKPos[playerid][1] == cAFKPos[playerid][4] && cAFKPos[playerid][2] == cAFKPos[playerid][5])
+    {
+        if(cAFK[playerid] == 0)
+        {
+	    	cTomarVW[playerid] = GetPlayerVirtualWorld(playerid);
+			SetPlayerVirtualWorld(playerid, 100);
+	    	cAFK[playerid] = 1;
+	    	TAFKT[playerid] = SetTimerEx("AFKText", 3000, 1, "i", playerid);
+	        return 1;
+		}
+		else
+		{
+		    cAFKPos[playerid][3] = cAFKPos[playerid][0];
+			cAFKPos[playerid][4] = cAFKPos[playerid][1];
+			cAFKPos[playerid][5] = cAFKPos[playerid][2];
+		    KillTimer(cAFKTimer[playerid]);
+		    cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
+	    	return 1;
+		}
+	}
+	else
+	{
+	    cAFKPos[playerid][3] = cAFKPos[playerid][0];
+		cAFKPos[playerid][4] = cAFKPos[playerid][1];
+		cAFKPos[playerid][5] = cAFKPos[playerid][2];
+	    KillTimer(cAFKTimer[playerid]);
+	    cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
+	    return 1;
+	}
+}
+
+public AFKText(playerid)
+{
+	if(cAFK[playerid] == 1)
+	{
+		new string[15];
+	    format(string, sizeof(string), "MODO AUSENTE");
+	    GameTextForPlayer(playerid, string, 3000, 3);
+		return 1;
+	}
+	return 1;
+}
