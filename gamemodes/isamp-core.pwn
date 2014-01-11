@@ -12,6 +12,7 @@
 //#include <mapandreas>
 
 //Includes  moudulos isamp
+#include "isamp-database.inc"
 #include "isamp-jobs.inc"
 #include "isamp-factions.inc"
 #include "isamp-business.inc"
@@ -200,76 +201,6 @@
 #define LOG_MONEY            	2
 #define LOG_CHAT                3
 
-//====[TIPOS DE VEHICULOS]======================================================
-#define	VEH_NONE				0	// Ninguno, no spawnea.
-#define	VEH_DEALERSHIP 			1	// De venta.
-#define	VEH_OWNED				2	// Personal.
-#define	VEH_FACTION				3	// Facción.
-#define	VEH_SCHOOL				4	// Escuela de manejo.
-#define	VEH_CREATED				5	// Creado por un administrador, desaparece a los 15 minutos.
-#define	VEH_JOB					6	// Empleo.
-#define	VEH_RENT                7
-#define	VEH_DEALERSHIP2 		8	// De venta, GROTTI.
-
-#define VTYPE_CAR 				1
-#define VTYPE_HEAVY 			2
-#define VTYPE_MONSTER 			3
-#define VTYPE_BIKE				4
-#define VTYPE_QUAD 				5
-#define VTYPE_BMX 				6
-#define VTYPE_HELI 				7
-#define VTYPE_PLANE 			8
-#define VTYPE_SEA 				9
-#define VTYPE_TRAILER 			10
-#define VTYPE_TRAIN 			11
-#define VTYPE_BOAT 				VTYPE_SEA
-#define VTYPE_BICYCLE 			VTYPE_BMX
-//====[EMPLEOS]=================================================================
-//#define JOB_MECH              1 		// Mecánicos.
-#define JOB_TAXI             	2 		// Conductor.
-#define JOB_FARM             	3 		// Granjero.
-#define JOB_TRAN                4       // Transportista.
-#define JOB_GARB                5       // Basurero.
-#define JOB_FELON               6
-#define JOB_DRUGF          		7
-#define JOB_DRUGD          		8
-
-#define FAC_TYPE_ILLEGAL        0
-#define FAC_TYPE_GOV            1
-#define FAC_TYPE_LEGAL          2
-#define FAC_TYPE_GANG	        3
-
-#define JOB_TAXI_MAXPASSENGERS  10
-
-#define JOB_FARM_MAXPRODS       20
-#define JOB_FARM_PRODVALUE      200  
-#define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     160
-
-#define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
-#define JOB_TRAN_PRODVALUE      500    	// VALOR POR PAQUETE
-
-#define JOB_GARB_MONEY       	4000 	// MONEY + random(MONEY / 2)
-
-#define JOB_MECH_MAXPRICE       1500 	// Máximo que pueden cobrar los mecánicos.
-
-#define JOB_EXP_MULTIPLIER      3
-//
-#define BLD_PMA                 2
-#define BLD_HOSP                5
-//====[FACCIONES]===============================================================
-#define FAC_NONE                0
-#define FAC_PMA                 1 		// Policía Metropolitana.
-#define FAC_HOSP                2
-#define FAC_FORZ                3
-#define FAC_CHIN                4
-#define FAC_BERT                5
-#define FAC_MAN                 6
-#define FAC_MECH                7
-#define FAC_RIV                	8
-#define FAC_BOCA               	9
-#define FAC_SIDE                10
-
 //====[DEFINES]=================================================================
 #define COLOR_FACTIONCHAT 		0x7BDDA5AA
 #define COLOR_CORLEONE 			0x212121AA
@@ -393,12 +324,6 @@
 //==============================================================================
 
 new
-	// No bajarle el tamaño o no funca.
- 	MYSQL_HOST[256],
- 	MYSQL_USER[256],
- 	MYSQL_PASS[256],
- 	MYSQL_DB[256],
- 	
  	DrugOfferType[MAX_PLAYERS],
  	DrugOffer[MAX_PLAYERS],
 	DrugOfferPrice[MAX_PLAYERS],
@@ -411,10 +336,6 @@ new
     SIDEGateTimer,
     TMTuneTimers[5],
 	timersID[24],
-	// Misc.
-	bool:dontsave = false,
-    bool:FALSE = false,
-	dbHandle = 1,
 	// Menus.
 	Menu:phoneMenu,
 	Menu:licenseMenu,
@@ -1321,13 +1242,6 @@ forward cantSaveItems(playerid);
 forward kickTimer(playerid);
 forward banTimer(playerid);
 
-// MySQL
-forward MySQLUpdateInt(sqlplayerid,sqltable[],sqlvalname[],sqlupdateint);
-forward MySQLUpdateFloat(sqlplayerid,sqltable[],sqlvalname[], Float:sqlupdateflo);
-forward MySQLUpdateStr(sqlplayerid,sqltable[],sqlvalname[],sqlupdatestr[]);
-forward MySQLUpdateDate(sqlplayerid,sqltable[],sqlvalname[],year,month,day,hour,minute,second);
-forward MySQLConnect(sqlhost[], sqluser[], sqlpass[], sqldb[]);
-
 forward GiveJobExp(playerid, job, exp);
 forward BackupClear(playerid, calledbytimer);
 forward FixHour(hour);
@@ -1380,7 +1294,6 @@ forward IsAtBar(playerid);
 forward DrugEffect(playerid);
 forward UndrugEffect(playerid);
 forward ClearCheckpointsForPlayer(playerid);
-forward IsABike(vehicleid);
 forward OnPlayerConnectEx(playerid);
 forward AFKc(playerid);
 forward AFKText(playerid);
@@ -1393,20 +1306,7 @@ main() {
 }
 
 
-stock loadMySQLcfg() {
-	if(dini_Exists("isamp-data/db.cfg")) {
-	    new sendcmd[128];
-		MYSQL_HOST = dini_Get("isamp-data/db.cfg", "MYSQL_HOST");
-		MYSQL_PASS = dini_Get("isamp-data/db.cfg", "MYSQL_PASS");
-		MYSQL_USER = dini_Get("isamp-data/db.cfg", "MYSQL_USER");
-		MYSQL_DB = dini_Get("isamp-data/db.cfg", "MYSQL_DB");
-		format(sendcmd, sizeof(sendcmd), "password %s", dini_Get("isamp-data/db.cfg", "SERVER_PASSWORD"));
-		SendRconCommand(sendcmd);
-	} else {
-		print("Error cargando la configuracion de la DB.");
-	}
-	return 1;
-}
+
 
 public OnGameModeInit() {
 	mysql_debug(1);
@@ -14454,34 +14354,6 @@ public TutTimer(playerid) {
     return 1;
 }
 
-public MySQLUpdateDate(sqlplayerid,sqltable[],sqlvalname[],year,month,day,hour,minute,second) {
-	new query[256];
-	format(query, sizeof(query), "UPDATE `%s` SET `%s` = '%02d-%02d-%02d %02d:%02d:%02d' WHERE `Id`=%d",sqltable,sqlvalname, year, month, day, hour, minute, second, sqlplayerid);
-	mysql_function_query(dbHandle, query, false, "", "");
-	return 1;
-}
-
-public MySQLUpdateInt(sqlplayerid,sqltable[],sqlvalname[],sqlupdateint) {
-	new query[256];
-	format(query,sizeof(query),"UPDATE `%s` SET `%s`=%d WHERE `Id` =%d",sqltable,sqlvalname,sqlupdateint,sqlplayerid);
-	mysql_function_query(dbHandle, query, false, "", "");
-	return 1;
-}
-
-public MySQLUpdateFloat(sqlplayerid,sqltable[],sqlvalname[], Float:sqlupdateflo) {
-	new query[256];
-	format(query,sizeof(query),"UPDATE `%s` SET `%s`=%f WHERE `Id`=%d",sqltable,sqlvalname,sqlupdateflo,sqlplayerid);
-	mysql_function_query(dbHandle, query, false, "", "");
-	return 1;
-}
-
-public MySQLUpdateStr(sqlplayerid,sqltable[],sqlvalname[],sqlupdatestr[]) {
-	new query[256];
-	mysql_real_escape_string(sqlupdatestr,sqlupdatestr);
-	format(query,sizeof(query),"UPDATE `%s` SET `%s`='%s' WHERE `Id`=%d",sqltable,sqlvalname,sqlupdatestr,sqlplayerid);
-	mysql_function_query(dbHandle, query, false, "", "");
-	return 1;
-}
 
 //====[ZCMD COMMANDS]===========================================================
 CMD:pos(playerid, params[]) {

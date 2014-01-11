@@ -18,6 +18,42 @@
 #define NUM_MISSION          	424
 #define NUM_MISSION2            425
 
+
+//====[EMPLEOS]=================================================================
+//#define JOB_MECH              1 		// Mecánicos.
+#define JOB_TAXI             	2 		// Conductor.
+#define JOB_FARM             	3 		// Granjero.
+#define JOB_TRAN                4       // Transportista.
+#define JOB_GARB                5       // Basurero.
+#define JOB_FELON               6
+#define JOB_DRUGF          		7
+#define JOB_DRUGD          		8
+
+#define FAC_TYPE_ILLEGAL        0
+#define FAC_TYPE_GOV            1
+#define FAC_TYPE_LEGAL          2
+#define FAC_TYPE_GANG	        3
+
+#define JOB_TAXI_MAXPASSENGERS  10
+
+#define JOB_FARM_MAXPRODS       20
+#define JOB_FARM_PRODVALUE      200  
+#define JOB_DRUGF_MAXPRODS      30
+#define JOB_DRUGF_PRODVALUE     160
+
+#define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
+#define JOB_TRAN_PRODVALUE      500    	// VALOR POR PAQUETE
+
+#define JOB_GARB_MONEY       	4000 	// MONEY + random(MONEY / 2)
+
+#define JOB_MECH_MAXPRICE       1500 	// Máximo que pueden cobrar los mecánicos.
+
+#define JOB_EXP_MULTIPLIER      3
+//
+#define BLD_PMA                 2
+#define BLD_HOSP                5
+
+
 //Enums
 
 enum jInf {

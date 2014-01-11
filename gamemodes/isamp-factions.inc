@@ -3,7 +3,22 @@
 #endif
 #define _isamp_factions_included
 
+//Defines
 #define MAX_FACTIONS            20
+
+//====[FACCIONES]===============================================================
+#define FAC_NONE                0
+#define FAC_PMA                 1 		// Policía Metropolitana.
+#define FAC_HOSP                2
+#define FAC_FORZ                3
+#define FAC_CHIN                4
+#define FAC_BERT                5
+#define FAC_MAN                 6
+#define FAC_MECH                7
+#define FAC_RIV                	8
+#define FAC_BOCA               	9
+#define FAC_SIDE                10
+
 
 //Enums
 enum Factions {

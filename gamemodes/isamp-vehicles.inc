@@ -11,6 +11,31 @@
 #define MAX_VEH                 1001
 #define MAX_RENTCAR             20
 
+//====[TIPOS DE VEHICULOS]======================================================
+#define	VEH_NONE				0	// Ninguno, no spawnea.
+#define	VEH_DEALERSHIP 			1	// De venta.
+#define	VEH_OWNED				2	// Personal.
+#define	VEH_FACTION				3	// Facción.
+#define	VEH_SCHOOL				4	// Escuela de manejo.
+#define	VEH_CREATED				5	// Creado por un administrador, desaparece a los 15 minutos.
+#define	VEH_JOB					6	// Empleo.
+#define	VEH_RENT                7
+#define	VEH_DEALERSHIP2 		8	// De venta, GROTTI.
+
+#define VTYPE_CAR 				1
+#define VTYPE_HEAVY 			2
+#define VTYPE_MONSTER 			3
+#define VTYPE_BIKE				4
+#define VTYPE_QUAD 				5
+#define VTYPE_BMX 				6
+#define VTYPE_HELI 				7
+#define VTYPE_PLANE 			8
+#define VTYPE_SEA 				9
+#define VTYPE_TRAILER 			10
+#define VTYPE_TRAIN 			11
+#define VTYPE_BOAT 				VTYPE_SEA
+#define VTYPE_BICYCLE 			VTYPE_BMX
+
 //Enums
 enum Cars {
 	VehSQLID,
@@ -69,6 +94,7 @@ new TrunkInfo[MAX_VEH][Trunks];
 forward IsAPlane(vehicleid);
 forward IsAHelicopter(vehicleid);
 forward IsVehicleOccupied(vehicleid);
+forward IsABike(vehicleid);
 
 
 VehTypeName(type) {
