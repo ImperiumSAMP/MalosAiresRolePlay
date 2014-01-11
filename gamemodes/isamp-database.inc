@@ -20,7 +20,7 @@ forward MySQLUpdateInt(sqlplayerid,sqltable[],sqlvalname[],sqlupdateint);
 forward MySQLUpdateFloat(sqlplayerid,sqltable[],sqlvalname[], Float:sqlupdateflo);
 forward MySQLUpdateStr(sqlplayerid,sqltable[],sqlvalname[],sqlupdatestr[]);
 forward MySQLUpdateDate(sqlplayerid,sqltable[],sqlvalname[],year,month,day,hour,minute,second);
-forward MySQLConnect(sqlhost[], sqluser[], sqlpass[], sqldb[]);
+//forward MySQLConnect(sqlhost[], sqluser[], sqlpass[], sqldb[]);
 
 stock loadMySQLcfg() {
 	if(dini_Exists("isamp-data/db.cfg")) {
@@ -64,4 +64,8 @@ public MySQLUpdateStr(sqlplayerid,sqltable[],sqlvalname[],sqlupdatestr[]) {
 	format(query,sizeof(query),"UPDATE `%s` SET `%s`='%s' WHERE `Id`=%d",sqltable,sqlvalname,sqlupdatestr,sqlplayerid);
 	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
+}
+
+public OnQueryError(errorid, error[], callback[], query[], connectionHandle) {
+	return printf("errorid: %d | error: %s | callback: %s | query: %s", errorid, error, callback, query);
 }
