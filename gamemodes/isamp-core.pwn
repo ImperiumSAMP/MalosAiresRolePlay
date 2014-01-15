@@ -1493,6 +1493,10 @@ public ResetStats(playerid) {
 	SprintRaceBet[playerid] = 0;
 	SprintRaceCountdownSecs[playerid] = 11;
 	
+	/* Sistema de tazer */
+	TAZERENMANO[playerid] = 0;
+	TTAZER[playerid] = 0;
+	
  	DrugOfferType[playerid] = 0;
  	DrugOffer[playerid] = INVALID_PLAYER_ID;
 	DrugOfferPrice[playerid] = -1;
