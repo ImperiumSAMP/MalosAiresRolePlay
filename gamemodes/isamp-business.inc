@@ -65,7 +65,7 @@ new Business[MAX_BUSINESS][BusinessSystem];
 //Admin commands
 //====[NEGOCIOS]================================================================
 CMD:anegocios(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 7) return 1;
+	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Negocios:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/ainfonegocio /aninsert /anremove /angetid /anproductos /anprecio /antipo");
@@ -77,7 +77,7 @@ CMD:ainfonegocio(playerid, params[]) {
 	new
 	    id;
 
-    if(PlayerInfo[playerid][pAdmin] < 4) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 2) return 1;
 
 	if(sscanf(params, "d", id)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ainfonegocio [idnegocio]");
@@ -174,7 +174,7 @@ CMD:antele(playerid, params[]) {
 	new
 	    bizID;
 
-    if(PlayerInfo[playerid][pAdmin] < 4)
+    if(PlayerInfo[playerid][pAdmin] < 2)
 		return 1;
 
 	if(sscanf(params, "d", bizID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antele [idnegocio]");
@@ -215,7 +215,7 @@ CMD:anproductos(playerid, params[]) {
 	    bizID,
 	    products;
 
-    if(PlayerInfo[playerid][pAdmin] < 10)
+    if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
 	if(sscanf(params, "dd", bizID, products)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anproductos [idnegocio] [cantidad]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
@@ -233,7 +233,7 @@ CMD:anprecio(playerid, params[]) {
 	    bizID,
 	    price;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
+    if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
 	if(sscanf(params, "dd", bizID, price)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anprecio [idnegocio] [precio]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {

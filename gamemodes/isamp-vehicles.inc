@@ -1257,39 +1257,58 @@ CMD:vehiculo(playerid,params[]) {
 			SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no te pertenece!");
 		}
 	} else if(strcmp(text,"puertas",true) == 0) {
-		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)	{
+		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		{
 		    vehicleid = GetPlayerVehicleID(playerid);
-            if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
+            if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
-			} else if(vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2] && !AdminDuty[playerid]) {
-   			    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
-   			} else if(VehicleInfo[vehicleid][VehLocked] != 1) {
+
+			if( vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2] && !AdminDuty[playerid] )
+			{
+   				if( VehicleInfo[vehicleid][VehType] == VEH_FACTION && PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction] )
+				{
+
+				} else
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
+			}
+
+	   		if(VehicleInfo[vehicleid][VehLocked] != 1)
+	   		{
 				PlayerActionMessage(playerid,15.0, "ha asegurado las puertas del vehículo.");
 				VehicleInfo[vehicleid][VehLocked] = 1;
-			} else {
-				PlayerActionMessage(playerid,15.0, "ha destrabado las puertas del vehículo.");
-				VehicleInfo[vehicleid][VehLocked] = 0;
-			}
-		} else {
-   			vehicleid = GetClosestVehicle(playerid, 10.0);
-   			if(vehicleid != INVALID_VEHICLE_ID)	{
-   				GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-	  			if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
-		    		return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
-				} else if(vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2] && !AdminDuty[playerid]) {
-	   			    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
-	   			    return 1;
-	   			} else if(VehicleInfo[vehicleid][VehLocked] != 1) {
-					PlayerActionMessage(playerid,15.0,"ha asegurado las puertas del vehículo.");
-					VehicleInfo[vehicleid][VehLocked] = 1;
-				} else {
-					PlayerActionMessage(playerid,15.0,"ha destrabado las puertas del vehículo.");
+			} else
+				{
+					PlayerActionMessage(playerid,15.0, "ha destrabado las puertas del vehículo.");
 					VehicleInfo[vehicleid][VehLocked] = 0;
 				}
-   			} else {
-                SendClientMessage(playerid, COLOR_YELLOW2, "¡No hay ningún vehículo cerca tuyo!");
-   			}
-  		}
+		} else
+		{
+   			vehicleid = GetClosestVehicle(playerid, 10.0);
+   			if(vehicleid == INVALID_VEHICLE_ID)
+			   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No hay ningún vehículo cerca tuyo!");
+			GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+	  		if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
+
+			if( vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2] && !AdminDuty[playerid] )
+			{
+				if( VehicleInfo[vehicleid][VehType] == VEH_FACTION && PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction] )
+				{
+
+				} else
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
+			}
+
+	   		if(VehicleInfo[vehicleid][VehLocked] != 1)
+	   		{
+				PlayerActionMessage(playerid,15.0, "ha asegurado las puertas del vehículo.");
+				VehicleInfo[vehicleid][VehLocked] = 1;
+			} else
+				{
+					PlayerActionMessage(playerid,15.0, "ha destrabado las puertas del vehículo.");
+					VehicleInfo[vehicleid][VehLocked] = 0;
+				}
+		}
 	} else if(strcmp(text, "luces", true) == 0) {
 		vehicleid = GetPlayerVehicleID(playerid);
 		if(IsPlayerInAnyVehicle(playerid)) {
@@ -1384,7 +1403,7 @@ CMD:avinfo(playerid, params[]) {
 		Float:hp,
 	    id;
 
-    if(PlayerInfo[playerid][pAdmin] < 4) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 2) return 1;
 	if(sscanf(params, "d", id)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avinfo [idauto]");
 	} else if(id >= 1 && id < MAX_VEH) {
@@ -1408,7 +1427,7 @@ CMD:avinfo(playerid, params[]) {
 
 CMD:aventrar(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 6)
+	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
 	new vehid;
     if(sscanf(params, "i", vehid))
@@ -1423,7 +1442,7 @@ CMD:aventrar(playerid, params[])
 
 CMD:avrespawn(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 6)
+	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
 	new vehid;
     if(sscanf(params, "i", vehid))
@@ -1438,7 +1457,7 @@ CMD:avrespawn(playerid, params[])
 
 CMD:avrespawnall(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 6)
+	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
 	for(new i = 1;i<MAX_VEH;i++) {
 		    if(IsVehicleOccupied(i) == 0) {
