@@ -276,7 +276,6 @@ new
 	bool:smoking[MAX_PLAYERS],
 	policeCallTime[MAX_PLAYERS],
 	theftTime[MAX_PLAYERS],
-	bool:usedTazer[MAX_PLAYERS],
     eventParam[MAX_PLAYERS],
 	eventStep[MAX_PLAYERS],
     bool:jobDuty[MAX_PLAYERS],
@@ -845,6 +844,23 @@ new Float:SPRINT_RACE_POS[27][3] = {
 	{367.8909,-2038.0934,7.2342}
 };
 
+/* Sistema de Tazer, guardado de las armas reglamentarias que se juntan. */
+new TENIAMM[MAX_PLAYERS],
+	MM[MAX_PLAYERS],
+	MMA[MAX_PLAYERS],
+	TENIAMMSILENCIADA[MAX_PLAYERS],
+	MMSILENCIADA[MAX_PLAYERS],
+	MMASILENCIADA[MAX_PLAYERS],
+	TENIADEAGLE[MAX_PLAYERS],
+	DEAGLE[MAX_PLAYERS],
+	DEAGLEA[MAX_PLAYERS],
+	TENIATAZER[MAX_PLAYERS],
+	TAZER[MAX_PLAYERS],
+	TAZERA[MAX_PLAYERS];
+
+new TTAZER[MAX_PLAYERS],
+	TAZERENMANO[MAX_PLAYERS];
+	
 static const itemPrice[] = { // Base, armería.
 	0,
 	190,
@@ -945,7 +961,7 @@ forward Reparacion(playerid);
 forward Unfreeze(playerid);
 forward AntiBH(playerid);
 forward OnPlayerPrivmsg(playerid, recieverid, text[]);
-forward UntazePlayer(playerid, issuer);
+forward FinishTazerEffect(playerid);
 forward SendFactionMessage(faction, color, string[]);
 forward SetPlayerToFactionSkin(playerid);
 forward SetPlayerToTeamColor(playerid);
@@ -1455,7 +1471,6 @@ public ResetStats(playerid) {
     policeCallTime[playerid] = 0;
 	theftTime[playerid] = -1;
 	felon[playerid] = INVALID_PLAYER_ID;
-    usedTazer[playerid] = false;
 	eventStep[playerid] = 0;
     eventParam[playerid] = 0;
 	LastVeh[playerid] = 0;
@@ -1477,6 +1492,10 @@ public ResetStats(playerid) {
 	SprintRaceOpponent[playerid] = 999;
 	SprintRaceBet[playerid] = 0;
 	SprintRaceCountdownSecs[playerid] = 11;
+	
+	/* Sistema de tazer */
+	TAZERENMANO[playerid] = 0;
+	TTAZER[playerid] = 0;
 	
  	DrugOfferType[playerid] = 0;
  	DrugOffer[playerid] = INVALID_PLAYER_ID;
@@ -5507,6 +5526,43 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid) {
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
 		}
 		
+    if(issuerid != INVALID_PLAYER_ID)
+    {
+   		if( weaponid == 23 && TAZERENMANO[issuerid] == 1)
+    	{
+
+	    	if(CopDuty[issuerid] != 1 && SIDEDuty[issuerid] != 1)
+ 	    		return 1;
+
+            new Float:victimHealth;
+			GetPlayerHealthEx(playerid, victimHealth);
+			SetPlayerHealthEx(playerid, victimHealth + amount);
+
+            if(!IsPlayerInAnyVehicle(issuerid)) {
+                if(!IsPlayerInAnyVehicle(playerid)) {
+
+					if(ProxDetectorS(12.0, issuerid, playerid)){
+						if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+							return SendClientMessage(issuerid, COLOR_YELLOW2, "El sujeto está ocupado o actualmente inhabilitado.");
+
+						SendFMessage(playerid, COLOR_YELLOW2, "¡Has sido tazeado por %s!, el efecto dura %d segundos.", GetPlayerNameEx(issuerid), TAZER_TIME / 1000);
+						SendFMessage(issuerid, COLOR_YELLOW2, "¡Has tazeado a %s por %d segundos!", GetPlayerNameEx(playerid), TAZER_TIME / 1000);
+					   	TogglePlayerControllable(playerid, 0);
+					   	SetPVarInt(playerid, "disabled", DISABLE_TAZER);
+					   	ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
+					   	SetTimerEx("FinishTazerEffect", 10000, 0, "i", playerid);
+					   	PlayerPlayerActionMessage(issuerid, playerid, 15.0, "ha tazeado a");
+                    } else {
+		       			 SendClientMessage(issuerid, COLOR_YELLOW2, "El sujeto estaba demasiado lejos.");
+		    		}
+                } else {
+				    SendClientMessage(issuerid, COLOR_YELLOW2, "Debes bajar al sujeto del vehículo antes de tazearlo.");
+				}
+            } else {
+				SendClientMessage(issuerid, COLOR_YELLOW2, "¡No lo puedes usar desde adentro de un vehículo!");
+    		}
+    	}
+	}
     return 1;
 }
 
@@ -9361,17 +9417,15 @@ public GetPlayerWantedLevelEx(playerid) {
 	return PlayerInfo[playerid][pWantedLevel];
 }
 
-public UntazePlayer(playerid, issuer) {
-	if(GetPVarInt(playerid, "disabled") == DISABLE_TAZER) {
+public FinishTazerEffect(playerid)
+{
+    if(GetPVarInt(playerid, "disabled") == DISABLE_TAZER) {
 	    SendClientMessage(playerid, COLOR_YELLOW2, "El efecto del tazer se ha ido.");
-	    TogglePlayerControllable(playerid, 1);
-	    ClearAnimations(playerid);
-	    usedTazer[issuer] = false;
-	    ClearAnimations(playerid);
-	    DeletePVar(playerid, "disabled");
-	    PlayerActionMessage(playerid, 15.0, "ya no se encuentra tazeado.");
-	}
-	return 1;
+		TogglePlayerControllable(playerid, 1);
+    	ApplyAnimation(playerid, "PED", "getup_front", 4.1, 0, 1, 1, 0, 1, 1);
+    	DeletePVar(playerid, "disabled");
+    }
+    return 1;
 }
 
 public CloseGate(gateID) {
@@ -16823,57 +16877,6 @@ CMD:quitar(playerid, params[]) {
 	return 1;
 }
 
-CMD:tazear(playerid, params[]) {
-	new
-		closestPlayer = INVALID_PLAYER_ID,
-		Float:distance = 0,
-	    Float:closest = 999999.0,
-	    targetID;
-	    
-    if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
-
-	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0) {
-    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
-    	return 1;
-	}
-	
-    if(!IsPlayerInAnyVehicle(playerid)) {
-        if(!usedTazer[playerid]) {
-		    foreach(new i : Player) {
-		        distance = GetDistanceBetweenPlayers(playerid, i);
-				if(distance < closest && PlayerInfo[i][pFaction] != FAC_PMA) {
-		            closest = distance;
-		            closestPlayer = i;
-		        }
-		    }
-		    if(closest <= 6.0 && closestPlayer != INVALID_PLAYER_ID) {
-                if(!IsPlayerInAnyVehicle(closestPlayer)) {
-					if(GetPVarInt(closestPlayer, "disabled") != DISABLE_NONE)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto está ocupado o actualmente inhabilitado.");
-					    
-				    SendFMessage(targetID, COLOR_YELLOW2, "¡Has sido tazeado por %s!, el efecto dura %d segundos.", GetPlayerNameEx(playerid), TAZER_TIME / 1000);
-					SendFMessage(playerid, COLOR_YELLOW2, "¡Has tazeado a %s por %d segundos!", GetPlayerNameEx(closestPlayer), TAZER_TIME / 1000);
-					TogglePlayerControllable(closestPlayer, 0);
-					SetPVarInt(closestPlayer, "disabled", DISABLE_TAZER);
-					ApplyAnimation(closestPlayer, "CRACK", "crckidle2", 4.1,1,1,1,1,1,0);
-					usedTazer[playerid] = true;
-					SetTimerEx("UntazePlayer", TAZER_TIME, false, "ii", closestPlayer, playerid);
-					PlayerPlayerActionMessage(playerid, closestPlayer, 15.0, "ha tazeado a");
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Debes bajar al sujeto del vehículo antes de tazearlo.");
-				}
-		    } else {
-		        SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún civil cerca.");
-		    }
-		} else {
-            SendClientMessage(playerid, COLOR_YELLOW2, "Espera a que recargue la pistola.");
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡No lo puedes usar desde adentro de un vehículo!");
-    }
-	return 1;
-}
-
 CMD:revisar(playerid, params[]) {
 	new
 	    targetID,
@@ -20178,6 +20181,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 23, 100); // Silenciada
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 8));
 						return 1;
@@ -20190,6 +20194,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 7));
 						return 1;
@@ -20229,6 +20234,7 @@ CMD:equipo(playerid, params[]) {
 		                GivePlayerWeapon(playerid, 43, 50); // Cámara
 		            	GivePlayerWeapon(playerid, 4, 1); // Cuchillo
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 3));
 						return 1;
@@ -20255,6 +20261,7 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1); // Macana
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 		            	SetPlayerSkin(playerid, 71); // Vigilante
+		            	TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 8));
 						return 1;
@@ -20267,6 +20274,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 		            	SetPlayerSkin(playerid, 266); // Oficial
+		            	TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 7));
 						return 1;
@@ -20279,6 +20287,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 						GivePlayerWeapon(playerid, 25, 25); // Escopeta
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 280); // Cabo
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 6));
@@ -20292,6 +20301,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 24, 50); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 35); // Escopeta
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 284); // Sargento
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 5));
@@ -20306,6 +20316,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 75); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 30); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 281); // Sargento Mayor
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 4));
@@ -20320,6 +20331,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 35); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 283); // Teniente
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 3));
@@ -20334,6 +20346,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 40); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 288); // Sub Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 2));
@@ -20348,6 +20361,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 50); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 282); // Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 1));
@@ -20413,6 +20427,7 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1);
 		            	GivePlayerWeapon(playerid, 24, 35);
 		            	GivePlayerWeapon(playerid, 29, 200);
+		            	TTAZER[playerid] = 1;
                         SetPlayerSkin(playerid, 286);
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(1, 4));
@@ -21864,6 +21879,110 @@ public AFKText(playerid)
 	    format(string, sizeof(string), "MODO AUSENTE");
 	    GameTextForPlayer(playerid, string, 3000, 3);
 		return 1;
+	}
+	return 1;
+}
+
+// SIST TAZER //
+
+CMD:tomartazer(playerid, params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0) {
+    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
+    	return 1;
+	}
+	if(TTAZER[playerid] == 0) {
+    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar equipado!");
+    	return 1;
+	}
+	if(TTAZER[playerid] == 3 && TENIATAZER[playerid] == 3){
+ 		SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaria a recargarlo!");
+        return 1;
+	}
+	if(TAZERENMANO[playerid] == 1){
+ 		SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes el tazer en la mano!");
+    	return 1;
+	}
+
+    new sweapon, sammo;
+    for (new i=0; i<9; i++)
+    {
+        GetPlayerWeaponData(playerid, i, sweapon, sammo);
+        if(sweapon != 0)
+        {
+			if(sweapon == 22){
+       			TENIAMM[playerid] = 1;
+			    MM[playerid] = sweapon;
+			    MMA[playerid] = sammo;
+			}
+			if(sweapon == 23){
+       			TENIAMMSILENCIADA[playerid] = 1;
+			    MMSILENCIADA[playerid] = sweapon;
+			    MMASILENCIADA[playerid] = sammo;
+			}
+			if(sweapon == 24){
+			    TENIADEAGLE[playerid] = 1;
+			    DEAGLE[playerid] = sweapon;
+			    DEAGLEA[playerid] = sammo;
+			}
+        }
+    }
+    RemovePlayerWeapon(playerid, MMSILENCIADA[playerid]);
+    TAZERENMANO[playerid] = 1;
+    if(TTAZER[playerid] == 1){
+ 		GivePlayerWeapon(playerid, 23, 10);
+	}
+	if(TTAZER[playerid] == 2){
+ 		GivePlayerWeapon(playerid, TAZER[playerid], TAZERA[playerid]);
+	}
+	return 1;
+}
+
+CMD:guardartazer(playerid, params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+    if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0) {
+    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
+    	return 1;
+	}
+	if(TTAZER[playerid] == 0) {
+    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar equipado!");
+    	return 1;
+	}
+	if(TAZERENMANO[playerid] == 0){
+ 		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el tazer en la mano!");
+    	return 1;
+	}
+
+	new sweapon, sammo;
+    for (new i=0; i<9; i++)
+    {
+        GetPlayerWeaponData(playerid, i, sweapon, sammo);
+        if(sweapon != 0)
+        {
+			if(sweapon == 23 && TTAZER[playerid] != 3){
+			    TENIATAZER[playerid] = 1;
+			    TAZER[playerid] = sweapon;
+			    TAZERA[playerid] = sammo;
+			    RemovePlayerWeapon(playerid, TAZER[playerid]);
+			    TTAZER[playerid] = 2;
+			}
+			if(sweapon == 23 && TAZERA[playerid] == 0) {
+                TENIATAZER[playerid] = 3;
+				TTAZER[playerid] = 3;
+   			}
+        }
+    }
+    TAZERENMANO[playerid] = 0;
+	if(TENIAMM[playerid] == 1){
+	GivePlayerWeapon(playerid, MM[playerid], MMA[playerid]);
+	}
+	if(TENIAMMSILENCIADA[playerid] == 1){
+	GivePlayerWeapon(playerid, MMSILENCIADA[playerid], MMASILENCIADA[playerid]);
+	}
+	if(TENIADEAGLE[playerid] == 1){
+	GivePlayerWeapon(playerid, DEAGLE[playerid], DEAGLEA[playerid]);
 	}
 	return 1;
 }
