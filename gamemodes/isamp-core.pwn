@@ -20177,6 +20177,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 23, 100); // Silenciada
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 8));
 						return 1;
@@ -20189,6 +20190,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 7));
 						return 1;
@@ -20228,6 +20230,7 @@ CMD:equipo(playerid, params[]) {
 		                GivePlayerWeapon(playerid, 43, 50); // Cámara
 		            	GivePlayerWeapon(playerid, 4, 1); // Cuchillo
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
+						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 3));
 						return 1;
@@ -20254,6 +20257,7 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1); // Macana
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 		            	SetPlayerSkin(playerid, 71); // Vigilante
+		            	TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 8));
 						return 1;
@@ -20266,6 +20270,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 		            	SetPlayerSkin(playerid, 266); // Oficial
+		            	TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 7));
 						return 1;
@@ -20278,6 +20283,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 						GivePlayerWeapon(playerid, 25, 25); // Escopeta
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 280); // Cabo
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 6));
@@ -20291,6 +20297,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 24, 50); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 35); // Escopeta
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 284); // Sargento
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 5));
@@ -20305,6 +20312,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 75); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 30); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 281); // Sargento Mayor
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 4));
@@ -20319,6 +20327,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 35); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 283); // Teniente
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 3));
@@ -20333,6 +20342,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 40); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 288); // Sub Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 2));
@@ -20347,6 +20357,7 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 50); // Rifle de Caza
+						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 282); // Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 1));
@@ -20412,6 +20423,7 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1);
 		            	GivePlayerWeapon(playerid, 24, 35);
 		            	GivePlayerWeapon(playerid, 29, 200);
+		            	TTAZER[playerid] = 1;
                         SetPlayerSkin(playerid, 286);
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(1, 4));
