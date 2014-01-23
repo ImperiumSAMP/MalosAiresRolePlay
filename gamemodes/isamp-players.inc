@@ -83,6 +83,8 @@ enum pInfo {
 	pLighter,
 	pFightStyle,
 	
+	Float:pAdictionPercent,
+	pAdictionAbstinence,
 	pMarijuana,
 	pLSD,
 	pEcstasy,

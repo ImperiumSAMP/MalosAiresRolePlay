@@ -1257,7 +1257,7 @@ CMD:vehiculo(playerid,params[]) {
 			SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no te pertenece!");
 		}
 	} else if(strcmp(text,"puertas",true) == 0) {
-		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER || GetPlayerState(playerid) == PLAYER_STATE_PASSENGER)
 		{
 		    vehicleid = GetPlayerVehicleID(playerid);
             if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
