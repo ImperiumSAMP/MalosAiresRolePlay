@@ -23,7 +23,7 @@
 #include "isamp-business.inc" //Sistema de negocios
 #include "isamp-houses.inc" //Sistema de negocios
 #include "isamp-vehicles.inc" //Sistema de vehiculos
-#include "isamp-thiefjob.inc" //Sistema de vehiculos
+#include "isamp-thiefjob.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -73,6 +73,14 @@
 #define POS_POLICE_ARREST_X 	257.9974
 #define POS_POLICE_ARREST_Y     84.9305
 #define POS_POLICE_ARREST_Z     1002.4453
+
+// Disables.
+#define DISABLE_NONE            0
+#define DISABLE_FREEZE          1
+#define DISABLE_TAZER           2
+#define DISABLE_DYING           3
+#define DISABLE_STEALING        4
+#define DISABLE_DEATHBED        5
 
 // Dialogs.
 #define DLG_LOGIN 				10000
@@ -301,7 +309,6 @@ new
 	TransportPassenger[MAX_PLAYERS],
 	TransportCost[MAX_PLAYERS],
 	TaxiTimer=PRICE_TAXI_INTERVAL,
-
 
 	//workedTime[MAX_PLAYERS],
 	lastPoliceCallNumber = 0,
@@ -1441,9 +1448,6 @@ public ResetStats(playerid) {
 	
 	SeatBelt[playerid] = false;
 	smoking[playerid] = false;
-    policeCallTime[playerid] = 0;
-	theftTime[playerid] = -1;
-	felon[playerid] = INVALID_PLAYER_ID;
     usedTazer[playerid] = false;
 	eventStep[playerid] = 0;
     eventParam[playerid] = 0;
@@ -1514,11 +1518,6 @@ public ResetStats(playerid) {
 	PlayerCantBarricadas[playerid] = 0;
 	cAFK[playerid] = 0; //Sistema de AFK
 
-
-	//Limpio las variables del job de ladron
-	resetThiefVariables(playerid);
-
-
 	playerLicense[playerid][lDStep] = 0;
 	playerLicense[playerid][lDTaking] = 0;
 	playerLicense[playerid][lDTime] = 0;
@@ -1533,7 +1532,9 @@ public ResetStats(playerid) {
 	
 	PlayerInfo[playerid][pFightStyle] = 0;
 	PlayerInfo[playerid][pMuteB] = 0;
-	
+
+	resetThiefVariables(playerid);
+
 	PlayerInfo[playerid][pCantWork] = 0;
 	PlayerInfo[playerid][pWantedLevel] = 0;
 	PlayerInfo[playerid][pBizKey] = 0;
@@ -4487,6 +4488,7 @@ public OnPlayerDataLoad(playerid) {
 	if(rows) {
 		DeletePVar(playerid, "LoginAttempts");
 
+
         cache_get_field_content(0, "Id", result); 				PlayerInfo[playerid][pID] 				= strval(result);
     	cache_get_field_content(0, "Level", result); 			PlayerInfo[playerid][pLevel] 			= strval(result);
 		cache_get_field_content(0, "AdminLevel", result); 		PlayerInfo[playerid][pAdmin] 			= strval(result);
@@ -4560,6 +4562,8 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pArmour", result); 			PlayerInfo[playerid][pArmour] 			= floatstr(result);
 
         gPlayerLogged[playerid] = 1;
+
+        loadThiefJobData(playerid,PlayerInfo[playerid][pID]);
 
 		GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
@@ -5044,7 +5048,8 @@ public OnVehicleDataLoad(id) {
 OnPlayerRegister(playerid, password[]) {
     if(IsPlayerConnected(playerid))	{
 		new query[128],
-			name[MAX_PLAYER_NAME];
+			name[MAX_PLAYER_NAME],
+			playersqlid;
 
 		GetPlayerName(playerid, name, sizeof(name));
 		mysql_real_escape_string(name, name);
@@ -5052,6 +5057,11 @@ OnPlayerRegister(playerid, password[]) {
 		format(query,sizeof(query),"INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", name, password);
   		mysql_function_query(dbHandle, query, false, "", "");
 		strmid(PlayerInfo[playerid][pKey], password, 0, strlen(password), 128);
+		
+		//Create ThiefJob
+		playersqlid=mysql_insert_id(dbHandle);
+		createThiefJob(playersqlid);
+		
 		OnPlayerLogin(playerid, password);
 		return 1;
 	}
@@ -5196,8 +5206,6 @@ public SaveAccount(playerid) {
 
 
 		mysql_function_query(dbHandle, query, false, "", "");
-		//Guardamos las variables de ladron
-		saveThiefJob(playerid);
 	}
 	return 1;
 }
@@ -5754,9 +5762,8 @@ public globalUpdate() {
 				}
 			}
 		    
-		    // Contadores.
-			UpdateThiefCounters(playerid);
-			
+			updateThiefCounters(playerid);
+
 			if(PlayerInfo[playerid][pMuteB] > 0)
 			    PlayerInfo[playerid][pMuteB]--;
 			//
@@ -6281,6 +6288,7 @@ public matsFinish(playerid, matsCount) {
 	eventParam[playerid] = 0;
     return 1;
 }
+
 
 stock hasFireGun(playerid) {
 	new wep = GetPlayerWeapon(playerid);
@@ -8119,6 +8127,7 @@ IsNumeric(const string[])
 	}
 	return 1;
 }
+
 
 public kickTimer(playerid) {
 	return Kick(playerid);
@@ -15234,15 +15243,6 @@ CMD:ayuda(playerid,params[]) {
 	return 1;
 }
 
-CMD:delincuenteayuda(playerid, params[]) {
-	if(PlayerInfo[playerid][pJob] != JOB_FELON)
-	    return 1;
-	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa");
-	SendClientMessage(playerid, COLOR_WHITE, "Info: al delinquir conseguirás puntos de experiencia, dependiendo de tu nivel de delincuente algunos...");
-	SendClientMessage(playerid, COLOR_WHITE, "delitos no otorgarán más conocimiento del que ya tienes.");
-	return 1;
-}
-
 CMD:ayudarenta(playerid, params[]) {
 	SendClientMessage(playerid, COLOR_WHITE, "[Renta]: /rentar /cancelar renta /tiemporenta");
 	SendClientMessage(playerid, COLOR_WHITE, "Info: al rentar un vehículo este permancerá hasta que se termine el tiempo sin importar si sales del juego.");
@@ -20417,7 +20417,6 @@ CMD:vercargos(playerid, params[]) {
 	return 1;
 }
 
-
 CMD:set(playerid, params[]) {
 	new
 	    string[128],
@@ -20495,8 +20494,6 @@ CMD:admin(playerid, params[]) {
 	}
 	return 1;
 }
-
-
 
 CMD:ao(playerid, params[]) {
 	new

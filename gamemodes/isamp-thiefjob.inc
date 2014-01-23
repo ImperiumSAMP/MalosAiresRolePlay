@@ -31,9 +31,30 @@ stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pRob247Limit] = 999999999;
 	ThiefJobInfo[playerid][pTheft247Limit] = 999999999;
 
+	theftTime[playerid] = -1;
+	felon[playerid] = INVALID_PLAYER_ID;
+	policeCallTime[playerid] = 0;
 }
 
-stock readThiefJob() {
+stock loadThiefJobData(playerid,MysqlID){
+	new		
+		query[256];
+
+    format(query, sizeof(query), "SELECT * FROM `thiefJob` WHERE id=%d", MysqlID);
+	mysql_function_query(dbHandle, query, true, "OnThiefJobDataLoad", "i", playerid);
+	return 1;
+}
+
+forward OnThiefJobDataLoad(playerid);
+public OnThiefJobDataLoad(playerid) {
+	new
+		rows,
+		fields,
+		result[32];
+	
+	cache_get_data(rows, fields);
+	if(rows)
+	{	
 		cache_get_field_content(0, "pFelonExp", result); 		ThiefJobInfo[playerid][pFelonExp] 		= strval(result);
 		cache_get_field_content(0, "pFelonLevel", result); 		ThiefJobInfo[playerid][pFelonLevel] 		= strval(result);
 		cache_get_field_content(0, "pRobPersonLimit", result);	ThiefJobInfo[playerid][pRobPersonLimit] 	= strval(result);
@@ -43,6 +64,13 @@ stock readThiefJob() {
 		cache_get_field_content(0, "pRobHouseLimit", result); 	ThiefJobInfo[playerid][pRobHouseLimit] 	= strval(result);
 		cache_get_field_content(0, "pRob247Limit", result); 	ThiefJobInfo[playerid][pRob247Limit] 		= strval(result);
 		cache_get_field_content(0, "pTheft247Limit", result); 	ThiefJobInfo[playerid][pTheft247Limit] 	= strval(result);
+	}
+}
+
+stock createThiefJob(playersqlid){
+		new query[128];
+		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('playersqlid')", playersqlid);
+		mysql_function_query(dbHandle, query, false, "", "");
 }
 
 forward saveThiefJob(playerid);
@@ -233,8 +261,7 @@ stock GetJobExpNeeded(playerid, job) {
 	return 0;
 }
 
-
-stock UpdateThiefCounters(playerid){
+stock updateThiefCounters(playerid){
 	if(ThiefJobInfo[playerid][pRobPersonLimit] > 0)
 		ThiefJobInfo[playerid][pRobPersonLimit]--;
 		
@@ -247,9 +274,11 @@ stock UpdateThiefCounters(playerid){
 	if(ThiefJobInfo[playerid][pRobHouseLimit] > 0)
 		ThiefJobInfo[playerid][pRobHouseLimit]--;
 		
-	if(PlayerInfo[playerid][pTheft247Limit] > 0)
+	if(ThiefJobInfo[playerid][pTheft247Limit] > 0)
 		ThiefJobInfo[playerid][pTheft247Limit]--;
 }
+
+// Thief system commands
 
 CMD:asaltar(playerid, params[]) {
 	new
@@ -455,8 +484,7 @@ CMD:asaltartienda(playerid, params[]) {
 	return 1;
 }
 
-CMD:hurtarcasa(playerid, params[])
-{
+CMD:hurtarcasa(playerid, params[]) {
 	new house = GetPlayerHouse(playerid);
 
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
@@ -615,3 +643,11 @@ CMD:verexp(playerid, params[]) {
 	return 1;
 }
 
+CMD:delincuenteayuda(playerid, params[]) {
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+	    return 1;
+	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa");
+	SendClientMessage(playerid, COLOR_WHITE, "Info: al delinquir conseguirás puntos de experiencia, dependiendo de tu nivel de delincuente algunos...");
+	SendClientMessage(playerid, COLOR_WHITE, "delitos no otorgarán más conocimiento del que ya tienes.");
+	return 1;
+}
