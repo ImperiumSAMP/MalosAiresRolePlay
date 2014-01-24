@@ -40,7 +40,7 @@ new House[MAX_HOUSES][HouseSystem];
 //Admin commands
 //====[CASAS]===================================================================
 CMD:acasas(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 7) return 1;
+	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /ainfocasa - /acdisp - /acentrada - /acsalida - /acdesc - /actele - /acprecio - /acvender - /acinterior");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} para agregar una casa consulta con el comando '/acdisp' qué casa está disponible para ser añadida.");
@@ -52,7 +52,7 @@ CMD:ainfocasa(playerid, params[]) {
 	new
 	    id;
 
-    if(PlayerInfo[playerid][pAdmin] < 4) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 2) return 1;
 
 	if(sscanf(params, "d", id)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ainfocasa [idcasa]");

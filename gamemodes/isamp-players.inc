@@ -66,16 +66,6 @@ enum pInfo {
 	pAccusedOf[64],
 	pAccusedBy[24],
 	
-	pFelonExp,
-	pFelonLevel,
-	pRobPersonLimit,
-	pRobLastVictimPID,
-	pTheftLastVictimPID,
-	pTheftPersonLimit,
-	pRob247Limit,
-	pTheft247Limit,
-	pRobHouseLimit,
-
 	pMuteB,
 	pRentCarID,
 	pRentCarRID,
@@ -83,6 +73,8 @@ enum pInfo {
 	pLighter,
 	pFightStyle,
 	
+	Float:pAdictionPercent,
+	pAdictionAbstinence,
 	pMarijuana,
 	pLSD,
 	pEcstasy,
@@ -96,3 +88,11 @@ enum Inv {
 };
 
 new InvInfo[MAX_PLAYERS][Inv];
+
+stock getPlayerMysqlId(playerid){
+	return PlayerInfo[playerid][pID];
+}
+
+stock isPlayerJailed(playerid){
+	return PlayerInfo[playerid][pJailed];
+}

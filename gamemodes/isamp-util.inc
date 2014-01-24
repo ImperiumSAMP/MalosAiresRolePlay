@@ -97,6 +97,16 @@
 #define SKINS_F_1    37
 #define SKINS_F_2    14
 
+// Disables.
+#define DISABLE_NONE            0
+#define DISABLE_FREEZE          1
+#define DISABLE_TAZER           2
+#define DISABLE_DYING           3
+#define DISABLE_STEALING        4
+#define DISABLE_DEATHBED        5
+
+
+
 new validWeatherIDs[2] = {
 	1,2/*,-3,4,5,6,7,9,10,11,12,13,14,15,17,18,20-*/
 };

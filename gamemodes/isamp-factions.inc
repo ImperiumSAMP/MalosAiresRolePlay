@@ -58,6 +58,8 @@ new FactionInfo[MAX_FACTIONS][Factions];
 
 new MedDuty[MAX_PLAYERS],
 	CopDuty[MAX_PLAYERS],
+	CopTrace[MAX_PLAYERS],
+	CopTraceTimer[MAX_PLAYERS],
 	SIDEDuty[MAX_PLAYERS],
 	PlayerCuffed[MAX_PLAYERS];
 
@@ -73,7 +75,7 @@ stock isPlayerCopOnDuty(playerid){
 //[CMD_A7]
 //====[FACCIONES]===============================================================
 CMD:afacciones(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 7) return 1;
+	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdrogas /afdinero /afmats /afskin /afrango /afvehmision");
@@ -349,7 +351,7 @@ CMD:afexpulsar(playerid, params[]) {
 		string[128],
 	    targetID;
 
-    if(PlayerInfo[playerid][pAdmin] < 5)
+    if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
 
 	if(sscanf(params, "uS(sin razon)[64]", targetID, reason)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afexpulsar [playerid/ParteDelNombre] [razón]");
