@@ -18,8 +18,9 @@
 #define BIZ_CLOT                6
 #define BIZ_CLUB                7
 #define BIZ_CLOT2               8
-
-
+#define BIZ_CASINO              9
+#define BIZ_HARD                10
+#define BIZ_CLUB2               11
 
 //Enums
 enum BusinessSystem {
@@ -57,11 +58,6 @@ enum BusinessSystem {
 new Business[MAX_BUSINESS][BusinessSystem];
 
 
-
-
-
-
-
 //Admin commands
 //====[NEGOCIOS]================================================================
 CMD:anegocios(playerid, params[]) {
@@ -69,7 +65,7 @@ CMD:anegocios(playerid, params[]) {
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Negocios:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/ainfonegocio /aninsert /anremove /angetid /anproductos /anprecio /antipo");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
 
@@ -386,7 +382,6 @@ CMD:anvender(playerid, params[]) {
 	if(sscanf(params, "d", bizID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anvender [idnegocio]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
 		Business[bizID][bLocked] = 0;
-		Business[bizID][bOwnerSQLID] = -1;
 		foreach(Player, i) {
 			if(PlayerInfo[i][pID] == Business[bizID][bOwnerSQLID]) {
                 PlayerInfo[i][pBizKey] = 0;
@@ -395,6 +390,7 @@ CMD:anvender(playerid, params[]) {
 				mysql_function_query(dbHandle, query, false, "", "");
 			}
 		}
+		Business[bizID][bOwnerSQLID] = -1;
 		strmid(Business[bizID][bOwner], "Ninguno", 0, strlen("Ninguno"), 255);
 		format(string, sizeof(string), "[ALERTA DE ADMIN]: %s (DBID: %d) > venta de negocio ID: %d.", PlayerName(playerid), PlayerInfo[playerid][pID], bizID);
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);

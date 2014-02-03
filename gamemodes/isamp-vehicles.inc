@@ -1119,9 +1119,9 @@ CMD:vehiculo(playerid,params[]) {
 		vehicleid3,
 		price;
 
-	if(sscanf(params, "s[128]U(-1)I(-1)I(-1)", text, targetid, vehicleid3, extraparam)) {
+	if(sscanf(params, "s[128]I(-1)I(-1)I(-1)", text, targetid, vehicleid3, extraparam)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/veh)iculo [comando]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos]: comprar - vender - vendera [ID jugador] [ID vehículo] [dinero] - estacionar - puertas - luces - mal - capot");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos]: comprar [color1] [color2] - vender - vendera [ID jugador] [ID vehículo] [dinero] - estacionar - puertas - luces - mal - capot");
 	} else if(strcmp(text, "comprar", true) == 0) {
 		vehicleid = GetPlayerVehicleID(playerid);
 		price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
@@ -1132,6 +1132,11 @@ CMD:vehiculo(playerid,params[]) {
 		} else if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0) {
 			SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tener más de dos vehículos.");
 		} else if(price <= GetPlayerCash(playerid)) {
+			new color1 = targetid;
+		    new color2 = vehicleid3;
+			if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores que sean válidos (0-255).");
+			    
 		    for(new vid = 1; vid < MAX_VEH; vid++) {
 				if(VehicleInfo[vid][VehType] == VEH_NONE) {
 				    vehicleid2 = vid;
@@ -1145,8 +1150,8 @@ CMD:vehiculo(playerid,params[]) {
 		    VehicleInfo[vehicleid2][VehType] = VEH_OWNED;
 			VehicleInfo[vehicleid2][VehOwnerSQLID] = PlayerInfo[playerid][pID];
 			VehicleInfo[vehicleid2][VehOwnerName] = playerName;
-			VehicleInfo[vehicleid2][VehColor1] = VehicleInfo[vehicleid][VehColor1];
-			VehicleInfo[vehicleid2][VehColor2] = VehicleInfo[vehicleid][VehColor2];
+			VehicleInfo[vehicleid2][VehColor1] = color1;
+			VehicleInfo[vehicleid2][VehColor2] = color2;
 			VehicleInfo[vehicleid2][VehModel] = VehicleInfo[vehicleid][VehModel];
 			if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP) {
 				VehicleInfo[vehicleid2][VehPosX] = 2127.6501;
@@ -1243,7 +1248,7 @@ CMD:vehiculo(playerid,params[]) {
 		    new Float:vehicleHealth;
 			GetVehicleHealth(vehicleid, vehicleHealth);
 			if(vehicleHealth < 700.0)
-		    	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡o puedes estacionar un vehículo en este estado. Debe estar en mejores condiciones.");
+		    	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡No puedes estacionar un vehículo en este estado! Debe estar en mejores condiciones.");
 
 			GetVehiclePos(vehicleid, x, y, z);
 			GetVehicleZAngle(vehicleid, angle);

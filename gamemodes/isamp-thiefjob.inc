@@ -472,8 +472,8 @@ CMD:asaltartienda(playerid, params[]) {
 	    return 1;
 	}
 
-    if(Business[business][bType] != BIZ_247)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7.");
+    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2 && Business[business][bType] != BIZ_CLUB && Business[business][bType] != BIZ_CLUB2 && Business[business][bType] != BIZ_REST && Business[business][bType] != BIZ_HARD)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 / Local de ropa / Bar / Discoteca o Club Nocturno / Restaurant.");
 
 	if(!hasFireGun(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano.");
@@ -536,8 +536,8 @@ CMD:hurtartienda(playerid, params[]) {
 	    return 1;
 	}
 
-    if(Business[business][bType] != BIZ_247)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7.");
+    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 o en una tienda de ropa.");
 		
     ThiefJobInfo[playerid][pTheft247Limit] = 60 * 30;
 	

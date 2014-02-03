@@ -42,19 +42,35 @@ resetTazer(playerid)
 	TAZERA[playerid] = 0;
 }
 
+resetTazerWeapons(playerid)
+{
+    /* Sistema de tazer */
+    TENIAMM[playerid] = 0;
+	MM[playerid] = 0;
+	MMA[playerid] = 0;
+	TENIAMMSILENCIADA[playerid] = 0;
+	MMSILENCIADA[playerid] = 0;
+	MMASILENCIADA[playerid] = 0;
+	TENIADEAGLE[playerid] = 0;
+	DEAGLE[playerid] = 0;
+	DEAGLEA[playerid] = 0;
+}
+
 forward checkTazer(playerid,issuerid,Float:amount,weaponid);
-public checkTazer(playerid,issuerid,Float:amount,weaponid) {	
+public checkTazer(playerid,issuerid,Float:amount,weaponid)
+{	
 	if( weaponid == 23 && TAZERENMANO[issuerid] == 1) 
 	{
 		if(CopDuty[issuerid] != 1 && SIDEDuty[issuerid] != 1)
 			return 1;
-		if(!IsPlayerInAnyVehicle(issuerid)) {
-			if(!IsPlayerInAnyVehicle(playerid)) {
-
-				if(ProxDetectorS(TAZER_MAX_DISTANCE, issuerid, playerid)){
+		if(!IsPlayerInAnyVehicle(issuerid))
+		{
+			if(!IsPlayerInAnyVehicle(playerid))
+			{
+				if(ProxDetectorS(TAZER_MAX_DISTANCE, issuerid, playerid))
+				{
 					if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 						return SendClientMessage(issuerid, COLOR_YELLOW2, "El sujeto está ocupado o actualmente inhabilitado.");
-
 					SendFMessage(playerid, COLOR_YELLOW2, "¡Has sido tazeado por %s!, el efecto dura %d segundos.", GetPlayerNameEx(issuerid), TAZER_TIME / 1000);
 					SendFMessage(issuerid, COLOR_YELLOW2, "¡Has tazeado a %s por %d segundos!", GetPlayerNameEx(playerid), TAZER_TIME / 1000);
 					TogglePlayerControllable(playerid, 0);

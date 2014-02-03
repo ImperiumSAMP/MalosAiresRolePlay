@@ -116,19 +116,20 @@
 #define PRICE_MATS              45
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_DRUG_MAT          10
+#define PRICE_BIZ_PROD          50
 #define PRICE_TREATMENT         2000
 
 // Combustible.
 #define PRICE_FULLTANK          600
 // 24-7
-#define PRICE_CIGARETTES        20
-#define PRICE_LIGHTER        	15
+#define PRICE_CIGARETTES        40
+#define PRICE_LIGHTER        	20
 #define PRICE_PHONE             500
 #define PRICE_PHONEBOOK			120
-#define PRICE_ALFAJOR			5
-#define PRICE_FUELCAN           42
+#define PRICE_ALFAJOR			35
+#define PRICE_FUELCAN           100
 #define PRICE_CAMERA            650
-#define PRICE_SANDWICH          40
+#define PRICE_SANDWICH          50
 
 #define PRICE_PIZZA             60
 #define PRICE_LIC_GUN       	30000
@@ -276,6 +277,9 @@ new
 	bool:carryingProd[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
+	// Negocios
+	bool:openBizPermission[MAX_BUSINESS],
+	
 	// Mecánico.
 	MechanicCall = 999,
 	MechanicCallTime[MAX_PLAYERS],
@@ -373,7 +377,8 @@ new
 	P_CAR_RENT,
 	P_MATS_SHOP,
 	P_DRUGFARM_MATS,
-	P_TUNE[5];
+	P_TUNE[5],
+	P_PRODS_SHOP;
 	
 enum e_ballData {
 	Float:ballPos[3],
@@ -899,6 +904,7 @@ forward garbageTimer(playerid, garbcp);
 forward matsTimer(playerid);
 forward buyMatsTimer(playerid, amount);
 forward buyDrugsTimer(playerid, amount);
+forward buyProductsTimer(playerid, amount);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -1206,6 +1212,13 @@ public OnPlayerConnectEx(playerid) {
 	RemoveBuildingForPlayer(playerid, 673, 1411.5703, -1416.5391, 12.9063, 0.25);
 	RemoveBuildingForPlayer(playerid, 647, 1409.1875, -1410.3281, 14.6250, 0.25);
 	
+	// WORLD OF COQ
+	RemoveBuildingForPlayer(playerid, 18017, 449.2109, -16.9688, 1000.4375, 0.25);
+	RemoveBuildingForPlayer(playerid, 18016, 451.2578, -10.6250, 1001.9766, 0.25);
+
+	// CASINO EXTERIOR 1
+	RemoveBuildingForPlayer(playerid, 4747, 1671.5078, -1343.3359, 87.5391, 0.25);
+
 	// ESTACION DE SERVICIO PIG PEN
 	RemoveBuildingForPlayer(playerid, 17535, 2364.0547, -1391.5313, 41.3516, 0.25);
 	RemoveBuildingForPlayer(playerid, 17965, 2322.2813, -1355.1953, 25.4063, 0.25);
@@ -1971,24 +1984,45 @@ DestroySelectionMenu(playerid) {
 
 HandlePlayerItemSelection(playerid, selecteditem, skintype) {
 	// In this case we change the player's skin
-  	if(gSelectionItemsTag[playerid][selecteditem] >= 0 && gSelectionItemsTag[playerid][selecteditem] < 300) {
-		switch(skintype) {
+  	if(gSelectionItemsTag[playerid][selecteditem] >= 0 && gSelectionItemsTag[playerid][selecteditem] < 300)
+	{
+		switch(skintype)
+		{
 			case 1, 3:
-				if(GetPlayerCash(playerid) >= PRICE_CLOTHES1) {
-					GivePlayerCash(playerid, -PRICE_CLOTHES1);
-				} else {
+			{
+				if(GetPlayerCash(playerid) < PRICE_CLOTHES1)
+				{
 				    SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario ($%d).", PRICE_CLOTHES1);
-				    return 1;
+					return 1;
 				}
-			case 2, 4: 
-				if(GetPlayerCash(playerid) >= PRICE_CLOTHES2) {
-					GivePlayerCash(playerid, -PRICE_CLOTHES2);
-				} else {
-				    SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario ($%d).", PRICE_CLOTHES2);
-				    return 1;
+				GivePlayerCash(playerid, -PRICE_CLOTHES1);
+				new business = GetPlayerBusiness(playerid);
+		        if(business != 0 && Business[business][bType] == BIZ_CLOT)
+		        {
+					Business[business][bTill] += PRICE_CLOTHES1;
+					Business[business][bProducts]--;
+					saveBusiness(business);
 				}
+			}
+			case 2, 4:
+			{
+			    if(GetPlayerCash(playerid) < PRICE_CLOTHES2)
+			    {
+					SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario ($%d).", PRICE_CLOTHES2);
+					return 1;
+   				}
+     			GivePlayerCash(playerid, -PRICE_CLOTHES2);
+	       		new business = GetPlayerBusiness(playerid);
+		        if(business != 0 && Business[business][bType] == BIZ_CLOT2)
+		        {
+					Business[business][bTill] += PRICE_CLOTHES2;
+					Business[business][bProducts]--;
+					saveBusiness(business);
+				}
+			}
 		}
         SetPlayerSkin(playerid, gSelectionItemsTag[playerid][selecteditem]);
+        PlayerActionMessage(playerid, 15.0, "compra unas vestimentas en el negocio y se las viste en el probador.");
         PlayerInfo[playerid][pSkin] = gSelectionItemsTag[playerid][selecteditem];
 		return 1;
 	}
@@ -2243,12 +2277,12 @@ public OnPlayerText(playerid, text[]) {
 	    }
 		return 0;
 	} else if(Mobile[playerid] != 255) {
-		format(string, sizeof(string), "[Voz al teléfono] dice: %s", text);
+		format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
-		if(IsPlayerConnected(Mobile[playerid])) {
-		    if(Mobile[Mobile[playerid]] == playerid) {
+		if(IsPlayerConnected(Mobile[playerid]))
+		{
+		    if(Mobile[Mobile[playerid]] == playerid)
 				SendClientMessage(Mobile[playerid], COLOR_WHITE, string);
-			}
 		} else {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} no hay nadie en la línea.");
 		}
@@ -3124,12 +3158,10 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 					{
 					    if (ProxDetectorS(8.0, playerid, giveplayerid))
 						{
-						    new text1[20];
-					        new text2[20];
-					        new text3[20];
-							if(PlayerInfo[playerid][pCarLic]) { text1 = "Yes"; } else { text1 = "No"; }
-	                        if(PlayerInfo[playerid][pFlyLic]) { text2 = "Yes"; } else { text2 = "No"; }
-							if(PlayerInfo[playerid][pWepLic]) { text3 = "Yes"; } else { text3 = "No"; }
+						    new text1[20], text2[20], text3[20];
+							if(PlayerInfo[playerid][pCarLic]) { text1 = "Si"; } else { text1 = "No"; }
+	                        if(PlayerInfo[playerid][pFlyLic]) { text2 = "Si"; } else { text2 = "No"; }
+							if(PlayerInfo[playerid][pWepLic]) { text3 = "Si"; } else { text3 = "No"; }
 							SendClientMessage(giveplayerid,COLOR_LIGHTGREEN,"|_____________[Documento de identidad]_____________|");
 					        format(string, sizeof(string), "Nombre: %s.", GetPlayerNameEx(playerid));
 					        SendClientMessage(giveplayerid, COLOR_WHITE, string);
@@ -3271,7 +3303,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 					}
 					return 1;
 				}
-				PlayerLocalMessage(playerid,20.0,result);
+				PlayerLocalMessage(playerid,15.0,result);
 			}
 			return 1;
 		}
@@ -4824,6 +4856,7 @@ public OnBusinessDataLoad(id) {
 	    Business[id][bLoaded] = false;
 	}
 	ReloadBizIcon(id);
+	openBizPermission[id] = true;
 	return 1;
 }
 
@@ -5293,22 +5326,28 @@ stock GetPlayerHouse(playerid) {
 	return 0;
 }
 
+//=========================INGRESOS POR ENTORNO A NEGOCIOS======================
+
 GetBusinessPayCheck(bizID)
 {
 	new payDayMoney;
 	switch(Business[bizID][bType])
 	{
-		case BIZ_REST: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_REST: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
 		case BIZ_CLUB: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_AMMU: 	payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
-		case BIZ_247: 	payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		case BIZ_CLUB2:	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_CASINO: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_HARD:  payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_AMMU: 	payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
+		case BIZ_247: 	payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
 		case BIZ_PHON: 	payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
-		case BIZ_ADVE: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_CLOT2: payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_CLOT: 	payDayMoney = Business[bizID][bPrice] / 666; // 0.15 porciento
+		case BIZ_ADVE: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
+		case BIZ_CLOT2: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_CLOT: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
 		default: 		payDayMoney = 0;
 	}
 	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
+	payDayMoney += 50 * PRICE_BIZ_PROD; // lo que nos saca de productos el entorno
 	return payDayMoney;
 }
 
@@ -5316,6 +5355,8 @@ GetBusinessTaxes(bizID)
 {
 	return Business[bizID][bPrice] / 400; // 0.25 porciento del valor de compra
 }
+
+//===================================PAYDAY=====================================
 
 public PayDay(playerid) {
     if(gPlayerLogged[playerid]) {
@@ -5395,31 +5436,41 @@ public PayDay(playerid) {
                 PlayerInfo[playerid][pPayCheck] += 800 + random(400);
 			}
         }
-    
+
  		new wstring[128];
 		new interest = (PlayerInfo[playerid][pBank]/1000) * (intrate);
-		
+
 		/* Impuestos */
 		new tax = 0;
-		
+
 		if(PlayerInfo[playerid][pVeh1] != 0)
 		    tax += GetVehiclePrice(PlayerInfo[playerid][pVeh1], 1) / 4;
-		    
+
 		if(PlayerInfo[playerid][pVeh2] != 0)
 		    tax += GetVehiclePrice(PlayerInfo[playerid][pVeh2], 1) / 4;
-		    
-		if(PlayerInfo[playerid][pHouseKey] != 0)
-		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 4;
-		    
-		if(PlayerInfo[playerid][pBizKey] != 0)
-		{
-		    new bizID = PlayerInfo[playerid][pBizKey];
-		    tax += GetBusinessTaxes(bizID);
-		    PlayerInfo[playerid][pPayCheck] += GetBusinessPayCheck(bizID);
-		}
 
+		if(PlayerInfo[playerid][pHouseKey] != 0)
+		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 6;
 		/* Impuestos - fin */
-		
+
+		/* Sistema de Negocios */
+		new bizID = PlayerInfo[playerid][pBizKey];
+  		new bizPay = 0;
+	 	new bizTax = 0;
+		if(bizID != 0)
+		{
+		    bizTax = GetBusinessTaxes(bizID);
+  			Business[bizID][bTill] -= bizTax;
+		    openBizPermission[bizID] = true;
+		    if(Business[bizID][bLocked] == 0 && Business[bizID][bProducts] >= 50)
+		    {
+		        bizPay = GetBusinessPayCheck(bizID);
+			    Business[bizID][bTill] += bizPay;
+		     	Business[bizID][bProducts] -= 50; // minimo que se descuenta para obtener ganancias del entorno
+			}
+		}
+        /* Sistema de Negocios - fin */
+
 		new randextra = 20 + random(180);
 	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] + interest - tax + randextra;
 
@@ -5427,11 +5478,16 @@ public PayDay(playerid) {
 		    PlayerInfo[playerid][pCantWork] = 0;
 		}
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
-		SendClientMessage(playerid, COLOR_YELLOW, "____________________________________| día de pago |____________________________________");
+		SendClientMessage(playerid, COLOR_YELLOW, "____________________________________| día de pago |_____________________________________");
 	    SendFMessage(playerid, COLOR_WHITE, "salario: $%d + $%d - impuestos: $%d - interés ganado: $%d - tasa de interés: 0.%d\%", PlayerInfo[playerid][pPayCheck], randextra, tax, interest, intrate);
 	    SendFMessage(playerid, COLOR_WHITE, "* balance anterior: $%d *", PlayerInfo[playerid][pBank]);
 	    SendFMessage(playerid, COLOR_WHITE, "* nuevo balance:   $%d *", newbank);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} el dinero ha sido depositado en su cuenta bancaria.");
+		if(bizID != 0) {
+			    SendFMessage(playerid, COLOR_WHITE, "[negocio %s] ingresos: $%d - impuestos: $%d - nuevo balance de caja: $%d - productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
+	        	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} los ingresos menos los impuestos se encuentran guardados en la caja del negocio.");
+	        	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} si no tuviste ingresos se debe a que estaba cerrado o no tenias stock de venta (mín 50 prod).");
+		}
 		SendClientMessage(playerid, COLOR_YELLOW, "_____________________________________________________________________________________");
 	    PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
@@ -5544,6 +5600,9 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid) {
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
+ 		if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
+            return 1;
+	
 		if(checkTazer(playerid,issuerid,amount,weaponid))
 		    return 1;
 
@@ -5553,7 +5612,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid) {
 		    {
 			    if(DrugEffectEcstasy[issuerid] == true)
 			    {
-			    	amount = (amount / 10) * 17; // subimos 50 porciento el daño a trompadas que inflige si esta drogado con LSD
+			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
 	    			if(armour > 0)
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
 					else
@@ -6370,6 +6429,33 @@ public buyDrugsTimer(playerid, amount) {
 	return 1;
 }
 
+//======================COMPRA DE PRODUCTOS PARA NEGOCIOS=======================
+
+public buyProductsTimer(playerid, amount) {
+	new
+	    vehicleid = GetPlayerVehicleID(playerid),
+		bool:charged = false;
+
+    TogglePlayerControllable(playerid, true);
+
+	for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
+			setTrunkItem(vehicleid, i, 50);
+			setTrunkParam(vehicleid, i, amount);
+			charged = true;
+			break;
+	    }
+	}
+	if(!charged) {
+        SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
+        GivePlayerCash(playerid, amount * PRICE_BIZ_PROD);
+	} else
+		SendClientMessage(playerid, COLOR_WHITE, "Vé a tu negocio y descarga la nueva mercaderia dentro escribiendo /descargar en la entrada!");
+	return 1;
+}
+
+//=====================DESCARGA DE MATERIALES PARA MAFIAS=======================
+
 public matsFinish(playerid, matsCount) {
 	new
 		vehicleID = GetPlayerVehicleID(playerid);
@@ -6386,6 +6472,67 @@ public matsFinish(playerid, matsCount) {
     return 1;
 }
 
+//=============================DESCARGA DE ITEMS================================
+
+CMD:descargar(playerid, params[]) {
+	new
+	    amount,
+	    string[128],
+		factionid = PlayerInfo[playerid][pFaction],
+		vehicleid = GetPlayerVehicleID(playerid);
+
+	if(PlayerInfo[playerid][pBizKey] != 0)
+	{
+	    new business = PlayerInfo[playerid][pBizKey];
+		if(PlayerToPoint(6.0, playerid, Business[business][bOutsideX], Business[business][bOutsideY], Business[business][bOutsideZ]))
+		{
+ 			if(!IsPlayerInAnyVehicle(playerid))
+		    	return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
+		    if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
+		    	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
+			new totalAmount = 0;
+       		for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++)
+			{
+			    if(getTrunkItem(vehicleid, i) == 50)
+				{
+			        amount = getTrunkParam(vehicleid, i);
+					if(Business[business][bProducts] + amount > 500) // Si supera el maximo de productos permitido por negocio
+						return SendClientMessage(playerid, COLOR_YELLOW, "No puedes cargar mas mercaderia al negocio. El depósito está lleno.");
+      				totalAmount += getTrunkParam(vehicleid, i);
+					setTrunkItem(vehicleid, i, -1);
+					Business[business][bProducts] += amount;
+					format(string, sizeof(string), "%d productos descargados...", totalAmount);
+					GameTextForPlayer(playerid, string, 4000, 4);
+			    }
+			}
+			if (totalAmount > 0)
+				PlayerActionMessage(playerid, 15.0, "descarga alguna mercadería en el depósito del negocio.");
+			return 1;
+		}
+	}
+
+    if(factionid != FAC_NONE && FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL) {
+        if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
+            if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
+                for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+				    if(getTrunkItem(vehicleid, i) == 47) {
+				        amount += getTrunkParam(vehicleid, i);
+						setTrunkItem(vehicleid, i, -1);
+				    }
+				}
+				FactionInfo[factionid][fMaterials] += amount;
+				format(string, sizeof(string), "%d piezas descargadas...", amount);
+				GameTextForPlayer(playerid, string, 4000, 4);
+	        } else {
+	            SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
+				SendClientMessage(playerid, COLOR_WHITE, "Vé a la siguiente localización para descargar la van.");
+	        }
+		} else {
+		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la van de la facción.");
+		}
+    }
+	return 1;
+}
 
 stock hasFireGun(playerid) {
 	new wep = GetPlayerWeapon(playerid);
@@ -6832,6 +6979,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 			format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
 		    GameTextForPlayer(playerid, string, 2000, 4);
 	    }
+	} else if(pickupid == P_PRODS_SHOP) {
+		new string[128];
+		format(string, sizeof(string), "~w~/comprar para comprar productos - $%d por unidad", PRICE_BIZ_PROD);
+		GameTextForPlayer(playerid, string, 2000, 4);
 	}
 	return 1;
 }
@@ -7417,14 +7568,17 @@ stock ReloadBizIcon(bizid) {
 	    return 1;
 
 	switch(Business[bizid][bType]) {
-	    case 1: bizType = "Restaurant";
-	    case 2: bizType = "Compañía telefonica";
-	    case 3: bizType = "Tienda 24-7";
-	    case 4: bizType = "Armería";
-	    case 5: bizType = "Publicidad";
-	    case 6: bizType = "Tienda de ropa";
-	    case 7: bizType = "Bar/Club";
-	    default: bizType = "Indefinido";
+	    case 1: 	bizType = "Restaurant";
+	    case 2: 	bizType = "Compañía telefonica";
+	    case 3: 	bizType = "Tienda 24-7";
+	    case 4: 	bizType = "Armería";
+	    case 5: 	bizType = "Publicidad";
+	    case 6,8: 	bizType = "Tienda de ropa";
+	    case 7: 	bizType = "Bar";
+	    case 9: 	bizType = "Casino";
+	    case 10:	bizType = "Ferretería";
+	    case 11:	bizType = "Discoteca/Club Nocturno";
+	    default: 	bizType = "Indefinido";
 	}
 
 	DestroyDynamic3DTextLabel(Business[bizid][bOutsideLabel]);
@@ -7436,14 +7590,14 @@ stock ReloadBizIcon(bizid) {
 	    return 1;
 
     if(Business[bizid][bOwnerSQLID] == -1) {
-        format(string, sizeof(string), "{A9E2F3}%s\n{31B404}¡Negocio a la venta!{A9E2F3}\nCosto: $%d\n{A9E2F3}Tipo: %s\n/entrar para ingresar", Business[bizid][bName], Business[bizid][bPrice], bizType);
+        format(string, sizeof(string), "{A9E2F3}%s\n{31B404}¡Negocio a la venta!{A9E2F3}\nCosto: $%d\n{A9E2F3}Tipo: %s\nCosto de entrada: $%d\n", Business[bizid][bName], Business[bizid][bPrice], bizType, Business[bizid][bEntranceFee]);
 		Business[bizid][bOutsidePickup] = CreateDynamicPickup(1274, 1, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ], -1);
 	} else {
-		format(string, sizeof(string), "{A9E2F3}%s\nCosto de entrada: $%d\n/entrar para ingresar", Business[bizid][bName], Business[bizid][bEntranceFee]);
+		format(string, sizeof(string), "{A9E2F3}%s\nCosto de entrada: $%d\n{A9E2F3}Tipo: %s\n", Business[bizid][bName], Business[bizid][bEntranceFee], bizType);
 		Business[bizid][bOutsidePickup] = CreateDynamicPickup(1239, 1, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ], -1);
 	}
 	Business[bizid][bOutsideLabel] = CreateDynamic3DTextLabel(string, COLOR_WHITE, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
-	Business[bizid][bInsideLabel] = CreateDynamic3DTextLabel("{A9E2F3}/salir para abandonar este lugar", 0x008080FF, Business[bizid][bInsideX], Business[bizid][bInsideY], Business[bizid][bInsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, Business[bizid][bInsideWorld], 0, -1, 100.0);
+	Business[bizid][bInsideLabel] = CreateDynamic3DTextLabel("{A9E2F3}Salida", 0x008080FF, Business[bizid][bInsideX], Business[bizid][bInsideY], Business[bizid][bInsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, Business[bizid][bInsideWorld], 0, -1, 100.0);
 	Business[bizid][bInsidePickup] = CreateDynamicPickup(19198, 1, Business[bizid][bInsideX], Business[bizid][bInsideY], Business[bizid][bInsideZ], Business[bizid][bInsideWorld]);
 	return 1;
 }
@@ -7740,7 +7894,7 @@ stock getInvItemType(playerid, invslot) {
 	switch(itemid) {
 		case 1 .. 15, 16 .. 38, 41, 43:
 			return ITEM_WEAPON;
-		case 47, 48, 49:
+		case 47, 48, 49, 50:
 			return ITEM_OTHER;
 		/*case 43:
 			return ITEM_STORABLE;*/
@@ -7829,7 +7983,7 @@ stock getTrunkItemType(vehicleid, trunkslot) {
 	switch(itemid) {
 		case 1 .. 15, 16 .. 38, 41, 43:
 			return ITEM_WEAPON;
-		case 47, 48, 49:
+		case 47, 48, 49, 50:
 			return ITEM_OTHER;
 		/*case 43:
 			return ITEM_STORABLE;*/
@@ -9692,48 +9846,57 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 
 			/* Entrada a negocios. */
-			for(new i = 1; i < MAX_BUSINESS; i++){
-				if (PlayerToPoint(1.0, playerid,Business[i][bOutsideX], Business[i][bOutsideY], Business[i][bOutsideZ])) {
-					if(Business[i][bEnterable] == 0) {
+			for(new i = 1; i < MAX_BUSINESS; i++)
+			{
+				if (PlayerToPoint(1.0, playerid,Business[i][bOutsideX], Business[i][bOutsideY], Business[i][bOutsideZ]))
+				{
+					if(Business[i][bEnterable] == 0)
+					{
 						SendClientMessage(playerid,COLOR_YELLOW2,"Negocio temporalmente deshabilitado.");
 						return 1;
 					}
-					if(PlayerInfo[playerid][pBizKey] == i) {
+					if(PlayerInfo[playerid][pBizKey] == i)
+					{
 		            	SetPlayerInterior(playerid, Business[i][bInsideInt]);
-						SetPlayerPos(playerid,Business[i][bInsideX],Business[i][bInsideY],Business[i][bInsideZ]);
+						SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
 						SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
 		                SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
 		                SetCameraBehindPlayer(playerid);
-		            } else if(GetPlayerCash(playerid) >= Business[i][bEntranceFee]) {
-						if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
-							GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
-							return 1;
+		            } else
+		                {
+			                if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
+								GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
+								return 1;
+							}
+							if(GetPlayerCash(playerid) < Business[i][bEntranceFee])
+								return SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
+							SetPlayerInterior(playerid, Business[i][bInsideInt]);
+							SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
+							SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
+							SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
+							SetCameraBehindPlayer(playerid);
+							GivePlayerCash(playerid, -Business[i][bEntranceFee]);
+							if(Business[i][bEntranceFee] > 0)
+							{
+								format(string, sizeof(string), "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
+                                SendClientMessage(playerid, COLOR_YELLOW2, string);
+							}
+							if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU || Business[i][bType] == BIZ_HARD)
+			    				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
+							else
+								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
+							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+								else
+								    if(Business[i][bType] == BIZ_REST)
+								        SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+									else
+										if(Business[i][bType] == BIZ_CASINO)
+									    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+							if(Business[i][bProducts] == 0)
+								GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
+							Business[i][bTill] += Business[i][bEntranceFee];
+							saveBusiness(i);
 						}
-						SetPlayerInterior(playerid, Business[i][bInsideInt]);
-						SetPlayerPos(playerid, Business[i][bInsideX],Business[i][bInsideY],Business[i][bInsideZ]);
-						SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
-						SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
-						SetCameraBehindPlayer(playerid);
-						GivePlayerCash(playerid, -Business[i][bEntranceFee]);
-						if(Business[i][bEntranceFee] > 0) {
-							format(string, sizeof(string), "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
-						} else if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU) {
-						    format(string, sizeof(string), "Utiliza /comprar para comprar en este negocio.");
-						} else if(Business[i][bType] == BIZ_CLUB) {
-						    format(string, sizeof(string), "Utiliza /beber para comprar una bebida.");
-						}
-						SendClientMessage(playerid, COLOR_YELLOW2, string);
-						if(Business[i][bProducts] == 0) {
-							GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
-							return 1;
-						} else if(Business[i][bProducts] == 0 && Business[i][bOwnerSQLID] == -1) {
-							return 1;
-						}
-						Business[i][bTill] += Business[i][bEntranceFee];
-						saveBusiness(i);
-					} else {
-						SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
-					}
 					return 1;
 				}
 			}
@@ -9872,6 +10035,7 @@ stock LoadPickups() {
 
     P_CAR_RENT = CreateDynamicPickup(1239, 1, 1569.2878, -2251.9846, 13.5413, -1);
     P_MATS_SHOP = CreateDynamicPickup(1239, 1, 2349.8408, -1216.3939, 22.5000, -1);
+    P_PRODS_SHOP = CreateDynamicPickup(1239, 1, 2183.9963, -2260.7658, 13.4098, -1);
 	return 1;
 }
 
@@ -11594,6 +11758,249 @@ stock LoadMap() {
 	CreateDynamicObject(18850, 1511.62390, -2634.38696, 0.34690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18850, 1461.62390, -2634.38696, 0.34690,   0.00000, 0.00000, 0.00000);
 	
+	// FIX WORLD OF COQ
+	CreateDynamicObject(19376, 451.73251, -4.74720, 1003.28802,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19376, 441.23251, -4.74720, 1003.28802,   0.00000, 90.00000, 0.00000);
+	Textura = CreateDynamicObject(19357, 453.81500, -18.16140, 1001.77667,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "rest_wall5", -1);
+	Textura = CreateDynamicObject(19446, 443.68820, -23.11110, 1001.98364,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "koen_win", -1);
+	Textura = CreateDynamicObject(19446, 453.32199, -23.11110, 1001.98358,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "koen_win", -1);
+	Textura = CreateDynamicObject(19446, 453.92899, -23.53720, 1001.98358,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "koen_win", -1);
+	Textura = CreateDynamicObject(19446, 455.01740, -10.08520, 1001.61591,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "koen_win", -1);
+	Textura = CreateDynamicObject(19446, 437.45740, -10.08520, 1001.61591,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "koen_win", -1);
+	CreateDynamicObject(2441, 454.20410, -11.41230, 999.72858,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2441, 454.20410, -12.41230, 999.72858,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2441, 454.20410, -13.41230, 999.72858,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2441, 454.20410, -13.41230, 999.72858,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2441, 454.20410, -14.41230, 999.72858,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1557, 455.77649, -10.99167, 999.71680,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1541, 455.66260, -13.53840, 1001.96143,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1541, 455.66260, -14.95840, 1001.96143,   0.00000, 0.00000, 90.00000);
+	Textura = CreateDynamicObject(19357, 448.60629, -22.02100, 1001.77667,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "rest_wall5", -1);
+	Textura = CreateDynamicObject(19357, 445.41998, -22.02189, 1001.77667,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "rest_wall5", -1);
+	Textura = CreateDynamicObject(19427, 443.03229, -22.02100, 1001.77667,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "rest_wall5", -1);
+	CreateDynamicObject(1536, 453.79199, -18.93620, 1000.10938,   0.00000, 0.00000, 90.00000);
+
+	// FIX WELCOME PUMP
+	CreateDynamicObject(19360, 681.58691, -450.60730, -26.49362,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19360, 681.58691, -450.60730, -22.99600,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1498, 680.74298, -450.68509, -26.66410,   0.00000, 0.00000, 0.00000);
+
+	// CASINO INTERIOR
+	CreateObject(14623, 2806.24219, -1080.44409, 1010.19989,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14579, 2793.35498, -1066.41919, 1006.28796,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(14622, 2806.23560, -1054.03870, 1012.20001,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1557, 2802.78979, -1042.24902, 1008.67450,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1557, 2805.81812, -1042.24609, 1008.67450,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2188, 2788.79126, -1083.24231, 1005.63293,   0.00000, 0.00000, 99.06001);
+	CreateDynamicObject(14582, 2806.13428, -1080.31970, 1008.11005,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14611, 2806.13428, -1080.31970, 1007.85840,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2784, 2820.05884, -1080.28943, 1005.94122,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1836, 2817.96924, -1080.56726, 1005.43292,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1833, 2820.09326, -1080.56726, 1005.44391,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1978, 2817.89209, -1068.36182, 1005.67999,   0.00000, 0.00000, 45.18000);
+	CreateDynamicObject(2785, 2816.29346, -1087.39978, 1005.46350,   0.00000, 0.00000, 53.16001);
+	CreateDynamicObject(1895, 2788.18799, -1087.80334, 1006.46436,   0.00000, 0.00000, -242.69987);
+	CreateDynamicObject(1836, 2817.97583, -1080.04724, 1005.43292,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1836, 2822.16919, -1080.56726, 1005.43292,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1836, 2822.17578, -1080.04724, 1005.43292,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1833, 2820.10767, -1080.03406, 1005.44391,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1978, 2820.96948, -1072.45483, 1005.67999,   0.00000, 0.00000, 27.90000);
+	CreateDynamicObject(2785, 2815.57007, -1086.85999, 1005.46350,   0.00000, 0.00000, -127.50010);
+	CreateDynamicObject(1895, 2789.59399, -1090.58362, 1006.46436,   0.00000, 0.00000, -242.99986);
+	CreateDynamicObject(2188, 2788.77905, -1077.49268, 1005.63287,   0.00000, 0.00000, 80.94000);
+	CreateDynamicObject(1824, 2796.94580, -1073.39136, 1005.13342,   0.00000, 0.00000, -126.06001);
+	CreateDynamicObject(1896, 2789.49072, -1087.18347, 1005.63287,   0.00000, 0.00000, 117.00000);
+	CreateDynamicObject(1896, 2790.84351, -1089.88733, 1005.63287,   0.00000, 0.00000, 117.00000);
+	CreateDynamicObject(1978, 2794.72388, -1080.28174, 1005.72961,   0.00000, 0.00000, 1.02000);
+	CreateDynamicObject(1978, 2796.98608, -1087.24231, 1005.72961,   0.00000, 0.00000, 37.02000);
+	CreateDynamicObject(2785, 2809.79370, -1092.03882, 1005.46350,   0.00000, 0.00000, 16.92000);
+	CreateDynamicObject(2785, 2809.50903, -1091.10889, 1005.46350,   0.00000, 0.00000, 196.50011);
+	CreateDynamicObject(2412, 2811.87451, -1059.84485, 1004.64844,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2773, 2816.70435, -1060.06116, 1005.15027,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2773, 2814.78418, -1060.06116, 1005.15002,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2773, 2812.86426, -1060.06116, 1005.15033,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2412, 2809.87451, -1059.84485, 1004.64838,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2773, 2795.76440, -1060.06116, 1005.15033,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2773, 2797.68433, -1060.06116, 1005.15002,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2773, 2799.60547, -1060.06116, 1005.15033,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2412, 2801.27441, -1059.84485, 1004.64838,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2412, 2803.27441, -1059.84485, 1004.64838,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2412, 2805.27441, -1059.84485, 1004.64838,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2412, 2807.87451, -1059.84485, 1004.64838,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2773, 2806.23999, -1060.06116, 1005.15033,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2785, 2789.37646, -1071.48523, 1005.46350,   0.00000, 0.00000, -296.94009);
+	CreateDynamicObject(2785, 2792.80835, -1066.73145, 1005.46350,   0.00000, 0.00000, -314.94000);
+	CreateDynamicObject(2785, 2819.61816, -1093.63794, 1005.46350,   0.00000, 0.00000, -135.72006);
+	CreateDynamicObject(2785, 2815.01978, -1097.16907, 1005.46350,   0.00000, 0.00000, -153.23996);
+	CreateDynamicObject(19380, 2805.18311, -1118.97778, 1008.32178,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19380, 2815.68311, -1118.97778, 1008.32178,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19380, 2805.35571, -1099.30432, 1008.32178,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19380, 2810.51709, -1104.64502, 1008.32178,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19380, 2803.31567, -1109.82422, 1008.32178,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19380, 2808.47607, -1104.59998, 1008.32178,   90.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19380, 2808.34644, -1111.77185, 1008.32178,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1491, 2800.08545, -1111.78564, 1004.62817,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1491, 2803.11011, -1111.76501, 1004.62817,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(19380, 2797.84644, -1111.77185, 1011.93781,   90.00000, 0.00000, 90.00000);
+	CreateDynamicObject(14455, 2806.90308, -1118.72632, 1006.32312,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14455, 2801.14307, -1118.72632, 1006.32312,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2184, 2809.18530, -1114.21106, 1004.64001,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1714, 2811.10010, -1115.27295, 1004.65363,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(11666, 2809.52441, -1116.41479, 1006.35248,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19175, 2807.67432, -1111.88550, 1007.09637,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19173, 2812.38330, -1116.20129, 1006.55719,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1720, 2808.13940, -1114.12292, 1004.63220,   0.00000, 0.00000, 68.04000);
+	CreateDynamicObject(1720, 2808.08105, -1116.26404, 1004.63220,   0.00000, 0.00000, 102.96003);
+	CreateDynamicObject(1720, 2803.33398, -1117.33582, 1004.63220,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1433, 2803.27686, -1116.00598, 1004.82123,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2189, 2803.30591, -1116.02454, 1005.34479,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1720, 2802.06641, -1116.09973, 1004.63220,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1720, 2804.52637, -1115.97974, 1004.63220,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1720, 2803.25391, -1114.77576, 1004.63220,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1921, 2802.61694, -1116.30872, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1931, 2802.60962, -1116.36487, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1931, 2802.98950, -1115.31726, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1931, 2803.98999, -1116.16296, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1931, 2803.11255, -1116.76025, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1921, 2802.97021, -1115.35742, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1921, 2804.05127, -1116.24194, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(1921, 2803.09326, -1116.79968, 1005.32202,   0.00000, 0.00000, 239.03999);
+	CreateDynamicObject(2894, 2809.81201, -1114.80554, 1005.40997,   0.00000, 0.00000, 67.97999);
+	CreateDynamicObject(2606, 2800.09570, -1116.06812, 1007.97998,   20.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2606, 2799.99561, -1116.06812, 1007.46069,   10.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1557, 2808.49438, -1107.75549, 1004.63916,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1557, 2808.49438, -1102.59546, 1004.63922,   0.00000, 0.00000, 90.00000);
+	CreateObject(19380, 2799.40112, -1052.23340, 1005.52063,   0.00000, 73.20000, 90.00000);
+	CreateObject(19380, 2809.08105, -1052.23340, 1005.52063,   0.00000, 73.20000, 90.00000);
+	CreateObject(19380, 2818.70117, -1052.23340, 1005.52057,   0.00000, 73.20000, 90.00000);
+	CreateObject(19380, 2813.43213, -1047.02637, 1007.12878,   0.00000, 73.20000, 90.00000);
+	CreateObject(19380, 2803.79199, -1047.02637, 1007.12878,   0.00000, 73.20000, 90.00000);
+	CreateObject(19380, 2794.15210, -1047.02637, 1007.12885,   0.00000, 73.20000, 90.00000);
+	CreateDynamicObject(2350, 2811.09888, -1076.99939, 1005.00989,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2350, 2812.10498, -1080.37524, 1005.00989,   0.00000, 0.00000, -42.96000);
+	CreateDynamicObject(2350, 2812.13574, -1079.24402, 1005.00989,   0.00000, 0.00000, -59.82000);
+	CreateDynamicObject(2350, 2810.11890, -1084.84375, 1005.00989,   0.00000, 0.00000, -59.82000);
+	CreateDynamicObject(2350, 2809.64355, -1075.52429, 1005.00989,   0.00000, 0.00000, -59.82000);
+	CreateDynamicObject(2350, 2804.00708, -1074.70044, 1005.00989,   0.00000, 0.00000, -59.82000);
+	CreateDynamicObject(2350, 2802.15601, -1075.98218, 1005.00989,   0.00000, 0.00000, -59.82000);
+	CreateDynamicObject(2350, 2800.50610, -1079.02979, 1005.00989,   0.00000, 0.00000, -111.60001);
+	CreateDynamicObject(2350, 2800.34082, -1080.14185, 1005.00989,   0.00000, 0.00000, -150.47997);
+	CreateDynamicObject(2350, 2800.70337, -1082.22485, 1005.00989,   0.00000, 0.00000, -177.29994);
+	CreateDynamicObject(2350, 2801.58105, -1083.85840, 1005.00989,   0.00000, 0.00000, -177.29994);
+	CreateDynamicObject(2350, 2802.65527, -1084.87769, 1005.00989,   0.00000, 0.00000, -140.39998);
+	CreateDynamicObject(1979, 2796.03418, -1086.28198, 1005.67010,   0.00000, 0.00000, 37.02000);
+	CreateDynamicObject(1979, 2794.49219, -1078.93054, 1005.68347,   0.00000, 0.00000, 1.02000);
+	CreateDynamicObject(1979, 2816.79736, -1067.54028, 1005.65289,   0.00000, 0.00000, 45.18000);
+	CreateDynamicObject(1979, 2820.15552, -1071.35449, 1005.60541,   0.00000, 0.00000, 27.90000);
+
+	// CASINO EXTERIOR 1
+	CreateDynamicObject(7288, 1691.89001, -1343.38513, 29.54490,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(7315, 1679.52783, -1339.64795, 31.29655,   0.00000, 0.00000, 132.05998);
+    CreateDynamicObject(7315, 1676.62476, -1352.50305, 31.29650,   0.00000, 0.00000, 60.30000);
+    CreateDynamicObject(9833, 1693.63525, -1343.38330, 18.50295,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(3515, 1694.06348, -1343.38574, 15.69804,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(749, 1698.49634, -1328.64771, 16.22736,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(877, 1699.34094, -1326.42688, 17.95135,   0.00000, 0.00000, -12.18000);
+	CreateDynamicObject(869, 1699.88098, -1329.86304, 16.73954,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(819, 1699.27844, -1324.19214, 16.88918,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(870, 1700.33911, -1330.25623, 16.76057,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(742, 1699.58630, -1361.62854, 16.61069,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(742, 1698.53491, -1359.07434, 16.61069,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(801, 1698.57312, -1364.55798, 15.37371,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(817, 1700.62878, -1357.40918, 16.64525,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(870, 1700.48206, -1360.29517, 16.49658,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(872, 1698.40515, -1361.63269, 16.37837,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(822, 1697.86572, -1357.42090, 16.35331,   0.00000, 0.00000, 77.10001);
+	CreateDynamicObject(870, 1700.24976, -1363.17383, 16.49658,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(809, 1694.15906, -1342.96814, 15.89441,   0.00000, 0.00000, 77.10000);
+
+    // CASINO EXTERIOR 2
+    CreateDynamicObject(1568, 1025.21899, -1122.49390, 22.73803,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1568, 1019.50610, -1122.65430, 22.73803,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(3471, 1017.48499, -1122.48853, 24.11240,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3471, 1027.29956, -1122.40344, 24.11240,   0.00000, 0.00000, -90.00000);
+    CreateDynamicObject(9482, 1022.20563, -1130.32275, 29.33718,   0.00000, 0.00000, 89.16000);
+    CreateDynamicObject(3802, 1027.71521, -1131.41870, 27.02440,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3802, 1032.43616, -1131.47876, 27.02440,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3802, 1016.68109, -1131.23865, 27.02440,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3802, 1011.96729, -1131.17871, 27.02440,   0.00000, 0.00000, -90.00000);
+
+	// RESTAURANT
+	CreateObject(14777, -246.48650, -2021.79346, 1010.03131,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -240.87950, -2015.03418, 1012.05359,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -238.61951, -2015.03418, 1012.05359,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -237.75951, -2015.03418, 1012.05359,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -235.61951, -2015.03418, 1012.05359,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -234.75951, -2015.03418, 1012.05359,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -232.51950, -2015.03418, 1012.05359,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18057, -233.63852, -2019.08044, 1010.43835,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -244.73500, -2023.05029, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -244.73500, -2024.51038, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -245.67500, -2024.51038, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -240.93500, -2024.51038, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -237.25500, -2024.51038, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -233.47501, -2024.49036, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -233.47501, -2023.05029, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -237.25500, -2023.05029, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -240.93500, -2023.05029, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -245.67500, -2023.05029, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -247.93500, -2023.05029, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -247.93500, -2024.51038, 1010.67120,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2120, -242.47501, -2024.51038, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -238.67500, -2024.51038, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -234.99500, -2024.51038, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -231.25500, -2024.51038, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -231.25500, -2023.05029, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -235.02319, -2023.05029, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -238.67500, -2023.05029, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -242.47501, -2023.05029, 1010.67120,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, -232.59245, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -234.05251, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -236.87250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -238.25250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -241.01250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -242.31250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -244.79250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -246.15250, -2018.39465, 1010.67120,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, -246.15250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -244.79250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -242.31250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -241.01250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -236.87250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -234.05251, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, -232.59250, -2020.85474, 1010.67120,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1753, -237.27885, -2028.35181, 1011.29480,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1754, -234.04210, -2029.10352, 1011.29480,   0.00000, 0.00000, -59.40000);
+	CreateDynamicObject(1746, -238.19197, -2030.09045, 1011.27753,   0.00000, 0.00000, 100.80000);
+	CreateDynamicObject(1754, -233.74136, -2030.37537, 1011.29480,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1754, -237.18593, -2031.38318, 1011.29480,   0.00000, 0.00000, -216.35994);
+	CreateDynamicObject(2117, -236.54926, -2030.00098, 1010.98895,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1753, -249.85817, -2030.32727, 1011.29480,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1753, -246.55939, -2028.30054, 1011.29480,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2117, -248.18114, -2029.86243, 1010.98901,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1753, -243.51140, -2028.32703, 1011.29480,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1746, -240.33723, -2030.57178, 1011.27753,   0.00000, 0.00000, 71.04002);
+	CreateDynamicObject(1754, -240.29849, -2029.03503, 1011.29480,   0.00000, 0.00000, -59.40000);
+	CreateDynamicObject(1754, -244.42532, -2029.59534, 1011.29480,   0.00000, 0.00000, -269.22000);
+	CreateDynamicObject(2117, -242.91516, -2029.89929, 1010.98895,   0.00000, 0.00000, 0.90000);
+	CreateDynamicObject(1753, -256.55591, -2033.90051, 1009.94562,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1746, -253.25613, -2030.91199, 1009.94562,   0.00000, 0.00000, -404.69989);
+	CreateDynamicObject(1754, -252.98221, -2032.81921, 1009.94562,   0.00000, 0.00000, -89.99998);
+	CreateDynamicObject(2117, -254.60887, -2033.29468, 1009.61365,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1753, -253.45499, -2035.15588, 1009.94562,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2069, -256.58023, -2035.10815, 1010.05011,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2596, -239.45630, -2021.77075, 1013.57489,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2596, -237.55630, -2021.77075, 1013.57489,   0.00000, 0.00000, 90.00000);
+
 	// ESTACION DE SERVICIO NORTE
 	CreateDynamicObject(16107, 1008.38977, -922.83356, 41.65400,   0.00000, 0.00000, 278.20004);
 	CreateDynamicObject(1676, 998.50000, -937.59998, 42.90000,   0.00000, 0.00000, 8.00000);
@@ -13226,166 +13633,139 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			if(inputtext[strPos] == '%')
 				inputtext[strPos] = '\0'; // SA-MP placeholder exploit patch
 
-	switch(dialogid) {
-        case DLG_247: {
+	switch(dialogid)
+	{
+        case DLG_247:
+		{
             new business = GetPlayerBusiness(playerid);
-            if(response) {
-	        	switch(listitem) {
-		            case 0: {
-					    new Float:health;
-				        if(GetPlayerCash(playerid) >= PRICE_ALFAJOR) {
-							GivePlayerCash(playerid, -PRICE_ALFAJOR);
-							PlayerActionMessage(playerid, 15.0, "le paga al empleado por un alfajor y se lo come.");
-							SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d!", PRICE_ALFAJOR);
-							GetPlayerHealthEx(playerid, health);
-							if(health + 5 > 100) {
-		                        SetPlayerHealthEx(playerid, 100);
-				            } else {
-				                SetPlayerHealthEx(playerid, health + 5);
-				            }
-							if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-							   	Business[business][bTill] += PRICE_ALFAJOR / 3;
-			        			Business[business][bProducts]--;
-			        			saveBusiness(business);
-							}
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+            if(response)
+			{
+				switch(listitem)
+				{
+		            case 0:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_ALFAJOR)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+	    				new Float:health;
+						GivePlayerCash(playerid, -PRICE_ALFAJOR);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un alfajor y se lo come.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d!", PRICE_ALFAJOR);
+						GetPlayerHealthEx(playerid, health);
+						if(health + 5 > 100)
+		                	SetPlayerHealthEx(playerid, 100);
+      					else
+          					SetPlayerHealthEx(playerid, health + 5);
+						Business[business][bTill] += PRICE_ALFAJOR;
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
 					}
-			        case 1: {
-				        if(GetPlayerCash(playerid) >= PRICE_CIGARETTES) {
-				            if(PlayerInfo[playerid][pCigarettes] > 50) {
-				                SendClientMessage(playerid, COLOR_YELLOW2, "Tienes demasiados cigarrillos.");
-							} else {
-								GivePlayerCash(playerid, -PRICE_CIGARETTES);
-								PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos y se lo guarda en el bolsillo.");
-								SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (5 unidades) por $%d, puedes utilizar /fumar.", PRICE_CIGARETTES);
-								PlayerInfo[playerid][pCigarettes] += 5;
-								if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-								   	Business[business][bTill] += PRICE_CIGARETTES / 3;
-				        			Business[business][bProducts]--;
-				        			saveBusiness(business);
-								}
-				            }
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+			        case 1:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_CIGARETTES)
+				            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+            			if(PlayerInfo[playerid][pCigarettes] > 50)
+               				return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes demasiados cigarrillos.");
+						GivePlayerCash(playerid, -PRICE_CIGARETTES);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos y se lo guarda en el bolsillo.");
+						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (5 unidades) por $%d, puedes utilizar /fumar.", PRICE_CIGARETTES);
+						PlayerInfo[playerid][pCigarettes] += 5;
+						Business[business][bTill] += PRICE_CIGARETTES;
+				        Business[business][bProducts]--;
+				        saveBusiness(business);
 			        }
-			        case 2: {
-				        if(GetPlayerCash(playerid) >= PRICE_LIGHTER) {
-				            if(PlayerInfo[playerid][pLighter]) {
-				                SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un encendedor.");
-							} else {
-								GivePlayerCash(playerid, -PRICE_LIGHTER);
-								PlayerActionMessage(playerid, 15.0, "le paga al empleado por un encendedor y se lo guarda en el bolsillo.");
-								SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un encendedor por $%d!", PRICE_LIGHTER);
-								PlayerInfo[playerid][pLighter] = 1;
-								if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-								   	Business[business][bTill] += PRICE_LIGHTER / 3;
-				        			Business[business][bProducts]--;
-				        			saveBusiness(business);
-								}
-				            }
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+			        case 2:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_LIGHTER)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+       					if(PlayerInfo[playerid][pLighter])
+            				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un encendedor.");
+						GivePlayerCash(playerid, -PRICE_LIGHTER);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un encendedor y se lo guarda en el bolsillo.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un encendedor por $%d!", PRICE_LIGHTER);
+						PlayerInfo[playerid][pLighter] = 1;
+		   				Business[business][bTill] += PRICE_LIGHTER;
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
 			        }
-					case 3: {
-		                new
-		   					phoneNumber = 40000 + random(999999); // Min: 40000, Max: 999999
-
-						if(GetPlayerCash(playerid) >= PRICE_PHONE) {
-							GivePlayerCash(playerid, -PRICE_PHONE);
-							PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
-							SendFMessage(playerid, COLOR_WHITE, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
-							PlayerInfo[playerid][pPhoneNumber] = phoneNumber;
-							PlayerInfo[playerid][pPhoneC] = 0;
-							PlayerInfo[playerid][pListNumber] = 1;
-							if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-							   	Business[business][bTill] += PRICE_PHONE / 3;
-			        			Business[business][bProducts]--;
-			        			saveBusiness(business);
-							}
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-						}
+					case 3:
+					{
+						if(GetPlayerCash(playerid) < PRICE_PHONE)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+       					new phoneNumber = 40000 + random(999999); // Min: 40000, Max: 999999
+						GivePlayerCash(playerid, -PRICE_PHONE);
+						PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
+						PlayerInfo[playerid][pPhoneNumber] = phoneNumber;
+						PlayerInfo[playerid][pPhoneC] = 0;
+						PlayerInfo[playerid][pListNumber] = 1;
+						Business[business][bTill] += PRICE_PHONE;
+			        	Business[business][bProducts]--;
+        				saveBusiness(business);
 					}
-					case 4: {
-				        if(GetPlayerCash(playerid) >= PRICE_PHONEBOOK) {
-				            if(PlayerInfo[playerid][pPhoneBook]) {
-				                SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una guía telefónica.");
-				            } else {
-								GivePlayerCash(playerid, -PRICE_PHONEBOOK);
-								PlayerActionMessage(playerid, 15.0, "le paga al empleado por una guía telefónica.");
-								SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una guía telefónica por $%d!", PRICE_PHONEBOOK);
-								PlayerInfo[playerid][pPhoneBook] = 1;
-								if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-								   	Business[business][bTill] += PRICE_PHONEBOOK / 3;
-				        			Business[business][bProducts]--;
-				        			saveBusiness(business);
-								}
-							}
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+					case 4:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_PHONEBOOK)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						GivePlayerCash(playerid, -PRICE_PHONEBOOK);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una guía telefónica.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una guía telefónica por $%d!", PRICE_PHONEBOOK);
+						PlayerInfo[playerid][pPhoneBook] = 1;
+		   				Business[business][bTill] += PRICE_PHONEBOOK;
+				        Business[business][bProducts]--;
+				        saveBusiness(business);
 			        }
-			        case 5: {
-				        if(GetPlayerCash(playerid) >= PRICE_FUELCAN) {
-				          	new validslot = -1;
-							for(new i = 0; i < INV_MAX_SLOTS; i++) {
-							    if(getInvItemType(playerid, i) == ITEM_NONE) {
-									validslot = i;
-									break;
-							    }
-							}
-							if(validslot > -1) {
-								setInvItem(playerid, validslot, 48);
-								setInvParam(playerid, validslot, 0);
-								GivePlayerCash(playerid, -PRICE_FUELCAN);
-								PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
-								SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", PRICE_PHONEBOOK);
-								if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-								   	Business[business][bTill] += PRICE_FUELCAN / 3;
-				        			Business[business][bProducts]--;
-				        			saveBusiness(business);
-								}
-							} else {
-				            	SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-				        	}
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+			        case 5:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_FUELCAN)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+      					new validslot = -1;
+						for(new i = 0; i < INV_MAX_SLOTS; i++)
+						{
+					    	if(getInvItemType(playerid, i) == ITEM_NONE)
+							{
+								validslot = i;
+								break;
+	    					}
 						}
+						if(validslot < 0)
+						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
+						setInvItem(playerid, validslot, 48);
+						setInvParam(playerid, validslot, 0);
+						GivePlayerCash(playerid, -PRICE_FUELCAN);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
+						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", PRICE_FUELCAN);
+		   				Business[business][bTill] += PRICE_FUELCAN;
+        				Business[business][bProducts]--;
+				        saveBusiness(business);
 			        }
-			     	case 6: {
-				        if(GetPlayerCash(playerid) >= PRICE_CAMERA) {
-							GivePlayerCash(playerid, -PRICE_CAMERA);
-							PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cámara fotográfica.");
-							SendFMessage(playerid, COLOR_WHITE, "Has comprado una cámara fotográfica por $%d.", PRICE_CAMERA);
-							GivePlayerWeapon(playerid, 43, 35);
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+			     	case 6:
+					 {
+				        if(GetPlayerCash(playerid) < PRICE_CAMERA)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						GivePlayerCash(playerid, -PRICE_CAMERA);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cámara fotográfica.");
+						SendFMessage(playerid, COLOR_WHITE, "Has comprado una cámara fotográfica por $%d.", PRICE_CAMERA);
+						GivePlayerWeapon(playerid, 43, 35);
+ 						Business[business][bTill] += PRICE_CAMERA;
+        				Business[business][bProducts]--;
+				        saveBusiness(business);
 			        }
-			        case 7: {
-					    new Float:health;
-				        if(GetPlayerCash(playerid) >= PRICE_SANDWICH) {
-							GivePlayerCash(playerid, -PRICE_SANDWICH);
-							PlayerActionMessage(playerid, 15.0, "le paga al empleado por un sandwich y se lo come.");
-							SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d!", PRICE_SANDWICH);
-							GetPlayerHealthEx(playerid, health);
-							if(health + 15 > 100) {
-		                        SetPlayerHealthEx(playerid, 100);
-				            } else {
-				                SetPlayerHealthEx(playerid, health + 15);
-				            }
-							if(Business[business][bProducts] > 0 && Business[business][bOwnerSQLID] != -1) {
-							   	Business[business][bTill] += PRICE_SANDWICH / 3;
-			        			Business[business][bProducts]--;
-			        			saveBusiness(business);
-							}
-						} else {
-						    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						}
+			        case 7:
+					{
+				        if(GetPlayerCash(playerid) < PRICE_SANDWICH)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+                        new Float:health;
+						GivePlayerCash(playerid, -PRICE_SANDWICH);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un sandwich y se lo come.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d!", PRICE_SANDWICH);
+						GetPlayerHealthEx(playerid, health);
+						if(health + 20 > 100)
+      						SetPlayerHealthEx(playerid, 100);
+      					else
+           					SetPlayerHealthEx(playerid, health + 20);
+		   				Business[business][bTill] += PRICE_SANDWICH;
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
 					}
 				}
 			}
@@ -15936,6 +16316,8 @@ CMD:comprar(playerid, params[]) {
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 
 	if(business != 0 && Business[business][bType] == BIZ_247) {
+	    if(Business[business][bProducts] <= 0)
+     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
 		format(title, sizeof(title), "%s", Business[business][bName]);
 		format(content, sizeof(content), "{FFEFD5}Alfajor {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Guía telefónica {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d",
 			PRICE_ALFAJOR,
@@ -15947,15 +16329,15 @@ CMD:comprar(playerid, params[]) {
 			PRICE_CAMERA,
 			PRICE_SANDWICH
 		);
-		
         TogglePlayerControllable(playerid, false);
-        
         ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
 	} else if(business != 0 && Business[business][bType] == BIZ_PHON) {
 	    TogglePlayerControllable(playerid, false);
 		ShowMenuForPlayer(phoneMenu, playerid);
 	} else if(business != 0 && Business[business][bType] == BIZ_AMMU) {
 	    if(PlayerInfo[playerid][pWepLic]) {
+	        if(Business[business][bProducts] <= 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
 			if(sscanf(params, "dd", weapon, ammo)) {
 				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número] [balas]");
 				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Pistola 9mm. - $%d por munición", itemPrice[22]);
@@ -15964,19 +16346,27 @@ CMD:comprar(playerid, params[]) {
 				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 4 - Rifle de caza - $%d por munición", itemPrice[33]);
 			} else if(weapon >= 1 && weapon <= 4) {
 				if(ammo > 0 && ammo <= 900) {
-				    switch(weapon) {
+				    switch(weapon)
+					{
 						case 1: realWeapon = 22;
 						case 2: realWeapon = 24;
 						case 3: realWeapon = 25;
 						case 4: realWeapon = 33;
 				    }
-			        if(GetPlayerCash(playerid) >= itemPrice[realWeapon] * ammo) {
-						GivePlayerWeapon(playerid, realWeapon, ammo);
-				    	GivePlayerCash(playerid, -itemPrice[realWeapon] * ammo);
-				    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s con %d municiones a un total de $%d.", itemName[realWeapon], ammo, itemPrice[realWeapon] * ammo);
-					} else {
-						SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon] * ammo);
+				    new totalPrice = itemPrice[realWeapon] * ammo;
+			        if(GetPlayerCash(playerid) < totalPrice)
+			        {
+			            SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", totalPrice);
+						return 1;
 					}
+					GivePlayerWeapon(playerid, realWeapon, ammo);
+				    GivePlayerCash(playerid, -totalPrice);
+				    new string[128];
+				    format(string, sizeof(string), "ha comprado un/a %s con %d municiones a un total de $%d.", itemName[realWeapon], ammo, totalPrice);
+				    PlayerActionMessage(playerid, 15.0, string);
+					Business[business][bTill] += totalPrice / 2; // la mitad para evitar abusos de sacar armas gratis para el dueño
+					Business[business][bProducts]--;
+					saveBusiness(business);
 				} else {
 			    	SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 bala ni más de 900.");
 				}
@@ -15986,30 +16376,69 @@ CMD:comprar(playerid, params[]) {
 		} else {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de portación de armas.");
 		}
-	} else if(business != 0 && Business[business][bType] == BIZ_CLOT) {
-		new skintype;
-		if(PlayerInfo[playerid][pSex] == 1) {
-		    skintype = 1;
-		} else {
-			skintype = 3;
-		}
-  		TogglePlayerControllable(playerid, false);
+
+	} else if(business != 0 && (Business[business][bType] == BIZ_CLOT || Business[business][bType] == BIZ_CLOT2)) {
+	    if(Business[business][bProducts] <= 0)
+     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+	    new skintype;
+   		TogglePlayerControllable(playerid, false);
 		DestroySelectionMenu(playerid);
 	    SetPVarInt(playerid, "skinc_active", 1);
-	    CreateSelectionMenu(playerid, skintype);
+		if(Business[business][bType] == BIZ_CLOT)
+		{
+			if(PlayerInfo[playerid][pSex] == 1)
+		    	skintype = 1;
+			else
+				skintype = 3;
+		} else
+  			if(Business[business][bType] == BIZ_CLOT2)
+    		{
+    			if(PlayerInfo[playerid][pSex] == 1)
+		    		skintype = 2;
+				else
+					skintype = 4;
+		    }
+        CreateSelectionMenu(playerid, skintype);
 	    SelectTextDraw(playerid, 0xACCBF1FF);
-	} else if(business != 0 && Business[business][bType] == BIZ_CLOT2) {
-		new skintype;
-		if(PlayerInfo[playerid][pSex] == 1) {
-		    skintype = 2;
-		} else {
-			skintype = 4;
+
+    } else if(business != 0 && Business[business][bType] == BIZ_HARD) {
+        if(sscanf(params, "i", weapon))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Nudillos - $%d          6) Palo de pool - $%d", itemPrice[1], itemPrice[7]);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2) Pala - $%d				7) Consolador - $%d", itemPrice[6], itemPrice[11]);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 3) Baston - $%d 			8) Consolador doble punta - $%d", itemPrice[15], itemPrice[10]);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 4) Palo de golf - $%d		9) Vibrador - $%d", itemPrice[2], itemPrice[12]);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 5) Bate - $%d				10) Vibrador plateado - $%d", itemPrice[5], itemPrice[13]);
+			return 1;
 		}
-  		TogglePlayerControllable(playerid, false);
-		DestroySelectionMenu(playerid);
-	    SetPVarInt(playerid, "skinc_active", 1);
-	    CreateSelectionMenu(playerid, skintype);
-	    SelectTextDraw(playerid, 0xACCBF1FF);
+		if(Business[business][bProducts] < 1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+		if(weapon < 1 || weapon > 10)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+        switch(weapon)
+		{
+			case 1: realWeapon = 1;
+			case 2: realWeapon = 6;
+			case 3: realWeapon = 15;
+			case 4: realWeapon = 2;
+			case 5: realWeapon = 5;
+			case 6: realWeapon = 7;
+			case 7: realWeapon = 11;
+			case 8: realWeapon = 10;
+			case 9: realWeapon = 12;
+			case 10: realWeapon = 13;
+	    }
+	    if(GetPlayerCash(playerid) < itemPrice[realWeapon])
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+		GivePlayerCash(playerid, -itemPrice[realWeapon]);
+		GivePlayerWeapon(playerid, realWeapon, 1);
+		Business[business][bTill] += itemPrice[realWeapon];
+		Business[business][bProducts] --;
+		saveBusiness(business);
+		format(content, sizeof(content), "le paga al vendedor y compra un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon]);
+		PlayerActionMessage(playerid, 15.0, content);
+
 	} else if(business == 0) {
 		if(PlayerToPoint(4.0, playerid, 2333.2856, -1948.3102, 13.5783)) {
 			if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
@@ -16018,13 +16447,13 @@ CMD:comprar(playerid, params[]) {
 				    amount,
 					type,
 					vehicleid = GetPlayerVehicleID(playerid);
-					
+
 		        if(!IsPlayerInAnyVehicle(playerid))
 		            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo!");
 
 		        if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
 		            return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo con dueño o de facción.");
-				
+
 				if(sscanf(params, "dd", type, amount)) {
 	                SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [tipo] [cant de bolsas de mat. prima a canjear]");
 			        SendClientMessage(playerid, COLOR_YELLOW2, "1: marihuana    -    5 grs. por cada bolsa de materia prima.");
@@ -16033,12 +16462,12 @@ CMD:comprar(playerid, params[]) {
 			        SendClientMessage(playerid, COLOR_YELLOW2, "4: cocaína         -    2 grs. por cada bolsa de materia prima.");
 			    } else if(type >= 1 && type <= 4) {
 			        if(amount <= 0 || amount > 50)
-			            return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de gramos no debe ser menor a 0 o mayor a 50.");
-			            
+			            return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas a canjear no debe ser menor a 0 o mayor a 50.");
+
 					new
 						param,
 						result = -1;
-					    
+
 					for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++)
 					{
 					    if(getTrunkItem(vehicleid, i) == 49)
@@ -16057,16 +16486,16 @@ CMD:comprar(playerid, params[]) {
 							    	result = amount;
 							    	break;
 								} else
-									{
-							    		result = param;
-							    		setTrunkItem(vehicleid, i, -1);
-									}
+								{
+							    	result = param;
+							    	setTrunkItem(vehicleid, i, -1);
+								}
 					    }
 					}
-					
+
 					if(result <= 0)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes suficiente materia prima.");
-					    
+
 					switch(type) {
 					    case 1: {
 							PlayerInfo[playerid][pMarijuana] += 5 * result;
@@ -16093,12 +16522,13 @@ CMD:comprar(playerid, params[]) {
 			        SendClientMessage(playerid, COLOR_YELLOW2, "4: cocaína         -    2 grs. por cada gr. de materia prima.");
 			    }
 			}
+
 	 	} else if(PlayerToPoint(4.0, playerid,	JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2])) {
 		    if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
 		        new vehicleid = GetPlayerVehicleID(playerid), amount;
 		        if(!IsPlayerInAnyVehicle(playerid))
 		            return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
-		            
+
 		        if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
 		            return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
 
@@ -16106,7 +16536,7 @@ CMD:comprar(playerid, params[]) {
 	                SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d la unidad.", PRICE_DRUG_MAT);
 			    } else {
 			        if(amount <= 0 || amount > 50)
-			            return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de gramos no debe ser menor a 0 o mayor a 50.");
+			            return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas de materia prima no debe ser menor a 0 o mayor a 50.");
 
 			        if(GetPlayerCash(playerid) < amount * PRICE_DRUG_MAT) {
 			            SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * PRICE_DRUG_MAT);
@@ -16118,6 +16548,33 @@ CMD:comprar(playerid, params[]) {
 					GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
 			    }
 		    }
+
+		} else if(PlayerToPoint(4.0, playerid, 2183.9963, -2260.7658, 13.4098)) {
+		    if(PlayerInfo[playerid][pBizKey] != 0) {
+		        new amount;
+		        if(sscanf(params, "i", amount))
+		        {
+	                SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d el producto.", PRICE_BIZ_PROD);
+					return 1;
+				}
+			 	if(!IsPlayerInAnyVehicle(playerid))
+		            return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
+ 		       	new vehicleid = GetPlayerVehicleID(playerid);
+		        if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
+		            return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
+		        if(amount <= 0 || amount > 50)
+          			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 0 o mayor a 50.");
+		        if(GetPlayerCash(playerid) < amount * PRICE_BIZ_PROD)
+				{
+		            SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * PRICE_BIZ_PROD);
+		            return 1;
+		        }
+		        GivePlayerCash(playerid, -amount * PRICE_BIZ_PROD);
+				SetTimerEx("buyProductsTimer", 4000, false, "ii", playerid, amount);
+				TogglePlayerControllable(playerid, false);
+				GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
+		    }
+
 		} else if(PlayerToPoint(4.0, playerid, 2349.8408, -1216.3939, 22.5000)) {
 			if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
 				new amount;
@@ -16133,39 +16590,13 @@ CMD:comprar(playerid, params[]) {
 						SetPVarInt(playerid, "buyMatsTimer", SetTimerEx("buyMatsTimer", 4000, false, "ii", playerid, amount));
 					    TogglePlayerControllable(playerid, false);
 						GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
-					} else {
-					    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la VAN de la facción.");
-					}
-			    } else {
-			    	SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
-			    }
-			} else {
-	            SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿te conozco?");
-			}
+					} else
+	    				SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la VAN de la facción.");
+			    } else
+		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
+			} else
+				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿te conozco?");
 		} else if(business == 0 && IsAtHardware(playerid)) {
-			if(PlayerInfo[playerid][pFaction] == FAC_RIV || PlayerInfo[playerid][pFaction] == FAC_BOCA) {
-				if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Manopla. - $%d          3 - Baston. - $%d",itemPrice[1] - itemPrice[1] / 100 * 30, itemPrice[15] - itemPrice[15] / 100 * 30);
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Pala. - $%d", itemPrice[6] - itemPrice[6] / 100 * 30);
-				} else if(weapon >= 1 && weapon <= 3) {
-					    switch(weapon) {
-							case 1: realWeapon = 1;
-							case 2: realWeapon = 6;
-							case 3: realWeapon = 15;
-					    }
-				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	TakePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-					    	/*GivePlayerCash(playerid, -GivePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30));*/
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
-				}
-			} else {
 			    if(sscanf(params, "d", weapon)) {
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
 					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Manopla. - $%d          3 - Baston. - $%d", itemPrice[1], itemPrice[15]);
@@ -16186,31 +16617,7 @@ CMD:comprar(playerid, params[]) {
 				} else {
 				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
 				}
-			}
-			} else if(business == 0 && IsAtSportShop(playerid)) {
-			if(PlayerInfo[playerid][pFaction] == FAC_RIV || PlayerInfo[playerid][pFaction] == FAC_BOCA) {
-				if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Palo de golf. - $%d          3 - Palo de pool. - $%d",itemPrice[2] - itemPrice[2] / 100 * 30, itemPrice[7] - itemPrice[7] / 100 * 30);
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Bate. - $%d", itemPrice[5] - itemPrice[5] / 100 * 30);
-				} else if(weapon >= 1 && weapon <= 3) {
-					    switch(weapon) {
-							case 1: realWeapon = 2;
-							case 2: realWeapon = 5;
-							case 3: realWeapon = 7;
-					    }
-				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	TakePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-					    	/*GivePlayerCash(playerid, -GivePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30));*/
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
-				}
-			} else {
+		} else if(business == 0 && IsAtSportShop(playerid)) {
 			    if(sscanf(params, "d", weapon)) {
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
 					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Palo de golf. - $%d          3 - Palo de pool. - $%d", itemPrice[2], itemPrice[7]);
@@ -16231,55 +16638,7 @@ CMD:comprar(playerid, params[]) {
 				} else {
 				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
 				}
-			}
-			} else if(business == 0 && IsAtSexShop(playerid)) {
-			if(PlayerInfo[playerid][pFaction] == FAC_RIV || PlayerInfo[playerid][pFaction] == FAC_BOCA) {
-				if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Consolador. - $%d          3 - Vibrador. - $%d",itemPrice[11] - itemPrice[11] / 100 * 30, itemPrice[12] - itemPrice[12] / 100 * 30);
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Consolador dobre punta. - $%d    4 - Vibrador plateado. - $%d", itemPrice[10] - itemPrice[10] / 100 * 30, itemPrice[13] - itemPrice[13] / 100 * 30);
-				} else if(weapon >= 1 && weapon <= 4) {
-					    switch(weapon) {
-							case 1: realWeapon = 11;
-							case 2: realWeapon = 10;
-							case 3: realWeapon = 12;
-							case 4: realWeapon = 13;
-					    }
-				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	TakePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-					    	/*GivePlayerCash(playerid, -GivePlayerCash(playerid, itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30));*/
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon] - itemPrice[realWeapon] / 100 * 30);
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 4.");
-				}
-			} else {
-			    if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Consolador. - $%d          3 - Vibrador. - $%d", itemPrice[11], itemPrice[12]);
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Consolador doble punta. - $%d    4 - Vibrador plateado. - $%d", itemPrice[10], itemPrice[13]);
-				} else if(weapon >= 1 && weapon <= 4) {
-					    switch(weapon) {
-							case 1: realWeapon = 11;
-							case 2: realWeapon = 10;
-							case 3: realWeapon = 12;
-							case 4: realWeapon = 13;
-					    }
-				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon]) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	GivePlayerCash(playerid, -itemPrice[realWeapon]);
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon]);
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon]);
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 4.");
-				}
-			}
-			}
+		}
 	}
 	return 1;
 }
@@ -16931,7 +17290,7 @@ CMD:quitar(playerid, params[]) {
 				}
 				switch(itemid) {
 					case 1 .. 9, 16 .. 38, 41:
-						setInvItem(targetID, invslot, itemid);
+						setInvItem(targetID, invslot, 0);
 				}
 			}
 		}
@@ -17327,8 +17686,14 @@ CMD:sospechoso(playerid, params[]) {
 //[NEGOCIOS]
 
 CMD:ayudanegocio(playerid, params[]) {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Nivel 6]: /comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /ayudaproductos");
+	return 1;
+}
+
+CMD:ayudaproductos(playerid, params[]){
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, y estaciona en la puerta del depósito.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprar, y cuando llegues con la mercaderia a la entrada de tu negocio usa /descargar.");
 	return 1;
 }
 
@@ -17341,11 +17706,15 @@ CMD:abrirnegocio(playerid, params[]) {
 		if(PlayerToPoint(3.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(3.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ])) {
 			if(PlayerInfo[playerid][pBizKey] == bizID && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
 				if(Business[bizID][bLocked] == 1) {
+					if(openBizPermission[bizID] == false)
+				        return SendClientMessage(playerid, COLOR_YELLOW2,"¡Debes esperar hasta el próximo dia de pago!");
 					Business[bizID][bLocked] = 0;
                     PlayerActionMessage(playerid, 15.0, "toma unas llaves de su bolsillo y abre las puertas del negocio.");
 				} else {
 					Business[bizID][bLocked] = 1;
                     PlayerActionMessage(playerid, 15.0, "toma unas llaves de su bolsillo y cierra las puertas del negocio.");
+                    SendClientMessage(playerid, COLOR_YELLOW2,"Una vez cerrado, no podrás abrirlo hasta el próximo payday y perderas los ingresos de ese día.");
+                    openBizPermission[bizID] = false;
 				}
 				saveBusiness(bizID);
 				return 1;
@@ -17401,10 +17770,10 @@ CMD:negociodepositar(playerid, params[]) {
     	if(GetPlayerCash(playerid) < ammount) {
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes esa cantidad de dinero!");
 		}
-	    if(ammount > 50000) {
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes depositar más de $50.000.");
+	    if(ammount > 1000000) {
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes depositar más de $1.000.000.");
 	    }
-	    if(Business[bizID][bTill] >= 50000) {
+	    if(Business[bizID][bTill] >= 1000000) {
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "La caja se encuentra actualmente llena.");
 	    }
 		GivePlayerCash(playerid, -ammount);
@@ -17487,7 +17856,7 @@ CMD:infonegocio(playerid,params[]) {
             SendClientMessage(playerid, COLOR_WHITE, string);
             format(string, sizeof(string), "Caja:		$%d", Business[bizID][bTill]);
             SendClientMessage(playerid, COLOR_WHITE, string);
-            format(string, sizeof(string), "Abierto: 	%d", Business[bizID][bLocked]);
+            format(string, sizeof(string), "Cerrado: 	%d", Business[bizID][bLocked]);
             SendClientMessage(playerid, COLOR_WHITE, string);
             format(string, sizeof(string), "Productos: 	%d", Business[bizID][bProducts]);
             SendClientMessage(playerid, COLOR_WHITE, string);
@@ -17566,7 +17935,7 @@ CMD:vendernegocio(playerid,params[]) {
 			Business[bizID][bLocked] = 0;
 			Business[bizID][bOwnerSQLID] = -1;
 			strmid(Business[bizID][bOwner], "Ninguno", 0, strlen("Ninguno"), 255);
-			GivePlayerCash(playerid, (Business[bizID][bPrice] / 100) * 70);
+			GivePlayerCash(playerid, (Business[bizID][bPrice] / 100) * 70); // 70 porciento del valor original
 			format(string, sizeof(string), "¡Has vendido el negocio por $%d!", (Business[bizID][bPrice] / 100) * 70);
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, string);
 			PlayerInfo[playerid][pBizKey] = 0;
@@ -17878,10 +18247,8 @@ CMD:curar(playerid,params[]) {
 	    if(PlayerInfo[playerid][pFaction] == FAC_HOSP) {
 		    if(GetPVarInt(playerid, "isHealing") == 0) {
 			    if(target != playerid) {
-			        if(GetPVarInt(target, "disabled") == DISABLE_DEATHBED) {
+			        if(GetPVarInt(target, "disabled") == DISABLE_DEATHBED)
 					    SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto se encuentra en su lecho de muerte y no hay nada que puedas hacer por él.");
-					    return 1;
-					}
 			        GetPlayerPos(target, tX, tY, tZ);
 			    	if(IsPlayerInRangeOfPoint(playerid, 1.0, tX, tY, tZ)) {
 			    	    if(GetPlayerCash(target) >= cost) {
@@ -18195,8 +18562,12 @@ CMD:aceptar(playerid,params[]) {
 		if(RepairOffer[playerid] < 999) {
 			if(GetPlayerCash(playerid) >= RepairPrice[playerid]) {
 				if(IsPlayerInAnyVehicle(playerid)) {
-    				if(!ProxDetectorS(6.0, playerid, RepairOffer[playerid]))
+					if(!ProxDetectorS(6.0, playerid, RepairOffer[playerid]))
+    				{
+   	    				RepairOffer[playerid] = 999;
+						RepairPrice[playerid] = 0;
   	    				return SendClientMessage(playerid, COLOR_WHITE, "El mecánico no está cerca tuyo.");
+					}
 					if(IsPlayerConnected(RepairOffer[playerid])) {
 						GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
 						GameTextForPlayer(RepairOffer[playerid], "Reparando vehiculo...", 6000, 1);
@@ -18771,162 +19142,154 @@ CMD:ventanillas(playerid, params[]) {
 	return 1;
 }
 
-CMD:comer(playerid, params[]) {
-	new
-	    Float:HP,
-	    menu;
+//=======================NEGOCIOS TIPO RESTAURANT===============================
 
-	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED) {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-		return 1;
-	}
+CMD:comer(playerid, params[])
+{
+	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 
+	new Float:HP, menu;
     GetPlayerHealthEx(playerid, HP);
 
 	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
-		if(PlayerToPoint(25.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
 		{
 			if(GetPlayerVirtualWorld(playerid) == i + 17000)
 			{
 	    		if(Business[i][bType] == BIZ_REST)
 				{
-	    			if(Business[i][bProducts] != 0 || Business[i][bOwnerSQLID] == -1)
+	    			if(Business[i][bProducts] <= 0)
+                    	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+					if(sscanf(params, "i", menu))
 					{
-						if(sscanf(params, "i", menu)) {
-							SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
-							SendClientMessage(playerid, COLOR_WHITE, "1) - Milanesa con papas - Precio: $50.");
-							SendClientMessage(playerid, COLOR_WHITE, "2) - Pollo al horno con verduritas - Precio: $60.");
-							SendClientMessage(playerid, COLOR_WHITE, "3) - Ravioles de espinaca con salsa parisiene - Precio: $60.");
-							SendClientMessage(playerid, COLOR_WHITE, "4) - Ensalada Cáesar - Precio: $40.");
-							SendClientMessage(playerid, COLOR_WHITE, "5) - Bife de cerdo a la plancha - Precio: $70.");
-							SendClientMessage(playerid, COLOR_WHITE, "6) - Pastel de papa casero - Precio: $45.");
-							SendClientMessage(playerid, COLOR_WHITE, "7) - Asado completo con bebida - Precio: $90.");
-							return 1;
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+						SendClientMessage(playerid, COLOR_WHITE, "1) - Milanesa con papas - Precio: $50.");
+						SendClientMessage(playerid, COLOR_WHITE, "2) - Pollo al horno con verduritas - Precio: $60.");
+						SendClientMessage(playerid, COLOR_WHITE, "3) - Ravioles de espinaca con salsa parisiene - Precio: $60.");
+						SendClientMessage(playerid, COLOR_WHITE, "4) - Ensalada Cáesar - Precio: $40.");
+						SendClientMessage(playerid, COLOR_WHITE, "5) - Bife de cerdo a la plancha - Precio: $70.");
+						SendClientMessage(playerid, COLOR_WHITE, "6) - Pastel de papa casero - Precio: $45.");
+						SendClientMessage(playerid, COLOR_WHITE, "7) - Asado completo con bebida - Precio: $90.");
+						return 1;
+					}
+					switch(menu)
+					{
+					    case 1:
+					    {
+					        if(GetPlayerCash(playerid) < 50)
+					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+	       					GivePlayerCash(playerid, -50);
+	       		    		Business[i][bTill] += 50;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 22.0);
+				       		if( (HP + 22.0) > 100)
+						   	{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena una milanesa con papas y comienza a comer.");
+							saveBusiness(i);
+	                    }
+						case 2:
+					    {
+					        if(GetPlayerCash(playerid) < 60)
+					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+       						GivePlayerCash(playerid, -60);
+	       		    		Business[i][bTill] += 60;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 24.0);
+				         	if( (HP + 24.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena un pollo al horno con verduritas y comienza a comer.");
+							saveBusiness(i);
 						}
-						switch(menu)
-						{
-						    case 1:
-						    {
-						        if(GetPlayerCash(playerid) >= 50)
-						        {
-	       							GivePlayerCash(playerid, -50);
-	       		    				Business[i][bTill] += 50;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 22.0);
-				          			if( (HP + 22.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena una milanesa con papas y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 2:
-						    {
-						        if(GetPlayerCash(playerid) >= 60)
-						        {
-	       							GivePlayerCash(playerid, -60);
-	       		    				Business[i][bTill] += 60;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 24.0);
-				          			if( (HP + 24.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena un pollo al horno con verduritas y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 3:
-						    {
-						        if(GetPlayerCash(playerid) >= 60)
-						        {
-	       							GivePlayerCash(playerid, -60);
-	       		    				Business[i][bTill] += 60;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 24.0);
-				          			if( (HP + 24.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena unos ravioles de espinaca a la parisiene y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 4:
-						    {
-						        if(GetPlayerCash(playerid) >= 40)
-						        {
-	       							GivePlayerCash(playerid, -40);
-	       		    				Business[i][bTill] += 40;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 20.0);
-				          			if( (HP + 20.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena una ensalada Cáesar y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 5:
-						    {
-						        if(GetPlayerCash(playerid) >= 70)
-						        {
-	       							GivePlayerCash(playerid, -70);
-	       		    				Business[i][bTill] += 70;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 26.0);
-				          			if( (HP + 26.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena un bife de cerdo a la plancha y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 6:
-						    {
-						        if(GetPlayerCash(playerid) >= 45)
-						        {
-	       							GivePlayerCash(playerid, -45);
-	       		    				Business[i][bTill] += 45;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 21.0);
-				          			if( (HP + 21.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena un pastel de papas casero y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							case 7:
-						    {
-						        if(GetPlayerCash(playerid) >= 90)
-						        {
-	       							GivePlayerCash(playerid, -90);
-	       		    				Business[i][bTill] += 90;
-	            		   			Business[i][bProducts]--;
-	               		  			SetPlayerHealthEx(playerid, HP + 30.0);
-				          			if( (HP + 30.0) > 100) {
-	                					SetPlayerHealthEx(playerid, 100);
-						                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
-			            			}
-						  			PlayerActionMessage(playerid, 15.0, "ordena un asado completo con bebida y comienza a comer.");
-								  	saveBusiness(i);
-								} else
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-							default: SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+						case 3:
+					    {
+					        if(GetPlayerCash(playerid) < 60)
+					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+       						GivePlayerCash(playerid, -60);
+	       		    		Business[i][bTill] += 60;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 24.0);
+				         	if( (HP + 24.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena unos ravioles de espinaca a la parisiene y comienza a comer.");
+							saveBusiness(i);
 						}
+						case 4:
+					    {
+					        if(GetPlayerCash(playerid) < 40)
+					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+	       					GivePlayerCash(playerid, -40);
+	       		    		Business[i][bTill] += 40;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 20.0);
+				         	if( (HP + 20.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena una ensalada Cáesar y comienza a comer.");
+							saveBusiness(i);
+						}
+						case 5:
+					    {
+					        if(GetPlayerCash(playerid) < 70)
+					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+       						GivePlayerCash(playerid, -70);
+	       		    		Business[i][bTill] += 70;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 26.0);
+				         	if( (HP + 26.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena un bife de cerdo a la plancha y comienza a comer.");
+							saveBusiness(i);
+						}
+						case 6:
+					    {
+					        if(GetPlayerCash(playerid) < 45)
+					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+       						GivePlayerCash(playerid, -45);
+	       		    		Business[i][bTill] += 45;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 21.0);
+				         	if( (HP + 21.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena un pastel de papas casero y comienza a comer.");
+							saveBusiness(i);
+						}
+						case 7:
+					    {
+					        if(GetPlayerCash(playerid) < 90)
+					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+	       					GivePlayerCash(playerid, -90);
+	       		    		Business[i][bTill] += 90;
+	            	   		Business[i][bProducts]--;
+	               	  		SetPlayerHealthEx(playerid, HP + 30.0);
+		         			if( (HP + 30.0) > 100)
+					 		{
+	                			SetPlayerHealthEx(playerid, 100);
+					            SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
+			           		}
+					  		PlayerActionMessage(playerid, 15.0, "ordena un asado completo con bebida y comienza a comer.");
+							saveBusiness(i);
+						}
+						default:
+							SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
 					}
 				}
 			}
@@ -18935,139 +19298,497 @@ CMD:comer(playerid, params[]) {
 	return 1;
 }
 
-CMD:beber(playerid, params[]) {
-	new
-	    Float:HP,
-	    command[64];
-	    
-	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED) {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-		return 1;
-	}
+//=========================NEGOCIOS TIPO CASINO=================================
 
+#define ROULETTE_COLOR_RED    	1
+#define ROULETTE_COLOR_BLACK    2
+#define ROULETTE_COLOR_GREEN    3
+
+new rouletteData[37] = {
+	3,1,2,1,2,
+	1,2,1,2,1,
+	2,2,1,2,1,
+	2,1,2,1,1,
+	2,1,2,1,2,
+	1,2,1,2,2,
+	1,2,1,2,1,
+	2,1
+};
+
+bool:EsPar(n)
+{
+	return ((n % 2) == 0);
+}
+
+getRouletteNumberDozen(number)
+{
+	if(number >= 1 && number <= 12)
+	    return 1;
+	else
+	    if(number >= 13 && number <= 24)
+	        return 2;
+		else
+		    if(number >= 25 && number <= 36)
+	        	return 3;
+	return 0;
+}
+
+new bool:isBeting[MAX_PLAYERS];
+
+forward CasinoBetEnabled(playerid);
+public CasinoBetEnabled(playerid)
+{
+	if(isBeting[playerid])
+	    isBeting[playerid] = false;
+	return 1;
+}
+
+CMD:apostar(playerid, params[])
+{
+	return SendClientMessage(playerid, COLOR_YELLOW2, "Comandos para apostar en un casino: /apruleta, /apfortuna.");
+}
+CMD:apruleta(playerid, params[])
+{
+	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CASINO)
+	    		{
+					new number, numberbet, colour[10], colourbet, parity[10], paritybet, dozen, dozenbet;
+					if(sscanf(params, "iis[10]is[10]iii", number, numberbet, colour, colourbet, parity, paritybet, dozen, dozenbet))
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y su apuesta escribe '0'.");
+						return 1;
+					}
+					if( (strcmp(colour, "rojo", true) != 0 && strcmp(colour, "negro", true) != 0 && strcmp(colour, "no", true) != 0) ||
+						(strcmp(parity, "par", true) != 0 && strcmp(parity, "impar", true) != 0 && strcmp(parity, "no", true) != 0) )
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y en su apuesta escribe '0'.");
+						return 1;
+					}
+					if(isBeting[playerid] == true)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
+					if(number < -1 || number > 36)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Los numeros de una ruleta van del 0 al 36!");
+					if(dozen < -1 || dozen > 3)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes elegir 1ra, 2da o 3er docena! (1,2,3 o -1 para omitir esa apuesta).");
+					if(numberbet < 0 || numberbet > 20000 || colourbet < 0 ||colourbet > 20000 || paritybet < 0 || paritybet > 20000 || dozenbet < 0 || dozenbet > 20000)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
+					if(GetPlayerCash(playerid) < (numberbet + colourbet + paritybet + dozenbet))
+     					return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
+					if( ( numberbet * 36 + colourbet * 2 + paritybet * 2 + dozenbet * 3) > Business[i][bTill] )
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
+
+	                GivePlayerCash(playerid, -(numberbet + colourbet + paritybet + dozenbet) );
+	                Business[i][bTill] += (numberbet + colourbet + paritybet + dozenbet);
+	                PlayerActionMessage(playerid, 15.0, "hace una apuesta en la ruleta y el empleado del casino comienza a girarla, moviendo la bolilla.");
+
+                    new string[128], winnerNumber, winnerColour[10];
+					winnerNumber = random(37);
+					switch(rouletteData[winnerNumber])
+					{
+					    case ROULETTE_COLOR_RED: winnerColour = "rojo";
+					    case ROULETTE_COLOR_BLACK: winnerColour = "negro";
+					    case ROULETTE_COLOR_GREEN: winnerColour = "verde";
+					}
+					format(string, sizeof(string), "Luego de unos segundos de tensión, la ruleta se detiene,y la bolilla se perfila...: ¡%s %d!", winnerColour, winnerNumber);
+					PlayerDoMessage(playerid, 15.0, string);
+
+					new betWin = 0;
+					new betsWin[128] = "";
+					if(winnerNumber == number)
+					{
+					    betWin += numberbet * 36;
+					    format(betsWin, sizeof(betsWin), "Número %d, ganó $%d.", winnerNumber, numberbet * 36);
+					}
+					if(strcmp(winnerColour, colour, true) == 0)
+					{
+						betWin += colourbet * 2;
+						format(betsWin, sizeof(betsWin), "%s Color %s, ganó $%d.", betsWin, winnerColour, colourbet * 2);
+					}
+					if(strcmp(parity, "par", true) == 0 && EsPar(winnerNumber) == true)
+					{
+					    betWin += paritybet * 2;
+					    format(betsWin, sizeof(betsWin), "%s Tipo par, ganó $%d.", betsWin, paritybet * 2);
+					}
+					if(strcmp(parity, "impar", true) == 0 && EsPar(winnerNumber) == false)
+					{
+    					betWin += paritybet * 2;
+	                    format(betsWin, sizeof(betsWin), "%s Tipo impar, ganó $%d.", betsWin, paritybet * 2);
+					}
+					if(getRouletteNumberDozen(winnerNumber) == dozen)
+					{
+					    betWin += dozenbet * 3;
+					    format(betsWin, sizeof(betsWin), "%s Docena Nº%d, ganó $%d.", betsWin, dozen, dozenbet * 3);
+					}
+					if(betWin == 0)
+					    PlayerActionMessage(playerid, 15.0, "ha perdido todas sus apuestas: el casino se queda con el dinero.");
+					else
+					{
+					    Business[i][bTill] -= betWin;
+					    GivePlayerCash(playerid, betWin);
+					    format(string, sizeof(string), "tuvo suerte y ganó $%d! %s", betWin, betsWin);
+					    PlayerActionMessage(playerid, 15.0, string);
+					}
+					isBeting[playerid] = true;
+					SetTimerEx("CasinoBetEnabled", 60000, false, "i", playerid);
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+CMD:apfortuna(playerid, params[])
+{
+ 	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CASINO)
+	    		{
+  					new number, numberbet;
+   					if(sscanf(params, "ii",number, numberbet))
+						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apfortuna [numero] [apuesta]");
+	    			if(isBeting[playerid] == true)
+			    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
+					if(number != 1 && number != 2 && number != 5 && number != 10 && number != 20 && number != 40)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que apostar por un valor válido: 1, 2, 5, 10, 20 o 40.");
+					if(numberbet < 1 || numberbet > 20000)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
+					if(GetPlayerCash(playerid) < numberbet)
+		     			return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
+					if( number * (numberbet + 1)  > Business[i][bTill] )
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
+
+                    new string[128], winnerNumber;
+                    GivePlayerCash(playerid, -numberbet);
+                    Business[i][bTill] += numberbet;
+                    format(string, sizeof(string), "apuesta $%d al numero %d en la rueda de la fortuna.", numberbet, number);
+                    PlayerActionMessage(playerid, 15.0, string);
+
+                    new aleatorio = random(54);
+					if(aleatorio < 24) winnerNumber = 1;
+						else if(aleatorio < 39) winnerNumber = 2;
+						    else if(aleatorio < 46) winnerNumber = 5;
+           						else if(aleatorio < 50) winnerNumber = 10;
+   						        	else if(aleatorio < 52) winnerNumber = 20;
+   						        	    else if(aleatorio < 54) winnerNumber = 40;
+
+                    format(string, sizeof(string), "El croupier cierra las apuestas y gira la rueda de la fortuna. La rueda se detiene en... ¡%d!", winnerNumber);
+                    PlayerDoMessage(playerid, 15.0, string);
+                    if(winnerNumber == number)
+                    {
+                        GivePlayerCash(playerid, number * (numberbet + 1));
+                    	Business[i][bTill] += number * (numberbet + 1);
+                    	format(string, sizeof(string), "ha ganado $%d apostandole al %d!", number * (numberbet + 1), number);
+					} else
+					    	format(string, sizeof(string), "ha perdido $%d apostandole al %d!", numberbet, number);
+       				PlayerActionMessage(playerid, 15.0, string);
+					isBeting[playerid] = true;
+					SetTimerEx("CasinoBetEnabled", 60000, false, "i", playerid);
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+//=======================NEGOCIOS TIPO BAR Y CASINO=============================
+
+CMD:beber(playerid, params[])
+{
+	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+
+	new Float:HP, command[64];
     GetPlayerHealthEx(playerid, HP);
 
-	for(new i = 0; i < MAX_BUSINESS; i++) {
-		if(PlayerToPoint(25.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ])) {
-			if(GetPlayerVirtualWorld(playerid) == i + 17000) {
-	    		if(Business[i][bType] == BIZ_CLUB) {
-	    			if(Business[i][bProducts] != 0 || Business[i][bOwnerSQLID] == -1) {
-						if(sscanf(params, "s[64]", command)) {
-							SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
-							SendClientMessage(playerid, COLOR_WHITE, "Cerveza - Precio: $7.");
-							SendClientMessage(playerid, COLOR_WHITE, "Vodka - Precio: $10.");
-							SendClientMessage(playerid, COLOR_WHITE, "CocaCola - Precio: $3.");
-							SendClientMessage(playerid, COLOR_WHITE, "Agua - Precio: $3.");
-							SendClientMessage(playerid, COLOR_WHITE, "Whisky - Precio: $10.");
-							SendClientMessage(playerid, COLOR_WHITE, "Brandy - Precio: $15.");
-							SendClientMessage(playerid, COLOR_WHITE, "Soda - Precio: $5.");
-							return 1;
-						} else {
-							if(strcmp(command, "cerveza", true) == 0) {
-								if(GetPlayerCash(playerid) >= 7) {
-		       						GivePlayerCash(playerid, -7);
-		             		       	Business[i][bTill] += 7;
-		                		    Business[i][bProducts]--;
-		                  		  	SetPlayerHealthEx(playerid, HP + 15.0);
-						          	if( (HP + 15.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado una cerveza y la bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "vodka", true) == 0) {
-								if(GetPlayerCash(playerid) >= 10) {
-		       						GivePlayerCash(playerid, -10);
-		             		       	Business[i][bTill] += 10;
-		                		    Business[i][bProducts]--;
-                  		  			SetPlayerHealthEx(playerid, HP + 20.0);
-                  		  			if( (HP + 20.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un shot de vodka y lo bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "cocacola", true) == 0) {
-								if(GetPlayerCash(playerid) >= 3) {
-		       						GivePlayerCash(playerid, -3);
-		             		       	Business[i][bTill] += 3;
-		                		    Business[i][bProducts]--;
-                  		  			SetPlayerHealthEx(playerid, HP + 10.0);
-		                  		  	if( (HP + 10.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de Coca Cola y lo bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "agua", true) == 0) {
-								if(GetPlayerCash(playerid) >= 1) {
-		       						GivePlayerCash(playerid, -1);
-		             		       	Business[i][bTill] += 1;
-		                		    Business[i][bProducts]--;
-                  		  			SetPlayerHealthEx(playerid, HP + 5.0);
-                  		  			if( (HP + 5.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de agua y lo bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "whisky", true) == 0) {
-								if(GetPlayerCash(playerid) >= 10) {
-		       						GivePlayerCash(playerid, -10);
-		             		       	Business[i][bTill] += 10;
-		                		    Business[i][bProducts]--;
-		                  		  	SetPlayerHealthEx(playerid, HP + 10.0);
-		                  		  	if( (HP + 10.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de whisky.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "brandy", true) == 0) {
-								if(GetPlayerCash(playerid) >= 15) {
-		       						GivePlayerCash(playerid, -15);
-		             		       	Business[i][bTill] += 15;
-		                		    Business[i][bProducts]--;
-                  		  			SetPlayerHealthEx(playerid, HP + 12.0);
-									if( (HP + 12.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de brandy y lo bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
-							} else if(strcmp(command, "soda", true) == 0) {
-								if(GetPlayerCash(playerid) >= 5) {
-		       						GivePlayerCash(playerid, -5);
-		             		       	Business[i][bTill] += 5;
-		                		    Business[i][bProducts]--;
-									SetPlayerHealthEx(playerid, HP + 6.0);
-									if( (HP + 6.0) > 100) {
-					                    SetPlayerHealthEx(playerid, 100);
-					                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
-						            }
-							  		PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de soda y lo bebe.");
-							  		saveBusiness(i);
-								} else {
-								    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-								}
+	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CASINO)
+				{
+	    			if(Business[i][bProducts] <= 0)
+                    	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de bebidas. Intenta volviendo mas tarde");
+					if(sscanf(params, "s[64]", command))
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
+						SendClientMessage(playerid, COLOR_WHITE, "Cerveza - Precio: $35.");
+						SendClientMessage(playerid, COLOR_WHITE, "Vodka - Precio: $40.");
+						SendClientMessage(playerid, COLOR_WHITE, "CocaCola - Precio: $25.");
+						SendClientMessage(playerid, COLOR_WHITE, "Agua - Precio: $20.");
+						SendClientMessage(playerid, COLOR_WHITE, "Whisky - Precio: $40.");
+						SendClientMessage(playerid, COLOR_WHITE, "Brandy - Precio: $35.");
+						SendClientMessage(playerid, COLOR_WHITE, "Cafe - Precio: $25.");
+						return 1;
+					} else {
+						if(strcmp(command, "cerveza", true) == 0) {
+							if(GetPlayerCash(playerid) >= 35)
+							{
+		       					GivePlayerCash(playerid, -35);
+		            	       	Business[i][bTill] += 35;
+		               		    Business[i][bProducts]--;
+		               		  	SetPlayerHealthEx(playerid, HP + 10.0);
+					          	if( (HP + 10.0) > 100)
+	  							{
+                					SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+          						}
+					  			PlayerActionMessage(playerid, 15.0, "se ha comprado una cerveza y la bebe.");
+							  	saveBusiness(i);
+							} else {
+								SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "vodka", true) == 0) {
+							if(GetPlayerCash(playerid) >= 40)
+							{
+		       					GivePlayerCash(playerid, -40);
+		             	       	Business[i][bTill] += 40;
+		                	    Business[i][bProducts]--;
+                  				SetPlayerHealthEx(playerid, HP + 13.0);
+                  				if( (HP + 13.0) > 100)
+					  			{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un shot de vodka y lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "cocacola", true) == 0) {
+							if(GetPlayerCash(playerid) >= 25)
+							{
+		       					GivePlayerCash(playerid, -25);
+		             	       	Business[i][bTill] += 25;
+		                	    Business[i][bProducts]--;
+                  				SetPlayerHealthEx(playerid, HP + 7.0);
+		                  		if( (HP + 7.0) > 100)
+					  			{
+		                    		SetPlayerHealthEx(playerid, 100);
+				                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+					  			PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de Coca Cola y lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "agua", true) == 0) {
+							if(GetPlayerCash(playerid) >= 20)
+							{
+		       					GivePlayerCash(playerid, -20);
+		             		   	Business[i][bTill] += 20;
+		                	    Business[i][bProducts]--;
+                  		  		SetPlayerHealthEx(playerid, HP + 5.0);
+                  		  		if( (HP + 5.0) > 100)
+								{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de agua y lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "whisky", true) == 0) {
+							if(GetPlayerCash(playerid) >= 40)
+							{
+		       					GivePlayerCash(playerid, -40);
+		             		   	Business[i][bTill] += 40;
+		                	    Business[i][bProducts]--;
+		                  	  	SetPlayerHealthEx(playerid, HP + 13.0);
+		                  	  	if( (HP + 13.0) > 100)
+								{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de whisky.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "brandy", true) == 0) {
+							if(GetPlayerCash(playerid) >= 35)
+							{
+		       					GivePlayerCash(playerid, -35);
+		             		   	Business[i][bTill] += 35;
+		                	    Business[i][bProducts]--;
+                  		  		SetPlayerHealthEx(playerid, HP + 10.0);
+								if( (HP + 10.0) > 100)
+								{
+					                SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+						        }
+								PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de brandy y lo bebe.");
+								saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "cafe", true) == 0) {
+							if(GetPlayerCash(playerid) >= 25)
+							{
+		       					GivePlayerCash(playerid, -25);
+		             	       	Business[i][bTill] += 25;
+		                	    Business[i][bProducts]--;
+								SetPlayerHealthEx(playerid, HP + 7.0);
+								if( (HP + 7.0) > 100)
+								{
+					                SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+						        }
+						  		PlayerActionMessage(playerid, 15.0, "se pide una taza de café y lo bebe.");
+						  		saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						}
+					}
+				}
+				if(Business[i][bType] == BIZ_CLUB2)
+				{
+	    			if(Business[i][bProducts] <= 0)
+                    	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de bebidas. Intenta volviendo mas tarde");
+					if(sscanf(params, "s[64]", command))
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
+						SendClientMessage(playerid, COLOR_WHITE, "FernetCola - Precio: $50.");
+						SendClientMessage(playerid, COLOR_WHITE, "Destornillador - Precio: $60.");
+						SendClientMessage(playerid, COLOR_WHITE, "GinTonic - Precio: $60.");
+						SendClientMessage(playerid, COLOR_WHITE, "CubaLibre - Precio: $70.");
+						SendClientMessage(playerid, COLOR_WHITE, "Caipirinha - Precio: $80.");
+						SendClientMessage(playerid, COLOR_WHITE, "Martini - Precio: $80.");
+						SendClientMessage(playerid, COLOR_WHITE, "Champagne - Precio: $150.");
+						return 1;
+					} else {
+						if(strcmp(command, "fernetcola", true) == 0) {
+							if(GetPlayerCash(playerid) >= 50)
+							{
+		       					GivePlayerCash(playerid, -50);
+		            	       	Business[i][bTill] += 50;
+		               		    Business[i][bProducts]--;
+		               		  	SetPlayerHealthEx(playerid, HP + 15.0);
+					          	if( (HP + 15.0) > 100)
+	  							{
+                					SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+          						}
+					  			PlayerActionMessage(playerid, 15.0, "ha comprado un vaso de Fernet con Coca y se lo bebe.");
+							  	saveBusiness(i);
+							} else {
+			    				SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "destornillador", true) == 0) {
+							if(GetPlayerCash(playerid) >= 60)
+							{
+		       					GivePlayerCash(playerid, -60);
+		             	       	Business[i][bTill] += 60;
+		                	    Business[i][bProducts]--;
+                  				SetPlayerHealthEx(playerid, HP + 18.0);
+                  				if( (HP + 18.0) > 100)
+					  			{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Destornillador y se lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "gintonic", true) == 0) {
+							if(GetPlayerCash(playerid) >= 60)
+							{
+		       					GivePlayerCash(playerid, -60);
+		             	       	Business[i][bTill] += 60;
+		                	    Business[i][bProducts]--;
+                  				SetPlayerHealthEx(playerid, HP + 18.0);
+		                  		if( (HP + 18.0) > 100)
+					  			{
+		                    		SetPlayerHealthEx(playerid, 100);
+				                    SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+					  			PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Gin Tonic y se lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "cubalibre", true) == 0) {
+							if(GetPlayerCash(playerid) >= 70)
+							{
+		       					GivePlayerCash(playerid, -70);
+		             		   	Business[i][bTill] += 70;
+		                	    Business[i][bProducts]--;
+                  		  		SetPlayerHealthEx(playerid, HP + 21.0);
+                  		  		if( (HP + 21.0) > 100)
+								{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Cuba Libre y se lo bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "caipirinha", true) == 0) {
+							if(GetPlayerCash(playerid) >= 80)
+							{
+		       					GivePlayerCash(playerid, -80);
+		             		   	Business[i][bTill] += 80;
+		                	    Business[i][bProducts]--;
+		                  	  	SetPlayerHealthEx(playerid, HP + 24.0);
+		                  	  	if( (HP + 24.0) > 100)
+								{
+					            	SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+		            			}
+							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Caipirinha y se la bebe.");
+							  	saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "martini", true) == 0) {
+							if(GetPlayerCash(playerid) >= 80)
+							{
+		       					GivePlayerCash(playerid, -80);
+		             		   	Business[i][bTill] += 80;
+		                	    Business[i][bProducts]--;
+                  		  		SetPlayerHealthEx(playerid, HP + 24.0);
+								if( (HP + 24.0) > 100)
+								{
+					                SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+						        }
+								PlayerActionMessage(playerid, 15.0, "ha comprado uan copa de Martini y se lo bebe.");
+								saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+							}
+						} else if(strcmp(command, "champagne", true) == 0) {
+							if(GetPlayerCash(playerid) >= 150)
+							{
+		       					GivePlayerCash(playerid, -150);
+		             	       	Business[i][bTill] += 150;
+		                	    Business[i][bProducts]--;
+								SetPlayerHealthEx(playerid, HP + 32.0);
+								if( (HP + 32.0) > 100)
+								{
+					                SetPlayerHealthEx(playerid, 100);
+					                SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras lleno.");
+						        }
+						  		PlayerActionMessage(playerid, 15.0, "ha comprado una botella de Champagne, la descorcha, y se toma una copa.");
+						  		saveBusiness(i);
+							} else {
+							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
 							}
 						}
 					}
@@ -19080,7 +19801,6 @@ CMD:beber(playerid, params[]) {
 
 CMD:ayudacasa(playerid, params[]) {
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Casa]: /entrar - /salir - /comprarcasa - /vendercasa - /puerta");
-	//SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/housematsput - /housematstake - /housedrugsput - /housedrugstake - /alquilar - /alquilable - /costoalquiler - /casadepositar - /casaretirar");
 	return 1;
 }
 
@@ -19622,7 +20342,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 23, 100); // Silenciada
-						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 8));
 						return 1;
@@ -19635,7 +20354,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 43, 20); // Cámara
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
-						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 7));
 						return 1;
@@ -19675,7 +20393,6 @@ CMD:equipo(playerid, params[]) {
 		                GivePlayerWeapon(playerid, 43, 50); // Cámara
 		            	GivePlayerWeapon(playerid, 4, 1); // Cuchillo
 						GivePlayerWeapon(playerid, 24, 60); // DEagle
-						TTAZER[playerid] = 1;
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un %s para tener acceso a este equipo.", GetRankName(FAC_SIDE, 3));
 						return 1;
@@ -19683,6 +20400,7 @@ CMD:equipo(playerid, params[]) {
 				}
 		    }
 		    TTAZER[playerid] = 1;
+		    resetTazerWeapons(playerid);
 		}
 	} else if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid]) {
 		if(sscanf(params, "d", id)) {
@@ -19702,7 +20420,6 @@ CMD:equipo(playerid, params[]) {
 		                ResetPlayerWeapons(playerid);
 		            	GivePlayerWeapon(playerid, 3, 1); // Macana
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 71); // Vigilante
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 8));
@@ -19715,7 +20432,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1); // Macana
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
-					 	TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 266); // Oficial
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 7));
@@ -19729,7 +20445,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 						GivePlayerWeapon(playerid, 25, 25); // Escopeta
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 280); // Cabo
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 6));
@@ -19743,7 +20458,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 24, 50); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 35); // Escopeta
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 284); // Sargento
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 5));
@@ -19758,7 +20472,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 75); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 30); // Rifle de Caza
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 281); // Sargento Mayor
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 4));
@@ -19773,7 +20486,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 35); // Rifle de Caza
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 283); // Teniente
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 3));
@@ -19788,7 +20500,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 40); // Rifle de Caza
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 288); // Sub Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 2));
@@ -19803,7 +20514,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 100); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 50); // Rifle de Caza
-						TTAZER[playerid] = 1;
 		            	SetPlayerSkin(playerid, 282); // Comisario
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 1));
@@ -19883,6 +20593,7 @@ CMD:equipo(playerid, params[]) {
 			PlayerInfo[playerid][pHealth] = 100;
 			PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
 			TTAZER[playerid] = 1;
+			resetTazerWeapons(playerid);
 		} else {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
 		}
@@ -20287,36 +20998,6 @@ CMD:morir(playerid, params[]) {
         SendClientMessage(playerid, COLOR_YELLOW2, "No puedes utilizarlo en este momento.");
     }
     return 1;
-}
-
-CMD:descargar(playerid, params[]) {
-	new
-	    matsAmount,
-	    string[128],
-		factionid = PlayerInfo[playerid][pFaction],
-		vehicleid = GetPlayerVehicleID(playerid);
-		
-    if(factionid != FAC_NONE && FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL) {
-        if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
-            if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
-                for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
-				    if(getTrunkItem(vehicleid, i) == 47) {
-				        matsAmount += getTrunkParam(vehicleid, i);
-						setTrunkItem(vehicleid, i, -1);
-				    }
-				}
-				FactionInfo[factionid][fMaterials] += matsAmount;
-				format(string, sizeof(string), "%d piezas descargadas...", matsAmount);
-				GameTextForPlayer(playerid, string, 4000, 4);
-	        } else {
-	            SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
-				SendClientMessage(playerid, COLOR_WHITE, "Vé a la siguiente localización para descargar la van.");
-	        }
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la van de la facción.");
-		}
-    } 
-	return 1;
 }
 
 /* ---------------------------------- SIDE ---------------------------------- */
@@ -21127,7 +21808,7 @@ public UpdatePlayerAdiction()
 				} else
 	   				{
 						SendClientMessage(playerid, COLOR_RED, "Entras en un estado crítico causado por tu abstinencia. Unos paramédicos te socorren y te llevan al hospital.");
-						SendClientMessage(playerid, COLOR_RED, "Luego de un arduo trabajo médico, logran dejarte estable, cobrándote $20.000 a la salida.");
+						SendClientMessage(playerid, COLOR_RED, "Luego de un tiempo logran salvarte, cobrándote $20.000. Si no lo tienes se descontará de tu cuenta bancaria.");
    						if(GetPlayerCash(playerid) > ADICTION_REHAB_PRICE)
 							GivePlayerCash(playerid, -ADICTION_REHAB_PRICE); // se cobra 18 mil por el tratamiento + 2 mil normales por morir
 						else
@@ -21205,7 +21886,9 @@ CMD:rehabilitarse(playerid, params[])
 	        DeletePlayerAdiction(playerid, (GetPlayerAdiction(playerid) / 10) * 9); // 25 porciento que baje 90 porciento
 		else
 		    if(aleatorio < 80)
-		        DeletePlayerAdiction(playerid, GetPlayerAdiction(playerid)); // 5 porciento de eliminar la adiccion, el 20 porciento restante es para que siga igual
+		        DeletePlayerAdiction(playerid, GetPlayerAdiction(playerid)); // 5 porciento de eliminar la adiccion
+   			else
+			    DeletePlayerAdiction(playerid, 0.0); // 20 porciento de que no pase nada
 	PlayerActionMessage(playerid, 15.0, "es sometido a un tratamiento de rehabilitación en la clínica, veremos como responde ante este.");
     SendClientMessage(RehabOffer[playerid], COLOR_YELLOW2, "Una parte del dinero del paciente te será pagado en la siguiente hora, y otra parte irá al fondo del hospital.");
 	GivePlayerCash(playerid, -ADICTION_REHAB_PRICE);
