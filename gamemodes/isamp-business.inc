@@ -166,6 +166,25 @@ CMD:angetid(playerid, params[]) {
 	return 1;
 }
 
+CMD:ancaja(playerid, params[]) {
+	new
+	    string[128],
+	    bizID,
+	    money;
+
+    if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "ii", bizID, money))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ancaja [idnegocio] [dinero]");
+	if(bizID >= 0 && bizID < MAX_BUSINESS) {
+		Business[bizID][bTill] = money;
+		format(string, sizeof(string), "Has seteado la caja del negocio [%d] en %d.", bizID, money);
+		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		saveBusiness(bizID);
+	}
+	return 1;
+}
+
 CMD:antele(playerid, params[]) {
 	new
 	    bizID;
