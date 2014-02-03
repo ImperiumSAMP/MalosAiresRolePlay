@@ -23,7 +23,5 @@ new
 	bool:DrugEffectLSD[MAX_PLAYERS],
 	bool:DrugEffectCocaine[MAX_PLAYERS],
 	bool:DrugEffectMarijuana[MAX_PLAYERS];
-	
-stock isPlayerSellingDrugs(playerid){
-	return SellingDrugs[playerid];
-}
+
+

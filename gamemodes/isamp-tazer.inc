@@ -23,27 +23,35 @@ new TENIAMM[MAX_PLAYERS],   // Sistema de TAZER
 	TTAZER[MAX_PLAYERS],
 	TAZERENMANO[MAX_PLAYERS];
 	
-resetTazer(playerid){
+resetTazer(playerid)
+{
+	/* Sistema de tazer */
 	TAZERENMANO[playerid] = 0;
 	TTAZER[playerid] = 0;
+	TENIAMM[playerid] = 0;
+	MM[playerid] = 0;
+	MMA[playerid] = 0;
+	TENIAMMSILENCIADA[playerid] = 0;
+	MMSILENCIADA[playerid] = 0;
+	MMASILENCIADA[playerid] = 0;
+	TENIADEAGLE[playerid] = 0;
+	DEAGLE[playerid] = 0;
+	DEAGLEA[playerid] = 0;
+	TENIATAZER[playerid] = 0;
+	TAZER[playerid] = 0;
+	TAZERA[playerid] = 0;
 }
 
 forward checkTazer(playerid,issuerid,Float:amount,weaponid);
 public checkTazer(playerid,issuerid,Float:amount,weaponid) {	
 	if( weaponid == 23 && TAZERENMANO[issuerid] == 1) 
 	{
-
 		if(CopDuty[issuerid] != 1 && SIDEDuty[issuerid] != 1)
 			return 1;
-
-		new Float:victimHealth;
-		GetPlayerHealthEx(playerid, victimHealth);
-		SetPlayerHealthEx(playerid, victimHealth + amount);
-
 		if(!IsPlayerInAnyVehicle(issuerid)) {
 			if(!IsPlayerInAnyVehicle(playerid)) {
 
-				if(ProxDetectorS(12.0, issuerid, playerid)){
+				if(ProxDetectorS(TAZER_MAX_DISTANCE, issuerid, playerid)){
 					if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 						return SendClientMessage(issuerid, COLOR_YELLOW2, "El sujeto está ocupado o actualmente inhabilitado.");
 
@@ -52,7 +60,7 @@ public checkTazer(playerid,issuerid,Float:amount,weaponid) {
 					TogglePlayerControllable(playerid, 0);
 					SetPVarInt(playerid, "disabled", DISABLE_TAZER);
 					ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
-					SetTimerEx("FinishTazerEffect", 10000, 0, "i", playerid);
+					SetTimerEx("FinishTazerEffect", TAZER_TIME, 0, "i", playerid);
 					PlayerPlayerActionMessage(issuerid, playerid, 15.0, "ha tazeado a");
 				} else {
 					 SendClientMessage(issuerid, COLOR_YELLOW2, "El sujeto estaba demasiado lejos.");

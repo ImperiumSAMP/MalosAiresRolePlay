@@ -59,7 +59,6 @@ new FactionInfo[MAX_FACTIONS][Factions];
 new MedDuty[MAX_PLAYERS],
 	CopDuty[MAX_PLAYERS],
 	CopTrace[MAX_PLAYERS],
-	CopTraceTimer[MAX_PLAYERS],
 	SIDEDuty[MAX_PLAYERS],
 	PlayerCuffed[MAX_PLAYERS];
 

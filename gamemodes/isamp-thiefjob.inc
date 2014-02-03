@@ -146,7 +146,7 @@ public theftTimer(playerid, type, biz) {
 				robberyAlert(playerid,"robo a mano armada","anónimo",Business[biz][bName]);				
 
 		        SendClientMessage(playerid, COLOR_WHITE, "¡Un empleado ha notado tu accionar y ha llamado a la policía!");
-		        SendClientMessage(playerid, COLOR_WHITE, "Puedes utilizar /correr para escapar dejando toda la mercancía o esperar para terminar.");
+		        SendClientMessage(playerid, COLOR_WHITE, "Puedes utilizar /correr para escapar dejando todo el dinero o esperar para terminar.");
 		    }
 		    format(string, sizeof(string), "~w~Guardando dinero ~r~%d~w~ segundos", theftTime[playerid]);
 	 		GameTextForPlayer(playerid, string, 1000, 4);
@@ -306,7 +306,10 @@ CMD:asaltar(playerid, params[]) {
         return SendClientMessage(playerid, COLOR_YELLOW2, "No te puedes hurtar a tí mismo.");
 	
 	if(ThiefJobInfo[playerid][pRobPersonLimit] != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar algo de tiempo antes de volver a robar.");
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a robar.", ThiefJobInfo[playerid][pRobPersonLimit] / 60);
+	    return 1;
+	}
 	
     if(target == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador incorrecto.");
@@ -464,7 +467,10 @@ CMD:asaltartienda(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas más experiencia para utilizar este comando.");
 		
 	if(ThiefJobInfo[playerid][pRob247Limit] != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar algo de tiempo antes de volver a hurtar.");
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a asaltar.", ThiefJobInfo[playerid][pRob247Limit] / 60);
+	    return 1;
+	}
 
     if(Business[business][bType] != BIZ_247)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7.");
@@ -493,8 +499,11 @@ CMD:hurtarcasa(playerid, params[]) {
 	if(ThiefJobInfo[playerid][pFelonLevel] < 5)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas más experiencia para utilizar este comando.");
 
- 	if(ThiefJobInfo[playerid][pRobHouseLimit] != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar algo de tiempo antes de volver a hurtar.");
+	if(ThiefJobInfo[playerid][pRobHouseLimit] != 0)
+ 	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a hurtar.", ThiefJobInfo[playerid][pRobHouseLimit] / 60);
+	    return 1;
+	}
 
 	if(house == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
@@ -522,7 +531,10 @@ CMD:hurtartienda(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas más experiencia para utilizar este comando.");
 
 	if(ThiefJobInfo[playerid][pTheft247Limit] != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar algo de tiempo antes de volver a hurtar.");
+ 	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a hurtar.", ThiefJobInfo[playerid][pTheft247Limit] / 60);
+	    return 1;
+	}
 
     if(Business[business][bType] != BIZ_247)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7.");
@@ -580,9 +592,10 @@ CMD:hurtar(playerid, params[]) {
 	if(target == playerid)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No te puedes hurtar a tí mismo.");
         
-	if(ThiefJobInfo[playerid][pTheftPersonLimit] > 0) {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Has superado el límite de hurtos, espera un tiempo.");
-		return 1;
+	if(ThiefJobInfo[playerid][pTheftPersonLimit] > 0)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Has superado el límite de hurtos, espera %d minutos.", ThiefJobInfo[playerid][pTheftPersonLimit] / 60);
+	    return 1;
 	}
 
     if(target == INVALID_PLAYER_ID)
