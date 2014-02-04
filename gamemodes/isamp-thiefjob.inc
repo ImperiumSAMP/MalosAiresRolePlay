@@ -127,7 +127,7 @@ public theftTimer(playerid, type, biz) {
 	        theftTime[playerid]--;
 		} else if(theftTime[playerid] == 0) {
 			new
-				takeMoney = random(350 * felonLevel) + 200;
+				takeMoney = (80 * felonLevel) + random(310 * felonLevel);
 		    theftTime[playerid] = -1;
 			SendFMessage(playerid, COLOR_WHITE, "Has tomado la mercancía por un valor de $%d, ¡retírate de la tienda!", takeMoney);
 			TogglePlayerControllable(playerid, true);
@@ -154,7 +154,7 @@ public theftTimer(playerid, type, biz) {
         } else if(theftTime[playerid] == 0) {
 			new takeMoney;
             theftTime[playerid] = -1;
-            takeMoney = 600 + random(1000 * felonLevel);
+            takeMoney = (260 * felonLevel) + random(860 * felonLevel);
 			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d de la caja, ¡escapa antes de que venga la policía!", takeMoney);
 			TogglePlayerControllable(playerid, true);
 			GivePlayerCash(playerid, takeMoney);
@@ -179,7 +179,7 @@ public theftTimer(playerid, type, biz) {
 	 		GameTextForPlayer(playerid, string, 1000, 4);
 	        theftTime[playerid]--;
         } else if(theftTime[playerid] == 0) {
-			new takeMoney = 1200 + random(560 * felonLevel);
+			new takeMoney = (200 * felonLevel) + random(600 * felonLevel);
             theftTime[playerid] = -1;
 			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d objetos de valor, ¡escapa antes de que venga la policía!", takeMoney);
 			TogglePlayerControllable(playerid, true);
@@ -206,19 +206,23 @@ stock robberyAlert(playerid,accusedOf[],accusedBy[],propName[],houseId=0){
 	}
 	
 	if(houseId){
+	    format(string, sizeof(string), "[Dpto. de policía]: un vecino ha reportado a %s por intrusión en la casa Nro %d. Marcamos la dirección en su GPS.", GetPlayerNameEx(playerid), houseId);
 		foreach(new play : Player)
 		{
-			if(PlayerInfo[play][pFaction] == FAC_PMA)
+			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
 			{
+			    SendClientMessage(play, COLOR_PMA, string);
 				SetPlayerCheckpoint(play, House[houseId][EntranceX], House[houseId][EntranceY], House[houseId][EntranceZ], 2.0);
 			}
 		}
-		format(string, sizeof(string), "[Dpto. de policía]: un vecino ha reportado a %s por intrusión en la casa Nro %d. Marcamos la dirección en su GPS.", GetPlayerNameEx(playerid), houseId);
 	} else {
 		format(string, sizeof(string), "[Dpto. de policía]: un civil ha reportado a %s por %s en %s.", GetPlayerNameEx(playerid), accusedOf, propName);
+		foreach(new play : Player)
+		{
+			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
+			    SendClientMessage(play, COLOR_PMA, string);
+		}
 	}
-	
-	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
 	
 	format(PlayerInfo[playerid][pAccusedOf], 64, accusedOf);
 	format(PlayerInfo[playerid][pAccusedBy], 24, accusedBy);
@@ -512,7 +516,7 @@ CMD:hurtarcasa(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes robar tu propia casa!");
 
 	PlayerActionMessage(playerid, 15.0, "empieza a buscar objetos de valor y los almacena en una bolsa.");
-	policeCallTime[playerid] = 20 + random(80);
+	policeCallTime[playerid] = 20 + random(60);
 	SetPVarInt(playerid, "theftTimer", SetTimerEx("theftTimer", 1000, true, "iii", playerid, 2, house));
 	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
 	theftTime[playerid] = 100;

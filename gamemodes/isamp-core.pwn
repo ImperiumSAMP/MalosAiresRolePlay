@@ -21,11 +21,13 @@
 #include "isamp-jobs.inc" //Definiciones y funciones para los JOBS
 #include "isamp-factions.inc" //Sistema de facciones
 #include "isamp-business.inc" //Sistema de negocios
-#include "isamp-houses.inc" //Sistema de negocios
+#include "isamp-houses.inc" //Sistema de casas
 #include "isamp-vehicles.inc" //Sistema de vehiculos
-#include "isamp-thiefjob.inc"
-#include "isamp-tazer.inc"
-#include "isamp-animations.inc"
+#include "isamp-thiefjob.inc" //Sistema del job de ladron
+#include "isamp-tazer.inc" //Sistema del tazer
+#include "isamp-animations.inc" //Sistema de animaciones
+#include "isamp-itemspma.inc" //Sistema de items auxiliares para la pma (conos, barricadas, etc)
+#include "isamp-sprintrace.inc" //Sistema de picadas (carreras)
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -43,7 +45,7 @@
 
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
-#define GAS_UPDATE_TIME         10000                                           // Tiempo de actualizacion de la gasolina.
+#define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
 #define MAX_TEXTDRAWS           10
 #define MAX_ZONE_NAME 			28
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
@@ -174,9 +176,6 @@
 
 #define cAFKTime 				600000
 
-#define MAX_CONOS_PERSONA 		10
-#define MAX_BARRICADAS_PERSONA  5
-
 #define OFFROAD_WHEEL_ID 1025
 #define SHADOW_WHEEL_ID 1073
 #define MEGA_WHEEL_ID 1074
@@ -288,14 +287,6 @@ new
 	TuningOffer[MAX_PLAYERS],
 	TuningClient[MAX_PLAYERS],
 	DestuningOffer[MAX_PLAYERS],
-
-	/* Sistema de picadas */
-	SprintRaceOffer[MAX_PLAYERS],
-	SprintRaceOpponent[MAX_PLAYERS],
-	SprintRaceBet[MAX_PLAYERS],
-	SprintRaceCountdownSecs[MAX_PLAYERS],
-	SprintRaceTimer[MAX_PLAYERS],
-	SprintRaceCancelOfferTimer[MAX_PLAYERS],
 	
 	// Taxi/Bus.
 	TaxiCall = 999,
@@ -357,11 +348,6 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	cAFK[MAX_PLAYERS],
 	TAFKT[MAX_PLAYERS],
 	cTomarVW[MAX_PLAYERS];
-
-new PlayerCantConos[MAX_PLAYERS]; // Para sistema de conos de la PMA
-new Conos[MAX_PLAYERS][MAX_CONOS_PERSONA];
-new PlayerCantBarricadas[MAX_PLAYERS]; // Para sistema de barricadas de la PMA
-new Barricadas[MAX_PLAYERS][MAX_BARRICADAS_PERSONA];
 
 // Pickups
 new
@@ -805,37 +791,6 @@ static const gSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordina
 	{"Red County",                  {-1213.90,-768.00,-242.90,2997.00,596.30,900.00}},
 	{"Flint County",                {-1213.90,-2892.90,-242.90,44.60,-768.00,900.00}},
 	{"Whetstone",                   {-2997.40,-2892.90,-242.90,-1213.90,-1115.50,900.00}}
-};
-
-/* Sistema de picadas - Posiciones de llegada */
-new Float:SPRINT_RACE_POS[27][3] = {
-    {1846.5231,-1366.7672,12.9625},
-	{1820.0952,-1828.6703,12.9792},
-	{1682.6759,-2163.8623,17.0619},
-	{1530.0300,-1734.9821,12.9484},
-	{1366.6411,-1397.9254,12.9656},
-	{1020.7272,-1141.5991,23.2214},
-	{1301.4172,-927.4117,39.0356},
-	{898.4853,-761.1699,97.4632},
-	{270.0749,-1115.5090,78.7906},
-	{94.2488,-1514.7880,6.0249},
-	{520.7662,-1260.1526,15.6716},
-	{484.5140,-1501.8690,19.9247},
-	{784.0887,-1676.9086,12.8284},
-	{1079.4280,-2342.4229,11.9586},
-	{1722.7888,-2687.0054,5.4470},
-	{2391.5979,-2665.8567,13.0817},
-	{2763.1636,-2458.6868,13.0951},
-	{2836.0371,-1969.0796,10.5005},
-	{2781.3474,-1045.8680,36.6520},
-	{1599.3545,-1342.5320,29.6871},
-	{2314.8547,-1661.9110,13.7055},
-	{2592.1982,-1561.0543,8.4551},
-	{2581.3362,-2180.7651,-0.6541},
-	{1923.7242,-1840.4707,3.5495},
-	{1617.0505,-1642.9298,13.0261},
-	{1170.7081,-1570.0011,12.8763},
-	{367.8909,-2038.0934,7.2342}
 };
 
 static const itemPrice[] = { // Base, armería.
@@ -1492,10 +1447,7 @@ public ResetStats(playerid) {
 	DestuningOffer[playerid] = 999;
 	
 	/* Sistema de Picadas */
-	SprintRaceOffer[playerid] = 999;
-	SprintRaceOpponent[playerid] = 999;
-	SprintRaceBet[playerid] = 0;
-	SprintRaceCountdownSecs[playerid] = 11;
+	resetSprintRace(playerid);
 	
 	/* Sistema de Adiccion y Drogas */
 	RehabOffer[playerid] = 999;
@@ -1549,8 +1501,9 @@ public ResetStats(playerid) {
 	FactionRequest[playerid] = 0;
 	Mobile[playerid] = 255;
 	gPlayerLogged[playerid] = 0;
-	PlayerCantConos[playerid] = 0;
-	PlayerCantBarricadas[playerid] = 0;
+
+	resetAuxiliarItemsPMA(playerid);
+
 	cAFK[playerid] = 0; //Sistema de AFK
 
 	playerLicense[playerid][lDStep] = 0;
@@ -1747,47 +1700,10 @@ public OnPlayerDisconnect(playerid, reason) {
 		SaveAccount(playerid);
 	}
 	
-	if(PlayerCantConos[playerid] != 0)
-	{
-		new cant;
-		cant = PlayerCantConos[playerid];
-		for(new b = 0; b < cant; b++)
-		{
-			DestroyDynamicObject(Conos[playerid][b]);
-		}
-		PlayerCantConos[playerid] = 0;
-	}
+	deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
+	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
 
-	if(PlayerCantBarricadas[playerid] != 0)
-	{
-		new cant;
-		cant = PlayerCantBarricadas[playerid];
-		for(new b = 0; b < cant; b++)
-		{
-			DestroyDynamicObject(Barricadas[playerid][b]);
-		}
-		PlayerCantBarricadas[playerid] = 0;
-	}
-	
-	/* Sistema de picadas */
-	new winnerid = SprintRaceOpponent[playerid];
-	if(winnerid != 999)
-	{
-	    if(SprintRaceOpponent[winnerid] == playerid)
-	    {
-	        new finishRaceMessage[128];
-			SendClientMessage(winnerid, COLOR_YELLOW2, "Tu contricante ha abandonado ((Desconectado)) la carrera, ganas la carrera.");
-			GivePlayerCash(winnerid, SprintRaceBet[winnerid]*2);
-			format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[winnerid]*2);
-		    SendClientMessage(playerid, COLOR_WHITE, finishRaceMessage);
-		    SprintRaceOpponent[playerid] = 999;
-		    SprintRaceOpponent[winnerid] = 999;
-		    SprintRaceBet[winnerid] = 0;
-		    SprintRaceBet[playerid] = 0;
-		    DisablePlayerRaceCheckpoint(winnerid);
-		}
-	}
-	/* Fin sistema de picadas */
+	deleteAbandonedSprintRace(playerid);
 	
 	return 1;
 }
@@ -2150,6 +2066,10 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	if(PlayerInfo[playerid][pJailed] == 0) {
 		PlayerInfo[playerid][pHospitalized] = 1;
 	}
+	
+	CopDuty[playerid] = 0;
+	SIDEDuty[playerid] = 0;
+	
 	return 1;
 }
 
@@ -5958,7 +5878,7 @@ public globalUpdate() {
 		            // Camara panoramica al agonizar
 		            new Float:dyingX, Float:dyingY, Float:dyingZ;
 		            GetPlayerPos(playerid, dyingX, dyingY, dyingZ);
-		            SetPlayerCameraPos(playerid, dyingX - 6.0, dyingY - 6.0, dyingZ + 7.0);
+		            SetPlayerCameraPos(playerid, dyingX - 5.0, dyingY - 5.0, dyingZ + 6.0);
 		            SetPlayerCameraLookAt(playerid, dyingX, dyingY, dyingZ, CAMERA_MOVE);
 		            dyingCamera[playerid] = true;
 		            // -----------------------------
@@ -5966,15 +5886,16 @@ public globalUpdate() {
 					if(random(10) < 8)
 					{
 						SendFactionMessage(FAC_HOSP, COLOR_WHITE, "Hospital dice: ¡atención!, hemos marcado la ubicación de una llamada de emergencia en su GPS necesitan asistencia inmediata.");
-                        SendFactionMessage(FAC_PMA, COLOR_PMA, "[Dpto. de policía]: un ciudadano ha reportado a un herido de gravedad. Lo marcamos en su GPS.");
                         new Float:playerMedicPos[3];
 						GetPlayerPos(playerid, playerMedicPos[0], playerMedicPos[1], playerMedicPos[2]);
 						foreach(new play : Player)
 						{
 			               	if(PlayerInfo[play][pFaction] == FAC_HOSP || PlayerInfo[play][pFaction] == FAC_PMA)
 							{
-			               		SetPlayerCheckpoint(play, playerMedicPos[0], playerMedicPos[1], playerMedicPos[2], 4.0);
-			               	}
+								SetPlayerCheckpoint(play, playerMedicPos[0], playerMedicPos[1], playerMedicPos[2], 4.0);
+                                if(PlayerInfo[play][pFaction] == FAC_PMA)
+			               			SendClientMessage(play, COLOR_PMA, "[Llamado al 911]: un ciudadano ha reportado a un herido de gravedad. Lo marcamos en su GPS.");
+							}
 	     				}
 	     				SendClientMessage(playerid, COLOR_YELLOW2, "¡Un ciudadano notó tu agonía y ha reportado tu situacion al 911!");
 					} else {
@@ -6013,12 +5934,16 @@ public globalUpdate() {
 		                }
 		            }
 		            
-		            SendClientMessage(playerid, COLOR_YELLOW2, "Has sido dado de alta. Te cobraron dinero por tu tratamiento. Lo que te quede a pagar se descontará de tu cuenta bancaria.");
+					SendClientMessage(playerid, COLOR_YELLOW2, "Has sido dado de alta. Te cobraron dinero por tu tratamiento. Lo que te quede a pagar se descontará de tu cuenta bancaria.");
 		            if(GetPlayerCash(playerid) > PRICE_TREATMENT)
 						GivePlayerCash(playerid, -PRICE_TREATMENT); // se cobra 2 mil por el tratamiento
 					else
 						if(GetPlayerCash(playerid) > 0)
+						{
+							PlayerInfo[playerid][pBank] -= PRICE_TREATMENT - GetPlayerCash(playerid);
 						    ResetPlayerCash(playerid);
+						} else
+						    PlayerInfo[playerid][pBank] -= PRICE_TREATMENT;
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);
@@ -6282,23 +6207,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		    SendClientMessage(playerid,COLOR_WHITE,"-------------------------------------------------------------");
 		}
 
-	    if(VehicleInfo[vehicleid][VehFaction] != 0 && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) {
-            if(AdminDuty[playerid] == 0) {
-				if(FactionInfo[VehicleInfo[vehicleid][VehFaction]][fType] == FAC_TYPE_GOV) {
-				    /*new location[MAX_ZONE_NAME];
-					GetPlayer2DZone(playerid, location, MAX_ZONE_NAME);
-					format(string, sizeof(string), "[PFA]: %s ha sido encontrado sospechoso de robo de vehículo estatal, visto por última vez en: %s.", GetPlayerNameEx(playerid),location);
-					SendFactionMessage(FAC_PMA, COLOR_PMA,string);
-					SetPlayerWantedLevelEx(playerid,GetPlayerWantedLevel(playerid) + 1);*/
-					RemovePlayerFromVehicle(playerid);
-	      		    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
-	      		} else {
-	      		    RemovePlayerFromVehicle(playerid);
-	      		    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
-	      		}
-			}
-		}
-
 		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid)) {
 	  		if(PlayerInfo[playerid][pFlyLic] == 0) {
 				if(AdminDuty[playerid] == 0) {
@@ -6501,12 +6409,14 @@ CMD:descargar(playerid, params[]) {
       				totalAmount += getTrunkParam(vehicleid, i);
 					setTrunkItem(vehicleid, i, -1);
 					Business[business][bProducts] += amount;
-					format(string, sizeof(string), "%d productos descargados...", totalAmount);
-					GameTextForPlayer(playerid, string, 4000, 4);
 			    }
 			}
 			if (totalAmount > 0)
+			{
+			    format(string, sizeof(string), "%d productos descargados...", totalAmount);
+				GameTextForPlayer(playerid, string, 4000, 4);
 				PlayerActionMessage(playerid, 15.0, "descarga alguna mercadería en el depósito del negocio.");
+			}
 			return 1;
 		}
 	}
@@ -6739,37 +6649,7 @@ public OnPlayerLeaveCheckpoint(playerid) {
 
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
-	/* Sistema de picadas */
-	new racerid = SprintRaceOpponent[playerid];
-    if(racerid != 999)
-	{
-	    if(SprintRaceOpponent[racerid] == playerid)
-	    {
-		    if(racerid != INVALID_PLAYER_ID)
-		    {
-		        if(SprintRaceBet[racerid] == SprintRaceBet[playerid])
-		        {
-		            new finishRaceMessage[128];
-		            new ganadorid = playerid;
-		            GameTextForPlayer(ganadorid, "Has ganado la carrera!", 1000, 3);
-		            GameTextForPlayer(racerid, "Has perdido la carrera!", 1000, 3);
-		            DisablePlayerRaceCheckpoint(playerid);
-		            DisablePlayerRaceCheckpoint(racerid);
-		    		GivePlayerCash(playerid, SprintRaceBet[racerid]*2);
-			    	format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[racerid]*2);
-				    SendClientMessage(playerid, COLOR_WHITE, finishRaceMessage);
-				    format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador se queda con tus $%d de la carrera y se lo reparte al ganador!", SprintRaceBet[racerid]);
-				    SendClientMessage(racerid, COLOR_WHITE, finishRaceMessage);
-				    SprintRaceOpponent[playerid] = 999;
-		 			SprintRaceOpponent[racerid] = 999;
-				    SprintRaceBet[playerid] = 0;
-				    SprintRaceBet[racerid] = 0;
-				}
-			}
-		}
-	}
-	/* Fin sistema de picadas */
-
+	deleteFinishedSprintRace(playerid);
 	return 1;
 }
 
@@ -9055,7 +8935,7 @@ public cantSaveItems(playerid) {
 }
 
 public healTimer(playerid) {
-    if(GetPVarInt(playerid, "isHealing") == 0)
+    if(GetPVarInt(playerid, "isHealing") != 0)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Tu oferta se ha cancelado, el herido no la ha aceptado.");
 		SendClientMessage(GetPVarInt(playerid, "healTarget"), COLOR_WHITE, "Ha pasado demasiado tiempo y has rechazado la oferta del médico.");
@@ -15793,7 +15673,7 @@ CMD:inventario(playerid, params[]) {
 	        if(getInvItemType(playerid, returnid) != ITEM_NONE) {
 	        	new string[128];
       			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", itemName[getInvItem(playerid, returnid)]);
-         		PlayerActionMessage(playerid, 15.0, string);
+         		PlayerActionMessage(playerid, 8.0, string);
 				setInvItem(playerid, returnid, -1);
 	        } else {
 	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
@@ -17174,7 +17054,7 @@ CMD:ayudap(playerid, params[]) {
 	if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
  	if(PlayerInfo[playerid][pRank] <= 4) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
 	}
@@ -17741,8 +17621,8 @@ CMD:negocioretirar(playerid,params[]) {
   		if(ammount > Business[bizID][bTill]) {
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes esa cantidad de dinero en la caja!");
 		}
-	    if(ammount > 50000 || ammount < 1) {
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes retirar más de $50.000 o menos de $1.");
+	    if(ammount > 1000000 || ammount < 1) {
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes retirar más de $1.000.000 o menos de $1.");
 	    }
 		GivePlayerCash(playerid, ammount);
 		Business[bizID][bTill] -= ammount;
@@ -18613,6 +18493,7 @@ CMD:aceptar(playerid,params[]) {
             SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie ha llamado a un taxi!");
 	    	return 1;
         }
+        
 	} else if(strcmp(text,"tuning",true) == 0){
 		if(TuningOffer[playerid] == 999)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie te ha ofrecido un tuneo!");
@@ -18624,6 +18505,7 @@ CMD:aceptar(playerid,params[]) {
 		GameTextForPlayer(playerid, "Has aceptado la propuesta de tuneo.", 6000, 1);
 		SendClientMessage(TuningOffer[playerid], COLOR_YELLOW, "Aceptaron tu propuesta, usa /tuning arriba del vehiculo.");
 		return 1;
+		
 	} else if(strcmp(text,"destuneo",true) == 0){
  		if(DestuningOffer[playerid] == 999)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie te ha ofrecido sacarle el tuning al vehiculo!");
@@ -18652,177 +18534,13 @@ CMD:aceptar(playerid,params[]) {
 		}
 		DestuningOffer[playerid] = 999;
 		return 1;
-		
-	//----------------------------SISTEMA DE PICADAS----------------------------
-	//----------------------------SISTEMA DE PICADAS----------------------------
 
 	} else if(strcmp(text,"picada",true) == 0){
-
-	    new challengerid = SprintRaceOffer[playerid];
-
-	    if(SprintRaceOpponent[playerid] != 999)
-	        return SendClientMessage(playerid, COLOR_WHITE, "Ya estás en una carrera!");
-
-		if(challengerid == 999)
-		    return SendClientMessage(playerid, COLOR_WHITE, "Nadie te ha desafiado a una carrera de sprint.");
-
-        if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
-        {
-		   	SprintRaceCancel(playerid);
-		    return SendClientMessage(playerid, COLOR_WHITE, "Para aceptar un desafio, debes estar en el punto de reunion de corredores conocido como 'El Sótano'");
-		}
-
-	 	if(challengerid == INVALID_PLAYER_ID)
-	 	{
-		    SprintRaceCancel(playerid);
-   			return SendClientMessage(playerid, COLOR_WHITE, "Jugador invalido.");
-		}
-
-		if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent[challengerid] != 999)
-	    	return SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos está en una carrera!");
-
-		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(challengerid) != PLAYER_STATE_DRIVER)
-		{
-		    SprintRaceCancel(playerid);
-		    return SendClientMessage(playerid, COLOR_WHITE, "Ambos deben estar de conductor en el auto con el cual correrán!");
-		}
-
-        new moneyBet = SprintRaceBet[playerid];
-
-		if(GetPlayerCash(playerid) < moneyBet)
-		{
-		    SprintRaceCancel(playerid);
-		    return SendClientMessage(playerid, COLOR_WHITE, "No tienes esa cantidad de dinero para apostar!");
-		}
-
-        if(GetPlayerCash(challengerid) < moneyBet)
-        {
-		    SprintRaceCancel(playerid);
-		    return SendClientMessage(playerid, COLOR_WHITE, "El sujeto parece no tener ese dinero!");
-		}
-
-	  	if(!ProxDetectorS(10.0, playerid, challengerid))
-	  	{
-		    SprintRaceCancel(playerid);
-		    return SendClientMessage(playerid, COLOR_WHITE, "Debes estar cerca del otro corredor.");
-		}
-
-		KillTimer(SprintRaceCancelOfferTimer[playerid]);
-		new content[128];
-	   	format(content, sizeof(content), "ha aceptado el desafio de %s a una carrera sprint por $%d.", GetPlayerNameEx(challengerid), moneyBet);
-		PlayerActionMessage(playerid, 15.0, content);
-		SprintRaceOpponent[playerid] = challengerid;
-		SprintRaceOpponent[challengerid] = playerid;
-		SprintRaceOffer[playerid] = 999;
-		SprintRaceBet[challengerid] = moneyBet;
-		TogglePlayerControllable(playerid, false);
-		TogglePlayerControllable(challengerid, false);
-		SendClientMessage(playerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
-		SendClientMessage(challengerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
-		GivePlayerCash(playerid, -moneyBet);
-		GivePlayerCash(challengerid, -moneyBet);
-		new randomPos = random (27);
-		SetPlayerRaceCheckpoint(playerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
-        SetPlayerRaceCheckpoint(challengerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
-		SendClientMessage(playerid, COLOR_YELLOW2, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
-		SendClientMessage(challengerid, COLOR_YELLOW2, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
-		SprintRaceTimer[challengerid] = SetTimerEx("SprintRaceCountdown", 1000, 1, "ii", challengerid, playerid);
+		startSprintRaceChallenge(playerid); // sistema de picadas
+		return 1;
 	}
 	return 1;
 }
-
-//---------------------------SISTEMA DE PICADAS---------------------------------
-//---------------------------SISTEMA DE PICADAS---------------------------------
-
-stock SprintRaceCancel(playerid)
-{
-    SprintRaceOffer[playerid] = 999;
-	SprintRaceBet[playerid] = 0;
-	KillTimer(SprintRaceCancelOfferTimer[playerid]);
-}
-
-forward SprintRaceCancelOffer(playerid);
-public SprintRaceCancelOffer(playerid)
-{
-    SprintRaceOffer[playerid] = 999;
-	SprintRaceBet[playerid] = 0;
-	return 1;
-}
-
-forward SprintRaceCountdown(racerid, racerid2);
-public SprintRaceCountdown(racerid, racerid2)
-{
-    SprintRaceCountdownSecs[racerid] --;
-	if (SprintRaceCountdownSecs[racerid] > 0)
-	{
- 		new sprintRaceCountdownString[8];
-		format(sprintRaceCountdownString, sizeof(sprintRaceCountdownString), "%d", SprintRaceCountdownSecs[racerid]);
- 		PlayerPlaySound(racerid, 1056, 0.0, 0.0, 0.0);
- 		PlayerPlaySound(racerid2, 1056, 0.0, 0.0, 0.0);
-		GameTextForPlayer(racerid, sprintRaceCountdownString, 500, 3);
-		GameTextForPlayer(racerid2, sprintRaceCountdownString, 500, 3);
-	}
-	if(SprintRaceCountdownSecs[racerid] == 0)
-	{
-		GameTextForPlayer(racerid, "YA!!!", 500, 3);
-		GameTextForPlayer(racerid2, "YA!!!", 500, 3);
-		PlayerPlaySound(racerid, 1057, 0.0, 0.0, 0.0);
-		PlayerPlaySound(racerid2, 1057, 0.0, 0.0, 0.0);
-		TogglePlayerControllable(racerid, true);
-		TogglePlayerControllable(racerid2, true);
-		SprintRaceCountdownSecs[racerid] = 11;
-		KillTimer(SprintRaceTimer[racerid]);
-	}
-	return 1;
-}
-
-CMD:desafiarpicada(playerid, params[])
-{
-	new racerid, moneyBet;
-
-	if(sscanf(params, "ii", racerid, moneyBet))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desafiarpicada [ID-Jugador] [dinero]");
-
-    if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
-    	return SendClientMessage(playerid, COLOR_WHITE, "Para desafiar a alguien, debes ir al punto de encuentro de corredores conocido como 'El Sotano'.");
-
- 	if(racerid == INVALID_PLAYER_ID || racerid == playerid)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "Jugador invalido.");
-
-	if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent [racerid] != 999)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos está en una carrera!");
-
-	if(SprintRaceOffer[playerid] != 999)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "Ya tienes un desafio pendiente!");
-
-	if(SprintRaceOffer[racerid] != 999)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "El sujeto esta con otro desafio en este instante, aguarda.");
-
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(racerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Ambos deben estar de conductor en el auto con el cual correrán!");
-
-	if(moneyBet < 500)
- 		return SendClientMessage(playerid, COLOR_WHITE, "La apuesta mínima es de $500.");
-
-	if(GetPlayerCash(playerid) < moneyBet)
- 		return SendClientMessage(playerid, COLOR_WHITE, "No tienes esa cantidad de dinero para apostar!");
-
-	if(!ProxDetectorS(10.0, playerid, racerid))
-  	    return SendClientMessage(playerid, COLOR_WHITE, "El jugador que desafiaste no está cerca tuyo.");
-
-	new content[128];
-   	format(content, sizeof(content), "%s te ha desafiado a una carrera por $%d. La oferta termina en 15 segundos. Usa /aceptar picada si lo deseas.", GetPlayerNameEx(playerid), moneyBet);
-	SendClientMessage(racerid, COLOR_LIGHTBLUE, content);
-	format(content, sizeof(content), "Has desafiado a %s a una carrera por $%d. La oferta termina en 15 segundos. Espera su respuesta.", GetPlayerNameEx(racerid), moneyBet);
-	SendClientMessage(playerid, COLOR_LIGHTBLUE, content);
-	SprintRaceOffer[racerid] = playerid;
-	SprintRaceBet[racerid] = moneyBet;
-	SprintRaceCancelOfferTimer[racerid] = SetTimerEx("SprintRaceCancelOffer", 15000, false, "i", racerid);
-	return 1;
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
 
 //---------------------SISTEMA DE TUNING DE MECANICOS---------------------------
 //---------------------SISTEMA DE TUNING DE MECANICOS---------------------------
@@ -19142,6 +18860,219 @@ CMD:ventanillas(playerid, params[]) {
 	return 1;
 }
 
+//=========================NEGOCIOS TIPO CASINO=================================
+
+#define ROULETTE_COLOR_RED    	1
+#define ROULETTE_COLOR_BLACK    2
+#define ROULETTE_COLOR_GREEN    3
+#define CASINO_GAME_ROULETTE    1
+#define CASINO_GAME_FORTUNE     2
+
+new rouletteData[37] = {
+	3,1,2,1,2,
+	1,2,1,2,1,
+	2,2,1,2,1,
+	2,1,2,1,1,
+	2,1,2,1,2,
+	1,2,1,2,2,
+	1,2,1,2,1,
+	2,1
+};
+
+bool:EsPar(n)
+{
+	return ((n % 2) == 0);
+}
+
+getRouletteNumberDozen(number)
+{
+	if(number >= 1 && number <= 12)
+	    return 1;
+	else
+	    if(number >= 13 && number <= 24)
+	        return 2;
+		else
+		    if(number >= 25 && number <= 36)
+	        	return 3;
+	return 0;
+}
+
+new bool:isBetingRoulette[MAX_PLAYERS];
+new bool:isBetingFortune[MAX_PLAYERS];
+
+forward CasinoBetEnabled(playerid, game);
+public CasinoBetEnabled(playerid, game)
+{
+	switch(game)
+	{
+	    case CASINO_GAME_ROULETTE:
+			if(isBetingRoulette[playerid])
+	    		isBetingRoulette[playerid] = false;
+		case CASINO_GAME_FORTUNE:
+		    if(isBetingFortune[playerid])
+	    		isBetingFortune[playerid] = false;
+	}
+	return 1;
+}
+
+CMD:apostar(playerid, params[])
+{
+	return SendClientMessage(playerid, COLOR_YELLOW2, "Comandos para apostar en un casino: /apruleta, /apfortuna.");
+}
+CMD:apruleta(playerid, params[])
+{
+	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CASINO)
+	    		{
+					new number, numberbet, colour[10], colourbet, parity[10], paritybet, dozen, dozenbet;
+					if(sscanf(params, "iis[10]is[10]iii", number, numberbet, colour, colourbet, parity, paritybet, dozen, dozenbet))
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y su apuesta escribe '0'.");
+						return 1;
+					}
+					if( (strcmp(colour, "rojo", true) != 0 && strcmp(colour, "negro", true) != 0 && strcmp(colour, "no", true) != 0) ||
+						(strcmp(parity, "par", true) != 0 && strcmp(parity, "impar", true) != 0 && strcmp(parity, "no", true) != 0) )
+					{
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y en su apuesta escribe '0'.");
+						return 1;
+					}
+					if(isBetingRoulette[playerid] == true)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
+					if(number < -1 || number > 36)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Los numeros de una ruleta van del 0 al 36!");
+					if(dozen < -1 || dozen > 3)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes elegir 1ra, 2da o 3er docena! (1,2,3 o -1 para omitir esa apuesta).");
+					if(numberbet < 0 || numberbet > 20000 || colourbet < 0 ||colourbet > 20000 || paritybet < 0 || paritybet > 20000 || dozenbet < 0 || dozenbet > 20000)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
+					new totalbet = numberbet + colourbet + paritybet + dozenbet;
+					if(GetPlayerCash(playerid) < totalbet)
+     					return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
+					if( ( numberbet * 36 + colourbet * 2 + paritybet * 2 + dozenbet * 3) > Business[i][bTill] )
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
+
+	                GivePlayerCash(playerid, -totalbet );
+	                Business[i][bTill] += totalbet;
+
+                    new string[128], winnerNumber, winnerColour[10];
+					winnerNumber = random(37);
+					switch(rouletteData[winnerNumber])
+					{
+					    case 1: winnerColour = "rojo";
+					    case 2: winnerColour = "negro";
+					    case 3: winnerColour = "verde";
+					}
+					format(string, sizeof(string), "apuesta $%d en la ruleta. El croupier empieza a girarla, y tras unos segundos... ¡%s %d!", totalbet, winnerColour, winnerNumber);
+                    PlayerActionMessage(playerid, 15.0, string);
+
+					new betWin = 0;
+					new betsWin[128] = "";
+					if(winnerNumber == number)
+					{
+					    betWin += numberbet * 36;
+					    format(betsWin, sizeof(betsWin), "Número %d, ganó $%d.", winnerNumber, numberbet * 36);
+					}
+					if(strcmp(winnerColour, colour, true) == 0)
+					{
+						betWin += colourbet * 2;
+						format(betsWin, sizeof(betsWin), "%s Color %s, ganó $%d.", betsWin, winnerColour, colourbet * 2);
+					}
+					if(strcmp(parity, "par", true) == 0 && EsPar(winnerNumber) == true)
+					{
+					    betWin += paritybet * 2;
+					    format(betsWin, sizeof(betsWin), "%s Tipo par, ganó $%d.", betsWin, paritybet * 2);
+					}
+					if(strcmp(parity, "impar", true) == 0 && EsPar(winnerNumber) == false)
+					{
+    					betWin += paritybet * 2;
+	                    format(betsWin, sizeof(betsWin), "%s Tipo impar, ganó $%d.", betsWin, paritybet * 2);
+					}
+					if(getRouletteNumberDozen(winnerNumber) == dozen)
+					{
+					    betWin += dozenbet * 3;
+					    format(betsWin, sizeof(betsWin), "%s Docena Nº%d, ganó $%d.", betsWin, dozen, dozenbet * 3);
+					}
+					if(betWin == 0)
+					    PlayerActionMessage(playerid, 15.0, "ha perdido todas sus apuestas: el casino se queda con el dinero.");
+					else
+					{
+					    Business[i][bTill] -= betWin;
+					    GivePlayerCash(playerid, betWin);
+					    format(string, sizeof(string), "tuvo suerte y ganó $%d! %s", betWin, betsWin);
+					    PlayerActionMessage(playerid, 15.0, string);
+					}
+					isBetingRoulette[playerid] = true;
+					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_ROULETTE);
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+CMD:apfortuna(playerid, params[])
+{
+ 	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CASINO)
+	    		{
+  					new number, numberbet;
+   					if(sscanf(params, "ii",number, numberbet))
+						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apfortuna [numero] [apuesta]");
+	    			if(isBetingFortune[playerid] == true)
+			    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
+					if(number != 1 && number != 2 && number != 5 && number != 10 && number != 20 && number != 40)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que apostar por un valor válido: 1, 2, 5, 10, 20 o 40.");
+					if(numberbet < 1 || numberbet > 20000)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
+					if(GetPlayerCash(playerid) < numberbet)
+		     			return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
+					if( number * (numberbet + 1)  > Business[i][bTill] )
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
+
+                    new string[128], winnerNumber;
+                    GivePlayerCash(playerid, -numberbet);
+                    Business[i][bTill] += numberbet;
+                    format(string, sizeof(string), "apuesta $%d al numero %d en la rueda de la fortuna.", numberbet, number);
+                    PlayerActionMessage(playerid, 15.0, string);
+
+                    new aleatorio = random(54);
+					if(aleatorio < 24) winnerNumber = 1;
+						else if(aleatorio < 39) winnerNumber = 2;
+						    else if(aleatorio < 46) winnerNumber = 5;
+           						else if(aleatorio < 50) winnerNumber = 10;
+   						        	else if(aleatorio < 52) winnerNumber = 20;
+   						        	    else if(aleatorio < 54) winnerNumber = 40;
+
+                    format(string, sizeof(string), "El croupier cierra las apuestas y gira la rueda de la fortuna. La rueda se detiene en... ¡%d!", winnerNumber);
+                    PlayerDoMessage(playerid, 15.0, string);
+                    if(winnerNumber == number)
+                    {
+                        GivePlayerCash(playerid, number * (numberbet + 1));
+                    	Business[i][bTill] += number * (numberbet + 1);
+                    	format(string, sizeof(string), "ha ganado $%d apostandole al %d!", number * (numberbet + 1), number);
+					} else
+					    	format(string, sizeof(string), "ha perdido $%d apostandole al %d!", numberbet, number);
+       				PlayerActionMessage(playerid, 15.0, string);
+					isBetingFortune[playerid] = true;
+					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_FORTUNE);
+				}
+			}
+		}
+	}
+	return 1;
+}
+
 //=======================NEGOCIOS TIPO RESTAURANT===============================
 
 CMD:comer(playerid, params[])
@@ -19154,7 +19085,7 @@ CMD:comer(playerid, params[])
 
 	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
-		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		if(PlayerToPoint(35.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
 		{
 			if(GetPlayerVirtualWorld(playerid) == i + 17000)
 			{
@@ -19298,209 +19229,6 @@ CMD:comer(playerid, params[])
 	return 1;
 }
 
-//=========================NEGOCIOS TIPO CASINO=================================
-
-#define ROULETTE_COLOR_RED    	1
-#define ROULETTE_COLOR_BLACK    2
-#define ROULETTE_COLOR_GREEN    3
-
-new rouletteData[37] = {
-	3,1,2,1,2,
-	1,2,1,2,1,
-	2,2,1,2,1,
-	2,1,2,1,1,
-	2,1,2,1,2,
-	1,2,1,2,2,
-	1,2,1,2,1,
-	2,1
-};
-
-bool:EsPar(n)
-{
-	return ((n % 2) == 0);
-}
-
-getRouletteNumberDozen(number)
-{
-	if(number >= 1 && number <= 12)
-	    return 1;
-	else
-	    if(number >= 13 && number <= 24)
-	        return 2;
-		else
-		    if(number >= 25 && number <= 36)
-	        	return 3;
-	return 0;
-}
-
-new bool:isBeting[MAX_PLAYERS];
-
-forward CasinoBetEnabled(playerid);
-public CasinoBetEnabled(playerid)
-{
-	if(isBeting[playerid])
-	    isBeting[playerid] = false;
-	return 1;
-}
-
-CMD:apostar(playerid, params[])
-{
-	return SendClientMessage(playerid, COLOR_YELLOW2, "Comandos para apostar en un casino: /apruleta, /apfortuna.");
-}
-CMD:apruleta(playerid, params[])
-{
-	for(new i = 0; i < MAX_BUSINESS; i++)
-	{
-		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
-		{
-			if(GetPlayerVirtualWorld(playerid) == i + 17000)
-			{
-	    		if(Business[i][bType] == BIZ_CASINO)
-	    		{
-					new number, numberbet, colour[10], colourbet, parity[10], paritybet, dozen, dozenbet;
-					if(sscanf(params, "iis[10]is[10]iii", number, numberbet, colour, colourbet, parity, paritybet, dozen, dozenbet))
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
-     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y su apuesta escribe '0'.");
-						return 1;
-					}
-					if( (strcmp(colour, "rojo", true) != 0 && strcmp(colour, "negro", true) != 0 && strcmp(colour, "no", true) != 0) ||
-						(strcmp(parity, "par", true) != 0 && strcmp(parity, "impar", true) != 0 && strcmp(parity, "no", true) != 0) )
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [par/impar] [apuesta] [docena] [apuesta].");
-     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del resto, y en su apuesta escribe '0'.");
-						return 1;
-					}
-					if(isBeting[playerid] == true)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
-					if(number < -1 || number > 36)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "Los numeros de una ruleta van del 0 al 36!");
-					if(dozen < -1 || dozen > 3)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes elegir 1ra, 2da o 3er docena! (1,2,3 o -1 para omitir esa apuesta).");
-					if(numberbet < 0 || numberbet > 20000 || colourbet < 0 ||colourbet > 20000 || paritybet < 0 || paritybet > 20000 || dozenbet < 0 || dozenbet > 20000)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
-					if(GetPlayerCash(playerid) < (numberbet + colourbet + paritybet + dozenbet))
-     					return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
-					if( ( numberbet * 36 + colourbet * 2 + paritybet * 2 + dozenbet * 3) > Business[i][bTill] )
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
-
-	                GivePlayerCash(playerid, -(numberbet + colourbet + paritybet + dozenbet) );
-	                Business[i][bTill] += (numberbet + colourbet + paritybet + dozenbet);
-	                PlayerActionMessage(playerid, 15.0, "hace una apuesta en la ruleta y el empleado del casino comienza a girarla, moviendo la bolilla.");
-
-                    new string[128], winnerNumber, winnerColour[10];
-					winnerNumber = random(37);
-					switch(rouletteData[winnerNumber])
-					{
-					    case ROULETTE_COLOR_RED: winnerColour = "rojo";
-					    case ROULETTE_COLOR_BLACK: winnerColour = "negro";
-					    case ROULETTE_COLOR_GREEN: winnerColour = "verde";
-					}
-					format(string, sizeof(string), "Luego de unos segundos de tensión, la ruleta se detiene,y la bolilla se perfila...: ¡%s %d!", winnerColour, winnerNumber);
-					PlayerDoMessage(playerid, 15.0, string);
-
-					new betWin = 0;
-					new betsWin[128] = "";
-					if(winnerNumber == number)
-					{
-					    betWin += numberbet * 36;
-					    format(betsWin, sizeof(betsWin), "Número %d, ganó $%d.", winnerNumber, numberbet * 36);
-					}
-					if(strcmp(winnerColour, colour, true) == 0)
-					{
-						betWin += colourbet * 2;
-						format(betsWin, sizeof(betsWin), "%s Color %s, ganó $%d.", betsWin, winnerColour, colourbet * 2);
-					}
-					if(strcmp(parity, "par", true) == 0 && EsPar(winnerNumber) == true)
-					{
-					    betWin += paritybet * 2;
-					    format(betsWin, sizeof(betsWin), "%s Tipo par, ganó $%d.", betsWin, paritybet * 2);
-					}
-					if(strcmp(parity, "impar", true) == 0 && EsPar(winnerNumber) == false)
-					{
-    					betWin += paritybet * 2;
-	                    format(betsWin, sizeof(betsWin), "%s Tipo impar, ganó $%d.", betsWin, paritybet * 2);
-					}
-					if(getRouletteNumberDozen(winnerNumber) == dozen)
-					{
-					    betWin += dozenbet * 3;
-					    format(betsWin, sizeof(betsWin), "%s Docena Nº%d, ganó $%d.", betsWin, dozen, dozenbet * 3);
-					}
-					if(betWin == 0)
-					    PlayerActionMessage(playerid, 15.0, "ha perdido todas sus apuestas: el casino se queda con el dinero.");
-					else
-					{
-					    Business[i][bTill] -= betWin;
-					    GivePlayerCash(playerid, betWin);
-					    format(string, sizeof(string), "tuvo suerte y ganó $%d! %s", betWin, betsWin);
-					    PlayerActionMessage(playerid, 15.0, string);
-					}
-					isBeting[playerid] = true;
-					SetTimerEx("CasinoBetEnabled", 60000, false, "i", playerid);
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-CMD:apfortuna(playerid, params[])
-{
- 	for(new i = 0; i < MAX_BUSINESS; i++)
-	{
-		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
-		{
-			if(GetPlayerVirtualWorld(playerid) == i + 17000)
-			{
-	    		if(Business[i][bType] == BIZ_CASINO)
-	    		{
-  					new number, numberbet;
-   					if(sscanf(params, "ii",number, numberbet))
-						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apfortuna [numero] [apuesta]");
-	    			if(isBeting[playerid] == true)
-			    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
-					if(number != 1 && number != 2 && number != 5 && number != 10 && number != 20 && number != 40)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que apostar por un valor válido: 1, 2, 5, 10, 20 o 40.");
-					if(numberbet < 1 || numberbet > 20000)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1 y la máxima de $20.000!");
-					if(GetPlayerCash(playerid) < numberbet)
-		     			return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
-					if( number * (numberbet + 1)  > Business[i][bTill] )
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
-
-                    new string[128], winnerNumber;
-                    GivePlayerCash(playerid, -numberbet);
-                    Business[i][bTill] += numberbet;
-                    format(string, sizeof(string), "apuesta $%d al numero %d en la rueda de la fortuna.", numberbet, number);
-                    PlayerActionMessage(playerid, 15.0, string);
-
-                    new aleatorio = random(54);
-					if(aleatorio < 24) winnerNumber = 1;
-						else if(aleatorio < 39) winnerNumber = 2;
-						    else if(aleatorio < 46) winnerNumber = 5;
-           						else if(aleatorio < 50) winnerNumber = 10;
-   						        	else if(aleatorio < 52) winnerNumber = 20;
-   						        	    else if(aleatorio < 54) winnerNumber = 40;
-
-                    format(string, sizeof(string), "El croupier cierra las apuestas y gira la rueda de la fortuna. La rueda se detiene en... ¡%d!", winnerNumber);
-                    PlayerDoMessage(playerid, 15.0, string);
-                    if(winnerNumber == number)
-                    {
-                        GivePlayerCash(playerid, number * (numberbet + 1));
-                    	Business[i][bTill] += number * (numberbet + 1);
-                    	format(string, sizeof(string), "ha ganado $%d apostandole al %d!", number * (numberbet + 1), number);
-					} else
-					    	format(string, sizeof(string), "ha perdido $%d apostandole al %d!", numberbet, number);
-       				PlayerActionMessage(playerid, 15.0, string);
-					isBeting[playerid] = true;
-					SetTimerEx("CasinoBetEnabled", 60000, false, "i", playerid);
-				}
-			}
-		}
-	}
-	return 1;
-}
-
 //=======================NEGOCIOS TIPO BAR Y CASINO=============================
 
 CMD:beber(playerid, params[])
@@ -19513,7 +19241,7 @@ CMD:beber(playerid, params[])
 
 	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
-		if(PlayerToPoint(60.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
 		{
 			if(GetPlayerVirtualWorld(playerid) == i + 17000)
 			{
@@ -20266,7 +19994,7 @@ CMD:refuerzos(playerid, params[]) {
 				case 1: {
 				    SetPVarInt(playerid, "requestingBackup", 1);
 					foreach(Player, i) {
-						if(PlayerInfo[i][pFaction] == FAC_PMA) {
+						if(PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) {
 							SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
 							SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requeriere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
 						}
@@ -20275,7 +20003,7 @@ CMD:refuerzos(playerid, params[]) {
 				case 2: {
 					SetPVarInt(playerid, "requestingBackup", 1);
 					foreach(Player, i) {
-						if(PlayerInfo[i][pFaction] == FAC_HOSP) {
+						if(PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) {
 							SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
 							SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requeriere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
 						}
@@ -20284,7 +20012,7 @@ CMD:refuerzos(playerid, params[]) {
 				case 3: {
 					SetPVarInt(playerid, "requestingBackup", 1);
 					foreach(Player, i) {
-						if(PlayerInfo[i][pFaction] == FAC_PMA || PlayerInfo[i][pFaction] == FAC_HOSP) {
+						if( (PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) || (PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) ) {
 							SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
 							SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requeriere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
 						}
@@ -21274,227 +21002,6 @@ stock Float:modulus(Float:a, Float:b)
     while(a > b)
         a -= b;
     return a;
-}
-
-//------------------------SISTEMA DE CONOS PARA LA PFA--------------------------
-//------------------------SISTEMA DE CONOS PARA LA PFA--------------------------
-
-CMD:cono(playerid,params[])
-{
-    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	SendClientMessage(playerid, COLOR_YELLOW2, "Menú de conos policiales: /cponer /cquitar /cquitartodo.");
-	return 1;
-}
-
-
-CMD:cponer(playerid,params[])
-{
-	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
-
-   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
-    new cant;
-	cant = PlayerCantConos[playerid];
-	if( cant >= MAX_CONOS_PERSONA)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes conos [MAX 10], quita algunos! (/cquitar) (cquitartodo).");
-	new Float:x, Float:y, Float:z;
-	GetPlayerPos(playerid, x, y, z);
-	cant++;
-	Conos[playerid][cant-1] = CreateDynamicObject(1238, x, y, z-0.7, 0.0, 0.0, 0.0);
-	SetPlayerPosFindZ(playerid, x, y-0.7, z);
-	PlayerActionMessage(playerid, 15.0, "ubica un cono policial.");
-	PlayerCantConos[playerid] = cant;
-
-	return 1;
-}
-
-CMD:cquitar(playerid,params[])
-{
-    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
-
-   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
-    new cant = PlayerCantConos[playerid];
-	if(cant > 0)
-    {
-    	DestroyDynamicObject(Conos[playerid][cant-1]);
-		PlayerCantConos[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira un cono policial.");
-	}
-	else
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto conos!");
-
-	return 1;
-}
-
-CMD:cquitartodo(playerid, params[])
-{
-    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
-    {
-		new cant;
-		if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
-		{
-		    for(new i = 0; i < MAX_PLAYERS; i++)
-		    {
-		        cant = PlayerCantConos[i];
-				if(cant > 0)
-				{
-					for(new b = 0; b < cant; b++)
-					{
-						DestroyDynamicObject(Conos[i][b]);
-					}
-					PlayerCantConos[i] = 0;
-				}
-			}
-			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario ha quitado todos los conos puestos por la facción. ))");
-		} else
-		    {
-				cant = PlayerCantConos[playerid];
-				if(cant > 0)
-				{
-					for(new b = 0; b < cant; b++)
-					{
-						DestroyDynamicObject(Conos[playerid][b]);
-					}
-					PlayerCantConos[playerid] = 0;
-			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todos los conos que pusiste.");
-				}
-				else
-					return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto conos!");
-			}
-	} else
-		if (PlayerInfo[playerid][pFaction] == FAC_PMA)
-			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
-	return 1;
-}
-
-//------------------SISTEMA DE BARRICADAS DE LA PMA-----------------------------
-//------------------SISTEMA DE BARRICADAS DE LA PMA-----------------------------
-
-CMD:barricada(playerid,params[])
-{
-    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	SendClientMessage(playerid, COLOR_YELLOW2, "Menú de barricadas policiales: /bponer /bquitar /bquitartodo.");
-	return 1;
-}
-
-
-CMD:bponer(playerid,params[])
-{
-	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
-
-   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
-    new cant;
-	cant = PlayerCantBarricadas[playerid];
-	if( cant >= MAX_BARRICADAS_PERSONA)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes barricadas [MAX 5], quita algunas! (/bquitar) (bquitartodo).");
-	new Float:x, Float:y, Float:z, Float:facingAngle;
-	GetPlayerPos(playerid, x, y, z);
-	GetPlayerFacingAngle(playerid, facingAngle);
-	cant++;
-	Barricadas[playerid][cant-1] = CreateDynamicObject(1459, x, y, z-0.7, 0.0, 0.0, facingAngle);
-	SetPlayerPosFindZ(playerid, x, y-0.7, z);
-	PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-	PlayerCantBarricadas[playerid] = cant;
-
-	return 1;
-}
-
-CMD:bquitar(playerid,params[])
-{
-    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-
-	if(CopDuty[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
-
-   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
-    new cant = PlayerCantBarricadas[playerid];
-	if(cant > 0)
-    {
-    	DestroyDynamicObject(Barricadas[playerid][cant-1]);
-		PlayerCantBarricadas[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira una barricada policial.");
-	}
-	else
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto barricadas!");
-
-	return 1;
-}
-
-CMD:bquitartodo(playerid, params[])
-{
-    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
-    {
-		new cant;
-		if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
-		{
-		    for(new i = 0; i < MAX_PLAYERS; i++)
-		    {
-		        cant = PlayerCantBarricadas[i];
-				if(cant > 0)
-				{
-					for(new b = 0; b < cant; b++)
-					{
-						DestroyDynamicObject(Barricadas[i][b]);
-					}
-					PlayerCantBarricadas[i] = 0;
-				}
-			}
-			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario ha quitado todas las barricadas puestas por la facción. ))");
-		} else
-		    {
-				cant = PlayerCantBarricadas[playerid];
-				if(cant > 0)
-				{
-					for(new b = 0; b < cant; b++)
-					{
-						DestroyDynamicObject(Barricadas[playerid][b]);
-					}
-					PlayerCantBarricadas[playerid] = 0;
-			        SendClientMessage(playerid, COLOR_YELLOW2, "Retiras todas las barricadas que pusiste.");
-				}
-				else
-					return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto barricadas!");
-			}
-	} else
-		if (PlayerInfo[playerid][pFaction] == FAC_PMA)
-			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
-	return 1;
 }
 
 //---------------------------SISTEMA DE AFK-------------------------------------
