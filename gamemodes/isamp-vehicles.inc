@@ -1135,7 +1135,7 @@ CMD:vehiculo(playerid,params[]) {
 			new color1 = targetid;
 		    new color2 = vehicleid3;
 			if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores que sean válidos (0-255).");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0=negro, 1=blanco.))");
 			    
 		    for(new vid = 1; vid < MAX_VEH; vid++) {
 				if(VehicleInfo[vid][VehType] == VEH_NONE) {

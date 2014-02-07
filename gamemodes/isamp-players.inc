@@ -23,7 +23,6 @@ enum pInfo {
 	pCash,
 	pBank,
 	pSkin,
-	pDrugs,
 	pMaterials,
 	pJob,
 	pJobTime,
@@ -72,6 +71,7 @@ enum pInfo {
 	pCigarettes,
 	pLighter,
 	pFightStyle,
+	pMask,
 	
 	Float:pAdictionPercent,
 	pAdictionAbstinence,
