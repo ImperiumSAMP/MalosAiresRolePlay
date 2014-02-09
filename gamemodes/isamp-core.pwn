@@ -12,21 +12,21 @@
 //#include <mapandreas>
 
 //Includes  moudulos isamp
-#include "isamp-util.inc" //Contiene defines básicos utilizados en todo el GM
-#include "isamp-database.inc" //Funciones varias para acceso a datos
-#include "isamp-players.inc" //Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
-#include "isamp-drugs.inc" //Sistema de drogas
-#include "isamp-admin.inc" //Sistema de admines
-#include "isamp-inventory.inc" //Sistema de inventario y maletero
-#include "isamp-jobs.inc" //Definiciones y funciones para los JOBS
-#include "isamp-factions.inc" //Sistema de facciones
-#include "isamp-business.inc" //Sistema de negocios
-#include "isamp-houses.inc" //Sistema de casas
-#include "isamp-vehicles.inc" //Sistema de vehiculos
-#include "isamp-thiefjob.inc" //Sistema del job de ladron
-#include "isamp-tazer.inc" //Sistema del tazer
+#include "isamp-util.inc" 		//Contiene defines básicos utilizados en todo el GM
+#include "isamp-database.inc" 	//Funciones varias para acceso a datos
+#include "isamp-players.inc" 	//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
+#include "isamp-drugs.inc" 		//Sistema de drogas
+#include "isamp-admin.inc" 		//Sistema de admines
+#include "isamp-inventory.inc" 	//Sistema de inventario y maletero
+#include "isamp-jobs.inc" 		//Definiciones y funciones para los JOBS
+#include "isamp-factions.inc" 	//Sistema de facciones
+#include "isamp-business.inc" 	//Sistema de negocios
+#include "isamp-houses.inc" 	//Sistema de casas
+#include "isamp-vehicles.inc" 	//Sistema de vehiculos
+#include "isamp-thiefjob.inc" 	//Sistema del job de ladron
+#include "isamp-tazer.inc" 		//Sistema del tazer
 #include "isamp-animations.inc" //Sistema de animaciones
-#include "isamp-itemspma.inc" //Sistema de items auxiliares para la pma (conos, barricadas, etc)
+#include "isamp-itemspma.inc"	//Sistema de items auxiliares para la pma (conos, barricadas, etc)
 #include "isamp-sprintrace.inc" //Sistema de picadas (carreras)
 
 // Configuraciones.
@@ -2037,7 +2037,9 @@ public OnPlayerDeath(playerid, killerid, reason) {
  	switch(time - LastDeath[playerid]) {
         case 0 .. 3: {
             DeathSpam{playerid}++;
-            if(DeathSpam{playerid} == 3)return BanPlayer(playerid, INVALID_PLAYER_ID, "fake kills cheat");
+            if(DeathSpam{playerid} == 3) {
+				return BanPlayer(playerid, INVALID_PLAYER_ID, "fake kills cheat");
+			}
         }
         default: DeathSpam{playerid} = 0;
     }
@@ -2876,53 +2878,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 					{
 						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} el símbolo | no está permitido.");
 					}
-				}
-			}
-			return 1;
-		}
-	    if(strcmp(cmd, "/ban", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-		    	tmp = strtok(cmdtext, idx);
-				if(!strlen(tmp))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ban [playerid/ParteDelNombre] [razón]");
-					return 1;
-				}
-				giveplayerid = ReturnUser(tmp);
-				if (PlayerInfo[playerid][pAdmin] >= 2)
-				{
-					if(IsPlayerConnected(giveplayerid))
-					{
-					    if(giveplayerid != INVALID_PLAYER_ID)
-					    {
-							new length = strlen(cmdtext);
-							while ((idx < length) && (cmdtext[idx] <= ' '))
-							{
-								idx++;
-							}
-							new offset = idx;
-							new result[128];
-							while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-							{
-								result[idx - offset] = cmdtext[idx];
-								idx++;
-							}
-							result[idx - offset] = EOS;
-							if(!strlen(result))
-							{
-								SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ban [playerid/ParteDelNombre] [razón]");
-								return 1;
-							}
-							BanPlayer(giveplayerid, playerid, (result));
-							return 1;
-						}
-					}
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Invalid ID.");
 				}
 			}
 			return 1;
@@ -4645,6 +4600,39 @@ public OnBanDataLoad(playerid) {
 	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
 		SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	}
+	return 1;
+}
+
+forward OnUnbanDataLoad(playerid, type, target[32]);
+public OnUnbanDataLoad(playerid, type, target[32]) {
+	new rows;
+	new fields;
+	new string[128];
+	new query[128];
+	
+    cache_get_data(rows, fields);
+
+	if (type == 0) {
+	    if (rows) {
+			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
+
+			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pName` = '%s'", target);
+		} else {
+		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con el nombre '%s' en la base de datos.", target);
+		    return 1;
+		}
+	} else if (type == 1) {
+		if (rows) {
+			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
+
+			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pIP` = '%s'", target);
+		} else {
+		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con la IP '%s' en la base de datos.", target);
+		    return 1;
+		}
+	}
+	mysql_function_query(dbHandle, query, false, "", "");
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	return 1;
 }
 
@@ -20262,24 +20250,48 @@ CMD:cambiarnombre(playerid, params[]) {
 	return 1;
 }
 
-CMD:desbanear(playerid, params[]) {
-	new
-	    query[128],
-	    string[128],
-		IP[16];
-		
-	if(PlayerInfo[playerid][pAdmin] < 5) return 1;
+CMD:ban(playerid, params[]) {
+	return cmd_banear(playerid, params);
+}
 
-	if(sscanf(params, "s[16]", IP)) {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desbanear [IP]");
+CMD:banear(playerid, params[]) {
+	new targetid, reason[128];
+
+	if (PlayerInfo[playerid][pAdmin] < 2) {
+		return 1;
+	}
+
+	if (sscanf(params, "us[128]", targetid, reason)) {
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ban)ear [playerid/ParteDelNombre] [razón]");
 	} else {
-	    format(string, sizeof(string), "[Staff] el administrador %s ha desbaneado a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), IP);
-	    AdministratorMessage(COLOR_ADMINCMD, string, 1);
-		format(query, sizeof(query), "UPDATE bans SET banActive=0 WHERE `pIP` = '%s'", IP);
-	    mysql_function_query(dbHandle, query, false, "", "");
-		format(string, sizeof(string), "unbanip %s", IP);
-		SendRconCommand(string);
-		SendRconCommand("reloadbans");
+		BanPlayer(targetid, playerid, reason);
+	}
+	return 1;
+}
+
+CMD:desbanear(playerid, params[]) {
+	new query[128];
+	new string[128];
+	new target[32];
+
+	if (PlayerInfo[playerid][pAdmin] < 5) {
+		return 1;
+	}
+
+	if (sscanf(params, "S(0)[32]", target)) {
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desbanear [IP] ó [nombre]");
+	} else {
+	    mysql_real_escape_string(target, target);
+	    
+		if(strfind(target, "_", true) != -1) { // Si tiene un "_" suponemos que es un nombre, caso contrario una IP.
+			format(query, sizeof(query),"SELECT * FROM `bans` WHERE `pName` = '%s' AND `banActive` = 1", target);
+
+			mysql_function_query(dbHandle, query, true, "OnUnbanDataLoad", "iis", playerid, 0, target);
+		} else {
+			format(query, sizeof(query),"SELECT * FROM `bans` WHERE `pIP` = '%s' AND `banActive` = 1", target);
+
+			mysql_function_query(dbHandle, query, true, "OnUnbanDataLoad", "iis", playerid, 1, target);
+		}
 	}
 	return 1;
 }
