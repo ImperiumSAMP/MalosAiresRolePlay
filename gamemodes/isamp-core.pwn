@@ -9396,185 +9396,186 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	    }
     }
 
-	if(PlayerInfo[playerid][pRegStep] == 1) {
-		if(PRESSED(KEY_SPRINT)) {
-		    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-			if(PlayerInfo[playerid][pSex] == 1)	{
-			    SetPlayerSkin(playerid, SkinRegFemale[0][0]);
-		    	PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: femenino");
-		    	PlayerInfo[playerid][pSex] = 0;
-			} else {
-				SetPlayerSkin(playerid, SkinRegMale[0][0]);
-				PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: masculino");
-				PlayerInfo[playerid][pSex] = 1;
-			}
-		} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
-		    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
+	if (PlayerInfo[playerid][pTutorial] == 1) {
+		if (PlayerInfo[playerid][pRegStep] == 1) {
+			if(PRESSED(KEY_SPRINT)) {
+			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+				if(PlayerInfo[playerid][pSex] == 1)	{
+				    SetPlayerSkin(playerid, SkinRegFemale[0][0]);
+			    	PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: femenino");
+			    	PlayerInfo[playerid][pSex] = 0;
+				} else {
+					SetPlayerSkin(playerid, SkinRegMale[0][0]);
+					PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: masculino");
+					PlayerInfo[playerid][pSex] = 1;
+				}
+			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
+			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 
-		    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
-			RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 133.500000, "~>~");
-			PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
-			PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
-			PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
-			PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
+			    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
+				RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 133.500000, "~>~");
+				PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
+				PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
+				PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
+				PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
 
-			PlayerInfo[playerid][pRegStep]++;
-			if(PlayerInfo[playerid][pSex] == 1)	{
-			    format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
-			} else {
-				format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegFemale));
+				PlayerInfo[playerid][pRegStep]++;
+				if(PlayerInfo[playerid][pSex] == 1)	{
+				    format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
+				} else {
+					format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegFemale));
+				}
+	            PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
 			}
-            PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
-		}
-	} else if(PlayerInfo[playerid][pRegStep] == 2) {
-	    if(PRESSED(KEY_SPRINT))	{
-			RegCounter[playerid]++;
-		    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-		    if(PlayerInfo[playerid][pSex] == 1) {
-		        if(RegCounter[playerid] > sizeof(SkinRegMale)) {
+		} else if(PlayerInfo[playerid][pRegStep] == 2) {
+		    if(PRESSED(KEY_SPRINT))	{
+				RegCounter[playerid]++;
+			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+			    if(PlayerInfo[playerid][pSex] == 1) {
+			        if(RegCounter[playerid] > sizeof(SkinRegMale)) {
+			            RegCounter[playerid] = 1;
+			        }
+					SetPlayerSkin(playerid, SkinRegMale[RegCounter[playerid] - 1][0]);
+					PlayerInfo[playerid][pSkin] = SkinRegMale[RegCounter[playerid] - 1][0];
+					format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
+				} else {
+				    if(RegCounter[playerid] > sizeof(SkinRegFemale)) {
+			            RegCounter[playerid] = 1;
+			        }
+				    SetPlayerSkin(playerid, SkinRegFemale[RegCounter[playerid] - 1][0]);
+				    PlayerInfo[playerid][pSkin] = SkinRegFemale[RegCounter[playerid] - 1][0];
+				    format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegFemale));
+				}
+				PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
+			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
+			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
+
+			    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
+				RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 144.500000, "~>~");
+				PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
+				PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
+				PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
+				PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
+
+				PlayerInfo[playerid][pRegStep]++;
+	   			RegCounter[playerid] = 18;
+
+	   			PlayerTextDrawSetString(playerid, RegTDAge[playerid], "Edad: 18");
+	   			ClearScreen(playerid);
+	   			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para incrementar el valor y ~k~~SNEAK_ABOUT~ para disminuirlo, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
+			}
+		} else if(PlayerInfo[playerid][pRegStep] == 3) {
+		    if(PRESSED(KEY_SPRINT))	{
+				RegCounter[playerid]++;
+			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+	            if(RegCounter[playerid] > 99) {
+		            RegCounter[playerid] = 18;
+		        }
+		        PlayerInfo[playerid][pAge] = RegCounter[playerid];
+				format(string, sizeof(string), "Edad: %d", RegCounter[playerid]);
+				PlayerTextDrawSetString(playerid, RegTDAge[playerid], string);
+			}
+			if(PRESSED(KEY_WALK)) {
+			    RegCounter[playerid]--;
+			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+	            if(RegCounter[playerid] < 18) {
+		            RegCounter[playerid] = 99;
+		        }
+		        PlayerInfo[playerid][pAge] = RegCounter[playerid];
+				format(string, sizeof(string), "Edad: %d", RegCounter[playerid]);
+				PlayerTextDrawSetString(playerid, RegTDAge[playerid], string);
+			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
+			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
+
+			    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
+				RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 156.000000, "~>~");
+				PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
+				PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
+				PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
+				PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
+				PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
+				PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
+
+				PlayerInfo[playerid][pRegStep]++;
+	   			RegCounter[playerid] = 1;
+	            PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: latino");
+	   			ClearScreen(playerid);
+	   			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para seleccionar una opción, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
+			}
+		} else if(PlayerInfo[playerid][pRegStep] == 4) {
+		    if(PRESSED(KEY_SPRINT)) {
+				RegCounter[playerid]++;
+			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+			  	if(RegCounter[playerid] > 6) {
 		            RegCounter[playerid] = 1;
 		        }
-				SetPlayerSkin(playerid, SkinRegMale[RegCounter[playerid] - 1][0]);
-				PlayerInfo[playerid][pSkin] = SkinRegMale[RegCounter[playerid] - 1][0];
-				format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
-			} else {
-			    if(RegCounter[playerid] > sizeof(SkinRegFemale)) {
-		            RegCounter[playerid] = 1;
-		        }
-			    SetPlayerSkin(playerid, SkinRegFemale[RegCounter[playerid] - 1][0]);
-			    PlayerInfo[playerid][pSkin] = SkinRegFemale[RegCounter[playerid] - 1][0];
-			    format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegFemale));
+				switch(RegCounter[playerid]) {
+				    case 1: {
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: latino");
+					}
+					case 2: {
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: europeo");
+					}
+					case 3: {
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: americano");
+					}
+					case 4:	{
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: asiatico");
+					}
+					case 5:	{
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: africano");
+					}
+					case 6:	{
+				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: indefinido");
+					}
+				}
+		        PlayerInfo[playerid][pOrigin] = RegCounter[playerid];
+			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
+			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
+
+				TextDrawHideForPlayer(playerid, RegTDBorder1);
+				TextDrawHideForPlayer(playerid, RegTDBorder2);
+				TextDrawHideForPlayer(playerid, RegTDBackground);
+				TextDrawHideForPlayer(playerid, RegTDTitle);
+				PlayerTextDrawHide(playerid, RegTDGender[playerid]);
+				PlayerTextDrawHide(playerid, RegTDSkin[playerid]);
+				PlayerTextDrawHide(playerid, RegTDAge[playerid]);
+				PlayerTextDrawHide(playerid, RegTDOrigin[playerid]);
+				PlayerTextDrawHide(playerid, RegTDArrow[playerid]);
+
+				PlayerInfo[playerid][pRegStep] = 0;
+
+				/*PlayerInfo[playerid][pA] = 358.4098;
+				PlayerInfo[playerid][pX] = 1481.2329;
+				PlayerInfo[playerid][pY] = -1751.8094;
+				PlayerInfo[playerid][pZ] = 15.4453;*/
+
+				PlayerInfo[playerid][pA] = 176.6281;
+				PlayerInfo[playerid][pX] = 1685.7615;
+				PlayerInfo[playerid][pY] = -2241.1375;
+				PlayerInfo[playerid][pZ] = 13.5469;
+				PlayerInfo[playerid][pInterior] = 0;
+				PlayerInfo[playerid][pVirtualWorld] = 0;
+
+				TogglePlayerControllable(playerid, true);
+
+				SpawnPlayer(playerid);
+
+				ClearScreen(playerid);
+				SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
 			}
-			PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
-		} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
-		    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
-
-		    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
-			RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 144.500000, "~>~");
-			PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
-			PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
-			PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
-			PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
-
-			PlayerInfo[playerid][pRegStep]++;
-   			RegCounter[playerid] = 18;
-
-   			PlayerTextDrawSetString(playerid, RegTDAge[playerid], "Edad: 18");
-   			ClearScreen(playerid);
-   			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para incrementar el valor y ~k~~SNEAK_ABOUT~ para disminuirlo, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
 		}
-	} else if(PlayerInfo[playerid][pRegStep] == 3) {
-	    if(PRESSED(KEY_SPRINT))	{
-			RegCounter[playerid]++;
-		    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-            if(RegCounter[playerid] > 99) {
-	            RegCounter[playerid] = 18;
-	        }
-	        PlayerInfo[playerid][pAge] = RegCounter[playerid];
-			format(string, sizeof(string), "Edad: %d", RegCounter[playerid]);
-			PlayerTextDrawSetString(playerid, RegTDAge[playerid], string);
-		}
-		if(PRESSED(KEY_WALK)) {
-		    RegCounter[playerid]--;
-		    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-            if(RegCounter[playerid] < 18) {
-	            RegCounter[playerid] = 99;
-	        }
-	        PlayerInfo[playerid][pAge] = RegCounter[playerid];
-			format(string, sizeof(string), "Edad: %d", RegCounter[playerid]);
-			PlayerTextDrawSetString(playerid, RegTDAge[playerid], string);
-		} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
-		    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
-
-		    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
-			RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 156.000000, "~>~");
-			PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawBackgroundColor(playerid, RegTDArrow[playerid], 255);
-			PlayerTextDrawFont(playerid, RegTDArrow[playerid], 2);
-			PlayerTextDrawLetterSize(playerid, RegTDArrow[playerid], 0.260000, 0.899999);
-			PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
-			PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
-			PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
-
-			PlayerInfo[playerid][pRegStep]++;
-   			RegCounter[playerid] = 1;
-            PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: latino");
-   			ClearScreen(playerid);
-   			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para seleccionar una opción, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
-		}
-	} else if(PlayerInfo[playerid][pRegStep] == 4) {
-	    if(PRESSED(KEY_SPRINT)) {
-			RegCounter[playerid]++;
-		    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-		  	if(RegCounter[playerid] > 6) {
-	            RegCounter[playerid] = 1;
-	        }
-			switch(RegCounter[playerid]) {
-			    case 1: {
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: latino");
-				}
-				case 2: {
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: europeo");
-				}
-				case 3: {
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: americano");
-				}
-				case 4:	{
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: asiatico");
-				}
-				case 5:	{
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: africano");
-				}
-				case 6:	{
-			        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: indefinido");
-				}
-			}
-	        PlayerInfo[playerid][pOrigin] = RegCounter[playerid];
-		} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
-		    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
-
-			TextDrawHideForPlayer(playerid, RegTDBorder1);
-			TextDrawHideForPlayer(playerid, RegTDBorder2);
-			TextDrawHideForPlayer(playerid, RegTDBackground);
-			TextDrawHideForPlayer(playerid, RegTDTitle);
-			PlayerTextDrawHide(playerid, RegTDGender[playerid]);
-			PlayerTextDrawHide(playerid, RegTDSkin[playerid]);
-			PlayerTextDrawHide(playerid, RegTDAge[playerid]);
-			PlayerTextDrawHide(playerid, RegTDOrigin[playerid]);
-			PlayerTextDrawHide(playerid, RegTDArrow[playerid]);
-
-			PlayerInfo[playerid][pRegStep] = 0;
-			
-			/*PlayerInfo[playerid][pA] = 358.4098;
-			PlayerInfo[playerid][pX] = 1481.2329;
-			PlayerInfo[playerid][pY] = -1751.8094;
-			PlayerInfo[playerid][pZ] = 15.4453;*/
-			
-			PlayerInfo[playerid][pA] = 176.6281;
-			PlayerInfo[playerid][pX] = 1685.7615;
-			PlayerInfo[playerid][pY] = -2241.1375;
-			PlayerInfo[playerid][pZ] = 13.5469;
-			PlayerInfo[playerid][pInterior] = 0;
-			PlayerInfo[playerid][pVirtualWorld] = 0;
-
-			TogglePlayerControllable(playerid, true);
-
-			SpawnPlayer(playerid);
-
-			ClearScreen(playerid);
-			SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
-		}
-	}
-	else if(Choice[playerid] != CHOICE_NONE) {
+	} else if (Choice[playerid] != CHOICE_NONE) {
 		if(PRESSED(KEY_YES)) {
             switch(Choice[playerid]) {
                 case CHOICE_CARSELL: {
