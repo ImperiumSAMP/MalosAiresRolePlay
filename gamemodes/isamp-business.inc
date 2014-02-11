@@ -56,7 +56,7 @@ enum BusinessSystem {
 	Text3D:bInsideLabel,
 }
 new Business[MAX_BUSINESS][BusinessSystem];
-
+new bool:openBizPermission[MAX_BUSINESS];
 
 //Admin commands
 //====[NEGOCIOS]================================================================
