@@ -6170,8 +6170,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		    SendClientMessage(playerid,COLOR_WHITE,string);
 		    format(string, sizeof(string), "Costo actual: {3E9D41}$%d{FFFFFF} (%d%%%%).", GetVehiclePrice(vehicleid,ServerInfo[sVehiclePricePercent]), ServerInfo[sVehiclePricePercent]);
 		    SendClientMessage(playerid,COLOR_WHITE,string);
-		    if(GetVehicleType(vehicleid) == VTYPE_CAR) {
-				SendClientMessage(playerid, COLOR_WHITE, "Maletero: si");
+		    if(GetVehicleMaxTrunkSlots(vehicleid) > 0) {
+				SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
 		    } else {
 		        SendClientMessage(playerid, COLOR_WHITE, "Maletero: no");
 		    }
@@ -6228,7 +6228,7 @@ public matsTimer(playerid) {
 		validslot = -1;
 		
     TogglePlayerControllable(playerid, true);
-	for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
 			validslot = i;
 			break;
@@ -6259,7 +6259,7 @@ public buyMatsTimer(playerid, amount) {
 		validslot = -1;
 
     TogglePlayerControllable(playerid, true);
-	for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
 			validslot = i;
 			break;
@@ -6290,7 +6290,7 @@ public buyDrugsTimer(playerid, amount) {
 		return 1;
 	}
 	
-	for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
 			setTrunkItem(vehicleid, i, 49);
 			setTrunkParam(vehicleid, i, amount);
@@ -6318,7 +6318,7 @@ public buyProductsTimer(playerid, amount) {
 
     TogglePlayerControllable(playerid, true);
 
-	for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
 			setTrunkItem(vehicleid, i, 50);
 			setTrunkParam(vehicleid, i, amount);
@@ -6371,7 +6371,7 @@ CMD:descargar(playerid, params[]) {
 		    if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
 		    	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
 			new totalAmount = 0;
-       		for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++)
+       		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
 			{
 			    if(getTrunkItem(vehicleid, i) == 50)
 				{
@@ -6396,7 +6396,7 @@ CMD:descargar(playerid, params[]) {
     if(factionid != FAC_NONE && FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL) {
         if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
             if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
-                for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+                for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 				    if(getTrunkItem(vehicleid, i) == 47) {
 				        amount += getTrunkParam(vehicleid, i);
 						setTrunkItem(vehicleid, i, -1);
@@ -6444,7 +6444,7 @@ public OnPlayerEnterCheckpoint(playerid) {
 	    new
 			matsCount = 0;
 			
-	    for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+	    for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleID); i++) {
 		    if(getTrunkItem(vehicleID, i) == 47) {
 		        matsCount = getTrunkParam(vehicleID, i);
 				FactionInfo[faction][fMaterials] += matsCount;
@@ -7819,27 +7819,14 @@ stock resetInv(playerid) {
 
 // Obtenemos el tipo de item en el slot.
 stock getTrunkItemType(vehicleid, trunkslot) {
-	new
-	    itemid = -1;
-
-	switch(trunkslot) {
-	    case 0:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "i{i}", itemid);
-	    case 1:
-			sscanf(TrunkInfo[vehicleid][trunk1], "i{i}", itemid);
-	    case 2:
-			sscanf(TrunkInfo[vehicleid][trunk2], "i{i}", itemid);
-	    case 3:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "i{i}", itemid);
-	}
-	
+	new itemid = getTrunkItem(vehicleid, trunkslot);
 	switch(itemid) {
 		case 1 .. 15, 16 .. 38, 41, 43:
 			return ITEM_WEAPON;
 		case 47, 48, 49, 50:
 			return ITEM_OTHER;
-		/*case 43:
-			return ITEM_STORABLE;*/
+		//case 43:
+		//	return ITEM_STORABLE;
 		case -1, 0:
 			return ITEM_NONE;
 	}
@@ -7854,13 +7841,21 @@ stock getTrunkItem(vehicleid, trunkslot) {
 
 	switch(trunkslot) {
 	    case 0:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "i{i}", itemid);
+	    	sscanf(TrunkInfo[vehicleid][trunk0], "i{iii}", itemid);
 	    case 1:
-			sscanf(TrunkInfo[vehicleid][trunk1], "i{i}", itemid);
+			sscanf(TrunkInfo[vehicleid][trunk1], "i{iii}", itemid);
 	    case 2:
-			sscanf(TrunkInfo[vehicleid][trunk2], "i{i}", itemid);
+			sscanf(TrunkInfo[vehicleid][trunk2], "i{iii}", itemid);
 	    case 3:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "i{i}", itemid);
+	    	sscanf(TrunkInfo[vehicleid][trunk3], "i{iii}", itemid);
+	    case 4:
+	    	sscanf(TrunkInfo[vehicleid][trunk0], "{ii}i{i}", itemid);
+	    case 5:
+			sscanf(TrunkInfo[vehicleid][trunk1], "{ii}i{i}", itemid);
+	    case 6:
+			sscanf(TrunkInfo[vehicleid][trunk2], "{ii}i{i}", itemid);
+	    case 7:
+	    	sscanf(TrunkInfo[vehicleid][trunk3], "{ii}i{i}", itemid);
 	}
 	return itemid;
 }
@@ -7872,31 +7867,60 @@ stock getTrunkParam(vehicleid, trunkslot) {
 
 	switch(trunkslot) {
 	    case 0:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "{i}i", param);
+	    	sscanf(TrunkInfo[vehicleid][trunk0], "{i}i{ii}", param);
 	    case 1:
-			sscanf(TrunkInfo[vehicleid][trunk1], "{i}i", param);
+			sscanf(TrunkInfo[vehicleid][trunk1], "{i}i{ii}", param);
 	    case 2:
-			sscanf(TrunkInfo[vehicleid][trunk2], "{i}i", param);
+			sscanf(TrunkInfo[vehicleid][trunk2], "{i}i{ii}", param);
 	    case 3:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "{i}i", param);
+	    	sscanf(TrunkInfo[vehicleid][trunk3], "{i}i{ii}", param);
+	    case 4:
+	    	sscanf(TrunkInfo[vehicleid][trunk0], "{iii}i", param);
+	    case 5:
+			sscanf(TrunkInfo[vehicleid][trunk1], "{iii}i", param);
+	    case 6:
+			sscanf(TrunkInfo[vehicleid][trunk2], "{iii}i", param);
+	    case 7:
+	    	sscanf(TrunkInfo[vehicleid][trunk3], "{iii}i", param);
 	}
 	return param;
 }
 
 // Seteamos el item.
 stock setTrunkItem(vehicleid, trunkslot, itemid) {
+	new secondaryitem, secondaryparam;
 	switch(trunkslot) {
 	    case 0:	{
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d 0", itemid);
+	        sscanf(TrunkInfo[vehicleid][trunk0], "{ii}ii", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk0], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
 		}
 	    case 1:	{
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d 0", itemid);
+	        sscanf(TrunkInfo[vehicleid][trunk1], "{ii}ii", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk1], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
 		}
 	    case 2:	{
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d 0", itemid);
+	        sscanf(TrunkInfo[vehicleid][trunk2], "{ii}ii", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk2], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
 		}
 	    case 3:	{
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d 0", itemid);
+	        sscanf(TrunkInfo[vehicleid][trunk3], "{ii}ii", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk3], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
+		}
+  		case 4:	{
+	        sscanf(TrunkInfo[vehicleid][trunk0], "ii{ii}", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
+		}
+	    case 5:	{
+	        sscanf(TrunkInfo[vehicleid][trunk1], "ii{ii}", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
+		}
+	    case 6:	{
+	        sscanf(TrunkInfo[vehicleid][trunk2], "ii{ii}", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
+		}
+	    case 7:	{
+	        sscanf(TrunkInfo[vehicleid][trunk3], "ii{ii}", secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
 		}
 	}
 	SaveVehicle(vehicleid);
@@ -7905,18 +7929,39 @@ stock setTrunkItem(vehicleid, trunkslot, itemid) {
 
 // Seteamos el parámetro adicional.
 stock setTrunkParam(vehicleid, trunkslot, param) {
+	new primaryitem, secondaryitem, secondaryparam;
 	switch(trunkslot) {
 	    case 0:	{
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d", getTrunkItem(vehicleid, trunkslot), param);
+	        sscanf(TrunkInfo[vehicleid][trunk0], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
 		}
 	    case 1:	{
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d", getTrunkItem(vehicleid, trunkslot), param);
+	        sscanf(TrunkInfo[vehicleid][trunk1], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
 		}
 	    case 2:	{
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d", getTrunkItem(vehicleid, trunkslot), param);
+	        sscanf(TrunkInfo[vehicleid][trunk2], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
 		}
 	    case 3:	{
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d", getTrunkItem(vehicleid, trunkslot), param);
+	        sscanf(TrunkInfo[vehicleid][trunk3], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
+			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
+		}
+  		case 4:	{
+	        sscanf(TrunkInfo[vehicleid][trunk0], "iii{i}", secondaryitem, secondaryparam, primaryitem);
+			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
+		}
+	    case 5:	{
+	        sscanf(TrunkInfo[vehicleid][trunk1], "iii{i}", secondaryitem, secondaryparam, primaryitem);
+			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
+		}
+	    case 6:	{
+	        sscanf(TrunkInfo[vehicleid][trunk2], "iii{i}", secondaryitem, secondaryparam, primaryitem);
+			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
+		}
+	    case 7:	{
+	        sscanf(TrunkInfo[vehicleid][trunk3], "iii{i}", secondaryitem, secondaryparam, primaryitem);
+			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
 		}
 	}
 	SaveVehicle(vehicleid);
@@ -7925,10 +7970,10 @@ stock setTrunkParam(vehicleid, trunkslot, param) {
 
 // Reseteamos.
 stock resetTrunk(vehicleid) {
-	strmid(TrunkInfo[vehicleid][trunk0], "-1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk1], "-1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk2], "-1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk3], "-1 -1", 0, 16);
+	strmid(TrunkInfo[vehicleid][trunk0], "-1 -1 -1 -1", 0, 16);
+	strmid(TrunkInfo[vehicleid][trunk1], "-1 -1 -1 -1", 0, 16);
+	strmid(TrunkInfo[vehicleid][trunk2], "-1 -1 -1 -1", 0, 16);
+	strmid(TrunkInfo[vehicleid][trunk3], "-1 -1 -1 -1", 0, 16);
 	SaveVehicle(vehicleid);
 	return 1;
 }
@@ -16565,7 +16610,7 @@ CMD:comprar(playerid, params[]) {
 						param,
 						result = -1;
 
-					for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++)
+					for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
 					{
 					    if(getTrunkItem(vehicleid, i) == 49)
 						{
@@ -20289,7 +20334,6 @@ CMD:banear(playerid, params[]) {
 
 CMD:desbanear(playerid, params[]) {
 	new query[128];
-	new string[128];
 	new target[32];
 
 	if (PlayerInfo[playerid][pAdmin] < 5) {

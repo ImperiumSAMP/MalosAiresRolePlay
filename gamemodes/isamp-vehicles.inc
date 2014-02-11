@@ -41,8 +41,6 @@
 #define VTYPE_BOAT 				VTYPE_SEA
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
-#define TRUNK_MAX_SLOTS         5
-
 //CHOICES
 // Selecciones.
 #define CHOICE_NONE     		0
@@ -128,6 +126,41 @@ VehTypeName(type) {
 		default: format(name, 32, "¡REPORTAR-BUG!");
     }
     return name;
+}
+
+GetVehicleMaxTrunkSlots(vehicleid) {
+	new trunkslots = 0;
+	new modelid = GetVehicleModel(vehicleid);
+	switch(modelid)
+	{
+		case 406, 407, 408, 423, 424, 425, 431, 432, 434, 437, 441, 443, 444,
+			447, 448, 449, 457, 460, 461, 462, 463, 464, 465, 468, 469, 471,
+			473, 476, 481, 485, 486, 494, 495, 501, 502, 503, 504, 509, 510,
+			512, 513, 520, 521, 522, 523, 524, 525, 530, 531, 532, 537, 538,
+			539, 544, 556, 557, 564, 568, 569, 570, 571, 572, 573, 574, 581,
+			583, 584, 586, 588, 590, 594, 601, 606, 607, 608, 610, 611:
+			trunkslots = 0;
+
+		case 401, 402, 410, 411, 415, 419, 429, 430, 436, 439, 446, 451, 452,
+		    472, 474, 475, 477, 480, 488, 491, 493, 496, 500, 506, 517, 518, 526,
+		    527, 528, 533, 536, 541, 542, 545, 549, 552, 555, 558, 559, 562, 565,
+			575, 576, 578, 587, 589, 593, 595, 602, 603:
+			trunkslots = 2;
+
+		case 400, 403, 404, 405, 409, 412, 416, 418, 420, 421, 426,
+			427, 428, 438, 442, 445, 458, 466, 467, 470, 478, 479, 483, 484,
+			487, 489, 490, 492, 497, 505, 507, 511, 514, 515, 516, 529,
+			534, 535, 540, 546, 547, 550, 551, 560, 561, 563, 566,
+			567, 579, 580, 582, 585, 596, 597, 598, 599, 600, 604, 605:
+			trunkslots = 4;
+
+		case 413,417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 577:
+			trunkslots = 6;
+
+		case 414, 433, 435, 450, 453, 455, 456, 498, 499, 591, 592, 609:
+		    trunkslots = 8;
+	}
+	return trunkslots;
 }
 
 GetVehicleName(vehicleid) {
@@ -873,7 +906,7 @@ CMD:maletero(playerid, params[]) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos: ver - tomar [slot de item] - guardar [slot, opcional] - guardardroga [tipo] [cantidad] - tomardroga [tipo] [cantidad]");
 		SendClientMessage(playerid, COLOR_WHITE, "|---------------- Maletero ----------------|");
-		for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
             itemid = getTrunkItem(vehicleid, i);
             param = getTrunkParam(vehicleid, i);
             if(getTrunkItemType(vehicleid, i) == ITEM_WEAPON) {
@@ -1013,7 +1046,7 @@ CMD:maletero(playerid, params[]) {
 				                SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
 				                return 1;
 							}
-							for(new i = 0; i < TRUNK_MAX_SLOTS-1; i++) {
+							for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
 							    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
 									validslot = i;
 									break;
@@ -1028,7 +1061,7 @@ CMD:maletero(playerid, params[]) {
 							} else {
 				            	SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
 				        	}
-			        	} else if(returnid2 > -1 && returnid2 < TRUNK_MAX_SLOTS) {
+			        	} else if(returnid2 > -1 && returnid2 <= GetVehicleMaxTrunkSlots(vehicleid)) {
 			        	    if(getTrunkItemType(vehicleid, returnid2) == ITEM_NONE) {
 			        	        SetPVarInt(playerid, "cantSaveItems", 1);
 							    SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -1039,7 +1072,7 @@ CMD:maletero(playerid, params[]) {
 	                            SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese hueco.");
 							}
 			        	} else {
-			        	    SendFMessage(playerid, COLOR_YELLOW2, "¡El valor no debe ser menor de 0 o mayor de %d!", TRUNK_MAX_SLOTS-1);
+			        	    SendFMessage(playerid, COLOR_YELLOW2, "¡El valor no debe ser menor de 0 o mayor de %d!", GetVehicleMaxTrunkSlots(vehicleid));
 			        	}
 			        } else {
 						SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
