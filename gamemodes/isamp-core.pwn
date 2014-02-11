@@ -220,6 +220,7 @@ new
     SIDEGateTimer,
     TMTuneTimers[5],
 	timersID[24],
+	speedoTimer[playerid],
 	// Menus.
 	Menu:phoneMenu,
 	Menu:licenseMenu,
@@ -1054,7 +1055,10 @@ public OnGameModeExit() {
 	KillTimer(timersID[6]);
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
-	KillTimer(timersID[11]);
+	foreach(new i : Player) {
+		KillTimer(speedoTimer[i]);
+	}
+	
 	KillTimer(timersID[12]);
 	KillTimer(timersID[13]);
 	TextDrawDestroy(RegTDBorder1);
@@ -5978,13 +5982,14 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
 
-	if(AdminDuty[playerid])
+	if(AdminDuty[playerid]) {
 	    return 1;
+	}
 
 	if(VehicleInfo[vehicleid][VehLocked] == 1 || (VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid)) {
-		if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
+		if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
 		    return 1;
-
+		}
 		/*if(ispassenger)
 		    return 1;*/
 		    
@@ -6002,12 +6007,13 @@ public OnPlayerExitVehicle(playerid, vehicleid) {
 }
 
 public OnPlayerStateChange(playerid, newstate, oldstate) {
-	new
-		string[128],
-		vehicleid = LastVeh[playerid];
+	new	string[128];
+	new vehicleid = LastVeh[playerid];
 		
-	if(playerid == INVALID_PLAYER_ID)
+	if(playerid == INVALID_PLAYER_ID) {
 	    return 1;
+	}
+	
 	if(newstate == PLAYER_STATE_ONFOOT) {
 		if(SeatBelt[playerid])	{
 			new vType = GetVehicleType(vehicleid);
@@ -6043,7 +6049,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
 	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-	    KillTimer(timersID[11]);
+	    KillTimer(speedoTimer[playerid]);
 	    //
 
 		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM) {
@@ -6099,7 +6105,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
 		    // Si no es una bicicleta mostramos el velocímetro.
 			PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
-			timersID[11] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
+			speedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
 		}
 		
 		vehicleid = GetPlayerVehicleID(playerid);
@@ -6113,8 +6119,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta bicicleta no te pertenece!");
 					RemovePlayerFromVehicle(playerid);
 				} else if(VehicleInfo[vehicleid][VehLocked] == 1 && GetVehicleType(vehicleid) != VTYPE_BMX) {
-				    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
+				    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
 		    			return 1;
+					}
 		    			
 					SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 					RemovePlayerFromVehicle(playerid);
@@ -8961,46 +8968,55 @@ public jobBreakTimer(playerid, job) {
 }
 
 public speedoTimer(playerid) {
-	new
-	    vehicleID = GetPlayerVehicleID(playerid),
-	    string[20],
-		string2[64];
+	new vehicleID = GetPlayerVehicleID(playerid);
+	new string[20];
+	new string2[64];
 
   	// Actualizamos la información del velocímetro.
 
-	if((VehicleInfo[vehicleID][VehFuel] > 0) && (VehicleInfo[vehicleID][VehFuel] < 100000))
+	if((VehicleInfo[vehicleID][VehFuel] > 0) && (VehicleInfo[vehicleID][VehFuel] < 100000)) {
 		format(string, sizeof(string), "~g~%s~l~%s", "I", "IIIIIIIII");
+	}
 
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 1)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 2)))
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 1)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 2))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "II", "IIIIIIII");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 2)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 3)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 2)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 3))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "III", "IIIIIII");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 3)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 4)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 3)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 4))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIII", "IIIIII");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 4)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 5)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 4)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 5))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIIII", "IIIII");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 5)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 6)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 5)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 6))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIIIII", "IIII");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 6)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 7)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 6)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 7))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIII", "III");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 7)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 8)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 7)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 8))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIIII", "II");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 8)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 9)))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 8)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 9))) {
 		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIIIII", "I");
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 9)) && (VehicleInfo[vehicleID][VehFuel] <= 100))
+	}
+	
+	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 9)) && (VehicleInfo[vehicleID][VehFuel] <= 100)) {
 		format(string, sizeof(string), "~g~%s", "IIIIIIIIII");
-
-	if(VehicleInfo[vehicleID][VehFuel] == 0)
+	}
+	
+	if(VehicleInfo[vehicleID][VehFuel] == 0) {
 		format(string, sizeof(string), "~l~%s", "IIIIIIIIII");
-
+	}
 				// Format the final fuel-gauge readout
 		//format(FuelString, 50, "~w~Fuel: %s", FuelStatus);
 		// Display the fuel-gauge
@@ -9008,6 +9024,7 @@ public speedoTimer(playerid) {
 
     format(string2, sizeof(string2), "%d KM/H~n~ ~n~Combustible: ~n~%s", GetPlayerSpeed(playerid, true), string);
 	PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string2);
+	return 1;
 }
 
 public vehicleTimer() {
