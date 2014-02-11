@@ -17843,7 +17843,7 @@ CMD:abrirnegocio(playerid, params[]) {
 	GetPlayerName(playerid, playerName, sizeof(playerName));
     for(new bizID = 0; bizID < MAX_BUSINESS; bizID++)	{
 		if(PlayerToPoint(3.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(3.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ])) {
-			if(PlayerInfo[playerid][pBizKey] == bizID && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+			if(PlayerInfo[playerid][pBizKey] == bizID && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 				if(Business[bizID][bLocked] == 1) {
 					if(openBizPermission[bizID] == false)
 				        return SendClientMessage(playerid, COLOR_YELLOW2,"¡Debes esperar hasta el próximo dia de pago!");
@@ -17873,7 +17873,7 @@ CMD:negocioretirar(playerid,params[]) {
 		bizID = PlayerInfo[playerid][pBizKey];
 
 	if(sscanf(params, "d", ammount)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negocioretirar [cantidad]");
-	else if(bizID != 0 && Business[bizID][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 		if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld]) {
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Te encuentras demasiado lejos de la caja!");
 	    }
@@ -17902,7 +17902,7 @@ CMD:negociodepositar(playerid, params[]) {
 		bizID = PlayerInfo[playerid][pBizKey];
 
 	if(sscanf(params, "d", ammount)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negociodepositar [cantidad]");
-	else if(bizID != 0 && Business[bizID][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 		if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld]) {
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Te encuentras demasiado lejos de la caja!");
 	    }
@@ -17937,7 +17937,7 @@ CMD:entradanegocio(playerid,params[]) {
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
 	if(sscanf(params, "d", price)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /entradanegocio [precio de entrada]");
-	else if(bizID != 0 && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
 			if(price < 0 || price > 10000) {
 				SendClientMessage(playerid, COLOR_YELLOW2, "¡El costo de la entrada no debe ser menor a $0 ni mayor a $10000!");
@@ -17965,7 +17965,7 @@ CMD:nombrenegocio(playerid,params[]) {
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
 	if(sscanf(params, "s[64]", bizName)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /nombrenegocio [nombre - 64 caracteres]");
-	else if(bizID != 0 && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
 			mysql_real_escape_string(bizName, bizName);
 			strmid(Business[bizID][bName], bizName, 0, 64, 255);
@@ -17988,7 +17988,7 @@ CMD:infonegocio(playerid,params[]) {
 		playerName[MAX_PLAYER_NAME];
 
 	GetPlayerName(playerid, playerName, sizeof(playerName));
-	if(bizID != 0 && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+	if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
             SendClientMessage(playerid, COLOR_WHITE, "----[Información sobre el negocio]----");
             format(string, sizeof(string), "Nombre: 	%s", Business[bizID][bName]);
@@ -18024,7 +18024,7 @@ CMD:comprarnegocio(playerid,params[]) {
 		        SendClientMessage(playerid, COLOR_YELLOW2, "Parece que este negocio se encuentra deshabilitado...");
 				return 1;
 		    }
-			if(PlayerInfo[playerid][pBizKey] != 0 && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+			if(PlayerInfo[playerid][pBizKey] != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
 				SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de un negocio!");
 				return 1;
 			}
@@ -20301,11 +20301,28 @@ CMD:cambiarnombre(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] < 5) return 1;
 
 	if(sscanf(params, "us[24]", target, name)) {
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarnombre [playerid/ParteDelNombre] [nombre]");
 	} else if(target != INVALID_PLAYER_ID) {
 	    format(PlayerInfo[target][pName], 24, "%s", name);
 		format(string, sizeof(string), "[Staff] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
 		AdministratorMessage(COLOR_ADMINCMD, string, 1);
 		SetPlayerName(target, PlayerInfo[target][pName]);
+		if(PlayerInfo[target][pVeh1] != 0) {
+  			VehicleInfo[PlayerInfo[target][pVeh1]][VehOwnerName] = name;
+  			SaveVehicle(PlayerInfo[target][pVeh1]);
+		}
+		if(PlayerInfo[target][pVeh2] != 0) {
+			VehicleInfo[PlayerInfo[target][pVeh2]][VehOwnerName] = name;
+			SaveVehicle(PlayerInfo[target][pVeh2]);
+		}
+		if(PlayerInfo[target][pHouseKey] != 0) {
+		    House[PlayerInfo[target][pHouseKey]][Owner] = name;
+		    saveHouse(PlayerInfo[target][pHouseKey]);
+		}
+		if(PlayerInfo[target][pBizKey] != 0) {
+			Business[PlayerInfo[target][pBizKey]][bOwner] = name;
+			saveBusiness(PlayerInfo[target][pBizKey]);
+		}
 		SendFMessage(target, COLOR_WHITE, "Tu nombre ha sido cambiado a %s por el administrador %s.", GetPlayerNameEx(target), GetPlayerNameEx(playerid));
 	} else {
 	    SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
