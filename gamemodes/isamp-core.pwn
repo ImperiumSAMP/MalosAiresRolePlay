@@ -220,7 +220,7 @@ new
     SIDEGateTimer,
     TMTuneTimers[5],
 	timersID[24],
-	speedoTimer[playerid],
+	pSpeedoTimer[MAX_PLAYERS],
 	// Menus.
 	Menu:phoneMenu,
 	Menu:licenseMenu,
@@ -276,9 +276,6 @@ new
 	jobBreak[MAX_PLAYERS],
 	bool:carryingProd[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
-	
-	// Negocios
-	bool:openBizPermission[MAX_BUSINESS],
 	
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
@@ -1055,10 +1052,11 @@ public OnGameModeExit() {
 	KillTimer(timersID[6]);
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
+
 	foreach(new i : Player) {
-		KillTimer(speedoTimer[i]);
+		KillTimer(pSpeedoTimer[i]);
 	}
-	
+
 	KillTimer(timersID[12]);
 	KillTimer(timersID[13]);
 	TextDrawDestroy(RegTDBorder1);
@@ -6049,7 +6047,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
 	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-	    KillTimer(speedoTimer[playerid]);
+	    KillTimer(pSpeedoTimer[playerid]);
 	    //
 
 		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM) {
@@ -6105,7 +6103,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
 		    // Si no es una bicicleta mostramos el velocímetro.
 			PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
-			speedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
+			pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
 		}
 		
 		vehicleid = GetPlayerVehicleID(playerid);
