@@ -283,6 +283,10 @@ new
 	bool:carryingProd[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
+	// Sistema de radios en autos
+	bool:isHearingVehicleRedio[MAX_PLAYERS],
+	vehicleRedio[MAX_VEHICLES],
+	
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
 	bool:isBetingFortune[MAX_PLAYERS],
@@ -1478,6 +1482,9 @@ public ResetStats(playerid) {
 	
 	/* Sistema de Picadas */
 	resetSprintRace(playerid);
+
+	/* Sistema de radios para autos */
+	isHearingVehicleRedio[playerid] = false;
 	
 	/* Sistema de entrevistas para CTRMAN */
 	InterviewOffer[playerid] = 999;
@@ -4589,6 +4596,7 @@ public OnVehicleDataLoad(id) {
 		}
 		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
 		SetVehicleToRespawn(id);
+		vehicleRedio[id] = 0;
     }
 	return 1;
 }
@@ -5633,6 +5641,13 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 				}
 			}
 		}
+		
+		if(isHearingVehicleRedio[playerid] == true)
+		{
+			StopAudioStreamForPlayer(playerid);
+			isHearingVehicleRedio[playerid] = false;
+		}
+		
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
 	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
@@ -5663,6 +5678,13 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 				TransportDriver[TransportPassenger[playerid]] = 999;
 			}
 		}
+		
+		if(isHearingVehicleRedio[playerid] == true)
+		{
+			StopAudioStreamForPlayer(playerid);
+			isHearingVehicleRedio[playerid] = false;
+		}
+		
 	}
 	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT) {
 		if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && TransportDriver[playerid] == 999) {
@@ -5684,7 +5706,13 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		    	
 			SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 			RemovePlayerFromVehicle(playerid);
-		} 
+		}
+		// Sistema de radio en autos
+		new vID;
+		vID = GetPlayerVehicleID(playerid);
+ 		if(vehicleRedio[vID] > 0)
+	    	PlayCarRedioForPlayer(playerid, vehicleRedio[vID]);
+		//---------------------------
 	}
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
 	    LastVeh[playerid] = vehicleid;
@@ -5696,6 +5724,11 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		}
 		
 		vehicleid = GetPlayerVehicleID(playerid);
+		
+		// Sistema de radio en autos
+		if(vehicleRedio[vehicleid] > 0)
+	    	PlayCarRedioForPlayer(playerid, vehicleRedio[vehicleid]);
+		//--------------------------
 
         if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
 			format(string, sizeof(string), "~w~%s", GetVehicleName(vehicleid));
@@ -9266,7 +9299,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
 			}
 		}
-	} else if (Choice[playerid] != CHOICE_NONE) {
+	}
+	if(Choice[playerid] != CHOICE_NONE) {
 		if(PRESSED(KEY_YES)) {
             switch(Choice[playerid]) {
                 case CHOICE_CARSELL: {
@@ -19663,6 +19697,67 @@ CMD:ptunear(playerid, params[]) {
 	} else {
 		SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la puerta de un Transfender, Loco Low Co. o Wheel Arch Angels.");
 	}
+	return 1;
+}
+
+//==========================SISTEMA DE RADIO PARA AUTOS=========================
+
+stock PlayCarRedioForPlayer(playerid, redio)
+{
+	if(isHearingVehicleRedio[playerid])
+ 		StopAudioStreamForPlayer(playerid);
+	switch(redio)
+	{
+	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://184.171.254.134:9878/listen.pls");
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://giss.tv:8001/AltaM.mp3");
+	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
+	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
+	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
+	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
+	}
+	isHearingVehicleRedio[playerid] = true;
+}
+
+CMD:emisora(playerid, params[])
+{
+    new redio, vType, vehicleid = GetPlayerVehicleID(playerid);
+	vType = GetVehicleType(vehicleid);
+
+	if(sscanf(params, "i", redio))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-9]. Para apagarla utiliza /emisoraoff.");
+	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
+	if(redio < 1 || redio > 9)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 9.");
+
+	foreach(new i : Player)
+	{
+		if(IsPlayerInVehicle(i, vehicleid))
+  			PlayCarRedioForPlayer(i, redio);
+	}
+	vehicleRedio[vehicleid] = redio;
+	return 1;
+}
+
+CMD:emisoraoff(playerid, params[])
+{
+	new vType, vehicleid = GetPlayerVehicleID(playerid);
+	vType = GetVehicleType(vehicleid);
+
+	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
+ 	foreach(new i : Player)
+	{
+		if(IsPlayerInVehicle(i, vehicleid))
+		{
+		    if(isHearingVehicleRedio[i])
+		        StopAudioStreamForPlayer(i);
+		}
+	}
+	vehicleRedio[vehicleid] = 0;
 	return 1;
 }
 
