@@ -3,6 +3,8 @@
 #endif
 #define _isamp_factions_included
 
+#include "isamp-vehicles.inc"
+
 //Defines
 #define MAX_FACTIONS            20
 
@@ -78,6 +80,7 @@ CMD:afacciones(playerid, params[]) {
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdrogas /afdinero /afmats /afskin /afrango /afvehmision");
+ 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos");
 	return 1;
 }
 
@@ -101,6 +104,26 @@ CMD:aftipo(playerid, params[]) {
 	} else {
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
 	}
+	return 1;
+}
+
+CMD:afvehiculos(playerid, params[])
+{
+    if(PlayerInfo[playerid][pAdmin] < 4)
+		return 1;
+
+	new factionID;
+	if(sscanf(params, "dd", factionID))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehiculos [idfacción]");
+    if(factionID < 1 && factionID >= MAX_FACTIONS)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
+    SendFMessage(playerid, COLOR_YELLOW, "=================|Vehiculos de facción: %s|=================", FactionInfo[factionID][fName]);
+	for(new i=0; i<MAX_VEH; i++)
+	{
+	    if(VehicleInfo[i][VehFaction] == factionID)
+	        SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} Vehiculo ID %d - Modelo %s", i, GetVehicleName(i));
+	}
+	SendClientMessage(playerid, COLOR_YELLOW, "===============================================================================");
 	return 1;
 }
 

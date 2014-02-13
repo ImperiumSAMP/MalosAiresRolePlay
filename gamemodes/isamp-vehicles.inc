@@ -26,6 +26,7 @@
 #define	VEH_JOB					6	// Empleo.
 #define	VEH_RENT                7
 #define	VEH_DEALERSHIP2 		8	// De venta, GROTTI.
+#define VEH_NPC                 9
 
 #define VTYPE_CAR 				1
 #define VTYPE_HEAVY 			2
@@ -116,13 +117,14 @@ VehTypeName(type) {
     new name[32];
     switch(type) {
         case 0: format(name, 32, "ninguno");
-		case 1: format(name, 32, "venta");
+		case 1,8: format(name, 32, "venta");
 		case 2: format(name, 32, "personal");
 		case 3: format(name, 32, "faccion");
 		case 4: format(name, 32, "escuela");
 		case 5: format(name, 32, "admin");
 		case 6: format(name, 32, "empleo");
 		case 7: format(name, 32, "renta");
+		case 9: format(name, 32, "npc");
 		default: format(name, 32, "¡REPORTAR-BUG!");
     }
     return name;
@@ -1276,7 +1278,8 @@ CMD:vehiculo(playerid,params[]) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡No puedes estacionar un vehículo en la consecionaria!");
 			return 1;
 		}
-		if(PlayerInfo[playerid][pVeh1] == vehicleid || PlayerInfo[playerid][pVeh2] == vehicleid) {
+		if( (PlayerInfo[playerid][pVeh1] == vehicleid || PlayerInfo[playerid][pVeh2] == vehicleid) ||
+			(PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction] && PlayerInfo[playerid][pRank] == 1) ) {
 		
 		    new Float:vehicleHealth;
 			GetVehicleHealth(vehicleid, vehicleHealth);
