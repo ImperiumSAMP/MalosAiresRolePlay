@@ -10,8 +10,6 @@ public OnRecordingPlaybackEnd()
 #if RECORDING_TYPE == 1
 	public OnNPCEnterVehicle(vehicleid, seatid)
 	    {
-	        SendCommand("/motor");
-	        SendCommand("/veh luces");
 	  		StartRecordingPlayback(RECORDING_TYPE, RECORDING);
 		}
 	public OnNPCExitVehicle()

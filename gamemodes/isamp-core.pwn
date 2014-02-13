@@ -141,7 +141,6 @@
 #define PRICE_LIC_FLYING        25400
 #define PRICE_CLOTHES1          250
 #define PRICE_CLOTHES2          3500
-#define BLACK_MARKET_BUYLIMIT   25000
 // Materiales por unidad.
 #define MATS_KNUCKLES           1
 #define MATS_KNIFE              3
@@ -348,13 +347,6 @@ new
 	ProductsCost[MAX_PLAYERS],
 	UserExists[MAX_PLAYERS],
 	CanDoTut[MAX_PLAYERS];
-	
-new Float:BLACK_MARKET_POS[][3] = {
-	{2442.2798,-1973.6866,13.5469},
-	{856.4645,-600.1309,18.4219},
-	{2545.4199,-2468.9958,13.6232},
-	{2241.4578,-2158.4131,13.5538}
-};
 
 new Float:GUIDE_POS[][3] = {
 	{1675.1625,-2245.8516,13.5655},
@@ -369,7 +361,6 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 
 // Pickups
 new
-	P_BLACK_MARKET[sizeof(BLACK_MARKET_POS)],
 	P_BANK,
 	P_FIGHT_STYLE,
 	P_LICENSE_CENTER,
@@ -1479,6 +1470,9 @@ public ResetStats(playerid) {
 	TuningClient[playerid] = 999;
 	DestuningOffer[playerid] = 999;
 	
+	/* Sistema de máscaras */
+	isUsingMaskInSlot[playerid] = -1;
+	
 	/* Sistema de Picadas */
 	resetSprintRace(playerid);
 
@@ -1751,6 +1745,9 @@ public OnPlayerDisconnect(playerid, reason) {
 	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
 
 	deleteAbandonedSprintRace(playerid);
+	
+	if(isHearingVehicleRedio[playerid])
+		StopAudioStreamForPlayer(playerid);
 	
 	return 1;
 }
@@ -2125,6 +2122,9 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	CopDuty[playerid] = 0;
 	SIDEDuty[playerid] = 0;
 	
+	if(isHearingVehicleRedio[playerid])
+		StopAudioStreamForPlayer(playerid);
+		
 	return 1;
 }
 
@@ -5988,6 +5988,9 @@ public OnPlayerEnterCheckpoint(playerid) {
 		Float:vehicleHP;
 
     GetVehicleHealth(vehicleID, vehicleHP);
+    
+	if(MechanicCallTime[playerid] > 0 && faction == FAC_MECH)
+	    MechanicCallTime[playerid] = 0;
 
 	if(eventStep[playerid] == 3) {
 	    new
@@ -6315,13 +6318,7 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source) {
 }
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
-	for(new i = 0; i < sizeof(P_BLACK_MARKET); i++) {
-	    if(pickupid == P_BLACK_MARKET[i]) {
-			GameTextForPlayer(playerid, "~w~/comprar", 2000, 4);
-			return 1;
-		}
-	}
-	
+
 	for(new i = 0; i < 5; i++) {
 	    if(pickupid == P_TUNE[i]) {
 	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
@@ -9503,11 +9500,7 @@ public ClearCheckpointsForPlayer(playerid) {
 }
 
 stock LoadPickups() {
-	// Mercados negros.
-	for(new i = 0; i < sizeof(BLACK_MARKET_POS); i ++) {
-		P_BLACK_MARKET[i] = CreateDynamicPickup(1239, 1, BLACK_MARKET_POS[i][0], BLACK_MARKET_POS[i][1], BLACK_MARKET_POS[i][2], -1);
-	}
-	
+
 	/* Gimnasio */
 	P_FIGHT_STYLE = CreateDynamicPickup(1239, 1, 766.3723, 13.8237, 1000.7015, -1);
 	
@@ -15357,7 +15350,7 @@ CMD:chino(playerid, params[])
 		{
 		    if(ProxDetectorS(15.0, playerid, i))
  			{
-		    	if(PlayerInfo[i][pFaction] == FAC_CHIN)
+		    	if(PlayerInfo[i][pFaction] == FAC_CHIN || AdminDuty[i])
 		        	SendFMessage(i, COLOR_WHITE, "%s dice en chino: %s", name, text);
 				else
 				    SendFMessage(i, COLOR_ACT1, "%s habla unas palabras en un idioma desconocido.", name);
@@ -15388,7 +15381,7 @@ CMD:italiano(playerid, params[])
 		{
 		    if(ProxDetectorS(15.0, playerid, i))
  			{
-		    	if(PlayerInfo[i][pFaction] == FAC_BERT)
+		    	if(PlayerInfo[i][pFaction] == FAC_BERT || AdminDuty[i])
 		        	SendFMessage(i, COLOR_WHITE, "%s dice en italiano: %s", name, text);
 				else
 				    SendFMessage(i, COLOR_ACT1, "%s habla unas palabras en un idioma desconocido.", name);
@@ -15419,7 +15412,7 @@ CMD:ruso(playerid, params[])
 		{
 		    if(ProxDetectorS(15.0, playerid, i))
  			{
-		    	if(PlayerInfo[i][pFaction] == FAC_FORZ)
+		    	if(PlayerInfo[i][pFaction] == FAC_FORZ || AdminDuty[i])
 		        	SendFMessage(i, COLOR_WHITE, "%s dice en ruso: %s", name, text);
 				else
 				    SendFMessage(i, COLOR_ACT1, "%s habla unas palabras en un idioma desconocido.", name);
@@ -15801,7 +15794,7 @@ CMD:ayuda(playerid,params[]) {
 	}
 	
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /vehiculo /maletero /ayudarenta (/cin)turón (/cas)co");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /vehiculo /maletero /ayudarenta (/cin)turón (/cas)co /emisora");
 	
     if(PlayerInfo[playerid][pFaction] != 0) {
     	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Facción]:{C8C8C8} /fooc /faccion");
@@ -16000,9 +15993,10 @@ CMD:colgar(playerid, params[]) {
 CMD:llamar(playerid, params[]) {
 	new
 		workers,
-  	    number;
+  	    number,
+  	    text[128];
 
-    if(sscanf(params, "d", number)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
+    if(sscanf(params, "dS[128]", number, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
 	else {
 		if(PlayerInfo[playerid][pPhoneNumber] == 0) {
 			SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
@@ -16050,6 +16044,16 @@ CMD:llamar(playerid, params[]) {
 			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
 			Mobile[playerid] = 444;
 			return 1;
+		}
+		if(number == 3900)
+		{
+		    SendClientMessage(playerid, COLOR_WHITE, "Telefonista: gracias por comunicarte con CTR-MAN, tu mensaje será recibido.");
+		    foreach(new i : Player)
+		    {
+		        if(PlayerInfo[i][pFaction] == FAC_MAN)
+		            SendFMessage(i, COLOR_WHITE, "[Nuevo mensaje a la radio de %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+		    }
+		    return 1;
 		}
 		if(number == PlayerInfo[playerid][pPhoneNumber]) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
@@ -18383,7 +18387,7 @@ CMD:tuning(playerid, params[])
 		 			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
                 if(PlayerInfo[clientID][pVeh1] != vID && PlayerInfo[clientID][pVeh2] != vID)
 			        return SendClientMessage(playerid, COLOR_WHITE, "Este auto no es de tu cliente.");
-		        if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE && GetVehicleType(vID) != VTYPE_HEAVY)
+		        if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE)
 		            return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo invalido.");
 		        if(IsPlayerInRangeOfPoint(playerid, 15.0, 1594.9000, -1797.5000, 13.3428)) //En el galpon de reparaciones del taller
 				{
@@ -19519,6 +19523,10 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
 	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
 	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://95.141.24.140:80/listen.pls");
+     	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://206.217.213.235:8170/listen.pls");
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://5.135.158.214:6316/listen.pls");
 	}
 	isHearingVehicleRedio[playerid] = true;
 }
@@ -19529,16 +19537,19 @@ CMD:emisora(playerid, params[])
 	vType = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", redio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-9]. Para apagarla utiliza /emisoraoff.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-13]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
-	if(redio < 1 || redio > 9)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 9.");
+	if(redio < 1 || redio > 13)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 13.");
 
 	foreach(new i : Player)
 	{
 		if(IsPlayerInVehicle(i, vehicleid))
+		{
+			SendFMessage(i, COLOR_ACT1, "%s sintoniza una radio en el estéreo del auto.", GetPlayerNameEx(playerid));
   			PlayCarRedioForPlayer(i, redio);
+		}
 	}
 	vehicleRedio[vehicleid] = redio;
 	return 1;
@@ -19555,6 +19566,7 @@ CMD:emisoraoff(playerid, params[])
 	{
 		if(IsPlayerInVehicle(i, vehicleid))
 		{
+			SendFMessage(i, COLOR_ACT1, "%s apaga la radio sintonizada en el estéreo del auto.", GetPlayerNameEx(playerid));
 		    if(isHearingVehicleRedio[i])
 		        StopAudioStreamForPlayer(i);
 		}
@@ -19619,7 +19631,7 @@ CMD:entrevistar(playerid, params[])
 	format(string, sizeof(string), "El reportero %s te quiere entrevistar por la radio, si lo deseas escribe /entrevistarse. Tienes 15 segundos.", GetPlayerNameEx(playerid));
 	SendClientMessage(target, COLOR_LIGHTBLUE, string);
 	InterviewOffer[target] = playerid;
-	SetTimerEx("EndInterviewOffer", 15000, false, "i", playerid);
+	SetTimerEx("EndInterviewOffer", 15000, false, "i", target);
 	return 1;
 }
 
@@ -19658,7 +19670,8 @@ CMD:mascara(playerid, params[])
 		if(index == 999)
   			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio para equiparte items.");
 		SetPlayerAttachedObject(playerid, index, PlayerInfo[playerid][pMask], 2, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
-        PlayerActionMessage(playerid, 15.0, "agarra un pañuelo de su bolsillo y se la coloca en la cara para tapar su rostro.");
+        EditAttachedObject(playerid, index);
+		PlayerActionMessage(playerid, 15.0, "agarra un pañuelo de su bolsillo y se la coloca en la cara para tapar su rostro.");
 		isUsingMaskInSlot[playerid] = index;
 		foreach(new i:Player)
 		{
@@ -19690,6 +19703,8 @@ CMD:comprarmascara(playerid, params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $300.");
 	if(GetPlayerCash(playerid) < 300)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $300. ¡Vuelve cuando los tengas!");
+	if(Business[business][bProducts] < 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "La tienda no tiene productos!");
  	GivePlayerCash(playerid, -300);
  	PlayerInfo[playerid][pMask] = maskModels[idmask];
  	PlayerActionMessage(playerid, 15.0, "le paga al empleado $300 y compra un pañuelo, que luego guarda en su bolsillo.");
