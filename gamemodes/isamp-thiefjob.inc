@@ -584,7 +584,7 @@ CMD:hurtar(playerid, params[]) {
     if(PlayerInfo[playerid][pJailed] > 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo estando encarcelado.");
 
-	if(IsPlayerInAnyVehicle(playerid))
+	if(IsPlayerInAnyVehicle(playerid) && GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_BIKE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo desde un vehículo.");
 
 	if(sscanf(params, "u", target)) {

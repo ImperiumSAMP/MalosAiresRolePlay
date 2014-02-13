@@ -285,7 +285,6 @@ new
 	
 	// Sistema de radios en autos
 	bool:isHearingVehicleRedio[MAX_PLAYERS],
-	vehicleRedio[MAX_VEHICLES],
 	
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
@@ -4596,7 +4595,6 @@ public OnVehicleDataLoad(id) {
 		}
 		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
 		SetVehicleToRespawn(id);
-		vehicleRedio[id] = 0;
     }
 	return 1;
 }
@@ -5146,75 +5144,6 @@ stock isWeaponAllowed(weapon) {
 	return 1;
 }
 
-/*stock GivePlayerWeapon(playerid, weapon, ammo) {
-	switch(weapon) {
-	    case 0, 1: {
-			sWeapons[playerid][0][0] = weapon;
-			sWeapons[playerid][0][1] = ammo;
-	    }
-		case 2 .. 9: {
-			sWeapons[playerid][1][0] = weapon;
-			sWeapons[playerid][1][1] = ammo;
-		}
-	    case 10 .. 15: {
-			sWeapons[playerid][10][0] = weapon;
-			sWeapons[playerid][10][1] = ammo;
-		}
-	    case 16 .. 18: {
-			sWeapons[playerid][8][0] = weapon;
-			sWeapons[playerid][8][1] = ammo;
-		}
-	    case 22 .. 24: {
-			sWeapons[playerid][2][0] = weapon;
-			sWeapons[playerid][2][1] = ammo;
-		}
-	    case 25 .. 27: {
-			sWeapons[playerid][3][0] = weapon;
-			sWeapons[playerid][3][1] = ammo;
-		}
-	    case 28, 29, 32: {
-			sWeapons[playerid][4][0] = weapon;
-			sWeapons[playerid][4][1] = ammo;
-		}
-	    case 30, 31: {
-			sWeapons[playerid][5][0] = weapon;
-			sWeapons[playerid][5][1] = ammo;
-		}
-        case 33, 34: {
-			sWeapons[playerid][6][0] = weapon;
-			sWeapons[playerid][6][1] = ammo;
-		}
-        case 35 .. 38: {
-			sWeapons[playerid][7][0] = weapon;
-			sWeapons[playerid][7][1] = ammo;
-		}
-        case 39: {
-			sWeapons[playerid][8][0] = weapon;
-			sWeapons[playerid][8][1] = ammo;
-		}
-        case 40: {
-			sWeapons[playerid][12][0] = weapon;
-			sWeapons[playerid][12][1] = ammo;
-        }
-        case 41, 43: {
-			sWeapons[playerid][9][0] = weapon;
-			sWeapons[playerid][9][1] = ammo;
-		}
-        case 44, 46: {
-			sWeapons[playerid][11][0] = weapon;
-			sWeapons[playerid][11][1] = ammo;
-		}
-	}
-	GivePlayerWeapon(playerid, weapon, ammo);
-    return 1;
-}
-
-stock GetPlayerWeaponData(playerid, slot, &weapon, &ammo) {
-	weapon = sWeapons[playerid][slot][0];
-	ammo = sWeapons[playerid][slot][1];
-	return 1;
-}
-*/
 public antiCheatTimer() {
 	new
 	    string[128];
@@ -9300,6 +9229,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 			}
 		}
 	}
+	
 	if(Choice[playerid] != CHOICE_NONE) {
 		if(PRESSED(KEY_YES)) {
             switch(Choice[playerid]) {
@@ -19402,78 +19332,6 @@ CMD:vendercasa(playerid, params[]) {
 	return 1;
 }
 
-/*CMD:alquilable(playerid, params[]) {
-	new
-	    house = PlayerInfo[playerid][pHouseKey],
-		name[MAX_PLAYER_NAME];
-		
-	GetPlayerName(playerid, playername, sizeof(playername));
-	
-	if(house != 0 && strcmp(playername, House[house][Owner], true) == 0) {
-		if(House[house][Rentable] == 0) {
-			SendClientMessage(playerid, COLOR_WHITE, "Tu casa ya se puede alquilar.");
-		    House[house][Rentable] = 1;
-		} else if(House[house][Rentable] == 1) {
-			SendClientMessage(playerid, COLOR_WHITE, "Tu casa ya no se puede alquilar.");
-		    House[house][Rentable] = 0;
-		}
-		saveHouse(house);
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener una casa para utilizar este comando!");
-	}
-	return 1;
-}
-
-CMD:costoalquiler(playerid, params[]) {
-	new
-	    cost,
-	    house = PlayerInfo[playerid][pHouseKey],
-		name[MAX_PLAYER_NAME];
-	
-	if(sscanf(params, "i", cost)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /costoalquiler [costo]");
-	} else if(bouse != 255 && strcmp(name, House[house][Owner], true) == 0) {
-		if(cost > 1 && cost < 100000) {
-			House[house][RentCost] = cost;
-			SendFMessage(playerid, COLOR_WHITE, "Has cambiado el costo de alquiler a $%d.", House[house][RentCost]);
-			saveHouse(house);
-		} else {
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar un valor mayor a $0 y menor que $100.000!");
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener una casa para utilizar este comando!");
-	}
-	return 1;
-}
-
-CMD:alquilar(playerid, params[]) {
-	new
-	    house = PlayerInfo[playerid][pHouseKey],
-		name[MAX_PLAYER_NAME];
-		
-	GetPlayerName(playerid, name, sizeof(name));
-	for(new h = 0; h < sizeof(House); h++) {
-		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 1 && House[h][Rentable] == 1)	{
-			if(PlayerInfo[playerid][pHouseKey] == 0) {
-				if(GetPlayerCash(playerid) >= House[h][RentCost]) {
-					PlayerInfo[playerid][pHouseKey] = h;
-					GivePlayerCash(playerid, - House[h][RentCost]);
-					House[h][Money] = House[h][Money] + House[h][RentCost];
-					SetPlayerInterior(playerid, House[h][ExitInterior]);
-					SetPlayerPos(playerid, House[h][ExitX], House[h][ExitY], House[h][ExitZ]);
-					SetPlayerVirtualWorld(playerid, h + 15000);
-					SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado esta casa por $%d! ya no deberás volver a pagar.");
-				} else {
-					SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-				}
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de una casa!");
-			}
-		}
-	}
-	return 1;
-}*/
-
 CMD:puerta(playerid, params[]) {
     new
 	    house = PlayerInfo[playerid][pHouseKey],
@@ -19499,62 +19357,6 @@ CMD:puerta(playerid, params[]) {
 	}
 	return 1;
 }
-/*
-CMD:casaretirar(playerid, params[]) {
-	new
-	    amount,
-		house = PlayerInfo[playerid][pHouseKey],
-	    name[MAX_PLAYER_NAME];
-	    
-	GetPlayerName(playerid, name, sizeof(name));
-	if(sscanf(params, "d", amount)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaretirar [cantidad]");
-	} else {
-		if(PlayerInfo[playerid][pHouseKey] != 0 && strcmp(playername, House[PlayerInfo[playerid][pHouseKey]][Owner], true) == 0) {
-			if(PlayerToPoint(20.0, playerid,House[bouse][ExitX], House[bouse][ExitY], House[bouse][ExitZ]) && GetPlayerVirtualWorld(playerid) == house + 15000) {
-				if(House[house][Money] >= amount && amount > 0) {
-					GivePlayerCash(playerid, amount);
-					House[bouse][Money] -= amount;
-	            	PlayerActionMessage(playerid, 15.0, "gira la cerradura de su caja fuerte y toma algo de dinero de ella.");
-					saveHouse(house);
-				} else {
-					SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-				}
-			} else {
-				SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar dentro de tu casa!");
-			}
-		}
-	}
-	return 1;
-}
-				
-CMD:casadepositar(playerid, params[]) {
-	new
-	    amount,
-		house = PlayerInfo[playerid][pHouseKey],
-	    name[MAX_PLAYER_NAME];
-
-	GetPlayerName(playerid, name, sizeof(name));
-	if(sscanf(params, "d", amount)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casadepositar [cantidad]");
-	} else {
-		if(PlayerInfo[playerid][pHouseKey] != 0 && strcmp(playername, House[house][Owner], true) == 0) {
-			if(PlayerToPoint(20.0, playerid, House[house][ExitX], House[house][ExitY], House[house][ExitZ]) && GetPlayerVirtualWorld(playerid) == house + 15000) {
-                if((amount <= 150000 || House[house][Money] + amount <= 150000) && amount > 0) {
-					GivePlayerCash(playerid, -amount);
-					House[house][Money] += amount;
-	            	PlayerActionMessage(playerid, 15.0, "gira la cerradura de su caja fuerte y guarda algo de dinero de ella.");
-					saveHouse(house);
-				} else {
-					SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes almacenar más de $150.000 o menos de $0!");
-				}
-			} else {
-				SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar dentro de tu casa!");
-			}
-		}
-	}
-	return 1;
-}*/
 
 CMD:reparar(playerid,params[]) {
 	new

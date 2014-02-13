@@ -86,6 +86,8 @@ enum Cars {
 };
 new VehicleInfo[MAX_VEH][Cars];
 
+new vehicleRedio[MAX_VEH];
+
 enum RCars {
 	vrID,
 	vrRented,
@@ -875,6 +877,7 @@ public OnVehicleSpawn(vehicleid) {
 		    //SetVehiclePos(vehicleid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ]);
 		}
 	}
+	vehicleRedio[vehicleid] = 0;
 	return 1;
 }
 
