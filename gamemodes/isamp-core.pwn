@@ -15875,7 +15875,7 @@ CMD:hora(playerid, params[]) {
 }
 
 CMD:servicios(playerid, params[]) {
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Emergencias: 911 | Taller mecánico: 555 | Taxi: 444 | Medios MA: 222");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Emergencias: 911 | Taller mecánico: 555 | Taxi: 444 | Medios MA: 3900");
     return 1;
 }
 
@@ -17593,313 +17593,215 @@ CMD:verlicencias(playerid,params[]) {
     return 1;
 }
 
-CMD:pagar(playerid,params[]) {
-	new
-	    targetID,
-	    name[32],
-	    string[128],
-	    ammount;
+//==============================MANEJO DE DINERO================================
 
-    if(sscanf(params, "ud", targetID, ammount)) {
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pagar [IDJugador/ParteDelNombre] [cantidad]");
-	} else if(GetPlayerCash(playerid) >= ammount && ammount > 0 && ammount) {
-	    if(playerid != targetID) {
-			if(ProxDetectorS(2.0, playerid, targetID)) {
-			    GetPlayerName(targetID, name, 32);
-				format(string, sizeof(string), "[PAGO] $%d a %s (DBID: %d)", ammount, name, PlayerInfo[playerid][pID]);
-		       	log(playerid, LOG_MONEY, string);
-				GivePlayerCash(playerid, -ammount);
-				GivePlayerCash(targetID, ammount);
-				format(string, sizeof(string), "Le has pagado $%d a %s.", ammount, GetPlayerNameEx(targetID));
-				SendClientMessage(playerid, COLOR_WHITE, string);
-				format(string, sizeof(string), "%s te ha pagado $%d.", GetPlayerNameEx(playerid), ammount);
-				SendClientMessage(targetID, COLOR_WHITE, string);
-				format(string, sizeof(string), "toma algo de dinero y se lo entrega a %s.", GetPlayerNameEx(targetID));
-	            PlayerActionMessage(playerid, 15.0, string);
-	            PlayerPlaySound(targetID, 1052, 0.0, 0.0, 0.0);
-	            PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡Deben estar cerca!");
-			}
-	    } else {
-  			SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes pagarte a tí mismo!");
-	    }
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida! asegúrate de tener dicha suma y que sea de más de $0 y menos de $50,000).");
-	}
+CMD:pagar(playerid,params[])
+{
+	new targetID, name[32], string[128], amount;
+
+    if(sscanf(params, "ud", targetID, amount))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pagar [ID/Jugador] [cantidad]");
+    if(GetPlayerCash(playerid) < amount || amount < 1 || amount > 500000)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida! asegúrate de tener dicha suma y que sea de más de $0 y menos de $500,000).");
+    if(playerid == targetID)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes pagarte a tí mismo!");
+    if(!ProxDetectorS(2.0, playerid, targetID))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Deben estar cerca!");
+        
+    GetPlayerName(targetID, name, 32);
+	format(string, sizeof(string), "[PAGO] $%d a %s (DBID: %d)", amount, name, PlayerInfo[playerid][pID]);
+  	log(playerid, LOG_MONEY, string);
+	GivePlayerCash(playerid, -amount);
+	GivePlayerCash(targetID, amount);
+	SendFMessage(playerid, COLOR_WHITE, "Le has pagado $%d a %s.", amount, GetPlayerNameEx(targetID));
+	SendFMessage(targetID, COLOR_WHITE, "%s te ha pagado $%d.", GetPlayerNameEx(playerid), amount);
+	format(string, sizeof(string), "toma algo de dinero y se lo entrega a %s.", GetPlayerNameEx(targetID));
+    PlayerActionMessage(playerid, 15.0, string);
+    PlayerPlaySound(targetID, 1052, 0.0, 0.0, 0.0);
+    PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
     return 1;
 }
 
-CMD:ayudabanco(playerid,params[]) {
-	new
-	    string[128];
+CMD:ayudacajero(playerid,params[])
+{
+	cmd_ayudabanco(playerid, params);
+	return 1;
+}
+
+CMD:ayudabanco(playerid,params[])
+{
+	new string[128];
 
 	if(PlayerInfo[playerid][pFaction] != 0 && PlayerInfo[playerid][pRank] == 1) {
 	    format(string, sizeof(string), "- /fverbalance - /fdepositar - /fretirar");
     } else if(PlayerInfo[playerid][pFaction] != 0) {
-    	format(string, sizeof(string), "- /fdepositar", string);
+    	format(string, sizeof(string), "- /fdepositar");
 	}
-    format(string, sizeof(string), "[BANCO]: /verbalance - /depositar - /retirar %s", string);
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[BANCO]: /verbalance - /depositar - /retirar %s", string);
 	return 1;
 }
 
-CMD:ayudacajero(playerid,params[]) {
-	new
-	    string[128];
+CMD:depositar(playerid,params[])
+{
+	new amount;
 
-	if(PlayerInfo[playerid][pFaction] != 0 && PlayerInfo[playerid][pRank] == 1) {
-	    format(string, sizeof(string), "- /fverbalance - /fdepositar - /fretirar");
-    } else if(PlayerInfo[playerid][pFaction] != 0) {
-    	format(string, sizeof(string), "- /fdepositar", string);
-	}
-    format(string, sizeof(string), "[CAJERO]: /verbalance - /depositar - /retirar %s", string);
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
-	return 1;
-}
-
-CMD:depositar(playerid,params[]) {
-	new
-	    string[128],
-	    ammount;
-
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-        if(sscanf(params, "d", ammount)) {
-            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /depositar [cantidad]");
-		} else if(GetPlayerCash(playerid) >= ammount && ammount > 0) {
-			GivePlayerCash(playerid, -ammount);
-			PlayerInfo[playerid][pBank] += ammount;
-			format(string, sizeof(string), "Has depositado $%d, nuevo balance: $%d.", ammount, PlayerInfo[playerid][pBank]);
-			SendClientMessage(playerid, COLOR_WHITE, string);
-			if(IsAtATM(playerid)) {
-				PlayerActionMessage(playerid, 15.0, "toma algo de dinero y lo deposita en la abertura del cajero automático.");
-			} else {
-			    PlayerActionMessage(playerid, 15.0, "toma algo de dinero y se lo entrega al banquero.");
-			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-		}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+ 	if(sscanf(params, "d", amount))
+    	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /depositar [cantidad]");
+	if(GetPlayerCash(playerid) < amount || amount < 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+	    
+	GivePlayerCash(playerid, -amount);
+	PlayerInfo[playerid][pBank] += amount;
+	SendFMessage(playerid, COLOR_WHITE, "Has depositado $%d. Nuevo balance: $%d.", amount, PlayerInfo[playerid][pBank]);
+ 	PlayerActionMessage(playerid, 15.0, "toma una suma de dinero y la deposita en su cuenta.");
     return 1;
 }
 
-CMD:retirar(playerid,params[]) {
-	new
-		string[128],
-	    ammount;
+CMD:retirar(playerid,params[])
+{
+	new amount;
+	
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+ 	if(sscanf(params, "d", amount))
+    	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /retirar [cantidad]");
+	if(PlayerInfo[playerid][pBank] < amount || amount < 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
 
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-        if(sscanf(params, "d", ammount))
-            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /retirar [cantidad]");
-		else if(PlayerInfo[playerid][pBank] >= ammount && ammount > 0) {
-			GivePlayerCash(playerid, ammount);
-			PlayerInfo[playerid][pBank] -= ammount;
-			format(string, sizeof(string), "Has retirado $%d, nuevo balance: $%d.", ammount, PlayerInfo[playerid][pBank]);
-			SendClientMessage(playerid, COLOR_WHITE, string);
-			if(IsAtATM(playerid)) {
-			    PlayerActionMessage(playerid, 15.0, "toma un manojo de billetes de la abertura del cajero automático.");
-			} else {
-			    PlayerActionMessage(playerid, 15.0, "recibe un paquete con dinero del banquero.");
-			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-		}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+	GivePlayerCash(playerid, amount);
+	PlayerInfo[playerid][pBank] -= amount;
+	SendFMessage(playerid, COLOR_WHITE, "Has retirado $%d. Nuevo balance: $%d.", amount, PlayerInfo[playerid][pBank]);
+    PlayerActionMessage(playerid, 15.0, "retira una suma de dinero de su cuenta.");
     return 1;
 }
 
-CMD:transferir(playerid,params[]) {
-	new
-	    targetID,
-	    name[32],
-	    string[128],
-	    ammount;
+CMD:transferir(playerid,params[])
+{
+	new targetID, name[32], string[128], amount;
 
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-        if(sscanf(params, "du", ammount, targetID))
-            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /transferir [cantidad] [IDJugador/ParteDelNombre]");
-		else if(PlayerInfo[playerid][pBank] >= ammount && ammount > 0) {
-		    if(playerid != targetID) {
-		        GetPlayerName(targetID, name, 32);
-		    	format(string, sizeof(string), "[TRANSFERENCIA] $%d a %s (DBID: %d)", ammount, name, PlayerInfo[playerid][pID]);
-		       	log(playerid, LOG_MONEY, string);
-		    	PlayerInfo[playerid][pBank] -= ammount;
-				PlayerInfo[targetID][pBank] += ammount;
-				format(string, sizeof(string), "Has realizado una transferencia de $%d a la cuenta de %s.", ammount, GetPlayerNameEx(targetID));
-				SendClientMessage(playerid, COLOR_WHITE, string);
-                if(IsAtATM(playerid)) {
-				    PlayerActionMessage(playerid, 15.0, "toma algo de dinero y lo deposita en la abertura del cajero automático.");
-				} else {
-				    PlayerActionMessage(playerid, 15.0, "toma algo de dinero y se lo entrega al banquero.");
-				}
-		    } else {
-      			SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes transferirte a tí mismo!");
-		    }
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-		}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+	if(sscanf(params, "ud", targetID, amount))
+ 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /transferir [ID/Jugador] [cantidad]");
+    if(PlayerInfo[playerid][pBank] < amount || amount < 1)
+  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+   	if(playerid == targetID)
+   	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes transferirte a tí mismo!");
+
+	GetPlayerName(targetID, name, 32);
+	format(string, sizeof(string), "[TRANSFERENCIA] $%d a %s (DBID: %d)", amount, name, PlayerInfo[playerid][pID]);
+	log(playerid, LOG_MONEY, string);
+	PlayerInfo[playerid][pBank] -= amount;
+	PlayerInfo[targetID][pBank] += amount;
+	SendFMessage(playerid, COLOR_WHITE, "Has realizado una transferencia de $%d a la cuenta de %s.", amount, GetPlayerNameEx(targetID));
+	SendFMessage(targetID, COLOR_WHITE, "Has recibido una transferencia de la cuenta de %s por $%d.", GetPlayerNameEx(playerid), amount);
+  	return 1;
+}
+
+CMD:verbalance(playerid,params[])
+{
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+
+	SendFMessage(playerid, COLOR_WHITE, "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
+	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
     return 1;
 }
 
-CMD:verbalance(playerid,params[]) {
-	new
-	    string[128];
+//==========================MANEJO DE DINERO DE FACCION=========================
 
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-		format(string, sizeof(string), "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
-		SendClientMessage(playerid, COLOR_WHITE, string);
-  		PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+CMD:fverbalance(playerid,params[])
+{
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+    if(PlayerInfo[playerid][pFaction] == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
+    if(PlayerInfo[playerid][pRank] != 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
     return 1;
 }
 
-CMD:fverbalance(playerid,params[]) {
-    new
-	    string[128];
-
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-		if(PlayerInfo[playerid][pFaction] != 0) {
-		    if(PlayerInfo[playerid][pRank] == 1) {
-				format(string, sizeof(string), "El balance actual de la cuenta compartida es de $%d.", FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
-				SendClientMessage(playerid, COLOR_WHITE, string);
-	            PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
-			} else {
-			     SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-			}
-		} else {
-        	SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
-    	}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+CMD:fdepositar(playerid,params[])
+{
+	new string[128], amount;
+	
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+    if(PlayerInfo[playerid][pFaction] == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
+ 	if(sscanf(params, "d", amount))
+  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fdepositar [cantidad]");
+ 	if(GetPlayerCash(playerid) < amount || amount < 1)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+ 	    
+	GivePlayerCash(playerid, -amount);
+	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += amount;
+	format(string, sizeof(string), "Has depositado $%d en la cuenta compartida, nuevo balance: $%d.", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	SendClientMessage(playerid, COLOR_WHITE, string);
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha depositado en la cuenta de faccion (%s) $%d.", GetPlayerNameEx(playerid), FactionInfo[PlayerInfo[playerid][pFaction]][fName], amount);
+	log(playerid, LOG_MONEY, string);
+ 	PlayerActionMessage(playerid, 15.0, "toma una suma de dinero y la deposita en su cuenta.");
     return 1;
 }
 
-CMD:fdepositar(playerid,params[]) {
-	new
-	    string[128],
-	    ammount;
+CMD:fretirar(playerid,params[])
+{
+	new string[128], amount;
 
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-        if(PlayerInfo[playerid][pFaction] != 0) {
-	        if(sscanf(params, "d", ammount))
-	            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fdepositar [cantidad]");
-			else if(GetPlayerCash(playerid) >= ammount && ammount > 0) {
-				GivePlayerCash(playerid, -ammount);
-				FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += ammount;
-				format(string, sizeof(string), "Has depositado $%d en la cuenta compartida, nuevo balance: $%d.", ammount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
-				SendClientMessage(playerid, COLOR_WHITE, string);
-				format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha depositado en la cuenta de faccion (%s) $%d.", GetPlayerNameEx(playerid), FactionInfo[PlayerInfo[playerid][pFaction]][fName], ammount);
-				log(playerid, LOG_MONEY, string);
-		      	if(IsAtATM(playerid)) {
-				    PlayerActionMessage(playerid, 15.0, "toma algo de dinero y lo deposita en la abertura del cajero automático.");
-				} else {
-				    PlayerActionMessage(playerid, 15.0, "toma algo de dinero y se lo entrega al banquero.");
-				}
-				SaveFactions();
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-			}
-		} else {
-        	SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
-    	}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
+	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+    if(PlayerInfo[playerid][pFaction] == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
+    if(PlayerInfo[playerid][pRank] != 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+ 	if(sscanf(params, "d", amount))
+  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fretirar [cantidad]");
+ 	if(FactionInfo[PlayerInfo[playerid][pFaction]][fBank] < amount || amount < 1)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+ 	    
+	GivePlayerCash(playerid, amount);
+	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] -= amount;
+	format(string, sizeof(string), "Has retirado $%d de la cuenta compartida, nuevo balance: $%d.", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	SendClientMessage(playerid, COLOR_WHITE, string);
+    PlayerActionMessage(playerid, 15.0, "retira una suma de dinero de su cuenta.");
     return 1;
 }
 
-CMD:fretirar(playerid,params[]) {
-	new
-	    string[128],
-	    ammount;
+CMD:curar(playerid,params[])
+{
+    new target, cost;
 
-    if(PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) || IsAtATM(playerid)) {
-        if(PlayerInfo[playerid][pFaction] != 0) {
-		    if(PlayerInfo[playerid][pRank] == 1) {
-			 	if(sscanf(params, "d", ammount))
-		            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fretirar [cantidad]");
-				else if(FactionInfo[PlayerInfo[playerid][pFaction]][fBank] >= ammount && ammount > 0) {
-					GivePlayerCash(playerid, ammount);
-					FactionInfo[PlayerInfo[playerid][pFaction]][fBank] -= ammount;
-					format(string, sizeof(string), "Has retirado $%d de la cuenta compartida, nuevo balance: $%d.", ammount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
-					SendClientMessage(playerid, COLOR_WHITE, string);
-			      	if(IsAtATM(playerid)) {
-					    PlayerActionMessage(playerid, 15.0, "toma un manojo de billetes de la abertura del cajero automático.");
-					} else {
-					    PlayerActionMessage(playerid, 15.0, "recibe un paquete con dinero del banquero.");
-					}
-					SaveFactions();
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-				}
-			} else {
-			     SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-			}
-		} else {
-        	SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
-    	}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco!");
-    }
-    return 1;
-}
-
-CMD:curar(playerid,params[]) {
-    new
-        target,
-        cost,
-		Float:tX,
-		Float:tY,
-		Float:tZ;
-
-    if(!MedDuty[playerid]) {
+	if(PlayerInfo[playerid][pFaction] != FAC_HOSP)
+	    return 1;
+    if(!MedDuty[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
-    }
+    if(sscanf(params, "ud", target, cost))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /curar [ID/Jugador] [precio]");
+	if(cost < 0 || cost > 2500)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡El costo no puede ser menor a 0 o mayor a 2500!");
+    if(GetPVarInt(playerid, "isHealing") != 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás curando a una persona: debes esperar 15 segundos para usar nuevamente el comando!");
+    if(target == playerid)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes curarte a tí mismo!");
+	if(!ProxDetectorS(1.2, playerid, target))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca del herido!");
+  	if(GetPVarInt(target, "disabled") == DISABLE_DEATHBED)
+  		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto se encuentra en su lecho de muerte y no hay nada que puedas hacer por él.");
+	if(GetPlayerCash(target) < cost)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene el dinero suficiente.");
 
-    if(sscanf(params, "ud", target, cost)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /curar [IDJugador/ParteDelNombre] [precio]");
-	} else if(cost >= 0 && cost <= 2500) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_HOSP) {
-		    if(GetPVarInt(playerid, "isHealing") == 0) {
-			    if(target != playerid) {
-			        if(GetPVarInt(target, "disabled") == DISABLE_DEATHBED)
-					    SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto se encuentra en su lecho de muerte y no hay nada que puedas hacer por él.");
-			        GetPlayerPos(target, tX, tY, tZ);
-			    	if(IsPlayerInRangeOfPoint(playerid, 1.0, tX, tY, tZ)) {
-			    	    if(GetPlayerCash(target) >= cost) {
-							SendFMessage(target, COLOR_LIGHTBLUE, "El médico %s te ha ofrecido un tratamiento curativo por $%d. Escribe (/aceptar medico) para recibirlo o (/cancelar medico).", GetPlayerNameEx(playerid), cost);
-                            SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s un tratamiento curativo por $%d.", GetPlayerNameEx(target), cost);
-							SetPVarInt(playerid, "healTarget", target);
-							SetPVarInt(playerid, "isHealing", 1);
-							SetPVarInt(target, "healIssuer", playerid);
-							SetPVarInt(target, "healCost", cost);
-							SetTimerEx("healTimer", 15000, false, "i", playerid);
-				        } else {
-				            SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene el dinero suficiente.");
-				        }
-				    } else {
-				        SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca del herido!");
-				    }
-				} else {
-					SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes curarte a tí mismo!");
-				}
-			} else {
-				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás curando a una persona / Debes esperar 15 segundos para usar nuevamente el comando!");
-			}
-		}
-    } else {
-        SendClientMessage(playerid, COLOR_YELLOW2, "¡El costo no puede ser menor a 0 o mayor a 2500!");
-    }
+	SendFMessage(target, COLOR_LIGHTBLUE, "El médico %s te ha ofrecido un tratamiento curativo por $%d. Escribe (/aceptar medico) para recibirlo o (/cancelar medico).", GetPlayerNameEx(playerid), cost);
+ 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s un tratamiento curativo por $%d.", GetPlayerNameEx(target), cost);
+	SetPVarInt(playerid, "healTarget", target);
+	SetPVarInt(playerid, "isHealing", 1);
+	SetPVarInt(target, "healIssuer", playerid);
+	SetPVarInt(target, "healCost", cost);
+	SetTimerEx("healTimer", 15000, false, "i", playerid);
 	return 1;
 }
 
@@ -18443,12 +18345,6 @@ CMD:cancelar(playerid,params[]) {
 	    } else {
 			SendClientMessage(playerid, COLOR_YELLOW2, "No has rentado ningún vehículo.");
 		}
-	} else if(strcmp(text,"medico",true) == 0) {
-		SendClientMessage(GetPVarInt(playerid, "healTarget"), COLOR_WHITE, "Has rechazado la oferta del médico.");
-		DeletePVar(DeletePVar(playerid, "healTarget"), "healIssuer");
-		DeletePVar(DeletePVar(playerid, "healTarget"), "healCost");
-		DeletePVar(playerid, "isHealing");
-		DeletePVar(playerid, "healTarget");
 	} else if(strcmp(text,"taxi",true) == 0) {
 	    if(TaxiCall < 999) {
 	        if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI && TaxiCallTime[playerid] > 0) {
