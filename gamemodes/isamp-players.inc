@@ -73,6 +73,9 @@ enum pInfo {
 	pFightStyle,
 	pMask,
 	
+	Float:pThirst,
+	Float:pHunger,
+	
 	Float:pAdictionPercent,
 	pAdictionAbstinence,
 	pMarijuana,

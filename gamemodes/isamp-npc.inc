@@ -45,36 +45,42 @@ spawnNPC(playerid)
 	{
 	    SetPlayerSkin(playerid, 253);
 	    SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
-	    SetTimerEx("SetNPCInVehicle", 1000, false, "ii", playerid, ColectivoAmarilloIda);
+	    SetTimerEx("SetNPCInVehicle", 5000, false, "ii", playerid, ColectivoAmarilloIda);
+	    SetPlayerColor(playerid, 0xFFFFFF00);
 	} else
     if(!strcmp(npcname, "NPCColRojoIda", true))
     {
    		SetPlayerSkin(playerid, 253);
    		SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
    		SetTimerEx("SetNPCInVehicle", 30000, false, "ii", playerid, ColectivoRojoIda);
+   		SetPlayerColor(playerid, 0xFFFFFF00);
     } else
     if(!strcmp(npcname, "NPCColVerdeIda", true))
     {
    		SetPlayerSkin(playerid, 253);
    		SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
    		SetTimerEx("SetNPCInVehicle", 60000, false, "ii", playerid, ColectivoVerdeIda);
+   		SetPlayerColor(playerid, 0xFFFFFF00);
     } else
     if(!strcmp(npcname, "NPCColAmarilloVuelta", true))
     {
    		SetPlayerSkin(playerid, 253);
    		SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
    		SetTimerEx("SetNPCInVehicle", 90000, false, "ii", playerid, ColectivoAmarilloVuelta);
+   		SetPlayerColor(playerid, 0xFFFFFF00);
     } else
     if(!strcmp(npcname, "NPCColRojoVuelta", true))
     {
    		SetPlayerSkin(playerid, 253);
    		SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
    		SetTimerEx("SetNPCInVehicle", 120000, false, "ii", playerid, ColectivoRojoVuelta);
+   		SetPlayerColor(playerid, 0xFFFFFF00);
     } else
     if(!strcmp(npcname, "NPCColVerdeVuelta", true))
     {
    		SetPlayerSkin(playerid, 253);
    		SetPlayerPos(playerid, 1950.0131, 1782.1285, 18.9046);
    		SetTimerEx("SetNPCInVehicle", 150000, false, "ii", playerid, ColectivoVerdeVuelta);
+   		SetPlayerColor(playerid, 0xFFFFFF00);
     }
 }

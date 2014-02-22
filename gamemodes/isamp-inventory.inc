@@ -60,6 +60,10 @@ new itemName[][64] = {
 	"caja de materiales",
 	"bidón de combustible", // 48
 	"materia prima",
-	"productos"
+	"productos",
+	"dinero",
+	"sandwich",
+	"alfajor",
+	"botella de agua"
 };
 
