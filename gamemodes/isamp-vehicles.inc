@@ -26,7 +26,8 @@
 #define	VEH_JOB					6	// Empleo.
 #define	VEH_RENT                7
 #define	VEH_DEALERSHIP2 		8	// De venta, GROTTI.
-#define VEH_NPC                 9
+#define VEH_NPC                 9   // Para los colectivos
+#define	VEH_SHIPYARD     		10  // Astilleros
 
 #define VTYPE_CAR 				1
 #define VTYPE_HEAVY 			2
@@ -119,7 +120,7 @@ VehTypeName(type) {
     new name[32];
     switch(type) {
         case 0: format(name, 32, "ninguno");
-		case 1,8: format(name, 32, "venta");
+		case 1,8,10: format(name, 32, "venta");
 		case 2: format(name, 32, "personal");
 		case 3: format(name, 32, "faccion");
 		case 4: format(name, 32, "escuela");
@@ -400,7 +401,7 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 406: price = 853700;
 		case 407: price = 311800;
 		case 408: price = 280000;
-		case 409: price = 406000;
+		case 409: price = 530800;
 		case 410: price = 26300;
 		case 411: price = 990500;
 		case 412: price = 69100;
@@ -536,7 +537,7 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 568: price = 40000;
 		case 571: price = 25000;
 		case 572: price = 15000;
-		case 573: price = 250000;
+		case 573: price = 540000;
 		case 575: price = 85000;
 		case 576: price = 68000;
 		case 577: price = 3500000;
@@ -909,9 +910,9 @@ CMD:maletero(playerid, params[]) {
         
     if(sscanf(params, "s[128]S(null)[32]I(-1)", text, returnstr, returnid2)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos: ver - tomar [slot de item] - guardar [slot, opcional] - guardardroga [tipo] [cantidad] - tomardroga [tipo] [cantidad]");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos: tomar [slot de item] - guardar [slot, opcional] - guardardroga [tipo] [cantidad] - tomardroga [tipo] [cantidad]");
      	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "guardardinero [cantidad] - tomardinero [slot de item]");
-		SendClientMessage(playerid, COLOR_WHITE, "|---------------- Maletero ----------------|");
+       	SendClientMessage(playerid, COLOR_WHITE, "=======================[Maletero]=======================");
 		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
             itemid = getTrunkItem(vehicleid, i);
             param = getTrunkParam(vehicleid, i);
@@ -923,7 +924,6 @@ CMD:maletero(playerid, params[]) {
 			    SendFMessage(playerid, COLOR_WHITE, " - %d- Nada", i);
 			}
         }
-    	SendClientMessage(playerid, COLOR_WHITE, " ------------------------------------------------");
 		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
 		}
@@ -936,11 +936,9 @@ CMD:maletero(playerid, params[]) {
 		if(VehicleInfo[vehicleid][VehCocaine] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", VehicleInfo[vehicleid][VehCocaine]);
 		}
-        SendClientMessage(playerid, COLOR_WHITE, "|------------------------------------------------|");
+       	SendClientMessage(playerid, COLOR_WHITE, "========================================================");
 	} else {
-		if(strcmp(text,"ver",true) == 0) {
-			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza (/mal)etero solo.");
-	    } else if(strcmp(text, "guardardroga", true) == 0) {
+		if(strcmp(text, "guardardroga", true) == 0) {
 			if(SellingDrugs[playerid])
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes utilizarlo mientras vendes drogas.");
 			    
@@ -1191,7 +1189,7 @@ CMD:vehiculo(playerid,params[]) {
 		Float:z,
 		Float:angle,
 		vehicleid,
-		vehicleid2,
+		vehicleid2 = -1, // Es decir si no encuentra ningun auto para crear el nuevo.
 		vehicleid3,
 		price;
 
@@ -1203,7 +1201,7 @@ CMD:vehiculo(playerid,params[]) {
 		price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
 		if(!IsPlayerInAnyVehicle(playerid)) {
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en ningún vehículo!");
-		} else if(VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP && VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP2) {
+		} else if(VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP && VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP2 && VehicleInfo[vehicleid][VehType] != VEH_SHIPYARD) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar un vehículo que no está a la venta!");
 		} else if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0) {
 			SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tener más de dos vehículos.");
@@ -1211,7 +1209,7 @@ CMD:vehiculo(playerid,params[]) {
 			new color1 = targetid;
 		    new color2 = vehicleid3;
 			if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0=negro, 1=blanco.))");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0:negro, 1:blanco))");
 			    
 		    for(new vid = 1; vid < MAX_VEH; vid++) {
 				if(VehicleInfo[vid][VehType] == VEH_NONE) {
@@ -1219,6 +1217,8 @@ CMD:vehiculo(playerid,params[]) {
 				    break;
 				}
 		    }
+		    if(vehicleid2 == -1) // Si no encontró ningun auto de tipo VEH_NONE es pq ya no hay mas lugar dentro de los MAX_VEH
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay mas espacio para autos en el servidor. REPORTAR A UN ADMIN.");
 		    
 		    GivePlayerCash(playerid, -price);
 		    GetPlayerName(playerid, playerName, sizeof(playerName));
@@ -1239,6 +1239,11 @@ CMD:vehiculo(playerid,params[]) {
 				VehicleInfo[vehicleid2][VehPosY] = -1250.9829;
 				VehicleInfo[vehicleid2][VehPosZ] = 16.5953;
 				VehicleInfo[vehicleid2][VehAngle] = 300.7206;
+			} else if(VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD) {
+				VehicleInfo[vehicleid2][VehPosX] = 2963.1904;
+				VehicleInfo[vehicleid2][VehPosY] = -2090.9250;
+				VehicleInfo[vehicleid2][VehPosZ] = 0.6618;
+				VehicleInfo[vehicleid2][VehAngle] = 176.0365;
 			}
 			
 			VehicleInfo[vehicleid2][VehFuel] = 100;
@@ -1546,9 +1551,9 @@ CMD:avehiculo(playerid, params[]) {
 	if(sscanf(params, "s[128]I(-1)I(-1)", text, returnid, returnid2)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/av)ehiculo [comando]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos]: /avinfo - estacionar - tipo [tipo] - modelo [IDmodelo] - color [color1] [color2] - faccion [idfaccion] - empleo [idempleo]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "traer [idvehiculo] - motor - nitro - motorgral [1=on - 0=off]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "traer [idvehiculo] - motor - nitro");
        	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/av tipo 0', si éste estaba asociado a un personaje");
-        SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}el vehículo será eliminado de su cuenta.");
+        SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}el vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
 	} else if(strcmp(text,"estacionar",true) == 0) {
 		new
 			vehicleid = GetPlayerVehicleID(playerid),

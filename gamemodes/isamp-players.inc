@@ -13,7 +13,6 @@ enum pInfo {
 	pIP[16],
 	pLevel,
 	pAdmin,
-	pDonateRank,
 	pAccountBlocked,
 	pTutorial,
 	pRegStep,
@@ -23,7 +22,6 @@ enum pInfo {
 	pCash,
 	pBank,
 	pSkin,
-	pMaterials,
 	pJob,
 	pJobTime,
 	pJobAllowed, // Si tiene job de facción no lo puede dejar.
@@ -34,7 +32,6 @@ enum pInfo {
 	pRank,
 	pHouseKey,
 	pBizKey,
-	pSpawnPoint,//If pSpawnPoint = 1, then the user will spawn at there normal place, if it's 0 then they will spawn at there home.
 	pWarnings,
 	pCarLic,
 	pFlyLic,
@@ -45,7 +42,6 @@ enum pInfo {
 	pListNumber,
 	pJailed,
 	pJailTime,
-	pProducts,
 	Float:pX,
 	Float:pY,
 	Float:pZ,
@@ -54,16 +50,22 @@ enum pInfo {
 	pVirtualWorld,
 	pVeh1,
 	pVeh2,
-	pOrigin,
 	pHospitalized,
 	Float:pHealth,
 	Float:pArmour,
 	pSpectating,
-	pPoints,
 	pWantedLevel,
 	pCantWork,
 	pAccusedOf[64],
 	pAccusedBy[24],
+	
+	// Sin uso y se guardan en DB
+	pDonateRank,
+	pMaterials,
+	pSpawnPoint,//If pSpawnPoint = 1, then the user will spawn at there normal place, if it's 0 then they will spawn at there home.
+    pProducts,
+	pOrigin,
+	pPoints,
 	
 	pMuteB,
 	pRentCarID,

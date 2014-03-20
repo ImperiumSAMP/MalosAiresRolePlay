@@ -613,7 +613,7 @@ CMD:hurtar(playerid, params[])
  	if(GetPVarInt(target, "disabled") != DISABLE_DYING && GetPVarInt(target, "disabled") != DISABLE_DEATHBED && ThiefJobInfo[playerid][pFelonLevel] == 1) {
  		GiveJobExp(playerid, PlayerInfo[playerid][pJob], 1);
  	}
-	ThiefJobInfo[playerid][pTheftPersonLimit] = 480;
+	ThiefJobInfo[playerid][pTheftPersonLimit] = 600;
 	ThiefJobInfo[playerid][pTheftLastVictimPID] = getPlayerMysqlId(target);
 	printf("%s hurto a %s", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 	return 1;
@@ -628,7 +628,7 @@ CMD:verexp(playerid, params[]) {
 CMD:delincuenteayuda(playerid, params[]) {
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 	    return 1;
-	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa");
+	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /verexp");
 	SendClientMessage(playerid, COLOR_WHITE, "Info: al delinquir conseguirás puntos de experiencia, dependiendo de tu nivel de delincuente algunos...");
 	SendClientMessage(playerid, COLOR_WHITE, "delitos no otorgarán más conocimiento del que ya tienes.");
 	return 1;

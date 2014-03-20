@@ -72,4 +72,3 @@ CMD:ainfocasa(playerid, params[]) {
 	}
 	return 1;
 }
-

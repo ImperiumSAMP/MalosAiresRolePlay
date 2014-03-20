@@ -117,13 +117,13 @@ CMD:afvehiculos(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehiculos [idfacción]");
     if(factionID < 1 && factionID >= MAX_FACTIONS)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
-    SendFMessage(playerid, COLOR_YELLOW, "=================|Vehiculos de facción: %s|=================", FactionInfo[factionID][fName]);
+    SendFMessage(playerid, COLOR_YELLOW, "===============|Vehiculos de facción: %s|===============", FactionInfo[factionID][fName]);
 	for(new i=0; i<MAX_VEH; i++)
 	{
 	    if(VehicleInfo[i][VehFaction] == factionID)
 	        SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} Vehiculo ID %d - Modelo %s", i, GetVehicleName(i));
 	}
-	SendClientMessage(playerid, COLOR_YELLOW, "===============================================================================");
+	SendClientMessage(playerid, COLOR_YELLOW, "====================================================================");
 	return 1;
 }
 

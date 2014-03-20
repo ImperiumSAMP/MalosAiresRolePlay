@@ -154,7 +154,7 @@ CMD:aninsert(playerid, params[]) {
 //[NEGOCIOS] Comandos
 
 CMD:ayudanegocio(playerid, params[]) {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[NEGOCIO]: /comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /ayudaproductos");
 	return 1;
 }
@@ -382,14 +382,6 @@ CMD:comprarnegocio(playerid,params[]) {
 	return 1;
 }
 
-CMD:jetx(playerid,params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 5)
-	    return 1;
-
-    SetPlayerSpecialAction(playerid,2);
-    return 1;
-}
-
 CMD:vendernegocio(playerid,params[]) {
 	new
 	    string[128],
@@ -517,7 +509,7 @@ CMD:anprecio(playerid, params[]) {
 	    bizID,
 	    price;
 
-    if(PlayerInfo[playerid][pAdmin] < 4)
+    if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
 	if(sscanf(params, "dd", bizID, price)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anprecio [idnegocio] [precio]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
@@ -644,7 +636,7 @@ CMD:annombre(playerid, params[]) {
 	    bizID,
 		name[32];
 
-    if(PlayerInfo[playerid][pAdmin] < 10)
+    if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
 
 	if(sscanf(params, "ds[32]", bizID, name)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /annombre [idnegocio] [nombre 32 chars]");
