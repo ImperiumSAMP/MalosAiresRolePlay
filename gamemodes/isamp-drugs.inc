@@ -8,7 +8,7 @@
 #define ADICTION_LSD       		0.25
 #define ADICTION_ECSTASY   		0.35
 #define ADICTION_COCAINE   		0.50
-#define ADICTION_REHAB_PRICE    18000
+#define ADICTION_REHAB_PRICE    10000
 #define ADICTION_ABSTINENCE_MAX 36000 // tiempo maximo para que te pida consumir con el minimo porcentaje de adiccion, en segundos 10 horas
 
 

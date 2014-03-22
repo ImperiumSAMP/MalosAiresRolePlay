@@ -61,9 +61,7 @@ enum pInfo {
 	
 	// Sin uso y se guardan en DB
 	pDonateRank,
-	pMaterials,
 	pSpawnPoint,//If pSpawnPoint = 1, then the user will spawn at there normal place, if it's 0 then they will spawn at there home.
-    pProducts,
 	pOrigin,
 	pPoints,
 	
