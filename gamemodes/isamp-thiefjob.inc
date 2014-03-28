@@ -19,6 +19,9 @@ new ThiefJobInfo[MAX_PLAYERS][tThiefJob];
 new policeCallTime[MAX_PLAYERS],
 	theftTime[MAX_PLAYERS],
 	felon[MAX_PLAYERS];
+	
+// Sistema de mascaras
+new isUsingMaskInSlot[MAX_PLAYERS]; // -1 si no usa, caso contrario guarda el slot donde la tiene attacheada
 
 stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pFelonExp] = 0;
@@ -199,10 +202,12 @@ public theftTimer(playerid, type, biz) {
 stock robberyAlert(playerid,accusedOf[],accusedBy[],propName[],houseId=0){
 	new string[128];
 	
-	if(GetPlayerWantedLevelEx(playerid) < 2) {
-		SetPlayerWantedLevelEx(playerid, 2);
-	} else {
-		SetPlayerWantedLevelEx(playerid, GetPlayerWantedLevelEx(playerid) + 1);
+ 	if(isUsingMaskInSlot[playerid] == -1) // Si roba sin mascara le damos sosp
+ 	{
+		if(GetPlayerWantedLevelEx(playerid) < 2)
+			SetPlayerWantedLevelEx(playerid, 2);
+		else
+			SetPlayerWantedLevelEx(playerid, GetPlayerWantedLevelEx(playerid) + 1);
 	}
 	
 	if(houseId){
@@ -606,7 +611,6 @@ CMD:hurtar(playerid, params[])
 			if(takeMoney > targetMoney)
    				takeMoney = targetMoney;
 		    SendFMessage(playerid, COLOR_WHITE, "Has tomado $%d del sujeto sin que éste se percate de lo sucedido, actúa como si nada hubiera pasado.", takeMoney);
-			SendClientMessage(target, COLOR_WHITE, "Un sujeto te ha hurtado algo del bolsillo/cartera pero no te has dado cuenta...");
             GivePlayerCash(target, -takeMoney);
 			GivePlayerCash(playerid, takeMoney);
 		}

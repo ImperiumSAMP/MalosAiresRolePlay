@@ -867,17 +867,15 @@ public OnVehicleSpawn(vehicleid) {
  			    	AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][VehCompSlot][i]);
 				}
  			}
-            VehicleInfo[vehicleid][VehBonnet] = 0;
- 			VehicleInfo[vehicleid][VehBoot] = 0;
 		}
         case VEH_FACTION: {
-            VehicleInfo[vehicleid][VehBonnet] = 0;
- 			VehicleInfo[vehicleid][VehBoot] = 0;
 		}
 		default: {
 		    //SetVehiclePos(vehicleid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ]);
 		}
 	}
+	VehicleInfo[vehicleid][VehBonnet] = 0;
+	VehicleInfo[vehicleid][VehBoot] = 0;
 	vehicleRedio[vehicleid] = 0;
 	return 1;
 }
@@ -1115,7 +1113,7 @@ CMD:maletero(playerid, params[]) {
 	                            SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese hueco.");
 							}
 			        	} else {
-			        	    SendFMessage(playerid, COLOR_YELLOW2, "¡El valor no debe ser menor de 0 o mayor de %d!", GetVehicleMaxTrunkSlots(vehicleid));
+			        	    SendFMessage(playerid, COLOR_YELLOW2, "¡El valor no debe ser menor de 0 o mayor de %d!", GetVehicleMaxTrunkSlots(vehicleid)-1);
 			        	}
 			        } else {
 						SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
