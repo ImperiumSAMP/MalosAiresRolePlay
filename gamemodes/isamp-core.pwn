@@ -175,7 +175,6 @@
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
 #define UpdateMoneyBar 			GivePlayerMoney
-#define GasMax 					100
 
 #define cAFKTime 				600000
 
@@ -1735,11 +1734,11 @@ public OnPlayerDisconnect(playerid, reason) {
 	
     if(gPlayerLogged[playerid]) {
 		switch(reason) {
-	        case 2:{
-				PlayerLocalMessage(playerid,15.0,"se ha desconectado (razón: crash).");
+	        case 0,2:{
+				PlayerLocalMessage(playerid, 25.0, "se ha desconectado (razón: crash).");
 			}
 			case 1:{
-			    PlayerLocalMessage(playerid,15.0,"se ha desconectado (razón: a voluntad).");
+			    PlayerLocalMessage(playerid, 25.0, "se ha desconectado (razón: a voluntad).");
 			}
 	    }
 		SaveAccount(playerid);
@@ -2231,7 +2230,7 @@ public OnPlayerText(playerid, text[]) {
 			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
-            format(string, sizeof(string), "[Llamada al 911] %s (%d) dice: %s", GetPlayerNameEx(playerid), playerid, text);
+            format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
 			Mobile[playerid] = 255;
 			lastMedicCallNumber = PlayerInfo[playerid][pPhoneNumber];
@@ -2301,24 +2300,20 @@ public OnPlayerText(playerid, text[]) {
 	return 0;
 }
 
-public OnPlayerPrivmsg(playerid, recieverid, text[]) {
+public OnPlayerPrivmsg(playerid, recieverid, text[])
+{
 	new string[128];
-	if(PMsEnabled[recieverid] || AdminDuty[playerid]) {
-		foreach(new i : Player)	{
-			if(GetPVarInt(i, "pms") == 1) {
-			    format(string, sizeof(string), "[OOC]: MP de %s(%d) a %s(%d): %s", GetPlayerNameEx(playerid),playerid,GetPlayerNameEx(recieverid),recieverid, text);
-				SendClientMessage(i, COLOR_WHITE, string);
-			}
-		}
-		format(string, sizeof(string), "[OOC]: MP de %s(%d): %s", GetPlayerNameEx(playerid),playerid, text);
-		SendClientMessage(recieverid,COLOR_MEDIUMBLUE,string);
-		format(string, sizeof(string), "[OOC]: MP a %s(%d): %s", GetPlayerNameEx(recieverid),recieverid, text);
-		SendClientMessage(playerid,COLOR_MEDIUMBLUE,string);
-		log(playerid, LOG_CHAT, string);
-		return 0;
-	} else {
-	    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} el usuario ha bloqueado los susurros.");
+	
+	if(!PMsEnabled[recieverid] && !AdminDuty[playerid])
+		return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} el usuario ha bloqueado los susurros.");
+
+	foreach(new i : Player)	{
+		if(GetPVarInt(i, "pms") == 1)
+			SendFMessage(i, COLOR_MEDIUMBLUE, "[OOC]: MP de %s(%d) a %s(%d): %s", GetPlayerNameEx(playerid),playerid,GetPlayerNameEx(recieverid),recieverid, text);
 	}
+	SendFMessage(recieverid, COLOR_MEDIUMBLUE, "[OOC]: MP de %s(%d): %s", GetPlayerNameEx(playerid),playerid, text);
+	SendFMessage(playerid, COLOR_MEDIUMBLUE, "[OOC]: MP a %s(%d): %s", GetPlayerNameEx(recieverid),recieverid, text);
+	log(playerid, LOG_CHAT, string);
 	return 0;
 }
 
@@ -2328,62 +2323,9 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 	new idx;
 	cmd = strtok(cmdtext, idx);
 	new tmp[256];
-	new giveplayerid;
 
 	if(gPlayerLogged[playerid] == 1)
 	{
-	 	if(strcmp(cmd, "/mp", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				tmp = strtok(cmdtext, idx);
-				if(!strlen(tmp))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [playerid] [mensaje]");
-					return 1;
-				}
-				giveplayerid = ReturnUser(tmp);
-				if (IsPlayerConnected(giveplayerid))
-				{
-				    if(giveplayerid != INVALID_PLAYER_ID)
-				    {
-						new length = strlen(cmdtext);
-						while ((idx < length) && (cmdtext[idx] <= ' '))
-						{
-							idx++;
-						}
-						new offset = idx;
-						new result[128];
-						while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-						{
-							result[idx - offset] = cmdtext[idx];
-							idx++;
-						}
-						result[idx - offset] = EOS;
-						if(!strlen(result))
-						{
-							SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [playerid] [mensaje]");
-							return 1;
-						}
-						if(giveplayerid != playerid)
-						{
-						    OnPlayerPrivmsg(playerid, giveplayerid, result);
-						}
-						else
-						{
-							SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} no puedes enviarte un mensaje privado a tí mismo.");
-						}
-						return 1;
-					}
-				}
-				else
-				{
-					format(string, sizeof(string), "{FF4600}[Error]:{C8C8C8} la id %d no está asociada a ningun jugador en línea.", strval(tmp));
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
-				}
-			}
-			return 1;
-		}
 		//===================================================[DYNAMIC HOUSES SYSTEM]=================================================
 	 	if(strcmp(cmd, "/actele", true) == 0)
 		{
@@ -2945,18 +2887,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			}
 			return 1;
 		}
-	 	if(strcmp(cmdtext,"/asuicide",true)==0)
-		{
-			if (PlayerInfo[playerid][pAdmin] >= 20)
-			{
-			SetPlayerHealthEx(playerid,-1);
-			}
-			else
-			{
-			SendClientMessage(playerid, COLOR_RED,"Your not an administrator or an administrator with the required level.");
-			}
-			return 1;
-		}
 		if(strcmp(cmd, "/finfo", true) == 0)
 		{
 		    if(IsPlayerConnected(playerid))
@@ -3111,100 +3041,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			}
 			return 1;
 		}
-	 	if(strcmp(cmd, "/vb", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[128];
-				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if(!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vb [mensaje]");
-					return 1;
-				}
-				if(isUsingMaskInSlot[playerid] == -1)
-					format(string, sizeof(string), "[Voz baja] %s dice: %s", GetPlayerNameEx(playerid), result);
-				else
-					format(string, sizeof(string), "[Voz baja] Enmascarado dice: %s", result);
-				ProxDetector(4.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
-			}
-			return 1;
-		}
-		if(strcmp(cmd, "/b", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[128];
-				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if(!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /b [mensaje]");
-					return 1;
-				}
-				if(PlayerInfo[playerid][pMuteB] > 0) {
-				    if(PlayerInfo[playerid][pMuteB] > 60) {
-						SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d minutos.", PlayerInfo[playerid][pMuteB] / 60);
-					} else {
-					    SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d segundos.", PlayerInfo[playerid][pMuteB]);
-					}
-					return 1;
-				}
-				PlayerLocalMessage(playerid,15.0,result);
-			}
-			return 1;
-		}
-	  	if(strcmp(cmd, "/local", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[128];
-				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if(!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /local [mensaje]");
-					return 1;
-				}
-  	    		if(isUsingMaskInSlot[playerid] == -1)
-					format(string, sizeof(string), "%s dice: %s", GetPlayerNameEx(playerid), result);
-				else
-				    format(string, sizeof(string), "Enmascarado dice: %s", result);
-				ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
-			}
-			return 1;
-		}
 		if(strcmp(cmd, "/ppvehiculos", true) == 0)
 		{
 		    if(IsPlayerConnected(playerid))
@@ -3232,39 +3068,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			}
 			return 1;
 		}
-		if(strcmp(cmd, "/ppcasas", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				tmp = strtok(cmdtext, idx);
-				if(!strlen(tmp))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ppcasas [porcentaje del precio]");
-					return 1;
-				}
-				new perc = strval(tmp);
-				if(PlayerInfo[playerid][pAdmin] >= 20)
-				{
-					if(perc <= 1000 && perc >= 1)
-					{
-					    ServerInfo[sHousePricePercent] = perc;
-					    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el porcentaje de costo de las casas ha sido ajustado a %d por ciento.", perc);
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
-					}
-					else
-					{
-					    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} el porcentaje no puede ser menor a 1 o mayor a 1000.");
-					}
-				}
-			}
-			return 1;
-		}
 		if(strcmp(cmd, "/admins", true) == 0)
 		{
 	        if(IsPlayerConnected(playerid))
 		    {
 		        new count = 0;
-				SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES EN SERVICIO]====================");
+				SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES EN SERVICIO]===================");
 				foreach(new i : Player) {
 				    if(PlayerInfo[i][pAdmin] >= 1 && AdminDuty[i] == 1) {
 						format(string, 256, "Administrador: %s", GetPlayerNameEx(i));
@@ -3314,34 +3123,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			}
 			return 1;
 		}
-	 	if(strcmp(cmd, "/me", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[128];
-				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if(!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /me [acción]");
-					return 1;
-				}
-				new form[128];
-				format(form, sizeof(form), "%s", result);
-				PlayerActionMessage(playerid, 15.0, form);
-			}
-			return 1;
-		}
 	 	if(strcmp(cmd, "/do", true) == 0)
 		{
 		    if(IsPlayerConnected(playerid))
@@ -3378,82 +3159,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 		if(strcmp(cmd, "/aeconomia", true) == 0)
 		{
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Nivel 20]: /ppvehiculos - /ppcasas");
-			return 1;
-		}
-	 	if(strcmp(cmd, "/gooc", true) == 0 || strcmp(cmd, "/go", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				if ((OOCStatus) == 0 && PlayerInfo[playerid][pAdmin] < 1)
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} OOC global desactivado.");
-					return 1;
-				}
-				if(Muted[playerid])
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} muteado.");
-					return 1;
-				}
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[128];
-				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if(!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} [/go]oc [mensaje]");
-					return 1;
-				}
-				if(PlayerInfo[playerid][pAdmin] >= 1 && AdminDuty[playerid] == 1)
-				{
-					format(string, sizeof(string), "(( [Global] {3CB371}%s{87CEFA}: %s ))", GetPlayerNameEx(playerid), result);
-					SendClientMessageToAll(COLOR_GLOBALOOC, string);
-     				log(playerid, LOG_CHAT, string);
-					return 1;
-				}
-				else
-				{
-					format(string, sizeof(string), "(( [Global] %s: %s ))", GetPlayerNameEx(playerid), result);
-					SendClientMessageToAll(COLOR_GLOBALOOC,string);
-    			 	log(playerid, LOG_CHAT, string);
-				}
-			}
-			return 1;
-		}
-	 	if (strcmp(cmd, "/check", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				if (PlayerInfo[playerid][pAdmin] >= 2)
-				{
-					tmp = strtok(cmdtext, idx);
-					if(!strlen(tmp))
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /check [playerid]");
-						return 1;
-					}
-		            giveplayerid = ReturnUser(tmp);
-					if(IsPlayerConnected(giveplayerid))
-					{
-					    if(giveplayerid != INVALID_PLAYER_ID)
-					    {
-							ShowStats(playerid,giveplayerid, true);
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Invalid ID.");
-					}
-				}
-			}
 			return 1;
 		}
 	 	if(strcmp(cmd, "/donar", true) == 0)
@@ -3596,18 +3301,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				}
 			}
 			return 1;
-		}
-		if(strcmp(cmd, "/fuelcars", true) == 0)
-		{
-	        if(PlayerInfo[playerid][pAdmin] >= 4)
-	        {
-	            SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido llenados con gasolina por un administrador.");
-	            for(new c=0;c<MAX_VEH;c++)
-				{
-					VehicleInfo[c][VehFuel] = GasMax;
-				}
-			}
-		    return 1;
 		}
 	}
 	else
@@ -4686,8 +4379,11 @@ public PayDay(playerid) {
 	            }
             }
             default: {
-            	if(PlayerInfo[playerid][pJob] == 0) // ASIGNACION A LOS DESEMPLEADOS
-            		PlayerInfo[playerid][pPayCheck] += 800 + random(400);
+            	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
+					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
+					PlayerInfo[playerid][pJob] == JOB_DRUGF  || // Si para el estado el sujeto no tiene empleo (job ilegal)
+					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
+            		PlayerInfo[playerid][pPayCheck] += 800 + random(400); // ASIGNACION A LOS DESEMPLEADOS
 			}
         }
         
@@ -4760,16 +4456,17 @@ public PayDay(playerid) {
 	}
 }
 
-public accountTimer() {
-	if(!strcmp(ServerInfo[sMOTD], "-", true)) {
-		new
-		    string[128];
-		    
+public accountTimer()
+{
+	if(!strcmp(ServerInfo[sMOTD], "-", true))
+	{
+		new string[128];
 		format(string, sizeof(string), "[NOTICIA-OOC]: %s", ServerInfo[sMOTD]);
 		SendClientMessageToAll(COLOR_DARKBROWN, string);
 	}
 
-    foreach(new playerid : Player)	{
+    foreach(new playerid : Player)
+	{
 	    if(gPlayerLogged[playerid]) {
 			SaveAccount(playerid);
 		}
@@ -9162,7 +8859,8 @@ stock LoadPickups() {
 }
 
 stock LoadMap() {
-	/* CTR-Man */
+
+//===============================CTR-MAN========================================
 	CreateObject(14388, 767.28662, -1374.46045, 1010.00000,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(14393, 794.91492, -1377.46106, 1014.91010,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(14391, 793.97089, -1378.57153, 1013.63013,   0.00000, 0.00000, -90.00000);
@@ -9339,7 +9037,7 @@ stock LoadMap() {
 	CreateDynamicObject(1714, 794.35864, -1380.80884, 1012.67542,   0.00000, 0.00000, 183.41989);
 	CreateDynamicObject(1714, 795.78046, -1380.76111, 1012.67542,   0.00000, 0.00000, 192.83978);
 
-	// Rampas tapadas.
+//=================================RAMPAS TAPADAS===============================
 	CreateDynamicObject(2372, 1991.66687, -1624.81311, 12.33607,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2372, 1991.66760, -1621.87000, 12.33607,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2372, 1990.56128, -1623.32129, 12.79605,   0.00000, 0.00000, 0.00000);
@@ -9347,10 +9045,10 @@ stock LoadMap() {
 	CreateDynamicObject(2372, 1951.90222, -1624.77063, 12.33607,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2372, 1951.91553, -1621.86572, 12.33607,   0.00000, 0.00000, 0.00000);
 	
-	// Reja que tapa el plantaBomba en auto en unity
+//==============================REJA TAPABOMBA DE UNITY=========================
 	CreateDynamicObject(971, 1843.27722, -1854.75964, 12.04920,   0.00000, 0.00000, 90.00000);
 
-    // Cajeros automáticos (ATM).
+//=================================CAJEROS ATM==================================
 	CreateDynamicObject(2942, 1350.3709716797,-1759.2380371094,13.158480644226, 0.0000, 0.0000, 180.0000);
 	CreateDynamicObject(2942, 1317.4858398438,-897.83563232422,39.22102355957, 0.0000, 0.0000, 0.0000);
 	CreateDynamicObject(2942, 1834.2731933594,-1850.9847412109,13.032647132874, 0.0000, 0.0000, 0.0000);
@@ -9361,7 +9059,7 @@ stock LoadMap() {
 	CreateDynamicObject(2942, 1144.3293457031,-1765.9627685547,13.250393867493, 0.0000, 0.0000, 180.0000);
 	CreateDynamicObject(2942, 2423.5649414063,-1219.5200195313,25.180541992188, 0.0000, 0.0000, 0.0000);
 
-	/* Interior de la S.I.D.E */
+//=================================INTERIOR SIDE================================
 	SIDEDoor[0][1] = CreateObject(1500, 265.7763671875, 112.5830078125, 1003.6171875, 0, 0, 0);
 	SIDEDoor[1][1] = CreateObject(1500, 264.30032348633, 112.55754852295, 1003.6171875, 0, 0, 0);
 	SIDEDoor[2][1] = CreateObject(2930, 253.20094299316, 110.82429504395, 1004.8625488281, 0, 0, 0);
@@ -9727,7 +9425,7 @@ stock LoadMap() {
 	CreateDynamicObject(3051, 274.2958984375, 122.61940002441, 1006.3125, 46, 90, 359.84533691406);
 	CreateDynamicObject(3051, 274.29904174805, 121.6692199707, 1006.3180541992, 46, 90, 359.84533691406);
 
-	/* Exterior de la S.I.D.E */
+//=====================================EXTERIOR SIDE============================
 	SIDEGate[1] = CreateObject(19449, 1286.31, -1654.82, 14.28, 0.00, 0.00, 0.00);
 	SIDEGate[2] = CreateObject(19449, 1286.30, -1645.22, 17.77, 0.00, 0.00, 0.00);
 	SIDEGate[3] = CreateObject(19449, 1286.32, -1645.22, 14.28, 0.00, 0.00, 0.00);
@@ -9991,7 +9689,7 @@ stock LoadMap() {
 	CreateDynamicObject(1536, 1275, -1689.7998046875, 34.400001525879, 0, 0, 178.74755859375);
 	CreateDynamicObject(10245, 1273.4000244141, -1683.5, 29.799999237061, 0, 0, 314);
 
-	// Villa test.
+//=============================VILLA DEL HUEVO==================================
 	new Textura;
 
 	Textura = CreateDynamicObject(11459, 1619.96143, -2108.65552, 14.78708,   0.00000, 0.00000, 219.19254);
@@ -10356,14 +10054,14 @@ stock LoadMap() {
 	CreateDynamicObject(1362, 1633.67029, -2137.96704, 18.90028,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1362, 1634.08411, -2137.17773, 18.90028,   0.00000, 0.00000, 0.00000);
 
-	// Portones.
+//==================================PORTONES====================================
 	TMTune[0][1] = CreateObject(3037, -2716.01, 217.88, 5.48, 0.00, 0.00, 0.00);			// Wheel Arch Angels. CreateObject(3294, -2718.93, 217.42, 7.30,   0.00, 90.00, 0.00);
 	TMTune[1][1] = CreateObject(989, 2644.83, -2039.06, 14.32, 0.00, 0.00, -73.08); 		// Loco Low Co. CreateObject(5340, 2644.86, -2040.67, 15.59,   0.00, 90.00, -90.00);
 	TMTune[2][1] = CreateObject(971, -1935.01, 238.70, 33.69,   0.00, 0.00, 0.06); 			// Transfender SF. CreateObject(3294, -1935.80, 241.36, 37.27,   0.00, 90.00, 90.00);
 	TMTune[3][1] = CreateObject(971, 1043.17, -1025.85, 33.66,   0.00, 0.00, 0.00); 		// Transfender LS. CreateObject(5779, 1041.34, -1024.51, 34.20,   0.00, 90.00, 90.00);
 	TMTune[4][1] = CreateObject(971, 2387.38, 1043.45, 11.82,   0.00, 0.00, 0.00); 			// Transfender LV. CreateObject(3294, 2386.67, 1046.04, 13.31,   0.00, 90.00, 90.00);
 
-	//CRUCE CON PIEDRAS DE AVENIDA
+//========================CRUCE CON PIEDRAS AVENIDA=============================
 	CreateDynamicObject(673, 1402.99695, -1403.38782, 12.90625,   356.85840, 0.00000, 3.14159);
 	CreateDynamicObject(880, 1411.95654, -1406.06958, 14.50760,   0.00000, 0.00000, 123.24000);
 	CreateDynamicObject(880, 1406.05823, -1410.46790, 14.50760,   0.00000, 0.00000, -32.46000);
@@ -10378,7 +10076,7 @@ stock LoadMap() {
 	CreateDynamicObject(673, 1405.14783, -1436.59363, 12.90625,   356.85840, 0.00000, 3.14159);
 	CreateDynamicObject(673, 1417.25732, -1439.34119, 12.90625,   356.85840, 0.00000, 3.14159);
 
-	// Cancha de futbol
+//===============================CANCHA DE FUTBOL===============================
     CreateDynamicObject(1897, 2315.47900, -1542.24316, 25.45240,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(1897, 2319.65015, -1542.22314, 25.45237,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(1897, 2318.65771, -1542.24805, 26.44339,   90.00000, 90.00000, 0.00000);
@@ -10462,7 +10160,8 @@ stock LoadMap() {
 	SetDynamicObjectMaterial(Textura, 0, 3031, "wngdishx", "dish1", -1);
 	SetDynamicObjectMaterial(Textura, 1, 3031, "wngdishx", "dish1", -1);
 	SetDynamicObjectMaterial(Textura, 2, 3031, "wngdishx", "dish1", -1);
-	//---------------Segunda canchita de futbol---------------------------------
+	
+//=============================SEGUNDA CANCHA DE FUTBOL=========================
 	Textura = CreateDynamicObject(18765, 2311.22681, -1517.93701, 21.85860,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 3031, "all_walls", "desgreengrass", -1);
 	Textura = CreateDynamicObject(18765, 2322.24390, -1517.93701, 21.85860,   0.00000, 0.00000, 0.00000);
@@ -10529,7 +10228,7 @@ stock LoadMap() {
 	CreateDynamicObject(3819, 2303.98389, -1517.90637, 26.06335,   0.00000, -10.00000, 180.00000);
 	CreateDynamicObject(3819, 2303.98389, -1538.14465, 26.06330,   0.00000, -10.00000, 180.00000);
 
-	// Mapeo R&L
+//===================================MAPEO R&L==================================
 	CreateObject(14595, 1652.5, -1627.69921875, 547.70001220703, 0, 0, 0);
 	CreateDynamicObject(1506, 1655.5999755859, -1640.0999755859, 543.79998779297, 0, 0, 90);
 	CreateDynamicObject(1775, 1660.19995, -1623.09998, 544.79999, 0, 0, 0);
@@ -10611,7 +10310,7 @@ stock LoadMap() {
 	CreateDynamicObject(4724, 1661.5, -1638.9000244141, 544, 0, 90, 90);
 	CreateDynamicObject(330, 1642.4000244141, -1639.5999755859, 544.52001953125, 90, 0, 148);
 
-	// Exterior del hospital.
+//================================EXTERIOR HOSPITAL=============================
 	HOSPGate = CreateObject(968, 1147.03149, -1384.87317, 13.46000,   0.00000, -90.00000, 0.00000);
 	CreateDynamicObject(8658, 1139.23096, -1370.12109, 13.76910,   0.00000, 0.00000, 179.94000);
 	CreateDynamicObject(1233, 1156.33105, -1389.95605, 14.31803,   0.00000, 0.00000, 90.00000);
@@ -10745,7 +10444,7 @@ stock LoadMap() {
 	CreateDynamicObject(638, 1133.01709, -1303.49255, 13.28000,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(3802, 1133.30225, -1315.14465, 15.27250,   0.00000, 0.00000, 0.00000);
 	
-	// Radio MAN.
+//====================================CTR-MAN===================================
 	CreateDynamicObject(966, 781.35, -1329.45, 12.54,   0.00, 0.00, 0.00);
 	CreateDynamicObject(967, 781.15, -1330.83, 12.55,   0.00, 0.00, 90.00);
 	MANGate = CreateObject(968, 781.57, -1329.41, 13.34,   0.00, 270.00, 0.00);
@@ -10820,7 +10519,7 @@ stock LoadMap() {
 	CreateDynamicObject(2948, 732, -1349.7022705078, 12.507115364075, 0, 0, 180);
 	CreateDynamicObject(3055, 777.95001220703, -1384.7744140625, 13.800000190735, 0, 0, 0);
 	
-	//--------AEROPUERTO--------------------------------------------------------
+//===================================AEROPUERTO=================================
 	CreateDynamicObject(10183, 1963.72949, -2226.99072, 12.56770,   0.00000, 0.00000, -134.87996);
 	CreateDynamicObject(10183, 1963.75659, -2212.38721, 12.56770,   0.00000, 0.00000, 45.05998);
 	CreateDynamicObject(10183, 1963.77600, -2202.95435, 12.56770,   0.00000, 0.00000, -134.87996);
@@ -10865,7 +10564,7 @@ stock LoadMap() {
 	CreateDynamicObject(18850, 1511.62390, -2634.38696, 0.34690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18850, 1461.62390, -2634.38696, 0.34690,   0.00000, 0.00000, 0.00000);
 	
-	// FIX WORLD OF COQ
+//=================================FIX WORLD OF COQ=============================
 	CreateDynamicObject(19376, 451.73251, -4.74720, 1003.28802,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19376, 441.23251, -4.74720, 1003.28802,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19357, 453.81500, -18.16140, 1001.77667,   0.00000, 0.00000, 0.00000);
@@ -10896,12 +10595,12 @@ stock LoadMap() {
 	SetDynamicObjectMaterial(Textura, 0, 18009, "genintrestrest1", "rest_wall5", -1);
 	CreateDynamicObject(1536, 453.79199, -18.93620, 1000.10938,   0.00000, 0.00000, 90.00000);
 
-	// FIX WELCOME PUMP
+//==================================FIX WELCOME PUMP============================
 	CreateDynamicObject(19360, 681.58691, -450.60730, -26.49362,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(19360, 681.58691, -450.60730, -22.99600,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(1498, 680.74298, -450.68509, -26.66410,   0.00000, 0.00000, 0.00000);
 
-	// CASINO INTERIOR
+//=================================CASINO INTERIOR==============================
 	CreateObject(14623, 2806.24219, -1080.44409, 1010.19989,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(14579, 2793.35498, -1066.41919, 1006.28796,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(14622, 2806.23560, -1054.03870, 1012.20001,   0.00000, 0.00000, 0.00000);
@@ -11009,7 +10708,7 @@ stock LoadMap() {
 	CreateDynamicObject(1979, 2816.79736, -1067.54028, 1005.65289,   0.00000, 0.00000, 45.18000);
 	CreateDynamicObject(1979, 2820.15552, -1071.35449, 1005.60541,   0.00000, 0.00000, 27.90000);
 
-	// CASINO EXTERIOR 1
+//================================CASINO EXTERIOR 1=============================
 	CreateDynamicObject(7288, 1691.89001, -1343.38513, 29.54490,   0.00000, 0.00000, 180.00000);
 	CreateDynamicObject(7315, 1679.52783, -1339.64795, 31.29655,   0.00000, 0.00000, 132.05998);
     CreateDynamicObject(7315, 1676.62476, -1352.50305, 31.29650,   0.00000, 0.00000, 60.30000);
@@ -11030,7 +10729,7 @@ stock LoadMap() {
 	CreateDynamicObject(870, 1700.24976, -1363.17383, 16.49658,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(809, 1694.15906, -1342.96814, 15.89441,   0.00000, 0.00000, 77.10000);
 
-    // CASINO EXTERIOR 2
+//================================CASINO EXTERIOR 2=============================
     CreateDynamicObject(1568, 1025.21899, -1122.49390, 22.73803,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1568, 1019.50610, -1122.65430, 22.73803,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(3471, 1017.48499, -1122.48853, 24.11240,   0.00000, 0.00000, -90.00000);
@@ -11043,7 +10742,7 @@ stock LoadMap() {
 	CreateDynamicObject(3531, 1022.42078, -1118.71960, 28.47788,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(3528, 1022.10150, -1120.45642, 31.16140,   0.00000, 0.00000, -94.14000);
 
-	// RESTAURANT
+//====================================RESTAURANT================================
 	CreateObject(14777, -246.48650, -2021.79346, 1010.03131,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2120, -240.87950, -2015.03418, 1012.05359,   0.00000, 0.00000, 180.00000);
 	CreateDynamicObject(2120, -238.61951, -2015.03418, 1012.05359,   0.00000, 0.00000, 0.00000);
@@ -11110,10 +10809,10 @@ stock LoadMap() {
 	CreateDynamicObject(2596, -239.45630, -2021.77075, 1013.57489,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(2596, -237.55630, -2021.77075, 1013.57489,   0.00000, 0.00000, 90.00000);
 	
-	// ASTILLERO
+//====================================ASTILLERO=================================
 	CreateDynamicObject(10830, 2933.24121, -2051.62744, 4.30050,   0.00000, 0.00000, -44.64000);
 	
-	// HQ CHINA
+//=====================================HQ CHINO=================================
 	CreateObject(14789, 2944.60449, -1974.24365, 1010.00000,   0.00000, 0.00000, 0.00000);
 	Textura = CreateDynamicObject(19379, 2966.96997, -1984.66113, 1008.66160,   0.00000, 0.00000, 90.00000);
 	SetDynamicObjectMaterial(Textura, 0, 14789, "ab_sfgymmain", "ab_panelWall1", -1);
@@ -11317,7 +11016,7 @@ stock LoadMap() {
 	CreateDynamicObject(1616, 2945.28857, -1982.43188, 1011.50183,   0.00000, 0.00000, 168.72029);
 	CreateDynamicObject(14455, 2947.94165, -1977.43896, 1007.42218,   0.00000, 0.00000, 0.00000);
 
-    /*----------------------------INTERIOR MAPEO HQ ITALIANA----------------------*/
+//===================================HQ ITALIANO================================
 	Textura = CreateObject(14853, 2925.96411, -835.51038, 1010.00000,   0.00000, 0.00000, 0.00000);
 	SetObjectMaterial(Textura, 2, 14853, "gen_pol_vegas", "mp_cop_panel", -1);
 	SetObjectMaterial(Textura, 5, 14703, "vghsb3int2", "HS2_3Carpet1", -1);
@@ -11565,24 +11264,23 @@ stock LoadMap() {
 	CreateDynamicObject(19325, 2923.62329, -820.08270, 1011.93390,   90.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2606, 2915.23071, -818.86218, 1014.14899,   10.00000, 0.00000, -90.00000);
 	CreateDynamicObject(2606, 2915.22974, -816.88318, 1014.14899,   10.00000, 0.00000, -90.00000);
-	/*---------------------FIN INTERIOR HQ ITALIANA-------------------------------*/
 
-	//REJA TANA
+//====================================REJA TANA=================================
 	BERTGate = CreateObject(971, 1245.07910, -767.55127, 90.60150,   0.00000, 0.00000, 180.00000);
 	CreateDynamicObject(18980, 1240.07996, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18980, 1241.07996, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18980, 1250.98499, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18980, 1249.98499, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
-	//REJA CHINA
+//====================================REJA CHINA================================
 	CHINGate[0] = CreateObject(971, 324.34799, -1185.18579, 75.42600,   0.00000, 0.00000, 37.50000);
 	CHINGate[1] = CreateObject(971, 317.32422, -1190.57642, 75.42602,   0.00000, 0.00000, 37.49999);
 	CreateDynamicObject(18762, 313.66541, -1193.70801, 77.41848,   0.00000, 0.00000, 37.08000);
 	CreateDynamicObject(18762, 328.41751, -1182.00623, 77.41800,   0.00000, 0.00000, 37.08000);
 	CreateDynamicObject(18762, 327.65201, -1182.58411, 77.41850,   0.00000, 0.00000, 37.08000);
-	//REJA FORZA
+//====================================REJA FORZA================================
 	FORZGate = CreateObject(971, 263.59546, -1333.77124, 51.39749,   0.00000, 0.00000, 35.82000);
 	
-	// ESTACION DE SERVICIO NORTE
+//============================ESTACION DE SERVICIO NORTE========================
 	CreateDynamicObject(16107, 1008.38977, -922.83356, 41.65400,   0.00000, 0.00000, 278.20004);
 	CreateDynamicObject(1676, 998.50000, -937.59998, 42.90000,   0.00000, 0.00000, 8.00000);
 	CreateDynamicObject(1676, 1002.40002, -937.09998, 42.90000,   0.00000, 0.00000, 6.99829);
@@ -11601,19 +11299,19 @@ stock LoadMap() {
 	CreateDynamicObject(984, 1003.75623, -936.05951, 41.82510,   0.00000, 0.00000, -82.02000);
 	CreateDynamicObject(1280, 1006.20831, -948.07727, 41.59710,   0.00000, 0.00000, 97.80000);
 	CreateDynamicObject(1280, 1002.36914, -948.59900, 41.55710,   0.00000, 0.00000, 97.80000);
-	// ESTACION DE SERVICIO PIG PEN
+//============================ESTACION DE SERVICIO PIGPEN=======================
 	CreateDynamicObject(13296, 2325.20508, -1355.67761, 26.27400,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(1676, 2319.55054, -1358.84802, 24.70120,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(1676, 2319.55054, -1354.08887, 24.70120,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(9192, 2315.27661, -1373.10754, 27.79730,   0.00000, 0.00000, 225.00000);
 	CreateDynamicObject(984, 2318.83154, -1356.27258, 23.65950,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 2320.19629, -1356.27258, 23.65950,   0.00000, 0.00000, 0.00000);
-	// ESTACION DE SERVICIO UNITY
+//============================ESTACION DE SERVICIO UNITY========================
 	CreateDynamicObject(984, 1940.84546, -1772.84338, 13.05690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 1951.64490, -1770.88342, 13.21690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 1925.48303, -1762.31604, 13.21690,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(984, 1942.44727, -1772.93127, 13.01110,   0.00000, 0.00000, 0.00000);
-	// ESTACION DE SERVICIO FARO
+//============================ESTACION DE SERVICIO FARO=========================
 	CreateDynamicObject(9192, 618.66846, -1510.80493, 18.73229,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1676, 609.23718, -1517.07373, 15.65070,   0.00000, 0.00000, 90.00000);
 	Textura = CreateDynamicObject(12853, 598.19482, -1510.96594, 16.07810,   0.00000, -1.00000, 180.00000);
@@ -11624,7 +11322,7 @@ stock LoadMap() {
 	CreateDynamicObject(983, 608.36182, -1506.61218, 14.60300,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(983, 610.13251, -1515.51428, 14.64300,   0.50000, 0.00000, 180.00000);
 	CreateDynamicObject(983, 608.36121, -1515.51428, 14.64300,   0.50000, 0.00000, 180.00000);
-	// ESTACION DE SERVICIO PUERTO
+//============================ESTACION DE SERVICIO PUERTO=======================
 	CreateDynamicObject(12853, 2268.51929, -2439.89038, 14.53370,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19458, 2263.91431, -2441.95947, 13.71640,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1676, 2257.45752, -2434.35596, 14.21490,   0.00000, 0.00000, 90.00000);
@@ -11632,7 +11330,7 @@ stock LoadMap() {
 	CreateDynamicObject(9192, 2255.75122, -2419.47144, 17.19479,   0.00000, 0.00000, 133.19998);
 	CreateDynamicObject(984, 2256.52905, -2439.83105, 13.18160,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 2258.32471, -2439.83105, 13.18160,   0.00000, 0.00000, 0.00000);
-	// ESTACION DE SERVICIO AYUNTA
+//============================ESTACION DE SERVICIO AYUNTA=======================
 	CreateDynamicObject(13296, 1371.59045, -1758.69226, 15.76920,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(9192, 1379.25208, -1742.16565, 17.31170,   0.00000, 0.00000, 45.00000);
 	CreateDynamicObject(1676, 1377.29614, -1760.25854, 14.18680,   0.00000, 0.00000, 90.00000);
@@ -11644,7 +11342,7 @@ stock LoadMap() {
 	CreateDynamicObject(3440, 1370.57751, -1774.69153, 13.04783,   0.00000, 0.00000, 154.20000);
 	CreateDynamicObject(3440, 1364.59509, -1774.68665, 12.63327,   0.00000, 0.00000, 154.20000);
 
-    // ---------------------MAPEO PASILLO DE LA MERCA---------------------------
+//==================================PASILLO LA MERCA============================
     CreateObject(5628, 2028.53503, -1773.95313, 16.67970,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(14414, 1973.36255, -1776.09998, 6.10330,   0.00000, 0.00000, 180.00000);
 	CreateDynamicObject(19456, 1973.28516, -1780.84985, 6.24230,   0.00000, 90.00000, 0.00000);
@@ -11773,8 +11471,8 @@ stock LoadMap() {
 	CreateDynamicObject(17969, 1980.59558, -1806.05969, 7.35670,   130.00000, 180.00000, -90.00000);
 	CreateDynamicObject(17969, 1992.84167, -1810.29614, 8.98890,   20.00000, 0.00000, -90.00000);
 	
-	//=============================PARADAS DE COLECTIVO=============================
-	// Linea amarilla
+//=============================PARADAS DE COLECTIVO=============================
+//=================================LINEA AMARILLA===============================
 	CreateObject(1257, 1590.58606, -1865.89673, 13.82070,   0.00000, 0.00000, 90.00000);
 	CreateObject(1257, 1582.01001, -1878.56262, 13.82070,   0.00000, 0.00000, -90.00000);
 	CreateObject(1257, 1342.48938, -1726.02234, 13.81770,   0.00000, 0.00000, 90.00000);
@@ -11793,7 +11491,7 @@ stock LoadMap() {
 	CreateObject(1257, 2006.02698, -1472.27222, 13.81730,   0.00000, 0.00000, -90.00000);
 	CreateObject(1257, 1815.35242, -1596.41919, 13.81580,   0.00000, 0.00000, 180.00000);
 	CreateObject(1257, 1828.20251, -1588.92676, 13.81580,   0.00000, 0.00000, 0.00000);
-	// Linea Roja
+//===================================LINEA ROJA=================================
 	CreateObject(1257, 2175.16724, -2151.25293, 13.82450,   0.00000, 0.00000, -134.99994);
 	CreateObject(1257, 2184.54175, -2142.18188, 13.82450,   0.00000, 0.00000, 44.46000);
 	CreateObject(1257, 2391.93774, -1978.88147, 13.81264,   0.00000, 0.00000, -90.00000);
@@ -11812,7 +11510,7 @@ stock LoadMap() {
 	CreateObject(1257, 2165.46362, -1627.29346, 14.46503,   -1.00000, 0.00000, -288.47961);
 	CreateObject(1257, 2036.43127, -1758.86426, 13.80459,   0.00000, 0.00000, -90.00000);
 	CreateObject(1257, 2034.12976, -1745.68030, 13.80460,   0.00000, 0.00000, 90.00000);
-	// Linea Verde
+//==================================LINEA VERDE=================================
 	CreateObject(1257, 1488.97754, -1586.04126, 13.77824,   0.00000, 0.00000, 90.00000);
 	CreateObject(1257, 1492.30469, -1598.44775, 13.77820,   0.00000, 0.00000, -90.00000);
 	CreateObject(1257, 1422.50366, -1151.95544, 24.18831,   0.00000, 0.00000, 77.52003);
@@ -11830,8 +11528,7 @@ stock LoadMap() {
 	CreateObject(1257, 1829.37427, -2069.79980, 13.74623,   0.00000, 0.00000, 0.00000);
 	CreateObject(1257, 1816.65747, -2096.87329, 13.74620,   0.00000, 0.00000, 180.00000);
 
-
-	//-------------------TALLER MECANICO MERCURY--------------------------------
+//==============================TALLER MECANICO MERCURY=========================
 	TMMAGate = CreateObject(980, 1623.01730, -1862.1691, 12.00760, 0.00000, 0.00000, 180.00000);
 	SetObjectMaterial(TMMAGate, 0, 2660, "cj_banner", "CJ_MERC_LOGO", -1);
 	SetObjectMaterial(TMMAGate, 1, 2660, "cj_banner", "CJ_MERC_LOGO", -1);
@@ -11846,8 +11543,6 @@ stock LoadMap() {
 	SetDynamicObjectMaterialText(InscripcionTaller, 0, "nico", 60, "Impact", 50, 0, -8388608, 0, 1);
 	InscripcionTaller = CreateDynamicObject(19353, 1614.91736, -1862.23401, 13.55060,   -0.59990, 0.00000, -90.04910);
 	SetDynamicObjectMaterialText(InscripcionTaller, 0, "Mercury", 60, "Impact", 45, 0, -8388608, 0, 1);
-
-//-----------------------------LOGO DE BOXES------------------------------------
 
 	new BoxTaller;
 
@@ -11865,8 +11560,6 @@ stock LoadMap() {
 	SetDynamicObjectMaterialText(BoxTaller, 0, "BOX 6", 60, "Impact", 40, 1, -16777216, -8092540, 1);
 	BoxTaller = CreateDynamicObject(2643, 1606.8218, -1807.1680, 15.7696, 0.0000, 0.0000, -89.7264);
 	SetDynamicObjectMaterialText(BoxTaller, 0, "BOX 7", 60, "Impact", 40, 1, -16777216, -8092540, 1);
-
-//-----------------------------MAPA DEL TALLER----------------------------------
 
 	CreateDynamicObject(3624, 1594.79736, -1848.25525, 16.63494,   0.00000, 0.00000, 630.24011);
 	CreateDynamicObject(3624, 1594.80249, -1796.63037, 16.60672,   0.00000, 0.00000, 449.63977);
@@ -12197,8 +11890,7 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(19444, 1588.19495, -1820.00549, 13.26250,   0.00000, 0.00000, 180.00000);
 	SetDynamicObjectMaterial(Textura, 0, 19463, "all_walls", "stormdrain3_nt", -1);
 	
-	
-	/* TERRAZA PFA */
+//=================================TERRAZA PFA==================================
 	CreateDynamicObject(14819, 1558.0999755859, -1674.8000488281, 28.545364379883, 0, 0, 90);
 	CreateDynamicObject(970, 1551.701171875, -1650.7998046875, 27.953596115112, 0, 0, 0);
 	CreateDynamicObject(970, 1547.5999755859, -1650.8000488281, 27.953596115112, 0, 0, 0);
@@ -12282,7 +11974,7 @@ stock LoadMap() {
 	CreateDynamicObject(1523, 1577.2667236328, -1637.3781738281, 12.563405990601, 0, 0, 90);
 	CreateDynamicObject(1533, 1577.2353515625, -1638.3509521484, 15, 0, 270, 270);
 
-	/* ESTACIONAMIENTO PUBLICO - CASA DE GOBIERNO */
+//================ESTACIONAMIENTO PUBLICO - CASA DE GOBIERNO====================
 	CreateDynamicObject(994, 1377.013671875, -1659.703125, 12.546875, 0, 0, 90);
 	CreateDynamicObject(997, 1376.9912109375, -1663.0107421875, 12.53639793396, 0, 0, 90);
 	CreateDynamicObject(994, 1378.8916015625, -1669.0771484375, 12.546875, 0, 0, 107.86376953125);
@@ -12319,7 +12011,7 @@ stock LoadMap() {
 	CreateDynamicObject(3091, 1367.2252197266, -1696.8881835938, 8.5870733261108, 0, 0, 304);
 	CreateDynamicObject(3091, 1369.5506591797, -1700.6794433594, 8.6833829879761, 0, 0, 303.99719238281);
 	
-	// Bloqueos paynspray.
+//=============================BLOQUEOS PAYNSPRAY===============================
 	CreateDynamicObject(985, 720.66430664063, -462.59594726563, 15.60000038147, 0, 0, 180);
 	CreateDynamicObject(985, -1420.7413330078, 2591.1958007813, 55, 0, 0, 0);
 	CreateDynamicObject(985, -100.21936035156, 1111.3374023438, 19.39999961853, 0, 0, 0);
@@ -12331,11 +12023,11 @@ stock LoadMap() {
 	CreateDynamicObject(985, 2394.212890625, 1483.556640625, 10.671899795532, 0, 0, 180);
 	CreateDynamicObject(985, -1904.1252441406, 277.83969116211, 41.039100646973, 0, 0, 180);
 
-	// Interior Ayuntamiento.
+//============================INTERIOR AYUNTAMIENTO=============================
 	CreateDynamicObject(1535, 372.78, 166.67, 1007.39,   0.00, 0.00, 180.00);
 	CreateDynamicObject(1535, 365.78, 189.49, 1007.38,   0.00, 0.00, 0.00);
 
-	// Centro de licencias.
+//===============================CENTRO DE LICENCIAS============================
 	CreateDynamicObject(982, 1103.09, -1765.55, 13.22,   0.00, 0.00, 0.00);
 	CreateDynamicObject(982, 1090.28, -1778.37, 13.22,   0.00, 0.00, 90.00);
 	CreateDynamicObject(982, 1071.07, -1778.38, 13.22,   0.00, 0.00, 90.00);
@@ -12344,14 +12036,14 @@ stock LoadMap() {
 	CreateDynamicObject(982, 1071.08, -1735.17, 13.22,   0.00, 0.00, 90.00);
 	CreateDynamicObject(982, 1093.48, -1735.17, 13.22,   0.00, 0.00, 90.00);
 
-	// JAIL OOC
+//=================================JAIL OOC=====================================
 	CreateDynamicObject(18856, 1411.23, -2.94, 1001.44, 0.00, 0.00, 0.00);
 	
-	// LSPD.
-	    // Exterior.
+//====================================PMA=======================================
+//===================================EXTERIOR===================================
 	PMGate = CreateObject(3037, 1589.73499, -1638.32410, 14.27130,   0.00000, 0.00000, 90.00000);
     PMBarrier = CreateObject(968, 1544.68, -1631.00, 13.19,   0.00, 90.00, 90.00);
-		// Interior.
+//===================================INTERIOR===================================
 	PMHallDoor[1] = CreateObject(19303, 245.54, 72.44, 1003.87, 0.00, 0.00, 180.00);
 	PMHallDoor[2] = CreateObject(19303, 247.29, 72.44, 1003.87, 0.00, 0.00, 0.00);
 	PMWindow[1] = CreateObject(3352, 250.46, 68.02, 1005.13, 0.00, 180.00, 0.00);
@@ -12478,11 +12170,11 @@ stock LoadMap() {
 	CreateDynamicObject(2356, 175.10001, 72.2, 996.59998, 0, 0, 154);
 	CreateDynamicObject(2356, 173.7, 72.3, 996.59998, 0, 0, 190);
 	
-	//-----------------------------SHOPPING SHOPPING----------------------------
-	//-----------------------------SHOPPING SHOPPING----------------------------
+//==================================SHOPPING====================================
 	CreateDynamicObject(19322, 1117.58594, -1490.00781, 32.71880,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19323, 1117.58594, -1490.00781, 32.71880,   0.00000, 0.00000, 0.00000);
-	//-------------------------TIENDA DEPORTIVA SHOPPING----------------------------
+	
+//============================TIENDA DEPORTIVA SHOPPING=========================
 	CreateDynamicObject(2404, 1163.61462, -1449.14478, 16.03050,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2368, 1156.99011, -1451.12231, 14.78151,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2622, 1160.82629, -1459.71863, 15.58081,   0.00000, 0.00000, 0.00000);
@@ -12562,8 +12254,8 @@ stock LoadMap() {
 	CreateDynamicObject(2382, 1167.74438, -1452.54382, 16.15427,   8.00000, 0.00000, -90.00000);
 	CreateDynamicObject(2392, 1167.75928, -1451.95374, 16.19400,   8.00000, 0.00000, -90.00000);
 	CreateDynamicObject(2394, 1168.16614, -1451.36401, 16.21990,   -1.30000, 6.00000, -179.99980);
-	//-----------------FIN TIENDA DEPORTIVA SHOPPING----------------------------
-	//------------------FERRETERIA SHOPPING-------------------------------------
+
+//===============================FERRETERIA SHOPPING============================
 	CreateDynamicObject(1984, 1166.02283, -1471.21948, 14.78000,   0.00000, 0.00000, 107.56000);
 	CreateDynamicObject(2379, 1160.37000, -1468.70996, 14.76000,   0.00000, 0.00000, 108.01000);
 	CreateDynamicObject(2379, 1158.53003, -1466.67004, 14.76000,   0.00000, 0.00000, 288.16000);
@@ -12611,8 +12303,8 @@ stock LoadMap() {
 	CreateDynamicObject(1558, 1163.70557, -1472.98047, 15.40341,   0.00000, 0.00000, 19.14000);
 	CreateDynamicObject(1558, 1162.28052, -1472.32800, 15.40341,   0.00000, 0.00000, 19.14000);
 	CreateDynamicObject(1558, 1162.68591, -1473.34399, 15.40341,   0.00000, 0.00000, 19.14000);
-	//------------------------FIN DE FERRETERIA SHOPPING------------------------
-	//------------------------VIDRIOS SHOPPING----------------------------------
+
+//=================================VIDRIOS SHOPPING=============================
 	CreateDynamicObject(19325, 1155.40002, -1434.89001, 16.49000,   0.00000, 0.00000, 0.30000);
 	CreateDynamicObject(19325, 1155.37000, -1445.41003, 16.31000,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19325, 1155.29004, -1452.38000, 16.31000,   0.00000, 0.00000, 0.00000);
@@ -12635,8 +12327,8 @@ stock LoadMap() {
 	CreateDynamicObject(19325, 1163.08997, -1517.25000, 23.46000,   0.00000, 0.00000, -40.74000);
 	CreateDynamicObject(19325, 1163.04004, -1442.06006, 23.40000,   0.00000, 0.00000, -0.12000);
 	CreateDynamicObject(19325, 1163.08997, -1428.46997, 23.50000,   0.00000, 0.00000, 0.54000);
-	//--------------------FIN VIDRIOS SHOPPING----------------------------------
-	//-----------------------24-7 SHOPPING------------------------------------------
+
+//================================24-7 SHOPPING=================================
 	CreateDynamicObject(19326, 1155.33997, -1446.72998, 16.38000,   0.00000, 0.00000, -89.82000);
 	CreateDynamicObject(19326, 1155.25000, -1443.84998, 16.36000,   0.00000, 0.00000, -89.82000);
 	CreateDynamicObject(19326, 1155.37000, -1436.31995, 16.36000,   0.00000, 0.00000, -89.82000);
@@ -12773,10 +12465,8 @@ stock LoadMap() {
 	CreateDynamicObject(1995, 1177.70996, -1439.63000, 14.79000,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1994, 1176.72998, -1439.63000, 14.79000,   0.00000, 0.00000, 0.06000);
 	CreateDynamicObject(1993, 1177.82996, -1444.15002, 14.79000,   0.00000, 0.00000, 179.46001);
-	//----------------------------FIN 24-7 SHOPPING-----------------------------
-	//-------------------------------FIN SHOPPING-------------------------------
 
-	// Hospital.
+//===================================HOSPITAL===================================
 	CreateObject(14595, 1163.0966796875, -1324.3876953125, 1022.6499023438, 0, 0, 0); // Piso estático.
 	CreateObject(14597, 1148.146484375, -1305.5849609375, 1024.6940917969, 0, 0, 270);// Piso estático.
 	CreateDynamicObject(16501, 1166.2685546875, -1335.3037109375, 1020.3896484375, 0, 0, 179.99450683594);
@@ -12856,7 +12546,7 @@ stock LoadMap() {
 	CreateDynamicObject(1369, 1161.0999755859, -1336, 1019.299987793, 0, 0, 67.494506835938);
 	CreateDynamicObject(1369, 1160.8000488281, -1334.1999511719, 1019.299987793, 0, 0, 67.494506835938);
 	
-	// Ayuntamiento.
+//===================================AYUNTAMIENTO===============================
 	CreateDynamicObject(996, 1534.6118164063, -1662.9228515625, 13.131567955017, 0, 0, 90);
 	CreateDynamicObject(996, 1534.6096191406, -1654.0778808594, 13.131567955017, 0, 0, 90);
 	CreateDynamicObject(996, 1534.6334228516, -1645.2020263672, 13.131567955017, 0, 0, 90);
@@ -13122,7 +12812,7 @@ stock LoadMap() {
 	CreateDynamicObject(1341, 1504.5688476563, -1698.6971435547, 14.049461364746, 0, 0, 0);
 	CreateDynamicObject(1341, 1504.5698242188, -1700.8142089844, 14.049461364746, 0, 0, 0);
 
-	// Unity.
+//======================================UNITY===================================
     CreateDynamicObject(3660, 1769.42896, -1941.80811, 15.19510,   0.00000, 0.00000, 180.72000);
 	CreateDynamicObject(16362, 1801.40, -1916.90, 15.40,   0.00, 0.00, 0.00);
 	CreateDynamicObject(16362, 1779.70, -1916.80, 15.40,   0.00, 0.00, 0.00);
@@ -13984,27 +13674,25 @@ CMD:acmds(playerid, params[]) {
 
 CMD:admincmds(playerid, params[]) {
     if(PlayerInfo[playerid][pAdmin] < 1) {
-		return 0;
+		return 1;
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /actele /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /avinfo /descongelar /congelar /slap /muteb /teleayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda /av");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/ainfocasa /ainfonegocio /aetele /antele /ban /check /checkinv /fly /sethp");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/mps /setint /setvw /set /togglegooc /verf");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aventrar /avrespawn /avrespawnall /afexpulsar /cambiarnombre /finfo /fixveh /fuelcars");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/jetx /setarmour /setjob /setcoord");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /cambiarnombre /finfo /jetx /setarmour /setjob /setcoord");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/givegun /advertir /clima /darlider /desbanear /saltartuto /tutorial /anproductos /annombre /gametext /sinfo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"/av /acasas /aedificios /afacciones /anegocios /crearveh /crearpermaveh /ppvehiculos");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/gmx /exit /tod /unknowngametext /money /givemoney /motd /resetcars /setadmin /rerollplates /ppcasas");
-  		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/abarreracrear /abarreraquitar /abarreraquitartodo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acasas /aedificios /afacciones /anegocios /ppvehiculos /gmx /exit /tod /unknowngametext /money /givemoney");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/motd /resetcars /setadmin /rerollplates /ppcasas /abarreracrear /abarreraquitar /abarreraquitartodo");
 	}
 	return 1;
 }
@@ -14385,100 +14073,6 @@ CMD:setvw(playerid, params[]) {
 	if(sscanf(params,"ud", targetid, world)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setvw [ID-Jugador] [mundo virtual]");
 	else {
         SetPlayerVirtualWorld(targetid, world);
-	}
-	return 1;
-}
-
-//[CMD_A4]
-CMD:fixveh(playerid, params[]) {
-    if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
-
-	if(IsPlayerInAnyVehicle(playerid)) {
-	    new vehicleid = GetPlayerVehicleID(playerid);
-		RepairVehicle(vehicleid);
-		VehicleInfo[vehicleid][VehHP] = 100;
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Vehículo reparado.");
-	}
-	return 1;
-}
-
-CMD:crearveh(playerid, params[]) {
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-   	new
-		id = 1,
-	   	Float:px,
-		Float:py,
-		Float:pz,
-		Float:pa,
-		model,
-		color1,
-		color2;
-
-	if(sscanf(params, "ddd", model, color1, color2)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /crearveh [modelo] [color1] [color2]");
-	else if(model >= 400 && model <= 611) {
-		while(id < MAX_VEH)	{
-			if(VehicleInfo[id][VehType] == VEH_NONE) {
-			    VehicleInfo[id][VehType] = VEH_CREATED;
-			    VehicleInfo[id][VehModel] = model;
-			    VehicleInfo[id][VehColor1] = color1;
-			    VehicleInfo[id][VehColor2] = color2;
-			    GetPlayerPos(playerid, px, py, pz);
-			    GetPlayerFacingAngle(playerid, pa);
-				DestroyVehicle(id);
-                CreateVehicle(model, px, py, pz, pa, color1, color2, 20);
-				PutPlayerInVehicle(playerid, id, 0);
-				LastVeh[playerid] = id;
-				SetEngine(id, 1);
-				SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (desaparecerá luego de 15 minutos sin utilizar).");
-				return 1;
-			}
-			id++;
-		}
-	} else {
-	    SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} el modelo del vehículo debe estar entre 400 y 611.");
-	}
-	return 1;
-}
-
-CMD:crearpermaveh(playerid, params[]) {
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-   	new
-		id = 1,
-	   	Float:px,
-		Float:py,
-		Float:pz,
-		Float:pa,
-		model,
-		color1,
-		color2;
-
-	if(sscanf(params, "ddd", model, color1, color2)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /crearpermaveh [modelo] [color1] [color2]");
-	else if(model >= 400 && model <= 611) {
-		while(id < MAX_VEH)	{
-			if(VehicleInfo[id][VehType] == VEH_NONE) {
-			    VehicleInfo[id][VehType] = VEH_CREATED;
-			    VehicleInfo[id][VehModel] = model;
-			    VehicleInfo[id][VehColor1] = color1;
-			    VehicleInfo[id][VehColor2] = color2;
-			    GetPlayerPos(playerid, px, py, pz);
-			    GetPlayerFacingAngle(playerid, pa);
-				DestroyVehicle(id);
-                CreateVehicle(model, px, py, pz, pa, color1, color2, 0);
-				PutPlayerInVehicle(playerid, id, 0);
-				LastVeh[playerid] = id;
-				SetEngine(id, 1);
-				SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (no desaparecerá hasta que sea eliminado o reinicie el servidor).");
-				return 1;
-			}
-			id++;
-		}
-	} else {
-	    SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} el modelo del vehículo debe estar entre 400 y 611.");
 	}
 	return 1;
 }
@@ -16512,7 +16106,7 @@ CMD:terminar(playerid,params[]) {
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    LastCP[playerid] = -1;
 	    ServerInfo[sDrugRawMats] += 5;
-	    PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_DRUGF_PRODVALUE;
+	    GivePlayerCash(playerid, CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 	    CollectedProds[playerid] = 0;
 	
 		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
@@ -16612,7 +16206,21 @@ CMD:dejarempleo(playerid,params[]) {
 	return 1;
 }
 
-//[PUERTAS-USABLES]
+//===============================COMANDOS DE PMA================================
+
+CMD:ayudap(playerid, params[])
+{
+	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+		return 1;
+		
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
+ 	if(PlayerInfo[playerid][pRank] <= 4)
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
+	return 1;
+}
+
 CMD:apuerta(playerid,params[]) {
 
     // Policía de Malos Aires
@@ -16676,21 +16284,6 @@ CMD:apuerta(playerid,params[]) {
 			}
 		}
 	}
-}
-
-//===============================COMANDOS DE PMA================================
-
-CMD:ayudap(playerid, params[])
-{
-	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-		return 1;
-		
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
- 	if(PlayerInfo[playerid][pRank] <= 4)
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
-	return 1;
 }
 
 CMD:multar(playerid, params[])
@@ -19626,7 +19219,10 @@ CMD:equipomec(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipomec [ropa] (1-5)");
     if(!PlayerToPoint(3.0, playerid, 1584.5441, -1819.6831, 13.3418)) // Oficina del taller
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la oficina del taller, al lado de los estantes donde se guardan las vestimentas de trabajo.");
+   	if(!jobDuty[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio");
 
+	RemovePlayerWeapon(playerid, 41); // Evitamos acumulacion de sprays
 	if(option == 5)
 	{
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
@@ -19641,7 +19237,7 @@ CMD:equipomec(playerid, params[])
 			    case 4: SetPlayerSkin(playerid, 268);
 			}
 			GivePlayerWeapon(playerid, 41, 500);
-			PlayerActionMessage(playerid, 15.0, "toma unas vestimentas bien dobladas del estante, se las pone, y agarra un aerosol de pintura.");
+			PlayerActionMessage(playerid, 15.0, "toma unas vestimentas del estante y se las pone. Luego agarra un aerosol de pintura.");
 		}
 	return 1;
 }
@@ -19687,8 +19283,6 @@ CMD:remolcar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes que estar conduciendo una grúa!");
 	if(targetVehicleid == INVALID_VEHICLE_ID)
 	    return 1;
-	if(VehicleInfo[targetVehicleid][VehType] == VEH_RENT)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes remolcar vehículos de renta.");
 
 	if(IsTrailerAttachedToVehicle(vehicleid))
 		DetachTrailerFromVehicle(vehicleid);
@@ -20453,6 +20047,46 @@ CMD:mute(playerid, params[])
 	return 1;
 }
 
+CMD:check(playerid, params[])
+{
+	new targetid;
+
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "u", targetid))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /check [ID/Jugador]");
+	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
+
+    ShowStats(playerid, targetid, true);
+    return 1;
+}
+
+CMD:gooc(playerid, params[])
+{
+	new text[128], string[128];
+
+ 	if(sscanf(params, "s[128]", text))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} [/go]oc [mensaje]");
+    if(OOCStatus == 0 && PlayerInfo[playerid][pAdmin] < 1)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} OOC global desactivado.");
+	if(Muted[playerid])
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Usted se encuentra muteado.");
+
+	if(PlayerInfo[playerid][pAdmin] >= 1 && AdminDuty[playerid])
+	{
+		format(string, sizeof(string), "(( [Global] {3CB371}%s{87CEFA}: %s ))", GetPlayerNameEx(playerid), text);
+		SendClientMessageToAll(COLOR_GLOBALOOC, string);
+		log(playerid, LOG_CHAT, string);
+	} else
+		{
+			format(string, sizeof(string), "(( [Global] %s: %s ))", GetPlayerNameEx(playerid), text);
+			SendClientMessageToAll(COLOR_GLOBALOOC, string);
+			log(playerid, LOG_CHAT, string);
+		}
+	return 1;
+}
+
 CMD:susurrar(playerid, params[])
 {
 	new targetid, text[128], string[128];
@@ -20474,6 +20108,81 @@ CMD:susurrar(playerid, params[])
 	SendClientMessage(playerid, COLOR_YELLOW, string);
 	PlayerPlayerActionMessage(playerid, targetid, 5.0, "ha susurrado algo al oído de");
 	return 1;
+}
+
+CMD:me(playerid, params[])
+{
+	new text[128], string[128];
+
+	if(sscanf(params, "s[128]", text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /me [acción]");
+
+	format(string, sizeof(string), "%s", text);
+	PlayerActionMessage(playerid, 15.0, text);
+	return 1;
+}
+
+CMD:local(playerid, params[])
+{
+	new text[128], string[128];
+
+	if(sscanf(params, "s[128]", text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /local [mensaje]");
+
+	if(isUsingMaskInSlot[playerid] == -1)
+		format(string, sizeof(string), "%s dice: %s", GetPlayerNameEx(playerid), text);
+	else
+	    format(string, sizeof(string), "Enmascarado dice: %s", text);
+	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+	return 1;
+}
+
+CMD:vb(playerid, params[])
+{
+	new text[128], string[128];
+
+	if(sscanf(params, "s[128]", text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vb [mensaje]");
+
+	if(isUsingMaskInSlot[playerid] == -1)
+		format(string, sizeof(string), "[Voz baja] %s dice: %s", GetPlayerNameEx(playerid), text);
+	else
+		format(string, sizeof(string), "[Voz baja] Enmascarado dice: %s", text);
+	ProxDetector(4.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+	return 1;
+}
+
+CMD:b(playerid, params[])
+{
+	new text[128], string[128];
+
+	if(sscanf(params, "s[128]", text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /b [mensaje]");
+
+	if(PlayerInfo[playerid][pMuteB] > 0)
+	{
+	    if(PlayerInfo[playerid][pMuteB] > 60)
+			SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d minutos.", PlayerInfo[playerid][pMuteB] / 60);
+		else
+		    SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d segundos.", PlayerInfo[playerid][pMuteB]);
+		return 1;
+	}
+	format(string, sizeof(string), "%s", text);
+	PlayerLocalMessage(playerid, 15.0, string);
+	return 1;
+}
+
+CMD:mp(playerid, params[])
+{
+	new targetid, text[128];
+
+	if(sscanf(params, "us[128]", targetid, text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
+	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
+
+    OnPlayerPrivmsg(playerid, targetid, text);
+    return 1;
 }
 
 CMD:mps(playerid, params[]) {
@@ -20635,7 +20344,7 @@ CMD:bidon(playerid, params[]) {
 
 CMD:fumar(playerid, params[])
 {
-    if(GetPlayerState(playerid) !=1)
+    if(GetPlayerState(playerid) != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes utilizarlo estando parado.");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
@@ -21290,6 +20999,8 @@ CMD:llenar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras cargando nafta.");
     if(IsPlayerInAnyVehicle(playerid))
 	{
+		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar como conductor del vehículo.");
 		vehicleid = GetPlayerVehicleID(playerid);
 		preamount = VehicleInfo[vehicleid][VehFuel];
 		if(preamount > 99)

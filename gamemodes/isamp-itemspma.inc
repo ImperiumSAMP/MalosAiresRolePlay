@@ -78,7 +78,7 @@ CMD:cponer(playerid,params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
@@ -107,7 +107,7 @@ CMD:cquitar(playerid,params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
@@ -117,10 +117,10 @@ CMD:cquitar(playerid,params[])
     {
     	DestroyDynamicObject(Conos[playerid][cant-1]);
 		PlayerCantConos[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira un cono policial.");
+        PlayerActionMessage(playerid, 15.0, "retira un cono policial del lugar.");
 	}
 	else
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto conos!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has puesto ningún cono!");
 
 	return 1;
 }
@@ -135,7 +135,7 @@ CMD:cquitartodo(playerid, params[])
 		    {
 		        deleteAuxiliarItemsPMA(i, PMA_CONE_ITEM);
 			}
-			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario ha quitado todos los conos puestos por la facción. ))");
+			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todos los conos puestos por la facción. ))");
 		} else
 		    {
 				deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
@@ -168,7 +168,7 @@ CMD:bponer(playerid,params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
@@ -198,7 +198,7 @@ CMD:bquitar(playerid,params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
     if(PlayerInfo[playerid][pRank] > 7)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente!");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
@@ -208,10 +208,10 @@ CMD:bquitar(playerid,params[])
     {
     	DestroyDynamicObject(Barricadas[playerid][cant-1]);
 		PlayerCantBarricadas[playerid] = cant - 1;
-        PlayerActionMessage(playerid, 15.0, "retira una barricada policial.");
+        PlayerActionMessage(playerid, 15.0, "retira una barricada policial del lugar.");
 	}
 	else
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No has puesto barricadas!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has puesto ninguna barricada!");
 
 	return 1;
 }
@@ -226,7 +226,7 @@ CMD:bquitartodo(playerid, params[])
 		    {
       			deleteAuxiliarItemsPMA(i, PMA_BARRICATE_ITEM);
 			}
-			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario ha quitado todas las barricadas puestas por la facción. ))");
+			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todas las barricadas puestas por la facción. ))");
 		} else
 		    {
 				deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);

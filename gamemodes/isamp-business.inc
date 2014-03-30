@@ -7,7 +7,7 @@
 
 // Mensajes del sistema.
 #define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana - 7: Bar/Club - 8: Tienda de ropa fina"
-#define BUSINESS_TYPES2 		" "
+#define BUSINESS_TYPES2 		"9: Casino - 10: Ferreteria - 11: Discoteca"
 
 // Negocios.
 #define BIZ_REST          		1

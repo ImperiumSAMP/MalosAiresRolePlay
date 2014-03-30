@@ -41,7 +41,7 @@
 #define COLOR_MP                0x5F9EA0FF
 //
 #define COLOR_EVENT             0x4F76F7FF
-#define COLOR_ADMINQUESTION     0xFF9500AA
+#define COLOR_ADMINQUESTION     0xC20000FF
 #define COLOR_ACHAT             0xE8934DFF
 #define COLOR_LOCALMSG		 	0xEC5413AA
 #define COLOR_ADMINCMD 			0x2EBFC7FF
@@ -163,7 +163,6 @@ new femaleSkins2[SKINS_F_2] = {
 //Enums
 enum sInfo {
 	sVehiclePricePercent,
-	sHousePricePercent,
 	sPlayersRecord,
 	sMOTD[128],
 	svLevelExp,

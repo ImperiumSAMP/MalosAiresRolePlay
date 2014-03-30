@@ -874,9 +874,9 @@ public OnVehicleSpawn(vehicleid) {
 		    //SetVehiclePos(vehicleid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ]);
 		}
 	}
-	VehicleInfo[vehicleid][VehBonnet] = 0;
-	VehicleInfo[vehicleid][VehBoot] = 0;
-	vehicleRedio[vehicleid] = 0;
+	VehicleInfo[vehicleid][VehBonnet] = 0; // le cerramos el capot
+	VehicleInfo[vehicleid][VehBoot] = 0; // Le cerramos el maletero
+	vehicleRedio[vehicleid] = 0; // Le apagamos la radio
 	return 1;
 }
 
@@ -1209,7 +1209,7 @@ CMD:vehiculo(playerid,params[]) {
 			new color1 = targetid;
 		    new color2 = vehicleid3;
 			if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0:negro, 1:blanco))");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0: Negro, 1: Blanco))");
 			    
 		    for(new vid = 1; vid < MAX_VEH; vid++) {
 				if(VehicleInfo[vid][VehType] == VEH_NONE) {
@@ -1455,65 +1455,100 @@ CMD:vehiculo(playerid,params[]) {
 	return 1;
 }
 
+//=======================COMANDOS DE ADMIN PARA VEHICULOS=======================
 
-
-// Admin commands
-//[CMD_A6]
-
-CMD:avinfo(playerid, params[]) {
-	new
-		Float:hp,
-	    id;
-
-    if(PlayerInfo[playerid][pAdmin] < 2) return 1;
-	if(sscanf(params, "d", id)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avinfo [idauto]");
-	} else if(id >= 1 && id < MAX_VEH) {
-	    GetVehicleHealth(id, hp);
-	    SendFMessage(playerid, COLOR_WHITE, "|---- Auto %d [vid %d] ----|", id, VehicleInfo[id][VehSQLID]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d (%s)", VehicleInfo[id][VehType], VehTypeName(VehicleInfo[id][VehType]));
-	    SendFMessage(playerid, COLOR_WHITE, "- Modelo: %d", VehicleInfo[id][VehModel]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Colores: %d-%d", VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- Faccion: %d", VehicleInfo[id][VehFaction]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- Empleo: %d", VehicleInfo[id][VehJob]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s pid: %d - slot: %d", VehicleInfo[id][VehOwnerName], VehicleInfo[id][VehOwnerSQLID], VehicleInfo[id][VehOwnerSlot]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- Patente: %s", VehicleInfo[id][VehPlate]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- HP: %f - HP2: %f", hp, VehicleInfo[id][VehHP]);
-	   	SendFMessage(playerid, COLOR_WHITE, "- Gasolina: %d", VehicleInfo[id][VehFuel]);
-		SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", VehicleInfo[id][VehLocked]);
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Auto inexistente.");
+CMD:av(playerid, params[])
+{
+    if(PlayerInfo[playerid][pAdmin] < 1) {
+		return 1;
 	}
+	if(PlayerInfo[playerid][pAdmin] >= 1) {
+  		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA VEHICULOS]==============================");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 1] /avmotor - /avinfo");
+	}
+	if(PlayerInfo[playerid][pAdmin] >= 3) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuelcars - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
+	}
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avestacionar - /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfaccion [idfaccion] - /avempleo [IDempleo] /avnitro /avcrear /avcrearperma");
+		SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/avtipo 0', si éste estaba asociado a un personaje el...");
+	 	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}...vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
+	}
+	return 1;
+}
+
+CMD:avmotor(playerid, params[])
+{
+	new vehicleid;
+
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+
+	vehicleid = GetPlayerVehicleID(playerid);
+	GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+ 	if(VehicleInfo[vehicleid][VehEngine] != 1)
+		SetEngine(vehicleid, 1);
+	else
+		SetEngine(vehicleid, 0);
+	return 1;
+}
+
+CMD:avinfo(playerid, params[])
+{
+	new Float:hp, id;
+
+    if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "d", id))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avinfo [idvehiculo]");
+	if(id < 1 || id >= MAX_VEH)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Auto inexistente.");
+
+  	GetVehicleHealth(id, hp);
+  	SendFMessage(playerid, COLOR_WHITE, "=============== Auto %d [vid %d] ===============", id, VehicleInfo[id][VehSQLID]);
+  	SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d (%s)", VehicleInfo[id][VehType], VehTypeName(VehicleInfo[id][VehType]));
+  	SendFMessage(playerid, COLOR_WHITE, "- Modelo: %d", VehicleInfo[id][VehModel]);
+  	SendFMessage(playerid, COLOR_WHITE, "- Colores: %d-%d", VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Faccion: %d", VehicleInfo[id][VehFaction]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Empleo: %d", VehicleInfo[id][VehJob]);
+  	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s pid: %d - slot: %d", VehicleInfo[id][VehOwnerName], VehicleInfo[id][VehOwnerSQLID], VehicleInfo[id][VehOwnerSlot]);
+  	SendFMessage(playerid, COLOR_WHITE, "- Patente: %s", VehicleInfo[id][VehPlate]);
+	SendFMessage(playerid, COLOR_WHITE, "- HP: %f - HP2: %f", hp, VehicleInfo[id][VehHP]);
+	SendFMessage(playerid, COLOR_WHITE, "- Gasolina: %d", VehicleInfo[id][VehFuel]);
+	SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", VehicleInfo[id][VehLocked]);
 	return 1;
 }
 
 CMD:aventrar(playerid, params[])
 {
+	new vehicleid;
+
 	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
-	new vehid;
-    if(sscanf(params, "i", vehid))
+    if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aventrar [idvehiculo]");
-	if(vehid != INVALID_VEHICLE_ID && VehicleInfo[vehid][VehType] != 0) {
-			PutPlayerInVehicle(playerid, vehid, 0);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
-		}
+	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH || VehicleInfo[vehicleid][VehType] == VEH_NONE)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
+
+	PutPlayerInVehicle(playerid, vehicleid, 0);
 	return 1;
 }
 
 CMD:avrespawn(playerid, params[])
 {
+	new vehicleid;
+
 	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
-	new vehid;
-    if(sscanf(params, "i", vehid))
+    if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avrespawn [idvehiculo]");
-	if(vehid != INVALID_VEHICLE_ID && VehicleInfo[vehid][VehType] != 0 && VehicleInfo[vehid][VehType] != VEH_NPC) {
-			SetVehicleToRespawn(vehid);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
-		}
+	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH || VehicleInfo[vehicleid][VehType] == VEH_NONE || VehicleInfo[vehicleid][VehType] == VEH_NPC)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
+
+	SetVehicleToRespawn(vehicleid);
 	return 1;
 }
 
@@ -1521,259 +1556,342 @@ CMD:avrespawnall(playerid, params[])
 {
 	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
-	for(new i = 1;i<MAX_VEH;i++) {
-		    if(IsVehicleOccupied(i) == 0)
-			{
-			    if(VehicleInfo[i][VehType] != VEH_NPC)
-		        	SetVehicleToRespawn(i);
-		    }
+
+	for(new i = 1; i < MAX_VEH; i++)
+	{
+ 		if(IsVehicleOccupied(i) == 0)
+		{
+		    if(VehicleInfo[i][VehType] != VEH_NPC)
+		       	SetVehicleToRespawn(i);
 		}
-	new string[128];
-	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} todos los vehículos desocupados han sido respawneados por %s.", GetPlayerNameEx(playerid));
-	SendClientMessageToAll(COLOR_ADMINCMD, string);
+	}
+	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos desocupados han sido respawneados por un administrador.");
 	return 1;
 }
 
-CMD:av(playerid, params[]) {
-	cmd_avehiculo(playerid, params);
+CMD:avtraer(playerid, params[])
+{
+	new Float:x, Float:y, Float:z, Float:angle, vehicleid;
+
+	if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+	if(sscanf(params, "i", vehicleid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtraer [idvehiculo]");
+	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
+
+	GetPlayerPos(playerid, x, y, z);
+	GetPlayerFacingAngle(playerid, angle);
+	SetVehiclePos(vehicleid, x, y + 3.5, z);
+	SetVehicleZAngle(vehicleid, angle);
 	return 1;
 }
 
-CMD:avehiculo(playerid, params[]) {
-	new
-		text[128],
-		string[128],
-		returnid,
-		returnid2;
+CMD:avfix(playerid, params[])
+{
+	new vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+	if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
-	if(sscanf(params, "s[128]I(-1)I(-1)", text, returnid, returnid2)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/av)ehiculo [comando]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos]: /avinfo - estacionar - tipo [tipo] - modelo [IDmodelo] - color [color1] [color2] - faccion [idfaccion] - empleo [idempleo]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "traer [idvehiculo] - motor - nitro");
-       	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/av tipo 0', si éste estaba asociado a un personaje");
-        SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}el vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
-	} else if(strcmp(text,"estacionar",true) == 0) {
-		new
-			vehicleid = GetPlayerVehicleID(playerid),
-			Float:x,
-			Float:y,
-			Float:z,
-			Float:a;
+	vehicleid = GetPlayerVehicleID(playerid);
+	RepairVehicle(vehicleid);
+	VehicleInfo[vehicleid][VehHP] = 100;
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Vehículo reparado.");
+	return 1;
+}
 
-	    if(!IsPlayerInAnyVehicle(playerid)) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-			return 1;
+CMD:avfuelcars(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+
+	for(new c = 0; c < MAX_VEH; c++)
+	{
+		VehicleInfo[c][VehFuel] = 100;
+	}
+	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido llenados con gasolina por un administrador.");
+	return 1;
+}
+
+CMD:avnitro(playerid, params[])
+{
+	new vehicleid;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+
+    AddVehicleComponent(vehicleid, 1010);
+	return 1;
+}
+
+CMD:avempleo(playerid, params[])
+{
+	new vehicleid, jobid;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "i", jobid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avempleo [idempleo]");
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+    if(jobid < 0 || jobid > 8)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de empleo inválida.");
+
+	vehicleid = GetPlayerVehicleID(playerid);
+	VehicleInfo[vehicleid][VehJob] = jobid;
+   	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el empleo del vehículo %d ha sido ajustado a %d.", vehicleid, jobid);
+   	SaveVehicle(vehicleid);
+	return 1;
+}
+
+CMD:avfaccion(playerid, params[])
+{
+	new vehicleid, factionid;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "i", factionid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avfaccion [idfaccion]");
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+    if(factionid < 0 || factionid > 10)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción inválida.");
+
+	vehicleid = GetPlayerVehicleID(playerid);
+	VehicleInfo[vehicleid][VehFaction] = factionid;
+   	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} la facción del vehículo %d ha sido ajustada a %d.", vehicleid, factionid);
+   	SaveVehicle(vehicleid);
+	return 1;
+}
+
+CMD:avcolor(playerid, params[])
+{
+	new vehicleid, color1, color2, Float:cx, Float:cy, Float:cz, Float:angle;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "ii", color1, color2))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcolor [color1] [color2]");
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+    if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Ingresa colores válidos: 0-255.");
+
+	VehicleInfo[vehicleid][VehColor1] = color1;
+	VehicleInfo[vehicleid][VehColor2] = color2;
+    SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el color del vehículo %d ha sido ajustado a %d-%d.", vehicleid, color1, color2);
+	GetVehiclePos(vehicleid, cx, cy, cz);
+	GetVehicleZAngle(vehicleid, angle);
+	DestroyVehicle(vehicleid);
+	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
+	PutPlayerInVehicle(playerid, vehicleid, 0);
+	SetVehiclePos(vehicleid, cx, cy, cz);
+	SetVehicleZAngle(vehicleid, angle);
+    SaveVehicle(vehicleid);
+	return 1;
+}
+
+CMD:avmodelo(playerid, params[])
+{
+	new vehicleid, modelid, Float:cx, Float:cy, Float:cz, Float:angle;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "i", modelid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avmodelo [idmodelo]");
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+    if(modelid < 400 || modelid > 611)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de modelo incorrecta, debe estar en el rango de 400-611.");
+
+	VehicleInfo[vehicleid][VehModel] = modelid;
+    SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, modelid);
+	GetVehiclePos(vehicleid, cx, cy, cz);
+	GetVehicleZAngle(vehicleid, angle);
+	DestroyVehicle(vehicleid);
+	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
+	PutPlayerInVehicle(playerid, vehicleid, 0);
+	SetVehiclePos(vehicleid, cx, cy, cz);
+	SetVehicleZAngle(vehicleid, angle);
+    SaveVehicle(vehicleid);
+	return 1;
+}
+
+CMD:avtipo(playerid, params[])
+{
+	new vehicleid, type, string[128], pconnected;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "i", type))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtipo [idtipo]");
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+	if(type < 0 || type > 10)
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de tipo incorrecta.");
+
+	vehicleid = GetPlayerVehicleID(playerid);
+	pconnected = 0;
+	if(VehicleInfo[vehicleid][VehType] == VEH_RENT) {
+		for(new i = 1; i < MAX_RENTCAR; i++) {
+	    	if(RentCar[i][vrID] == vehicleid){
+               	RentCar[i][vrID] = 0;
+               	RentCar[i][vrOwnerSQLID] = -1;
+               	RentCar[i][vrTime] = 0;
+               	RentCar[i][vrRented] = 0;
+      		}
 		}
-		GetVehiclePos(vehicleid, x, y, z);
-		GetVehicleZAngle(vehicleid, a);
-		VehicleInfo[vehicleid][VehPosX] = x;
-		VehicleInfo[vehicleid][VehPosY] = y;
-		VehicleInfo[vehicleid][VehPosZ] = z;
-		VehicleInfo[vehicleid][VehAngle] = a;
-		SaveVehicle(vehicleid);
-		
-		DestroyVehicle(vehicleid);
-	    CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
-    	SetVehicleNumberPlate(vehicleid, VehicleInfo[vehicleid][VehPlate]);
-		SetVehicleToRespawn(vehicleid);
-		UpdateVehicleDamageStatus(vehicleid, VehicleInfo[vehicleid][VehDamage1], VehicleInfo[vehicleid][VehDamage2], VehicleInfo[vehicleid][VehDamage3], VehicleInfo[vehicleid][VehDamage4]);
-		SetVehicleHealth(vehicleid, VehicleInfo[vehicleid][VehHP]);
-		PutPlayerInVehicle(playerid, vehicleid, 0);
-		
-	    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} vehículo %d estacionado correctamente.", vehicleid);
-	    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-	} else if(strcmp(text,"tipo",true) == 0) {
-		if(IsPlayerInAnyVehicle(playerid)) {
-			new
-				vehicleid = GetPlayerVehicleID(playerid),
-				pconnected = 0;
-
-			if(returnid == -1) return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/av)ehiculo tipo [idtipo]");
-			if(VehicleInfo[vehicleid][VehType] == VEH_RENT) {
-				for(new i = 1; i < MAX_RENTCAR; i++) {
-				    if(RentCar[i][vrID] == vehicleid){
-                    	RentCar[i][vrID] = 0;
-                    	RentCar[i][vrOwnerSQLID] = -1;
-                    	RentCar[i][vrTime] = 0;
-                    	RentCar[i][vrRented] = 0;
-                    }
-				}
-			} else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
- 			    foreach(new i : Player)	{
-					if(PlayerInfo[i][pVeh1] == vehicleid) {
-					    PlayerInfo[i][pVeh1] = 0;
-					    pconnected = 1;
-					} else if(PlayerInfo[i][pVeh2] == vehicleid) {
+	} else
+		if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
+ 			foreach(new i : Player)	{
+				if(PlayerInfo[i][pVeh1] == vehicleid) {
+				    PlayerInfo[i][pVeh1] = 0;
+				    pconnected = 1;
+				} else
+					if(PlayerInfo[i][pVeh2] == vehicleid) {
 					    PlayerInfo[i][pVeh2] = 0;
 					    pconnected = 1;
 					}
-				}
-				if(pconnected == 0)	{
-				    if(VehicleInfo[vehicleid][VehOwnerSlot] == 1) {
-				        format(string, sizeof(string), "UPDATE accounts SET pVeh1 = 0 WHERE Id = %d AND pVeh1 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
-						mysql_function_query(dbHandle, string, false, "", "");
-				    } else if(VehicleInfo[vehicleid][VehOwnerSlot] == 2) {
-				        format(string, sizeof(string), "UPDATE accounts SET pVeh2 = 0 WHERE Id = %d AND pVeh2 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
+			}
+			if(pconnected == 0)	{
+			    if(VehicleInfo[vehicleid][VehOwnerSlot] == 1) {
+			        format(string, sizeof(string), "UPDATE accounts SET pVeh1 = 0 WHERE Id = %d AND pVeh1 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
+					mysql_function_query(dbHandle, string, false, "", "");
+				} else
+					if(VehicleInfo[vehicleid][VehOwnerSlot] == 2) {
+						format(string, sizeof(string), "UPDATE accounts SET pVeh2 = 0 WHERE Id = %d AND pVeh2 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
 						mysql_function_query(dbHandle, string, false, "", "");
 					}
-				}
 			}
-			
-			/*if(returnid == VEH_RENT) {
-				new available = -1;
-				for(new i = 1; i < MAX_RENTCAR; i++) {
-				    if(RentCar[i][vrID] < 1) {
-                    	RentCar[i][vrID] = vehicleid;
-                    	RentCar[i][vrOwnerSQLID] = -1;
-                    	RentCar[i][vrTime] = 0;
-                    	RentCar[i][vrRented] = 0;
-                    	available = i;
-                    }
-				}
-				if(available == -1)
-				    return SendClientMessage(playerid, COLOR_YELLOW2, "No se pueden poner más vehículos de renta.");
-			}*/
-			if(returnid == VEH_NONE) {
-				resetVehicle(vehicleid);
-			}
-
-            VehicleInfo[vehicleid][VehType] = returnid;
-		    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el tipo del vehículo %d ha sido ajustado a %d.", vehicleid, returnid);
-		    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-    		SaveVehicle(vehicleid);
-    		SetVehicleToRespawn(vehicleid);
-			if(returnid != VEH_NONE && returnid != VEH_CREATED) PutPlayerInVehicle(playerid, vehicleid, 0);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 		}
-	} else if(strcmp(text, "modelo", true) == 0) {
-		new
-			vehicleid = GetPlayerVehicleID(playerid),
-			Float:cx,
-			Float:cy,
-			Float:cz,
-			Float:angle;
 
-	    if(returnid == -1) return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/aveh)iculo modelo [idmodelo]");
+	/*
+	if(type == VEH_RENT) {
+		new available = -1;
+		for(new i = 1; i < MAX_RENTCAR; i++) {
+		    if(RentCar[i][vrID] < 1) {
+               	RentCar[i][vrID] = vehicleid;
+               	RentCar[i][vrOwnerSQLID] = -1;
+                RentCar[i][vrTime] = 0;
+                RentCar[i][vrRented] = 0;
+                available = i;
+    		}
+		}
+		if(available == -1)
+  			return SendClientMessage(playerid, COLOR_YELLOW2, "No se pueden poner más vehículos de renta.");
+	}
+	*/
 
-		if(IsPlayerInAnyVehicle(playerid)) {
-			if(returnid > 399 && returnid < 612) {
-				VehicleInfo[vehicleid][VehModel] = returnid;
-			    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, returnid);
-			    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-				GetVehiclePos(vehicleid,cx,cy,cz);
-				GetVehicleZAngle(vehicleid, angle);
-				DestroyVehicle(vehicleid);
-				CreateVehicle(VehicleInfo[vehicleid][VehModel],VehicleInfo[vehicleid][VehPosX],VehicleInfo[vehicleid][VehPosY],VehicleInfo[vehicleid][VehPosZ],VehicleInfo[vehicleid][VehAngle],VehicleInfo[vehicleid][VehColor1],VehicleInfo[vehicleid][VehColor2], -1);
-				PutPlayerInVehicle(playerid,vehicleid,0);
-				SetVehiclePos(vehicleid, cx, cy, cz);
- 				SetVehicleZAngle(vehicleid, angle);
-			    SaveVehicle(vehicleid);
-		    } else {
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de model incorrecta, debe estar en el rango de 400-611.");
-			}
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-		}
-	} else if(strcmp(text,"color",true) == 0) {
-	    new
-			vehicleid = GetPlayerVehicleID(playerid),
-			Float:cx,
-			Float:cy,
-			Float:cz,
-			Float:angle;
+	if(type == VEH_NONE)
+		resetVehicle(vehicleid);
 
-		if(IsPlayerInAnyVehicle(playerid)) {
-			if(returnid < 0 || returnid > 255 || returnid2 < 0 || returnid2 > 255) { SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} colores válidos: 0-255."); return 1; }
+    VehicleInfo[vehicleid][VehType] = type;
+    SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el tipo del vehículo %d ha sido ajustado a %d.", vehicleid, type);
+	SaveVehicle(vehicleid);
+	SetVehicleToRespawn(vehicleid);
+	if(type != VEH_NONE && type != VEH_CREATED)
+		PutPlayerInVehicle(playerid, vehicleid, 0);
+	return 1;
+}
 
-			VehicleInfo[vehicleid][VehColor1] = returnid;
-			VehicleInfo[vehicleid][VehColor2] = returnid2;
-   			format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el color del vehículo %d ha sido ajustado a %d-%d.", vehicleid, returnid, returnid2);
-		    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-			GetVehiclePos(vehicleid,cx,cy,cz);
-			GetVehicleZAngle(vehicleid, angle);
-			DestroyVehicle(vehicleid);
-			CreateVehicle(VehicleInfo[vehicleid][VehModel],VehicleInfo[vehicleid][VehPosX],VehicleInfo[vehicleid][VehPosY],VehicleInfo[vehicleid][VehPosZ],VehicleInfo[vehicleid][VehAngle],VehicleInfo[vehicleid][VehColor1],VehicleInfo[vehicleid][VehColor2], -1);
-			PutPlayerInVehicle(playerid,vehicleid,0);
-			SetVehiclePos(vehicleid, cx, cy, cz);
-			SetVehicleZAngle(vehicleid, angle);
-		    SaveVehicle(vehicleid);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-		}
-	} else if(strcmp(text,"faccion",true) == 0) {
-	    new
-			vehicleid = GetPlayerVehicleID(playerid);
+CMD:avestacionar(playerid, params[])
+{
+	new vehicleid, Float:cx, Float:cy, Float:cz, Float:angle;
 
-		if(IsPlayerInAnyVehicle(playerid)) {
-			if(returnid < 11 || 255) {
-				VehicleInfo[vehicleid][VehFaction] = returnid;
-			    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la facción del vehículo %d ha sido ajustada a %d.", vehicleid, returnid);
-			    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-			    SaveVehicle(vehicleid);
-		    } else {
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} ID de facción inválida.");
-			}
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-		}
-	} else if(strcmp(text,"empleo",true) == 0) {
-	    new
-			vehicleid = GetPlayerVehicleID(playerid);
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+    if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
-		if(IsPlayerInAnyVehicle(playerid)) {
-			VehicleInfo[vehicleid][VehJob] = returnid;
-		    format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el empleo del vehículo %d ha sido ajustado a %d.", vehicleid, returnid);
-		    SendClientMessage(playerid,COLOR_ADMINCMD, string);
-		    SaveVehicle(vehicleid);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-		}
-	} else if(strcmp(text,"nitro",true) == 0) {
-	    new
-			vehicleid = GetPlayerVehicleID(playerid);
+    vehicleid = GetPlayerVehicleID(playerid);
+	GetVehiclePos(vehicleid, cx, cy, cz);
+	GetVehicleZAngle(vehicleid, angle);
+	VehicleInfo[vehicleid][VehPosX] = cx;
+	VehicleInfo[vehicleid][VehPosY] = cy;
+	VehicleInfo[vehicleid][VehPosZ] = cz;
+	VehicleInfo[vehicleid][VehAngle] = angle;
+	SaveVehicle(vehicleid);
 
-		if(IsPlayerInAnyVehicle(playerid)) {
-        	AddVehicleComponent(vehicleid, 1010);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-		}
-	} else if(strcmp(text,"entrar",true) == 0) {
-	    if(returnid != INVALID_VEHICLE_ID && VehicleInfo[returnid][VehType] != 0) {
-			PutPlayerInVehicle(playerid, returnid, 0);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
-		}
-	} else if(strcmp(text,"traer",true) == 0) {
-		new
-			Float:x,
-			Float:y,
-			Float:z,
-			Float:angle;
+	DestroyVehicle(vehicleid);
+ 	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
+	SetVehicleNumberPlate(vehicleid, VehicleInfo[vehicleid][VehPlate]);
+	SetVehicleToRespawn(vehicleid);
+	UpdateVehicleDamageStatus(vehicleid, VehicleInfo[vehicleid][VehDamage1], VehicleInfo[vehicleid][VehDamage2], VehicleInfo[vehicleid][VehDamage3], VehicleInfo[vehicleid][VehDamage4]);
+	SetVehicleHealth(vehicleid, VehicleInfo[vehicleid][VehHP]);
+	PutPlayerInVehicle(playerid, vehicleid, 0);
+	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} vehículo %d estacionado correctamente.", vehicleid);
+	return 1;
+}
 
-	    if(returnid != INVALID_VEHICLE_ID) {
-	        GetPlayerPos(playerid, x,y,z);
-			GetPlayerFacingAngle(playerid, angle);
-	        SetVehiclePos(returnid, x, y + 3.5, z);
-	        SetVehicleZAngle(returnid, angle);
-			//PutPlayerInVehicle(playerid,id,0);
-		} else {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
+CMD:avcrear(playerid, params[])
+{
+	new id = 1, Float:px, Float:py, Float:pz, Float:pa, modelid, color1, color2;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "iii", modelid, color1, color2))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcrear [idmodelo] [color1] [color2]");
+	if(modelid < 400 || modelid > 611)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de modelo incorrecta, debe estar en el rango de 400-611.");
+
+	while(id < MAX_VEH)
+	{
+		if(VehicleInfo[id][VehType] == VEH_NONE)
+		{
+  			VehicleInfo[id][VehType] = VEH_CREATED;
+			VehicleInfo[id][VehModel] = modelid;
+			VehicleInfo[id][VehColor1] = color1;
+			VehicleInfo[id][VehColor2] = color2;
+			GetPlayerPos(playerid, px, py, pz);
+			GetPlayerFacingAngle(playerid, pa);
+			DestroyVehicle(id);
+   			CreateVehicle(modelid, px, py, pz, pa, color1, color2, 300);
+			PutPlayerInVehicle(playerid, id, 0);
+			LastVeh[playerid] = id;
+			SetEngine(id, 1);
+			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (desaparecerá luego de 5 minutos sin utilizar).");
+			return 1;
 		}
-	} else if(strcmp(text,"motor",true) == 0) {
-		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER) {
-			new vehicleid = GetPlayerVehicleID(playerid);
-			GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm],vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-		    if(VehicleInfo[vehicleid][VehEngine] != 1) {
-				SetEngine(vehicleid, 1);
-			} else {
-				SetEngine(vehicleid, 0);
-			}
-		} else {
-		    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+		id++;
+	}
+	return 1;
+}
+
+CMD:avcrearperma(playerid, params[])
+{
+	new id = 1, Float:px, Float:py, Float:pz, Float:pa, modelid, color1, color2;
+
+    if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "iii", modelid, color1, color2))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcrearperma [idmodelo] [color1] [color2]");
+	if(modelid < 400 || modelid > 611)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de modelo incorrecta, debe estar en el rango de 400-611.");
+
+	while(id < MAX_VEH)
+	{
+		if(VehicleInfo[id][VehType] == VEH_NONE)
+		{
+		  	VehicleInfo[id][VehType] = VEH_CREATED;
+		  	VehicleInfo[id][VehModel] = modelid;
+		  	VehicleInfo[id][VehColor1] = color1;
+		  	VehicleInfo[id][VehColor2] = color2;
+		  	GetPlayerPos(playerid, px, py, pz);
+		  	GetPlayerFacingAngle(playerid, pa);
+			DestroyVehicle(id);
+  			CreateVehicle(modelid, px, py, pz, pa, color1, color2, 0);
+			PutPlayerInVehicle(playerid, id, 0);
+			LastVeh[playerid] = id;
+			SetEngine(id, 1);
+			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (no desaparecerá hasta que sea eliminado o reinicie el servidor).");
+			return 1;
 		}
- 	}
+		id++;
+	}
 	return 1;
 }
