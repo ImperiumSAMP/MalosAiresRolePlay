@@ -53,7 +53,9 @@
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
 #define MAX_LOGIN_ATTEMPTS      5
 #define TUT_TIME                10000                                           // Tiempo para reintentar el tutorial.
-#define JOB_WAITTIME            5 												// Número de PayDays que tienes que esperar para poder tomar otro empleo.
+#define JOB_WAITTIME            5												// Número de PayDays que tienes que esperar para poder tomar otro empleo.
+#define SLOT_TYPE_LOCKER        1
+#define MAX_LOCKER_SLOTS 		20
 
 // Posiciones.
 #define POS_BANK_X              2316.6213
@@ -354,6 +356,7 @@ new
 	OOCStatus = 0,
 	PMsEnabled[MAX_PLAYERS],
 	NewsEnabled[MAX_PLAYERS],
+	RedioEnabled[MAX_PLAYERS],
 	FactionEnabled[MAX_PLAYERS],
 	TicketOffer[MAX_PLAYERS],
 	TicketMoney[MAX_PLAYERS],
@@ -988,6 +991,8 @@ public OnGameModeInit() {
 	LoadJobs();
 	LoadBusiness();
 	loadBuildings();
+	LoadLockersSlotsInfo();
+	LoadTrunksSlotsInfo();
 
     weatherVariables[0] = validWeatherIDs[random(sizeof(validWeatherIDs))];
 	//SetWeather(weatherVariables[0]);
@@ -1535,6 +1540,7 @@ public ResetStats(playerid) {
 	SIDEDuty[playerid] = 0;
 	PMsEnabled[playerid] = 1;
 	NewsEnabled[playerid] = 1;
+	RedioEnabled[playerid] = 1;
 	FactionEnabled[playerid] = 1;
 	AdminDuty[playerid] = 0;
 	StartedCall[playerid] = 0;
@@ -2727,10 +2733,10 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 						}
 						new id2;
 						id2 = strval(tmp);
-
 						House[id][HousePrice] = id2;
 						new form[128];
 						format(form, sizeof form, "{878EE7}[INFO]:{C8C8C8} el precio de la casa %d ha sido ajustado a $%d.", id,id2);
+						resetLocker(id);
 						SendClientMessage(playerid, COLOR_ADMINCMD,form);
 						saveHouse(id);
 				}
@@ -2923,7 +2929,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			x_info = strtok(cmdtext, idx);
 			if(!strlen(x_info))
 			{
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [gasoil - mps - telefono - noticias - faccion]");
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [gasoil - mps - telefono - noticias - faccion - radio]");
 				return 1;
 			}
 			if(strcmp(x_info,"gasoil",true) == 0)
@@ -2976,6 +2982,19 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
 				    FactionEnabled[playerid] = 1;
+				}
+			}
+ 			else if(strcmp(x_info,"radio",true) == 0)
+			{
+				if(RedioEnabled[playerid])
+				{
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
+				    RedioEnabled[playerid] = 0;
+				}
+				else
+				{
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
+				    RedioEnabled[playerid] = 1;
 				}
 			}
 	  		else if(strcmp(x_info,"telefono",true) == 0)
@@ -3985,10 +4004,6 @@ public OnVehicleDataLoad(id) {
 		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
 	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
 	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
-		cache_get_field_content(0, "VehTrunkSlot0",						TrunkInfo[id][trunk0]);
-		cache_get_field_content(0, "VehTrunkSlot1",						TrunkInfo[id][trunk1]);
-		cache_get_field_content(0, "VehTrunkSlot2",						TrunkInfo[id][trunk2]);
-		cache_get_field_content(0, "VehTrunkSlot3",						TrunkInfo[id][trunk3]);
 		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate]);
 		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName]);
 		
@@ -4326,12 +4341,12 @@ public PayDay(playerid) {
                 switch(PlayerInfo[playerid][pRank]) {
 	                case 1: PlayerInfo[playerid][pPayCheck] += 10000;
 	                case 2: PlayerInfo[playerid][pPayCheck] += 8000;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 6500;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 5000;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 3500;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 7000;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 6500;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 6000;
+	                case 6: PlayerInfo[playerid][pPayCheck] += 5500;
+	                case 7: PlayerInfo[playerid][pPayCheck] += 4500;
+	                case 8: PlayerInfo[playerid][pPayCheck] += 3500;
 	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
@@ -5228,7 +5243,7 @@ public matsTimer(playerid) {
 		
     TogglePlayerControllable(playerid, true);
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
+	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			validslot = i;
 			break;
 	    }
@@ -5259,7 +5274,7 @@ public buyMatsTimer(playerid, amount) {
 
     TogglePlayerControllable(playerid, true);
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
+	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			validslot = i;
 			break;
 	    }
@@ -5290,7 +5305,7 @@ public buyDrugsTimer(playerid, amount) {
 	}
 	
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
+	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			setTrunkItem(vehicleid, i, 49);
 			setTrunkParam(vehicleid, i, amount);
 			charged = true;
@@ -5318,7 +5333,7 @@ public buyProductsTimer(playerid, amount) {
     TogglePlayerControllable(playerid, true);
 
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getTrunkItemType(vehicleid, i) == ITEM_NONE) {
+	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			setTrunkItem(vehicleid, i, 50);
 			setTrunkParam(vehicleid, i, amount);
 			charged = true;
@@ -6814,167 +6829,6 @@ stock resetInv(playerid) {
 	strmid(InvInfo[playerid][inv1], "-1 -1", 0, 16);
 	return 1;
 }
-
-// Obtenemos el tipo de item en el slot.
-stock getTrunkItemType(vehicleid, trunkslot) {
-	new itemid = getTrunkItem(vehicleid, trunkslot);
-	switch(itemid) {
-		case 1 .. 15, 16 .. 38, 41, 43:
-			return ITEM_WEAPON;
-		case 47, 48, 49, 50, 51, 52, 53, 54:
-			return ITEM_OTHER;
-		//case 43:
-		//	return ITEM_STORABLE;
-		case -1, 0:
-			return ITEM_NONE;
-	}
-	return ITEM_NONE;
-}
-
-// Obtenemos la ID del item.
-stock getTrunkItem(vehicleid, trunkslot)
-{
-	new itemid = -1;
-
-	switch(trunkslot) {
-	    case 0:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "i{iii}", itemid);
-	    case 1:
-			sscanf(TrunkInfo[vehicleid][trunk1], "i{iii}", itemid);
-	    case 2:
-			sscanf(TrunkInfo[vehicleid][trunk2], "i{iii}", itemid);
-	    case 3:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "i{iii}", itemid);
-	    case 4:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "{ii}i{i}", itemid);
-	    case 5:
-			sscanf(TrunkInfo[vehicleid][trunk1], "{ii}i{i}", itemid);
-	    case 6:
-			sscanf(TrunkInfo[vehicleid][trunk2], "{ii}i{i}", itemid);
-	    case 7:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "{ii}i{i}", itemid);
-	}
-	return itemid;
-}
-
-// Obtenemos el parámetro adicional (EJ: balas).
-stock getTrunkParam(vehicleid, trunkslot) {
-	new
-	    param = -1;
-
-	switch(trunkslot) {
-	    case 0:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "{i}i{ii}", param);
-	    case 1:
-			sscanf(TrunkInfo[vehicleid][trunk1], "{i}i{ii}", param);
-	    case 2:
-			sscanf(TrunkInfo[vehicleid][trunk2], "{i}i{ii}", param);
-	    case 3:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "{i}i{ii}", param);
-	    case 4:
-	    	sscanf(TrunkInfo[vehicleid][trunk0], "{iii}i", param);
-	    case 5:
-			sscanf(TrunkInfo[vehicleid][trunk1], "{iii}i", param);
-	    case 6:
-			sscanf(TrunkInfo[vehicleid][trunk2], "{iii}i", param);
-	    case 7:
-	    	sscanf(TrunkInfo[vehicleid][trunk3], "{iii}i", param);
-	}
-	return param;
-}
-
-// Seteamos el item.
-stock setTrunkItem(vehicleid, trunkslot, itemid) {
-	new secondaryitem, secondaryparam;
-	switch(trunkslot) {
-	    case 0:	{
-	        sscanf(TrunkInfo[vehicleid][trunk0], "{ii}ii", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
-		}
-	    case 1:	{
-	        sscanf(TrunkInfo[vehicleid][trunk1], "{ii}ii", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
-		}
-	    case 2:	{
-	        sscanf(TrunkInfo[vehicleid][trunk2], "{ii}ii", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
-		}
-	    case 3:	{
-	        sscanf(TrunkInfo[vehicleid][trunk3], "{ii}ii", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d 0 %d %d", itemid, secondaryitem, secondaryparam);
-		}
-  		case 4:	{
-	        sscanf(TrunkInfo[vehicleid][trunk0], "ii{ii}", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
-		}
-	    case 5:	{
-	        sscanf(TrunkInfo[vehicleid][trunk1], "ii{ii}", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
-		}
-	    case 6:	{
-	        sscanf(TrunkInfo[vehicleid][trunk2], "ii{ii}", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
-		}
-	    case 7:	{
-	        sscanf(TrunkInfo[vehicleid][trunk3], "ii{ii}", secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d 0", secondaryitem, secondaryparam, itemid);
-		}
-	}
-	SaveVehicle(vehicleid);
-	return 1;
-}
-
-// Seteamos el parámetro adicional.
-stock setTrunkParam(vehicleid, trunkslot, param) {
-	new primaryitem, secondaryitem, secondaryparam;
-	switch(trunkslot) {
-	    case 0:	{
-	        sscanf(TrunkInfo[vehicleid][trunk0], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
-		}
-	    case 1:	{
-	        sscanf(TrunkInfo[vehicleid][trunk1], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
-		}
-	    case 2:	{
-	        sscanf(TrunkInfo[vehicleid][trunk2], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
-		}
-	    case 3:	{
-	        sscanf(TrunkInfo[vehicleid][trunk3], "i{i}ii", primaryitem, secondaryitem, secondaryparam);
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d %d", primaryitem, param, secondaryitem, secondaryparam);
-		}
-  		case 4:	{
-	        sscanf(TrunkInfo[vehicleid][trunk0], "iii{i}", secondaryitem, secondaryparam, primaryitem);
-			format(TrunkInfo[vehicleid][trunk0], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
-		}
-	    case 5:	{
-	        sscanf(TrunkInfo[vehicleid][trunk1], "iii{i}", secondaryitem, secondaryparam, primaryitem);
-			format(TrunkInfo[vehicleid][trunk1], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
-		}
-	    case 6:	{
-	        sscanf(TrunkInfo[vehicleid][trunk2], "iii{i}", secondaryitem, secondaryparam, primaryitem);
-			format(TrunkInfo[vehicleid][trunk2], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
-		}
-	    case 7:	{
-	        sscanf(TrunkInfo[vehicleid][trunk3], "iii{i}", secondaryitem, secondaryparam, primaryitem);
-			format(TrunkInfo[vehicleid][trunk3], 16, "%d %d %d %d", secondaryitem, secondaryparam, primaryitem, param);
-		}
-	}
-	SaveVehicle(vehicleid);
-	return 1;
-}
-
-// Reseteamos.
-stock resetTrunk(vehicleid) {
-	strmid(TrunkInfo[vehicleid][trunk0], "-1 -1 -1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk1], "-1 -1 -1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk2], "-1 -1 -1 -1", 0, 16);
-	strmid(TrunkInfo[vehicleid][trunk3], "-1 -1 -1 -1", 0, 16);
-	SaveVehicle(vehicleid);
-	return 1;
-}
-
 
 stock StopMusic(playerid) {
 	PlayerPlaySound(playerid, 1069, 0.0, 0.0, 0.0);
@@ -11271,12 +11125,14 @@ stock LoadMap() {
 	CreateDynamicObject(18980, 1241.07996, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18980, 1250.98499, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(18980, 1249.98499, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
+	
 //====================================REJA CHINA================================
 	CHINGate[0] = CreateObject(971, 324.34799, -1185.18579, 75.42600,   0.00000, 0.00000, 37.50000);
 	CHINGate[1] = CreateObject(971, 317.32422, -1190.57642, 75.42602,   0.00000, 0.00000, 37.49999);
 	CreateDynamicObject(18762, 313.66541, -1193.70801, 77.41848,   0.00000, 0.00000, 37.08000);
 	CreateDynamicObject(18762, 328.41751, -1182.00623, 77.41800,   0.00000, 0.00000, 37.08000);
 	CreateDynamicObject(18762, 327.65201, -1182.58411, 77.41850,   0.00000, 0.00000, 37.08000);
+	
 //====================================REJA FORZA================================
 	FORZGate = CreateObject(971, 263.59546, -1333.77124, 51.39749,   0.00000, 0.00000, 35.82000);
 	
@@ -11299,6 +11155,7 @@ stock LoadMap() {
 	CreateDynamicObject(984, 1003.75623, -936.05951, 41.82510,   0.00000, 0.00000, -82.02000);
 	CreateDynamicObject(1280, 1006.20831, -948.07727, 41.59710,   0.00000, 0.00000, 97.80000);
 	CreateDynamicObject(1280, 1002.36914, -948.59900, 41.55710,   0.00000, 0.00000, 97.80000);
+	
 //============================ESTACION DE SERVICIO PIGPEN=======================
 	CreateDynamicObject(13296, 2325.20508, -1355.67761, 26.27400,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(1676, 2319.55054, -1358.84802, 24.70120,   0.00000, 0.00000, 90.00000);
@@ -11306,11 +11163,13 @@ stock LoadMap() {
 	CreateDynamicObject(9192, 2315.27661, -1373.10754, 27.79730,   0.00000, 0.00000, 225.00000);
 	CreateDynamicObject(984, 2318.83154, -1356.27258, 23.65950,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 2320.19629, -1356.27258, 23.65950,   0.00000, 0.00000, 0.00000);
+	
 //============================ESTACION DE SERVICIO UNITY========================
 	CreateDynamicObject(984, 1940.84546, -1772.84338, 13.05690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 1951.64490, -1770.88342, 13.21690,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 1925.48303, -1762.31604, 13.21690,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(984, 1942.44727, -1772.93127, 13.01110,   0.00000, 0.00000, 0.00000);
+	
 //============================ESTACION DE SERVICIO FARO=========================
 	CreateDynamicObject(9192, 618.66846, -1510.80493, 18.73229,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1676, 609.23718, -1517.07373, 15.65070,   0.00000, 0.00000, 90.00000);
@@ -11322,6 +11181,7 @@ stock LoadMap() {
 	CreateDynamicObject(983, 608.36182, -1506.61218, 14.60300,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(983, 610.13251, -1515.51428, 14.64300,   0.50000, 0.00000, 180.00000);
 	CreateDynamicObject(983, 608.36121, -1515.51428, 14.64300,   0.50000, 0.00000, 180.00000);
+	
 //============================ESTACION DE SERVICIO PUERTO=======================
 	CreateDynamicObject(12853, 2268.51929, -2439.89038, 14.53370,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19458, 2263.91431, -2441.95947, 13.71640,   0.00000, 0.00000, 0.00000);
@@ -11330,6 +11190,7 @@ stock LoadMap() {
 	CreateDynamicObject(9192, 2255.75122, -2419.47144, 17.19479,   0.00000, 0.00000, 133.19998);
 	CreateDynamicObject(984, 2256.52905, -2439.83105, 13.18160,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(984, 2258.32471, -2439.83105, 13.18160,   0.00000, 0.00000, 0.00000);
+	
 //============================ESTACION DE SERVICIO AYUNTA=======================
 	CreateDynamicObject(13296, 1371.59045, -1758.69226, 15.76920,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(9192, 1379.25208, -1742.16565, 17.31170,   0.00000, 0.00000, 45.00000);
@@ -12043,6 +11904,7 @@ stock LoadMap() {
 //===================================EXTERIOR===================================
 	PMGate = CreateObject(3037, 1589.73499, -1638.32410, 14.27130,   0.00000, 0.00000, 90.00000);
     PMBarrier = CreateObject(968, 1544.68, -1631.00, 13.19,   0.00, 90.00, 90.00);
+    
 //===================================INTERIOR===================================
 	PMHallDoor[1] = CreateObject(19303, 245.54, 72.44, 1003.87, 0.00, 0.00, 180.00);
 	PMHallDoor[2] = CreateObject(19303, 247.29, 72.44, 1003.87, 0.00, 0.00, 0.00);
@@ -13345,8 +13207,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                 tutorial(playerid, 1);
             }
 		}
-		//-----------------SISTEMA DE TUNING DE MECANICOS-----------------------
-		//-----------------SISTEMA DE TUNING DE MECANICOS-----------------------
+
+//=========================SISTEMA DE TUNING DE MECANICOS=======================
+
 		case DLG_TUNING:
 		{
 		    TogglePlayerControllable(playerid, true);
@@ -13551,8 +13414,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			    }
 			}
   		}
-  		//----------------FIN SISTEMA DE TUNING MECANICOS-----------------------
-  		//----------------FIN SISTEMA DE TUNING MECANICOS-----------------------
+  		
+//======================FIN SISTEMA DE TUNING DE MECANICOS======================
 		
 	}
     return 0;
@@ -14100,19 +13963,28 @@ CMD:d(playerid, params[]) {
 	return 1;
 }
 
-CMD:departamento(playerid, params[]) {
-	new
-	    string[128];
+CMD:departamento(playerid, params[])
+{
+	new text[128], string[128], factionID = PlayerInfo[playerid][pFaction];
 
-	if(sscanf(params,"s[128]", string)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/d)epartamento [texto]");
-	else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GOV) {
-	   	foreach(new i : Player) {
-	   		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV) {
-				SendFMessage(i, COLOR_LIGHTGREEN, "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), string);
-			}
-	   	}
+    if(factionID == 0 || FactionInfo[factionID][fType] != FAC_TYPE_GOV)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio o no tienes permiso para hablar por esta frecuencia.");
+	if(sscanf(params, "s[128]", text))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/d)epartamento [texto]");
+    if(Muted[playerid])
+		return SendClientMessage(playerid, COLOR_YELLOW, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
-	}
+	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
+	if(isUsingMaskInSlot[playerid] == -1)
+		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
+	else
+ 		format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
+	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+ 	foreach(new i : Player) {
+		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV) {
+			SendFMessage(i, COLOR_LIGHTGREEN, "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+		}
+  	}
 	return 1;
 }
 
@@ -14595,7 +14467,8 @@ CMD:payday(playerid, params[]) {
 	return 1;
 }
 
-//[CMD_COMUNICACION CON EL STAFF]
+//====================COMANDOS DE COMUNICACION CON STAFF========================
+
 CMD:duda(playerid,params[]) {
 	new string[128], string2[128];
 	if(sscanf(params, "s[128]", string)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /duda [texto]");
@@ -14665,49 +14538,40 @@ CMD:reportar(playerid,params[])
 	}
 	return 1;
 }
-//[CMD_FACCIONES]
+
+//===========================COMANDOS DE FACCIONES==============================
+
 CMD:r(playerid, params[]) {
 	cmd_radio(playerid, params);
 	return 1;
 }
 
-CMD:radio(playerid, params[]) {
-	new
-		text[128],
-		string[128],
-  		factionID = PlayerInfo[playerid][pFaction];
+CMD:radio(playerid, params[])
+{
+	new text[128], string[128], factionID = PlayerInfo[playerid][pFaction];
 
-	if(sscanf(params, "s[128]", text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/r)adio [mensaje]");
-	else if(factionID > 0) {
-		if(Muted[playerid])	{
-			SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
-			return 1;
-		}
-		switch(PlayerInfo[playerid][pRank]) {
-		    case 1: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank1], GetPlayerNameEx(playerid), text);
-		    case 2: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank2], GetPlayerNameEx(playerid), text);
-		    case 3: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank3], GetPlayerNameEx(playerid), text);
-		    case 4: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank4], GetPlayerNameEx(playerid), text);
-		    case 5: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank5], GetPlayerNameEx(playerid), text);
-		    case 6: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank6], GetPlayerNameEx(playerid), text);
-		    case 7: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank7], GetPlayerNameEx(playerid), text);
-		    case 8: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank8], GetPlayerNameEx(playerid), text);
-		    case 9: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank9], GetPlayerNameEx(playerid), text);
-		    case 10: format(string, sizeof(string), "[RADIO]: %s %s: %s", FactionInfo[factionID][fRank10], GetPlayerNameEx(playerid), text);
-		}
-		PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
-		SendFactionMessage(factionID, COLOR_PMA, string);
-		
-		if(isUsingMaskInSlot[playerid] == -1)
-			format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
-		else
-		    format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
-		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
-		
-		FactionChatLog(string);
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio o no te encuentras en servicio.");
+	if(sscanf(params, "s[128]", text))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/r)adio [mensaje]");
+	if(factionID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio o no te encuentras en servicio.");
+	if(!RedioEnabled[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tu radio apagada.");
+	if(Muted[playerid])
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
+
+	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
+	if(isUsingMaskInSlot[playerid] == -1)
+		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
+	else
+	    format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
+	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	foreach(new i : Player)
+	{
+ 		if(PlayerInfo[i][pFaction] == factionID && RedioEnabled[i] == 1)
+   			SendClientMessage(i, COLOR_PMA, string);
 	}
+	FactionChatLog(string);
 	return 1;
 }
 
@@ -15152,7 +15016,7 @@ CMD:ayuda(playerid,params[]) {
 	}
 	
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor /vehiculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas");
 	
     if(PlayerInfo[playerid][pFaction] != 0) {
     	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Facción]:{C8C8C8} /f /faccion /fdepositar");
@@ -15751,7 +15615,7 @@ CMD:comprar(playerid, params[]) {
 			    } else
 		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
 			} else
-				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿te conozco?");
+				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
 		} else if(business == 0 && IsAtHardware(playerid)) {
 			    if(sscanf(params, "d", weapon)) {
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
@@ -17845,13 +17709,12 @@ CMD:aceptar(playerid,params[]) {
 
 	if(sscanf(params, "s[64]", text)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aceptar [comando]");
+		
     } else if(strcmp(text,"droga",true) == 0) {
         if(DrugOffer[playerid] == INVALID_PLAYER_ID)
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido droga.");
-
 		if(GetDistanceBetweenPlayers(playerid, DrugOffer[playerid]) > 4.0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "La persona se encuentra demasiado lejos.");
-
 		if(!IsPlayerConnected(DrugOffer[playerid])) {
 		    KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
 		    CancelDrugTransfer(playerid, 0);
@@ -17864,7 +17727,6 @@ CMD:aceptar(playerid,params[]) {
 			{
    				if(PlayerInfo[DrugOffer[playerid]][pMarijuana] < DrugOfferAmount[playerid])
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya no tiene esa cantidad.");
-				format(string, sizeof(string), "agarra el/los %d gramos de marihuana que le ofrece %s y lo/s guarda disimuladamente en su bolsillo.", DrugOfferAmount[playerid], GetPlayerNameEx(DrugOffer[playerid]) );
 				PlayerInfo[playerid][pMarijuana] += DrugOfferAmount[playerid];
 				PlayerInfo[DrugOffer[playerid]][pMarijuana] -= DrugOfferAmount[playerid];
 			}
@@ -17872,7 +17734,6 @@ CMD:aceptar(playerid,params[]) {
 			{
 			    if(PlayerInfo[DrugOffer[playerid]][pLSD] < DrugOfferAmount[playerid])
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya no tiene esa cantidad.");
-                format(string, sizeof(string), "agarra la/s %d dosis de LSD que le ofrece %s y la/s guarda disimuladamente en su bolsillo.", DrugOfferAmount[playerid], GetPlayerNameEx(DrugOffer[playerid]) );
             	PlayerInfo[playerid][pLSD] += DrugOfferAmount[playerid];
 				PlayerInfo[DrugOffer[playerid]][pLSD] -= DrugOfferAmount[playerid];
 			}
@@ -17880,7 +17741,6 @@ CMD:aceptar(playerid,params[]) {
 			{
 			    if(PlayerInfo[DrugOffer[playerid]][pEcstasy] < DrugOfferAmount[playerid])
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya no tiene esa cantidad.");
-                format(string, sizeof(string), "agarra la/s %d pastillas de éxtasis que le ofrece %s y la/s guarda disimuladamente en su bolsillo.", DrugOfferAmount[playerid], GetPlayerNameEx(DrugOffer[playerid]) );
                 PlayerInfo[playerid][pEcstasy] += DrugOfferAmount[playerid];
 				PlayerInfo[DrugOffer[playerid]][pEcstasy] -= DrugOfferAmount[playerid];
 			}
@@ -17888,7 +17748,6 @@ CMD:aceptar(playerid,params[]) {
 			{
 			    if(PlayerInfo[DrugOffer[playerid]][pCocaine] < DrugOfferAmount[playerid])
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya no tiene esa cantidad.");
-                format(string, sizeof(string), "agarra el/los %d gramos de cocaina que le ofrece %s y lo/s guarda disimuladamente en su bolsillo.", DrugOfferAmount[playerid], GetPlayerNameEx(DrugOffer[playerid]) );
                 PlayerInfo[playerid][pCocaine] += DrugOfferAmount[playerid];
 				PlayerInfo[DrugOffer[playerid]][pCocaine] -= DrugOfferAmount[playerid];
 			}
@@ -17899,9 +17758,11 @@ CMD:aceptar(playerid,params[]) {
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Hubo un error con la transacción, cancelando...");
 			}
 		}
+		format(string, sizeof(string), "agarra un paquete desconocido que le da %s y lo guarda disimuladamente en su bolsillo.", GetPlayerNameEx(DrugOffer[playerid]) );
+        PlayerActionMessage(playerid, 8.0, string);
 		KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
 		CancelDrugTransfer(playerid, 0);
-		PlayerActionMessage(playerid, 5.0, string);
+
  	} else if(strcmp(text,"vehiculo",true) == 0) {
     
         // Comprobamos que exista una oferta para este jugador.
@@ -21041,15 +20902,8 @@ CMD:llenar(playerid, params[])
 
 //===========================ARMARIOS PARA LAS CASAS============================
 
-#define MAX_LOCKER_SLOTS 20
-
-enum LockerSlotInfo {
-	lItem,
-	lAmount,
-};
-
 new LockerStatus[MAX_HOUSES];
-new LockerInfo[MAX_HOUSES][MAX_LOCKER_SLOTS][LockerSlotInfo];
+new LockerInfo[MAX_HOUSES][MAX_LOCKER_SLOTS][SlotInfo];
 
 stock getItemType(itemid)
 {
@@ -21069,7 +20923,7 @@ stock getLockerItem(lockerid, lockerslot)
 	new itemid = -1;
 
 	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		itemid = LockerInfo[lockerid][lockerslot][lItem];
+		itemid = LockerInfo[lockerid][lockerslot][Item];
 	return itemid;
 }
 
@@ -21078,21 +20932,22 @@ stock getLockerParam(lockerid, lockerslot)
 	new param = -1;
 
 	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		param = LockerInfo[lockerid][lockerslot][lAmount];
+		param = LockerInfo[lockerid][lockerslot][Amount];
 	return param;
 }
 
 stock setLockerItem(lockerid, lockerslot, itemid)
 {
 	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		LockerInfo[lockerid][lockerslot][lItem] = itemid;
+		LockerInfo[lockerid][lockerslot][Item] = itemid;
+
 	return 1;
 }
 
 stock setLockerParam(lockerid, lockerslot, param)
 {
 	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		LockerInfo[lockerid][lockerslot][lAmount] = param;
+		LockerInfo[lockerid][lockerslot][Amount] = param;
 	return 1;
 }
 
@@ -21100,8 +20955,16 @@ stock resetLocker(lockerid)
 {
 	for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
 	{
-	    LockerInfo[lockerid][i][lAmount] = -1;
-	    LockerInfo[lockerid][i][lItem] = -1;
+	    if(LockerInfo[lockerid][i][Item] > 0)
+	    {
+	    	LockerInfo[lockerid][i][Item] = -1;
+		    LockerInfo[lockerid][i][Amount] = -1;
+		    SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, i);
+		} else
+		    {
+	    		LockerInfo[lockerid][i][Item] = -1;
+		    	LockerInfo[lockerid][i][Amount] = -1;
+			}
 	}
 	return 1;
 }
@@ -21132,7 +20995,7 @@ CMD:arm(playerid, params[])
 
 CMD:armario(playerid, params[])
 {
-	new text[128], param1, itemid, param, houseid = GetPlayerHouse(playerid);
+	new text[128], param1, itemid, paramcant, houseid = GetPlayerHouse(playerid);
 	
 	if(houseid == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar dentro de una casa!");
@@ -21146,12 +21009,12 @@ CMD:armario(playerid, params[])
         SendClientMessage(playerid, COLOR_WHITE, "=======================[Armario]=======================");
 		for(new i = 0; i < GetHouseMaxLockerSlots(houseid); i++) {
             itemid = getLockerItem(houseid, i);
-            param = getLockerParam(houseid, i);
+            paramcant = getLockerParam(houseid, i);
             if(getItemType(itemid) == ITEM_WEAPON)
-				SendFMessage(playerid, COLOR_WHITE, " - %d- Arma: %s - Munición: %d", i, itemName[itemid], param);
+				SendFMessage(playerid, COLOR_WHITE, " - %d- Arma: %s - Munición: %d", i, itemName[itemid], paramcant);
 			else
 				if(getItemType(itemid) == ITEM_OTHER)
-					SendFMessage(playerid, COLOR_WHITE, " - %d- Item: %s - Cantidad: %d", i, itemName[itemid], param);
+					SendFMessage(playerid, COLOR_WHITE, " - %d- Item: %s - Cantidad: %d", i, itemName[itemid], paramcant);
 			 	else
 				 	SendFMessage(playerid, COLOR_WHITE, " - %d- Nada", i);
         }
@@ -21181,6 +21044,7 @@ CMD:armario(playerid, params[])
 		    {
 		        GivePlayerWeapon(playerid, getLockerItem(houseid, param1), getLockerParam(houseid, param1));
 		        setLockerItem(houseid, param1, 0);
+		        SaveSlotInfo(SLOT_TYPE_LOCKER, houseid, param1);
 			} else
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		} else
@@ -21194,35 +21058,146 @@ CMD:armario(playerid, params[])
                     return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
                 if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid])
 	 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
-                if((GetPlayerWeapon(playerid) < 1 || GetPlayerWeapon(playerid) > 38) && GetPlayerWeapon(playerid) != 41 && GetPlayerWeapon(playerid) != 43)
+	 			if(GetPVarInt(playerid, "cantSaveItems") == 1)
+	 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a guardar un item!");
+                if((GetPlayerWeapon(playerid) < 1 || GetPlayerWeapon(playerid) > 34) && GetPlayerWeapon(playerid) != 43)
 				    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 				if(param1 == -1) // Si no eligió donde guardarlo
 				{
 					for(new i = 0; i < GetHouseMaxLockerSlots(houseid); i++) {
-					    if(getItemType(getLockerItem(houseid, param1)) == ITEM_NONE) {
+					    if(getItemType(getLockerItem(houseid, i)) == ITEM_NONE) {
 					        param1 = i; // Encontramos un slot libre
 					        break;
 						}
 					}
-					if(param == -1)
+					if(param1 == -1)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡El armario se encuentra lleno!");
-                    SetPVarInt(playerid, "cantSaveItems", 1);
-					SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-					setLockerItem(houseid, param1, GetPlayerWeapon(playerid));
-					setLockerParam(houseid, param1, GetPlayerAmmo(playerid));
-					RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 				} else // Si nos dijo donde guardarlo
 					{
 					    if(param1 < 0 || param1 >= GetHouseMaxLockerSlots(houseid))
 					        return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
 						if(getItemType(getLockerItem(houseid, param1)) != ITEM_NONE)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
- 	        			SetPVarInt(playerid, "cantSaveItems", 1);
-						SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-			        	setLockerItem(houseid, param1, GetPlayerWeapon(playerid));
-						setLockerParam(houseid, param1, GetPlayerAmmo(playerid));
-						RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 					}
+     			SetPVarInt(playerid, "cantSaveItems", 1);
+				SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+				setLockerItem(houseid, param1, GetPlayerWeapon(playerid));
+				setLockerParam(houseid, param1, GetPlayerAmmo(playerid));
+				RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
+				SaveSlotInfo(SLOT_TYPE_LOCKER, houseid, param1);
 			}
+	return 1;
+}
+
+stock LoadLockersSlotsInfo() {
+	new
+		query[128],
+		id = 1;
+
+	while(id < MAX_HOUSES) {
+	    format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_LOCKER, id);
+  		mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "iii", SLOT_TYPE_LOCKER, id);
+		id++;
+	}
+	return 1;
+}
+
+stock LoadTrunksSlotsInfo() {
+	new
+		query[128],
+		id = 1;
+
+	while(id < MAX_VEH) {
+	    format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_TRUNK, id);
+  		mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_TRUNK, id);
+		id++;
+	}
+	return 1;
+}
+
+forward OnSlotsInfoDataLoad(type, id);
+public OnSlotsInfoDataLoad(type, id) {
+   	new
+   	    result[128],
+		rows,
+		fields,
+		aux = 0, // Desde el primer registro obtenido que se almacena en posicion cero dentro de los resultados
+		slot;
+
+	cache_get_data(rows, fields);
+
+	if(rows) {
+	    switch(type) {
+	        case SLOT_TYPE_LOCKER: {
+			    while(aux < rows) {
+			    	cache_get_field_content(aux, "Slot", result); slot = strval(result); 
+					cache_get_field_content(aux, "Item", result); LockerInfo[id][slot][Item] = strval(result);
+					cache_get_field_content(aux, "Amount", result); LockerInfo[id][slot][Amount] = strval(result);
+					aux ++;
+				}
+			}
+			case SLOT_TYPE_TRUNK: {
+				while(aux < rows) {
+			    	cache_get_field_content(aux, "Slot", result); slot = strval(result);
+					cache_get_field_content(aux, "Item", result); TrunkInfo[id][slot][Item] = strval(result);
+					cache_get_field_content(aux, "Amount", result); TrunkInfo[id][slot][Amount] = strval(result);
+					aux ++;
+				}
+			}
+		}
+	}
+	return 1;
+}
+
+stock SaveSlotInfo(type, id, slot) {
+    new
+		query[256];
+
+	if(dontsave) return 1;
+	
+	switch(type)
+	{
+	    case SLOT_TYPE_LOCKER:
+	    {
+			if(LockerInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
+		 	{
+				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
+					type,
+					id,
+					slot,
+					LockerInfo[id][slot][Item],
+					LockerInfo[id][slot][Amount]
+				);
+			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
+			    {
+		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
+				    	type,
+				    	id,
+				    	slot
+					);
+				}
+		}
+		case SLOT_TYPE_TRUNK:
+  		{
+			if(TrunkInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
+		 	{
+				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
+					type,
+					id,
+					slot,
+					TrunkInfo[id][slot][Item],
+					TrunkInfo[id][slot][Amount]
+				);
+			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
+			    {
+		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
+				    	type,
+				    	id,
+				    	slot
+					);
+				}
+		}
+	}
+  	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
 }
