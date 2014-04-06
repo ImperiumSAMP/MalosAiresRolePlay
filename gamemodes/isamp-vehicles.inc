@@ -14,7 +14,7 @@
 
 //Defines
 #define MAX_VEH                 1001
-#define MAX_RENTCAR             20
+#define MAX_RENTCAR             30
 #define SLOT_TYPE_TRUNK         2
 #define MAX_TRUNK_SLOTS         10
 
@@ -92,12 +92,12 @@ new VehicleInfo[MAX_VEH][Cars];
 new vehicleRedio[MAX_VEH];
 
 enum RCars {
-	vrID,
-	vrRented,
-	vrTime,
-	vrOwnerSQLID,
+	rVehicleID,
+	rRented,
+	rTime,
+	rOwnerSQLID,
 };
-new RentCar[MAX_RENTCAR][RCars];
+new RentCarInfo[MAX_RENTCAR][RCars];
 
 //Forwards
 forward IsAPlane(vehicleid);
@@ -1259,7 +1259,7 @@ CMD:vehcomprar(playerid, params[])
     if(GetPlayerCash(playerid) < price)
         return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
 	if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). ((Si no sabes los colores, busca en la wiki de SAMP; 0: Negro, 1: Blanco))");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa colores válidos (0-255). Si no conoces los colores, busca en la wiki de SAMP; 0: Negro, 1: Blanco.");
 
 	for(new vid = 1; vid < MAX_VEH; vid++) {
 		if(VehicleInfo[vid][VehType] == VEH_NONE) {
@@ -1692,6 +1692,7 @@ CMD:avnitro(playerid, params[])
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
+    vehicleid = GetPlayerVehicleID(playerid);
     AddVehicleComponent(vehicleid, 1010);
 	return 1;
 }
@@ -1749,6 +1750,7 @@ CMD:avcolor(playerid, params[])
     if(color1 < 0 || color1 > 255 || color2 < 0 || color2 > 255)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Ingresa colores válidos: 0-255.");
 
+    vehicleid = GetPlayerVehicleID(playerid);
 	VehicleInfo[vehicleid][VehColor1] = color1;
 	VehicleInfo[vehicleid][VehColor2] = color2;
     SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el color del vehículo %d ha sido ajustado a %d-%d.", vehicleid, color1, color2);
@@ -1776,6 +1778,7 @@ CMD:avmodelo(playerid, params[])
     if(modelid < 400 || modelid > 611)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de modelo incorrecta, debe estar en el rango de 400-611.");
 
+    vehicleid = GetPlayerVehicleID(playerid);
 	VehicleInfo[vehicleid][VehModel] = modelid;
     SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, modelid);
 	GetVehiclePos(vehicleid, cx, cy, cz);
@@ -1804,14 +1807,15 @@ CMD:avtipo(playerid, params[])
 
 	vehicleid = GetPlayerVehicleID(playerid);
 	pconnected = 0;
-	if(VehicleInfo[vehicleid][VehType] == VEH_RENT) {
+	if(VehicleInfo[vehicleid][VehType] == VEH_RENT) { // Si el auto a cambiar tipo tiene tipo renta, lo sacamos de la estructura que maneja los autos de renta
 		for(new i = 1; i < MAX_RENTCAR; i++) {
-	    	if(RentCar[i][vrID] == vehicleid){
-               	RentCar[i][vrID] = 0;
-               	RentCar[i][vrOwnerSQLID] = -1;
-               	RentCar[i][vrTime] = 0;
-               	RentCar[i][vrRented] = 0;
-      		}
+	    	if(RentCarInfo[i][rVehicleID] == vehicleid){
+               	RentCarInfo[i][rVehicleID] = 0;
+               	RentCarInfo[i][rOwnerSQLID] = 0;
+               	RentCarInfo[i][rTime] = 0;
+               	RentCarInfo[i][rRented] = 0;
+				break;
+			}
 		}
 	} else
 		if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
@@ -1837,22 +1841,20 @@ CMD:avtipo(playerid, params[])
 			}
 		}
 
-	/*
 	if(type == VEH_RENT) {
 		new available = -1;
 		for(new i = 1; i < MAX_RENTCAR; i++) {
-		    if(RentCar[i][vrID] < 1) {
-               	RentCar[i][vrID] = vehicleid;
-               	RentCar[i][vrOwnerSQLID] = -1;
-                RentCar[i][vrTime] = 0;
-                RentCar[i][vrRented] = 0;
+		    if(RentCarInfo[i][rVehicleID] < 1) {
+               	RentCarInfo[i][rVehicleID] = vehicleid;
+               	RentCarInfo[i][rOwnerSQLID] = 0;
+                RentCarInfo[i][rTime] = 0;
+                RentCarInfo[i][rRented] = 0;
                 available = i;
     		}
 		}
 		if(available == -1)
   			return SendClientMessage(playerid, COLOR_YELLOW2, "No se pueden poner más vehículos de renta.");
 	}
-	*/
 
 	if(type == VEH_NONE)
 		resetVehicle(vehicleid);

@@ -164,7 +164,6 @@ new femaleSkins2[SKINS_F_2] = {
 enum sInfo {
 	sVehiclePricePercent,
 	sPlayersRecord,
-	sMOTD[128],
 	svLevelExp,
 	sDrugRawMats
 };

@@ -2066,15 +2066,6 @@ public OnPlayerSpawn(playerid) {
 	return 1;
 }
 
-TIMER:rentRespawn() {
-	for(new i = 1; i < MAX_RENTCAR; i++) {
-    	if(RentCar[i][vrRented] == 0) {
-			SetVehicleToRespawn(RentCar[i][vrID]);
-        }
-	}
-	return 1;
-}
-
 public OnPlayerDeath(playerid, killerid, reason) {
 	new string[128], time = gettime();
 	SetPVarInt(playerid, "died", 1);
@@ -3357,7 +3348,7 @@ public tutorial(playerid, step) {
 			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~El breve tutorial a continuacion te guiara por los conceptos basicos del RolePlay.");
-            PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hallas entendido correctamente.");
+            PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hayas entendido correctamente.");
 			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
 	    }
 	    case 2: {
@@ -3642,6 +3633,19 @@ public OnPlayerDataLoad(playerid) {
 			} else {
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
 			}
+			
+			if(PlayerInfo[playerid][pRentCarID] > 0)
+			{
+			    if(RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rRented] == 1 && RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rOwnerSQLID] == PlayerInfo[playerid][pID])
+			        SendFMessage(playerid, COLOR_WHITE, "Tu quedan %d minutos de renta del vehículo que alquilaste.", RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rTime]);
+				else
+				    {
+				    	PlayerInfo[playerid][pRentCarRID] = 0;
+				    	PlayerInfo[playerid][pRentCarID] = 0;
+				    	SendClientMessage(playerid, COLOR_WHITE, "Se ha acabado el tiempo de renta de tu vehículo alquilado.");
+					}
+			}
+			
 			SendClientMessage(playerid, COLOR_YELLOW2, " ");
 			SpawnPlayer(playerid);
 		}
@@ -3914,7 +3918,6 @@ public OnServerDataLoad() {
 
     if(rows) {
 	    cache_get_field_content(0, "sVehiclePricePercent", result); ServerInfo[sVehiclePricePercent] = strval(result);
-	    cache_get_field_content(0, "sMOTD", ServerInfo[sMOTD]);
 	    cache_get_field_content(0, "sPlayersRecord", result); ServerInfo[sPlayersRecord] = strval(result);
 	    cache_get_field_content(0, "svLevelExp", result); ServerInfo[svLevelExp] = strval(result);
 	    cache_get_field_content(0, "sDrugRawMats", result); ServerInfo[sDrugRawMats] = strval(result);
@@ -4026,33 +4029,40 @@ public OnVehicleDataLoad(id) {
 
 		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
  			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
+
 		} else {
 			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
 			    // Vehículos de consecionaria.
                 VehicleInfo[id][VehColor1] = random(255);
 				VehicleInfo[id][VehColor2] = random(255);
 				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
 			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
 			    // Vehículos de renta.
 			    for(new i = 1; i < MAX_RENTCAR; i++) {
-			    	if(RentCar[i][vrID] < 1) {
-                    	RentCar[i][vrID] = id;
-                    	RentCar[i][vrOwnerSQLID] = -1;
-                    	RentCar[i][vrTime] = 0;
-                    	RentCar[i][vrRented] = 0;
-                    	break;
+			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
+                    	RentCarInfo[i][rVehicleID] = id;
+                    	RentCarInfo[i][rOwnerSQLID] = 0;
+                    	RentCarInfo[i][rTime] = 0;
+                    	RentCarInfo[i][rRented] = 0;
+                    	break; // Salimos porque ya lo cargamos en el primero libre
                     }
 				}
+				VehicleInfo[id][VehLocked] = 0;
                 CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
+
 			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
 			    // Vehículos de empleo.
                 CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
 			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
 			    // Vehículos de licencia.
                 CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
 			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
 			    // Vehículos de facción.
                 CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
+
 			} else {
 			    // Otros.
 			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
@@ -4473,13 +4483,6 @@ public PayDay(playerid) {
 
 public accountTimer()
 {
-	if(!strcmp(ServerInfo[sMOTD], "-", true))
-	{
-		new string[128];
-		format(string, sizeof(string), "[NOTICIA-OOC]: %s", ServerInfo[sMOTD]);
-		SendClientMessageToAll(COLOR_DARKBROWN, string);
-	}
-
     foreach(new playerid : Player)
 	{
 	    if(gPlayerLogged[playerid]) {
@@ -5143,24 +5146,25 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 			} else {
 				SendFMessage(playerid, COLOR_WHITE, "Vehículo ID: %d | Nombre de dueño: %s | ID en la DB: %d.", vehicleid, VehicleInfo[vehicleid][VehOwnerName], VehicleInfo[vehicleid][VehOwnerSQLID]);
 			}
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] == vehicleid) {
-		    SendClientMessage(playerid, COLOR_WHITE, "Utiliza /motor para encender el vehículo.");
-		    GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-		    SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], 0);
+			
 		} else if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
+	        
 	    } else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
+	        
 	    } else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
+	        
 	    } else if(VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] != PlayerInfo[playerid][pJob]) {
 			if(AdminDuty[playerid] == 0 && PlayerInfo[playerid][pJob] != JOB_GARB) {
        			SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
 			    RemovePlayerFromVehicle(playerid);
 			}
+			
 	    } else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1) {
 			if(playerLicense[playerid][lDTaking] != 1) {
 				RemovePlayerFromVehicle(playerid);
@@ -5176,21 +5180,38 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					timersID[10] = SetTimerEx("licenseTimer", 1000, false, "dd", playerid, 1);
 				}
 			}
+
+		} else if(VehicleInfo[vehicleid][VehType] == VEH_RENT) {
+			for(new i = 1; i < MAX_RENTCAR; i++)
+			{
+		 		if(RentCarInfo[i][rVehicleID] == vehicleid && RentCarInfo[i][rRented] == 0)
+		 		{
+					SendClientMessage(playerid, COLOR_WHITE, "======================[Vehículo en Alquiler]======================");
+					SendFMessage(playerid, COLOR_WHITE, "Modelo: %s.", GetVehicleName(vehicleid));
+					new price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 100;
+					if(price < 300)
+						price = 300; // Seteamos un mínimo de precio
+					SendFMessage(playerid, COLOR_WHITE, "Costo de renta por hora: $%d.", price);
+					if(GetVehicleMaxTrunkSlots(vehicleid) > 0)
+						SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
+					else
+					    SendClientMessage(playerid, COLOR_WHITE, "Maletero: No.");
+					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "(( Para rentar éste vehículo utiliza '/rentar [tiempo] (en horas)'. ))");
+					SendClientMessage(playerid, COLOR_WHITE, "=============================================================");
+				}
+			}
+			
 		} else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD) {
 		    SendClientMessage(playerid,COLOR_WHITE,"=======================[Vehículo en Venta]=======================");
-		    format(string, sizeof(string), "Modelo: %s.", GetVehicleName(vehicleid));
-		    SendClientMessage(playerid,COLOR_WHITE,string);
-		    format(string, sizeof(string), "Costo real: $%d.", GetVehiclePrice(vehicleid,100));
-		    SendClientMessage(playerid,COLOR_WHITE,string);
-		    format(string, sizeof(string), "Costo actual: {3E9D41}$%d{FFFFFF} (%d%%%%).", GetVehiclePrice(vehicleid,ServerInfo[sVehiclePricePercent]), ServerInfo[sVehiclePricePercent]);
-		    SendClientMessage(playerid,COLOR_WHITE,string);
-		    if(GetVehicleMaxTrunkSlots(vehicleid) > 0) {
+			SendFMessage(playerid, COLOR_WHITE, "Modelo: %s.", GetVehicleName(vehicleid));
+			SendFMessage(playerid, COLOR_WHITE, "Costo real: $%d.", GetVehiclePrice(vehicleid,100));
+			SendFMessage(playerid, COLOR_WHITE, "Costo actual: {3E9D41}$%d{FFFFFF} (%d%%%%).", GetVehiclePrice(vehicleid,ServerInfo[sVehiclePricePercent]), ServerInfo[sVehiclePricePercent]);
+			if(GetVehicleMaxTrunkSlots(vehicleid) > 0)
 				SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
-		    } else {
-		        SendClientMessage(playerid, COLOR_WHITE, "Maletero: No.");
-		    }
+			else
+			    SendClientMessage(playerid, COLOR_WHITE, "Maletero: No.");
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"(( Para comprar éste vehículo utiliza '(/veh)iculo comprar [color1] [color2]'. ))");
-   			SendClientMessage(playerid,COLOR_WHITE,"=============================================================");
+			SendClientMessage(playerid,COLOR_WHITE,"=============================================================");
 		}
 
 		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid)) {
@@ -6665,10 +6686,9 @@ stock LoadServerInfo() {
 SaveServerInfo() {
     if(dontsave) return 1;
     new query[512];
-    format(query,sizeof(query),"UPDATE server SET sVehiclePricePercent = %d, sPlayersRecord = %d, sMOTD = '%s', svLevelExp = %d, sDrugRawMats = %d WHERE ID = 1;",
+    format(query,sizeof(query),"UPDATE server SET sVehiclePricePercent = %d, sPlayersRecord = %d, svLevelExp = %d, sDrugRawMats = %d WHERE ID = 1;",
 		ServerInfo[sVehiclePricePercent],
 		ServerInfo[sPlayersRecord],
-		ServerInfo[sMOTD],
 		ServerInfo[svLevelExp],
 		ServerInfo[sDrugRawMats]
 	);
@@ -13555,7 +13575,7 @@ CMD:admincmds(playerid, params[]) {
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acasas /aedificios /afacciones /anegocios /ppvehiculos /gmx /exit /tod /unknowngametext /money /givemoney");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/motd /resetcars /setadmin /rerollplates /ppcasas /abarreracrear /abarreraquitar /abarreraquitartodo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates /ppcasas /abarreracrear /abarreraquitar /abarreraquitartodo");
 	}
 	return 1;
 }
@@ -13940,19 +13960,6 @@ CMD:setvw(playerid, params[]) {
 	return 1;
 }
 
-CMD:motd(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
-	new
-	    string[128];
-	    
-	if(sscanf(params,"s[128]", string)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /motd [mensaje cada 20 mins] (poner '-' para no mostrar ninguno).");
-	else {
-		format(ServerInfo[sMOTD], ServerInfo[sMOTD], string);
-		SendFMessage(playerid, COLOR_LIGHTYELLOW, "{878EE7}[INFO]:{C8C8C8} motd: %s", string);
-	}
-	return 1;
-}
-
 CMD:recordjugadores(playerid, params[]) {
 	SendFMessage(playerid, COLOR_LIGHTYELLOW, "{878EE7}[INFO]:{C8C8C8} el record actual de jugadores es de %d.", ServerInfo[sPlayersRecord]);
 	return 1;
@@ -13971,6 +13978,8 @@ CMD:departamento(playerid, params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio o no tienes permiso para hablar por esta frecuencia.");
 	if(sscanf(params, "s[128]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/d)epartamento [texto]");
+	if(!RedioEnabled[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tu radio apagada.");
     if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
@@ -13980,9 +13989,10 @@ CMD:departamento(playerid, params[])
 	else
  		format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player) {
-		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV) {
-			SendFMessage(i, COLOR_LIGHTGREEN, "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RedioEnabled[i] == 1) {
+			SendClientMessage(i, COLOR_LIGHTGREEN, string);
 		}
   	}
 	return 1;
@@ -15771,6 +15781,96 @@ CMD:clasificado(playerid,params[]) {
 	return 1;
 }
 
+//=============================RENTA DE VEHICULOS===============================
+
+CMD:rentar(playerid, params[])
+{
+	new vehicleid, rentcarid, price, time;
+
+	if(sscanf(params, "i", time))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /rentar [tiempo] (en horas)");
+	if(PlayerInfo[playerid][pRentCarID] != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya has rentado un vehículo!");
+	if(!IsPlayerInAnyVehicle(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar subido a un vehículo de renta disponible para alquilar.");
+ 	vehicleid = GetPlayerVehicleID(playerid);
+	if(VehicleInfo[vehicleid][VehType] != VEH_RENT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar subido a un vehículo de renta disponible para alquilar.");
+	for(new i = 1; i < MAX_RENTCAR; i++)
+	{
+	    if(RentCarInfo[i][rVehicleID] == vehicleid)
+		{
+	        if(RentCarInfo[i][rRented] == 1)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar subido a un vehículo de renta disponible para alquiler.");
+			else
+			    {
+			        rentcarid = i;
+			    	break;
+				}
+		}
+	}
+	if(time < 1 || time > 3)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes alquilar por un mínimo de una hora, o un máximo de tres.");
+	price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 100;
+	if(price < 300)
+		price = 300; // Seteamos un mínimo de precio
+	if(GetPlayerCash(playerid) < price * time)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+	GivePlayerCash(playerid, -(price * time));
+	SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado este vehículo! Utiliza /motor para encenderlo. El vehículo será devuelto al acabarse el tiempo.");
+    SendClientMessage(playerid, COLOR_WHITE, "(( Si el vehículo respawnea, lo encontrarás en la agencia donde lo rentaste en primer lugar. ))");
+	RentCarInfo[rentcarid][rRented] = 1;
+	RentCarInfo[rentcarid][rOwnerSQLID] = PlayerInfo[playerid][pID];
+	RentCarInfo[rentcarid][rTime] = time * 60; // Guardamos el tiempo en minutos
+	PlayerInfo[playerid][pRentCarID] = vehicleid;
+	PlayerInfo[playerid][pRentCarRID] = rentcarid;
+	return 1;
+}
+
+TIMER:rentRespawn()
+{
+	new ownerid = -1; // Por default el -1 que significa no está conectado
+	for(new i = 1; i < MAX_RENTCAR; i++)
+	{
+		if(RentCarInfo[i][rRented] == 1)
+		{
+ 		    RentCarInfo[i][rTime] -= 20;
+            if(RentCarInfo[i][rTime] < 30)
+            {
+	           	foreach(new playerid : Player)
+			    {
+			        if(PlayerInfo[playerid][pID] == RentCarInfo[i][rOwnerSQLID])
+			        {
+			            ownerid = playerid;
+			            break;
+					}
+				}
+				if(RentCarInfo[i][rTime] > 0 && ownerid != 1)
+ 					SendFMessage(ownerid, COLOR_WHITE, "A tu vehículo de renta le quedan %d minutos de alquiler. Al finalizar será devuelto a la agencia.", RentCarInfo[i][rTime]);
+				if(RentCarInfo[i][rTime] <= 0)
+				{
+				    RentCarInfo[i][rRented] = 0;
+				    RentCarInfo[i][rTime] = 0;
+				    RentCarInfo[i][rOwnerSQLID] = 0;
+				    if(ownerid != -1)
+				    {
+       					PlayerInfo[ownerid][pRentCarID] = 0;
+						PlayerInfo[ownerid][pRentCarRID] = 0;
+						SendClientMessage(ownerid, COLOR_WHITE, "Se ha acabado el tiempo de alquiler del vehículo de renta.");
+				    }
+				}
+			}
+		}
+    	if(RentCarInfo[i][rRented] == 0)
+    	{
+			VehicleInfo[RentCarInfo[i][rVehicleID]][VehLocked] = 0;
+			SetVehicleToRespawn(RentCarInfo[i][rVehicleID]);
+		}
+	}
+	return 1;
+}
+
 CMD:motor(playerid,params[]) {
     new
 		vehicleid = GetPlayerVehicleID(playerid);
@@ -15790,8 +15890,7 @@ CMD:motor(playerid,params[]) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 		    return 1;
 		} else if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes rentar este vehículo, vé al punto y escribe /rentar.");
-            SetPlayerCheckpoint(playerid, 1568.4810, -2253.9084, 13.5425, 5.0);
+			SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 		    return 1;
 		} else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && PlayerInfo[playerid][pID] != VehicleInfo[vehicleid][VehOwnerSQLID] && AdminDuty[playerid] != 1) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
@@ -16539,6 +16638,9 @@ CMD:refuerzos(playerid, params[])
 	if(cmde < 1 || cmde > 3)
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ref)uerzos [PMA = 1, HMA = 2, TODOS = 3]");
 
+	new Float:x, Float:y, Float:z, area[MAX_ZONE_NAME];
+	GetPlayerPos(playerid, x, y ,z);
+	GetCoords2DZone(x, y, area, MAX_ZONE_NAME);
  	if(GetPVarInt(playerid, "requestingBackup") != 1)
 	{
 	    SetPVarInt(playerid, "requestingBackup", 1);
@@ -16547,24 +16649,24 @@ CMD:refuerzos(playerid, params[])
 			case 1: {
 				foreach(Player, i) {
 					if(PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) {
-						SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
-						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
+						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
+						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
 					}
 				}
 			}
 			case 2: {
 				foreach(Player, i) {
 					if(PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) {
-						SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
-						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
+						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
+						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
 					}
 				}
 			}
 			case 3: {
 				foreach(Player, i) {
 					if( (PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) || (PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) ) {
-						SetPlayerMarkerForPlayer(i, playerid, 0xFF0000FF);
-						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata, lo marcamos en rojo en el mapa.",  GetPlayerNameEx(playerid));
+						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
+						SendFMessage(i, COLOR_GREY, "Todas las unidades: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
 					}
 				}
 			}
@@ -17610,8 +17712,9 @@ CMD:transferir(playerid,params[])
 	PlayerInfo[playerid][pBank] -= amount;
 	PlayerInfo[targetID][pBank] += amount;
 	SendFMessage(playerid, COLOR_WHITE, "Has realizado una transferencia de $%d a la cuenta de %s.", amount, GetPlayerNameEx(targetID));
-	SendFMessage(targetID, COLOR_WHITE, "Has recibido una transferencia de la cuenta de %s por $%d.", GetPlayerNameEx(playerid), amount);
-  	return 1;
+	SendFMessage(targetID, COLOR_WHITE, "[Mensaje del Banco]: Has recibido una transferencia de la cuenta de %s por $%d.", GetPlayerNameEx(playerid), amount);
+    PlayerActionMessage(playerid, 15.0, "aprieta algunos botones del cajero y realiza una operación bancaria.");
+ 	return 1;
 }
 
 CMD:verbalance(playerid,params[])
