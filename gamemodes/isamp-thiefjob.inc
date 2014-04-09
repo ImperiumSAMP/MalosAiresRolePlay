@@ -611,7 +611,8 @@ CMD:hurtar(playerid, params[])
 			if(takeMoney > targetMoney)
    				takeMoney = targetMoney;
 		    SendFMessage(playerid, COLOR_WHITE, "Has tomado $%d del sujeto sin que éste se percate de lo sucedido, actúa como si nada hubiera pasado.", takeMoney);
-            GivePlayerCash(target, -takeMoney);
+		    SendClientMessage(target, COLOR_WHITE, "[AVISO OOC]: Un sujeto te ha hurtado sin que te des cuenta. Esta información NO la puedes usar IC.");
+			GivePlayerCash(target, -takeMoney);
 			GivePlayerCash(playerid, takeMoney);
 		}
  	if(GetPVarInt(target, "disabled") != DISABLE_DYING && GetPVarInt(target, "disabled") != DISABLE_DEATHBED && ThiefJobInfo[playerid][pFelonLevel] == 1) {

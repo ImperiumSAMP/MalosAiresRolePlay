@@ -59,12 +59,6 @@ enum pInfo {
 	pAccusedOf[64],
 	pAccusedBy[24],
 	
-	// Sin uso y se guardan en DB
-	pDonateRank,
-	pSpawnPoint,//If pSpawnPoint = 1, then the user will spawn at there normal place, if it's 0 then they will spawn at there home.
-	pOrigin,
-	pPoints,
-	
 	pMuteB,
 	pRentCarID,
 	pRentCarRID,
@@ -72,6 +66,7 @@ enum pInfo {
 	pLighter,
 	pFightStyle,
 	pMask,
+	pRadio,
 	
 	Float:pThirst,
 	Float:pHunger,
