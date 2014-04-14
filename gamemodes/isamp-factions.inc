@@ -26,7 +26,6 @@
 enum Factions {
 	fName[50],
 	fMaterials,
-	fDrugs,
 	fBank,
 	fRank1[35],
 	fRank2[35],
@@ -67,7 +66,11 @@ new MedDuty[MAX_PLAYERS],
 //General functions
 
 stock isPlayerCopOnDuty(playerid){
-	return PlayerInfo[playerid][pFaction] == 1 && CopDuty[playerid] == 1;
+	return PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1;
+}
+
+stock isPlayerSideOnDuty(playerid){
+	return PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1;
 }
 
 
@@ -79,7 +82,7 @@ CMD:afacciones(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdrogas /afdinero /afmats /afskin /afrango /afvehmision");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdinero /afmats /afskin /afrango /afvehmision");
  	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos");
 	return 1;
 }
@@ -252,28 +255,6 @@ CMD:afvehmision(playerid, params[]) {
 	}
 	return 1;
 }
-
-CMD:afdrogas(playerid, params[]) {
-	new
-	    string[128],
-	    factionID,
-		drugs;
-
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", factionID, drugs)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdrogas [idfacción] [cantidad]");
-	else if(factionID >= 0 && factionID < MAX_FACTIONS) {
-    	FactionInfo[factionID][fDrugs] = drugs;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de drogas de la facción %d ha sido ajustada a %d.", factionID, drugs);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-	    SaveFactions();
-	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
-	}
-	return 1;
-}
-
 
 CMD:afrangoingreso(playerid, params[]) {
 	new

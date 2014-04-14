@@ -7,11 +7,12 @@
 
 //=================================DEFINES======================================
 
-#define MAX_GANGZONES           7
+#define MAX_GANGZONES           8
 
 #define GANGZONE_CAPTURE_TIME   600 // En segundos, 10 min. Lo que tienen que mantenerse dentro para capturarlo.
 #define GANGZONE_CAPTURE_UPDATE 5 // En segundos, cada cuanto actualiza el sistema mientras están en guerra.
 #define GANGZONE_REDISPUTE_TIME 14400 // En segundos, 4 horas. Tiempo hasta que un barrio pueda ser recapturado.
+#define GANGZONE_HOLDING_TIME   21600 // En segundos, 6 horas. Tiempo máximo que puede mantener una faccion el dominio.
 
 #define GANGZONE_NUNEZ          0
 #define GANGZONE_LA_BOCA        1
@@ -20,6 +21,7 @@
 #define GANGZONE_FUERTE_APACHE  4
 #define GANGZONE_AVELLANEDA     5
 #define GANGZONE_WILLOWFIELD    6
+#define GANGZONE_SEVILLE_BEACH  7
 
 //==================================NEWS========================================
 
@@ -33,6 +35,8 @@ new GangZone[MAX_GANGZONES][GangZoneInfo];
 new GangZoneWarCountdownTimer[MAX_GANGZONES];
 new GangZoneWarCountdown[MAX_GANGZONES];
 new GangZoneWarEndTimer[MAX_GANGZONES];
+new IsFactionTakingGangZone[MAX_FACTIONS];
+new EndGangZoneHoldingFactionTimer[MAX_GANGZONES];
 
 CMD:tomarbarrio(playerid, params[])
 {
@@ -44,6 +48,8 @@ CMD:tomarbarrio(playerid, params[])
  	    return 1;
 	if(PlayerInfo[playerid][pRank] != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para iniciar la toma de un barrio debes ser el lider de la facción.");
+	if(IsFactionTakingGangZone[faction] == 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu facción ya está tomando un barrio en estos momentos.");
 	gangzone = GetPlayerGangZone(playerid);
 	if(gangzone == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en ningún barrio de conflicto.");
@@ -83,8 +89,27 @@ CMD:tomarbarrio(playerid, params[])
 			}
 	}
 	GangZone[gangzone][gzDisputed] = 1;
+	IsFactionTakingGangZone[faction] = 1;
 	SetTimerEx("EnableGangZoneDispute", GANGZONE_REDISPUTE_TIME * 1000, false, "i", gangzone);
 	GangZoneWarCountdownTimer[gangzone] = SetTimerEx("GangZoneWar", GANGZONE_CAPTURE_UPDATE * 1000, true, "ii", gangzone, faction);
+	return 1;
+}
+
+forward EndGangZoneHoldingFaction(gangzone);
+public EndGangZoneHoldingFaction(gangzone)
+{
+	GangZone[gangzone][gzFaction] = 0;
+	foreach(new playerid : Player)
+	{
+	    if(PlayerInfo[playerid][pFaction] != 0)
+	    {
+	        if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG)
+	        {
+  			    HideGangZonesToPlayer(playerid);
+			    ShowGangZonesToPlayer(playerid); // Para actualizarlo a color gris, es decir, a barrio sin dueño
+	        }
+		}
+	}
 	return 1;
 }
 
@@ -143,16 +168,18 @@ public EndGangZoneWar(gangzone, faction, endingtype)
 	GangZoneWarCountdownTimer[gangzone] = 0;
 	GangZoneWarCountdown[gangzone] = 0;
 	GangZoneWarEndTimer[gangzone] = 0;
+	IsFactionTakingGangZone[faction] = 0;
 	new defenderfaction = GangZone[gangzone][gzFaction];
 	switch(endingtype)
 	{
 	    case 1:
 	    {
+	        GangZone[gangzone][gzFaction] = faction;
 			foreach(new playerid : Player)
 			{
 				if(defenderfaction != 0 && PlayerInfo[playerid][pFaction] == defenderfaction)
 				{
-			    	SendClientMessage(defenderfaction, COLOR_PMA, "[DISPUTA]: Hemos perdido el control del barrio.");
+			    	SendClientMessage(playerid, COLOR_PMA, "[DISPUTA]: Hemos perdido el control del barrio.");
 			    	GangZoneStopFlashForPlayer(playerid, GangZone[gangzone][gzID]);
 			    	HideGangZonesToPlayer(playerid);
 			    	ShowGangZonesToPlayer(playerid); // Para actualizarlo con el nuevo color de la nueva faccion
@@ -160,13 +187,15 @@ public EndGangZoneWar(gangzone, faction, endingtype)
 				else
 			        if(PlayerInfo[playerid][pFaction] == faction)
 			        {
-                        SendClientMessage(faction, COLOR_PMA, "[DISPUTA]: ¡Bien, el barrio nuestro! Debemos mantenerlo bajo control y nos dará buen dinero.");
+                        SendClientMessage(playerid, COLOR_PMA, "[DISPUTA]: ¡Bien, el barrio es nuestro! Debemos mantenerlo bajo control y nos dará buen dinero.");
                         GangZoneStopFlashForPlayer(playerid, GangZone[gangzone][gzID]);
                         HideGangZonesToPlayer(playerid);
                         ShowGangZonesToPlayer(playerid); // Para actualizarlo con el nuevo color de la nueva faccion
+                        if(EndGangZoneHoldingFactionTimer[gangzone] != 0)
+                            KillTimer(EndGangZoneHoldingFactionTimer[gangzone]);
+                       	SetTimerEx("EndGangZoneHoldingFaction", GANGZONE_HOLDING_TIME * 1000, false, "i", gangzone);
 					}
 			}
-			GangZone[gangzone][gzFaction] = faction;
 		}
 		case 2:
 	    {
@@ -174,13 +203,16 @@ public EndGangZoneWar(gangzone, faction, endingtype)
 			{
 				if(defenderfaction != 0 && PlayerInfo[playerid][pFaction] == defenderfaction)
 				{
-			    	SendClientMessage(defenderfaction, COLOR_PMA, "[DISPUTA]: ¡Bien, hemos defendido el barrio con éxito y sigue siendo nuestro!");
+			    	SendClientMessage(playerid, COLOR_PMA, "[DISPUTA]: ¡Bien, hemos defendido el barrio con éxito y sigue siendo nuestro!");
                     GangZoneStopFlashForPlayer(playerid, GangZone[gangzone][gzID]);
+                    if(EndGangZoneHoldingFactionTimer[gangzone] != 0)
+                    	KillTimer(EndGangZoneHoldingFactionTimer[gangzone]);
+                   	SetTimerEx("EndGangZoneHoldingFaction", GANGZONE_HOLDING_TIME * 1000, false, "i", gangzone);
 				}
 				else
 			        if(PlayerInfo[playerid][pFaction] == faction)
 			        {
-                        SendClientMessage(faction, COLOR_PMA, "[DISPUTA]: La disputa se ha acabado, no hemos podido tomar el barrio.");
+                        SendClientMessage(playerid, COLOR_PMA, "[DISPUTA]: La disputa se ha acabado, no hemos podido tomar el barrio.");
                         GangZoneStopFlashForPlayer(playerid, GangZone[gangzone][gzID]);
 					}
 			}
@@ -205,12 +237,12 @@ stock ShowGangZonesToPlayer(playerid)
 		switch(GangZone[i][gzFaction])
 		{
 		    case 0: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00000077);
-			case 4: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x0000FF77);
-			case 5: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00FF0077);
-			case 6: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0xFF000077);
-			case 7: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0xFFFF0077);
-			case 8: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0xFF00FF77);
-			case 9: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00FFFF77);
+			case 11: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x0000FF77);
+			case 12: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00FF0077);
+			case 13: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0xFF000077);
+			case 14: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0xFFFF0077);
+			case 15: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00FFFF77);
+			default: GangZoneShowForPlayer(playerid, GangZone[i][gzID], 0x00000077);
 		}
 	}
 	return 1;
@@ -219,12 +251,13 @@ stock ShowGangZonesToPlayer(playerid)
 stock LoadGangZones()
 {
 	GangZone[GANGZONE_NUNEZ][gzID] = GangZoneCreate(1828.318, -1310.774, 2117.333, -1054.171);
-	GangZone[GANGZONE_LA_BOCA][gzID] = GangZoneCreate(2197.193, -1835.824, 2528.039, -1606.855);
+	GangZone[GANGZONE_LA_BOCA][gzID] = GangZoneCreate(2337.898, -1741.078, 2531.842, -1622.646);
 	GangZone[GANGZONE_EL_CORONA][gzID] = GangZoneCreate(1813.106, -2183.225, 1965.22, -1954.256);
 	GangZone[GANGZONE_VILLA_LATA][gzID] = GangZoneCreate(1527.894, -2187.173, 1813.106, -2084.531);
 	GangZone[GANGZONE_FUERTE_APACHE][gzID] = GangZoneCreate(1991.839, -1764.764, 2200.996, -1527.9);
 	GangZone[GANGZONE_AVELLANEDA][gzID] = GangZoneCreate(2109.728, -1219.976, 2326.489, -971.2684);
 	GangZone[GANGZONE_WILLOWFIELD][gzID] = GangZoneCreate(2204.798, -2060.845, 2531.842, -1875.301);
+	GangZone[GANGZONE_SEVILLE_BEACH][gzID] = GangZoneCreate(2604.096, -2060.845, 2786.632, -1902.935);
 	return 1;
 }
 
@@ -235,14 +268,28 @@ stock GetPlayerGangZone(playerid)
 	GetPlayerPos(playerid, px, py, pz);
 
 	if(px >= 1828.318 && px <= 2117.333 && py >= -1310.774 && py <= -1054.171) return GANGZONE_NUNEZ;
-	if(px >= 2197.193 && px <= 2528.039 && py >= -1835.824 && py <= -1606.855) return GANGZONE_LA_BOCA;
+	if(px >= 2337.898 && px <= 2531.842 && py >= -1741.078 && py <= -1622.646) return GANGZONE_LA_BOCA;
 	if(px >= 1813.106 && px <= 1965.220 && py >= -2183.225 && py <= -1954.256) return GANGZONE_EL_CORONA;
 	if(px >= 1527.894 && px <= 1813.106 && py >= -2187.173 && py <= -2084.531) return GANGZONE_VILLA_LATA;
 	if(px >= 1991.839 && px <= 2200.996 && py >= -1764.764 && py <= -1527.900) return GANGZONE_FUERTE_APACHE;
 	if(px >= 2109.728 && px <= 2326.489 && py >= -1219.976 && py <= -971.2684) return GANGZONE_AVELLANEDA;
 	if(px >= 2204.798 && px <= 2531.842 && py >= -2060.845 && py <= -1875.301) return GANGZONE_WILLOWFIELD;
+	if(px >= 2604.096 && px <= 2786.632 && py >= -2060.845 && py <= -1902.935) return GANGZONE_SEVILLE_BEACH;
 
 	return -1;
+}
+
+stock GetGangZoneLiderIncome(playerid)
+{
+	new income = 0;
+ 	for(new i = 0; i < MAX_GANGZONES; i++)
+	{
+		if(GangZone[i][gzFaction] == PlayerInfo[playerid][pFaction])
+		{
+			income += 1000;
+		}
+	}
+	return income;
 }
 
 stock DestroyGangZones()
@@ -254,5 +301,6 @@ stock DestroyGangZones()
 	GangZoneDestroy(GangZone[GANGZONE_FUERTE_APACHE][gzID]);
 	GangZoneDestroy(GangZone[GANGZONE_AVELLANEDA][gzID]);
  	GangZoneDestroy(GangZone[GANGZONE_WILLOWFIELD][gzID]);
+ 	GangZoneDestroy(GangZone[GANGZONE_SEVILLE_BEACH][gzID]);
 	return 1;
 }

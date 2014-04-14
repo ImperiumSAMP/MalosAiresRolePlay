@@ -196,9 +196,9 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 	{
 		case 406, 407, 408, 423, 424, 425, 431, 432, 434, 437, 441, 443, 444,
 			447, 448, 449, 457, 460, 461, 462, 463, 464, 465, 468, 469, 471,
-			473, 476, 481, 485, 486, 494, 495, 501, 502, 503, 504, 509, 510,
+			473, 476, 481, 485, 486, 494, 501, 502, 503, 504, 509, 510,
 			512, 513, 520, 521, 522, 523, 524, 525, 530, 531, 532, 537, 538,
-			539, 544, 556, 557, 564, 568, 569, 570, 571, 572, 573, 574, 581,
+			539, 544, 556, 557, 564, 568, 569, 570, 571, 572, 574, 581,
 			583, 584, 586, 588, 590, 594, 601, 606, 607, 608, 610, 611:
 			trunkslots = 0;
 
@@ -210,12 +210,12 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 
 		case 400, 403, 404, 405, 409, 412, 416, 418, 420, 421, 426,
 			427, 428, 438, 442, 445, 458, 466, 467, 470, 478, 479, 483, 484,
-			487, 489, 490, 492, 497, 505, 507, 511, 514, 515, 516, 529,
+			487, 489, 490, 492, 495, 497, 505, 507, 511, 514, 515, 516, 529,
 			534, 535, 540, 546, 547, 550, 551, 560, 561, 563, 566,
 			567, 579, 580, 582, 585, 596, 597, 598, 599, 600, 604, 605:
 			trunkslots = 4;
 
-		case 413,417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 577:
+		case 413, 417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 573, 577:
 			trunkslots = 6;
 
 		case 414, 433, 435, 450, 453, 455, 456, 498, 499, 591, 592, 609:
@@ -457,7 +457,7 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 406: price = 853700;
 		case 407: price = 311800;
 		case 408: price = 280000;
-		case 409: price = 530800;
+		case 409: price = 550000;
 		case 410: price = 26300;
 		case 411: price = 990500;
 		case 412: price = 69100;
@@ -526,14 +526,14 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 491: price = 55000;
 		case 492: price = 60000;
 		case 493: price = 770000;
-		case 494: price = 1500000;
+		case 494: price = 1000000;
 		case 495: price = 1300000;
 		case 496: price = 100500;
 		case 498: price = 80000;
 		case 499: price = 70000;
 		case 500: price = 60000;
-		case 502: price = 1500000;
-		case 503: price = 1500000;
+		case 502: price = 1000000;
+		case 503: price = 1000000;
 		case 504: price = 200000;
 		case 505: price = 105000;
 		case 506: price = 700000;
@@ -593,7 +593,7 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 568: price = 40000;
 		case 571: price = 25000;
 		case 572: price = 15000;
-		case 573: price = 540000;
+		case 573: price = 1000000;
 		case 575: price = 85000;
 		case 576: price = 68000;
 		case 577: price = 3500000;
@@ -1134,10 +1134,10 @@ CMD:maletero(playerid, params[]) {
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
 	        if(PlayerInfo[playerid][pLevel] < 3)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-    		if(GetPVarInt(playerid, "cantSaveItems") == 1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a guardar un item!");
-			if(isPlayerCopOnDuty(playerid))
+			if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
     			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
+			if(GetPVarInt(playerid, "cantSaveItems") == 1)
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 			if(GetPlayerWeapon(playerid) < 1 || (GetPlayerWeapon(playerid) > 34 && GetPlayerWeapon(playerid) != 43))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 
@@ -1162,7 +1162,7 @@ CMD:maletero(playerid, params[]) {
 				}
 				
    			SetPVarInt(playerid, "cantSaveItems", 1);
-			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
 			setTrunkItemAndParam(vehicleid, validslot, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
 			RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 	    }
@@ -1283,7 +1283,7 @@ CMD:vehcomprar(playerid, params[])
 	}
 	VehicleInfo[newveh][VehFuel] = 100;
 	SendClientMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado este vehículo!");
-	SendClientMessage(playerid, COLOR_WHITE, "Estacionalo con '(/veh)iculo estacionar' fuera de la consecionaria, de no hacerlo podrá ser incautado.");
+	SendClientMessage(playerid, COLOR_WHITE, "Estacionalo con '/vehestacionar' fuera de la consecionaria, de no hacerlo podrá ser incautado.");
 	if(PlayerInfo[playerid][pVeh1] == 0) {
 		PlayerInfo[playerid][pVeh1] = newveh;
 		VehicleInfo[newveh][VehOwnerSlot] = 1;
@@ -1354,7 +1354,7 @@ CMD:vehestacionar(playerid, params[])
 
 	if(!IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en ningún vehículo!");
-	if(!IsAtDealership(playerid))
+	if(IsAtDealership(playerid))
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes estacionar un vehículo en la consecionaria!");
 	vehicleid = GetPlayerVehicleID(playerid);
 	if( (PlayerInfo[playerid][pVeh1] != vehicleid && PlayerInfo[playerid][pVeh2] != vehicleid) &&
@@ -1781,6 +1781,7 @@ CMD:avmodelo(playerid, params[])
 	PutPlayerInVehicle(playerid, vehicleid, 0);
 	SetVehiclePos(vehicleid, cx, cy, cz);
 	SetVehicleZAngle(vehicleid, angle);
+	resetTrunk(vehicleid);
     SaveVehicle(vehicleid);
 	return 1;
 }
@@ -1843,6 +1844,7 @@ CMD:avtipo(playerid, params[])
                 RentCarInfo[i][rTime] = 0;
                 RentCarInfo[i][rRented] = 0;
                 available = i;
+                break;
     		}
 		}
 		if(available == -1)

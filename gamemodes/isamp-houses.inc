@@ -19,18 +19,18 @@ enum HouseSystem {
 	ExitInterior,
 	Float:ExitAngle,
 	Owned,
-	Rentable,
-	RentCost,
 	InsideWorld,
 	HousePrice,
-	Materials,
-	Drugs,
 	Money,
 	Locked,
 	hEntrancePickup,
 	hExitPickup,
 	Text3D:hEntranceLabel,
 	Text3D:hExitLabel,
+	Marijuana,
+	LSD,
+	Ecstasy,
+	Cocaine,
 };
 
 new House[MAX_HOUSES][HouseSystem];
@@ -60,11 +60,7 @@ CMD:ainfocasa(playerid, params[]) {
 	    SendFMessage(playerid, COLOR_WHITE, "|---- Casa %d '%s' ----|", id, House[id][Description]);
 	    SendFMessage(playerid, COLOR_WHITE, "- Tiene dueño: %d", House[id][Owned]);
 	    SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s", House[id][Owner]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Rentable: %d", House[id][Rentable]);
 	    SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", House[id][HousePrice]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Costo de renta: $%d", House[id][RentCost]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Materiales: $%d", House[id][Materials]);
-        SendFMessage(playerid, COLOR_WHITE, "- Drogas: %d", House[id][Drugs]);
 	    SendFMessage(playerid, COLOR_WHITE, "- Dinero: %d", House[id][Money]);
 	    SendFMessage(playerid, COLOR_WHITE, "- Cerrada: %d", House[id][Locked]);
 	} else {

@@ -41,7 +41,7 @@
 #define COLOR_MP                0x5F9EA0FF
 //
 #define COLOR_EVENT             0x4F76F7FF
-#define COLOR_ADMINQUESTION     0xC20000FF
+#define COLOR_ADMINQUESTION     0xFF0000BB
 #define COLOR_ACHAT             0xE8934DFF
 #define COLOR_LOCALMSG		 	0xEC5413AA
 #define COLOR_ADMINCMD 			0x2EBFC7FF
@@ -110,7 +110,7 @@
 #define DISABLE_DYING           3
 #define DISABLE_STEALING        4
 #define DISABLE_DEATHBED        5
-
+#define DISABLE_HEALING         6
 
 
 new validWeatherIDs[2] = {
