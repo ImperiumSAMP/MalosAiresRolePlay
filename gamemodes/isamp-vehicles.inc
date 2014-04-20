@@ -28,7 +28,6 @@
 #define	VEH_JOB					6	// Empleo.
 #define	VEH_RENT                7
 #define	VEH_DEALERSHIP2 		8	// De venta, GROTTI.
-#define VEH_NPC                 9   // Para los colectivos
 #define	VEH_SHIPYARD     		10  // Astilleros
 
 #define VTYPE_CAR 				1
@@ -183,7 +182,6 @@ VehTypeName(type) {
 		case 5: format(name, 32, "admin");
 		case 6: format(name, 32, "empleo");
 		case 7: format(name, 32, "renta");
-		case 9: format(name, 32, "npc");
 		default: format(name, 32, "¡REPORTAR-BUG!");
     }
     return name;
@@ -194,14 +192,6 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 	new modelid = GetVehicleModel(vehicleid);
 	switch(modelid)
 	{
-		case 406, 407, 408, 423, 424, 425, 431, 432, 434, 437, 441, 443, 444,
-			447, 448, 449, 457, 460, 461, 462, 463, 464, 465, 468, 469, 471,
-			473, 476, 481, 485, 486, 494, 501, 502, 503, 504, 509, 510,
-			512, 513, 520, 521, 522, 523, 524, 525, 530, 531, 532, 537, 538,
-			539, 544, 556, 557, 564, 568, 569, 570, 571, 572, 574, 581,
-			583, 584, 586, 588, 590, 594, 601, 606, 607, 608, 610, 611:
-			trunkslots = 0;
-
 		case 401, 402, 410, 411, 415, 419, 429, 430, 436, 439, 446, 451, 452,
 		    472, 474, 475, 477, 480, 488, 491, 493, 496, 500, 506, 517, 518, 526,
 		    527, 528, 533, 536, 541, 542, 545, 549, 552, 555, 558, 559, 562, 565,
@@ -218,8 +208,14 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 		case 413, 417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 573, 577:
 			trunkslots = 6;
 
-		case 414, 433, 435, 450, 453, 455, 456, 498, 499, 591, 592, 609:
+		case 414, 433, 453, 455, 456, 498, 499, 609:
 		    trunkslots = 8;
+
+		case 435, 450, 591, 592:
+		    trunkslots = 10;
+
+		default:
+		    trunkslots = 0;
 	}
 	return trunkslots;
 }
@@ -527,7 +523,7 @@ GetVehiclePrice(vehicleid, priceperc) {
 		case 492: price = 60000;
 		case 493: price = 770000;
 		case 494: price = 1000000;
-		case 495: price = 1300000;
+		case 495: price = 1000000;
 		case 496: price = 100500;
 		case 498: price = 80000;
 		case 499: price = 70000;
@@ -1265,7 +1261,8 @@ CMD:vehcomprar(playerid, params[])
 	VehicleInfo[newveh][VehColor1] = color1;
 	VehicleInfo[newveh][VehColor2] = color2;
 	VehicleInfo[newveh][VehModel] = VehicleInfo[vehicleid][VehModel];
-	if(VehicleInfo[newveh][VehType] == VEH_DEALERSHIP) {
+	
+	if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP) {
 		VehicleInfo[newveh][VehPosX] = 2127.6501;
 		VehicleInfo[newveh][VehPosY] = -1117.1167;
 		VehicleInfo[newveh][VehPosZ] = 24.9961;
@@ -1605,7 +1602,7 @@ CMD:avrespawn(playerid, params[])
 		return 1;
     if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avrespawn [idvehiculo]");
-	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH || VehicleInfo[vehicleid][VehType] == VEH_NPC)
+	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
 
 	SetVehicleToRespawn(vehicleid);
@@ -1621,8 +1618,7 @@ CMD:avrespawnall(playerid, params[])
 	{
  		if(IsVehicleOccupied(i) == 0)
 		{
-		    if(VehicleInfo[i][VehType] != VEH_NPC)
-		       	SetVehicleToRespawn(i);
+ 			SetVehicleToRespawn(i);
 		}
 	}
 	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos desocupados han sido respawneados por un administrador.");
