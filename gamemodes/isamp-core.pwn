@@ -272,9 +272,11 @@ new
 	MANGate,
 	TMMAGate,
 	HOSPGate,
+ 	/*
 	BERTGate,
 	CHINGate[2],
 	FORZGate,
+	*/
 	PMGate,
 	PMBarrier,
 	PMHallDoor[3],
@@ -8118,7 +8120,10 @@ public CloseGate(gateID) {
 	    MoveObject(HOSPGate, 1147.03149,-1384.87317, 13.46000, 0.0001, 0.00000, -90.00000, 0.00000);
 	} else if(gateID == PMGate) {
 	    MoveObject(PMGate, 1589.73499, -1638.32410, 14.27130, 2.0, 0.00000, 0.00000, 90.00000);
-	} else if(gateID == BERTGate) {
+	}
+	
+	/*
+	  else if(gateID == BERTGate) {
 	    MoveObject(BERTGate, 1245.07910, -767.55127, 90.60150, 2.0, 0.00000, 0.00000, 180.00000);
 	} else if(gateID == FORZGate) {
 	    MoveObject(FORZGate, 263.59546, -1333.77124, 51.39749, 2.0, 0.00000, 0.00000, 35.82000);
@@ -8126,6 +8131,8 @@ public CloseGate(gateID) {
 		MoveObject(CHINGate[0], 324.34799, -1185.18579, 75.42600, 2.0, 0.00000, 0.00000, 37.50000);
 		MoveObject(CHINGate[1], 317.32422, -1190.57642, 75.42602, 2.0, 0.00000, 0.00000, 37.49999);
 	}
+	*/
+	
 	return 1;
 }
 
@@ -8231,7 +8238,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	            MoveObject(HOSPGate,  1147.03149, -1384.87317, 13.46000, 0.0001, 0.00000, 0.00000, 0.00000);
 	            SetTimerEx("CloseGate", 4000, false, "i", HOSPGate);
 	        }
-	    } else
+	    }
+	    
+		/*
+		  else
 	    if(PlayerInfo[playerid][pFaction] == FAC_BERT) {
 	        if(PlayerToPoint(15.0, playerid, 1245.11, -767.45, 92.16)) {
 	            MoveObject(BERTGate,  1241.1888, -771.8996, 90.6015, 2.0, 0.0000, 0.0000, 96.6600);
@@ -8251,6 +8261,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	            SetTimerEx("CloseGate", 6000, false, "i", CHINGate[0]);
 	        }
 	    }
+	    */
+	    
     }
 
 	if (PlayerInfo[playerid][pTutorial] == 1) {
@@ -11687,6 +11699,7 @@ stock LoadMap() {
 	CreateDynamicObject(2606, 2915.23071, -818.86218, 1014.14899,   10.00000, 0.00000, -90.00000);
 	CreateDynamicObject(2606, 2915.22974, -816.88318, 1014.14899,   10.00000, 0.00000, -90.00000);
 
+/*
 //====================================REJA TANA=================================
 	BERTGate = CreateObject(971, 1245.07910, -767.55127, 90.60150,   0.00000, 0.00000, 180.00000);
 	CreateDynamicObject(18980, 1240.07996, -767.14990, 81.72060,   0.00000, 0.00000, 0.00000);
@@ -11703,7 +11716,8 @@ stock LoadMap() {
 	
 //====================================REJA FORZA================================
 	FORZGate = CreateObject(971, 263.59546, -1333.77124, 51.39749,   0.00000, 0.00000, 35.82000);
-	
+*/
+
 //============================ESTACION DE SERVICIO NORTE========================
 	CreateDynamicObject(16107, 1008.38977, -922.83356, 41.65400,   0.00000, 0.00000, 278.20004);
 	CreateDynamicObject(1676, 998.50000, -937.59998, 42.90000,   0.00000, 0.00000, 8.00000);
@@ -16825,70 +16839,65 @@ CMD:terminar(playerid,params[]) {
 	return 1;
 }
 
-CMD:tomarempleo(playerid,params[]) {
-    new
-		string[128];
-
+CMD:tomarempleo(playerid,params[])
+{
+	new string[128];
+	
     if(PlayerInfo[playerid][pJobAllowed] == 0)
-    	SendClientMessage(playerid,COLOR_YELLOW2,"¡No puedes tomar este empleo perteneciendo a esta facción!");
-    if(PlayerInfo[playerid][pJob] == 0) {
-        if(PlayerInfo[playerid][pJobTime] == 0) {
-			for(new id = 1; id < sizeof(JobInfo); id++) {
-				if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ])) {
-				    if(JobInfo[id][jType] != 0)
-                    	return 1;
-                    if(id == JOB_DRUGD && (FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
-						return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
-					if(id == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
-						return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Salí de acá!"); // Si es uno nuevo en el servidor o multicuenta
+    	return SendClientMessage(playerid,COLOR_YELLOW2,"¡No puedes tomar este empleo perteneciendo a esta facción!");
+    if(PlayerInfo[playerid][pJob] != 0)
+		return SendClientMessage(playerid,COLOR_YELLOW2,"¡Ya tienes un empleo!");
+	if(PlayerInfo[playerid][pJobTime] != 0)
+	{
+		format(string, sizeof(string), "¡Debes esperar %d PayDay/s antes de tomar otro empleo!", PlayerInfo[playerid][pJobTime]);
+		return SendClientMessage(playerid, COLOR_YELLOW2, string);
+	}
+	
+	for(new id = 1; id < sizeof(JobInfo); id++)
+	{
+		if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ]))
+		{
+		    if(JobInfo[id][jType] != 0)
+               	return 1;
+            if(id == JOB_DRUGD && (FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
+			if(id == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
+				return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Sal de aquí! (OOC: Requiere nivel 3)"); // Si es uno nuevo en el servidor o multicuenta
 
-					PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
-				    format(string, sizeof(string), "¡Felicidades!, ahora eres un %s, para ver los comandos disponibles, escribe /ayuda.", JobInfo[id][jName]);
-					SendClientMessage(playerid, COLOR_YELLOW3, string);
-					format(string, sizeof(string), "Debes esperar %d PayDay/s antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
-					SendClientMessage(playerid, COLOR_YELLOW3, string);
-					PlayerInfo[playerid][pJob] = id;
-					PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-					return 1;
-	  			}
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tomar un empleo en este lugar!");
-		} else {
-    		format(string, sizeof(string), "¡Debes esperar %d PayDay/s antes de tomar otro empleo!", PlayerInfo[playerid][pJobTime]);
-			SendClientMessage(playerid, COLOR_YELLOW3, string);
+			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
+			PlayerInfo[playerid][pJob] = id;
+			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+			SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades!, ahora eres un %s, para ver los comandos disponibles, escribe /ayuda.", JobInfo[id][jName]);
+			SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d PayDay/s antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
+			return 1;
 		}
-    } else {
-    	SendClientMessage(playerid,COLOR_YELLOW2,"¡Ya tienes un empleo!");
-    }
+	}
+	SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tomar un empleo en cualquier lugar!");
 	return 1;
 }
 
-CMD:dejarempleo(playerid,params[]) {
-	new
-		string[128];
+CMD:dejarempleo(playerid,params[])
+{
+    if(PlayerInfo[playerid][pJob] == 0)
+		return SendClientMessage(playerid,COLOR_YELLOW2,"No tienes ningún empleo.");
+  	if(jobDuty[playerid])
+	  	return SendClientMessage(playerid,COLOR_YELLOW2,"¡No puedes hacerlo mientras estás trabajando!");
 
-    if(PlayerInfo[playerid][pJob] != 0) {
-        if(!jobDuty[playerid]) {
-			for(new id = 1; id < sizeof(JobInfo); id++) {
-				if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX],JobInfo[id][jTakeY],JobInfo[id][jTakeZ])) {
-				    if(id != PlayerInfo[playerid][pJob])
-						return 1;
+	for(new id = 1; id < sizeof(JobInfo); id++)
+	{
+		if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX],JobInfo[id][jTakeY],JobInfo[id][jTakeZ]))
+		{
+  			if(id != PlayerInfo[playerid][pJob])
+				return SendClientMessage(playerid,COLOR_YELLOW2,"¡No trabajas aquí!");
+			if(JobInfo[id][jType] != 0)
+	            return 1;
 
-	                if(JobInfo[id][jType] != 0)
-	                    return 1;
-
-				    format(string, sizeof(string), "¡Has dejado tu empleo de %s!", JobInfo[id][jName]);
-					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					PlayerInfo[playerid][pJob] = 0;
-					return 1;
-	  			}
-			}
+			SendFMessage(playerid, COLOR_YELLOW2, "¡Has dejado tu empleo de %s!", JobInfo[id][jName]);
+			PlayerInfo[playerid][pJob] = 0;
+			return 1;
 		}
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dejar el empleo en este lugar!, vé y presenta la renuncia ante tu jefe.");
-    }
-    else {
-    	SendClientMessage(playerid,COLOR_YELLOW2,"No tienes ningún empleo.");
-    }
+	}
+	SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dejar tu empleo en cualquier lugar! Vé y presenta la renuncia ante tu jefe.");
 	return 1;
 }
 
@@ -18439,12 +18448,14 @@ CMD:ayudabanco(playerid,params[])
 {
 	new string[128];
 
-	if(PlayerInfo[playerid][pFaction] != 0 && PlayerInfo[playerid][pRank] == 1) {
-	    format(string, sizeof(string), "- /fverbalance - /fdepositar - /fretirar");
-    } else if(PlayerInfo[playerid][pFaction] != 0) {
-    	format(string, sizeof(string), "- /fdepositar");
+	if(PlayerInfo[playerid][pFaction] != 0)
+	{
+		if(PlayerInfo[playerid][pRank] == 1)
+	    	format(string, sizeof(string), "- /fverbalance - /fdepositar - /fretirar");
+    	else
+    		format(string, sizeof(string), "- /fdepositar");
 	}
-    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[BANCO]: /verbalance - /depositar - /retirar - /transferir %s", string);
+    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[BANCO/CAJERO]: /verbalance - /depositar - /retirar - /transferir %s", string);
 	return 1;
 }
 
@@ -19844,6 +19855,7 @@ CMD:puerta(playerid, params[]) {
 
 //==============================COMANDOS DE MAFIAS==============================
 
+/*
 CMD:ch(playerid, params[]) {
 	cmd_chino(playerid, params);
 	return 1;
@@ -19936,6 +19948,7 @@ CMD:ruso(playerid, params[])
 	}
 	return 1;
 }
+*/
 
 CMD:ensamblar(playerid, params[])
 {
