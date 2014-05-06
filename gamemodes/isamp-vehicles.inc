@@ -199,7 +199,7 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 			trunkslots = 2;
 
 		case 400, 403, 404, 405, 409, 412, 416, 418, 420, 421, 426,
-			427, 428, 438, 442, 445, 458, 466, 467, 470, 478, 479, 483, 484,
+			427, 438, 442, 445, 458, 466, 467, 470, 478, 479, 483, 484,
 			487, 489, 490, 492, 495, 497, 505, 507, 511, 514, 515, 516, 529,
 			534, 535, 540, 546, 547, 550, 551, 560, 561, 563, 566,
 			567, 579, 580, 582, 585, 596, 597, 598, 599, 600, 604, 605:
@@ -208,7 +208,7 @@ GetVehicleMaxTrunkSlots(vehicleid) {
 		case 413, 417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 573, 577:
 			trunkslots = 6;
 
-		case 414, 433, 453, 455, 456, 498, 499, 609:
+		case 414, 428, 433, 453, 455, 456, 498, 499, 609:
 		    trunkslots = 8;
 
 		case 435, 450, 591, 592:
@@ -1524,7 +1524,8 @@ CMD:avehiculo(playerid, params[])
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 1] /avmotor - /avinfo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuelcars - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuel - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avestacionar - /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
@@ -1659,6 +1660,21 @@ CMD:avfix(playerid, params[])
 	return 1;
 }
 
+CMD:avfuel(playerid, params[])
+{
+	new vehicleid;
+
+    if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+	if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+
+	vehicleid = GetPlayerVehicleID(playerid);
+	VehicleInfo[vehicleid][VehFuel] = 100;
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Vehículo llenado con combustible.");
+	return 1;
+}
+
 CMD:avfuelcars(playerid, params[])
 {
 	if(PlayerInfo[playerid][pAdmin] < 3)
@@ -1669,6 +1685,20 @@ CMD:avfuelcars(playerid, params[])
 		VehicleInfo[c][VehFuel] = 100;
 	}
 	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido llenados con gasolina por un administrador.");
+	return 1;
+}
+
+CMD:avfixcars(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+
+	for(new c = 0; c < MAX_VEH; c++)
+	{
+		RepairVehicle(c);
+		VehicleInfo[c][VehHP] = 100;
+	}
+	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido reparados por un administrador.");
 	return 1;
 }
 
@@ -1772,12 +1802,15 @@ CMD:avmodelo(playerid, params[])
     SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, modelid);
 	GetVehiclePos(vehicleid, cx, cy, cz);
 	GetVehicleZAngle(vehicleid, angle);
+	resetTrunk(vehicleid);
+	for(new i = 0; i < 14; i++) {
+ 	    VehicleInfo[vehicleid][VehCompSlot][i] = 0;
+ 	}
 	DestroyVehicle(vehicleid);
 	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
 	PutPlayerInVehicle(playerid, vehicleid, 0);
 	SetVehiclePos(vehicleid, cx, cy, cz);
 	SetVehicleZAngle(vehicleid, angle);
-	resetTrunk(vehicleid);
     SaveVehicle(vehicleid);
 	return 1;
 }

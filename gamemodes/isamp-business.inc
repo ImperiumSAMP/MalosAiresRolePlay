@@ -58,38 +58,39 @@ enum BusinessSystem {
 new Business[MAX_BUSINESS][BusinessSystem];
 new bool:openBizPermission[MAX_BUSINESS];
 
-//Admin commands
-//====[NEGOCIOS]================================================================
-CMD:anegocios(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
+//========================COMANDOS ADMIN DE NEGOCIOS============================
+
+CMD:anegocios(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Negocios:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/ainfonegocio /aninsert /anremove /angetid /anproductos /anprecio /antipo");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aninfo /aninsert /anremove /angetid /anproductos /anprecio /antipo");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
 
-CMD:ainfonegocio(playerid, params[]) {
-	new
-	    id;
+CMD:aninfo(playerid, params[])
+{
+	new id;
 
-    if(PlayerInfo[playerid][pAdmin] < 2) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 2)
+		return 1;
+	if(sscanf(params, "i", id))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aninfo [IDnegocio]");
+	if(id < 1 || id >= MAX_BUSINESS)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de negocio inválida.");
 
-	if(sscanf(params, "d", id)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ainfonegocio [idnegocio]");
-	} else if(id >= 1 && id < MAX_BUSINESS) {
-	    SendFMessage(playerid, COLOR_WHITE, "|---- Negocio %d '%s' ----|", id, Business[id][bName]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s [pid %d]", Business[id][bOwner], Business[id][bOwnerSQLID]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Habilitado: %d", Business[id][bEnterable]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", Business[id][bPrice]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Business[id][bEntranceFee]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Caja: $%d", Business[id][bTill]);
-        SendFMessage(playerid, COLOR_WHITE, "- Productos: %d", Business[id][bProducts]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", Business[id][bLocked]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d", Business[id][bType]);
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Negocio inexistente.");
-	}
+	SendFMessage(playerid, COLOR_WHITE, "=======================[Negocio %d '%s']=======================", id, Business[id][bName]);
+	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s [pid %d]", Business[id][bOwner], Business[id][bOwnerSQLID]);
+	SendFMessage(playerid, COLOR_WHITE, "- Habilitado: %d", Business[id][bEnterable]);
+	SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", Business[id][bPrice]);
+	SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Business[id][bEntranceFee]);
+	SendFMessage(playerid, COLOR_WHITE, "- Caja: $%d", Business[id][bTill]);
+	SendFMessage(playerid, COLOR_WHITE, "- Productos: %d", Business[id][bProducts]);
+	SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", Business[id][bLocked]);
+	SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d", Business[id][bType]);
 	return 1;
 }
 
@@ -446,18 +447,19 @@ CMD:ancaja(playerid, params[]) {
 	return 1;
 }
 
-CMD:antele(playerid, params[]) {
-	new
-	    bizID;
+CMD:antele(playerid, params[])
+{
+	new bizID;
 
     if(PlayerInfo[playerid][pAdmin] < 2)
 		return 1;
+	if(sscanf(params, "i", bizID))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antele [IDnegocio]");
+	if(bizID < 1 || bizID >= MAX_BUSINESS)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de negocio inválida.");
 
-	if(sscanf(params, "d", bizID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antele [idnegocio]");
-	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
-		SetPlayerPos(playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]);
-		SetPlayerInterior(playerid, Business[bizID][bOutsideInt]);
-	}
+	SetPlayerPos(playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]);
+	SetPlayerInterior(playerid, Business[bizID][bOutsideInt]);
 	return 1;
 }
 

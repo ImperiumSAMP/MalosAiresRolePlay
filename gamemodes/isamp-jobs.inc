@@ -52,6 +52,7 @@
 //
 #define BLD_PMA                 2
 #define BLD_HOSP                5
+#define BLD_HOSP2               11
 #define BLD_SIDE                31
 #define BLD_MAN                 36
 

@@ -73,17 +73,49 @@ stock isPlayerSideOnDuty(playerid){
 	return PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1;
 }
 
+//=======================COMANDOS DE ADMIN PARA FACCIONES=======================
 
-//Admin commands
-
-//[CMD_A7]
-//====[FACCIONES]===============================================================
 CMD:afacciones(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdinero /afmats /afskin /afrango /afvehmision");
- 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos /afallowjob /afinfo");
+	return 1;
+}
+
+CMD:afinfo(playerid, params[])
+{
+	new id, string[128];
+
+	if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
+	if(sscanf(params, "i", id))
+		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afinfo [idfacción]");
+	if(id < 0 || id >= MAX_FACTIONS)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
+
+	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Use Skins: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],FactionInfo[id][fBank],FactionInfo[id][fJoinRank],FactionInfo[id][fUseSkins],FactionInfo[id][fType]);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	format(string, sizeof(string), "[ID:%d] Skins: %d|%d|%d|%d|%d|%d|%d|%d|%d|%d - Rank Amount: %d - Permite Empleo: %d", id,FactionInfo[id][fSkin1],FactionInfo[id][fSkin2],FactionInfo[id][fSkin3],FactionInfo[id][fSkin4],FactionInfo[id][fSkin5],FactionInfo[id][fSkin6],FactionInfo[id][fSkin7],FactionInfo[id][fSkin8],FactionInfo[id][fSkin9],FactionInfo[id][fSkin10],FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	return 1;
+}
+
+CMD:afallowjob(playerid, params[])
+{
+	new factionID, option;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "ii", factionID, option))
+		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afallowjob [idfacción] [1=SI 0=NO]");
+	if(factionID < 1 || factionID >= MAX_FACTIONS)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
+
+	FactionInfo[factionID][fAllowJob] = option;
+	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} El permiso para tener empleo de la facción %d ha sido ajustado a %d.", factionID, option);
+	SaveFactions();
 	return 1;
 }
 

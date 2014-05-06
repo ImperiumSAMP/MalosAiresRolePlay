@@ -11,8 +11,8 @@
 
 #define GANGZONE_CAPTURE_TIME   600 // En segundos, 10 min. Lo que tienen que mantenerse dentro para capturarlo.
 #define GANGZONE_CAPTURE_UPDATE 5 // En segundos, cada cuanto actualiza el sistema mientras están en guerra.
-#define GANGZONE_REDISPUTE_TIME 14400 // En segundos, 4 horas. Tiempo hasta que un barrio pueda ser recapturado.
-#define GANGZONE_HOLDING_TIME   21600 // En segundos, 6 horas. Tiempo máximo que puede mantener una faccion el dominio.
+#define GANGZONE_REDISPUTE_TIME 18000 // En segundos, 5 horas. Tiempo hasta que un barrio pueda ser recapturado.
+#define GANGZONE_HOLDING_TIME   28800 // En segundos, 8 horas. Tiempo máximo que puede mantener una faccion el dominio.
 
 #define GANGZONE_NUNEZ          0
 #define GANGZONE_LA_BOCA        1
