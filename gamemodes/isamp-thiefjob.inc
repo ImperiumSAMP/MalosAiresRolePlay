@@ -44,7 +44,7 @@ stock loadThiefJobData(playerid,MysqlID){
 		query[256];
 
 	printf("\nLoading thiefJobData for player id: %d sqlid: %d\n",MysqlID);
-    format(query, sizeof(query), "SELECT * FROM `thiefJob` WHERE id=%d", MysqlID);
+    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE id=%d", MysqlID);
 	mysql_function_query(dbHandle, query, true, "OnThiefJobDataLoad", "i", playerid);
 	return 1;
 }
