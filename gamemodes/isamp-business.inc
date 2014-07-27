@@ -7,7 +7,7 @@
 
 // Mensajes del sistema.
 #define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana - 7: Bar/Club - 8: Tienda de ropa fina"
-#define BUSINESS_TYPES2 		" "
+#define BUSINESS_TYPES2 		"9: Casino - 10: Ferreteria - 11: Discoteca"
 
 // Negocios.
 #define BIZ_REST          		1
@@ -18,8 +18,9 @@
 #define BIZ_CLOT                6
 #define BIZ_CLUB                7
 #define BIZ_CLOT2               8
-
-
+#define BIZ_CASINO              9
+#define BIZ_HARD                10
+#define BIZ_CLUB2               11
 
 //Enums
 enum BusinessSystem {
@@ -55,45 +56,41 @@ enum BusinessSystem {
 	Text3D:bInsideLabel,
 }
 new Business[MAX_BUSINESS][BusinessSystem];
+new bool:openBizPermission[MAX_BUSINESS];
 
+//========================COMANDOS ADMIN DE NEGOCIOS============================
 
-
-
-
-
-
-//Admin commands
-//====[NEGOCIOS]================================================================
-CMD:anegocios(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 7) return 1;
+CMD:anegocios(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Negocios:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/ainfonegocio /aninsert /anremove /angetid /anproductos /anprecio /antipo");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aninfo /aninsert /anremove /angetid /anproductos /anprecio /antipo");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
 
-CMD:ainfonegocio(playerid, params[]) {
-	new
-	    id;
+CMD:aninfo(playerid, params[])
+{
+	new id;
 
-    if(PlayerInfo[playerid][pAdmin] < 4) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 2)
+		return 1;
+	if(sscanf(params, "i", id))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aninfo [IDnegocio]");
+	if(id < 1 || id >= MAX_BUSINESS)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de negocio inválida.");
 
-	if(sscanf(params, "d", id)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ainfonegocio [idnegocio]");
-	} else if(id >= 1 && id < MAX_BUSINESS) {
-	    SendFMessage(playerid, COLOR_WHITE, "|---- Negocio %d '%s' ----|", id, Business[id][bName]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s [pid %d]", Business[id][bOwner], Business[id][bOwnerSQLID]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Habilitado: %d", Business[id][bEnterable]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", Business[id][bPrice]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Business[id][bEntranceFee]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Caja: $%d", Business[id][bTill]);
-        SendFMessage(playerid, COLOR_WHITE, "- Productos: %d", Business[id][bProducts]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", Business[id][bLocked]);
-	    SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d", Business[id][bType]);
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Negocio inexistente.");
-	}
+	SendFMessage(playerid, COLOR_WHITE, "=======================[Negocio %d '%s']=======================", id, Business[id][bName]);
+	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s [pid %d]", Business[id][bOwner], Business[id][bOwnerSQLID]);
+	SendFMessage(playerid, COLOR_WHITE, "- Habilitado: %d", Business[id][bEnterable]);
+	SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", Business[id][bPrice]);
+	SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Business[id][bEntranceFee]);
+	SendFMessage(playerid, COLOR_WHITE, "- Caja: $%d", Business[id][bTill]);
+	SendFMessage(playerid, COLOR_WHITE, "- Productos: %d", Business[id][bProducts]);
+	SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", Business[id][bLocked]);
+	SendFMessage(playerid, COLOR_WHITE, "- Tipo: %d", Business[id][bType]);
 	return 1;
 }
 
@@ -155,6 +152,267 @@ CMD:aninsert(playerid, params[]) {
 	}
 	return 1;
 }
+//[NEGOCIOS] Comandos
+
+CMD:ayudanegocio(playerid, params[]) {
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[NEGOCIO]: /comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /ayudaproductos");
+	return 1;
+}
+
+CMD:ayudaproductos(playerid, params[]){
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, y estaciona en la puerta del depósito.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprar, y cuando llegues con la mercaderia a la entrada de tu negocio usa /descargar.");
+	return 1;
+}
+
+CMD:abrirnegocio(playerid, params[]) {
+    new
+		playerName[MAX_PLAYER_NAME];
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+    for(new bizID = 0; bizID < MAX_BUSINESS; bizID++)	{
+		if(PlayerToPoint(3.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(3.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ])) {
+			if(PlayerInfo[playerid][pBizKey] == bizID && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+				if(Business[bizID][bLocked] == 1) {
+					if(openBizPermission[bizID] == false)
+				        return SendClientMessage(playerid, COLOR_YELLOW2,"¡Debes esperar hasta el próximo dia de pago!");
+					Business[bizID][bLocked] = 0;
+                    PlayerActionMessage(playerid, 15.0, "toma unas llaves de su bolsillo y abre las puertas del negocio.");
+				} else {
+					Business[bizID][bLocked] = 1;
+                    PlayerActionMessage(playerid, 15.0, "toma unas llaves de su bolsillo y cierra las puertas del negocio.");
+                    SendClientMessage(playerid, COLOR_YELLOW2,"Una vez cerrado, no podrás abrirlo hasta el próximo payday y perderas los ingresos de ese día.");
+                    openBizPermission[bizID] = false;
+				}
+				saveBusiness(bizID);
+				return 1;
+			} else {
+				SendClientMessage(playerid, COLOR_YELLOW2,"¡No tienes las llaves de este negocio!");
+				return 1;
+			}
+		}
+	}
+    return 1;
+}
+
+CMD:negocioretirar(playerid,params[]) {
+	new
+	    string[128],
+	    ammount,
+		bizID = PlayerInfo[playerid][pBizKey];
+
+	if(sscanf(params, "d", ammount)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negocioretirar [cantidad]");
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+		if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld]) {
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Te encuentras demasiado lejos de la caja!");
+	    }
+  		if(ammount > Business[bizID][bTill]) {
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes esa cantidad de dinero en la caja!");
+		}
+	    if(ammount > 1000000 || ammount < 1) {
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes retirar más de $1.000.000 o menos de $1.");
+	    }
+		GivePlayerCash(playerid, ammount);
+		Business[bizID][bTill] -= ammount;
+		format(string, sizeof(string), "Has retirado $%d de la caja registradora, nuevo total: $%d.", ammount, Business[bizID][bTill]);
+		SendClientMessage(playerid, COLOR_WHITE, string);
+    	PlayerActionMessage(playerid, 15.0, "abre la caja registradora y retira algo de dinero dentro.");
+        saveBusiness(bizID);
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	}
+	return 1;
+}
+
+CMD:negociodepositar(playerid, params[]) {
+	new
+		string[128],
+	    ammount,
+		bizID = PlayerInfo[playerid][pBizKey];
+
+	if(sscanf(params, "d", ammount)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negociodepositar [cantidad]");
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+		if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld]) {
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Te encuentras demasiado lejos de la caja!");
+	    }
+    	if(GetPlayerCash(playerid) < ammount) {
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes esa cantidad de dinero!");
+		}
+	    if(ammount > 1000000) {
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes depositar más de $1.000.000.");
+	    }
+	    if(Business[bizID][bTill] >= 1000000) {
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "La caja se encuentra actualmente llena.");
+	    }
+		GivePlayerCash(playerid, -ammount);
+		Business[bizID][bTill] += ammount;
+		format(string, sizeof(string), "Has depositado $%d en la caja registradora, nuevo total: $%d.", ammount, Business[bizID][bTill]);
+		SendClientMessage(playerid, COLOR_WHITE, string);
+        PlayerActionMessage(playerid, 15.0, "abre la caja registradora y guarda algo de dinero dentro.");
+        saveBusiness(bizID);
+		return 1;
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	}
+	return 1;
+}
+
+CMD:entradanegocio(playerid,params[]) {
+	new
+	    string[128],
+	    bizID = PlayerInfo[playerid][pBizKey],
+	    playerName[MAX_PLAYER_NAME],
+	    price;
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	if(sscanf(params, "d", price)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /entradanegocio [precio de entrada]");
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
+			if(price < 0 || price > 10000) {
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡El costo de la entrada no debe ser menor a $0 ni mayor a $10000!");
+				return 1;
+			}
+			Business[bizID][bEntranceFee] = price;
+			format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el costo de entrada a tu negocio ahora es de $%d.", Business[bizID][bEntranceFee]);
+			SendClientMessage(playerid, COLOR_WHITE, string);
+			saveBusiness(bizID);
+		} else {
+			SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en tu negocio!");
+		}
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un negocio!");
+	}
+	return 1;
+}
+
+CMD:nombrenegocio(playerid,params[]) {
+	new
+	    string[128],
+	    bizID = PlayerInfo[playerid][pBizKey],
+	    playerName[MAX_PLAYER_NAME],
+	    bizName[64];
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	if(sscanf(params, "s[64]", bizName)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /nombrenegocio [nombre - 64 caracteres]");
+	else if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
+			mysql_real_escape_string(bizName, bizName);
+			strmid(Business[bizID][bName], bizName, 0, 64, 255);
+			format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el nombre de tu negocio ahora es  '%s'.",Business[bizID][bName]);
+			SendClientMessage(playerid, COLOR_WHITE, string);
+			saveBusiness(bizID);
+		} else {
+			SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en tu negocio!");
+		}
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un negocio!");
+	}
+	return 1;
+}
+
+CMD:infonegocio(playerid,params[]) {
+	new
+	    string[128],
+		bizID = PlayerInfo[playerid][pBizKey],
+		playerName[MAX_PLAYER_NAME];
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	if(bizID != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) || PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]))	{
+            SendClientMessage(playerid, COLOR_WHITE, "----[Información sobre el negocio]----");
+            format(string, sizeof(string), "Nombre: 	%s", Business[bizID][bName]);
+            SendClientMessage(playerid, COLOR_WHITE, string);
+            format(string, sizeof(string), "Caja:		$%d", Business[bizID][bTill]);
+            SendClientMessage(playerid, COLOR_WHITE, string);
+            format(string, sizeof(string), "Cerrado: 	%d", Business[bizID][bLocked]);
+            SendClientMessage(playerid, COLOR_WHITE, string);
+            format(string, sizeof(string), "Productos: 	%d", Business[bizID][bProducts]);
+            SendClientMessage(playerid, COLOR_WHITE, string);
+            format(string, sizeof(string), "Entrada: 	$%d", Business[bizID][bEntranceFee]);
+            SendClientMessage(playerid, COLOR_WHITE, string);
+            SendClientMessage(playerid, COLOR_WHITE, "--------------------------------------");
+			return 1;
+		} else {
+			SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en tu negocio!");
+		}
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún negocio!");
+	}
+	return 1;
+}
+
+CMD:comprarnegocio(playerid,params[]) {
+	new
+	    string[128],
+		playerName[MAX_PLAYER_NAME];
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	for(new bizID = 0; bizID < MAX_BUSINESS; bizID++)	{
+		if(PlayerToPoint(2.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]) && Business[bizID][bOwnerSQLID] == -1) {
+		    if(Business[bizID][bPrice] == 0) {
+		        SendClientMessage(playerid, COLOR_YELLOW2, "Parece que este negocio se encuentra deshabilitado...");
+				return 1;
+		    }
+			if(PlayerInfo[playerid][pBizKey] != 0 && Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] == PlayerInfo[playerid][pID]) {
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de un negocio!");
+				return 1;
+			}
+			if(GetPlayerCash(playerid) > Business[bizID][bPrice]) {
+				PlayerInfo[playerid][pBizKey] = bizID;
+				Business[bizID][bOwnerSQLID] = PlayerInfo[playerid][pID];
+				strmid(Business[bizID][bOwner], playerName, 0, strlen(playerName), 255);
+				GivePlayerCash(playerid, -Business[bizID][bPrice]);
+				SetPlayerInterior(playerid, Business[bizID][bInsideInt]);
+				SetPlayerVirtualWorld(playerid, Business[bizID][bInsideWorld]);
+				SetPlayerPos(playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]);
+				SetPlayerFacingAngle(playerid, Business[bizID][bInsideAngle]);
+				SetCameraBehindPlayer(playerid);
+   				PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo y firma un contrato, luego recibe las llaves del negocio.");
+   				SendClientMessage(playerid, COLOR_YELLOW2, "¡Felicitaciones, has comprado este negocio!");
+				saveBusiness(bizID);
+				format(string, sizeof(string), "[ALERTA DE USUARIO]: %s (DBID: %d) > compra de negocio ID: %d.", playerName, PlayerInfo[playerid][pID], bizID);
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				return 1;
+			} else {
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+				return 1;
+			}
+		}
+	}
+	return 1;
+}
+
+CMD:vendernegocio(playerid,params[]) {
+	new
+	    string[128],
+		playerName[MAX_PLAYER_NAME],
+		bizID;
+
+	GetPlayerName(playerid, playerName, sizeof(playerName));
+	if(PlayerInfo[playerid][pBizKey] != 0 && strcmp(playerName, Business[PlayerInfo[playerid][pBizKey]][bOwner], true) == 0) {
+		bizID = PlayerInfo[playerid][pBizKey];
+		if(PlayerToPoint(1.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ])) {
+			Business[bizID][bLocked] = 0;
+			Business[bizID][bOwnerSQLID] = -1;
+			strmid(Business[bizID][bOwner], "Ninguno", 0, strlen("Ninguno"), 255);
+			GivePlayerCash(playerid, (Business[bizID][bPrice] / 100) * 70); // 70 porciento del valor original
+			format(string, sizeof(string), "¡Has vendido el negocio por $%d!", (Business[bizID][bPrice] / 100) * 70);
+			SendClientMessage(playerid, COLOR_LIGHTBLUE, string);
+			PlayerInfo[playerid][pBizKey] = 0;
+			PlayerActionMessage(playerid, 15.0, "rompe el contrato, y le da las llaves del negocio al inmobiliario.");
+			saveBusiness(bizID);
+		} else {
+		    SendClientMessage(playerid, COLOR_YELLOW2,"¡Debes estar en la entrada de tu negocio para venderlo!");
+		}
+	} else {
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún negocio para vender!");
+	}
+	return 1;
+}
+
+//Comandos de admin relacionados con negocios
+
 
 CMD:angetid(playerid, params[]) {
     if(PlayerInfo[playerid][pAdmin] < 20)
@@ -170,18 +428,38 @@ CMD:angetid(playerid, params[]) {
 	return 1;
 }
 
-CMD:antele(playerid, params[]) {
+CMD:ancaja(playerid, params[]) {
 	new
-	    bizID;
+	    string[128],
+	    bizID,
+	    money;
 
-    if(PlayerInfo[playerid][pAdmin] < 4)
+    if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
-
-	if(sscanf(params, "d", bizID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antele [idnegocio]");
-	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
-		SetPlayerPos(playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]);
-		SetPlayerInterior(playerid, Business[bizID][bOutsideInt]);
+	if(sscanf(params, "ii", bizID, money))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ancaja [idnegocio] [dinero]");
+	if(bizID >= 0 && bizID < MAX_BUSINESS) {
+		Business[bizID][bTill] = money;
+		format(string, sizeof(string), "Has seteado la caja del negocio [%d] en %d.", bizID, money);
+		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		saveBusiness(bizID);
 	}
+	return 1;
+}
+
+CMD:antele(playerid, params[])
+{
+	new bizID;
+
+    if(PlayerInfo[playerid][pAdmin] < 2)
+		return 1;
+	if(sscanf(params, "i", bizID))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antele [IDnegocio]");
+	if(bizID < 1 || bizID >= MAX_BUSINESS)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de negocio inválida.");
+
+	SetPlayerPos(playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]);
+	SetPlayerInterior(playerid, Business[bizID][bOutsideInt]);
 	return 1;
 }
 
@@ -215,7 +493,7 @@ CMD:anproductos(playerid, params[]) {
 	    bizID,
 	    products;
 
-    if(PlayerInfo[playerid][pAdmin] < 10)
+    if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
 	if(sscanf(params, "dd", bizID, products)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anproductos [idnegocio] [cantidad]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
@@ -360,7 +638,7 @@ CMD:annombre(playerid, params[]) {
 	    bizID,
 		name[32];
 
-    if(PlayerInfo[playerid][pAdmin] < 10)
+    if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
 
 	if(sscanf(params, "ds[32]", bizID, name)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /annombre [idnegocio] [nombre 32 chars]");
@@ -386,7 +664,6 @@ CMD:anvender(playerid, params[]) {
 	if(sscanf(params, "d", bizID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anvender [idnegocio]");
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
 		Business[bizID][bLocked] = 0;
-		Business[bizID][bOwnerSQLID] = -1;
 		foreach(Player, i) {
 			if(PlayerInfo[i][pID] == Business[bizID][bOwnerSQLID]) {
                 PlayerInfo[i][pBizKey] = 0;
@@ -395,6 +672,7 @@ CMD:anvender(playerid, params[]) {
 				mysql_function_query(dbHandle, query, false, "", "");
 			}
 		}
+		Business[bizID][bOwnerSQLID] = -1;
 		strmid(Business[bizID][bOwner], "Ninguno", 0, strlen("Ninguno"), 255);
 		format(string, sizeof(string), "[ALERTA DE ADMIN]: %s (DBID: %d) > venta de negocio ID: %d.", PlayerName(playerid), PlayerInfo[playerid][pID], bizID);
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);
