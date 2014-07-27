@@ -73,8 +73,9 @@ public OnThiefJobDataLoad(playerid) {
 
 stock createThiefJob(playersqlid){
 		new query[128];
-		printf("Creating thiefJob for player id=%d 
+		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
 		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('playersqlid')", playersqlid);
+		printf("\nQuery is: %s",query);
 		mysql_function_query(dbHandle, query, false, "", "");
 }
 
