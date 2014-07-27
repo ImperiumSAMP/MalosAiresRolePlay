@@ -5,7 +5,7 @@
 #include <time>
 #include <file>
 #include <sscanf2>
-#include <foreach>
+//#include <foreach>
 #include <zcmd>
 #include <streamer>
 #include <Dini>
