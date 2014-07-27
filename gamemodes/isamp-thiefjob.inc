@@ -43,8 +43,10 @@ stock loadThiefJobData(playerid,MysqlID){
 	new		
 		query[256];
 
-	printf("\nLoading thiefJobData for player id: %d sqlid: %d\n",MysqlID);
-    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE id=%d", MysqlID);
+	#if defined _isamp_debug
+		printf("\nLoading thiefJobData for player id: %d sqlid: %d\n",playerid,MysqlID);
+	#endif
+    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE accountid=%d", MysqlID);
 	mysql_function_query(dbHandle, query, true, "OnThiefJobDataLoad", "i", playerid);
 	return 1;
 }
@@ -73,9 +75,12 @@ public OnThiefJobDataLoad(playerid) {
 
 stock createThiefJob(playersqlid){
 		new query[128];
-		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
+		
 		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('playersqlid')", playersqlid);
+		#if defined _isamp_debug
+		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
 		printf("\nQuery is: %s",query);
+		#endif
 		mysql_function_query(dbHandle, query, false, "", "");
 }
 
