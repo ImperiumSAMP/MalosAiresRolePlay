@@ -1,4 +1,4 @@
-#define _isamp_debug 1 //Esta linea activa algunos mensajes de log para debug. Debe ser comentada para versiones productivas.
+#define _isamp_debug 0 //Esta linea activa algunos mensajes de log para debug. Debe ser comentada para versiones productivas.
 
 #include <a_samp>
 #include <a_mysql>
