@@ -76,7 +76,7 @@ public OnThiefJobDataLoad(playerid) {
 stock createThiefJob(playersqlid){
 		new query[128];
 		
-		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('playersqlid')", playersqlid);
+		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", playersqlid);
 		#if defined _isamp_debug
 		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
 		printf("\nQuery is: %s",query);
