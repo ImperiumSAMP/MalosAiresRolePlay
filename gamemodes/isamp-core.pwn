@@ -969,11 +969,10 @@ main() {
 }
 
 public OnGameModeInit() {
-	mysql_debug(1);
 	print("HELP");
     loadMySQLcfg();
 	print("HELP");
-	if(!mysql_ping()) mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
+	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
     LoadTDs();
     LoadMap();
 	LoadPickups();
@@ -4142,10 +4141,6 @@ OnPlayerRegister(playerid, password[]) {
   		mysql_function_query(dbHandle, query, false, "", "");
 		strmid(PlayerInfo[playerid][pKey], password, 0, strlen(password), 128);
 		
-		//Create ThiefJob
-		playersqlid=mysql_insert_id(dbHandle);
-		createThiefJob(playersqlid);
-		
 		OnPlayerLogin(playerid, password);
 		return 1;
 	}
@@ -4286,10 +4281,14 @@ public SaveAccount(playerid) {
 		    PlayerInfo[playerid][pHealth],
 		    PlayerInfo[playerid][pArmour],
 		    PlayerInfo[playerid][pID]);
-
-
+			    
 		mysql_function_query(dbHandle, query, false, "", "");
+
+		if(PlayerInfo[playerid][pJob]==JOB_FELON)
+		    saveThiefJob(playerid);
+
 	}
+	
 	return 1;
 }
 
@@ -14753,6 +14752,10 @@ CMD:setjob(playerid, params[]) {
 		format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
 		AdministratorMessage(COLOR_ADMINCMD, string, 1);
         PlayerInfo[targetid][pJob] = job;
+
+		if(job == JOB_FELON){
+  			createThiefJob(PlayerInfo[targetid][pID]);
+		}
 	}
 	return 1;
 }
@@ -17017,6 +17020,10 @@ CMD:tomarempleo(playerid,params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
 			if(id == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
 				return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Sal de aquí! (OOC: Requiere nivel 3)"); // Si es uno nuevo en el servidor o multicuenta
+
+			if(id == JOB_FELON){
+                createThiefJob(PlayerInfo[playerid][pID]);
+			}
 
 			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 			PlayerInfo[playerid][pJob] = id;
