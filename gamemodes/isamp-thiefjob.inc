@@ -26,13 +26,13 @@ new isUsingMaskInSlot[MAX_PLAYERS]; // -1 si no usa, caso contrario guarda el sl
 stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pFelonExp] = 0;
 	ThiefJobInfo[playerid][pFelonLevel] = 1;
-	ThiefJobInfo[playerid][pRobPersonLimit] = 999999999;
+	ThiefJobInfo[playerid][pRobPersonLimit] = 0;
 	ThiefJobInfo[playerid][pRobLastVictimPID] = INVALID_PLAYER_ID;
 	ThiefJobInfo[playerid][pTheftLastVictimPID] = INVALID_PLAYER_ID;
-	ThiefJobInfo[playerid][pTheftPersonLimit] = 999999999;
-	ThiefJobInfo[playerid][pRobHouseLimit] = 999999999;
-	ThiefJobInfo[playerid][pRob247Limit] = 999999999;
-	ThiefJobInfo[playerid][pTheft247Limit] = 999999999;
+	ThiefJobInfo[playerid][pTheftPersonLimit] = 0;
+	ThiefJobInfo[playerid][pRobHouseLimit] = 0;
+	ThiefJobInfo[playerid][pRob247Limit] = 0;
+	ThiefJobInfo[playerid][pTheft247Limit] = 0;
 
 	theftTime[playerid] = -1;
 	felon[playerid] = INVALID_PLAYER_ID;
