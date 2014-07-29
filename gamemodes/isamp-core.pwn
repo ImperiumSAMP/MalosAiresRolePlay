@@ -25,8 +25,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-drugs.inc" 		//Sistema de drogas
 #include "isamp-admin.inc" 		//Sistema de admines
 #include "isamp-inventory.inc" 	//Sistema de inventario y maletero
-#include "isamp-jobs.inc" 		//Definiciones y funciones para los JOBS
 #include "isamp-factions.inc" 	//Sistema de facciones
+#include "isamp-jobs.inc" 		//Definiciones y funciones para los JOBS
 #include "isamp-business.inc" 	//Sistema de negocios
 #include "isamp-houses.inc" 	//Sistema de casas
 #include "isamp-vehicles.inc" 	//Sistema de vehiculos
@@ -59,7 +59,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
 #define MAX_LOGIN_ATTEMPTS      5
 #define TUT_TIME                10000                                           // Tiempo para reintentar el tutorial.
-#define JOB_WAITTIME            5												// Número de PayDays que tienes que esperar para poder tomar otro empleo.
+
 #define SLOT_TYPE_LOCKER        1
 #define MAX_LOCKER_SLOTS 		22
 
@@ -301,11 +301,6 @@ new
 	bool:smoking[MAX_PLAYERS],
     eventParam[MAX_PLAYERS],
 	eventStep[MAX_PLAYERS],
-    bool:jobDuty[MAX_PLAYERS],
-    LastCP[MAX_PLAYERS],
-	CollectedProds[MAX_PLAYERS],
-	jobBreak[MAX_PLAYERS],
-	bool:carryingProd[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
 	// Sistema de radios en autos
@@ -904,7 +899,7 @@ forward accountTimer();
 forward restartTimer(type);
 forward vehicleTimer();
 forward speedoTimer(playerid);
-forward jobBreakTimer(playerid, job);
+
 forward licenseTimer(playerid, lic);
 forward TutTimer(playerid);
 forward fuelTimer();
@@ -7753,39 +7748,6 @@ public healTimer(playerid) {
 	DeletePVar(DeletePVar(playerid, "healTarget"), "healCost");
 	DeletePVar(playerid, "isHealing");
 	DeletePVar(playerid, "healTarget");
-	return 1;
-}
-
-public jobBreakTimer(playerid, job) {
-	if(jobBreak[playerid] > 0) {
-		jobBreak[playerid]--;
-		if(jobBreak[playerid] == 40) {
-		    SendClientMessage(playerid, COLOR_WHITE, "¡Te quedan 40 segundos para ingresar al vehículo!");
-		}
-		SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "dd", playerid, job));
-	} else {
-	    SendClientMessage(playerid, COLOR_WHITE, "¡Has agotado el tiempo disponible para ingresar al vehículo!");
-	    SendClientMessage(playerid, COLOR_WHITE, "No recibirás ninguna paga y no podrás volver a trabajar hasta el próximo día de pago.");
-	    PlayerInfo[playerid][pCantWork] = 1;
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-		jobDuty[playerid] = false;
-		if(PlayerInfo[playerid][pJobAllowed] == 1) {
-			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-		}
-		CollectedProds[playerid] = 0;
-		LastCP[playerid] = -1;
-		
-		DisablePlayerCheckpoint(playerid);
-		
-		if(job == JOB_GARB) {
-			DeletePVar(playerid, "garbageCheckpoint");
-			DeletePVar(playerid, "garbageRoute");
-		}
-		SetEngine(GetPlayerVehicleID(playerid), 0);
-		SetVehicleToRespawn(GetPVarInt(playerid, "jobVehicle"));
-		DeletePVar(playerid, "jobVehicle");
-		KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	}
 	return 1;
 }
 

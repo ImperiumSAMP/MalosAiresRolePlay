@@ -56,7 +56,7 @@
 #define BLD_SIDE                31
 #define BLD_MAN                 36
 
-
+#define JOB_WAITTIME            5												// Número de PayDays que tienes que esperar para poder tomar otro empleo.
 #define JOB_NAME_FIELD_MAX		32
 
 //Enums
@@ -203,6 +203,17 @@ new Float:JOB_GARB_POS_R1[][3] = {
 	{2411.1948,-2013.1652,13.0868},
     {2389.2288,-2064.5564,13.2214} // entraga 25
 };
+
+forward jobBreakTimer(playerid, job);
+
+//Variables generales:
+
+new 
+	bool:jobDuty[MAX_PLAYERS],
+	LastCP[MAX_PLAYERS],
+	CollectedProds[MAX_PLAYERS],
+	bool:carryingProd[MAX_PLAYERS],
+	jobBreak[MAX_PLAYERS];
 
 //Funciones DB
 stock LoadJobs() {
@@ -526,6 +537,41 @@ CMD:setjob(playerid, params[]) {
 		if(job == JOB_FELON){
   			createThiefJob(PlayerInfo[targetid][pID]);
 		}
+	}
+	return 1;
+}
+
+
+//Timers
+public jobBreakTimer(playerid, job) {
+	if(jobBreak[playerid] > 0) {
+		jobBreak[playerid]--;
+		if(jobBreak[playerid] == 40) {
+		    SendClientMessage(playerid, COLOR_WHITE, "¡Te quedan 40 segundos para ingresar al vehículo!");
+		}
+		SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "dd", playerid, job));
+	} else {
+	    SendClientMessage(playerid, COLOR_WHITE, "¡Has agotado el tiempo disponible para ingresar al vehículo!");
+	    SendClientMessage(playerid, COLOR_WHITE, "No recibirás ninguna paga y no podrás volver a trabajar hasta el próximo día de pago.");
+	    PlayerInfo[playerid][pCantWork] = 1;
+	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+		jobDuty[playerid] = false;
+		if(PlayerInfo[playerid][pJobAllowed] == 1) {
+			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+		}
+		CollectedProds[playerid] = 0;
+		LastCP[playerid] = -1;
+		
+		DisablePlayerCheckpoint(playerid);
+		
+		if(job == JOB_GARB) {
+			DeletePVar(playerid, "garbageCheckpoint");
+			DeletePVar(playerid, "garbageRoute");
+		}
+		SetEngine(GetPlayerVehicleID(playerid), 0);
+		SetVehicleToRespawn(GetPVarInt(playerid, "jobVehicle"));
+		DeletePVar(playerid, "jobVehicle");
+		KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
 	}
 	return 1;
 }
