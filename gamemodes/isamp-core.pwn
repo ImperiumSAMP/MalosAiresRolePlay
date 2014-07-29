@@ -1,6 +1,8 @@
+#pragma semicolon 1
 #define _isamp_debug 0 //Esta linea activa algunos mensajes de log para debug. Debe ser comentada para versiones productivas.
 
 #include <a_samp>
+#include <a_npc>
 #include <a_mysql>
 #include <core>
 #include <float>
@@ -12,6 +14,8 @@
 #include <streamer>
 #include <Dini>
 #include <progress>
+
+forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 //#include <mapandreas>
 //Includes  moudulos isamp
@@ -951,7 +955,7 @@ forward IsACopSkin(skinid);
 forward JailTimer();
 forward PhoneAnimation(playerid);
 forward GetClosestPlayer(p1);
-forward Float:GetDistanceBetweenPlayers(p1,p2);
+
 forward SetPlayerWantedLevelEx(playerid, level);
 forward GetPlayerWantedLevelEx(playerid);
 forward ResetPlayerWantedLevelEx(playerid);
@@ -3161,7 +3165,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /changepass [nueva contraseña]");
 						return 1;
 					}
-					mysql_real_escape_string(result, result);
+					mysql_real_escape_string(result, result,1,sizeof(result));
 		   			strmid(PlayerInfo[playerid][pKey], (result), 0, strlen((result)), 128);
 					format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} has cambiado tu contraseña.");
 					SendClientMessage(playerid, COLOR_ADMINCMD, string);
@@ -3515,7 +3519,7 @@ OnPlayerLogin(playerid, password[]) {
 		query[256];
 
 	GetPlayerName(playerid, name, 24);
-    mysql_real_escape_string(password, password);
+    mysql_real_escape_string(password, password,1,sizeof(password[]));
 
     format(query, sizeof(query), "SELECT * FROM `accounts` WHERE UCASE(`Name`) = UCASE('%s') AND `Password` = MD5('%s')", name, password);
 	mysql_function_query(dbHandle, query, true, "OnPlayerDataLoad", "i", playerid);
@@ -4131,12 +4135,11 @@ public OnVehicleDataLoad(id) {
 OnPlayerRegister(playerid, password[]) {
     if(IsPlayerConnected(playerid))	{
 		new query[128],
-			name[MAX_PLAYER_NAME],
-			playersqlid;
+			name[MAX_PLAYER_NAME];
 
 		GetPlayerName(playerid, name, sizeof(name));
-		mysql_real_escape_string(name, name);
-		mysql_real_escape_string(password, password);
+		mysql_real_escape_string(name, name,1,sizeof(name));
+		mysql_real_escape_string(password, password,1,sizeof(password[]));
 		format(query,sizeof(query),"INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", name, password);
   		mysql_function_query(dbHandle, query, false, "", "");
 		strmid(PlayerInfo[playerid][pKey], password, 0, strlen(password), 128);
@@ -4164,7 +4167,7 @@ public SaveAccount(playerid) {
 		gettime(hour,minute,second);
 
 		GetPlayerName(playerid, name, 24);
-		mysql_real_escape_string(name, name);
+		mysql_real_escape_string(name, name,1,sizeof(name));
 		
         if(AdminDuty[playerid]) {
 			PlayerInfo[playerid][pHealth] = GetPVarFloat(playerid, "tempHealth");
@@ -6324,7 +6327,7 @@ stock log(playerid, logType, text[]) {
 	getdate(year, month, day);
 	gettime(hour, minute, second);
 	GetPlayerName(playerid, name, 24);
-	mysql_real_escape_string(name, name);
+	mysql_real_escape_string(name, name,1,sizeof(name));
 	
 	if(logType == LOG_ADMIN) {
 		format(query, sizeof(query), "INSERT INTO `log_admin` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
@@ -7223,8 +7226,8 @@ public BanPlayer(playerid, issuerid, reason[]) {
 		
 	GetPlayerName(issuerid, issuerName, 24);
 	GetPlayerName(playerid, targetName, 24);
-	mysql_real_escape_string(targetName, targetName);
-	mysql_real_escape_string(targetName, targetName);
+	mysql_real_escape_string(issuerName, issuerName,1,sizeof(issuerName));
+	mysql_real_escape_string(targetName, targetName, 1,sizeof(issuerName));
 	
 	GetPlayerIp(playerid, targetIP, sizeof(targetIP));
 
@@ -14998,7 +15001,7 @@ CMD:aeinsert(playerid, params[]) {
 		Building[blid][blPickupModel] = pickupModel;
 		Building[blid][blFaction] = faction;
 		Building[blid][blInsert] = true;
-		mysql_real_escape_string(name, name);
+		mysql_real_escape_string(name, name,1,sizeof(name));
 	 	strmid(Building[blid][blText], (name), 0, strlen((name)), 64);
 	 	saveBuilding(blid);
 	}
@@ -15030,7 +15033,7 @@ CMD:aetexto(playerid, params[]) {
 
 	if(sscanf(params, "ds[64]", blid, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto [idedificio] [texto 64 chars]");
 	else if(blid >= 1 && blid < MAX_BUILDINGS && strlen(text) <= 64) {
-	 	mysql_real_escape_string(text, text);
+	 	mysql_real_escape_string(text, text, 1, sizeof(text));
 	 	strmid(Building[blid][blText], (text), 0, strlen((text)), 64);
 		format(string, sizeof(string), "Has seteado el texto del edificio [%d] a '%s'.", blid, text);
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);
@@ -15050,7 +15053,7 @@ CMD:aetexto2(playerid, params[]) {
 
 	if(sscanf(params, "ds[64]", blid, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto2 [idedificio] [texto 64 chars]");
 	else if(blid >= 1 && blid < MAX_BUILDINGS && strlen(text) <= 64) {
-	 	mysql_real_escape_string(text, text);
+	 	mysql_real_escape_string(text, text, 1, sizeof (text));
 	 	strmid(Building[blid][blText2], (text), 0, strlen((text)), 64);
 		format(string, sizeof(string), "Has seteado el texto2 del edificio [%d] a '%s'.", blid, text);
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);
@@ -20822,7 +20825,7 @@ CMD:desbanear(playerid, params[])
 	if(sscanf(params, "S(0)[32]", target))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desbanear [IP] ó [nombre]");
 	    
- 	mysql_real_escape_string(target, target);
+ 	mysql_real_escape_string(target, target,1,sizeof(target));
 	if(strfind(target, "_", true) != -1) { // Si tiene un "_" suponemos que es un nombre, caso contrario una IP.
 		format(query, sizeof(query),"SELECT * FROM `bans` WHERE `pName` = '%s' AND `banActive` = 1", target);
 		mysql_function_query(dbHandle, query, true, "OnUnbanDataLoad", "iis", playerid, 0, target);
