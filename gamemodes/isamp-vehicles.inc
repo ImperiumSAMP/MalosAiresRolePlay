@@ -1746,7 +1746,7 @@ CMD:avfaccion(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avfaccion [idfaccion]");
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-    if(factionid < 0 || factionid > 10)
+    if(factionid < 0 || factionid > 20)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción inválida.");
 
 	vehicleid = GetPlayerVehicleID(playerid);
