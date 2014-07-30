@@ -72,9 +72,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BANK_I              0
 #define POS_BANK_W              16001
 
-#define POS_POLICE_DUTY_X 		255.3861
-#define POS_POLICE_DUTY_Y       77.2381
-#define POS_POLICE_DUTY_Z       1003.6406
+#define POS_POLICE_DUTY_X 		221.3295
+#define POS_POLICE_DUTY_Y       185.9018
+#define POS_POLICE_DUTY_Z       1002.4682
 
 #define POS_SIDE_DUTY_X         261.8023
 #define POS_SIDE_DUTY_Y			109.7926
@@ -88,9 +88,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_HOSP_HEAL_Y			-1308.4156
 #define POS_HOSP_HEAL_Z			1018.5358
 
-#define POS_POLICE_ARREST_X 	257.9974
-#define POS_POLICE_ARREST_Y     84.9305
-#define POS_POLICE_ARREST_Z     1002.4453
+#define POS_POLICE_ARREST_X 	196.4749
+#define POS_POLICE_ARREST_Y     168.1084
+#define POS_POLICE_ARREST_Z     1002.9252
 
 // Dialogs.
 #define DLG_LOGIN 				10000
@@ -1845,10 +1845,10 @@ public OnPlayerDeath(playerid, killerid, reason) {
 				format(string, sizeof(string), "[PMA]: %s ha reducido y arrestado al criminal %s (%d minutos).", GetPlayerNameEx(killerid), GetPlayerNameEx(playerid), PlayerInfo[playerid][pJailTime] / 60);
 				SendFactionMessage(FAC_PMA, COLOR_PMA, string);
 				PlayerInfo[playerid][pJailed] = 1;
-				PlayerInfo[playerid][pX] = 264.6383;
-				PlayerInfo[playerid][pY] = 81.9991;
-				PlayerInfo[playerid][pZ] = 1001.0391;
-				PlayerInfo[playerid][pA] = 267.0318;
+				PlayerInfo[playerid][pX] = 193.5868;
+				PlayerInfo[playerid][pY] = 175.3084;
+				PlayerInfo[playerid][pZ] = 1003.1221;
+				PlayerInfo[playerid][pA] = 180.0000;
 				
 				ResetPlayerWantedLevelEx(playerid);
 				resetInv(playerid);
@@ -11647,61 +11647,61 @@ CMD:apuerta(playerid,params[]) {
     // Policía de Malos Aires
 	if(PlayerInfo[playerid][pFaction] == FAC_PMA || AdminDuty[playerid] == 1) {
 
-		if(IsPlayerInRangeOfPoint(playerid, 4.0, 246.3947, 72.0577, 1003.6406)) {
-			// PM Puerta que da para el interior del edificio
+		if(IsPlayerInRangeOfPoint(playerid, 4.0, 228.1902, 151.2390, 1003.0037)) {
+			// PM Puerta que da para el interior del edificio izq
 			if(PMHallDoor[0] == 0) {
 			    PMHallDoor[0] = 1;
-				MoveObject(PMHallDoor[1], 244.54, 72.44, 1003.87, 1.00, 0.00, 0.00, 180.00);
-            	MoveObject(PMHallDoor[2], 248.29, 72.44, 1003.87, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMHallDoor[1], 228.2500, 149.3694, 1003.2724, 1.00, 0.00, 0.00, -90.00);
+            	MoveObject(PMHallDoor[2], 228.2500, 153.1094, 1003.2724, 1.00, 0.00, 0.00, 90.00);
 			} else {
 			    PMHallDoor[0] = 0;
-			    MoveObject(PMHallDoor[1], 245.54, 72.44, 1003.87, 1.00, 0.00, 0.00, 180.00);
-            	MoveObject(PMHallDoor[2], 247.29, 72.44, 1003.87, 1.00, 0.00, 0.00, 0.00);
+			    MoveObject(PMHallDoor[1], 228.25000, 150.34940, 1003.27240, 1.00, 0.00, 0.00, -90.00);
+            	MoveObject(PMHallDoor[2], 228.25000, 152.08940, 1003.27240, 1.00, 0.00, 0.00, 90.00);//
 			}
-        } else if(IsPlayerInRangeOfPoint(playerid, 4.0, 250.0500, 67.8024, 1003.6406)) {
-			// PM Ventana a la secretaría
+        } else if(IsPlayerInRangeOfPoint(playerid, 4.0, 209.1759, 178.1573, 1003.0037)) {
+			// PM Puerta antes de los calabozos
 			if(PMWindow[0] == 0) {
 			    PMWindow[0] = 1;
-				MoveObject(PMWindow[1], 250.46, 68.02, 1006.13, 1.00, 0.00, 180.00, 0.00);
+				MoveObject(PMWindow[1], 209.1675, 176.5160, 1003.2724, 1.00, 0.00, 0.00, 90.00);
 			} else {
 			    PMWindow[0] = 0;
-			    MoveObject(PMWindow[1], 250.46, 68.02, 1005.13, 1.00, 0.00, 180.00, 0.00);
+			    MoveObject(PMWindow[1], 209.1675, 178.2560, 1003.2724, 1.00, 0.00, 0.00, 90.00);
 			}
-        } else if(IsPlayerInRangeOfPoint(playerid, 4.0, 258.5691, 90.6539, 1002.4453)) {
+        } else if(IsPlayerInRangeOfPoint(playerid, 4.0, 204.5319, 173.0026, 1003.0037)) {
             // PM Puerta principal de la cárcel
 			if(PMJailMainDoor[0] == 0) {
 			    PMJailMainDoor[0] = 1;
-			 	MoveObject(PMJailMainDoor[1], 259.08, 92.44, 1002.70, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMJailMainDoor[1], 204.5757, 171.3780, 1003.2724, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMJailMainDoor[0] = 0;
-				MoveObject(PMJailMainDoor[1], 259.08, 90.67, 1002.70, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMJailMainDoor[1], 204.57574, 173.07796, 1003.27240, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 266.6638, 78.4081, 1001.0391)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 197.9036, 176.9503, 1003.0037)) {
             // PM Cárcel 1
 			if(PMJail1[0] == 0) {
 				PMJail1[0] = 1;
-			 	MoveObject(PMJail1[1], 266.29, 76.68, 1001.30, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMJail1[1], 198.8660, 177.0215, 1003.2745, 1.00, 0.00, 0.00, 0.00);
 			} else {
 				PMJail1[0] = 0;
-				MoveObject(PMJail1[1], 266.29, 78.45, 1001.30, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMJail1[1], 197.18600, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 266.6637, 82.9768, 1001.0391)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 193.7019, 177.0232, 1003.0037)) {
             // PM Cárcel 2
 			if(PMJail2[0] == 0) {
 			    PMJail2[0] = 1;
-			 	MoveObject(PMJail2[1], 266.29, 81.22, 1001.30, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMJail2[1], 194.6260, 177.0215, 1003.2745, 1.00, 0.00, 0.00, 0.00);
 			} else {
 				PMJail2[0] = 0;
-				MoveObject(PMJail2[1], 266.29, 82.96, 1001.30, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMJail2[1], 192.94600, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 266.6637, 87.4364, 1001.0391)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 189.5194, 177.0389, 1003.0037)) {
             // PM Cárcel 3
 			if(PMJail3[0] == 0) {
 				PMJail3[0] = 1;
-			 	MoveObject(PMJail3[1], 266.29, 85.71, 1001.30, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMJail3[1], 190.4260, 177.0215, 1003.2745, 1.00, 0.00, 0.00, 0.00);
 			} else {
 				PMJail3[0] = 0;
-				MoveObject(PMJail3[1], 266.29, 87.46, 1001.30, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMJail3[1], 188.70599, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
 		}
 	}
@@ -12327,13 +12327,13 @@ CMD:equipo(playerid, params[]) {
 		if(sscanf(params, "d", id)) {
 			SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
 			SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-			SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete                8: Comisario ");
-			SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial                 9: O.E. 1 (G.E.O.F.)");
-			SendClientMessage(playerid, COLOR_GRAD2, "| 3: Cabo                   10: O.E. 2 (G.E.O.F.)");
-			SendClientMessage(playerid, COLOR_GRAD2, "| 4: Sargento             11: O.E. 3 (G.E.O.F.)");
-			SendClientMessage(playerid, COLOR_GRAD3, "| 5: Sargento Mayor  12: O.E. 4 (G.E.O.F.)");
+			SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete      	        8: Comisario ");
+			SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial         	    9: O.E. 1 (G.E.O.F.)");
+			SendClientMessage(playerid, COLOR_GRAD2, "| 3: Cabo                	10: O.E. 2 (G.E.O.F.)");
+			SendClientMessage(playerid, COLOR_GRAD2, "| 4: Sargento            	11: O.E. 3 (G.E.O.F.)");
+			SendClientMessage(playerid, COLOR_GRAD3, "| 5: Sargento Mayor  		12: O.E. 4 (G.E.O.F.)");
 			SendClientMessage(playerid, COLOR_GRAD4, "| 6: Teniente             13: D.I.");
-			SendClientMessage(playerid, COLOR_GRAD5, "| 7: Sub Comisario    14: Civil");
+			SendClientMessage(playerid, COLOR_GRAD5, "| 7: Sub Comisario	    14: Civil");
 		} else if(PlayerToPoint(5.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z)) {
 		    switch(id) {
 		        case 1: {
