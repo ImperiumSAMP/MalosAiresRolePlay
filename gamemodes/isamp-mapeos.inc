@@ -367,6 +367,7 @@ stock removeBuildings(playerid) {
 
 stock LoadMap() {
 
+	new Textura;
 	//MAPEO PLAZA DE WILLOWFIELD
 	CreateDynamicObject(6959, 2507.06201, -1961.74670, 12.57630,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(6959, 2465.72192, -1961.74670, 12.57630,   0.00000, 0.00000, 0.00000);
@@ -1282,7 +1283,7 @@ stock LoadMap() {
 	CreateDynamicObject(10245, 1273.40002, -1683.50000, 29.80000,   0.00000, 0.00000, 314.00000);
 
 //=============================VILLA DEL HUEVO==================================
-	new Textura;
+	
 
 	Textura = CreateDynamicObject(11459, 1619.96143, -2108.65552, 14.78708,   0.00000, 0.00000, 219.19254);
 	SetObjectMaterial(Textura, 0, 16070, "des_stownmain1", "des_brick1", -1);
