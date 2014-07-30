@@ -13801,7 +13801,7 @@ CMD:cancelar(playerid,params[]) {
 }
 
 CMD:comprarlic(playerid,params[]) {
-	if(PlayerToPoint(1.0, playerid, 249.3701, 71.1788, 1003.6406) && GetPlayerVirtualWorld(playerid) == 16002) {
+	if(PlayerToPoint(1.0, playerid, 222.96, 145.17, 1003) && GetPlayerVirtualWorld(playerid) == 16002) {
         if(PlayerInfo[playerid][pWepLic] == 0) {
 			if(GetPlayerCash(playerid) >= PRICE_LIC_GUN) {
 				GivePlayerCash(playerid, -PRICE_LIC_GUN);
