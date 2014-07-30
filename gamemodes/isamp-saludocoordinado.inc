@@ -14,28 +14,28 @@ CMD:saludar (playerid, params[])
 new targetid, str[100], style;
 if (sscanf (params, "dd", targetid, style)) return SendClientMessage (playerid, COLOR_GREY, "{FF4600}[Sintaxis]:{C8C8C8} /saludar [Id/ParteDelNombre] [Estilo 1-7]");
 {
-if (GetDistanceBetweenPlayers (playerid, targetid) > 3.5) return SendClientMessage (playerid, COLOR_GREY, "°El jugador est· demasiado lejos!");
-if (targetid == playerid) return SendClientMessage (playerid, -1, "No podÈs hacerlo con ti mismo.");
-if (style > 7 || style < 1) return SendClientMessage (playerid, COLOR_RED, "°SÛlo podÈs elegir entre estilo 1 y 7!");
+if (GetDistanceBetweenPlayers (playerid, targetid) > 3.5) return SendClientMessage (playerid, COLOR_GREY, "¬°El jugador est√° demasiado lejos!");
+if (targetid == playerid) return SendClientMessage (playerid, -1, "No pod√©s hacerlo con ti mismo.");
+if (style > 7 || style < 1) return SendClientMessage (playerid, COLOR_RED, "¬°S√≥lo pod√©s elegir entre estilo 1 y 7!");
 if (!IsPlayerConnected (targetid)) {
-SendClientMessage (playerid, COLOR_GREY, "Jugador inv·lido o no conectado.");
+SendClientMessage (playerid, COLOR_GREY, "Jugador inv√°lido o no conectado.");
 return 1;
 }
 SetPVarInt (playerid, "saludando", targetid);
 SetPVarInt(playerid, "style", style);
-format (str, sizeof (str), "Saludaste a %s, pero debÈs esperar su respuesta.", GetPlayerNameEx (targetid));
+format (str, sizeof (str), "Saludaste a %s, pero deb√©s esperar su respuesta.", GetPlayerNameEx (targetid));
 SendClientMessage (playerid, COLOR_LIGHTRED, str);
-format (str, sizeof (str), "%s est· intentando coordinar un saludo con vos, us· /aceptar saludo.", GetPlayerNameEx (playerid));
+format (str, sizeof (str), "%s est√° intentando coordinar un saludo con vos, us√° /saludo aceptar.", GetPlayerNameEx (playerid));
 SendClientMessage (targetid, COLOR_LIGHTRED, str);
 }
 return 1;
 }
-CMD:aceptarsaludo (playerid, params[])
+CMD:saludo (playerid, params[])
 {
 new count, str[100], cmd;
-if (sscanf(params, "%s", cmd)) return SendClientMessage (playerid, COLOR_GREY, "{FF4600}[Sintaxis]:{C8C8C8} /aceptar [comando]");
+if (sscanf(params, "%s", cmd)) return SendClientMessage (playerid, COLOR_GREY, "{FF4600}[Sintaxis]:{C8C8C8} /saludo [comando]");
 {
-if (strcmp (params, "saludo") == 0)
+if (strcmp (params, "aceptar") == 0)
 {
 foreach (Player, i)
 {
@@ -44,7 +44,7 @@ if (GetPVarInt(i, "saludando") == playerid)
 if (GetDistanceBetweenPlayers (playerid, i) > 1)
 {
 count++;
-SendClientMessage (playerid, COLOR_GREY, "Est·s demasiado lejos de quien te saludo, no podÈs aceptar.");
+SendClientMessage (playerid, COLOR_GREY, "Est√°s demasiado lejos de quien te saludo, no pod√©s aceptar.");
 } else {
 switch(GetPVarInt(i, "style"))
 {
@@ -59,7 +59,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -74,7 +74,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -89,7 +89,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -104,7 +104,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -119,7 +119,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -134,7 +134,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -149,7 +149,7 @@ format(str, sizeof(str), "* %s acepta el saludo de %s.", GetPlayerNameEx(playeri
 ProxDetector(30.0, playerid, str, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 format(str, sizeof(str), "* Aceptaste coordinar un saludo con %s", GetPlayerNameEx(i));
 SendClientMessage (playerid, COLOR_GREY, str);
-format(str, sizeof(str), "* %s aceptÛ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
+format(str, sizeof(str), "* %s acept√≥ coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
 }
@@ -160,6 +160,6 @@ DeletePVar(i, "style");
 }
 }
 if(count == 0)
-return SendClientMessage(playerid, COLOR_WHITE, "Nadie te est· intentando saludar o quiz·s el comando es incorrecto (/aceptar saludo).");
+return SendClientMessage(playerid, COLOR_WHITE, "Nadie te est√° intentando saludar o quiz√°s el comando es incorrecto (/saludo aceptar).");
 return 1;
 }
