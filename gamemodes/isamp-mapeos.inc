@@ -5064,9 +5064,9 @@ stock LoadMap() {
 	
 	//-----------------------------Mapeo Grotti int-ext-------------------------
 	
-	Textura = CreateObject(6337, 536.13281, -1291.67969, 23.46880,   0.00000, 0.00000, 0.00000);//El suelo lo
-	SetObjectMaterial(Textura, 0, 6337, "sunset02_law2", "concretemanky", -1);					// dejamos en
-	SetObjectMaterial(Textura, 1, 6337, "sunset02_law2", "concpanel_la", -1);                   // CreateObject
+	Textura = CreateDynamicObject(6337, 536.13281, -1291.67969, 23.46880,   0.00000, 0.00000, 0.00000);//El suelo lo
+	SetDynamicObjectMaterial(Textura, 0, 6337, "sunset02_law2", "concretemanky", -1);					// dejamos en
+	SetDynamicObjectMaterial(Textura, 1, 6337, "sunset02_law2", "concpanel_la", -1);                   // CreateObject
 	
 	Textura = CreateDynamicObject(18980, 518.63599, -1294.82495, 12.68800,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 6337, "sunset02_law2", "concpanel_la", 0xFFB9B9B8);
@@ -5166,19 +5166,19 @@ stock LoadMap() {
 	CreateDynamicObject(2773, 548.76849, -1290.44360, 16.74590,   0.00000, 0.00000, 0.00000);
 	
 	//----------------Retexturización casa avenida norte fea de madera------------------
-	Textura = CreateObject(5892, 1123.05469, -988.19531, 45.22660,   0.00000, 0.00000, 0.00000);
-	SetObjectMaterial(Textura, 0, 13711, "mullho03_lahills", "brickred2", -1);
-	SetObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
-	SetObjectMaterial(Textura, 2, 5848, "mainlcawn", "shingles3", -1);
-	SetObjectMaterial(Textura, 3, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
-	Textura = CreateObject(5893, 1123.30469, -982.69531, 39.23440,   0.00000, 0.00000, 0.00000);
-	SetObjectMaterial(Textura, 0, 19325, "lsmall_shops", "lsmall_window01", 0xFF121212);
-	Textura = CreateObject(3498, 1107.57178, -966.50641, 38.71610,   0.00000, 0.00000, 0.00000);
-	SetObjectMaterial(Textura, 0, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
-	SetObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
-	Textura = CreateObject(3498, 1112.31165, -966.23608, 38.71610,   0.00000, 0.00000, 0.00000);
-	SetObjectMaterial(Textura, 0, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
-	SetObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	Textura = CreateDynamicObject(5892, 1123.05469, -988.19531, 45.22660,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 13711, "mullho03_lahills", "brickred2", -1);
+	SetDynamicObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	SetDynamicObjectMaterial(Textura, 2, 5848, "mainlcawn", "shingles3", -1);
+	SetDynamicObjectMaterial(Textura, 3, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	Textura = CreateDynamicObject(5893, 1123.30469, -982.69531, 39.23440,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 19325, "lsmall_shops", "lsmall_window01", 0xFF121212);
+	Textura = CreateDynamicObject(3498, 1107.57178, -966.50641, 38.71610,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	SetDynamicObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	Textura = CreateDynamicObject(3498, 1112.31165, -966.23608, 38.71610,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
+	SetDynamicObjectMaterial(Textura, 1, 5775, "sunset01_lawn", "gnhotelwall02_128", -1);
 	
 	return 1;
 }
