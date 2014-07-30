@@ -5736,7 +5736,7 @@ public SetPlayerSpawn(playerid) {
    		    SetPlayerVirtualWorld(playerid, Building[2][blInsideWorld]);
    		    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    	SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
-	    	SetPlayerInterior(playerid, 6);
+	    	SetPlayerInterior(playerid, 3);
 		    PlayerInfo[playerid][pHealth] = 100;
 		    SetCameraBehindPlayer(playerid);
 		    return 1;
@@ -8336,7 +8336,7 @@ stock LoadPickups() {
 	
 	// Licencia de armas
 	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
-	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 6, -1, 100.0);
+	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
 
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
