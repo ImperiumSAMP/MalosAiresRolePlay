@@ -37,6 +37,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-sprintrace.inc" //Sistema de picadas (carreras)
 #include "isamp-gangzones.inc"  //Sistema de control de barrios
 #include "isamp-mapeos.inc"  	//Mapeos del GM
+#include "isamp-saludocoordinado.inc"//Sistema de saludo coordinado
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
