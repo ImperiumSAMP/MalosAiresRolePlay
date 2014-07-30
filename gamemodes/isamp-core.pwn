@@ -8335,8 +8335,8 @@ stock LoadPickups() {
 	P_HOSP_HEAL = CreateDynamicPickup(1240, 1, POS_HOSP_HEAL_X, POS_HOSP_HEAL_Y, POS_HOSP_HEAL_Z + 1.0, -1);
 	
 	// Licencia de armas
-	CreateDynamicPickup(1239, 1, 249.3701, 71.1788, 1003.6406, -1);
-	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 249.3701, 71.1788, 1003.6406 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 6, -1, 100.0);
+	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
+	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 6, -1, 100.0);
 
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
