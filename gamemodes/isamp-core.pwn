@@ -5734,7 +5734,7 @@ public SetPlayerSpawn(playerid) {
    		    // Jail IC.
    		    TogglePlayerControllable(playerid, 0);
    		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
-   		    SetPlayerVirtualWorld(playerid, 16002);
+   		    SetPlayerVirtualWorld(playerid, Building[2][blInsideWorld]);
    		    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    	SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
 	    	SetPlayerInterior(playerid, 3);
