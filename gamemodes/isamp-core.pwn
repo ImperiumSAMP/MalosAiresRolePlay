@@ -39,6 +39,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mapeos.inc"  	//Mapeos del GM
 #include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
 #include "isamp-norespawnautos" // Sistema de no respawn autos.
+#include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
 #define GAMEMODE_USE_VERSION	"No"
@@ -1882,6 +1883,16 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
+    if(TextAnim == 1)
+{
+    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+    {
+    ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+    ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+    SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+    }
+}
+
 	if(Muted[playerid])	{
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
 		return 0;
@@ -1902,7 +1913,7 @@ public OnPlayerText(playerid, text[]) {
 	else
 		name = "Enmascarado";
 
-	if(Mobile[playerid] == NUM_MISSION) {
+    if(Mobile[playerid] == NUM_MISSION) {
 		if((strcmp("si", text, true, strlen(text)) == 0) && (strlen(text) == strlen("si"))) {
 			SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: ¡vamos, súbete a la van y di 'listo' una vez arriba!");
             Mobile[playerid] = NUM_MISSION2;
@@ -2016,8 +2027,7 @@ public OnPlayerText(playerid, text[]) {
 		log(playerid, LOG_CHAT, string);
 		return 0;
 	}
-	
-  	if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR) {
+    if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR){
 		format(string, sizeof(string), "%s dice: %s", name, text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
@@ -2033,7 +2043,7 @@ public OnPlayerText(playerid, text[]) {
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
 	}
-	return 0;
+    return 0;
 }
 
 public OnPlayerPrivmsg(playerid, recieverid, text[])
