@@ -37,8 +37,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-sprintrace.inc" //Sistema de picadas (carreras)
 #include "isamp-gangzones.inc"  //Sistema de control de barrios
 #include "isamp-mapeos.inc"  	//Mapeos del GM
-#include "isamp-saludocoordinado.inc"//Sistema de saludo coordinado
-
+#include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
+#include "isamp-norespawnautos" // Sistema de no respawn autos.
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
 #define GAMEMODE_USE_VERSION	"No"
@@ -1002,6 +1002,7 @@ public OnGameModeInit() {
 	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, 1);                  // Respawn de vehículos de renta.
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, 1);   // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, 1); // 5 min.		- Sistema de hambre y sed.
+	timersID[15] = SetTimer ("VHealth", 1000, 1); // Cada 1 seg. -Revisa la vida del auto y si es menor a 400 le vuelve a setear vida 400.
 	//====[MENUS]===============================================================
 	new
 		price[32];
@@ -1045,6 +1046,7 @@ public OnGameModeExit() {
 	KillTimer(timersID[6]);
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
+	KillTimer(timersID[15]);
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
