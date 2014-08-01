@@ -40,6 +40,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
 #include "isamp-norespawnautos" // Sistema de no respawn autos.
 #include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
+#include "isamp-descripcionyo.inc" //Sistema de descripción /yo.
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
 #define GAMEMODE_USE_VERSION	"No"
