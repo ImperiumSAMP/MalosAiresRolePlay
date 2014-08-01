@@ -1049,6 +1049,9 @@ public OnGameModeExit() {
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
 	KillTimer(timersID[15]);
+	KillTimer(timersID[16]);
+	
+	TextAnim = 0;
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
@@ -1890,7 +1893,7 @@ public OnPlayerText(playerid, text[]) {
     {
     ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
     ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
-    SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+   	timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
     }
 }
 
