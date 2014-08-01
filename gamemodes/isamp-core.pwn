@@ -54,7 +54,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 
 #define MAX_BUILDINGS           100
-
+#define MAX_CAMARAS             10                                              // Maximo de camaras seteadas del "Sistema de camaras"
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
 #define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
@@ -120,6 +120,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_TUNING_COLOR1       10021
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
+#define CAMARAS_POLICIA         10024
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 											// 5 minutos
@@ -375,6 +376,9 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	cAFK[MAX_PLAYERS],
 	TAFKT[MAX_PLAYERS],
 	cTomarVW[MAX_PLAYERS];
+
+//Sistema camaras policia
+new Camara[MAX_PLAYERS];
 
 // Pickups
 new
@@ -8542,6 +8546,96 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
 	switch(dialogid)
 	{
+		case CAMARAS_POLICIA:
+        {
+          if(response)
+          {
+	         switch(listitem)
+              {
+                 case 0:
+                {
+
+                        TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1810.6332,-1881.8149,19.5813);
+                        SetPlayerCameraLookAt(playerid,1826.7717,-1855.4510,13.5781);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+						SetPlayerPos(playerid,1808.0325,-1875.4358,14.1098);
+
+                }
+                case 1:
+                {
+                        TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1597.0785,-1881.5038,27.7953);
+                        SetPlayerCameraLookAt(playerid,1622.404,-1867.609,13.167);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1625.4521,-1869.5902,8.3828);
+
+                }
+                case 2:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid, 1176.9811,-1343.1915,19.4488);
+                        SetPlayerCameraLookAt(playerid,1189.4771,-1324.0830,13.5669);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1194.1521,-1325.6360,9.3984);
+
+                }
+                case 3:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,493.8351,-1271.0554,31.1417);
+                        SetPlayerCameraLookAt(playerid,536.0699,-1266.2397,16.5363);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,541.5012,-1257.4186,10.5401);
+
+                }
+                case 4:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,807.4939,-1307.5045,28.8984);
+                        SetPlayerCameraLookAt(playerid,783.412,-1327.025,13.254);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,778.0953,-1323.9830,9.3906);
+
+                }
+                case 5:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1289.1920,-944.2938,59.1594);
+                        SetPlayerCameraLookAt(playerid,1316.086,-914.297,37.690);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1315.8170,-915.3012,32.0215);
+                }
+                case 6:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid, 1354.3875,-1725.0841,23.1490);
+                        SetPlayerCameraLookAt(playerid, 1352.600,-1740.055,13.171);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1366.0573,-1754.3422,14.0174);
+                }
+                case 7:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,2352.8774,-1249.7654,36.8919);
+                        SetPlayerCameraLookAt(playerid, 2374.472,-1211.521,27.135);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,2348.5415,-1210.8560,30.2480);
+               	}
+            }
+         }
+          return 1;
+      }
         case DLG_247:
 		{
             new business = GetPlayerBusiness(playerid);
@@ -12606,6 +12700,31 @@ CMD:equipo(playerid, params[]) {
 	return 1;
 }
 
+CMD:camaras(playerid, params[])
+{
+
+if(IsPlayerInRangeOfPoint(playerid, 5.0, 211.7032,187.9873,1003.0313))
+{
+Camara[playerid] = 1;
+ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Camaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grooti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)","Ok", "");
+}
+return 1;
+}
+CMD:salircam (playerid, params[])
+{
+if(Camara[playerid] == 0) return SendClientMessage(playerid, -1,"¡No estas en una camara!");
+{
+TogglePlayerControllable(playerid, 1);
+Camara[playerid] = 0;
+SetCameraBehindPlayer(playerid);
+
+SetPlayerPos(playerid,211.7032,187.9873,1003.0313);
+SetPlayerVirtualWorld(playerid, 16002);
+SetPlayerInterior(playerid, 3);
+
+}
+return 1;
+}
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
 CMD:bol(playerid, params[])
