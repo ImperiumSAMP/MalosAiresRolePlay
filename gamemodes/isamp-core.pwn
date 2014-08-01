@@ -1050,8 +1050,6 @@ public OnGameModeExit() {
 	KillTimer(timersID[10]);
 	KillTimer(timersID[15]);
 	KillTimer(timersID[16]);
-	
-	TextAnim = 0;
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
