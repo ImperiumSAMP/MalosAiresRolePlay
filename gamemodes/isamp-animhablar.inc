@@ -8,12 +8,12 @@ CMD:animhablar (playerid, params[])
 if (TextAnim == 0)
 {
     TextAnim = 1;
-    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {FF4600}ACTIVADA{C8C8C8}");
+    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {C8C8C8}ACTIVADA");
 }
 else
 {
     TextAnim = 0;
-    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {FF4600}DESACTIVADA{C8C8C8}");
+    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {C8C8C8}DESACTIVADA");
 }
 return 1;
 }

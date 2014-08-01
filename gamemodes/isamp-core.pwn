@@ -7522,9 +7522,9 @@ public JailTimer() {
 			            PlayerInfo[i][pJailed] = 0;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, Building[2][blInsideWorld]);
-					    SetPlayerInterior(i, 6);
-						SetPlayerPos(i, 246.4393, 70.9981, 1003.6406);
-						SetPlayerFacingAngle(i, 177.6641);
+					    SetPlayerInterior(i, 3);
+						SetPlayerPos(i, 229.01, 151.30, 1003.02);
+						SetPlayerFacingAngle(i, 270.0000);
 						TogglePlayerControllable(i, true);
 		  			}
 			        case 2: {
