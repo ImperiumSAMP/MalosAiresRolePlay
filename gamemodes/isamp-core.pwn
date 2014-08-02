@@ -1900,7 +1900,8 @@ public OnPlayerText(playerid, text[]) {
 }
 
 	if(Muted[playerid])	{
-		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
+		return 0;
 	}
 
 	tmp = strtok(text, idx);
