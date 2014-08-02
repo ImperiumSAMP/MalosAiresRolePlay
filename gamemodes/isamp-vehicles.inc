@@ -107,6 +107,10 @@ forward IsABike(vehicleid);
 //Timers
 forward respawnVeh(vehicleid);
 
+stock getVehicleSqlId(vehicleid){
+	return VehicleInfo[vehicleid][VehSQLID];
+}
+
 //=========================VEHICLE TRUNK FUNCTIONS==============================
 
 enum SlotInfo {
@@ -1236,8 +1240,9 @@ CMD:vehcomprar(playerid, params[])
 	vehicleid = GetPlayerVehicleID(playerid);
 	if(VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP && VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP2 && VehicleInfo[vehicleid][VehType] != VEH_SHIPYARD)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar un vehículo que no está a la venta!");
-	if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tener más de dos vehículos.");
+	//if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0)
+	if(getPlayerFreeKeySlots(playerid)<1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehiculos.");
 	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
     if(GetPlayerCash(playerid) < price)
         return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
@@ -1281,15 +1286,17 @@ CMD:vehcomprar(playerid, params[])
 	VehicleInfo[newveh][VehFuel] = 100;
 	SendClientMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado este vehículo!");
 	SendClientMessage(playerid, COLOR_WHITE, "Estacionalo con '/vehestacionar' fuera de la consecionaria, de no hacerlo podrá ser incautado.");
-	if(PlayerInfo[playerid][pVeh1] == 0) {
+	/*if(PlayerInfo[playerid][pVeh1] == 0) {
 		PlayerInfo[playerid][pVeh1] = newveh;
 		VehicleInfo[newveh][VehOwnerSlot] = 1;
 	} else {
 	    PlayerInfo[playerid][pVeh2] = newveh;
 	    VehicleInfo[newveh][VehOwnerSlot] = 2;
-	}
+	}*/
+	
  	DestroyVehicle(newveh);
 	newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
+	addKeyToPlayer(playerid,newveh,playerid, GetVehicleName(newveh));
 	PutPlayerInVehicle(playerid, newveh, 0);
 	SaveVehicle(newveh);
 	return 1;
