@@ -26,13 +26,13 @@ new isUsingMaskInSlot[MAX_PLAYERS]; // -1 si no usa, caso contrario guarda el sl
 stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pFelonExp] = 0;
 	ThiefJobInfo[playerid][pFelonLevel] = 1;
-	ThiefJobInfo[playerid][pRobPersonLimit] = 999999999;
+	ThiefJobInfo[playerid][pRobPersonLimit] = 0;
 	ThiefJobInfo[playerid][pRobLastVictimPID] = INVALID_PLAYER_ID;
 	ThiefJobInfo[playerid][pTheftLastVictimPID] = INVALID_PLAYER_ID;
-	ThiefJobInfo[playerid][pTheftPersonLimit] = 999999999;
-	ThiefJobInfo[playerid][pRobHouseLimit] = 999999999;
-	ThiefJobInfo[playerid][pRob247Limit] = 999999999;
-	ThiefJobInfo[playerid][pTheft247Limit] = 999999999;
+	ThiefJobInfo[playerid][pTheftPersonLimit] = 0;
+	ThiefJobInfo[playerid][pRobHouseLimit] = 0;
+	ThiefJobInfo[playerid][pRob247Limit] = 0;
+	ThiefJobInfo[playerid][pTheft247Limit] = 0;
 
 	theftTime[playerid] = -1;
 	felon[playerid] = INVALID_PLAYER_ID;
@@ -43,7 +43,10 @@ stock loadThiefJobData(playerid,MysqlID){
 	new		
 		query[256];
 
-    format(query, sizeof(query), "SELECT * FROM `thiefJob` WHERE id=%d", MysqlID);
+	#if defined _isamp_debug
+		printf("\nLoading thiefJobData for player id: %d sqlid: %d\n",playerid,MysqlID);
+	#endif
+    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE accountid=%d", MysqlID);
 	mysql_function_query(dbHandle, query, true, "OnThiefJobDataLoad", "i", playerid);
 	return 1;
 }
@@ -72,7 +75,12 @@ public OnThiefJobDataLoad(playerid) {
 
 stock createThiefJob(playersqlid){
 		new query[128];
-		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('playersqlid')", playersqlid);
+		
+		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", playersqlid);
+		#if defined _isamp_debug
+		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
+		printf("\nQuery is: %s",query);
+		#endif
 		mysql_function_query(dbHandle, query, false, "", "");
 }
 

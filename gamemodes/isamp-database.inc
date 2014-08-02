@@ -60,7 +60,7 @@ public MySQLUpdateFloat(sqlplayerid,sqltable[],sqlvalname[], Float:sqlupdateflo)
 
 public MySQLUpdateStr(sqlplayerid,sqltable[],sqlvalname[],sqlupdatestr[]) {
 	new query[256];
-	mysql_real_escape_string(sqlupdatestr,sqlupdatestr);
+	mysql_real_escape_string(sqlupdatestr,sqlupdatestr,1,sizeof(sqlupdatestr[]));
 	format(query,sizeof(query),"UPDATE `%s` SET `%s`='%s' WHERE `Id`=%d",sqltable,sqlvalname,sqlupdatestr,sqlplayerid);
 	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;

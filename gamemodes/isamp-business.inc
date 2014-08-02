@@ -6,8 +6,8 @@
 #define MAX_BUSINESS	        100
 
 // Mensajes del sistema.
-#define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana - 7: Bar/Club - 8: Tienda de ropa fina"
-#define BUSINESS_TYPES2 		"9: Casino - 10: Ferreteria - 11: Discoteca"
+#define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana"
+#define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12:Pizzeria"
 
 // Negocios.
 #define BIZ_REST          		1
@@ -21,6 +21,7 @@
 #define BIZ_CASINO              9
 #define BIZ_HARD                10
 #define BIZ_CLUB2               11
+#define BIZ_PIZZERIA            12
 
 //Enums
 enum BusinessSystem {
