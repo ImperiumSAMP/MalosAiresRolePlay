@@ -3281,12 +3281,12 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pFightStyle", result); 		PlayerInfo[playerid][pFightStyle] 		= strval(result);
         cache_get_field_content(0, "pAdictionAbstinence", result); 		PlayerInfo[playerid][pAdictionAbstinence] 		= strval(result);
 		
-		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName]);
-		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected]);
-		cache_get_field_content(0, "pInv0", 					InvInfo[playerid][inv0]);
-		cache_get_field_content(0, "pInv1", 					InvInfo[playerid][inv1]);
-		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf]);
-		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy]);
+		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName],1,MAX_PLAYER_NAME);
+		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected],1,25);
+		cache_get_field_content(0, "pInv0", 					InvInfo[playerid][inv0],1,16);
+		cache_get_field_content(0, "pInv1", 					InvInfo[playerid][inv1],1,16);
+		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf],1,64);
+		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy],1,24);
 
 		cache_get_field_content(0, "pX", result); 				PlayerInfo[playerid][pX] 				= floatstr(result);
 		cache_get_field_content(0, "pY", result); 				PlayerInfo[playerid][pY] 				= floatstr(result);
@@ -3509,8 +3509,8 @@ public OnBusinessDataLoad(id) {
 		cache_get_field_content(0, "bType", result); 				Business[id][bType] 			= strval(result);
 		cache_get_field_content(0, "bProducts", result); 			Business[id][bProducts] 		= strval(result);
 
-		cache_get_field_content(0, "bOwnerName", 					Business[id][bOwner]);
-        cache_get_field_content(0, "bName", 						Business[id][bName]);
+		cache_get_field_content(0, "bOwnerName", 					Business[id][bOwner],1,MAX_PLAYER_NAME);
+        cache_get_field_content(0, "bName", 						Business[id][bName],1,128);
 
 		cache_get_field_content(0, "bOutsideX", result);	 		Business[id][bOutsideX] 		= floatstr(result);
 		cache_get_field_content(0, "bOutsideY", result); 			Business[id][bOutsideY] 		= floatstr(result);
@@ -3552,8 +3552,8 @@ public OnHouseDataLoad(id) {
 		cache_get_field_content(0, "Cocaine", result); 				House[id][Cocaine]				= strval(result);
 		cache_get_field_content(0, "Ecstasy", result); 				House[id][Ecstasy]				= strval(result);
 
-		cache_get_field_content(0, "Description", 					House[id][Description]);
-		cache_get_field_content(0, "Owner", 						House[id][Owner]);
+		cache_get_field_content(0, "Description", 					House[id][Description],128);
+		cache_get_field_content(0, "Owner", 						House[id][Owner],MAX_PLAYER_NAME);
 
 		cache_get_field_content(0, "EntranceX", result); 			House[id][EntranceX] 			= floatstr(result);
 		cache_get_field_content(0, "EntranceY", result); 			House[id][EntranceY] 			= floatstr(result);
@@ -3587,8 +3587,8 @@ public OnBuildingDataLoad(id) {
   		cache_get_field_content(0, "blFaction", result); 			Building[id][blFaction] 			= strval(result);
 		cache_get_field_content(0, "blInsideWorld", result); 		Building[id][blInsideWorld] 		= strval(result);
 
-		cache_get_field_content(0, "blText", 						Building[id][blText]);
-		cache_get_field_content(0, "blText2", 						Building[id][blText2]);
+		cache_get_field_content(0, "blText", 						Building[id][blText],1,128);
+		cache_get_field_content(0, "blText2", 						Building[id][blText2],1,128);
 
 		cache_get_field_content(0, "blOutsideX", result); 			Building[id][blOutsideX] 			= floatstr(result);
 		cache_get_field_content(0, "blOutsideY", result); 			Building[id][blOutsideY] 			= floatstr(result);
@@ -3651,17 +3651,17 @@ public OnFactionDataLoad(id) {
 		cache_get_field_content(0, "JoinRank", result); 				FactionInfo[id][fJoinRank] 	= strval(result);
 		cache_get_field_content(0, "UsesSkins", result); 				FactionInfo[id][fUseSkins] 	= strval(result);
 		cache_get_field_content(0, "RankAmount", result); 				FactionInfo[id][fRankAmount]= strval(result);
-		cache_get_field_content(0, "Name",								FactionInfo[id][fName]);
-		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1]);
-		cache_get_field_content(0, "Rank2", 							FactionInfo[id][fRank2]);
-		cache_get_field_content(0, "Rank3", 							FactionInfo[id][fRank3]);
-		cache_get_field_content(0, "Rank4", 							FactionInfo[id][fRank4]);
-		cache_get_field_content(0, "Rank5", 							FactionInfo[id][fRank5]);
-		cache_get_field_content(0, "Rank6", 							FactionInfo[id][fRank6]);
-		cache_get_field_content(0, "Rank7", 							FactionInfo[id][fRank7]);
-		cache_get_field_content(0, "Rank8", 							FactionInfo[id][fRank8]);
-		cache_get_field_content(0, "Rank9", 							FactionInfo[id][fRank9]);
-		cache_get_field_content(0, "Rank10", 							FactionInfo[id][fRank10]);
+		cache_get_field_content(0, "Name",								FactionInfo[id][fName],1,50);
+		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1],1,35);
+		cache_get_field_content(0, "Rank2", 							FactionInfo[id][fRank2],1,35);
+		cache_get_field_content(0, "Rank3", 							FactionInfo[id][fRank3],1,35);
+		cache_get_field_content(0, "Rank4", 							FactionInfo[id][fRank4],1,35);
+		cache_get_field_content(0, "Rank5", 							FactionInfo[id][fRank5],1,35);
+		cache_get_field_content(0, "Rank6", 							FactionInfo[id][fRank6],1,35);
+		cache_get_field_content(0, "Rank7", 							FactionInfo[id][fRank7],1,35);
+		cache_get_field_content(0, "Rank8", 							FactionInfo[id][fRank8],1,35);
+		cache_get_field_content(0, "Rank9", 							FactionInfo[id][fRank9],1,35);
+		cache_get_field_content(0, "Rank10", 							FactionInfo[id][fRank10],1,35);
 	}
 	return 1;
 }
@@ -3704,8 +3704,8 @@ public OnVehicleDataLoad(id) {
 		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
 	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
 	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
-		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate]);
-		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName]);
+		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate],1,32);
+		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName],1,MAX_PLAYER_NAME);
 		
 		if(VehicleInfo[id][VehType] == VEH_OWNED) {
 		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
