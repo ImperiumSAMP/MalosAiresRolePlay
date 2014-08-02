@@ -398,7 +398,8 @@ new
 	P_MATS_SHOP,
 	P_DRUGFARM_MATS,
 	P_TUNE[5],
-	P_PRODS_SHOP;
+	P_PRODS_SHOP,
+	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
 
@@ -1903,6 +1904,10 @@ public OnPlayerText(playerid, text[]) {
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
 		return 0;
 	}
+	if(Camara[playerid] == 1)	{
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
+		return 0;
+	}
 
 	tmp = strtok(text, idx);
 
@@ -3042,6 +3047,11 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 }
 
 public OnPlayerCommandReceived(playerid, cmdtext[]) {
+	if(Camara[playerid] == 1 && strcmp(cmdtext,"/salircam")!=0)
+	{
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Para utilizar un comando antes debes salir de la cámara.");
+	    return 0;
+	}
     return 1;
 }
 
@@ -5566,6 +5576,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_JOB_CENTER) {
 		GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
 		return 1;
+
+	} else if(pickupid == P_POLICE_CAMERAS) {
+		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
+		return 1;
 		
 	} else if(pickupid == P_HOSP_HEAL) {
 		new string[128];
@@ -6185,6 +6199,7 @@ stock ReloadBizIcon(bizid) {
 	    case 9: 	bizType = "Casino";
 	    case 10:	bizType = "Ferretería";
 	    case 11:	bizType = "Discoteca/Club Nocturno";
+	    case 12: 	bizType = "Pizzeria";
 	    default: 	bizType = "Indefinido";
 	}
 
@@ -8243,7 +8258,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
 							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
 								else
-								    if(Business[i][bType] == BIZ_REST)
+								    if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
 								        SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
 									else
 										if(Business[i][bType] == BIZ_CASINO)
@@ -8344,6 +8359,10 @@ public ClearCheckpointsForPlayer(playerid) {
 
 stock LoadPickups() {
 
+	/* Cámaras de Seguridad PMA */
+	P_POLICE_CAMERAS = CreateDynamicPickup(1239, 1, 219.36, 188.31, 1003.00, -1);
+	CreateDynamic3DTextLabel("Cámaras de Seguridad de la Ciudad", COLOR_WHITE, 219.36, 188.31, 1003.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
+	
 	/* Gimnasio */
 	P_FIGHT_STYLE = CreateDynamicPickup(1239, 1, 766.3723, 13.8237, 1000.7015, -1);
 	
@@ -8559,7 +8578,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,1810.6332,-1881.8149,19.5813);
                         SetPlayerCameraLookAt(playerid,1826.7717,-1855.4510,13.5781);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
 						SetPlayerPos(playerid,1808.0325,-1875.4358,14.1098);
 
@@ -8570,7 +8589,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,1597.0785,-1881.5038,27.7953);
                         SetPlayerCameraLookAt(playerid,1622.404,-1867.609,13.167);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,1625.4521,-1869.5902,8.3828);
 
@@ -8580,7 +8599,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid, 1176.9811,-1343.1915,19.4488);
                         SetPlayerCameraLookAt(playerid,1189.4771,-1324.0830,13.5669);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,1194.1521,-1325.6360,9.3984);
 
@@ -8590,7 +8609,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,493.8351,-1271.0554,31.1417);
                         SetPlayerCameraLookAt(playerid,536.0699,-1266.2397,16.5363);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,541.5012,-1257.4186,10.5401);
 
@@ -8600,7 +8619,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,807.4939,-1307.5045,28.8984);
                         SetPlayerCameraLookAt(playerid,783.412,-1327.025,13.254);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,778.0953,-1323.9830,9.3906);
 
@@ -8610,7 +8629,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,1289.1920,-944.2938,59.1594);
                         SetPlayerCameraLookAt(playerid,1316.086,-914.297,37.690);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,1315.8170,-915.3012,32.0215);
                 }
@@ -8619,7 +8638,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid, 1354.3875,-1725.0841,23.1490);
                         SetPlayerCameraLookAt(playerid, 1352.600,-1740.055,13.171);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,1366.0573,-1754.3422,14.0174);
                 }
@@ -8628,7 +8647,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         Camara[playerid] = 1;
                         SetPlayerCameraPos(playerid,2352.8774,-1249.7654,36.8919);
                         SetPlayerCameraLookAt(playerid, 2374.472,-1211.521,27.135);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /Salircam.");
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,2348.5415,-1210.8560,30.2480);
                	}
@@ -10844,8 +10863,8 @@ CMD:ayuda(playerid,params[]) {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas");
@@ -11744,7 +11763,7 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
  	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
  	if(PlayerInfo[playerid][pRank] <= 4)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
@@ -12702,28 +12721,25 @@ CMD:equipo(playerid, params[]) {
 
 CMD:camaras(playerid, params[])
 {
-
-if(IsPlayerInRangeOfPoint(playerid, 5.0, 211.7032,187.9873,1003.0313))
-{
-Camara[playerid] = 1;
-ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Camaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grooti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)","Ok", "");
+	if(IsPlayerInRangeOfPoint(playerid, 2.0, 219.36, 188.31, 1003.00))
+	{
+		ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Cámaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grotti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)","Ok", "");
+	}
+	return 1;
 }
-return 1;
-}
-CMD:salircam (playerid, params[])
-{
-if(Camara[playerid] == 0) return SendClientMessage(playerid, -1,"¡No estas en una camara!");
-{
-TogglePlayerControllable(playerid, 1);
-Camara[playerid] = 0;
-SetCameraBehindPlayer(playerid);
 
-SetPlayerPos(playerid,211.7032,187.9873,1003.0313);
-SetPlayerVirtualWorld(playerid, 16002);
-SetPlayerInterior(playerid, 3);
-
-}
-return 1;
+CMD:salircam(playerid, params[])
+{
+	if(Camara[playerid] == 0) return SendClientMessage(playerid, -1,"¡No estas en una camara!");
+	{
+		TogglePlayerControllable(playerid, 1);
+		Camara[playerid] = 0;
+		SetCameraBehindPlayer(playerid);
+		SetPlayerPos(playerid,219.36, 188.31, 1003.00);
+		SetPlayerVirtualWorld(playerid, 16002);
+		SetPlayerInterior(playerid, 3);
+	}
+	return 1;
 }
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
@@ -14336,7 +14352,109 @@ CMD:comer(playerid, params[])
 				}
 			}
 		}
-	}
+		if(Business[i][bType] == BIZ_PIZZERIA)
+		{
+	    	if(Business[i][bProducts] <= 0)
+              	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+			if(sscanf(params, "i", menu))
+			{
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+				SendClientMessage(playerid, COLOR_WHITE, "1) - Pizza de Muzzarella - Precio: $65.");
+				SendClientMessage(playerid, COLOR_WHITE, "2) - Pizza de Fugazzeta - Precio: $70.");
+				SendClientMessage(playerid, COLOR_WHITE, "3) - Pizza de Calabresa - Precio: $80.");
+				SendClientMessage(playerid, COLOR_WHITE, "4) - Pizza Especial con bebida - Precio: $100.");
+				SendClientMessage(playerid, COLOR_WHITE, "5) - Pizza Estilo Primavera - Precio: $90.");
+				SendClientMessage(playerid, COLOR_WHITE, "6) - Pizza De Jamón, Roquefort y Morrones con bebida - Precio: $105.");
+				SendClientMessage(playerid, COLOR_WHITE, "7) - Pizza de 4 Quesos Artesanal con bebida - Precio: $115.");
+				return 1;
+			}
+			switch(menu)
+			{
+				case 1:
+				{
+					if(GetPlayerCash(playerid) < 65)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -65);
+					Business[i][bTill] += 65;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza de Muzzarella y comienza a comer.");
+					PlayerEat(playerid, 65.0);
+					saveBusiness(i);
+				}
+				case 2:
+				{
+					if(GetPlayerCash(playerid) < 70)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -70);
+					Business[i][bTill] += 70;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza de Fugazzeta y comienza a comer.");
+					PlayerEat(playerid, 70.0);
+					saveBusiness(i);
+				}
+				case 3:
+				{
+					if(GetPlayerCash(playerid) < 80)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -80);
+					Business[i][bTill] += 80;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza de Calabresa y comienza a comer.");
+					PlayerEat(playerid, 80.0);
+					saveBusiness(i);
+				}
+				case 4:
+				{
+					if(GetPlayerCash(playerid) < 100)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -100);
+					Business[i][bTill] += 100;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza Especial con bebida y comienza a comer.");
+					PlayerEat(playerid, 70.0);
+					PlayerDrink(playerid, 50.0);
+					saveBusiness(i);
+				}
+				case 5:
+				{
+					if(GetPlayerCash(playerid) < 90)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -90);
+					Business[i][bTill] += 90;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza Estilo Primavera y comienza a comer.");
+					PlayerEat(playerid, 85.0);
+					saveBusiness(i);
+				}
+				case 6:
+				{
+					if(GetPlayerCash(playerid) < 105)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -105);
+					Business[i][bTill] += 105;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza De Jamón, Roquefort y Morrones con bebida y comienza a comer.");
+					PlayerEat(playerid, 85.0);
+					PlayerDrink(playerid, 60.0);
+					saveBusiness(i);
+				}
+				case 7:
+				{
+					if(GetPlayerCash(playerid) < 115)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					GivePlayerCash(playerid, -115);
+					Business[i][bTill] += 115;
+					Business[i][bProducts]--;
+					PlayerActionMessage(playerid, 15.0, "pide una pizza de 4 Quesos Artesanal con bebida y comienza a comer.");
+					PlayerEat(playerid, 95.0);
+					PlayerDrink(playerid, 65.0);
+					saveBusiness(i);
+				}
+				default:
+					SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+				}
+			}
+		}
 	return 1;
 }
 
