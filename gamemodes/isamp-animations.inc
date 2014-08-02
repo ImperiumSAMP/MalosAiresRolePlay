@@ -25,6 +25,19 @@ CMD:animaciones(playerid, params[])
 }
 
 CMD:noanim(playerid, params[]) {
+	new animlib[32];
+	new animname[32];
+	new msg[128];
+ 	GetAnimationName(GetPlayerAnimationIndex(playerid),animlib,32,animname,32);
+ 	format(msg, 128, "%s %s", animlib, animname);
+ 	if(!strcmp(msg,"PED FALL_FALL"))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar el comando en este momento!");
+	else if(!strcmp(msg,"PED FALL_BACK"))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar el comando en este momento!");
+	else if(!strcmp(msg,"PED FALL_FRONT"))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar el comando en este momento!");
+    else if(!strcmp(msg,"PED FALL_GLIDE"))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar el comando en este momento!");
 	if(GetPVarInt(playerid, "disabled") == DISABLE_NONE && GetPlayerState(playerid) == 1) {
 		ClearAnimations(playerid);
 		TogglePlayerControllable(playerid, 1);
