@@ -1408,6 +1408,7 @@ public OnPlayerDisconnect(playerid, reason) {
 
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	SetPlayerChatBubble(playerid,"", COLOR_RED, 20.0, 1000);
+	Camara[playerid] = 0;
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));

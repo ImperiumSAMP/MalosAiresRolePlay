@@ -12,7 +12,7 @@ CMD:yo(playerid, params[])
 		if(text[80] > MAX_CARACTERES)return SendClientMessage (playerid, COLOR_YELLOW2, "Has pasado el limite de caracteres, reduce tu descripción.");
 		format (str, sizeof (str), "{C8C8C8}Tu descripción ahora es:{FFFFFF} %s", text);
 		SendClientMessage (playerid, -1, str);
-		SetPlayerChatBubble(playerid, text, COLOR_RED, 20.0 , 100000000000 );
+		SetPlayerChatBubble(playerid, text, COLOR_RED, 10.0 , 100000000000 );
 		format(str, sizeof(str), "{C8C8C8}Para borrar tu descripción usa /yob");
 		SendClientMessage (playerid, -1, str);
 	}
@@ -24,6 +24,6 @@ CMD:yob(playerid, params[])
 	new str[128];
 	format (str, sizeof (str), "{C8C8C8}Borraste tu descripción, para volver a poner una usa el comando /yo");
 	SendClientMessage(playerid, -1, str);
-	SetPlayerChatBubble(playerid,"", COLOR_RED, 20.0, 1000);
+	SetPlayerChatBubble(playerid,"", COLOR_RED, 10.0, 1000);
 	return 1;
 }
