@@ -13,6 +13,7 @@
 enum tCarKey {
 	ckKeyId,
 	ckOwner,
+	ckOwnerName[MAX_PLAYER_NAME],
 	ckCarSqlId,
 	ckLabel[32],
 };
@@ -43,7 +44,7 @@ stock addKeyToPlayer(playerid,carId,ownerId,keylabel[]){
 	new carKey[tCarKey];
 	carKey[ckCarSqlId]=getVehicleSqlId(carId);
 	carKey[ckOwner]=getPlayerMysqlId(ownerId);
-	memcpy(carKey[ckLabel],keylabel,0,sizeof(keylabel),sizeof(carKey[ckLabel]));
+	memcpy(carKey[ckLabel],keylabel,0,strlen(keylabel),32);
 	playerKeys[playerid][playerKeyCount[playerid]++]=carKey;
 	savePlayerCarKeys(playerid);
 	return true;
@@ -72,7 +73,7 @@ public OnKeyListRecovered(playerid){
 		cache_get_field_content(i, "keyId", result); playerKeys[playerid][i][ckKeyId] = strval(result);
 		cache_get_field_content(i, "vehId", result); playerKeys[playerid][i][ckCarSqlId] = strval(result);
 		cache_get_field_content(i, "ownerId", result); playerKeys[playerid][i][ckOwner] = strval(result);
-		cache_get_field_content(i, "keyLabel", playerKeys[playerid][i][ckLabel]);
+		cache_get_field_content(i, "keyLabel", playerKeys[playerid][i][ckLabel],1,32);
 	}
 	return 1;
 }
@@ -123,7 +124,7 @@ stock listPlayerKeys(playerid){
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Posees las siguientes llaves:{C8C8C8}");
 	
 	for(i=0;i<playerKeyCount[playerid];i++){
-		format("{5CCAF1}%d{C8C8C8} - %s de %s",line,sizeof(line),i,playerKeys[playerid][i][ckLabel],GetPlayerNameEx(playerKeys[playerid][i][ckOwner]));
+		format(line,sizeof(line),"{5CCAF1}%d{C8C8C8} - %s de %s",i,playerKeys[playerid][i][ckLabel],GetPlayerNameEx(playerKeys[playerid][i][ckOwnerName]));
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, line);
 	}
 }
@@ -133,19 +134,21 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 }
 
 CMD::llaves(playerid, params[]) {
-	new subCmd[16],
-		keyId,user;
+	new subCmd[16],keyId,user;
 	
-	if(sscanf(params,"s[16]",subCmd)){
-		
-		if(strcmp(subCmd,"listar",true)) {
+	if(sscanf(params,"s[16]",subCmd))
+	{
+		if(strcmp(subCmd,"listar",true)) 
+		{
 			listPlayerKeys(playerid);
 			return 1;
 		} else {
-			if(strcmp(subCmd,"dar")){
-				if(sscanf(params,"s[16]iu",subCmd,keyId,user)){
-					playerGiveKeyToPlayer(playerid,keyid,user);
-					return 1
+			if(strcmp(subCmd,"dar"))
+			{
+				if(sscanf(params,"s[16]iu",subCmd,keyId,user))
+				{
+					playerGiveKeyToPlayer(playerid,keyId,user);
+					return 1;
 				}
 			}
 		}

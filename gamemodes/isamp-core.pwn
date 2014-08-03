@@ -13459,7 +13459,7 @@ CMD:aceptar(playerid,params[]) {
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);
 			GivePlayerCash(VehicleOffer[playerid], VehicleOfferPrice[playerid]);
 		    //PlayerInfo[playerid][pVeh1] = VehicleOfferID[playerid];
-			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid, GetVehicleName(VehicleOfferID[playerid]))
+			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid, GetVehicleName(VehicleOfferID[playerid]));
 		    PlayerPlayerActionMessage(VehicleOffer[playerid], playerid, 10.0, "recibe una suma de dinero y le entrega unas llaves a");
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
