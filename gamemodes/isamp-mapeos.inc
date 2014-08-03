@@ -3,6 +3,7 @@
 #endif
 #define _isamp_mapeos_included
 
+new Textura; //variable a utilizar para todas las texturas de objetos
 //[OBJETOS MOVILES] En los array, el valor 0 es el estado, abierto, cerrado, etc. El resto son los distintos objetos a mover.
 new
 	SIDEGate[7],
@@ -414,7 +415,6 @@ stock removeBuildings(playerid) {
 
 stock LoadMap() {
 
-	new Textura;
 	//MAPEO PLAZA DE WILLOWFIELD
 	CreateDynamicObject(6959, 2507.06201, -1961.74670, 12.57630,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(6959, 2465.72192, -1961.74670, 12.57630,   0.00000, 0.00000, 0.00000);
@@ -5223,8 +5223,8 @@ stock LoadMap() {
 	SetDynamicObjectMaterial(Textura, 0, 6337, "sunset02_law2", "concpanel_la", 0xFFB9B9B8);
 	Textura = CreateDynamicObject(18980, 537.28717, -1302.04956, 18.77799,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 6337, "sunset02_law2", "concpanel_la", 0xFFB9B9B8);
-	CreateDynamicObject(18981, 553.92401, -1301.32715, 15.74800,   0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(18981, 530.63501, -1301.32715, 15.74700,   0.00000, 90.00000, 0.00000);
+	CreateObject(18981, 553.92401, -1301.32715, 15.74800,   0.00000, 90.00000, 0.00000);
+	CreateObject(18981, 530.63501, -1301.32715, 15.74700,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19377, 542.29828, -1298.05835, 31.33180,   0.00000, 90.00000, 90.00000);
 	Textura = CreateDynamicObject(19447, 542.14685, -1302.20654, 29.78627,   0.00000, 0.00000, 90.00000);
 	SetDynamicObjectMaterial(Textura, 0, 19325, "lsmall_shops", "lsmall_window01", 0xFFA4C6FF);
