@@ -14352,8 +14352,7 @@ CMD:comer(playerid, params[])
 					}
 				}
 			}
-		}
-		if(Business[i][bType] == BIZ_PIZZERIA)
+        	if(Business[i][bType] == BIZ_PIZZERIA)
 		{
 	    	if(Business[i][bProducts] <= 0)
               	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
@@ -14456,6 +14455,7 @@ CMD:comer(playerid, params[])
 				}
 			}
 		}
+	}
 	return 1;
 }
 
