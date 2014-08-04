@@ -1892,14 +1892,14 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-    if(TextAnim == 1)
+   if (TextAnim[playerid])
 {
-    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-    {
-    ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
-    ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
-   	timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
-    }
+ if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+ {
+ ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+ ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+ timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+ }
 }
 
 	if(Muted[playerid])	{
