@@ -22,6 +22,24 @@ enum tCarKey {
 new playerKeys[MAX_PLAYERS][MAX_PLAYER_KEYS][tCarKey];
 new playerKeyCount[MAX_PLAYERS];
 
+stock updateCarOwnerName(target,name){
+	new i;
+
+	for(i=0;i<playerKeyCount[MAX_PLAYERS];i++){
+		
+
+	if(veh1ID != 0 && VehicleInfo[veh1ID][VehOwnerSQLID] == PlayerInfo[target][pID])
+	{
+		VehicleInfo[veh1ID][VehOwnerName] = name;
+		SaveVehicle(veh1ID);
+	}
+	if(veh2ID != 0 && VehicleInfo[veh2ID][VehOwnerSQLID] == PlayerInfo[target][pID])
+	{
+		VehicleInfo[veh2ID][VehOwnerName] = name;
+		SaveVehicle(veh2ID);
+	}
+}
+
 stock playerHasCarKey(playerid,carId) {
 	new i;
 	for(i=0;i<playerKeyCount[playerid];i++)

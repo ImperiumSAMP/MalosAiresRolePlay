@@ -8084,13 +8084,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 					    SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo en cualquier lugar!");
 					    return 1;
 					}
-					if(PlayerInfo[playerid][pVeh1] == vehicleid || PlayerInfo[playerid][pVeh2] == vehicleid) {
+					if(playerHasCarKey(playerid,vehicleid)) {
 						GivePlayerCash(playerid, price / 2);
-						if(PlayerInfo[playerid][pVeh1] == vehicleid) {
-							PlayerInfo[playerid][pVeh1] = 0;
-						} else {
-						    PlayerInfo[playerid][pVeh2] = 0;
-						}
 						resetVehicle(vehicleid);
                         VehicleInfo[vehicleid][VehType] = VEH_NONE;
 						SetVehicleToRespawn(vehicleid);
@@ -11602,46 +11597,6 @@ TIMER:rentRespawn()
 	return 1;
 }
 
-CMD:motor(playerid,params[]) {
-    new
-		vehicleid = GetPlayerVehicleID(playerid);
-
-	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)	{
-		GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-	 	if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD) {
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehFuel] < 1) {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene combustible.");
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehHP] < 500) {
-			PlayerActionMessage(playerid,15.0,"intenta encender el motor del vehículo pero se encuentra dañado.");
-			SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo se encuentra averiado.");
-			return 1;
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_FACTION && VehicleInfo[vehicleid][VehFaction] != PlayerInfo[playerid][pFaction]) {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) {
-			SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && PlayerInfo[playerid][pID] != VehicleInfo[vehicleid][VehOwnerSQLID] && AdminDuty[playerid] != 1) {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehJob] == JOB_FARM || VehicleInfo[vehicleid][VehJob] == JOB_DRUGF || VehicleInfo[vehicleid][VehJob] == JOB_TRAN || VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
-		    SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
-		    return 1;
-		} else if(VehicleInfo[vehicleid][VehEngine] != 1) {
-			PlayerActionMessage(playerid,15.0,"ha encendido el motor del vehículo.");
-			SetEngine(vehicleid, 1);
-		} else {
-			PlayerActionMessage(playerid,15.0,"ha apagado el motor del vehículo.");
-			SetEngine(vehicleid, 0);
-		}
-	} else {
-	    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
-	}
-	return 1;
-}
-
 //===============================COMANDOS DE PMA================================
 
 CMD:ayudap(playerid, params[])
@@ -12715,8 +12670,7 @@ CMD:mostrarced(playerid, params[])
 	if(vehicleid < 1 || vehicleid > MAX_VEH)
         return SendClientMessage(playerid, COLOR_YELLOW2, "Vehículo inválido.");
 
-	if( vehicleid == PlayerInfo[playerid][pVeh1] ||
-	    vehicleid == PlayerInfo[playerid][pVeh2] ||
+	if( playerHasCarKey(playerid,vehicleid) ||
 	    (VehicleInfo[vehicleid][VehType] == VEH_FACTION && PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction]) ||
 	    (VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] == vehicleid) )
 	{
@@ -13725,7 +13679,7 @@ CMD:aceptar(playerid,params[]) {
 		new vID = GetPlayerVehicleID(playerid);
 	    if(GetVehicleType(vID) != VTYPE_CAR)
 	    	return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo invalido.");
-	    if(PlayerInfo[playerid][pVeh1] != vID && PlayerInfo[playerid][pVeh2] != vID)
+	    if(!playerHasCarKey(playerid,vID))
 			return SendClientMessage(playerid, COLOR_WHITE, "No eres dueño de ese vehiculo.");
 	    PlayerActionMessage(DestuningOffer[playerid], 15.0, "comienza a desarmar el vehiculo y remover las partes tuneadas.");
 		for(new i = 0; i < 14; i++)
@@ -14916,7 +14870,7 @@ CMD:destunear(playerid, params[])
 	new vID = GetPlayerVehicleID(target);
     if(GetVehicleType(vID) != VTYPE_CAR)
         return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
-    if(PlayerInfo[target][pVeh1] != vID && PlayerInfo[target][pVeh2] != vID)
+    if(!playerHasCarKey(playerid,vehicleid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de ese vehiculo.");
 	    
     DestuningOffer[target] = playerid;
@@ -14954,7 +14908,7 @@ CMD:tunear(playerid,params[])
   	if(!ProxDetectorS(5.0, playerid, target))
   	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 	tuningVehicleID = GetPlayerVehicleID(playerid);
-	if(PlayerInfo[target][pVeh1] != tuningVehicleID && PlayerInfo[target][pVeh2] != tuningVehicleID)
+	if(!playerHasCarKey(playerid,tuningVehicleID))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de este vehiculo.");
     if(GetVehicleType(tuningVehicleID) != VTYPE_CAR && GetVehicleType(tuningVehicleID) != VTYPE_BIKE)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
@@ -14987,7 +14941,7 @@ CMD:tuning(playerid, params[])
  	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de conductor del auto que vas a tunear!");
 	new vID = GetPlayerVehicleID(playerid);
-  	if(PlayerInfo[clientID][pVeh1] != vID && PlayerInfo[clientID][pVeh2] != vID)
+  	if(!playerHasCarKey(playerid,vID))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este auto no es de tu cliente.");
    	if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehiculo invalido.");
@@ -15310,16 +15264,8 @@ CMD:cambiarnombre(playerid, params[]) {
 			houseID = PlayerInfo[target][pHouseKey],
 			bizID = PlayerInfo[target][pBizKey];
 
-        if(veh1ID != 0 && VehicleInfo[veh1ID][VehOwnerSQLID] == PlayerInfo[target][pID])
-		{
-			VehicleInfo[veh1ID][VehOwnerName] = name;
-  			SaveVehicle(veh1ID);
-		}
-		if(veh2ID != 0 && VehicleInfo[veh2ID][VehOwnerSQLID] == PlayerInfo[target][pID])
-		{
-			VehicleInfo[veh2ID][VehOwnerName] = name;
-			SaveVehicle(veh2ID);
-		}
+        updateCarOwnerName(target,name);
+		
 		if(houseID != 0)
 		{
 		    House[houseID][Owner] = name;
