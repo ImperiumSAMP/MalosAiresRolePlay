@@ -4013,6 +4013,7 @@ GetBusinessPayCheck(bizID)
 		case BIZ_ADVE: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
 		case BIZ_CLOT2: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
 		case BIZ_CLOT: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_PIZZERIA: payDayMoney = Business[bizID][bPrice] / 434; //0.23 porciento
 		default: 		payDayMoney = 0;
 	}
 	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
@@ -15275,11 +15276,11 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
 	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
 	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://95.141.24.140:80/listen.pls");
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
      	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://206.217.213.235:8170/listen.pls");
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://5.135.158.214:6316/listen.pls");
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streamlky.alsolnet.com:443/fmpasion/listen.pls");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://178.33.226.68:8112/listen.pls");
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
+	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
 	}
 	isHearingVehicleRedio[playerid] = true;
 }
