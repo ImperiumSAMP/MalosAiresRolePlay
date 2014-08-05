@@ -2,22 +2,21 @@
 #endinput
 #endif 
 #define _isamp_anim_hablar
-new TextAnim = 0;//para animacion al hablar
+new bool:TextAnim[MAX_PLAYERS] = false;//para animacion al hablar
 CMD:animhablar (playerid, params[])
 {
-if (TextAnim == 0)
+if (!TextAnim[playerid])
 {
-    TextAnim = 1;
-    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {C8C8C8}ACTIVADA");
+ TextAnim[playerid] = true;
+ SendClientMessage (playerid, COLOR_GREY, "Animación al hablar: {FF4600}ACTIVADA{C8C8C8}");
 }
 else
 {
-    TextAnim = 0;
-    SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "Animación al hablar: {C8C8C8}DESACTIVADA");
+ TextAnim[playerid] = false;
+ SendClientMessage (playerid, COLOR_GREY, "Animación al hablar: {FF4600}DESACTIVADA{C8C8C8}");
 }
 return 1;
 }
-
 
 forward EndAnim (playerid);
 public EndAnim (playerid)
