@@ -4337,11 +4337,18 @@ stock isWeaponAllowed(weapon) {
 	}
 	return 1;
 }
+stock isWeaponlevelone(weapon) {
+	if(weapon == 1 || weapon == 2 || weapon == 3 || weapon == 4 || weapon == 5 || weapon == 6 || weapon == 7 || weapon == 8 || weapon == 9 || weapon == 10 || weapon == 11 || weapon == 12 || weapon == 13 || weapon == 14 || weapon == 15 || weapon == 16 || weapon == 17 || weapon == 18 || weapon == 22 || weapon == 23 || weapon == 24 || weapon == 25 || weapon == 26 || weapon == 27 || weapon == 28 || weapon == 29 ||
+	   weapon == 30 || weapon == 31 || weapon == 32 || weapon == 33 || weapon == 34 || weapon == 41 || weapon == 42 || weapon == 43 || weapon == 45 || weapon == 46){
+	    return 0;
+	}
+	return 1;
+}
 
 public antiCheatTimer() {
 	new
 	    string[128];
-	    
+
 	foreach(new playerid : Player) {
 	    new weapon = GetPlayerWeapon(playerid);
 
@@ -4353,9 +4360,18 @@ public antiCheatTimer() {
 					KickPlayer(playerid, "el sistema", string);
 				}
 			}
-			
+
 			if(GetPVarInt(playerid, "died") != 1) {
 				SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
+			}
+
+			if (PlayerInfo[playerid][pPlayingHours] <= 2) {
+			   if(!isWeaponlevelone(weapon)){
+			       ResetPlayerWeapons(playerid);
+			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
+				   AdministratorMessage(COLOR_WHITE, string, 1);
+
+				}
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid)) {
@@ -4375,7 +4391,6 @@ public antiCheatTimer() {
 		}
 	}
 }
-
 public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
 {
 	if(refilltype == 1)
@@ -4727,7 +4742,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	if(playerid == INVALID_PLAYER_ID) {
 	    return 1;
 	}
-	
+
 	if(newstate == PLAYER_STATE_ONFOOT) {
 		if(SeatBelt[playerid])	{
 			new vType = GetVehicleType(vehicleid);
