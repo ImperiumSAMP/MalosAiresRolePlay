@@ -1892,7 +1892,7 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-   if (TextAnim[playerid])
+    if (TextAnim[playerid])
 {
  if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
  {
