@@ -23,6 +23,36 @@
 #define BIZ_CLUB2               11
 #define BIZ_PIZZERIA            12
 
+
+enum RES_PRICELIST {
+		bplItemName[64],
+		bplPrice,
+		Float:bplEatAmount,
+		Float:bplDrinkAmount
+};
+
+static const RestMenu[][RES_PRICELIST] = {
+	//Restaurant
+	{"Milanesa con papas", 80, 70.0, 0.0},
+	{"Pollo al horno con verduras", 90, 70.0, 0.0},
+	{"Ravioles de espinaca con salsa parisiene", 90, 70.0, 0.0},
+	{"Ensalada Cáesar", 70, 60.0, 0.0},
+	{"Bife de cerdo a la plancha", 90, 70.0, 0.0},
+	{"Pastel de papa casero", 75, 70.0, 0.0},
+	{"Asado completo con bebida", 120, 100.0, 70.0}
+};
+
+static const PizzaMenu[][RES_PRICELIST] = {
+	 //Pizza
+	{"Pizza de Muzzarella", 65, 65.0, 0.0},
+	{"Pizza de Fugazzeta", 70, 70.0, 0.0},
+	{"Pizza de Calabresa", 80, 80.0, 0.0},
+	{"Pizza Especial con bebida", 100, 70.0, 50.0},
+	{"Pizza Estilo Primavera", 90, 85.0, 0.0},
+	{"Pizza De Jamón, Roquefort y Morrones con bebida", 105, 85.0, 60.0},
+	{"Pizza de 4 Quesos Artesanal con bebida", 115, 95.0, 65.0}
+};
+
 //Enums
 enum BusinessSystem {
 	bID,
@@ -679,6 +709,85 @@ CMD:anvender(playerid, params[]) {
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		saveBusiness(bizID);
 		ReloadBizIcon(bizID);
+	}
+	return 1;
+}
+
+//=======================NEGOCIOS TIPO RESTAURANT===============================
+
+stock bizSellProduct(businessid,playerid,price,productCount=1){
+	if(GetPlayerCash(playerid)<price)
+		return 0;
+	
+	GivePlayerCash(playerid, 0-price);
+	Business[businessid][bTill] += price;
+	Business[businessid][bProducts]-=productCount;
+	saveBusiness(businessid);	
+	return 1;
+}
+
+stock bizShowMenu(playerid,const menu[][RES_PRICELIST],menusize){
+	new itemText[128];
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");						
+	
+	for(new i=0; i!= menusize;i++)
+	{
+		format(itemText,sizeof(itemText),"%d) - %s - Precio %.2f",i+1,menu[i][bplItemName],menu[i][bplPrice]);
+		SendClientMessage(playerid, COLOR_WHITE, itemText);
+	}
+	return 1;
+}
+
+stock isPlayerInBusiness(playerid,businessid){
+	return PlayerToPoint(35.0, playerid, Business[businessid][bInsideX], Business[businessid][bInsideY], Business[businessid][bInsideZ]) && (GetPlayerVirtualWorld(playerid) == businessid + 17000);
+}
+
+stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],menusize){
+	new option;
+	new eatMessage[128];	
+	
+	if(sscanf(params, "i", option))
+		return bizShowMenu(playerid,menu,menusize);
+			
+	if(option > menusize)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		
+	option=option-1;
+	
+	if(!bizSellProduct(businessid,playerid,menu[option][bplPrice]))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");						
+
+	
+	format(eatMessage,sizeof(eatMessage),"ordena '%s' y comienza a comer...",  menu[option][bplItemName]);
+	PlayerActionMessage(playerid, 15.0, eatMessage);
+	
+	if(menu[option][bplEatAmount] > 0.0) PlayerEat(playerid, menu[option][bplEatAmount]);
+	if(menu[option][bplDrinkAmount] > 0.0) PlayerEat(playerid, menu[option][bplDrinkAmount]);
+	
+	return 1;
+}
+
+CMD:comer(playerid, params[])
+{	
+	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+
+	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(Business[i][bType] != BIZ_REST && Business[i][bType] != BIZ_PIZZERIA){
+			return 1;
+		}
+			
+		if(isPlayerInBusiness(playerid,i))
+		{
+			if(Business[i][bProducts] <= 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+
+			switch(Business[i][bType]) {
+				case BIZ_REST: processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
+				case BIZ_PIZZERIA: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+			}					
+		}
 	}
 	return 1;
 }
