@@ -11,6 +11,7 @@
 #define BUSINESS_TYPES3         "14: Burger King - 15:Comidas Rápidas"
 
 // Negocios.
+#define BIZ_REST          		1
 #define BIZ_PHON                2
 #define BIZ_247                	3
 #define BIZ_AMMU                4
@@ -21,12 +22,10 @@
 #define BIZ_CASINO              9
 #define BIZ_HARD                10
 #define BIZ_CLUB2               11
-
-#define BIZ_REST          		50
-#define BIZ_PIZZERIA            51
-#define BIZ_BURGER1             52
-#define BIZ_BURGER2             53
-#define BIZ_BELL                54
+#define BIZ_PIZZERIA            12
+#define BIZ_BURGER1             13
+#define BIZ_BURGER2             14
+#define BIZ_BELL                15
 
 
 enum RES_PRICELIST {
@@ -94,6 +93,15 @@ enum BusinessSystem {
 new Business[MAX_BUSINESS][BusinessSystem];
 new bool:openBizPermission[MAX_BUSINESS];
 
+stock GetPlayerBusiness(playerid) {
+	for(new i = 1; i < MAX_BUSINESS; i++) {
+	    if(Business[i][bInsideInt] == GetPlayerInterior(playerid) && Business[i][bInsideWorld] == GetPlayerVirtualWorld(playerid) && Business[i][bInsideWorld] != 0) {
+			return i;
+		}
+	}
+	return 0;
+}
+
 //========================COMANDOS ADMIN DE NEGOCIOS============================
 
 CMD:anegocios(playerid, params[])
@@ -106,6 +114,7 @@ CMD:anegocios(playerid, params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
+
 
 CMD:aninfo(playerid, params[])
 {
@@ -768,43 +777,26 @@ stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],m
 	PlayerActionMessage(playerid, 15.0, eatMessage);
 	
 	if(menu[option][bplEatAmount] > 0.0) PlayerEat(playerid, menu[option][bplEatAmount]);
-	if(menu[option][bplDrinkAmount] > 0.0) PlayerEat(playerid, menu[option][bplDrinkAmount]);
+	if(menu[option][bplDrinkAmount] > 0.0) PlayerDrink(playerid, menu[option][bplDrinkAmount]);
 	
 	return 1;
 }
 
 CMD:comer(playerid, params[])
 {	
+	new i;
+	
 	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 
-	for(new i = 0; i < MAX_BUSINESS; i++)
-	{
-		if(isPlayerInBusiness(playerid,i))
-		{
-			if(Business[i][bType] < BIZ_REST){
-				printf("not a restaurant");
-			} else {
-		
-				printf("In a restaurant!");
-				
-
-				if(Business[i][bProducts] <= 0)
-					return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
-				
-				printf("processing restaurant menu");
-				switch(Business[i][bType]) {
-					case BIZ_REST: processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
-					case BIZ_PIZZERIA: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-					/*case BIZ_BURGER1: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-					case BIZ_BURGER2: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-					case BIZ_BURGER3: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));*/
-				}					
-				return 1;
-			}
-		}
-		else
-			printf("not in the business");
-	}
+	i=GetPlayerBusiness(playerid);
+	
+	switch(Business[i][bType]) {
+		case BIZ_REST: return processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
+		case BIZ_PIZZERIA: return processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+		/*case BIZ_BURGER1: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+		case BIZ_BURGER2: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+		case BIZ_BELL: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));*/
+	}					
 	return 1;
 }
