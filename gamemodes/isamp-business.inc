@@ -7,7 +7,8 @@
 
 // Mensajes del sistema.
 #define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana"
-#define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12:Pizzeria"
+#define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
+#define BUSINESS_TYPES3         "14: Burger King - 15:Comidas Rápidas"
 
 // Negocios.
 #define BIZ_REST          		1
@@ -22,6 +23,9 @@
 #define BIZ_HARD                10
 #define BIZ_CLUB2               11
 #define BIZ_PIZZERIA            12
+#define BIZ_BURGER1             13
+#define BIZ_BURGER2             14
+#define BIZ_BELL                15
 
 
 enum RES_PRICELIST {
@@ -566,6 +570,7 @@ CMD:antipo(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tipos de negocio:");
 	    SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES);
 		SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES2);
+		SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES3);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antipo [idnegocio] [tipo]");
 	}
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {

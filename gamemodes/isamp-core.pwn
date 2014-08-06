@@ -1892,14 +1892,14 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-    if(TextAnim == 1)
+    if (TextAnim[playerid])
 {
-    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-    {
-    ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
-    ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
-   	timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
-    }
+ if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+ {
+ ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+ ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+ timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+ }
 }
 
 	if(Muted[playerid])	{
@@ -4002,18 +4002,22 @@ GetBusinessPayCheck(bizID)
 	new payDayMoney;
 	switch(Business[bizID][bType])
 	{
-		case BIZ_REST: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLUB: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_CLUB2:	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
-		case BIZ_CASINO: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_HARD:  payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_AMMU: 	payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
-		case BIZ_247: 	payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
-		case BIZ_PHON: 	payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
-		case BIZ_ADVE: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLOT2: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_CLOT: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		default: 		payDayMoney = 0;
+		case BIZ_REST: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
+		case BIZ_CLUB: 		payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_CLUB2:		payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_CASINO: 	payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_HARD:  	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_AMMU: 		payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
+		case BIZ_247: 		payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
+		case BIZ_PHON: 		payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		case BIZ_ADVE: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
+		case BIZ_CLOT2:		payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_CLOT:	 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_PIZZERIA: 	payDayMoney = Business[bizID][bPrice] / 434; //0.23 porciento
+		case BIZ_BURGER1: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_BURGER2: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_BELL:      payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		default: 			payDayMoney = 0;
 	}
 	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
 	payDayMoney += 50 * PRICE_BIZ_PROD; // lo que nos saca de productos el entorno
@@ -4336,11 +4340,18 @@ stock isWeaponAllowed(weapon) {
 	}
 	return 1;
 }
+stock isWeaponlevelone(weapon) {
+	if(weapon == 1 || weapon == 2 || weapon == 3 || weapon == 4 || weapon == 5 || weapon == 6 || weapon == 7 || weapon == 8 || weapon == 9 || weapon == 10 || weapon == 11 || weapon == 12 || weapon == 13 || weapon == 14 || weapon == 15 || weapon == 16 || weapon == 17 || weapon == 18 || weapon == 22 || weapon == 23 || weapon == 24 || weapon == 25 || weapon == 26 || weapon == 27 || weapon == 28 || weapon == 29 ||
+	   weapon == 30 || weapon == 31 || weapon == 32 || weapon == 33 || weapon == 34 || weapon == 41 || weapon == 42 || weapon == 43 || weapon == 45 || weapon == 46){
+	    return 0;
+	}
+	return 1;
+}
 
 public antiCheatTimer() {
 	new
 	    string[128];
-	    
+
 	foreach(new playerid : Player) {
 	    new weapon = GetPlayerWeapon(playerid);
 
@@ -4352,9 +4363,18 @@ public antiCheatTimer() {
 					KickPlayer(playerid, "el sistema", string);
 				}
 			}
-			
+
 			if(GetPVarInt(playerid, "died") != 1) {
 				SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
+			}
+
+			if (PlayerInfo[playerid][pPlayingHours] <= 2) {
+			   if(!isWeaponlevelone(weapon)){
+			       ResetPlayerWeapons(playerid);
+			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
+				   AdministratorMessage(COLOR_WHITE, string, 1);
+
+				}
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid)) {
@@ -4374,7 +4394,6 @@ public antiCheatTimer() {
 		}
 	}
 }
-
 public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
 {
 	if(refilltype == 1)
@@ -4726,7 +4745,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	if(playerid == INVALID_PLAYER_ID) {
 	    return 1;
 	}
-	
+
 	if(newstate == PLAYER_STATE_ONFOOT) {
 		if(SeatBelt[playerid])	{
 			new vType = GetVehicleType(vehicleid);
@@ -6202,6 +6221,9 @@ stock ReloadBizIcon(bizid) {
 	    case 10:	bizType = "Ferretería";
 	    case 11:	bizType = "Discoteca/Club Nocturno";
 	    case 12: 	bizType = "Pizzeria";
+	    case 13:    bizType = "McDonals";
+		case 14:    bizType = "Burger King";
+		case 15:    bizType = "Comidas Rápidas";
 	    default: 	bizType = "Indefinido";
 	}
 
@@ -8260,7 +8282,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
 							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
 								else
-								    if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
+								    if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA || Business[i][bType] == BIZ_BURGER1 || Business[i][bType] == BIZ_BURGER2 || Business[i][bType] == BIZ_BELL)
 								        SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
 									else
 										if(Business[i][bType] == BIZ_CASINO)
@@ -11186,6 +11208,529 @@ CMD:numero(playerid, params[]) {
 	}
 	return 1;
 }
+
+//==============NEGOCIOS TIPO RESTAURANT/MCDONALS/BURGER/C-BELL=================
+/*
+CMD:comer(playerid, params[])
+{
+	new menu,
+	    business = GetPlayerBusiness(playerid);
+
+	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+	if(business != 0 && Business[business][bType] == BIZ_REST) // R E S T A U R A N T
+	{
+		if(Business[business][bProducts] <= 0)
+        	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		if(sscanf(params, "i", menu))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+			SendClientMessage(playerid, COLOR_WHITE, "1) - Milanesa con papas - Precio: $80.");
+			SendClientMessage(playerid, COLOR_WHITE, "2) - Pollo al horno con verduritas - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "3) - Ravioles de espinaca con salsa parisiene - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "4) - Ensalada Cáesar - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "5) - Bife de cerdo a la plancha - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "6) - Pastel de papa casero - Precio: $75.");
+			SendClientMessage(playerid, COLOR_WHITE, "7) - Asado completo con bebida - Precio: $120.");
+			return 1;
+		}
+		switch(menu)
+		{
+		    case 1:
+		    {
+		        if(GetPlayerCash(playerid) < 80)
+		            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -80);
+	    		Business[business][bTill] += 80;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena una milanesa con papas y comienza a comer.");
+                PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+            }
+			case 2:
+		    {
+		        if(GetPlayerCash(playerid) < 90)
+		            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -90);
+	    		Business[business][bTill] += 90;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena un pollo al horno con verduritas y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 3:
+		    {
+		        if(GetPlayerCash(playerid) < 90)
+		        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -90);
+	    		Business[business][bTill] += 90;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena unos ravioles de espinaca a la parisiene y comienza a comer.");
+                PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 4:
+		    {
+		        if(GetPlayerCash(playerid) < 70)
+		        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+	    		Business[business][bTill] += 70;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena una ensalada Caésar y comienza a comer.");
+                PlayerEat(playerid, 60.0);
+				saveBusiness(business);
+			}
+			case 5:
+		    {
+		        if(GetPlayerCash(playerid) < 90)
+		            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -90);
+	    		Business[business][bTill] += 90;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena un bife de cerdo a la plancha y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 6:
+		    {
+		        if(GetPlayerCash(playerid) < 75)
+		        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -75);
+	    		Business[business][bTill] += 75;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena un pastel de papas casero y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 7:
+		    {
+		        if(GetPlayerCash(playerid) < 120)
+		        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -120);
+	    		Business[business][bTill] += 120;
+    	   		Business[business][bProducts]--;
+		  		PlayerActionMessage(playerid, 15.0, "ordena un asado completo con bebida y comienza a comer.");
+                PlayerEat(playerid, 100.0);
+                PlayerDrink(playerid, 70.0);
+				saveBusiness(business);
+			}
+			default:
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		}
+	}
+	if(Business[business][bType] == BIZ_PIZZERIA) // P I Z Z E R I A
+	{
+		if(Business[business][bProducts] <= 0)
+		  	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		if(sscanf(params, "i", menu))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+			SendClientMessage(playerid, COLOR_WHITE, "1) - Pizza de Muzzarella - Precio: $65.");
+			SendClientMessage(playerid, COLOR_WHITE, "2) - Pizza de Fugazzeta - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "3) - Pizza de Calabresa - Precio: $80.");
+			SendClientMessage(playerid, COLOR_WHITE, "4) - Pizza Especial con bebida - Precio: $100.");
+			SendClientMessage(playerid, COLOR_WHITE, "5) - Pizza Estilo Primavera - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "6) - Pizza De Jamón, Roquefort y Morrones con bebida - Precio: $105.");
+			SendClientMessage(playerid, COLOR_WHITE, "7) - Pizza de 4 Quesos Artesanal con bebida - Precio: $115.");
+			return 1;
+		}
+		switch(menu)
+		{
+			case 1:
+			{
+				if(GetPlayerCash(playerid) < 65)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -65);
+				Business[business][bTill] += 65;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza de Muzzarella y comienza a comer.");
+				PlayerEat(playerid, 65.0);
+				saveBusiness(business);
+			}
+			case 2:
+			{
+				if(GetPlayerCash(playerid) < 70)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+				Business[business][bTill] += 70;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza de Fugazzeta y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 3:
+			{
+				if(GetPlayerCash(playerid) < 80)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -80);
+				Business[business][bTill] += 80;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza de Calabresa y comienza a comer.");
+				PlayerEat(playerid, 80.0);
+				saveBusiness(business);
+			}
+			case 4:
+			{
+				if(GetPlayerCash(playerid) < 100)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -100);
+				Business[business][bTill] += 100;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza Especial con bebida y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				PlayerDrink(playerid, 50.0);
+				saveBusiness(business);
+			}
+			case 5:
+			{
+				if(GetPlayerCash(playerid) < 90)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -90);
+				Business[business][bTill] += 90;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza Estilo Primavera y comienza a comer.");
+				PlayerEat(playerid, 85.0);
+				saveBusiness(business);
+			}
+			case 6:
+			{
+				if(GetPlayerCash(playerid) < 105)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -105);
+				Business[business][bTill] += 105;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza De Jamón, Roquefort y Morrones con bebida y comienza a comer.");
+				PlayerEat(playerid, 85.0);
+				PlayerDrink(playerid, 60.0);
+				saveBusiness(business);
+			}
+			case 7:
+			{
+				if(GetPlayerCash(playerid) < 115)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -115);
+				Business[business][bTill] += 115;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una pizza de 4 Quesos Artesanal con bebida y comienza a comer.");
+				PlayerEat(playerid, 95.0);
+				PlayerDrink(playerid, 65.0);
+				saveBusiness(business);
+			}
+			default:
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		}
+	}
+	if(Business[business][bType] == BIZ_BURGER1) // M C D O N A L S
+	{
+		if(Business[business][bProducts] <= 0)
+		  	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		if(sscanf(params, "i", menu))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+			SendClientMessage(playerid, COLOR_WHITE, "1) - Angus Beacon con gaseosa grande y papas grandes - Precio: $110.");
+			SendClientMessage(playerid, COLOR_WHITE, "2) - Doble Cuarto de libra con papas medianas y gaseosa mediana - Precio: $95.");
+			SendClientMessage(playerid, COLOR_WHITE, "3) - Triple Mac - Precio: $60.");
+			SendClientMessage(playerid, COLOR_WHITE, "4) - Big Mac con gaseosa mediana - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "5) - McNifica - Precio: $50.");
+			SendClientMessage(playerid, COLOR_WHITE, "6) - MacFiesta con huevo y gaseosa grande - Precio: $55.");
+			SendClientMessage(playerid, COLOR_WHITE, "7) - Jugo de naranja McDonals - Precio: $25.");
+			return 1;
+		}
+		switch(menu)
+		{
+			case 1:
+			{
+				if(GetPlayerCash(playerid) < 110)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -110);
+				Business[business][bTill] += 110;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Angus Beacon con gaseosa grande y papas grandes y comienza a comer.");
+				PlayerEat(playerid, 75.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 2:
+			{
+				if(GetPlayerCash(playerid) < 95)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -95);
+				Business[business][bTill] += 95;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Doble Cuarto de libra con papas medianas y gaseosa mediana y comienza a comer.");
+				PlayerEat(playerid, 60.0);
+				PlayerDrink(playerid, 30.0);
+				saveBusiness(business);
+			}
+			case 3:
+			{
+				if(GetPlayerCash(playerid) < 60)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -60);
+				Business[business][bTill] += 60;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Triple Mac y comienza a comer.");
+				PlayerEat(playerid, 50.0);
+				saveBusiness(business);
+			}
+			case 4:
+			{
+				if(GetPlayerCash(playerid) < 70)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+				Business[business][bTill] += 70;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Big Mac con gaseosa mediana y comienza a comer.");
+				PlayerEat(playerid, 50.0);
+				PlayerDrink(playerid, 35.0);
+				saveBusiness(business);
+			}
+			case 5:
+			{
+				if(GetPlayerCash(playerid) < 50)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -50);
+				Business[business][bTill] += 50;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una McNifica y comienza a comer.");
+				PlayerEat(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 6:
+			{
+				if(GetPlayerCash(playerid) < 55)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -55);
+				Business[business][bTill] += 55;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una MacFiesta con huevo y gaseosa grande y comienza a comer.");
+				PlayerEat(playerid, 45.0);
+				PlayerDrink(playerid, 30.0);
+				saveBusiness(business);
+			}
+			case 7:
+			{
+				if(GetPlayerCash(playerid) < 25)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -25);
+				Business[business][bTill] += 25;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Jugo de naranja McDonals y comienza a comer.");
+				PlayerDrink(playerid, 45.0);
+				saveBusiness(business);
+			}
+			default:
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		}
+	}
+	if(Business[business][bType] == BIZ_BURGER2) // B U R G E R K I N G
+	{
+		if(Business[business][bProducts] <= 0)
+		  	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		if(sscanf(params, "i", menu))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+			SendClientMessage(playerid, COLOR_WHITE, "1) - Whopper con queso y papas medianas - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "2) - SteakHouse Burger XT con papas Noisette - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "3) - Hamburguesa con queso - Precio: $35.");
+			SendClientMessage(playerid, COLOR_WHITE, "4) - BK Stacker Cuádruple con vaso grande y papas medianas - Precio: $105.");
+			SendClientMessage(playerid, COLOR_WHITE, "5) - King de pollo Francés con papas pequeñas - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "6) - Tendergrill Max con vaso mediano y papas grandes - Precio: $90.");
+			SendClientMessage(playerid, COLOR_WHITE, "7) - Churrasquito Pampeano con vaso grande - Precio: $100.");
+			return 1;
+		}
+		switch(menu)
+		{
+			case 1:
+			{
+				if(GetPlayerCash(playerid) < 70)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+				Business[business][bTill] += 70;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una Whopper con queso y papas medianas y comienza a comer.");
+				PlayerEat(playerid, 60.0);
+				saveBusiness(business);
+			}
+			case 2:
+			{
+				if(GetPlayerCash(playerid) < 80)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -80);
+				Business[business][bTill] += 80;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un SteakHouse Burger XT con papas Noisette y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				saveBusiness(business);
+			}
+			case 3:
+			{
+				if(GetPlayerCash(playerid) < 35)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -35);
+				Business[business][bTill] += 35;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una Hamburguesa con queso y comienza a comer.");
+				PlayerEat(playerid, 30.0);
+				saveBusiness(business);
+			}
+			case 4:
+			{
+				if(GetPlayerCash(playerid) < 105)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -105);
+				Business[business][bTill] += 105;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una BK Stacker Cuádruple con vaso grande y papas medianas y comienza a comer.");
+				PlayerEat(playerid, 80.0);
+				PlayerDrink(playerid, 45.0);
+				saveBusiness(business);
+			}
+			case 5:
+			{
+				if(GetPlayerCash(playerid) < 70)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+				Business[business][bTill] += 70;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un King de pollo Francés con papas pequeñas y comienza a comer.");
+				PlayerEat(playerid, 60.0);
+				saveBusiness(business);
+			}
+			case 6:
+			{
+				if(GetPlayerCash(playerid) < 90)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -90);
+				Business[business][bTill] += 90;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Tendergrill Max con vaso mediano y papas grandes y comienza a comer.");
+				PlayerEat(playerid, 60.0);
+				PlayerDrink(playerid, 35.0);
+				saveBusiness(business);
+			}
+			case 7:
+			{
+				if(GetPlayerCash(playerid) < 100)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -100);
+				Business[business][bTill] += 100;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Churrasquito Pampeano con vaso grande y comienza a comer.");
+				PlayerEat(playerid, 70.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			default:
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		}
+	}
+	if(Business[business][bType] == BIZ_BELL) // C - B E L L
+	{
+		if(Business[business][bProducts] <= 0)
+		  	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		if(sscanf(params, "i", menu))
+		{
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
+			SendClientMessage(playerid, COLOR_WHITE, "1) - Pechuga de pollo - Precio: $65.");
+			SendClientMessage(playerid, COLOR_WHITE, "2) - Albóndigas - Precio: $50.");
+			SendClientMessage(playerid, COLOR_WHITE, "3) - Café con tostado de jamón y queso - Precio: $55.");
+			SendClientMessage(playerid, COLOR_WHITE, "4) - Churrasco con papas fritas y bebida - Precio: $80.");
+			SendClientMessage(playerid, COLOR_WHITE, "5) - Sandwich de Lomo Grille con bebida - Precio: $70.");
+			SendClientMessage(playerid, COLOR_WHITE, "6) - Rabas a la provenzal con bebida - Precio: $85.");
+			SendClientMessage(playerid, COLOR_WHITE, "7) - Ensalada del bosque con Villa del Sur - Precio: $50.");
+			return 1;
+		}
+		switch(menu)
+		{
+			case 1:
+			{
+				if(GetPlayerCash(playerid) < 65)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -65);
+				Business[business][bTill] += 65;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una Pechuga de pollo y comienza a comer.");
+				PlayerEat(playerid, 65.0);
+				saveBusiness(business);
+			}
+			case 2:
+			{
+				if(GetPlayerCash(playerid) < 50)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -50);
+				Business[business][bTill] += 50;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide unas Albóndigas y comienza a comer.");
+				PlayerEat(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 3:
+			{
+				if(GetPlayerCash(playerid) < 55)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -55);
+				Business[business][bTill] += 55;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Café con tostado de jamón y queso y comienza a comer.");
+				PlayerEat(playerid, 40.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 4:
+			{
+				if(GetPlayerCash(playerid) < 80)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -80);
+				Business[business][bTill] += 80;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "Churrasco con papas fritas y bebida y comienza a comer.");
+				PlayerEat(playerid, 55.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 5:
+			{
+				if(GetPlayerCash(playerid) < 70)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -70);
+				Business[business][bTill] += 70;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide un Sandwich de Lomo Grille con bebida y comienza a comer.");
+				PlayerEat(playerid, 50.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 6:
+			{
+				if(GetPlayerCash(playerid) < 85)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -85);
+				Business[business][bTill] += 85;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide unas Rabas a la provenzal con bebida y comienza a comer.");
+				PlayerEat(playerid, 65.0);
+				PlayerDrink(playerid, 40.0);
+				saveBusiness(business);
+			}
+			case 7:
+			{
+				if(GetPlayerCash(playerid) < 50)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+				GivePlayerCash(playerid, -50);
+				Business[business][bTill] += 50;
+				Business[business][bProducts]--;
+				PlayerActionMessage(playerid, 15.0, "pide una Ensalada del bosque con Villa del Sur y comienza a comer.");
+				PlayerEat(playerid, 35.0);
+				PlayerDrink(playerid, 65.0);
+				saveBusiness(business);
+			}
+			default:
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		}
+	}
+	return 1;
+}*/
 
 CMD:comprar(playerid, params[]) {
 	new
@@ -15044,19 +15589,19 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	switch(redio)
 	{
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://184.171.254.134:9878/listen.pls");
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://giss.tv:8001/AltaM.mp3");
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
 	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
 	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
 	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
 	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://95.141.24.140:80/listen.pls");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94"); //nueva
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
      	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://206.217.213.235:8170/listen.pls");
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://5.135.158.214:6316/listen.pls");
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streamlky.alsolnet.com:443/fmpasion/listen.pls");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
+	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
 	}
 	isHearingVehicleRedio[playerid] = true;
 }
