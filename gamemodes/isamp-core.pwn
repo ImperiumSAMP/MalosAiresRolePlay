@@ -6210,20 +6210,20 @@ stock ReloadBizIcon(bizid) {
 	    return 1;
 
 	switch(Business[bizid][bType]) {
-	    case 1: 	bizType = "Restaurant";
-	    case 2: 	bizType = "Compañía telefonica";
-	    case 3: 	bizType = "Tienda 24-7";
-	    case 4: 	bizType = "Armería";
-	    case 5: 	bizType = "Publicidad";
-	    case 6,8: 	bizType = "Tienda de ropa";
-	    case 7: 	bizType = "Bar";
-	    case 9: 	bizType = "Casino";
-	    case 10:	bizType = "Ferretería";
-	    case 11:	bizType = "Discoteca/Club Nocturno";
-	    case 12: 	bizType = "Pizzeria";
-	    case 13:    bizType = "McDonals";
-		case 14:    bizType = "Burger King";
-		case 15:    bizType = "Comidas Rápidas";
+	    case BIZ_REST: 	bizType = "Restaurant";
+	    case BIZ_PHON: 	bizType = "Compañía telefonica";
+	    case BIZ_247: 	bizType = "Tienda 24-7";
+	    case BIZ_AMMU: 	bizType = "Armería";
+	    case BIZ_ADVE: 	bizType = "Publicidad";
+	    case BIZ_CLOT,BIZ_CLOT2: 	bizType = "Tienda de ropa";
+	    case BIZ_CLUB: 	bizType = "Bar";
+	    case BIZ_CASINO: bizType = "Casino";
+	    case BIZ_HARD:	bizType = "Ferretería";
+	    case BIZ_CLUB2:	bizType = "Discoteca/Club Nocturno";
+	    case BIZ_PIZZERIA: 	bizType = "Pizzeria";
+	    case BIZ_BURGER1:    bizType = "McDonals";
+		case BIZ_BURGER2:    bizType = "Burger King";
+		case BIZ_BELL:    bizType = "Comidas Rápidas";
 	    default: 	bizType = "Indefinido";
 	}
 

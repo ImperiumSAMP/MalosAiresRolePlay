@@ -11,7 +11,6 @@
 #define BUSINESS_TYPES3         "14: Burger King - 15:Comidas Rápidas"
 
 // Negocios.
-#define BIZ_REST          		1
 #define BIZ_PHON                2
 #define BIZ_247                	3
 #define BIZ_AMMU                4
@@ -22,10 +21,12 @@
 #define BIZ_CASINO              9
 #define BIZ_HARD                10
 #define BIZ_CLUB2               11
-#define BIZ_PIZZERIA            12
-#define BIZ_BURGER1             13
-#define BIZ_BURGER2             14
-#define BIZ_BELL                15
+
+#define BIZ_REST          		50
+#define BIZ_PIZZERIA            51
+#define BIZ_BURGER1             52
+#define BIZ_BURGER2             53
+#define BIZ_BELL                54
 
 
 enum RES_PRICELIST {
@@ -737,7 +738,7 @@ stock bizShowMenu(playerid,const menu[][RES_PRICELIST],menusize){
 	
 	for(new i=0; i!= menusize;i++)
 	{
-		format(itemText,sizeof(itemText),"%d) - %s - Precio %.2f",i+1,menu[i][bplItemName],menu[i][bplPrice]);
+		format(itemText,sizeof(itemText),"%d) - %s - Precio $%d",i+1,menu[i][bplItemName],menu[i][bplPrice]);
 		SendClientMessage(playerid, COLOR_WHITE, itemText);
 	}
 	return 1;
@@ -779,20 +780,31 @@ CMD:comer(playerid, params[])
 
 	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
-		if(Business[i][bType] != BIZ_REST && Business[i][bType] != BIZ_PIZZERIA){
-			return 1;
-		}
-			
 		if(isPlayerInBusiness(playerid,i))
 		{
-			if(Business[i][bProducts] <= 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+			if(Business[i][bType] < BIZ_REST){
+				printf("not a restaurant");
+			} else {
+		
+				printf("In a restaurant!");
+				
 
-			switch(Business[i][bType]) {
-				case BIZ_REST: processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
-				case BIZ_PIZZERIA: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-			}					
+				if(Business[i][bProducts] <= 0)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+				
+				printf("processing restaurant menu");
+				switch(Business[i][bType]) {
+					case BIZ_REST: processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
+					case BIZ_PIZZERIA: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+					/*case BIZ_BURGER1: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+					case BIZ_BURGER2: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+					case BIZ_BURGER3: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));*/
+				}					
+				return 1;
+			}
 		}
+		else
+			printf("not in the business");
 	}
 	return 1;
 }
