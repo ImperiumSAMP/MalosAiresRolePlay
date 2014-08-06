@@ -15591,17 +15591,17 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	switch(redio)
 	{
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://184.171.254.134:9878/listen.pls");
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://giss.tv:8001/AltaM.mp3");
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
 	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
 	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
 	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
 	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94"); //nueva
      	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
      	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://178.33.226.68:8112/listen.pls");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
 	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
 	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
 	}
