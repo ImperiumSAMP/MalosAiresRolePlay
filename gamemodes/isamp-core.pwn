@@ -1406,8 +1406,9 @@ public OnPlayerDisconnect(playerid, reason) {
 	new
 		string[64];
 
+    GCounter[playerid] = 0;
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
-	SetPlayerChatBubble(playerid,"", COLOR_RED, 20.0, 1000);
+	Delete3DTextLabel(DescLabel[playerid]);
 	Camara[playerid] = 0;
 	
     KillTimer(timersID[10]);
