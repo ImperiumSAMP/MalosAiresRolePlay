@@ -8271,14 +8271,23 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU || Business[i][bType] == BIZ_HARD)
 			    				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
 							else
-								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
+								if(Business[i][bType] == BIZ_CLUB){
 							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+								    PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
+									isHearingVehicleRedio[playerid] = true;
+										}
 								else
-								    if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA || Business[i][bType] == BIZ_BURGER1 || Business[i][bType] == BIZ_BURGER2 || Business[i][bType] == BIZ_BELL)
-								        SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-									else
-										if(Business[i][bType] == BIZ_CASINO)
-									    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+								    if(Business[i][bType] == BIZ_CLUB2){
+							    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+										PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash");
+										isHearingVehicleRedio[playerid] = true;
+											}
+								    else
+								        if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
+								            SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+									    else
+										    if(Business[i][bType] == BIZ_CASINO)
+									    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
 							if(Business[i][bProducts] == 0)
 								GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
 							Business[i][bTill] += Business[i][bEntranceFee];
@@ -8331,6 +8340,12 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				        if(Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2) {
 							DestroySelectionMenu(playerid);
 							CancelSelectTextDraw(playerid);
+						}
+						if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2){
+						   if(isHearingVehicleRedio[playerid]){
+		                      StopAudioStreamForPlayer(playerid);
+						      SendClientMessage(playerid, -1, "Sales del boliche y la musica deja de sonar.");
+							}
 						}
 						if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1) {
 							SetPlayerInterior(playerid, Business[i][bOutsideInt]);
