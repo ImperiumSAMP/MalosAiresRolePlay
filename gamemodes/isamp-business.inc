@@ -57,6 +57,40 @@ static const PizzaMenu[][RES_PRICELIST] = {
 	{"Pizza de 4 Quesos Artesanal con bebida", 115, 95.0, 65.0}
 };
 
+static const McMenu[][RES_PRICELIST] = {
+	 //McDonals
+	{"Angus Beacon con gaseosa grande y papas grandes", 110, 75.0, 40.0},
+	{"Doble Cuarto de libra con papas medianas y gaseosa mediana", 95, 60.0, 30.0},
+	{"Triple Mac", 60, 50.0, 0.0},
+	{"Big Mac con gaseosa mediana", 70, 50.0, 35.0},
+	{"McNifica", 50, 40.0, 0.0},
+	{"MacFiesta con huevo y gaseosa grande", 55, 45.0, 30.0},
+	{"Jugo de naranja McDonals", 25, 0.0, 45.0}
+};
+
+static const BurgerMenu[][RES_PRICELIST] = {
+	 //Burger King
+	{"Whopper con queso y papas medianas", 70, 60.0, 0.0},
+	{"SteakHouse Burger XT con papas Noisette", 80, 70.0, 0.0},
+	{"Hamburguesa con queso", 35, 30.0, 0.0},
+	{"BK Stacker Cuádruple con vaso grande y papas medianas", 105, 80.0, 45.0},
+	{"King de pollo Francés con papas pequeñas", 70, 60.0, 0.0},
+	{"Tendergrill Max con vaso mediano y papas grandes", 90, 60.0, 35.0},
+	{"Churrasquito Pampeano con vaso grande", 100, 70.0, 40.0}
+};
+
+static const BellMenu[][RES_PRICELIST] = {
+	 //Chuckin Bell
+	{"Pechuga de pollo", 65, 65.0, 0.0},
+	{"Albóndigas", 50, 40.0, 0.0},
+	{"Café con tostado de jamón y queso", 55, 40.0, 40.0},
+	{"Churrasco con papas fritas y bebida", 80, 55.0, 40.0},
+	{"Sandwich de Lomo Grille con bebida", 70, 50.0, 40.0},
+	{"Rabas a la provenzal con bebida", 85, 65.0, 40.0},
+	{"Ensalada del bosque con Villa del Sur", 50, 35.0, 65.0}
+};
+
+
 //Enums
 enum BusinessSystem {
 	bID,
@@ -773,7 +807,7 @@ stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],m
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");						
 
 	
-	format(eatMessage,sizeof(eatMessage),"ordena '%s' y comienza a comer...",  menu[option][bplItemName]);
+	format(eatMessage,sizeof(eatMessage),"realiza un pedido al dependiente del local: %s.",  menu[option][bplItemName]);
 	PlayerActionMessage(playerid, 15.0, eatMessage);
 	
 	if(menu[option][bplEatAmount] > 0.0) PlayerEat(playerid, menu[option][bplEatAmount]);
@@ -792,11 +826,11 @@ CMD:comer(playerid, params[])
 	i=GetPlayerBusiness(playerid);
 	
 	switch(Business[i][bType]) {
-		case BIZ_REST: return processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
-		case BIZ_PIZZERIA: return processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-		/*case BIZ_BURGER1: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-		case BIZ_BURGER2: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
-		case BIZ_BELL: processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));*/
+		case BIZ_REST: 		return processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
+		case BIZ_PIZZERIA:	return processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+		case BIZ_BURGER1:	return processRestMenu(params,playerid,i,McMenu,sizeof(McMenu));
+		case BIZ_BURGER2:	return processRestMenu(params,playerid,i,BurgerMenu,sizeof(BurgerMenu));
+		case BIZ_BELL:		return processRestMenu(params,playerid,i,BellMenu,sizeof(BellMenu));
 	}					
 	return 1;
 }
