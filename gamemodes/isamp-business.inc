@@ -787,10 +787,6 @@ stock bizShowMenu(playerid,const menu[][RES_PRICELIST],menusize){
 	return 1;
 }
 
-stock isPlayerInBusiness(playerid,businessid){
-	return PlayerToPoint(35.0, playerid, Business[businessid][bInsideX], Business[businessid][bInsideY], Business[businessid][bInsideZ]) && (GetPlayerVirtualWorld(playerid) == businessid + 17000);
-}
-
 stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],menusize){
 	new option;
 	new eatMessage[128];	
