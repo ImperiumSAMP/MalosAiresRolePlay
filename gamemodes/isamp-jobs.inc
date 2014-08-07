@@ -465,6 +465,8 @@ CMD:tomarempleo(playerid,params[])
 	{
 		if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ]))
 		{
+		    if(id == JOB_TAXI && (PlayerInfo[playerid][pCarLic] == 0))
+		        return SendClientMessage(playerid, COLOR_WHITE, "No puedo emplearte si no tienes licencia de manejo, hasta luego.");
 		    if(JobInfo[id][jType] != 0)
                	return 1;
             if(id == JOB_DRUGD && (FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
