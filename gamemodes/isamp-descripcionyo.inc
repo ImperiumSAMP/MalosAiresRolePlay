@@ -26,12 +26,12 @@ if(GCounter[playerid] == 0){
 if(strlen(textodescripcion[playerid]) > 65) return SendClientMessage(playerid, COLOR_WHITE, "Texto demasiado largo.");
 GetPlayerPos(playerid, X, Y, Z); 
 format(str, sizeof(str), "%s", textodescripcion[playerid]); 
-DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid], COLOR_LIGHTRED, X, Y, Z, 10, -1); 
+DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid],COLOR_BLUE , X, Y, Z, 10, -1); 
 Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3); 
 SendFMessage(playerid, -1, "{C8C8C8}Tu descripción es:{FFFFFF} %s {C8C8C8}usá /yob para eliminarla.", textodescripcion[playerid]); 
 GCounter[playerid] = 1; 
 } else { 
-    Update3DTextLabelText(DescLabel[playerid], COLOR_LIGHTRED, textodescripcion[playerid]); 
+    Update3DTextLabelText(DescLabel[playerid],COLOR_BLUE , textodescripcion[playerid]); 
     Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3); 
     format(str2, sizeof(str2), "{C8C8C8}Tu descripción es:{FFFFFF} %s", textodescripcion[playerid]); 
     SendClientMessage(playerid, -1, str2); 
