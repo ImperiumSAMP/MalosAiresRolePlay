@@ -257,32 +257,16 @@ public OnJobDataLoad(id) {
 	return 1;
 }
 
-CMD:crearptaxi(playerid, params[])
-{
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-    JobInfo[JOB_TAXI][jType] = 0;
-    JobInfo[JOB_TAXI][jTakeX] = 1789.6747;
-    JobInfo[JOB_TAXI][jTakeY] = -1882.2445;
-    JobInfo[JOB_TAXI][jTakeZ] = 13.9000;
-    JobInfo[JOB_TAXI][jTakeW] = 0;
-    JobInfo[JOB_TAXI][jTakeI] = 0;
-    return 1;
-}
-
 
 //Comandos de jobs
 CMD:comenzar(playerid,params[])
 	cmd_trabajar(playerid, params);
 
 CMD:trabajar(playerid,params[]) {
-	new
-	    string[128],
-	    job = PlayerInfo[playerid][pJob];
+	new job = PlayerInfo[playerid][pJob];
 	    
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-     format(string, sizeof(string), "Anuncio: el mecánico %s se encuentra en servicio (Tel: 555).", GetPlayerNameEx(playerid));
-		SendClientMessageToAll(COLOR_LIGHTGREEN, string);
+		SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
 		jobDuty[playerid] = true;
 	} else if(job != 0) {
 		if(!jobDuty[playerid]) {

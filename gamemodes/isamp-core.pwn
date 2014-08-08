@@ -4891,12 +4891,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
 	        
-	    } else if(VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] != PlayerInfo[playerid][pJob]) {
-			if(AdminDuty[playerid] == 0 && PlayerInfo[playerid][pJob] != JOB_GARB) {
-       			SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
-			    RemovePlayerFromVehicle(playerid);
-			}
-			
 	    } else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1) {
 			if(playerLicense[playerid][lDTaking] != 1) {
 				RemovePlayerFromVehicle(playerid);
