@@ -257,6 +257,20 @@ public OnJobDataLoad(id) {
 	return 1;
 }
 
+CMD:crearptaxi(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+    JobInfo[JOB_TAXI][jType] = 0;
+    JobInfo[JOB_TAXI][jTakeX] = 1789.6747;
+    JobInfo[JOB_TAXI][jTakeY] = -1882.2445;
+    JobInfo[JOB_TAXI][jTakeZ] = 13.9000;
+    JobInfo[JOB_TAXI][jTakeW] = 0;
+    JobInfo[JOB_TAXI][jTakeI] = 0;
+    return 1;
+}
+
+
 //Comandos de jobs
 CMD:comenzar(playerid,params[])
 	cmd_trabajar(playerid, params);
