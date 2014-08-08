@@ -257,26 +257,23 @@ public OnJobDataLoad(id) {
 	return 1;
 }
 
+
 //Comandos de jobs
 CMD:comenzar(playerid,params[])
 	cmd_trabajar(playerid, params);
 
 CMD:trabajar(playerid,params[]) {
-	new
-	    string[128],
-	    job = PlayerInfo[playerid][pJob];
+	new job = PlayerInfo[playerid][pJob];
 	    
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    format(string, sizeof(string), "Anuncio: el mecánico %s se encuentra en servicio (Tel: 555).", GetPlayerNameEx(playerid));
-		SendClientMessageToAll(COLOR_LIGHTGREEN, string);
+		SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
 		jobDuty[playerid] = true;
 	} else if(job != 0) {
 		if(!jobDuty[playerid]) {
 	        if(PlayerInfo[playerid][pCantWork] == 0) {
 			    if(job == JOB_TAXI) {
 			    	if(VehicleInfo[GetPlayerVehicleID(playerid)][VehJob] == JOB_TAXI) {
-			    	    format(string, sizeof(string), "Anuncio: el taxista %s se encuentra en servicio (Tel: 444).", GetPlayerNameEx(playerid));
-						SendClientMessageToAll(COLOR_LIGHTGREEN, string);
+						SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un taxista se encuentra en servicio (Tel: 444).");
 						jobDuty[playerid] = true;
 			       	} else {
 		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un taxi!");
@@ -465,6 +462,8 @@ CMD:tomarempleo(playerid,params[])
 	{
 		if(PlayerToPoint(1.0, playerid,JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ]))
 		{
+		    if(id == JOB_TAXI && (PlayerInfo[playerid][pCarLic] == 0))
+		        return SendClientMessage(playerid, COLOR_WHITE, "No puedo emplearte si no tienes licencia de manejo, hasta luego.");
 		    if(JobInfo[id][jType] != 0)
                	return 1;
             if(id == JOB_DRUGD && (FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )

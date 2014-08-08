@@ -130,9 +130,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_FIGHTSTYLE        10000
 #define PRICE_TEXT              2
 #define PRICE_CALL              20  // Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
-#define PRICE_TAXI 				2
+#define PRICE_TAXI              5
 #define PRICE_TAXI_INTERVAL		3   // Intervalo de tiempo de la bajada de taximetro (en segundos)
-#define PRICE_TAXI_PERPASSENGER 600 // Dinero por pasajero.
+#define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
 #define PRICE_MATS              45
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_DRUG_MAT          10
@@ -3773,14 +3773,11 @@ public OnVehicleDataLoad(id) {
 			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
 			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
 	   			new
-	   			    objectID,
-				   	Float:wWide,
+	   			    Float:wWide,
 				    Float:wLong,
 					Float:height;
 
 				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
-	   			objectID = CreateObject(19308, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
-				AttachObjectToVehicle(objectID, id, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
 			}
 		}
 		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
@@ -4100,6 +4097,7 @@ public PayDay(playerid) {
             	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
 					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
 					PlayerInfo[playerid][pJob] == JOB_DRUGF  || // Si para el estado el sujeto no tiene empleo (job ilegal)
+					PlayerInfo[playerid][pJob] == JOB_TAXI || //Mínimo por si no hay pasajeros disponibles
 					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
             		PlayerInfo[playerid][pPayCheck] += 800 + random(400); // ASIGNACION A LOS DESEMPLEADOS
 			}
@@ -4732,6 +4730,8 @@ public OnPlayerExitVehicle(playerid, vehicleid) {
 
 public OnPlayerStateChange(playerid, newstate, oldstate) {
 	new	string[128];
+ 	if(newstate == PLAYER_STATE_PASSENGER || newstate == PLAYER_STATE_DRIVER)
+		LastVeh[playerid] = GetPlayerVehicleID(playerid);
 	new vehicleid = LastVeh[playerid];
 		
 	if(playerid == INVALID_PLAYER_ID) {
@@ -4760,7 +4760,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					GameTextForPlayer(TransportDriver[playerid], string, 5000, 1);
 					GivePlayerCash(playerid, -TransportCost[TransportDriver[playerid]]);
 					GivePlayerCash(TransportDriver[playerid], TransportCost[TransportDriver[playerid]]);
-					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") <= JOB_TAXI_MAXPASSENGERS) {
+					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") < JOB_TAXI_MAXPASSENGERS) {
 					    SetPVarInt(TransportDriver[playerid], "pJobLimitCounter", GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") + 1);
 						PlayerInfo[TransportDriver[playerid]][pPayCheck] += PRICE_TAXI_PERPASSENGER;
 					}
@@ -4803,8 +4803,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el vehículo, por lo tanto no te cobrará ninguna tarifa.");
 					TransportCost[playerid] = 0;
 				}
-				TransportPassenger[playerid] = 999;
 				TransportDriver[TransportPassenger[playerid]] = 999;
+				TransportPassenger[playerid] = 999;
 			}
 		}
 		
@@ -4891,12 +4891,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
 	        
-	    } else if(VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] != PlayerInfo[playerid][pJob]) {
-			if(AdminDuty[playerid] == 0 && PlayerInfo[playerid][pJob] != JOB_GARB) {
-       			SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
-			    RemovePlayerFromVehicle(playerid);
-			}
-			
 	    } else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1) {
 			if(playerLicense[playerid][lDTaking] != 1) {
 				RemovePlayerFromVehicle(playerid);
@@ -13869,8 +13863,7 @@ CMD:aceptar(playerid,params[]) {
         }
         if(TaxiCall < 999) {
             if(IsPlayerConnected(TaxiCall)) {
-            	format(string, sizeof(string), "* Has aceptado la llamada de %s, verás un marcador en el GPS.", GetPlayerNameEx(TaxiCall));
-				SendClientMessage(playerid, COLOR_WHITE, string);
+            	SendClientMessage(playerid, COLOR_WHITE, "has aceptado la llamada, verás un marcador en el GPS.");
 				SendClientMessage(TaxiCall, COLOR_WHITE, "* Un taxista ha aceptado tu llamada, espere en el lugar por favor.");
 				TaxiCallTime[playerid] = 1;
 				TaxiAccepted[playerid] = TaxiCall;
