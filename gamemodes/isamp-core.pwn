@@ -4814,6 +4814,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 		
 	}
 	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT) {
+	    vehicleid = GetPlayerVehicleID(playerid);
 		if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && TransportDriver[playerid] == 999) {
 	        foreach(new i : Player) {
 				if(vehicleid == GetPlayerVehicleID(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER && jobDuty[i] && PlayerInfo[i][pJob] == JOB_TAXI) {

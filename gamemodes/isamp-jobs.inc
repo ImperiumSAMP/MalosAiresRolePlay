@@ -267,7 +267,7 @@ CMD:trabajar(playerid,params[]) {
 	    job = PlayerInfo[playerid][pJob];
 	    
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    format(string, sizeof(string), "Anuncio: el mecánico %s se encuentra en servicio (Tel: 555).", GetPlayerNameEx(playerid));
+     format(string, sizeof(string), "Anuncio: el mecánico %s se encuentra en servicio (Tel: 555).", GetPlayerNameEx(playerid));
 		SendClientMessageToAll(COLOR_LIGHTGREEN, string);
 		jobDuty[playerid] = true;
 	} else if(job != 0) {
@@ -275,8 +275,7 @@ CMD:trabajar(playerid,params[]) {
 	        if(PlayerInfo[playerid][pCantWork] == 0) {
 			    if(job == JOB_TAXI) {
 			    	if(VehicleInfo[GetPlayerVehicleID(playerid)][VehJob] == JOB_TAXI) {
-			    	    format(string, sizeof(string), "Anuncio: el taxista %s se encuentra en servicio (Tel: 444).", GetPlayerNameEx(playerid));
-						SendClientMessageToAll(COLOR_LIGHTGREEN, string);
+						SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un taxista se encuentra en servicio (Tel: 444).");
 						jobDuty[playerid] = true;
 			       	} else {
 		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un taxi!");
