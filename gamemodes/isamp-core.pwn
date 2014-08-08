@@ -4803,8 +4803,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el vehículo, por lo tanto no te cobrará ninguna tarifa.");
 					TransportCost[playerid] = 0;
 				}
-				TransportPassenger[playerid] = 999;
 				TransportDriver[TransportPassenger[playerid]] = 999;
+				TransportPassenger[playerid] = 999;
 			}
 		}
 		
