@@ -1261,6 +1261,7 @@ CMD:vehcomprar(playerid, params[])
 	VehicleInfo[newveh][VehColor1] = color1;
 	VehicleInfo[newveh][VehColor2] = color2;
 	VehicleInfo[newveh][VehModel] = VehicleInfo[vehicleid][VehModel];
+	format(VehicleInfo[newveh][VehPlate], 32, "%c%c%c-%d%d%d",65+random(26),65+random(26),65+random(26),random(10),random(10),random(10));
 	
 	if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP) {
 		VehicleInfo[newveh][VehPosX] = 2127.6501;
@@ -1607,7 +1608,7 @@ CMD:avrespawn(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avrespawn [idvehiculo]");
 	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehículo inválida.");
-
+    SetVehicleNumberPlate(vehicleid, VehicleInfo[vehicleid][VehPlate]);
 	SetVehicleToRespawn(vehicleid);
 	return 1;
 }
@@ -1621,6 +1622,7 @@ CMD:avrespawnall(playerid, params[])
 	{
  		if(IsVehicleOccupied(i) == 0)
 		{
+		    SetVehicleNumberPlate(i, VehicleInfo[i][VehPlate]);
  			SetVehicleToRespawn(i);
 		}
 	}
@@ -1988,5 +1990,18 @@ CMD:avcrearperma(playerid, params[])
 		}
 		id++;
 	}
+	return 1;
+}
+
+CMD:cambiarpatente(playerid, params[])
+{
+	new vehicleid,
+	    string[32];
+	if(PlayerInfo[playerid][pAdmin] < 3)
+	    return 1;
+    if(sscanf(params, "is[32]", vehicleid, string))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarpatente [idvehiculo] [patente]");
+	VehicleInfo[vehicleid][VehPlate] = string;
+	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);
 	return 1;
 }
