@@ -130,9 +130,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_FIGHTSTYLE        10000
 #define PRICE_TEXT              2
 #define PRICE_CALL              20  // Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
-#define PRICE_TAXI 				2
+#define PRICE_TAXI              5
 #define PRICE_TAXI_INTERVAL		3   // Intervalo de tiempo de la bajada de taximetro (en segundos)
-#define PRICE_TAXI_PERPASSENGER 500 // Dinero por pasajero.
+#define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
 #define PRICE_MATS              45
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_DRUG_MAT          10
