@@ -15791,6 +15791,7 @@ CMD:rerollplates(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
 	
 	setVehicleRandomPlates();
+	SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8}Se han reseteado todas las patentes");
 	return 1;
 }
 
