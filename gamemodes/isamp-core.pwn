@@ -11768,6 +11768,9 @@ CMD:motor(playerid,params[]) {
 		} else if(VehicleInfo[vehicleid][VehJob] == JOB_FARM || VehicleInfo[vehicleid][VehJob] == JOB_DRUGF || VehicleInfo[vehicleid][VehJob] == JOB_TRAN || VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
 		    SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
 		    return 1;
+        } else if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && PlayerInfo[playerid][pJob] != JOB_TAXI) {
+            SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+            return 1;
 		} else if(VehicleInfo[vehicleid][VehEngine] != 1) {
 			PlayerActionMessage(playerid,15.0,"ha encendido el motor del vehículo.");
 			SetEngine(vehicleid, 1);
