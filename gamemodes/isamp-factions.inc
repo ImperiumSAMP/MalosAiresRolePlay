@@ -3,8 +3,6 @@
 #endif
 #define _isamp_factions_included
 
-#include "isamp-vehicles.inc"
-
 //Defines
 #define MAX_FACTIONS            20
 

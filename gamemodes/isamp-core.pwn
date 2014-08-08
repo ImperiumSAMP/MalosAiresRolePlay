@@ -16,20 +16,21 @@
 #include <progress>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
+forward bool:isPlayerSellingDrugs(playerid);
 
 //#include <mapandreas>
 //Includes  moudulos isamp
 #include "isamp-util.inc" 		//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 	//Funciones varias para acceso a datos
 #include "isamp-players.inc" 	//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
-#include "isamp-drugs.inc" 		//Sistema de drogas
 #include "isamp-admin.inc" 		//Sistema de admines
 #include "isamp-inventory.inc" 	//Sistema de inventario y maletero
+#include "isamp-vehicles.inc" 	//Sistema de vehiculos
+#include "isamp-drugs.inc" 		//Sistema de drogas
 #include "isamp-factions.inc" 	//Sistema de facciones
 #include "isamp-jobs.inc" 		//Definiciones y funciones para los JOBS
 #include "isamp-business.inc" 	//Sistema de negocios
 #include "isamp-houses.inc" 	//Sistema de casas
-#include "isamp-vehicles.inc" 	//Sistema de vehiculos
 #include "isamp-keychain.inc" 	//Sistema de llaveros
 #include "isamp-thiefjob.inc" 	//Sistema del job de ladron
 #include "isamp-tazer.inc" 		//Sistema del tazer
@@ -41,6 +42,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
 #include "isamp-norespawnautos" // Sistema de no respawn autos.
 #include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
+
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
 #define GAMEMODE_USE_VERSION	"No"
@@ -1374,8 +1376,6 @@ public ResetStats(playerid) {
 	PlayerInfo[playerid][pA] = 358.1794;
 	PlayerInfo[playerid][pInterior] = 0;
 	PlayerInfo[playerid][pVirtualWorld] = 0;
-	PlayerInfo[playerid][pVeh1] = 0;
-	PlayerInfo[playerid][pVeh2] = 0;
 	PlayerInfo[playerid][pHospitalized] = 0;
 	PlayerInfo[playerid][pHealth] = 100.0;
 	PlayerInfo[playerid][pArmour] = 0;
@@ -3246,9 +3246,7 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "JailedTime", result); 		PlayerInfo[playerid][pJailTime] 		= strval(result);
 		cache_get_field_content(0, "pInterior", result);		PlayerInfo[playerid][pInterior] 		= strval(result);
 		cache_get_field_content(0, "pWorld", result); 			PlayerInfo[playerid][pVirtualWorld] 	= strval(result);
-		cache_get_field_content(0, "pVeh1", result); 			PlayerInfo[playerid][pVeh1] 			= strval(result);
-		cache_get_field_content(0, "pVeh2", result); 			PlayerInfo[playerid][pVeh2] 			= strval(result);
-        cache_get_field_content(0, "pHospitalized", result); 	PlayerInfo[playerid][pHospitalized] 	= strval(result);
+		cache_get_field_content(0, "pHospitalized", result); 	PlayerInfo[playerid][pHospitalized] 	= strval(result);
 		cache_get_field_content(0, "pWantedLevel", result); 	PlayerInfo[playerid][pWantedLevel] 		= strval(result);
 		cache_get_field_content(0, "pCantWork", result); 		PlayerInfo[playerid][pCantWork]			= strval(result);
 		cache_get_field_content(0, "pJobLimitCounter", result); SetPVarInt(playerid, "pJobLimitCounter", strval(result));
@@ -3283,8 +3281,9 @@ public OnPlayerDataLoad(playerid) {
 
         gPlayerLogged[playerid] = 1;
 
-        loadThiefJobData(playerid,PlayerInfo[playerid][pID]);
-        
+        loadThiefJobData(playerid,PlayerInfo[playerid][pID]); //Info del job de ladrón
+		loadPlayerCarKeys(playerid); //Llavero del usuario
+		
        	CreatePlayerBasicNeeds(playerid);
        	
        	if(PlayerInfo[playerid][pFaction] != 0)
@@ -3651,126 +3650,6 @@ public OnFactionDataLoad(id) {
 	return 1;
 }
 
-forward OnVehicleDataLoad(id);
-public OnVehicleDataLoad(id) {
-   	new
-		result[128],
-		rows,
-		fields;
-
-	cache_get_data(rows, fields);
-
-    if(rows) {
-	    cache_get_field_content(0, "VehSQLID", result); 				VehicleInfo[id][VehSQLID] 		= strval(result);
-		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
-		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
-		cache_get_field_content(0, "VehColor2", result); 				VehicleInfo[id][VehColor2] 		= strval(result);
-		cache_get_field_content(0, "VehFaction", result); 				VehicleInfo[id][VehFaction] 	= strval(result);
-		cache_get_field_content(0, "VehJob", result); 					VehicleInfo[id][VehJob] 		= strval(result);
-		cache_get_field_content(0, "VehDamage1", result); 				VehicleInfo[id][VehDamage1] 	= strval(result);
-		cache_get_field_content(0, "VehDamage2", result); 				VehicleInfo[id][VehDamage2] 	= strval(result);
-		cache_get_field_content(0, "VehDamage3", result); 				VehicleInfo[id][VehDamage3] 	= strval(result);
-		cache_get_field_content(0, "VehDamage4", result); 				VehicleInfo[id][VehDamage4]	 	= strval(result);
-		cache_get_field_content(0, "VehFuel", result); 					VehicleInfo[id][VehFuel] 		= strval(result);
-		cache_get_field_content(0, "VehType", result); 					VehicleInfo[id][VehType] 		= strval(result);
-		cache_get_field_content(0, "VehOwnerID", result); 				VehicleInfo[id][VehOwnerSQLID] 	= strval(result);
-		cache_get_field_content(0, "VehLocked", result);	 			VehicleInfo[id][VehLocked] 		= strval(result);
-		cache_get_field_content(0, "VehLights", result); 				VehicleInfo[id][VehLights] 		= strval(result);
-		cache_get_field_content(0, "VehEngine", result); 				VehicleInfo[id][VehEngine] 		= strval(result);
-		cache_get_field_content(0, "VehBonnet", result); 				VehicleInfo[id][VehBonnet] 		= strval(result);
-		cache_get_field_content(0, "VehBoot", result); 					VehicleInfo[id][VehBoot] 		= strval(result);
-		cache_get_field_content(0, "VehOwnerSlot", result); 			VehicleInfo[id][VehOwnerSlot] 	= strval(result);
-		cache_get_field_content(0, "VehMarijuana", result); 			VehicleInfo[id][VehMarijuana] 	= strval(result);
-		cache_get_field_content(0, "VehLSD", result); 					VehicleInfo[id][VehLSD] 		= strval(result);
-		cache_get_field_content(0, "VehEcstasy", result); 				VehicleInfo[id][VehEcstasy] 		= strval(result);
-		cache_get_field_content(0, "VehCocaine", result); 				VehicleInfo[id][VehCocaine] 	= strval(result);
-		cache_get_field_content(0, "VehPosX", result); 					VehicleInfo[id][VehPosX] 		= floatstr(result);
-		cache_get_field_content(0, "VehPosY", result); 					VehicleInfo[id][VehPosY] 		= floatstr(result);
-		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
-	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
-	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
-		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate]);
-		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName]);
-		
-		if(VehicleInfo[id][VehType] == VEH_OWNED) {
-		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot1", result); 		VehicleInfo[id][VehCompSlot][1] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot2", result); 		VehicleInfo[id][VehCompSlot][2] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot3", result); 		VehicleInfo[id][VehCompSlot][3] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot4", result); 		VehicleInfo[id][VehCompSlot][4] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot5", result); 		VehicleInfo[id][VehCompSlot][5] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot6", result); 		VehicleInfo[id][VehCompSlot][6] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot7", result); 		VehicleInfo[id][VehCompSlot][7] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot8", result); 		VehicleInfo[id][VehCompSlot][8] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot9", result); 		VehicleInfo[id][VehCompSlot][9] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot10", result); 		VehicleInfo[id][VehCompSlot][10] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot11", result); 		VehicleInfo[id][VehCompSlot][11] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot12", result); 		VehicleInfo[id][VehCompSlot][12] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot13", result); 		VehicleInfo[id][VehCompSlot][13] = strval(result);
-		}
-
-		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
- 			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
-
-		} else {
-			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
-			    // Vehículos de consecionaria.
-                VehicleInfo[id][VehColor1] = random(255);
-				VehicleInfo[id][VehColor2] = random(255);
-				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
-			    // Vehículos de renta.
-			    for(new i = 1; i < MAX_RENTCAR; i++) {
-			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
-                    	RentCarInfo[i][rVehicleID] = id;
-                    	RentCarInfo[i][rOwnerSQLID] = 0;
-                    	RentCarInfo[i][rTime] = 0;
-                    	RentCarInfo[i][rRented] = 0;
-                    	break; // Salimos porque ya lo cargamos en el primero libre
-                    }
-				}
-				VehicleInfo[id][VehLocked] = 0;
-    			VehicleInfo[id][VehColor1] = random(255);
-				VehicleInfo[id][VehColor2] = random(255);
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
-
-			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
-			    // Vehículos de empleo.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
-			    // Vehículos de licencia.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
-			    // Vehículos de facción.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
-
-			} else {
-			    // Otros.
-			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
-			}
-
-			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
-			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
-	   			new
-	   			    objectID,
-				   	Float:wWide,
-				    Float:wLong,
-					Float:height;
-
-				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
-	   			objectID = CreateObject(19308, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
-				AttachObjectToVehicle(objectID, id, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
-			}
-		}
-		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
-		SetVehicleToRespawn(id);
-    }
-	return 1;
-}
-
 OnPlayerRegister(playerid, password[]) {
     if(IsPlayerConnected(playerid))	{
 		new query[128],
@@ -3874,7 +3753,7 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pFightStyle],
 			PlayerInfo[playerid][pAdictionAbstinence]
 		);
-		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `PhoneBook`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pVeh1`='%d', `pVeh2`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
+		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `PhoneBook`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
 			PlayerInfo[playerid][pCarLic],
 			PlayerInfo[playerid][pFlyLic],
@@ -3888,8 +3767,6 @@ public SaveAccount(playerid) {
 			floatround(PlayerInfo[playerid][pThirst]),
 			PlayerInfo[playerid][pInterior],
 			PlayerInfo[playerid][pVirtualWorld],
-			PlayerInfo[playerid][pVeh1],
-			PlayerInfo[playerid][pVeh2],
 			PlayerInfo[playerid][pHospitalized],
 			PlayerInfo[playerid][pWantedLevel],
    			PlayerInfo[playerid][pCantWork],
@@ -4095,10 +3972,7 @@ public PayDay(playerid) {
 		//===========================IMPUESTOS==================================
 
 		new tax = 0;
-		if(PlayerInfo[playerid][pVeh1] != 0)
-		    tax += GetVehiclePrice(PlayerInfo[playerid][pVeh1], 1) / 4;
-		if(PlayerInfo[playerid][pVeh2] != 0)
-		    tax += GetVehiclePrice(PlayerInfo[playerid][pVeh2], 1) / 4;
+		tax+=calculateVehiclesTaxes(playerid);
 		if(PlayerInfo[playerid][pHouseKey] != 0)
 		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 4;
 		    
@@ -6603,7 +6477,10 @@ public ShowStats(playerid, targetid, bool:admin) {
 			SendFMessage(playerid, COLOR_WHITE,	"[Licencias] Conducción: %s | Vuelo: %s | Portación de armas: %s", cLicense, fLicense, wLicense);
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[General OOC]===========================");
 			SendFMessage(playerid, COLOR_WHITE, "Salud: %.1f | Nivel: %d | Experiencia: %d/%d | Advertencias: %d", health, PlayerInfo[targetid][pLevel], PlayerInfo[targetid][pExp], (PlayerInfo[targetid][pLevel] + 1) * ServerInfo[svLevelExp], PlayerInfo[targetid][pWarnings]);
-   			SendFMessage(playerid, COLOR_WHITE,	"Casa: %d | Negocio: %d | Vehículos: %d/%d | Horas de juego: %d", PlayerInfo[targetid][pHouseKey], PlayerInfo[targetid][pBizKey], PlayerInfo[targetid][pVeh1], PlayerInfo[targetid][pVeh2], PlayerInfo[targetid][pPlayingHours]);
+   			SendFMessage(playerid, COLOR_WHITE,	"Casa: %d | Negocio: %d | Horas de juego: %d", PlayerInfo[targetid][pHouseKey], PlayerInfo[targetid][pBizKey], PlayerInfo[targetid][pPlayingHours]);
+			
+			printCarKeys(playerid);
+			
 			if(admin) {
 			    SendClientMessage(playerid, COLOR_LIGHTYELLOW, "==============================[DEBUG]==============================");
 				SendFMessage(playerid, COLOR_WHITE,	"Negocio actual: %d | Skin: %d | Mundo: %d | Interior: %d | Ultveh: %d | pCantWork: %d | pJobAllowed: %d | pID %d", GetPlayerBusiness(targetid), PlayerInfo[targetid][pSkin], GetPlayerVirtualWorld(targetid), GetPlayerInterior(targetid), LastVeh[targetid], PlayerInfo[targetid][pCantWork], PlayerInfo[targetid][pJobAllowed], PlayerInfo[targetid][pID]);
@@ -13403,17 +13280,10 @@ CMD:aceptar(playerid,params[]) {
 			// Le quitamos el vehículo de la cuenta al vendedor.
 			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
 			
-			/*if(PlayerInfo[VehicleOffer[playerid]][pVeh1] == VehicleOfferID[playerid]) {
-                PlayerInfo[VehicleOffer[playerid]][pVeh1] = 0;
-			} else if(PlayerInfo[VehicleOffer[playerid]][pVeh2] == VehicleOfferID[playerid]) {
-			    PlayerInfo[VehicleOffer[playerid]][pVeh2] = 0;
-			}*/
-
 			// Se lo seteamos a la cuenta del nuevo dueño y realizamos la transacción de dinero.
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);
 			GivePlayerCash(VehicleOffer[playerid], VehicleOfferPrice[playerid]);
-		    //PlayerInfo[playerid][pVeh1] = VehicleOfferID[playerid];
-			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid, GetVehicleName(VehicleOfferID[playerid]));
+			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid);
 		    PlayerPlayerActionMessage(VehicleOffer[playerid], playerid, 10.0, "recibe una suma de dinero y le entrega unas llaves a");
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
@@ -14870,7 +14740,7 @@ CMD:destunear(playerid, params[])
 	new vID = GetPlayerVehicleID(target);
     if(GetVehicleType(vID) != VTYPE_CAR)
         return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
-    if(!playerHasCarKey(playerid,vehicleid))
+    if(!playerHasCarKey(playerid,vID))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de ese vehiculo.");
 	    
     DestuningOffer[target] = playerid;
@@ -15259,8 +15129,6 @@ CMD:cambiarnombre(playerid, params[]) {
 		AdministratorMessage(COLOR_ADMINCMD, string, 1);
 		SetPlayerName(target, PlayerInfo[target][pName]);
 		new
-			veh1ID = PlayerInfo[target][pVeh1],
-			veh2ID = PlayerInfo[target][pVeh2],
 			houseID = PlayerInfo[target][pHouseKey],
 			bizID = PlayerInfo[target][pBizKey];
 
@@ -16887,6 +16755,126 @@ stock LoadTrunksSlotsInfo() {
   		mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_TRUNK, id);
 		id++;
 	}
+	return 1;
+}
+
+forward OnVehicleDataLoad(id);
+public OnVehicleDataLoad(id) {
+   	new
+		result[128],
+		rows,
+		fields;
+
+	cache_get_data(rows, fields);
+
+    if(rows) {
+	    cache_get_field_content(0, "VehSQLID", result); 				VehicleInfo[id][VehSQLID] 		= strval(result);
+		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
+		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
+		cache_get_field_content(0, "VehColor2", result); 				VehicleInfo[id][VehColor2] 		= strval(result);
+		cache_get_field_content(0, "VehFaction", result); 				VehicleInfo[id][VehFaction] 	= strval(result);
+		cache_get_field_content(0, "VehJob", result); 					VehicleInfo[id][VehJob] 		= strval(result);
+		cache_get_field_content(0, "VehDamage1", result); 				VehicleInfo[id][VehDamage1] 	= strval(result);
+		cache_get_field_content(0, "VehDamage2", result); 				VehicleInfo[id][VehDamage2] 	= strval(result);
+		cache_get_field_content(0, "VehDamage3", result); 				VehicleInfo[id][VehDamage3] 	= strval(result);
+		cache_get_field_content(0, "VehDamage4", result); 				VehicleInfo[id][VehDamage4]	 	= strval(result);
+		cache_get_field_content(0, "VehFuel", result); 					VehicleInfo[id][VehFuel] 		= strval(result);
+		cache_get_field_content(0, "VehType", result); 					VehicleInfo[id][VehType] 		= strval(result);
+		cache_get_field_content(0, "VehOwnerID", result); 				VehicleInfo[id][VehOwnerSQLID] 	= strval(result);
+		cache_get_field_content(0, "VehLocked", result);	 			VehicleInfo[id][VehLocked] 		= strval(result);
+		cache_get_field_content(0, "VehLights", result); 				VehicleInfo[id][VehLights] 		= strval(result);
+		cache_get_field_content(0, "VehEngine", result); 				VehicleInfo[id][VehEngine] 		= strval(result);
+		cache_get_field_content(0, "VehBonnet", result); 				VehicleInfo[id][VehBonnet] 		= strval(result);
+		cache_get_field_content(0, "VehBoot", result); 					VehicleInfo[id][VehBoot] 		= strval(result);
+		cache_get_field_content(0, "VehOwnerSlot", result); 			VehicleInfo[id][VehOwnerSlot] 	= strval(result);
+		cache_get_field_content(0, "VehMarijuana", result); 			VehicleInfo[id][VehMarijuana] 	= strval(result);
+		cache_get_field_content(0, "VehLSD", result); 					VehicleInfo[id][VehLSD] 		= strval(result);
+		cache_get_field_content(0, "VehEcstasy", result); 				VehicleInfo[id][VehEcstasy] 		= strval(result);
+		cache_get_field_content(0, "VehCocaine", result); 				VehicleInfo[id][VehCocaine] 	= strval(result);
+		cache_get_field_content(0, "VehPosX", result); 					VehicleInfo[id][VehPosX] 		= floatstr(result);
+		cache_get_field_content(0, "VehPosY", result); 					VehicleInfo[id][VehPosY] 		= floatstr(result);
+		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
+	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
+	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
+		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate], 32);
+		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName],MAX_PLAYER_NAME);
+		
+		if(VehicleInfo[id][VehType] == VEH_OWNED) {
+		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot1", result); 		VehicleInfo[id][VehCompSlot][1] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot2", result); 		VehicleInfo[id][VehCompSlot][2] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot3", result); 		VehicleInfo[id][VehCompSlot][3] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot4", result); 		VehicleInfo[id][VehCompSlot][4] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot5", result); 		VehicleInfo[id][VehCompSlot][5] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot6", result); 		VehicleInfo[id][VehCompSlot][6] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot7", result); 		VehicleInfo[id][VehCompSlot][7] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot8", result); 		VehicleInfo[id][VehCompSlot][8] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot9", result); 		VehicleInfo[id][VehCompSlot][9] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot10", result); 		VehicleInfo[id][VehCompSlot][10] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot11", result); 		VehicleInfo[id][VehCompSlot][11] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot12", result); 		VehicleInfo[id][VehCompSlot][12] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot13", result); 		VehicleInfo[id][VehCompSlot][13] = strval(result);
+		}
+
+		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
+ 			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
+
+		} else {
+			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
+			    // Vehículos de consecionaria.
+                VehicleInfo[id][VehColor1] = random(255);
+				VehicleInfo[id][VehColor2] = random(255);
+				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
+			    // Vehículos de renta.
+			    for(new i = 1; i < MAX_RENTCAR; i++) {
+			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
+                    	RentCarInfo[i][rVehicleID] = id;
+                    	RentCarInfo[i][rOwnerSQLID] = 0;
+                    	RentCarInfo[i][rTime] = 0;
+                    	RentCarInfo[i][rRented] = 0;
+                    	break; // Salimos porque ya lo cargamos en el primero libre
+                    }
+				}
+				VehicleInfo[id][VehLocked] = 0;
+    			VehicleInfo[id][VehColor1] = random(255);
+				VehicleInfo[id][VehColor2] = random(255);
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
+
+			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
+			    // Vehículos de empleo.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
+			    // Vehículos de licencia.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
+			    // Vehículos de facción.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
+
+			} else {
+			    // Otros.
+			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
+			}
+
+			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
+			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
+	   			new
+	   			    objectID,
+				   	Float:wWide,
+				    Float:wLong,
+					Float:height;
+
+				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
+	   			objectID = CreateObject(19308, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
+				AttachObjectToVehicle(objectID, id, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
+			}
+		}
+		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
+		SetVehicleToRespawn(id);
+    }
 	return 1;
 }
 

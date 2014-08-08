@@ -24,4 +24,6 @@ new
 	bool:DrugEffectCocaine[MAX_PLAYERS],
 	bool:DrugEffectMarijuana[MAX_PLAYERS];
 
-
+stock bool:isPlayerSellingDrugs(playerid){
+	return SellingDrugs[playerid];
+}

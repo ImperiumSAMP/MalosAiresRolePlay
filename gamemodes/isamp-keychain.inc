@@ -13,37 +13,39 @@
 enum tCarKey {
 	ckKeyId,
 	ckOwner,
-	ckOwnerName[MAX_PLAYER_NAME],
-	ckCarSqlId,
-	ckLabel[32],
+	ckCarSqlId
 };
 
 
 new playerKeys[MAX_PLAYERS][MAX_PLAYER_KEYS][tCarKey];
 new playerKeyCount[MAX_PLAYERS];
 
-stock updateCarOwnerName(target,name){
-	new i;
+stock updateCarOwnerName(playerid,name[]){
+	new i,vehicleid;
 
-	for(i=0;i<playerKeyCount[MAX_PLAYERS];i++){
-		
+	for(i=0;i<playerKeyCount[playerid];i++){
+		vehicleid=playerKeys[playerid][i][ckCarSqlId];
+		if(VehicleInfo[vehicleid][VehOwnerSQLID] == getPlayerMysqlId(playerid))
+		{
+			memcpy(VehicleInfo[vehicleid][VehOwnerName], name,0,MAX_PLAYER_NAME);
+			SaveVehicle(vehicleid);
+		}
+	}
+}
 
-	if(veh1ID != 0 && VehicleInfo[veh1ID][VehOwnerSQLID] == PlayerInfo[target][pID])
-	{
-		VehicleInfo[veh1ID][VehOwnerName] = name;
-		SaveVehicle(veh1ID);
-	}
-	if(veh2ID != 0 && VehicleInfo[veh2ID][VehOwnerSQLID] == PlayerInfo[target][pID])
-	{
-		VehicleInfo[veh2ID][VehOwnerName] = name;
-		SaveVehicle(veh2ID);
-	}
+stock calculateVehiclesTaxes(playerid) {
+	new tax=0,i;
+	
+	for(i=0;i<playerKeyCount[playerid];i++)
+		tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 4;
+	
+	return tax;
 }
 
 stock playerHasCarKey(playerid,carId) {
 	new i;
 	for(i=0;i<playerKeyCount[playerid];i++)
-		if(playerKeys[playerid][i][ckCarSqlId]==getVehicleSqlId(carId))
+		if(playerKeys[playerid][i][ckCarSqlId]==carId)
 			return true;
 	
 	return false;
@@ -52,17 +54,16 @@ stock playerHasCarKey(playerid,carId) {
 stock playerOwnsCar(playerid,carId){
 	new i;
 	for(i=0;i<playerKeyCount[playerid];i++)
-		if(playerKeys[playerid][i][ckCarSqlId]==getVehicleSqlId(carId))
+		if(playerKeys[playerid][i][ckCarSqlId]==carId)
 			return playerKeys[playerid][i][ckOwner]==getPlayerMysqlId(playerid);
 	
 	return false;
 }
 
-stock addKeyToPlayer(playerid,carId,ownerId,keylabel[]){	
+stock addKeyToPlayer(playerid,carId,ownerId){	
 	new carKey[tCarKey];
 	carKey[ckCarSqlId]=getVehicleSqlId(carId);
 	carKey[ckOwner]=getPlayerMysqlId(ownerId);
-	memcpy(carKey[ckLabel],keylabel,0,strlen(keylabel),32);
 	playerKeys[playerid][playerKeyCount[playerid]++]=carKey;
 	savePlayerCarKeys(playerid);
 	return true;
@@ -73,13 +74,13 @@ stock getPlayerFreeKeySlots(playerid) {
 }
 
 stock removeKeyFromPlayer(playerid, carId){
-	deleteCarKeyByPlayerAndCar(tCarKey,getVehicleSqlId(carId));
+	deleteCarKeyByPlayerAndCar(playerid,getVehicleSqlId(carId));
 	loadPlayerCarKeys(playerid);
 }
 
 stock loadPlayerCarKeys(playerid){
 	new query[128];
-	format(query, sizeof(query), "SELECT * FROM `carKeys` WHERE accountId = %d", getPlayerMysqlId(playerid));
+	format(query, sizeof(query), "SELECT * FROM `carkeys` WHERE accountId = %d", getPlayerMysqlId(playerid));
 	mysql_function_query(dbHandle, query, true, "OnKeyListRecovered", "i", playerid);
 }
 
@@ -91,7 +92,7 @@ public OnKeyListRecovered(playerid){
 		cache_get_field_content(i, "keyId", result); playerKeys[playerid][i][ckKeyId] = strval(result);
 		cache_get_field_content(i, "vehId", result); playerKeys[playerid][i][ckCarSqlId] = strval(result);
 		cache_get_field_content(i, "ownerId", result); playerKeys[playerid][i][ckOwner] = strval(result);
-		cache_get_field_content(i, "keyLabel", playerKeys[playerid][i][ckLabel],1,32);
+		//cache_get_field_content(i, "keyLabel", playerKeys[playerid][i][ckLabel],1,32);
 	}
 	return 1;
 }
@@ -114,7 +115,7 @@ public OnKeyInserted(playerid,keyNum){
 
 stock insertCarKey(playerid, newKey[tCarKey], keyNum){
 	new query[128];	
-	format(query,sizeof(query),"INSERT INTO `carKeys` (`accountId`, `vehId`, `ownerId`, `keyLabel`) VALUES (%d, %d, %d, '%s')", playerid, newKey[ckCarSqlId], newKey[ckOwner], newKey[ckLabel]);
+	format(query,sizeof(query),"INSERT INTO `carkeys` (`accountId`, `vehId`, `ownerId`) VALUES (%d, %d, %d,'%s')", playerid, newKey[ckCarSqlId], newKey[ckOwner]);
   	mysql_function_query(dbHandle, query, true, "OnKeyInserted", "ii", playerid,keyNum);
 }
 
@@ -122,6 +123,12 @@ stock updateCarKey(playerid, newKey[tCarKey]) {
 	new query[128];	
 	format(query,sizeof(query),"UPDATE `carKeys` SET `accountId` = %d, `vehId`=%d, `ownerId`=%d WHERE keyId=%d", playerid, newKey[ckCarSqlId], newKey[ckOwner], newKey[ckKeyId]);
   	mysql_function_query(dbHandle, query, false, "", "");	
+}
+
+stock deleteKeysForCar(carid){
+	new query[128];	
+	format(query,sizeof(query),"DELETE FROM `carKeys` WHERE vehId=%d", carid);
+  	mysql_function_query(dbHandle, query, false, "", "");
 }
 
 stock deleteCarKey(keyId) {
@@ -142,7 +149,7 @@ stock listPlayerKeys(playerid){
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Posees las siguientes llaves:{C8C8C8}");
 	
 	for(i=0;i<playerKeyCount[playerid];i++){
-		format(line,sizeof(line),"{5CCAF1}%d{C8C8C8} - %s de %s",i,playerKeys[playerid][i][ckLabel],GetPlayerNameEx(playerKeys[playerid][i][ckOwnerName]));
+		format(line,sizeof(line),"{5CCAF1}%d{C8C8C8} - %s",i+1,getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, line);
 	}
 }
@@ -151,19 +158,30 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 	return 0;
 }
 
-CMD::llaves(playerid, params[]) {
+stock printCarKeys(playerid) {
+	new i;
+	if(playerKeyCount[playerid]>0){
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[Llaves]===========================");
+		for(i=0;i<playerKeyCount[playerid];i++)
+			SendFMessage(playerid, COLOR_WHITE,	"%s", getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));		
+	}
+	return 0;	
+}
+
+
+CMD:llaves(playerid, params[]) {
 	new subCmd[16],keyId,user;
 	
-	if(sscanf(params,"s[16]",subCmd))
+	if(sscanf(params,"s[16]",subCmd)==0)
 	{
-		if(strcmp(subCmd,"listar",true)) 
+		if(strcmp(subCmd,"listar",true)==0) 
 		{
 			listPlayerKeys(playerid);
 			return 1;
 		} else {
-			if(strcmp(subCmd,"dar"))
+			if(strcmp(subCmd,"dar")==0)
 			{
-				if(sscanf(params,"s[16]iu",subCmd,keyId,user))
+				if(sscanf(params,"s[16]iu",subCmd,keyId,user)==0)
 				{
 					playerGiveKeyToPlayer(playerid,keyId,user);
 					return 1;
@@ -172,8 +190,7 @@ CMD::llaves(playerid, params[]) {
 		}
 	}
 	
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llaves listar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llaves dar [IDLlave] [ID/ParteDelNombre]");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llaves listar | {5CCAF1}[O]:{C8C8C8} /llaves dar [IDLlave] [ID/ParteDelNombre]");
 	
 	return 1;	
 }

@@ -3,11 +3,6 @@
 #endif
 #define _isamp_vehicles_included
 
-#include "isamp-util.inc"
-#include "isamp-database.inc"
-#include "isamp-inventory.inc"
-#include "isamp-players.inc"
-
 /**
 * Isamp Vehicles functions and defines
 **/
@@ -174,6 +169,15 @@ stock resetTrunk(trunkid)
 }
 
 //==========================VEHICLE MISC FUNCTIONS==============================
+
+stock getVehicleJob(vehid) {
+	return VehicleInfo[vehid][VehJob];
+}
+
+stock getVehicleType(vehid) {
+	return VehicleInfo[vehid][VehType];
+}
+
 
 VehTypeName(type) {
     new name[32];
@@ -441,6 +445,13 @@ GetVehicleName(vehicleid) {
 	   case 611: format(name,32,"Utility Trailer");
 	}
 	return name;
+}
+
+stock getVehicleDescription(vehicleid){
+	new vehdesc[64];
+	format(vehdesc,64,	"%s de %s",GetVehicleName(vehicleid),VehicleInfo[vehicleid][VehOwnerName]);
+	
+	return vehdesc;
 }
 
 GetVehiclePrice(vehicleid, priceperc) {
@@ -991,7 +1002,7 @@ CMD:maletero(playerid, params[]) {
 	} else {
 		if(strcmp(text, "guardardroga", true) == 0) {
 		
-			if(SellingDrugs[playerid])
+			if(isPlayerSellingDrugs(playerid))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes utilizarlo mientras vendes drogas.");
 			    
             if(strcmp(returnstr, "marihuana", true) == 0) {
@@ -1296,7 +1307,10 @@ CMD:vehcomprar(playerid, params[])
 	
  	DestroyVehicle(newveh);
 	newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
-	addKeyToPlayer(playerid,newveh,playerid, GetVehicleName(newveh));
+	
+	
+	
+	addKeyToPlayer(playerid,newveh,playerid);
 	PutPlayerInVehicle(playerid, newveh, 0);
 	SaveVehicle(newveh);
 	return 1;
@@ -1311,7 +1325,7 @@ CMD:vehvender(playerid, params[])
 	if(!IsAtDealership(playerid))
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo en cualquier lugar. Debes ir a una consecionaria!");
 	vehicleid = GetPlayerVehicleID(playerid);
-    if(PlayerInfo[playerid][pVeh1] != vehicleid && PlayerInfo[playerid][pVeh2] != vehicleid)
+    if(!playerOwnsCar(playerid,vehicleid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No podés vender un vehículo que no te pertenece!");
 
 	Choice[playerid] = CHOICE_CARSELL;
@@ -1336,7 +1350,7 @@ CMD:vehvendera(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El precio no puede ser menor a $1 ni mayor a $5,000,000.");
 	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no puede ser vendido.");
-	if(PlayerInfo[playerid][pVeh1] != vehicleid && PlayerInfo[playerid][pVeh2] != vehicleid)
+	if(!playerOwnsCar(playerid,vehicleid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no te pertenece.");
 	if(GetDistanceBetweenPlayers(playerid, targetid) > 4.0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "La persona se encuentra demasiado lejos.");
@@ -1361,7 +1375,7 @@ CMD:vehestacionar(playerid, params[])
 	if(IsAtDealership(playerid))
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes estacionar un vehículo en la consecionaria!");
 	vehicleid = GetPlayerVehicleID(playerid);
-	if( (PlayerInfo[playerid][pVeh1] != vehicleid && PlayerInfo[playerid][pVeh2] != vehicleid) &&
+	if( !playerHasCarKey(playerid, vehicleid) &&
 		(PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction] || PlayerInfo[playerid][pRank] != 1) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no te pertenece!");
 	GetVehicleHealth(vehicleid, vhealth);
@@ -1460,7 +1474,7 @@ CMD:vehmal(playerid, params[])
 	{
 		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED) ||
 			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
-			(vehicleType == VEH_OWNED && vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2]) ||
+			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
 		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
 	}
@@ -1495,7 +1509,7 @@ CMD:vehcapot(playerid, params[])
 	{
 		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED) ||
 			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
-			(vehicleType == VEH_OWNED && vehicleid != PlayerInfo[playerid][pVeh1] && vehicleid != PlayerInfo[playerid][pVeh2]) ||
+			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
 		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
 	}
@@ -1824,7 +1838,7 @@ CMD:avmodelo(playerid, params[])
 
 CMD:avtipo(playerid, params[])
 {
-	new vehicleid, type, string[128], pconnected;
+	new vehicleid, type;
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
@@ -1836,7 +1850,7 @@ CMD:avtipo(playerid, params[])
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de tipo incorrecta.");
 
 	vehicleid = GetPlayerVehicleID(playerid);
-	pconnected = 0;
+
 	if(VehicleInfo[vehicleid][VehType] == VEH_RENT) { // Si el auto a cambiar tipo tiene tipo renta, lo sacamos de la estructura que maneja los autos de renta
 		for(new i = 1; i < MAX_RENTCAR; i++) {
 	    	if(RentCarInfo[i][rVehicleID] == vehicleid){
@@ -1849,26 +1863,11 @@ CMD:avtipo(playerid, params[])
 		}
 	} else
 		if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
- 			foreach(new i : Player)	{
-				if(PlayerInfo[i][pVeh1] == vehicleid) {
-				    PlayerInfo[i][pVeh1] = 0;
-				    pconnected = 1;
-				} else
-					if(PlayerInfo[i][pVeh2] == vehicleid) {
-					    PlayerInfo[i][pVeh2] = 0;
-					    pconnected = 1;
-					}
-			}
-			if(pconnected == 0)	{
-			    if(VehicleInfo[vehicleid][VehOwnerSlot] == 1) {
-			        format(string, sizeof(string), "UPDATE accounts SET pVeh1 = 0 WHERE Id = %d AND pVeh1 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
-					mysql_function_query(dbHandle, string, false, "", "");
-				} else
-					if(VehicleInfo[vehicleid][VehOwnerSlot] == 2) {
-						format(string, sizeof(string), "UPDATE accounts SET pVeh2 = 0 WHERE Id = %d AND pVeh2 = %d", VehicleInfo[vehicleid][VehOwnerSQLID], vehicleid);
-						mysql_function_query(dbHandle, string, false, "", "");
-					}
-			}
+ 			foreach(new i : Player)
+				if(playerHasCarKey(i,vehicleid)) 
+					removeKeyFromPlayer(i,vehicleid);
+
+			deleteKeysForCar(vehicleid);
 		}
 
 	if(type == VEH_RENT) {
@@ -2020,7 +2019,7 @@ CMD:motor(playerid,params[]) {
 		} else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && !playerHasCarKey(playerid,vehicleid) && AdminDuty[playerid] != 1) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 		    return 1;
-		} else if(VehicleInfo[vehicleid][VehJob] == JOB_FARM || VehicleInfo[vehicleid][VehJob] == JOB_DRUGF || VehicleInfo[vehicleid][VehJob] == JOB_TRAN || VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
+		} else if(jobRequiresVehicle(VehicleInfo[vehicleid][VehJob])) {
 		    SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
 		    return 1;
 		} else if(VehicleInfo[vehicleid][VehEngine] != 1) {
