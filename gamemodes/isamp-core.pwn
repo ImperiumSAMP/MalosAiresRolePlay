@@ -42,6 +42,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 #include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
 #include "isamp-norespawnautos" // Sistema de no respawn autos.
 #include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
+#include "isamp-descripcionyo.inc" //Sistema de descripción /yo.
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -56,7 +57,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 
 
 #define MAX_BUILDINGS           100
-
+#define MAX_CAMARAS             10                                              // Maximo de camaras seteadas del "Sistema de camaras"
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
 #define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
@@ -122,6 +123,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 #define DLG_TUNING_COLOR1       10021
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
+#define CAMARAS_POLICIA         10024
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 											// 5 minutos
@@ -131,9 +133,9 @@ forward bool:isPlayerSellingDrugs(playerid);
 #define PRICE_FIGHTSTYLE        10000
 #define PRICE_TEXT              2
 #define PRICE_CALL              20  // Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
-#define PRICE_TAXI 				2
+#define PRICE_TAXI              5
 #define PRICE_TAXI_INTERVAL		3   // Intervalo de tiempo de la bajada de taximetro (en segundos)
-#define PRICE_TAXI_PERPASSENGER 600 // Dinero por pasajero.
+#define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
 #define PRICE_MATS              45
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_DRUG_MAT          10
@@ -378,6 +380,9 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	TAFKT[MAX_PLAYERS],
 	cTomarVW[MAX_PLAYERS];
 
+//Sistema camaras policia
+new Camara[MAX_PLAYERS];
+
 // Pickups
 new
 	P_BANK,
@@ -396,7 +401,8 @@ new
 	P_MATS_SHOP,
 	P_DRUGFARM_MATS,
 	P_TUNE[5],
-	P_PRODS_SHOP;
+	P_PRODS_SHOP,
+	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
 
@@ -1051,6 +1057,7 @@ public OnGameModeExit() {
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
 	KillTimer(timersID[15]);
+	KillTimer(timersID[16]);
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
@@ -1400,8 +1407,11 @@ public OnPlayerDisconnect(playerid, reason) {
 	new
 		string[64];
 
+    GCounter[playerid] = 0;
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
-
+	Delete3DTextLabel(DescLabel[playerid]);
+	Camara[playerid] = 0;
+	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
     KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
@@ -1884,18 +1894,22 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-    if(TextAnim == 1)
+    if (TextAnim[playerid])
 {
-    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-    {
-    ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
-    ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
-    SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
-    }
+ if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+ {
+ ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+ ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+ timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+ }
 }
 
 	if(Muted[playerid])	{
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
+		return 0;
+	}
+	if(Camara[playerid] == 1)	{
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
 		return 0;
 	}
 
@@ -3037,6 +3051,11 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 }
 
 public OnPlayerCommandReceived(playerid, cmdtext[]) {
+	if(Camara[playerid] == 1 && strcmp(cmdtext,"/salircam")!=0)
+	{
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Para utilizar un comando antes debes salir de la cámara.");
+	    return 0;
+	}
     return 1;
 }
 
@@ -3264,12 +3283,12 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pFightStyle", result); 		PlayerInfo[playerid][pFightStyle] 		= strval(result);
         cache_get_field_content(0, "pAdictionAbstinence", result); 		PlayerInfo[playerid][pAdictionAbstinence] 		= strval(result);
 		
-		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName]);
-		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected]);
-		cache_get_field_content(0, "pInv0", 					InvInfo[playerid][inv0]);
-		cache_get_field_content(0, "pInv1", 					InvInfo[playerid][inv1]);
-		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf]);
-		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy]);
+		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName],1,MAX_PLAYER_NAME);
+		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected],1,25);
+		cache_get_field_content(0, "pInv0", 					InvInfo[playerid][inv0],1,16);
+		cache_get_field_content(0, "pInv1", 					InvInfo[playerid][inv1],1,16);
+		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf],1,64);
+		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy],1,24);
 
 		cache_get_field_content(0, "pX", result); 				PlayerInfo[playerid][pX] 				= floatstr(result);
 		cache_get_field_content(0, "pY", result); 				PlayerInfo[playerid][pY] 				= floatstr(result);
@@ -3493,8 +3512,8 @@ public OnBusinessDataLoad(id) {
 		cache_get_field_content(0, "bType", result); 				Business[id][bType] 			= strval(result);
 		cache_get_field_content(0, "bProducts", result); 			Business[id][bProducts] 		= strval(result);
 
-		cache_get_field_content(0, "bOwnerName", 					Business[id][bOwner]);
-        cache_get_field_content(0, "bName", 						Business[id][bName]);
+		cache_get_field_content(0, "bOwnerName", 					Business[id][bOwner],1,MAX_PLAYER_NAME);
+        cache_get_field_content(0, "bName", 						Business[id][bName],1,128);
 
 		cache_get_field_content(0, "bOutsideX", result);	 		Business[id][bOutsideX] 		= floatstr(result);
 		cache_get_field_content(0, "bOutsideY", result); 			Business[id][bOutsideY] 		= floatstr(result);
@@ -3536,8 +3555,8 @@ public OnHouseDataLoad(id) {
 		cache_get_field_content(0, "Cocaine", result); 				House[id][Cocaine]				= strval(result);
 		cache_get_field_content(0, "Ecstasy", result); 				House[id][Ecstasy]				= strval(result);
 
-		cache_get_field_content(0, "Description", 					House[id][Description]);
-		cache_get_field_content(0, "Owner", 						House[id][Owner]);
+		cache_get_field_content(0, "Description", 					House[id][Description],128);
+		cache_get_field_content(0, "Owner", 						House[id][Owner],MAX_PLAYER_NAME);
 
 		cache_get_field_content(0, "EntranceX", result); 			House[id][EntranceX] 			= floatstr(result);
 		cache_get_field_content(0, "EntranceY", result); 			House[id][EntranceY] 			= floatstr(result);
@@ -3571,8 +3590,8 @@ public OnBuildingDataLoad(id) {
   		cache_get_field_content(0, "blFaction", result); 			Building[id][blFaction] 			= strval(result);
 		cache_get_field_content(0, "blInsideWorld", result); 		Building[id][blInsideWorld] 		= strval(result);
 
-		cache_get_field_content(0, "blText", 						Building[id][blText]);
-		cache_get_field_content(0, "blText2", 						Building[id][blText2]);
+		cache_get_field_content(0, "blText", 						Building[id][blText],1,128);
+		cache_get_field_content(0, "blText2", 						Building[id][blText2],1,128);
 
 		cache_get_field_content(0, "blOutsideX", result); 			Building[id][blOutsideX] 			= floatstr(result);
 		cache_get_field_content(0, "blOutsideY", result); 			Building[id][blOutsideY] 			= floatstr(result);
@@ -3635,18 +3654,135 @@ public OnFactionDataLoad(id) {
 		cache_get_field_content(0, "JoinRank", result); 				FactionInfo[id][fJoinRank] 	= strval(result);
 		cache_get_field_content(0, "UsesSkins", result); 				FactionInfo[id][fUseSkins] 	= strval(result);
 		cache_get_field_content(0, "RankAmount", result); 				FactionInfo[id][fRankAmount]= strval(result);
-		cache_get_field_content(0, "Name",								FactionInfo[id][fName]);
-		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1]);
-		cache_get_field_content(0, "Rank2", 							FactionInfo[id][fRank2]);
-		cache_get_field_content(0, "Rank3", 							FactionInfo[id][fRank3]);
-		cache_get_field_content(0, "Rank4", 							FactionInfo[id][fRank4]);
-		cache_get_field_content(0, "Rank5", 							FactionInfo[id][fRank5]);
-		cache_get_field_content(0, "Rank6", 							FactionInfo[id][fRank6]);
-		cache_get_field_content(0, "Rank7", 							FactionInfo[id][fRank7]);
-		cache_get_field_content(0, "Rank8", 							FactionInfo[id][fRank8]);
-		cache_get_field_content(0, "Rank9", 							FactionInfo[id][fRank9]);
-		cache_get_field_content(0, "Rank10", 							FactionInfo[id][fRank10]);
+		cache_get_field_content(0, "Name",								FactionInfo[id][fName],1,50);
+		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1],1,35);
+		cache_get_field_content(0, "Rank2", 							FactionInfo[id][fRank2],1,35);
+		cache_get_field_content(0, "Rank3", 							FactionInfo[id][fRank3],1,35);
+		cache_get_field_content(0, "Rank4", 							FactionInfo[id][fRank4],1,35);
+		cache_get_field_content(0, "Rank5", 							FactionInfo[id][fRank5],1,35);
+		cache_get_field_content(0, "Rank6", 							FactionInfo[id][fRank6],1,35);
+		cache_get_field_content(0, "Rank7", 							FactionInfo[id][fRank7],1,35);
+		cache_get_field_content(0, "Rank8", 							FactionInfo[id][fRank8],1,35);
+		cache_get_field_content(0, "Rank9", 							FactionInfo[id][fRank9],1,35);
+		cache_get_field_content(0, "Rank10", 							FactionInfo[id][fRank10],1,35);
 	}
+	return 1;
+}
+
+forward OnVehicleDataLoad(id);
+public OnVehicleDataLoad(id) {
+   	new
+		result[128],
+		rows,
+		fields;
+
+	cache_get_data(rows, fields);
+
+    if(rows) {
+	    cache_get_field_content(0, "VehSQLID", result); 				VehicleInfo[id][VehSQLID] 		= strval(result);
+		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
+		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
+		cache_get_field_content(0, "VehColor2", result); 				VehicleInfo[id][VehColor2] 		= strval(result);
+		cache_get_field_content(0, "VehFaction", result); 				VehicleInfo[id][VehFaction] 	= strval(result);
+		cache_get_field_content(0, "VehJob", result); 					VehicleInfo[id][VehJob] 		= strval(result);
+		cache_get_field_content(0, "VehDamage1", result); 				VehicleInfo[id][VehDamage1] 	= strval(result);
+		cache_get_field_content(0, "VehDamage2", result); 				VehicleInfo[id][VehDamage2] 	= strval(result);
+		cache_get_field_content(0, "VehDamage3", result); 				VehicleInfo[id][VehDamage3] 	= strval(result);
+		cache_get_field_content(0, "VehDamage4", result); 				VehicleInfo[id][VehDamage4]	 	= strval(result);
+		cache_get_field_content(0, "VehFuel", result); 					VehicleInfo[id][VehFuel] 		= strval(result);
+		cache_get_field_content(0, "VehType", result); 					VehicleInfo[id][VehType] 		= strval(result);
+		cache_get_field_content(0, "VehOwnerID", result); 				VehicleInfo[id][VehOwnerSQLID] 	= strval(result);
+		cache_get_field_content(0, "VehLocked", result);	 			VehicleInfo[id][VehLocked] 		= strval(result);
+		cache_get_field_content(0, "VehLights", result); 				VehicleInfo[id][VehLights] 		= strval(result);
+		cache_get_field_content(0, "VehEngine", result); 				VehicleInfo[id][VehEngine] 		= strval(result);
+		cache_get_field_content(0, "VehBonnet", result); 				VehicleInfo[id][VehBonnet] 		= strval(result);
+		cache_get_field_content(0, "VehBoot", result); 					VehicleInfo[id][VehBoot] 		= strval(result);
+		cache_get_field_content(0, "VehOwnerSlot", result); 			VehicleInfo[id][VehOwnerSlot] 	= strval(result);
+		cache_get_field_content(0, "VehMarijuana", result); 			VehicleInfo[id][VehMarijuana] 	= strval(result);
+		cache_get_field_content(0, "VehLSD", result); 					VehicleInfo[id][VehLSD] 		= strval(result);
+		cache_get_field_content(0, "VehEcstasy", result); 				VehicleInfo[id][VehEcstasy] 		= strval(result);
+		cache_get_field_content(0, "VehCocaine", result); 				VehicleInfo[id][VehCocaine] 	= strval(result);
+		cache_get_field_content(0, "VehPosX", result); 					VehicleInfo[id][VehPosX] 		= floatstr(result);
+		cache_get_field_content(0, "VehPosY", result); 					VehicleInfo[id][VehPosY] 		= floatstr(result);
+		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
+	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
+	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
+		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate],1,32);
+		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName],1,MAX_PLAYER_NAME);
+		
+		if(VehicleInfo[id][VehType] == VEH_OWNED) {
+		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot1", result); 		VehicleInfo[id][VehCompSlot][1] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot2", result); 		VehicleInfo[id][VehCompSlot][2] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot3", result); 		VehicleInfo[id][VehCompSlot][3] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot4", result); 		VehicleInfo[id][VehCompSlot][4] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot5", result); 		VehicleInfo[id][VehCompSlot][5] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot6", result); 		VehicleInfo[id][VehCompSlot][6] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot7", result); 		VehicleInfo[id][VehCompSlot][7] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot8", result); 		VehicleInfo[id][VehCompSlot][8] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot9", result); 		VehicleInfo[id][VehCompSlot][9] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot10", result); 		VehicleInfo[id][VehCompSlot][10] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot11", result); 		VehicleInfo[id][VehCompSlot][11] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot12", result); 		VehicleInfo[id][VehCompSlot][12] = strval(result);
+		    cache_get_field_content(0, "VehCompSlot13", result); 		VehicleInfo[id][VehCompSlot][13] = strval(result);
+		}
+
+		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
+ 			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
+
+		} else {
+			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
+			    // Vehículos de consecionaria.
+                VehicleInfo[id][VehColor1] = random(255);
+				VehicleInfo[id][VehColor2] = random(255);
+				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
+			    // Vehículos de renta.
+			    for(new i = 1; i < MAX_RENTCAR; i++) {
+			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
+                    	RentCarInfo[i][rVehicleID] = id;
+                    	RentCarInfo[i][rOwnerSQLID] = 0;
+                    	RentCarInfo[i][rTime] = 0;
+                    	RentCarInfo[i][rRented] = 0;
+                    	break; // Salimos porque ya lo cargamos en el primero libre
+                    }
+				}
+				VehicleInfo[id][VehLocked] = 0;
+    			VehicleInfo[id][VehColor1] = random(255);
+				VehicleInfo[id][VehColor2] = random(255);
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
+
+			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
+			    // Vehículos de empleo.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
+			    // Vehículos de licencia.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+
+			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
+			    // Vehículos de facción.
+                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
+
+			} else {
+			    // Otros.
+			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
+			}
+
+			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
+			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
+	   			new
+	   			    Float:wWide,
+				    Float:wLong,
+					Float:height;
+
+				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
+			}
+		}
+		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
+		SetVehicleToRespawn(id);
+    }
 	return 1;
 }
 
@@ -3828,15 +3964,6 @@ stock GetPlayerSpeed(playerid, bool:kmh) {
     return kmh?floatround(rtn * 100 * 1.61):floatround(rtn * 100);
 }
 
-stock GetPlayerBusiness(playerid) {
-	for(new i = 1; i < MAX_BUSINESS; i++) {
-	    if(Business[i][bInsideInt] == GetPlayerInterior(playerid) && Business[i][bInsideWorld] == GetPlayerVirtualWorld(playerid) && Business[i][bInsideWorld] != 0) {
-			return i;
-		}
-	}
-	return 0;
-}
-
 stock GetPlayerBuilding(playerid) {
 	for(new i = 1; i < MAX_BUILDINGS; i++) {
 	    if(Building[i][blInsideInt] == GetPlayerInterior(playerid) && Building[i][blInsideWorld] == GetPlayerVirtualWorld(playerid) && Building[i][blInsideWorld] != 0) {
@@ -3862,18 +3989,22 @@ GetBusinessPayCheck(bizID)
 	new payDayMoney;
 	switch(Business[bizID][bType])
 	{
-		case BIZ_REST: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLUB: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_CLUB2:	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
-		case BIZ_CASINO: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_HARD:  payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_AMMU: 	payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
-		case BIZ_247: 	payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
-		case BIZ_PHON: 	payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
-		case BIZ_ADVE: 	payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLOT2: payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_CLOT: 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		default: 		payDayMoney = 0;
+		case BIZ_REST: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
+		case BIZ_CLUB: 		payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_CLUB2:		payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_CASINO: 	payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_HARD:  	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_AMMU: 		payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
+		case BIZ_247: 		payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
+		case BIZ_PHON: 		payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		case BIZ_ADVE: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
+		case BIZ_CLOT2:		payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
+		case BIZ_CLOT:	 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
+		case BIZ_PIZZERIA: 	payDayMoney = Business[bizID][bPrice] / 434; //0.23 porciento
+		case BIZ_BURGER1: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_BURGER2: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
+		case BIZ_BELL:      payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		default: 			payDayMoney = 0;
 	}
 	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
 	payDayMoney += 50 * PRICE_BIZ_PROD; // lo que nos saca de productos el entorno
@@ -3964,6 +4095,7 @@ public PayDay(playerid) {
             	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
 					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
 					PlayerInfo[playerid][pJob] == JOB_DRUGF  || // Si para el estado el sujeto no tiene empleo (job ilegal)
+					PlayerInfo[playerid][pJob] == JOB_TAXI || //Mínimo por si no hay pasajeros disponibles
 					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
             		PlayerInfo[playerid][pPayCheck] += 800 + random(400); // ASIGNACION A LOS DESEMPLEADOS
 			}
@@ -4193,11 +4325,18 @@ stock isWeaponAllowed(weapon) {
 	}
 	return 1;
 }
+stock isWeaponlevelone(weapon) {
+	if(weapon == 1 || weapon == 2 || weapon == 3 || weapon == 4 || weapon == 5 || weapon == 6 || weapon == 7 || weapon == 8 || weapon == 9 || weapon == 10 || weapon == 11 || weapon == 12 || weapon == 13 || weapon == 14 || weapon == 15 || weapon == 16 || weapon == 17 || weapon == 18 || weapon == 22 || weapon == 23 || weapon == 24 || weapon == 25 || weapon == 26 || weapon == 27 || weapon == 28 || weapon == 29 ||
+	   weapon == 30 || weapon == 31 || weapon == 32 || weapon == 33 || weapon == 34 || weapon == 41 || weapon == 42 || weapon == 43 || weapon == 45 || weapon == 46){
+	    return 0;
+	}
+	return 1;
+}
 
 public antiCheatTimer() {
 	new
 	    string[128];
-	    
+
 	foreach(new playerid : Player) {
 	    new weapon = GetPlayerWeapon(playerid);
 
@@ -4209,9 +4348,18 @@ public antiCheatTimer() {
 					KickPlayer(playerid, "el sistema", string);
 				}
 			}
-			
+
 			if(GetPVarInt(playerid, "died") != 1) {
 				SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
+			}
+
+			if (PlayerInfo[playerid][pPlayingHours] <= 2) {
+			   if(!isWeaponlevelone(weapon)){
+			       ResetPlayerWeapons(playerid);
+			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
+				   AdministratorMessage(COLOR_WHITE, string, 1);
+
+				}
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid)) {
@@ -4231,7 +4379,6 @@ public antiCheatTimer() {
 		}
 	}
 }
-
 public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
 {
 	if(refilltype == 1)
@@ -4578,12 +4725,14 @@ public OnPlayerExitVehicle(playerid, vehicleid) {
 
 public OnPlayerStateChange(playerid, newstate, oldstate) {
 	new	string[128];
+ 	if(newstate == PLAYER_STATE_PASSENGER || newstate == PLAYER_STATE_DRIVER)
+		LastVeh[playerid] = GetPlayerVehicleID(playerid);
 	new vehicleid = LastVeh[playerid];
 		
 	if(playerid == INVALID_PLAYER_ID) {
 	    return 1;
 	}
-	
+
 	if(newstate == PLAYER_STATE_ONFOOT) {
 		if(SeatBelt[playerid])	{
 			new vType = GetVehicleType(vehicleid);
@@ -4606,7 +4755,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					GameTextForPlayer(TransportDriver[playerid], string, 5000, 1);
 					GivePlayerCash(playerid, -TransportCost[TransportDriver[playerid]]);
 					GivePlayerCash(TransportDriver[playerid], TransportCost[TransportDriver[playerid]]);
-					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") <= JOB_TAXI_MAXPASSENGERS) {
+					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") < JOB_TAXI_MAXPASSENGERS) {
 					    SetPVarInt(TransportDriver[playerid], "pJobLimitCounter", GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") + 1);
 						PlayerInfo[TransportDriver[playerid]][pPayCheck] += PRICE_TAXI_PERPASSENGER;
 					}
@@ -4649,8 +4798,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el vehículo, por lo tanto no te cobrará ninguna tarifa.");
 					TransportCost[playerid] = 0;
 				}
-				TransportPassenger[playerid] = 999;
 				TransportDriver[TransportPassenger[playerid]] = 999;
+				TransportPassenger[playerid] = 999;
 			}
 		}
 		
@@ -4737,12 +4886,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
 	        
-	    } else if(VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] != PlayerInfo[playerid][pJob]) {
-			if(AdminDuty[playerid] == 0 && PlayerInfo[playerid][pJob] != JOB_GARB) {
-       			SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves!");
-			    RemovePlayerFromVehicle(playerid);
-			}
-			
 	    } else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1) {
 			if(playerLicense[playerid][lDTaking] != 1) {
 				RemovePlayerFromVehicle(playerid);
@@ -5435,6 +5578,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_JOB_CENTER) {
 		GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
 		return 1;
+
+	} else if(pickupid == P_POLICE_CAMERAS) {
+		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
+		return 1;
 		
 	} else if(pickupid == P_HOSP_HEAL) {
 		new string[128];
@@ -6044,16 +6191,20 @@ stock ReloadBizIcon(bizid) {
 	    return 1;
 
 	switch(Business[bizid][bType]) {
-	    case 1: 	bizType = "Restaurant";
-	    case 2: 	bizType = "Compañía telefonica";
-	    case 3: 	bizType = "Tienda 24-7";
-	    case 4: 	bizType = "Armería";
-	    case 5: 	bizType = "Publicidad";
-	    case 6,8: 	bizType = "Tienda de ropa";
-	    case 7: 	bizType = "Bar";
-	    case 9: 	bizType = "Casino";
-	    case 10:	bizType = "Ferretería";
-	    case 11:	bizType = "Discoteca/Club Nocturno";
+	    case BIZ_REST: 	bizType = "Restaurant";
+	    case BIZ_PHON: 	bizType = "Compañía telefonica";
+	    case BIZ_247: 	bizType = "Tienda 24-7";
+	    case BIZ_AMMU: 	bizType = "Armería";
+	    case BIZ_ADVE: 	bizType = "Publicidad";
+	    case BIZ_CLOT,BIZ_CLOT2: 	bizType = "Tienda de ropa";
+	    case BIZ_CLUB: 	bizType = "Bar";
+	    case BIZ_CASINO: bizType = "Casino";
+	    case BIZ_HARD:	bizType = "Ferretería";
+	    case BIZ_CLUB2:	bizType = "Discoteca/Club Nocturno";
+	    case BIZ_PIZZERIA: 	bizType = "Pizzeria";
+	    case BIZ_BURGER1:    bizType = "McDonals";
+		case BIZ_BURGER2:    bizType = "Burger King";
+		case BIZ_BELL:    bizType = "Comidas Rápidas";
 	    default: 	bizType = "Indefinido";
 	}
 
@@ -7398,9 +7549,9 @@ public JailTimer() {
 			            PlayerInfo[i][pJailed] = 0;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, Building[2][blInsideWorld]);
-					    SetPlayerInterior(i, 6);
-						SetPlayerPos(i, 246.4393, 70.9981, 1003.6406);
-						SetPlayerFacingAngle(i, 177.6641);
+					    SetPlayerInterior(i, 3);
+						SetPlayerPos(i, 229.01, 151.30, 1003.02);
+						SetPlayerFacingAngle(i, 270.0000);
 						TogglePlayerControllable(i, true);
 		  			}
 			        case 2: {
@@ -8108,14 +8259,23 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU || Business[i][bType] == BIZ_HARD)
 			    				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
 							else
-								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
+								if(Business[i][bType] == BIZ_CLUB){
 							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+								    PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
+									isHearingVehicleRedio[playerid] = true;
+										}
 								else
-								    if(Business[i][bType] == BIZ_REST)
-								        SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-									else
-										if(Business[i][bType] == BIZ_CASINO)
-									    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+								    if(Business[i][bType] == BIZ_CLUB2){
+							    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+										PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash");
+										isHearingVehicleRedio[playerid] = true;
+											}
+								    else
+								        if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
+								            SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+									    else
+										    if(Business[i][bType] == BIZ_CASINO)
+									    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
 							if(Business[i][bProducts] == 0)
 								GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
 							Business[i][bTill] += Business[i][bEntranceFee];
@@ -8169,6 +8329,12 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							DestroySelectionMenu(playerid);
 							CancelSelectTextDraw(playerid);
 						}
+						if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2){
+						   if(isHearingVehicleRedio[playerid]){
+		                      StopAudioStreamForPlayer(playerid);
+						      SendClientMessage(playerid, -1, "Sales del boliche y la musica deja de sonar.");
+							}
+						}
 						if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1) {
 							SetPlayerInterior(playerid, Business[i][bOutsideInt]);
 							SetPlayerVirtualWorld(playerid, 0);
@@ -8212,6 +8378,10 @@ public ClearCheckpointsForPlayer(playerid) {
 
 stock LoadPickups() {
 
+	/* Cámaras de Seguridad PMA */
+	P_POLICE_CAMERAS = CreateDynamicPickup(1239, 1, 219.36, 188.31, 1003.00, -1);
+	CreateDynamic3DTextLabel("Cámaras de Seguridad de la Ciudad", COLOR_WHITE, 219.36, 188.31, 1003.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
+	
 	/* Gimnasio */
 	P_FIGHT_STYLE = CreateDynamicPickup(1239, 1, 766.3723, 13.8237, 1000.7015, -1);
 	
@@ -8414,6 +8584,96 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
 	switch(dialogid)
 	{
+		case CAMARAS_POLICIA:
+        {
+          if(response)
+          {
+	         switch(listitem)
+              {
+                 case 0:
+                {
+
+                        TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1810.6332,-1881.8149,19.5813);
+                        SetPlayerCameraLookAt(playerid,1826.7717,-1855.4510,13.5781);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+						SetPlayerPos(playerid,1808.0325,-1875.4358,14.1098);
+
+                }
+                case 1:
+                {
+                        TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1597.0785,-1881.5038,27.7953);
+                        SetPlayerCameraLookAt(playerid,1622.404,-1867.609,13.167);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1625.4521,-1869.5902,8.3828);
+
+                }
+                case 2:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid, 1176.9811,-1343.1915,19.4488);
+                        SetPlayerCameraLookAt(playerid,1189.4771,-1324.0830,13.5669);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1194.1521,-1325.6360,9.3984);
+
+                }
+                case 3:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,493.8351,-1271.0554,31.1417);
+                        SetPlayerCameraLookAt(playerid,536.0699,-1266.2397,16.5363);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,541.5012,-1257.4186,10.5401);
+
+                }
+                case 4:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,807.4939,-1307.5045,28.8984);
+                        SetPlayerCameraLookAt(playerid,783.412,-1327.025,13.254);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,778.0953,-1323.9830,9.3906);
+
+                }
+                case 5:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1289.1920,-944.2938,59.1594);
+                        SetPlayerCameraLookAt(playerid,1316.086,-914.297,37.690);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1315.8170,-915.3012,32.0215);
+                }
+                case 6:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid, 1354.3875,-1725.0841,23.1490);
+                        SetPlayerCameraLookAt(playerid, 1352.600,-1740.055,13.171);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1366.0573,-1754.3422,14.0174);
+                }
+                case 7:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,2352.8774,-1249.7654,36.8919);
+                        SetPlayerCameraLookAt(playerid, 2374.472,-1211.521,27.135);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,2348.5415,-1210.8560,30.2480);
+               	}
+            }
+         }
+          return 1;
+      }
         case DLG_247:
 		{
             new business = GetPlayerBusiness(playerid);
@@ -10622,8 +10882,8 @@ CMD:ayuda(playerid,params[]) {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas");
@@ -10943,6 +11203,7 @@ CMD:numero(playerid, params[]) {
 	}
 	return 1;
 }
+
 
 CMD:comprar(playerid, params[]) {
 	new
@@ -11482,7 +11743,7 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
  	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
  	if(PlayerInfo[playerid][pRank] <= 4)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
@@ -12438,6 +12699,28 @@ CMD:equipo(playerid, params[]) {
 	return 1;
 }
 
+CMD:camaras(playerid, params[])
+{
+	if(IsPlayerInRangeOfPoint(playerid, 2.0, 219.36, 188.31, 1003.00))
+	{
+		ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Cámaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grotti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)","Ok", "");
+	}
+	return 1;
+}
+
+CMD:salircam(playerid, params[])
+{
+	if(Camara[playerid] == 0) return SendClientMessage(playerid, -1,"¡No estas en una camara!");
+	{
+		TogglePlayerControllable(playerid, 1);
+		Camara[playerid] = 0;
+		SetCameraBehindPlayer(playerid);
+		SetPlayerPos(playerid,219.36, 188.31, 1003.00);
+		SetPlayerVirtualWorld(playerid, 16002);
+		SetPlayerInterior(playerid, 3);
+	}
+	return 1;
+}
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
 CMD:bol(playerid, params[])
@@ -13508,8 +13791,7 @@ CMD:aceptar(playerid,params[]) {
         }
         if(TaxiCall < 999) {
             if(IsPlayerConnected(TaxiCall)) {
-            	format(string, sizeof(string), "* Has aceptado la llamada de %s, verás un marcador en el GPS.", GetPlayerNameEx(TaxiCall));
-				SendClientMessage(playerid, COLOR_WHITE, string);
+            	SendClientMessage(playerid, COLOR_WHITE, "has aceptado la llamada, verás un marcador en el GPS.");
 				SendClientMessage(TaxiCall, COLOR_WHITE, "* Un taxista ha aceptado tu llamada, espere en el lugar por favor.");
 				TaxiCallTime[playerid] = 1;
 				TaxiAccepted[playerid] = TaxiCall;
@@ -13899,127 +14181,6 @@ CMD:apfortuna(playerid, params[])
        				PlayerActionMessage(playerid, 15.0, string);
 					isBetingFortune[playerid] = true;
 					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_FORTUNE);
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-//=======================NEGOCIOS TIPO RESTAURANT===============================
-
-CMD:comer(playerid, params[])
-{
-	new menu;
-
-	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-
-	for(new i = 0; i < MAX_BUSINESS; i++)
-	{
-		if(PlayerToPoint(35.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
-		{
-			if(GetPlayerVirtualWorld(playerid) == i + 17000)
-			{
-	    		if(Business[i][bType] == BIZ_REST)
-				{
-	    			if(Business[i][bProducts] <= 0)
-                    	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
-					if(sscanf(params, "i", menu))
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");
-						SendClientMessage(playerid, COLOR_WHITE, "1) - Milanesa con papas - Precio: $80.");
-						SendClientMessage(playerid, COLOR_WHITE, "2) - Pollo al horno con verduritas - Precio: $90.");
-						SendClientMessage(playerid, COLOR_WHITE, "3) - Ravioles de espinaca con salsa parisiene - Precio: $90.");
-						SendClientMessage(playerid, COLOR_WHITE, "4) - Ensalada Cáesar - Precio: $70.");
-						SendClientMessage(playerid, COLOR_WHITE, "5) - Bife de cerdo a la plancha - Precio: $90.");
-						SendClientMessage(playerid, COLOR_WHITE, "6) - Pastel de papa casero - Precio: $75.");
-						SendClientMessage(playerid, COLOR_WHITE, "7) - Asado completo con bebida - Precio: $120.");
-						return 1;
-					}
-					switch(menu)
-					{
-					    case 1:
-					    {
-					        if(GetPlayerCash(playerid) < 80)
-					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-	       					GivePlayerCash(playerid, -80);
-	       		    		Business[i][bTill] += 80;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena una milanesa con papas y comienza a comer.");
-                            PlayerEat(playerid, 70.0);
-							saveBusiness(i);
-	                    }
-						case 2:
-					    {
-					        if(GetPlayerCash(playerid) < 90)
-					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-       						GivePlayerCash(playerid, -90);
-	       		    		Business[i][bTill] += 90;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena un pollo al horno con verduritas y comienza a comer.");
-         					PlayerEat(playerid, 70.0);
-							saveBusiness(i);
-						}
-						case 3:
-					    {
-					        if(GetPlayerCash(playerid) < 90)
-					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-       						GivePlayerCash(playerid, -90);
-	       		    		Business[i][bTill] += 90;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena unos ravioles de espinaca a la parisiene y comienza a comer.");
-                            PlayerEat(playerid, 70.0);
-							saveBusiness(i);
-						}
-						case 4:
-					    {
-					        if(GetPlayerCash(playerid) < 70)
-					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-	       					GivePlayerCash(playerid, -70);
-	       		    		Business[i][bTill] += 70;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena una ensalada Caésar y comienza a comer.");
-                            PlayerEat(playerid, 60.0);
-							saveBusiness(i);
-						}
-						case 5:
-					    {
-					        if(GetPlayerCash(playerid) < 90)
-					            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-       						GivePlayerCash(playerid, -90);
-	       		    		Business[i][bTill] += 90;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena un bife de cerdo a la plancha y comienza a comer.");
-							PlayerEat(playerid, 70.0);
-							saveBusiness(i);
-						}
-						case 6:
-					    {
-					        if(GetPlayerCash(playerid) < 75)
-					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-       						GivePlayerCash(playerid, -75);
-	       		    		Business[i][bTill] += 75;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena un pastel de papas casero y comienza a comer.");
-							PlayerEat(playerid, 70.0);
-							saveBusiness(i);
-						}
-						case 7:
-					    {
-					        if(GetPlayerCash(playerid) < 120)
-					        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-	       					GivePlayerCash(playerid, -120);
-	       		    		Business[i][bTill] += 120;
-	            	   		Business[i][bProducts]--;
-					  		PlayerActionMessage(playerid, 15.0, "ordena un asado completo con bebida y comienza a comer.");
-                            PlayerEat(playerid, 100.0);
-                            PlayerDrink(playerid, 70.0);
-							saveBusiness(i);
-						}
-						default:
-							SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
-					}
 				}
 			}
 		}
@@ -14834,19 +14995,19 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	switch(redio)
 	{
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://184.171.254.134:9878/listen.pls");
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://giss.tv:8001/AltaM.mp3");
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
 	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
 	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
 	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
 	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://144.76.174.181:2040/listen.pls");
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://188.138.33.174:12500/stream/2/listen.pls");
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://95.141.24.140:80/listen.pls");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94"); //nueva
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94"); //nueva
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
      	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://206.217.213.235:8170/listen.pls");
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://5.135.158.214:6316/listen.pls");
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streamlky.alsolnet.com:443/fmpasion/listen.pls");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
+	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
 	}
 	isHearingVehicleRedio[playerid] = true;
 }
@@ -16755,126 +16916,6 @@ stock LoadTrunksSlotsInfo() {
   		mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_TRUNK, id);
 		id++;
 	}
-	return 1;
-}
-
-forward OnVehicleDataLoad(id);
-public OnVehicleDataLoad(id) {
-   	new
-		result[128],
-		rows,
-		fields;
-
-	cache_get_data(rows, fields);
-
-    if(rows) {
-	    cache_get_field_content(0, "VehSQLID", result); 				VehicleInfo[id][VehSQLID] 		= strval(result);
-		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
-		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
-		cache_get_field_content(0, "VehColor2", result); 				VehicleInfo[id][VehColor2] 		= strval(result);
-		cache_get_field_content(0, "VehFaction", result); 				VehicleInfo[id][VehFaction] 	= strval(result);
-		cache_get_field_content(0, "VehJob", result); 					VehicleInfo[id][VehJob] 		= strval(result);
-		cache_get_field_content(0, "VehDamage1", result); 				VehicleInfo[id][VehDamage1] 	= strval(result);
-		cache_get_field_content(0, "VehDamage2", result); 				VehicleInfo[id][VehDamage2] 	= strval(result);
-		cache_get_field_content(0, "VehDamage3", result); 				VehicleInfo[id][VehDamage3] 	= strval(result);
-		cache_get_field_content(0, "VehDamage4", result); 				VehicleInfo[id][VehDamage4]	 	= strval(result);
-		cache_get_field_content(0, "VehFuel", result); 					VehicleInfo[id][VehFuel] 		= strval(result);
-		cache_get_field_content(0, "VehType", result); 					VehicleInfo[id][VehType] 		= strval(result);
-		cache_get_field_content(0, "VehOwnerID", result); 				VehicleInfo[id][VehOwnerSQLID] 	= strval(result);
-		cache_get_field_content(0, "VehLocked", result);	 			VehicleInfo[id][VehLocked] 		= strval(result);
-		cache_get_field_content(0, "VehLights", result); 				VehicleInfo[id][VehLights] 		= strval(result);
-		cache_get_field_content(0, "VehEngine", result); 				VehicleInfo[id][VehEngine] 		= strval(result);
-		cache_get_field_content(0, "VehBonnet", result); 				VehicleInfo[id][VehBonnet] 		= strval(result);
-		cache_get_field_content(0, "VehBoot", result); 					VehicleInfo[id][VehBoot] 		= strval(result);
-		cache_get_field_content(0, "VehOwnerSlot", result); 			VehicleInfo[id][VehOwnerSlot] 	= strval(result);
-		cache_get_field_content(0, "VehMarijuana", result); 			VehicleInfo[id][VehMarijuana] 	= strval(result);
-		cache_get_field_content(0, "VehLSD", result); 					VehicleInfo[id][VehLSD] 		= strval(result);
-		cache_get_field_content(0, "VehEcstasy", result); 				VehicleInfo[id][VehEcstasy] 		= strval(result);
-		cache_get_field_content(0, "VehCocaine", result); 				VehicleInfo[id][VehCocaine] 	= strval(result);
-		cache_get_field_content(0, "VehPosX", result); 					VehicleInfo[id][VehPosX] 		= floatstr(result);
-		cache_get_field_content(0, "VehPosY", result); 					VehicleInfo[id][VehPosY] 		= floatstr(result);
-		cache_get_field_content(0, "VehPosZ", result); 					VehicleInfo[id][VehPosZ] 		= floatstr(result);
-	 	cache_get_field_content(0, "VehAngle", result); 				VehicleInfo[id][VehAngle] 		= floatstr(result);
-	 	cache_get_field_content(0, "VehHP", result); 					VehicleInfo[id][VehHP] 			= floatstr(result);
-		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate], 32);
-		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName],MAX_PLAYER_NAME);
-		
-		if(VehicleInfo[id][VehType] == VEH_OWNED) {
-		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot1", result); 		VehicleInfo[id][VehCompSlot][1] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot2", result); 		VehicleInfo[id][VehCompSlot][2] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot3", result); 		VehicleInfo[id][VehCompSlot][3] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot4", result); 		VehicleInfo[id][VehCompSlot][4] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot5", result); 		VehicleInfo[id][VehCompSlot][5] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot6", result); 		VehicleInfo[id][VehCompSlot][6] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot7", result); 		VehicleInfo[id][VehCompSlot][7] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot8", result); 		VehicleInfo[id][VehCompSlot][8] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot9", result); 		VehicleInfo[id][VehCompSlot][9] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot10", result); 		VehicleInfo[id][VehCompSlot][10] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot11", result); 		VehicleInfo[id][VehCompSlot][11] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot12", result); 		VehicleInfo[id][VehCompSlot][12] = strval(result);
-		    cache_get_field_content(0, "VehCompSlot13", result); 		VehicleInfo[id][VehCompSlot][13] = strval(result);
-		}
-
-		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
- 			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
-
-		} else {
-			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
-			    // Vehículos de consecionaria.
-                VehicleInfo[id][VehColor1] = random(255);
-				VehicleInfo[id][VehColor2] = random(255);
-				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
-			    // Vehículos de renta.
-			    for(new i = 1; i < MAX_RENTCAR; i++) {
-			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
-                    	RentCarInfo[i][rVehicleID] = id;
-                    	RentCarInfo[i][rOwnerSQLID] = 0;
-                    	RentCarInfo[i][rTime] = 0;
-                    	RentCarInfo[i][rRented] = 0;
-                    	break; // Salimos porque ya lo cargamos en el primero libre
-                    }
-				}
-				VehicleInfo[id][VehLocked] = 0;
-    			VehicleInfo[id][VehColor1] = random(255);
-				VehicleInfo[id][VehColor2] = random(255);
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
-
-			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
-			    // Vehículos de empleo.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
-			    // Vehículos de licencia.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
-			    // Vehículos de facción.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
-
-			} else {
-			    // Otros.
-			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
-			}
-
-			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
-			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
-	   			new
-	   			    objectID,
-				   	Float:wWide,
-				    Float:wLong,
-					Float:height;
-
-				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
-	   			objectID = CreateObject(19308, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
-				AttachObjectToVehicle(objectID, id, 0.0047, -0.1224, 0.9479, 0.0000, 0.0000, 90.0000);
-			}
-		}
-		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
-		SetVehicleToRespawn(id);
-    }
 	return 1;
 }
 

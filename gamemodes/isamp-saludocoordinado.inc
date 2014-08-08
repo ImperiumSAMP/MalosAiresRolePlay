@@ -12,7 +12,7 @@ return 1;
 CMD:saludar (playerid, params[])
 {
 new targetid, str[100], style;
-if (sscanf (params, "dd", targetid, style)) return SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saludar [Id/ParteDelNombre] [Estilo 1-7]");
+if (sscanf (params, "rd", targetid, style)) return SendClientMessage (playerid, COLOR_GREY, "{FF4600}[Sintaxis]:{C8C8C8} /saludar [Id/ParteDelNombre] [Estilo 1-7]");
 {
 if (GetDistanceBetweenPlayers (playerid, targetid) > 3.5) return SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "¡El jugador está demasiado lejos!");
 
@@ -60,6 +60,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 2:
 {
@@ -73,6 +74,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 3:
 {
@@ -86,6 +88,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 4:
 {
@@ -99,6 +102,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 5:
 {
@@ -112,6 +116,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 6:
 {
@@ -125,6 +130,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 case 7:
 {
@@ -138,6 +144,7 @@ SendClientMessage (playerid, COLOR_GREY, str);
 format(str, sizeof(str), "* %s aceptó coordinar un saludo con vos.", GetPlayerNameEx(playerid));
 SendClientMessage (i, COLOR_GREY, str);
 DeletePVar(i, "style");
+count = 0;
 }
 }
 }

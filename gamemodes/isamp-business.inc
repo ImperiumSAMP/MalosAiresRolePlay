@@ -6,8 +6,9 @@
 #define MAX_BUSINESS	        100
 
 // Mensajes del sistema.
-#define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana - 7: Bar/Club - 8: Tienda de ropa fina"
-#define BUSINESS_TYPES2 		"9: Casino - 10: Ferreteria - 11: Discoteca"
+#define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana"
+#define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
+#define BUSINESS_TYPES3         "14: Burger King - 15:Comidas Rápidas"
 
 // Negocios.
 #define BIZ_REST          		1
@@ -21,6 +22,74 @@
 #define BIZ_CASINO              9
 #define BIZ_HARD                10
 #define BIZ_CLUB2               11
+#define BIZ_PIZZERIA            12
+#define BIZ_BURGER1             13
+#define BIZ_BURGER2             14
+#define BIZ_BELL                15
+
+
+enum RES_PRICELIST {
+		bplItemName[64],
+		bplPrice,
+		Float:bplEatAmount,
+		Float:bplDrinkAmount
+};
+
+static const RestMenu[][RES_PRICELIST] = {
+	//Restaurant
+	{"Milanesa con papas", 80, 70.0, 0.0},
+	{"Pollo al horno con verduras", 90, 70.0, 0.0},
+	{"Ravioles de espinaca con salsa parisiene", 90, 70.0, 0.0},
+	{"Ensalada Cáesar", 70, 60.0, 0.0},
+	{"Bife de cerdo a la plancha", 90, 70.0, 0.0},
+	{"Pastel de papa casero", 75, 70.0, 0.0},
+	{"Asado completo con bebida", 120, 100.0, 70.0}
+};
+
+static const PizzaMenu[][RES_PRICELIST] = {
+	 //Pizza
+	{"Pizza de Muzzarella", 65, 65.0, 0.0},
+	{"Pizza de Fugazzeta", 70, 70.0, 0.0},
+	{"Pizza de Calabresa", 80, 80.0, 0.0},
+	{"Pizza Especial con bebida", 100, 70.0, 50.0},
+	{"Pizza Estilo Primavera", 90, 85.0, 0.0},
+	{"Pizza De Jamón, Roquefort y Morrones con bebida", 105, 85.0, 60.0},
+	{"Pizza de 4 Quesos Artesanal con bebida", 115, 95.0, 65.0}
+};
+
+static const McMenu[][RES_PRICELIST] = {
+	 //McDonals
+	{"Angus Beacon con gaseosa grande y papas grandes", 110, 75.0, 40.0},
+	{"Doble Cuarto de libra con papas medianas y gaseosa mediana", 95, 60.0, 30.0},
+	{"Triple Mac", 60, 50.0, 0.0},
+	{"Big Mac con gaseosa mediana", 70, 50.0, 35.0},
+	{"McNifica", 50, 40.0, 0.0},
+	{"MacFiesta con huevo y gaseosa grande", 55, 45.0, 30.0},
+	{"Jugo de naranja McDonals", 25, 0.0, 45.0}
+};
+
+static const BurgerMenu[][RES_PRICELIST] = {
+	 //Burger King
+	{"Whopper con queso y papas medianas", 70, 60.0, 0.0},
+	{"SteakHouse Burger XT con papas Noisette", 80, 70.0, 0.0},
+	{"Hamburguesa con queso", 35, 30.0, 0.0},
+	{"BK Stacker Cuádruple con vaso grande y papas medianas", 105, 80.0, 45.0},
+	{"King de pollo Francés con papas pequeñas", 70, 60.0, 0.0},
+	{"Tendergrill Max con vaso mediano y papas grandes", 90, 60.0, 35.0},
+	{"Churrasquito Pampeano con vaso grande", 100, 70.0, 40.0}
+};
+
+static const BellMenu[][RES_PRICELIST] = {
+	 //Chuckin Bell
+	{"Pechuga de pollo", 65, 65.0, 0.0},
+	{"Albóndigas", 50, 40.0, 0.0},
+	{"Café con tostado de jamón y queso", 55, 40.0, 40.0},
+	{"Churrasco con papas fritas y bebida", 80, 55.0, 40.0},
+	{"Sandwich de Lomo Grille con bebida", 70, 50.0, 40.0},
+	{"Rabas a la provenzal con bebida", 85, 65.0, 40.0},
+	{"Ensalada del bosque con Villa del Sur", 50, 35.0, 65.0}
+};
+
 
 //Enums
 enum BusinessSystem {
@@ -58,6 +127,15 @@ enum BusinessSystem {
 new Business[MAX_BUSINESS][BusinessSystem];
 new bool:openBizPermission[MAX_BUSINESS];
 
+stock GetPlayerBusiness(playerid) {
+	for(new i = 1; i < MAX_BUSINESS; i++) {
+	    if(Business[i][bInsideInt] == GetPlayerInterior(playerid) && Business[i][bInsideWorld] == GetPlayerVirtualWorld(playerid) && Business[i][bInsideWorld] != 0) {
+			return i;
+		}
+	}
+	return 0;
+}
+
 //========================COMANDOS ADMIN DE NEGOCIOS============================
 
 CMD:anegocios(playerid, params[])
@@ -70,6 +148,7 @@ CMD:anegocios(playerid, params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
+
 
 CMD:aninfo(playerid, params[])
 {
@@ -535,6 +614,7 @@ CMD:antipo(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tipos de negocio:");
 	    SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES);
 		SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES2);
+		SendClientMessage(playerid, COLOR_ADMINCMD, BUSINESS_TYPES3);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /antipo [idnegocio] [tipo]");
 	}
 	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
@@ -679,5 +759,74 @@ CMD:anvender(playerid, params[]) {
 		saveBusiness(bizID);
 		ReloadBizIcon(bizID);
 	}
+	return 1;
+}
+
+//=======================NEGOCIOS TIPO RESTAURANT===============================
+
+stock bizSellProduct(businessid,playerid,price,productCount=1){
+	if(GetPlayerCash(playerid)<price)
+		return 0;
+	
+	GivePlayerCash(playerid, 0-price);
+	Business[businessid][bTill] += price;
+	Business[businessid][bProducts]-=productCount;
+	saveBusiness(businessid);	
+	return 1;
+}
+
+stock bizShowMenu(playerid,const menu[][RES_PRICELIST],menusize){
+	new itemText[128];
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comer [item]");						
+	
+	for(new i=0; i!= menusize;i++)
+	{
+		format(itemText,sizeof(itemText),"%d) - %s - Precio $%d",i+1,menu[i][bplItemName],menu[i][bplPrice]);
+		SendClientMessage(playerid, COLOR_WHITE, itemText);
+	}
+	return 1;
+}
+
+stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],menusize){
+	new option;
+	new eatMessage[128];	
+	
+	if(sscanf(params, "i", option))
+		return bizShowMenu(playerid,menu,menusize);
+			
+	if(option > menusize)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
+		
+	option=option-1;
+	
+	if(!bizSellProduct(businessid,playerid,menu[option][bplPrice]))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");						
+
+	
+	format(eatMessage,sizeof(eatMessage),"realiza un pedido al dependiente del local: %s.",  menu[option][bplItemName]);
+	PlayerActionMessage(playerid, 15.0, eatMessage);
+	
+	if(menu[option][bplEatAmount] > 0.0) PlayerEat(playerid, menu[option][bplEatAmount]);
+	if(menu[option][bplDrinkAmount] > 0.0) PlayerDrink(playerid, menu[option][bplDrinkAmount]);
+	
+	return 1;
+}
+
+CMD:comer(playerid, params[])
+{	
+	new i;
+	
+	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+
+	i=GetPlayerBusiness(playerid);
+	
+	switch(Business[i][bType]) {
+		case BIZ_REST: 		return processRestMenu(params,playerid,i,RestMenu,sizeof(RestMenu));
+		case BIZ_PIZZERIA:	return processRestMenu(params,playerid,i,PizzaMenu,sizeof(PizzaMenu));
+		case BIZ_BURGER1:	return processRestMenu(params,playerid,i,McMenu,sizeof(McMenu));
+		case BIZ_BURGER2:	return processRestMenu(params,playerid,i,BurgerMenu,sizeof(BurgerMenu));
+		case BIZ_BELL:		return processRestMenu(params,playerid,i,BellMenu,sizeof(BellMenu));
+	}					
 	return 1;
 }

@@ -1472,9 +1472,10 @@ CMD:vehmal(playerid, params[])
 	vehicleType = VehicleInfo[vehicleid][VehType];
 	if(!AdminDuty[playerid])
 	{
-		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED) ||
+		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED && vehicleType != VEH_JOB) ||
 			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
 			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
+			(vehicleType == VEH_JOB && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob]) ||
 		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
 	}
@@ -1507,9 +1508,10 @@ CMD:vehcapot(playerid, params[])
 	vehicleType = VehicleInfo[vehicleid][VehType];
 	if(!AdminDuty[playerid])
 	{
-		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED) ||
+		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED && vehicleType != VEH_JOB) ||
 			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
 			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
+			(vehicleType == VEH_JOB && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob]) ||
 		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
 	}

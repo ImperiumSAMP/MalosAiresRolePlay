@@ -477,8 +477,8 @@ CMD:asaltartienda(playerid, params[]) {
 	    return 1;
 	}
 
-    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2 && Business[business][bType] != BIZ_CLUB && Business[business][bType] != BIZ_CLUB2 && Business[business][bType] != BIZ_REST && Business[business][bType] != BIZ_HARD)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 / Local de ropa / Bar / Discoteca o Club Nocturno / Restaurant.");
+    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2 && Business[business][bType] != BIZ_CLUB && Business[business][bType] != BIZ_CLUB2 && Business[business][bType] != BIZ_REST && Business[business][bType] != BIZ_HARD && Business[business][bType] != BIZ_PIZZERIA && Business[business][bType] != BIZ_BURGER1 && Business[business][bType] != BIZ_BURGER2 && Business[business][bType] != BIZ_BELL)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 / Local de ropa / Bar / Discoteca o Club Nocturno / Restaurant / Comidas rápidas.");
 
 	if(!hasFireGun(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano.");
