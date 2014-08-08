@@ -4760,7 +4760,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate) {
 					GameTextForPlayer(TransportDriver[playerid], string, 5000, 1);
 					GivePlayerCash(playerid, -TransportCost[TransportDriver[playerid]]);
 					GivePlayerCash(TransportDriver[playerid], TransportCost[TransportDriver[playerid]]);
-					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") <= JOB_TAXI_MAXPASSENGERS) {
+					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") < JOB_TAXI_MAXPASSENGERS) {
 					    SetPVarInt(TransportDriver[playerid], "pJobLimitCounter", GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") + 1);
 						PlayerInfo[TransportDriver[playerid]][pPayCheck] += PRICE_TAXI_PERPASSENGER;
 					}
