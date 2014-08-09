@@ -39,9 +39,13 @@ GCounter[playerid] = 1;
 return 1; 
 } 
 
-CMD:yob(playerid, params[]){ 
-GCounter[playerid] = 0; 
-Delete3DTextLabel(DescLabel[playerid]); 
-SendClientMessage(playerid, -1, "Borraste tu descripción actual."); 
-return 1; 
-}  
+CMD:yob(playerid, params[]){
+if(GCounter[playerid] != 0){
+ GCounter[playerid] = 0;
+ Delete3DTextLabel(DescLabel[playerid]);
+ SendClientMessage(playerid, -1, "Borraste tu descripción actual.");
+} else {
+ SendClientMessage(playerid, -1, "No tenés ninguna descripción actualmente");
+}
+return 1;
+}
