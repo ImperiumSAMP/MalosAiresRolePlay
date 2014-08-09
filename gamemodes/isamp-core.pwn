@@ -314,6 +314,7 @@ new
 	MechanicCallTime[MAX_PLAYERS],
 	RepairOffer[MAX_PLAYERS],
 	RepairPrice[MAX_PLAYERS],
+	RepairType[MAX_PLAYERS],
 	TuningOffer[MAX_PLAYERS],
 	TuningClient[MAX_PLAYERS],
 	DestuningOffer[MAX_PLAYERS],
@@ -911,6 +912,7 @@ forward CloseTuneGate3();
 forward CloseTuneGate4();
 forward AllowAd(playerid);
 forward Reparacion(playerid);
+forward Cerrajeria(playerid);
 forward Unfreeze(playerid);
 forward AntiBH(playerid);
 forward OnPlayerPrivmsg(playerid, recieverid, text[]);
@@ -1230,6 +1232,7 @@ public ResetStats(playerid) {
 	jobBreak[playerid] = 80;
 	RepairOffer[playerid] = 999;
 	RepairPrice[playerid] = 0;
+	RepairType[playerid] = 0;
 	
 	/* Sistema de Tuning */
 	TuningOffer[playerid] = 999;
@@ -7638,6 +7641,31 @@ SetPlayerFaction(targetid, factionid, rank)
 	}
 }
 
+public Cerrajeria(playerid) {
+    new string[128], vehicleid;
+	if(GetPlayerCash(playerid) >= RepairPrice[playerid]) {
+		TogglePlayerControllable(playerid, true);
+		vehicleid = GetPlayerVehicleID(playerid);
+		deleteExtraKeysForCar(vehicleid);
+		reloadAllKeysForCar(vehicleid);
+		format(string, sizeof(string), "La cerradura de su vehículo ha sido cambiada por %s (costo: $%d).", GetPlayerNameEx(RepairOffer[playerid]), RepairPrice[playerid]);
+		SendClientMessage(playerid, COLOR_YELLOW2, string);
+		format(string, sizeof(string), "Cambiaste la cerradura del vehículo de %s, $%d han sido añadidos a su PayDay.", GetPlayerNameEx(playerid), RepairPrice[playerid]);
+		SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, string);
+		PlayerInfo[RepairOffer[playerid]][pPayCheck] += RepairPrice[playerid];
+		GivePlayerCash(playerid, -RepairPrice[playerid]);
+		RepairOffer[playerid] = 999;
+		RepairPrice[playerid] = 0;
+		RepairType[playerid] = 0;
+	} else {
+	    TogglePlayerControllable(playerid, true);
+	    SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, "El jugador no tiene el dinero necesario.");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+	    RepairOffer[playerid] = 999;
+		RepairType[playerid] = 0;
+	}
+}
+
 public Reparacion(playerid) {
     new string[128], vehicleid;
 	if(GetPlayerCash(playerid) >= RepairPrice[playerid]) {
@@ -13778,10 +13806,18 @@ CMD:aceptar(playerid,params[]) {
 			{
 				if(!ProxDetectorS(6.0, playerid, RepairOffer[playerid]))
 					return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está cerca tuyo.");
-				GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
-				GameTextForPlayer(RepairOffer[playerid], "Reparando vehiculo...", 6000, 1);
-   				TogglePlayerControllable(playerid, false);
-   				SetTimerEx("Reparacion", 6000, false, "i", playerid);
+				
+				if(RepairType[playerid]==1){
+					GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
+					GameTextForPlayer(RepairOffer[playerid], "Reparando vehiculo...", 6000, 1);
+					TogglePlayerControllable(playerid, false);
+					SetTimerEx("Reparacion", 6000, false, "i", playerid);
+				} else if(RepairType[playerid]==2){
+					GameTextForPlayer(playerid, "El mecánico está cambiando la cerradura...", 6000, 1);
+					GameTextForPlayer(RepairOffer[playerid], "Cambiando cerradura...", 6000, 1);
+					TogglePlayerControllable(playerid, false);
+					SetTimerEx("Cerrajeria", 6000, false, "i", playerid);
+				}
 				return 1;
 			}
 		}
@@ -14784,6 +14820,7 @@ CMD:reparar(playerid,params[])
 	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido reparar su vehículo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
 	RepairOffer[target] = playerid;
 	RepairPrice[target] = price;
+	RepairType[target] = 1;
 	return 1;
 }
 
@@ -16549,6 +16586,12 @@ CMD:llenar(playerid, params[])
 	fillingFuel[playerid] = true;
 	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiiii", playerid, refillprice, refillamount, refilltype, validslot));
 	return 1;
+}
+
+stock setRepairOffer(playerid,target,price,type=1){
+	RepairOffer[target] = playerid;
+	RepairPrice[target] = price;
+	RepairType[target] = type;
 }
 
 //===========================ARMARIOS PARA LAS CASAS============================

@@ -78,6 +78,12 @@ stock removeKeyFromPlayer(playerid, carId){
 	loadPlayerCarKeys(playerid);
 }
 
+stock reloadAllKeysForCar(vehicleid){
+	foreach(new playerid : Player)
+		if(playerHasCarKey(playerid,vehicleid))
+			loadPlayerCarKeys(playerid);
+}
+
 stock loadPlayerCarKeys(playerid){
 	new query[128];
 	format(query, sizeof(query), "SELECT * FROM `carkeys` WHERE accountId = %d", getPlayerMysqlId(playerid));
@@ -131,6 +137,12 @@ stock deleteKeysForCar(carid){
   	mysql_function_query(dbHandle, query, false, "", "");
 }
 
+stock deleteExtraKeysForCar(carid){
+	new query[128];	
+	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=% and ownerId!=accountId", carid);
+  	mysql_function_query(dbHandle, query, false, "", "");
+}
+
 stock deleteCarKey(keyId) {
 	new query[128];	
 	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE keyId=%d", keyId);
@@ -154,7 +166,7 @@ stock listPlayerKeys(playerid){
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Posees las siguientes llaves:{C8C8C8}");
 	
 	for(i=0;i<playerKeyCount[playerid];i++){
-		format(line,sizeof(line),"{5CCAF1}%d{C8C8C8} - %s",i+1,getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));
+		format(line,sizeof(line),"{5CCAF1}%d{C8C8C8} - %s [%d]",i+1,getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]),playerKeys[playerid][i][ckCarSqlId]);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, line);
 	}
 	
@@ -195,7 +207,7 @@ stock printCarKeys(playerid) {
 	if(playerKeyCount[playerid]>0){
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[Llaves]===========================");
 		for(i=0;i<playerKeyCount[playerid];i++)
-			SendFMessage(playerid, COLOR_WHITE,	"%s", getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));		
+			SendFMessage(playerid, COLOR_WHITE,	"[%d] %s", playerKeys[playerid][i][ckCarSqlId],getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));		
 	}
 	return 1;	
 }
@@ -211,4 +223,31 @@ CMD:llavero(playerid, params[]) {
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llavero ver | {5CCAF1}[O]:{C8C8C8} /llavero darcopia [nroLlave] [ID/ParteDelNombre]");
 	return 1;	
+}
+
+CMD:cambiarcerradura(playerid, params[]){
+	new target,price;
+	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No eres mecanico.");
+	if(!jobDuty[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en servicio.");
+	if(sscanf(params, "ud", target, price))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarcerradura [ID/Jugador] [precio]");
+	
+	if(price < 0 || price > JOB_MECH_MAXPRICE)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "¡El precio no debe ser mayor a %d o menor a 0!", JOB_MECH_MAXPRICE);
+	    return 1;
+ 	}
+ 	if(target == INVALID_PLAYER_ID || target == playerid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido.");
+ 	if(!ProxDetectorS(8.0, playerid, target) || !IsPlayerInAnyVehicle(target))
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no está dentro de un vehiculo.");
+	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(target) == PLAYER_STATE_PASSENGER)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
+	
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura del auto por $%d.", GetPlayerNameEx(target), price);
+	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido cambiar la cerradura del vehículo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
+	setRepairOffer(playerid,target,price,2);
+	return 1;
 }
