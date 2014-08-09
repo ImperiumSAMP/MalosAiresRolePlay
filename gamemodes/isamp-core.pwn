@@ -8147,6 +8147,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						SetVehicleToRespawn(vehicleid);
 						SaveVehicle(vehicleid);
 						removeKeyFromPlayer(playerid,vehicleid);
+						deleteExtraKeysForCar(vehicleid);
 						format(string, sizeof(string), "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
 						SendClientMessage(playerid, COLOR_FADE1, string);
 					} else {
@@ -13598,6 +13599,8 @@ CMD:aceptar(playerid,params[]) {
 
 			// Le quitamos el vehículo de la cuenta al vendedor.
 			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
+			// Y a los que lo tienen prestado 
+			deleteExtraKeysForCar(VehicleOfferID[playerid]);
 			
 			// Se lo seteamos a la cuenta del nuevo dueño y realizamos la transacción de dinero.
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);

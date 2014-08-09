@@ -245,7 +245,9 @@ CMD:cambiarcerradura(playerid, params[]){
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no está dentro de un vehiculo.");
 	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(target) == PLAYER_STATE_PASSENGER)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
-	
+	if(!playerOwnsCar(target,GetPlayerVehicleID(target)))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El auto no pertenece al usuario.");
+		
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura del auto por $%d.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido cambiar la cerradura del vehículo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
 	setRepairOffer(playerid,target,price,2);
