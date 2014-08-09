@@ -8148,7 +8148,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						SaveVehicle(vehicleid);
 						removeKeyFromPlayer(playerid,vehicleid);
 						deleteExtraKeysForCar(vehicleid);
-						reloadAllKeysFromCar(vehicleid);
+						reloadAllKeysForCar(vehicleid);
 						format(string, sizeof(string), "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
 						SendClientMessage(playerid, COLOR_FADE1, string);
 					} else {
