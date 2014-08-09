@@ -13602,7 +13602,7 @@ CMD:aceptar(playerid,params[]) {
 			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
 			// Y a los que lo tienen prestado 
 			deleteExtraKeysForCar(VehicleOfferID[playerid]);
-			reloadAllKeysFromCar(VehicleOfferID[playerid]);
+			reloadAllKeysForCar(VehicleOfferID[playerid]);
 			
 			// Se lo seteamos a la cuenta del nuevo dueño y realizamos la transacción de dinero.
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);
