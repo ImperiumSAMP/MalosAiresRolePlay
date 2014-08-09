@@ -108,9 +108,9 @@ stock savePlayerCarKeys(playerid){
 	
 	for(i=0;i<playerKeyCount[playerid];i++){
 		if(playerKeys[playerid][i][ckKeyId]==0)
-			insertCarKey(getPlayerMysqlId(playerid),playerKeys[playerid][i],i);
+			insertCarKey(playerid,playerKeys[playerid][i],i);
 		else
-			updateCarKey(getPlayerMysqlId(playerid),playerKeys[playerid][i]);
+			updateCarKey(playerid,playerKeys[playerid][i]);
 	}
 }
 
@@ -121,13 +121,13 @@ public OnKeyInserted(playerid,keyNum){
 
 stock insertCarKey(playerid, newKey[tCarKey], keyNum){
 	new query[128];	
-	format(query,sizeof(query),"INSERT INTO `carkeys` (`accountId`, `vehId`, `ownerId`) VALUES (%d, %d, %d)", playerid, newKey[ckCarSqlId], newKey[ckOwner]);
+	format(query,sizeof(query),"INSERT INTO `carkeys` (`accountId`, `vehId`, `ownerId`) VALUES (%d, %d, %d)", getPlayerMysqlId(playerid), newKey[ckCarSqlId], newKey[ckOwner]);
   	mysql_function_query(dbHandle, query, true, "OnKeyInserted", "ii", playerid,keyNum);
 }
 
 stock updateCarKey(playerid, newKey[tCarKey]) {
 	new query[128];	
-	format(query,sizeof(query),"UPDATE `carkeys` SET `accountId` = %d, `vehId`=%d, `ownerId`=%d WHERE keyId=%d", playerid, newKey[ckCarSqlId], newKey[ckOwner], newKey[ckKeyId]);
+	format(query,sizeof(query),"UPDATE `carkeys` SET `accountId` = %d, `vehId`=%d, `ownerId`=%d WHERE keyId=%d", getPlayerMysqlId(playerid), newKey[ckCarSqlId], newKey[ckOwner], newKey[ckKeyId]);
   	mysql_function_query(dbHandle, query, false, "", "");	
 }
 
@@ -139,7 +139,7 @@ stock deleteKeysForCar(carid){
 
 stock deleteExtraKeysForCar(carid){
 	new query[128];	
-	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=% and ownerId!=accountId", carid);
+	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=% and ownerId<>accountId", carid);
   	mysql_function_query(dbHandle, query, false, "", "");
 }
 
@@ -202,12 +202,12 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 	return 1;
 }
 
-stock printCarKeys(playerid) {
+stock printCarKeys(playerid,target) {
 	new i;
-	if(playerKeyCount[playerid]>0){
+	if(playerKeyCount[target]>0){
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[Llaves]===========================");
-		for(i=0;i<playerKeyCount[playerid];i++)
-			SendFMessage(playerid, COLOR_WHITE,	"[%d] %s", playerKeys[playerid][i][ckCarSqlId],getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));		
+		for(i=0;i<playerKeyCount[target];i++)
+			SendFMessage(playerid, COLOR_WHITE,	"[%d] %s", playerKeys[target][i][ckCarSqlId],getVehicleDescription(playerKeys[target][i][ckCarSqlId]));		
 	}
 	return 1;	
 }
