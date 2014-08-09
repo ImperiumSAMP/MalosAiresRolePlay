@@ -139,7 +139,7 @@ stock deleteKeysForCar(carid){
 
 stock deleteExtraKeysForCar(carid){
 	new query[128];	
-	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=% and ownerId<>accountId", carid);
+	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=%d and ownerId<>accountId", carid);
   	mysql_function_query(dbHandle, query, false, "", "");
 }
 
