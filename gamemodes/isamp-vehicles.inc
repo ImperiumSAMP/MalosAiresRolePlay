@@ -1309,8 +1309,6 @@ CMD:vehcomprar(playerid, params[])
  	DestroyVehicle(newveh);
 	newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
 	
-	
-	
 	addKeyToPlayer(playerid,newveh,playerid);
 	PutPlayerInVehicle(playerid, newveh, 0);
 	SaveVehicle(newveh);
@@ -2036,6 +2034,8 @@ CMD:motor(playerid,params[]) {
 	} else {
 	    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 	}
+	
+	return 1;
 }
 
 CMD:cambiarpatente(playerid, params[])

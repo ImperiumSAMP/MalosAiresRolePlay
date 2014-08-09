@@ -15293,7 +15293,7 @@ CMD:cambiarnombre(playerid, params[]) {
 			houseID = PlayerInfo[target][pHouseKey],
 			bizID = PlayerInfo[target][pBizKey];
 
-        updateCarOwnerName(target,name);
+        updateCarOwnerName(target);
 		
 		if(houseID != 0)
 		{
