@@ -12202,11 +12202,11 @@ CMD:refuerzos(playerid, params[])
 	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_HOSP)
 		return 1;
     if(sscanf(params, "d", cmde))
-        return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ref)uerzos [PMA = 1, HMA = 2, TODOS = 3]");
+        return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ref)uerzos [SIDE =1 , PMA = 2, HMA = 3, TODOS = 4]");
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0 && MedDuty[playerid] == 0)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(cmde < 1 || cmde > 3)
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ref)uerzos [PMA = 1, HMA = 2, TODOS = 3]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ref)uerzos [SIDE = 1, PMA = 2, HMA = 3, TODOS = 4]");
 
 	new Float:x, Float:y, Float:z, area[MAX_ZONE_NAME];
 	GetPlayerPos(playerid, x, y ,z);
@@ -12218,7 +12218,7 @@ CMD:refuerzos(playerid, params[])
 		{
 			case 1: {
 				foreach(Player, i) {
-					if(PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) {
+					if(PlayerInfo[i][pFaction] == FAC_SIDE && SIDEDuty[i]) {
 						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
 						SendFMessage(i, COLOR_GREY, "[CENTRAL]: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
 					}
@@ -12226,13 +12226,21 @@ CMD:refuerzos(playerid, params[])
 			}
 			case 2: {
 				foreach(Player, i) {
-					if(PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) {
+					if(PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) {
 						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
 						SendFMessage(i, COLOR_GREY, "[CENTRAL]: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
 					}
 				}
 			}
 			case 3: {
+				foreach(Player, i) {
+					if(PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) {
+						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
+						SendFMessage(i, COLOR_GREY, "[CENTRAL]: %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
+					}
+				}
+			}
+			case 4: {
 				foreach(Player, i) {
 					if( (PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) || (PlayerInfo[i][pFaction] == FAC_HOSP && MedDuty[i]) || (PlayerInfo[i][pFaction] == FAC_SIDE && SIDEDuty[i]) ) {
 						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);

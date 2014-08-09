@@ -104,7 +104,7 @@ stock savePlayerCarKeys(playerid){
 		if(playerKeys[playerid][i][ckKeyId]==0)
 			insertCarKey(getPlayerMysqlId(playerid),playerKeys[playerid][i],i);
 		else
-			updateCarKey(playerid,playerKeys[playerid][i]);
+			updateCarKey(getPlayerMysqlId(playerid),playerKeys[playerid][i]);
 	}
 }
 
@@ -139,7 +139,7 @@ stock deleteCarKey(keyId) {
 
 deleteCarKeyByPlayerAndCar(playerid, carSqlId){
 	new query[128];	
-	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE `accountId`= %d AND `carId`=%d", getPlayerMysqlId(playerid), carSqlId);
+	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE `accountId`= %d AND `vehId`=%d", getPlayerMysqlId(playerid), carSqlId);
   	mysql_function_query(dbHandle, query, false, "", "");	
 }
 

@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS `carkeys` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 
-insert into carkeys(accountid,vehid,ownerid) select id, pVeh1,id from accounts;
-insert into carkeys(accountid,vehid,ownerid) select id, pVeh2,id from accounts;
+insert into carkeys(accountid,vehid,ownerid) select id, pVeh1,id from accounts where pVeh1!=0;
+insert into carkeys(accountid,vehid,ownerid) select id, pVeh2,id from accounts where pVeh2!=0;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
