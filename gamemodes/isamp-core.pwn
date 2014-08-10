@@ -7647,7 +7647,6 @@ public Cerrajeria(playerid) {
 		TogglePlayerControllable(playerid, true);
 		vehicleid = GetPlayerVehicleID(playerid);
 		deleteExtraKeysForCar(vehicleid);
-		reloadAllKeysForCar(vehicleid);
 		format(string, sizeof(string), "La cerradura de su vehículo ha sido cambiada por %s (costo: $%d).", GetPlayerNameEx(RepairOffer[playerid]), RepairPrice[playerid]);
 		SendClientMessage(playerid, COLOR_YELLOW2, string);
 		format(string, sizeof(string), "Cambiaste la cerradura del vehículo de %s, $%d han sido añadidos a su PayDay.", GetPlayerNameEx(playerid), RepairPrice[playerid]);
@@ -8148,7 +8147,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						SaveVehicle(vehicleid);
 						removeKeyFromPlayer(playerid,vehicleid);
 						deleteExtraKeysForCar(vehicleid);
-						reloadAllKeysForCar(vehicleid);
 						format(string, sizeof(string), "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
 						SendClientMessage(playerid, COLOR_FADE1, string);
 					} else {
@@ -13598,17 +13596,17 @@ CMD:aceptar(playerid,params[]) {
 			VehicleInfo[VehicleOfferID[playerid]][VehOwnerSQLID] = PlayerInfo[playerid][pID];
 			GetPlayerName(playerid, VehicleInfo[VehicleOfferID[playerid]][VehOwnerName], 24);
 
-			// Le quitamos el vehículo de la cuenta al vendedor.
-			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
-			// Y a los que lo tienen prestado 
-			deleteExtraKeysForCar(VehicleOfferID[playerid]);
-			reloadAllKeysForCar(VehicleOfferID[playerid]);
 			
 			// Se lo seteamos a la cuenta del nuevo dueño y realizamos la transacción de dinero.
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);
 			GivePlayerCash(VehicleOffer[playerid], VehicleOfferPrice[playerid]);
 			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid);
-		    
+
+			// Le quitamos el vehículo de la cuenta al vendedor.
+			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
+			// Y a los que lo tienen prestado 
+			deleteExtraKeysForCar(VehicleOfferID[playerid]);
+			
 			PlayerPlayerActionMessage(VehicleOffer[playerid], playerid, 10.0, "recibe una suma de dinero y le entrega unas llaves a");
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);

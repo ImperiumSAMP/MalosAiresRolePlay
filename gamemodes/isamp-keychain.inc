@@ -75,13 +75,6 @@ stock getPlayerFreeKeySlots(playerid) {
 
 stock removeKeyFromPlayer(playerid, carId){
 	deleteCarKeyByPlayerAndCar(playerid,getVehicleSqlId(carId));
-	loadPlayerCarKeys(playerid);
-}
-
-stock reloadAllKeysForCar(vehicleid){
-	foreach(new playerid : Player)
-		if(playerHasCarKey(playerid,vehicleid))
-			loadPlayerCarKeys(playerid);
 }
 
 stock loadPlayerCarKeys(playerid){
@@ -131,16 +124,22 @@ stock updateCarKey(playerid, newKey[tCarKey]) {
   	mysql_function_query(dbHandle, query, false, "", "");	
 }
 
+stock reloadAllKeysForCar(vehicleid){
+	foreach(new playerid : Player)
+		if(playerHasCarKey(playerid,vehicleid))
+			loadPlayerCarKeys(playerid);
+}
+
 stock deleteKeysForCar(carid){
 	new query[128];	
 	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=%d", carid);
-  	mysql_function_query(dbHandle, query, false, "", "");
+  	mysql_function_query(dbHandle, query, true, "OnKeysDeleted", "i",carid);
 }
 
 stock deleteExtraKeysForCar(carid){
 	new query[128];	
 	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE vehId=%d and ownerId<>accountId", carid);
-  	mysql_function_query(dbHandle, query, false, "", "");
+  	mysql_function_query(dbHandle, query, true, "OnKeysDeleted", "i",carid);
 }
 
 stock deleteCarKey(keyId) {
@@ -152,7 +151,17 @@ stock deleteCarKey(keyId) {
 deleteCarKeyByPlayerAndCar(playerid, carSqlId){
 	new query[128];	
 	format(query,sizeof(query),"DELETE FROM `carkeys` WHERE `accountId`= %d AND `vehId`=%d", getPlayerMysqlId(playerid), carSqlId);
-  	mysql_function_query(dbHandle, query, false, "", "");	
+  	mysql_function_query(dbHandle, query, true, "OnKeyDeleted", "i", playerid);	
+}
+
+forward OnKeyDeleted(playerid);
+public OnKeyDeleted(playerid){
+	loadPlayerCarKeys(playerid);
+}
+
+forward OnKeysDeleted(vehicleid);
+public OnKeysDeleted(vehicleid){
+	reloadAllKeysForCar(vehicleid);
 }
 
 stock listPlayerKeys(playerid){
