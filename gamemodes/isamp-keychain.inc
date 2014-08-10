@@ -160,9 +160,7 @@ stock listPlayerKeys(playerid){
 	
 	if(playerKeyCount[playerid]==0)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No tienes ninguna llave en tu llavero");
-	
-	PlayerActionMessage(playerid, 15.0, "saca del bolisllo un manojo de llaves y revuelve entre las mismas...");
-	
+
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Posees las siguientes llaves:{C8C8C8}");
 	
 	for(i=0;i<playerKeyCount[playerid];i++){
@@ -179,15 +177,15 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 		vehicleid;
 	
 	if(keyid < 0 || keyid >= playerKeyCount[playerid]) //Me fijo que el tipo tenga llaves, sino revienta todo :D
-		return SendClientMessage(playerid, COLOR_YELLOW, "Llave no v√°lida");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Llave no v·lida");
 	
 	if(user == INVALID_PLAYER_ID || user == playerid || !ProxDetectorS(2.0, playerid, user))
-		return SendClientMessage(playerid, COLOR_YELLOW, "El usuario no es v√°lido o se encuentra muy lejos");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El usuario no es v·lido o se encuentra muy lejos");
 			
 	vehicleid=playerKeys[playerid][keyid][ckCarSqlId];
 	
 	if(!playerOwnsCar(playerid,vehicleid))
-		return SendClientMessage(playerid, COLOR_YELLOW, "El vehiculo no te pertenece");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El vehiculo no te pertenece");
 		
 	//Le doy la llave
 	addKeyToPlayer(user,vehicleid,playerid);
@@ -221,7 +219,7 @@ CMD:llavero(playerid, params[]) {
 	else if(sscanf(params,"s[16]iu",subCmd,keyId,user)==0 && strcmp(subCmd,"darcopia",true)==0)			
 		return playerGiveKeyToPlayer(playerid,keyId-1,user);
 
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llavero ver | {5CCAF1}[O]:{C8C8C8} /llavero darcopia [nroLlave] [ID/ParteDelNombre]");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llavero ver | /llavero darcopia [nroLlave] [ID/ParteDelNombre]");
 	return 1;	
 }
 
@@ -240,16 +238,16 @@ CMD:cambiarcerradura(playerid, params[]){
 	    return 1;
  	}
  	if(target == INVALID_PLAYER_ID || target == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inv√°lido.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inv·lido.");
  	if(!ProxDetectorS(8.0, playerid, target) || !IsPlayerInAnyVehicle(target))
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no est√° dentro de un vehiculo.");
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no est· dentro de un vehÌculo.");
 	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(target) == PLAYER_STATE_PASSENGER)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehÌculo desde adentro, ni tampoco repararselo a un pasajero.");
 	if(!playerOwnsCar(target,GetPlayerVehicleID(target)))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El auto no pertenece al usuario.");
 		
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura del auto por $%d.", GetPlayerNameEx(target), price);
-	SendFMessage(target, COLOR_LIGHTBLUE, "El mec√°nico %s le ha ofrecido cambiar la cerradura del veh√≠culo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
+	SendFMessage(target, COLOR_LIGHTBLUE, "El mec·nico %s le ha ofrecido cambiar la cerradura del vehÌculo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
 	setRepairOffer(playerid,target,price,2);
 	return 1;
 }
