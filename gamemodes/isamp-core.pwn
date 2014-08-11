@@ -7801,18 +7801,15 @@ public CloseGate(gateID) {
 	    MoveObject(HOSPGate, 1147.03149,-1384.87317, 13.46000, 0.0001, 0.00000, -90.00000, 0.00000);
 	} else if(gateID == PMGate) {
 	    MoveObject(PMGate, 1589.73499, -1638.32410, 14.27130, 2.0, 0.00000, 0.00000, 90.00000);
-	}
-	
-	/*
-	  else if(gateID == BERTGate) {
+	} else if(gateID == BERTGate) {
 	    MoveObject(BERTGate, 1245.07910, -767.55127, 90.60150, 2.0, 0.00000, 0.00000, 180.00000);
-	} else if(gateID == FORZGate) {
+	}/* else if(gateID == FORZGate) {
 	    MoveObject(FORZGate, 263.59546, -1333.77124, 51.39749, 2.0, 0.00000, 0.00000, 35.82000);
 	} else if(gateID == CHINGate[0]) {
 		MoveObject(CHINGate[0], 324.34799, -1185.18579, 75.42600, 2.0, 0.00000, 0.00000, 37.50000);
 		MoveObject(CHINGate[1], 317.32422, -1190.57642, 75.42602, 2.0, 0.00000, 0.00000, 37.49999);
-	}
-	*/
+	}*/
+	
 	
 	return 1;
 }
@@ -7919,16 +7916,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	            MoveObject(HOSPGate,  1147.03149, -1384.87317, 13.46000, 0.0001, 0.00000, 0.00000, 0.00000);
 	            SetTimerEx("CloseGate", 4000, false, "i", HOSPGate);
 	        }
-	    }
-	    
-		/*
-		  else
+	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_BERT) {
 	        if(PlayerToPoint(15.0, playerid, 1245.11, -767.45, 92.16)) {
 	            MoveObject(BERTGate,  1241.1888, -771.8996, 90.6015, 2.0, 0.0000, 0.0000, 96.6600);
 	            SetTimerEx("CloseGate", 6000, false, "i", BERTGate);
 	        }
-	    } else
+	    }/* else
 	    if(PlayerInfo[playerid][pFaction] == FAC_FORZ) {
 	        if(PlayerToPoint(10.0, playerid, 263.70, -1332.88, 53.43)) {
 	            MoveObject(FORZGate,  257.1657, -1338.4166, 51.3975, 2, 0.0000, 0.0000, 35.8200);
@@ -14642,7 +14636,7 @@ CMD:chino(playerid, params[])
 	}
 	return 1;
 }
-
+*/
 CMD:it(playerid, params[]) {
 	cmd_italiano(playerid, params);
 	return 1;
@@ -14673,7 +14667,7 @@ CMD:italiano(playerid, params[])
 	}
 	return 1;
 }
-
+/*
 CMD:ru(playerid, params[]) {
 	cmd_ruso(playerid, params);
 	return 1;
