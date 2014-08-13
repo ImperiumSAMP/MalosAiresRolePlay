@@ -15719,7 +15719,7 @@ CMD:b(playerid, params[])
 	PlayerLocalMessage(playerid, 15.0, string);
 	if(PlayerInfo[playerid][pAdmin] == 0) {
 	TiempoEsperaB[playerid] = 1;
-	SetTimerEx("TimeB", 15000, false, "i", playerid);
+	SetTimerEx("TimeB", 8000, false, "i", playerid);
 	}
 	return 1;
 	}
@@ -15743,7 +15743,7 @@ CMD:mp(playerid, params[])
     OnPlayerPrivmsg(playerid, targetid, text);
 	if(PlayerInfo[playerid][pAdmin] == 0) {
 	TiempoEsperaMps[playerid] = 1;
-	SetTimerEx("TimeMps", 15000, false, "i", playerid);
+	SetTimerEx("TimeMps", 8000, false, "i", playerid);
 	}
     return 1;
 }
