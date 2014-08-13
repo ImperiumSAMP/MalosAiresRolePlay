@@ -380,6 +380,9 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	cAFK[MAX_PLAYERS],
 	TAFKT[MAX_PLAYERS],
 	cTomarVW[MAX_PLAYERS];
+	
+new TiempoEsperaB[MAX_PLAYERS] = 0,
+    TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 //Sistema camaras policia
 new Camara[MAX_PLAYERS];
@@ -15702,8 +15705,7 @@ CMD:b(playerid, params[])
 
 	if(sscanf(params, "s[128]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /b [mensaje]");
-
-	if(PlayerInfo[playerid][pMuteB] > 0)
+    if(PlayerInfo[playerid][pMuteB] > 0)
 	{
 	    if(PlayerInfo[playerid][pMuteB] > 60)
 			SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d minutos.", PlayerInfo[playerid][pMuteB] / 60);
@@ -15711,11 +15713,22 @@ CMD:b(playerid, params[])
 		    SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d segundos.", PlayerInfo[playerid][pMuteB]);
 		return 1;
 	}
+	if(TiempoEsperaB[playerid] != 0)
+	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 15 segundos antes de usar nuevamente el comando.");
 	format(string, sizeof(string), "%s", text);
 	PlayerLocalMessage(playerid, 15.0, string);
+	if(PlayerInfo[playerid][pAdmin] == 0) {
+	TiempoEsperaB[playerid] = 1;
+	SetTimerEx("TimeB", 15000, false, "i", playerid);
+	}
 	return 1;
+	}
+public TimeB(playerid)
+{
+TiempoEsperaB[playerid] = 0;
+return 1;
 }
-
+	
 CMD:mp(playerid, params[])
 {
 	new targetid, text[128];
@@ -15724,10 +15737,23 @@ CMD:mp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
 	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
-
+	{
+    if(TiempoEsperaMps[playerid] != 0)
+	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 15 segundos antes de usar nuevamente el comando.");
     OnPlayerPrivmsg(playerid, targetid, text);
+	if(PlayerInfo[playerid][pAdmin] == 0) {
+	TiempoEsperaMps[playerid] = 1;
+	SetTimerEx("TimeMps", 15000, false, "i", playerid);
+	}
     return 1;
 }
+}
+public TimeMps(playerid)
+{
+TiempoEsperaMps[playerid] = 0;
+return 1;
+}
+
 
 CMD:mps(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] < 2) return 1;
