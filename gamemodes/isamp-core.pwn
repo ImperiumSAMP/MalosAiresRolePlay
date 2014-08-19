@@ -1771,6 +1771,13 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype) {
 
 public OnPlayerSpawn(playerid) {
 
+    for (new playermaletin; playermaletin < MAX_PLAYERS; playermaletin++)
+	{
+	if (PlayerInfo[playermaletin][pBriefcaseObject] == 1){
+	SetPlayerAttachedObject(playermaletin,0,1210,5,0.301999,0.082999,-0.012000,0.000000,-90.599975,-0.999999,1.000000,1.000000,1.000000);
+	}
+	}
+
     //---------------PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES--------------
 	ApplyAnimation(playerid, "ATTRACTORS", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BLOWJOBZ", "null", 0.0, 0, 0, 0, 0, 0);
@@ -3278,6 +3285,8 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pMuteB", result); 			PlayerInfo[playerid][pMuteB] 			= strval(result);
 		cache_get_field_content(0, "pRentCarID", result); 		PlayerInfo[playerid][pRentCarID] 		= strval(result);
 		cache_get_field_content(0, "pRentCarRID", result); 		PlayerInfo[playerid][pRentCarRID] 		= strval(result);
+		cache_get_field_content(0, "pBriefcaseCash", result); 	PlayerInfo[playerid][pBriefcaseCash] 	= strval(result);
+		cache_get_field_content(0, "pBriefcaseObject", result); PlayerInfo[playerid][pBriefcaseObject] 	= strval(result);
 		cache_get_field_content(0, "pMarijuana", result); 		PlayerInfo[playerid][pMarijuana] 		= strval(result);
 		cache_get_field_content(0, "pLSD", result); 			PlayerInfo[playerid][pLSD] 				= strval(result);
 		cache_get_field_content(0, "pEcstasy", result); 			PlayerInfo[playerid][pEcstasy] 			= strval(result);
@@ -3893,7 +3902,9 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pLighter],
 			PlayerInfo[playerid][pRadio],
 			PlayerInfo[playerid][pFightStyle],
-			PlayerInfo[playerid][pAdictionAbstinence]
+			PlayerInfo[playerid][pAdictionAbstinence], 
+			PlayerInfo[playerid][pBriefcaseCash],
+			PlayerInfo[playerid][pBriefcaseObject]
 		);
 		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `PhoneBook`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
@@ -8907,6 +8918,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					}
 					case 10:
 					{
+				        if(GetPlayerCash(playerid) < PRICE_MALETIN)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if (PlayerInfo[playerid][pBriefcaseObject] != 0)
+                            return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tenés un maletín!");
+                        PlayerInfo[playerid][pBriefcaseObject] = 1;
+						GivePlayerCash(playerid, -PRICE_MALETIN);
+						CrearMaletinEx(playerid);
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d!", PRICE_MALETIN);
+		   				Business[business][bTill] += PRICE_MALETIN;
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 11:
+					{
 				        if(GetPlayerCash(playerid) < PRICE_RADIO)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 						if(PlayerInfo[playerid][pRadio] != 0)
@@ -8919,6 +8945,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
+					
 				}
 			}
 			return 1;
@@ -11233,7 +11260,7 @@ CMD:numero(playerid, params[]) {
 CMD:comprar(playerid, params[]) {
 	new
 	    title[64],
-	    content[400],
+	    content[600],
 	    weapon,
 	    realWeapon,
 	    ammo,
@@ -11246,7 +11273,7 @@ CMD:comprar(playerid, params[]) {
 	    if(Business[business][bProducts] <= 0)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
 		format(title, sizeof(title), "%s", Business[business][bName]);
-		format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Alfajor {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Guía telefónica {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+		format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Alfajor {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Guía telefónica {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
             PRICE_ASPIRIN,
 			PRICE_ALFAJOR,
 			PRICE_CIGARETTES,
@@ -11257,8 +11284,12 @@ CMD:comprar(playerid, params[]) {
 			PRICE_CAMERA,
 			PRICE_SANDWICH,
 			PRICE_WATERBOTTLE,
+			PRICE_MALETIN,
 			PRICE_RADIO
+			
 		);
+        TogglePlayerControllable(playerid, false);
+        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
         TogglePlayerControllable(playerid, false);
         ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
 	} else if(business != 0 && Business[business][bType] == BIZ_PHON) {
@@ -15714,12 +15745,12 @@ CMD:b(playerid, params[])
 		return 1;
 	}
 	if(TiempoEsperaB[playerid] != 0)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 15 segundos antes de usar nuevamente el comando.");
+	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
 	format(string, sizeof(string), "%s", text);
 	PlayerLocalMessage(playerid, 15.0, string);
 	if(PlayerInfo[playerid][pAdmin] == 0) {
 	TiempoEsperaB[playerid] = 1;
-	SetTimerEx("TimeB", 8000, false, "i", playerid);
+	SetTimerEx("TimeB", 5000, false, "i", playerid);
 	}
 	return 1;
 	}
@@ -15739,11 +15770,11 @@ CMD:mp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
 	{
     if(TiempoEsperaMps[playerid] != 0)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 15 segundos antes de usar nuevamente el comando.");
+	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
     OnPlayerPrivmsg(playerid, targetid, text);
 	if(PlayerInfo[playerid][pAdmin] == 0) {
 	TiempoEsperaMps[playerid] = 1;
-	SetTimerEx("TimeMps", 8000, false, "i", playerid);
+	SetTimerEx("TimeMps", 5000, false, "i", playerid);
 	}
     return 1;
 }

@@ -48,8 +48,8 @@ enum pInfo {
 	Float:pA,
 	pInterior,
 	pVirtualWorld,
-//	pVeh1,
-//	pVeh2,
+	pVeh1,
+	pVeh2,
 	pHospitalized,
 	Float:pHealth,
 	Float:pArmour,
@@ -58,6 +58,9 @@ enum pInfo {
 	pCantWork,
 	pAccusedOf[64],
 	pAccusedBy[24],
+	
+	pBriefcaseCash,
+	pBriefcaseObject,
 	
 	pMuteB,
 	pRentCarID,
