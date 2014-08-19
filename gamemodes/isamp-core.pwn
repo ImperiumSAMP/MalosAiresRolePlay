@@ -11292,8 +11292,6 @@ CMD:comprar(playerid, params[]) {
 		);
         TogglePlayerControllable(playerid, false);
         ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
-        TogglePlayerControllable(playerid, false);
-        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
 	} else if(business != 0 && Business[business][bType] == BIZ_PHON) {
 	    TogglePlayerControllable(playerid, false);
 		ShowMenuForPlayer(phoneMenu, playerid);
