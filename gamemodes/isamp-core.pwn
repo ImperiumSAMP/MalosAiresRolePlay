@@ -43,6 +43,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 #include "isamp-norespawnautos" // Sistema de no respawn autos.
 #include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
 #include "isamp-descripcionyo.inc" //Sistema de descripción /yo.
+#include "isamp-maletin.inc" //sistema maletin
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
