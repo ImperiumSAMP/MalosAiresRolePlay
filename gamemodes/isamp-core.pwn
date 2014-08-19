@@ -158,6 +158,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 #define PRICE_SANDWICH          60
 #define PRICE_ASPIRIN           35
 #define PRICE_WATERBOTTLE       40
+#define PRICE_MALETIN           500
 
 #define HEALTH_ASPIRIN          10
 
