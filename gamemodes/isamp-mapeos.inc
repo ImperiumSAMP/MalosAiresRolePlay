@@ -3520,7 +3520,7 @@ stock LoadMap() {
 	InscripcionTaller = CreateDynamicObject(19353, 1606.72083, -1862.22827, 13.56220,   0.50000, -0.09990, -90.02810);
 	SetDynamicObjectMaterialText(InscripcionTaller, 0, "Taller", 60, "Impact", 50, 1, -8388608, 0, 1);
 	InscripcionTaller = CreateDynamicObject(19353, 1609.90735, -1862.23767, 13.58060,   0.00000, 0.00000, -89.99180);
-	SetDynamicObjectMaterialText(InscripcionTaller, 0, "Mec√°", 60, "Impact", 50, 0, -8388608, 0, 1);
+	SetDynamicObjectMaterialText(InscripcionTaller, 0, "Mec·°", 60, "Impact", 50, 0, -8388608, 0, 1);
 	InscripcionTaller = CreateDynamicObject(19353, 1611.95422, -1862.23010, 13.59280,   0.00000, 0.00000, -89.96790);
 	SetDynamicObjectMaterialText(InscripcionTaller, 0, "nico", 60, "Impact", 50, 0, -8388608, 0, 1);
 	InscripcionTaller = CreateDynamicObject(19353, 1614.91736, -1862.23401, 13.55060,   -0.59990, 0.00000, -90.04910);

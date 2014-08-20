@@ -48,7 +48,7 @@ stock Tienemaletin(playerid)
 ///Aca comienza el sistema de maletin
 CMD:dmaletin(playerid, params[])
 {
-    new Cash = GetPlayerMoney(playerid), amount;
+    new Cash = GetPlayerCash(playerid), amount;
     new str[100];
     if (sscanf (params, "d", amount)) return SendClientMessage (playerid, COLOR_RED, "{5CCAF1}[Sintaxis]:{C8C8C8} /dmaletin (Monto)");
     {
@@ -59,7 +59,7 @@ CMD:dmaletin(playerid, params[])
             if(amount + PlayerInfo[playerid][pBriefcaseCash] > MAX_DINERO_MALETIN) return SendClientMessage(playerid, COLOR_WHITE, "No podés depositar más de $100000 en el maletín.");
                 
             if (Cash >= amount && amount > 0) {
-                    GivePlayerMoney(playerid, -amount);
+                    GivePlayerCash(playerid, -amount);
                     PlayerInfo[playerid][pBriefcaseCash] += amount;
                     format (str, sizeof(str), "Depositaste $%d en tu maletín.", amount);
                     SendClientMessage (playerid, COLOR_GREY, str);
@@ -94,7 +94,7 @@ CMD:rmaletin (playerid, params[]){
         {
 			if(amount <= 0 || amount > cash) return SendClientMessage (playerid, COLOR_GREY, "Cantidad de dinero inválida.");
             {
-                GivePlayerMoney(playerid, amount);
+                GivePlayerCash(playerid, amount);
                 PlayerInfo[playerid][pBriefcaseCash] -= amount;
                 format (str, sizeof(str), "Retiraste $%d de tu maletín.", amount);
                 SendClientMessage (playerid, COLOR_GREY, str);
