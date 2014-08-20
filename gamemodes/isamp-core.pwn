@@ -961,6 +961,8 @@ forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward CerrarPuertaDeAscensor(numeroDePiso);
+forward TimeB(playerid);
+forward TimeMps(playerid);
 //==============================================================================
 
 main() {

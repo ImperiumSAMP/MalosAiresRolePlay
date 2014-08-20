@@ -5521,23 +5521,23 @@ stock LoadMap() {
 	//PASILLOS DEPTO
 	//PASILLOS DEPTO
 
-	ascensor = CreateDynamicObject(18755, 1470.77930, -1356.14099, 51.44730,   0.00000, 0.00000, 0.00000);
+	ascensor = CreateObject(18755, 1470.77930, -1356.14099, 51.44730,   0.00000, 0.00000, 0.00000);
 
-	puertaIzquierdaPiso0 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 51.46690,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso6 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 106.70910,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso7 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 116.50160,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso8 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 126.29410,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso9 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 136.08659,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso10 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 145.87910,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso11 = CreateDynamicObject(18757, 1470.65369, -1356.13599, 155.67160,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso0  = CreateObject(18757, 1470.65369, -1356.13599, 51.46690,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso6  = CreateObject(18757, 1470.65369, -1356.13599, 106.70910,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso7  = CreateObject(18757, 1470.65369, -1356.13599, 116.50160,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso8  = CreateObject(18757, 1470.65369, -1356.13599, 126.29410,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso9  = CreateObject(18757, 1470.65369, -1356.13599, 136.08659,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso10 = CreateObject(18757, 1470.65369, -1356.13599, 145.87910,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso11 = CreateObject(18757, 1470.65369, -1356.13599, 155.67160,   0.00000, 0.00000, 0.00000);
 
-	puertaDerechaPiso0 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 51.46690,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso6 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 106.70910,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso7 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 116.50160,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso8 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 126.29410,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso9 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 136.08659,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso10 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 145.87910,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso11 = CreateDynamicObject(18756, 1470.65369, -1356.13000, 155.67160,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso0  = CreateObject(18756, 1470.65369, -1356.13000, 51.46690,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso6  = CreateObject(18756, 1470.65369, -1356.13000, 106.70910,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso7  = CreateObject(18756, 1470.65369, -1356.13000, 116.50160,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso8  = CreateObject(18756, 1470.65369, -1356.13000, 126.29410,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso9  = CreateObject(18756, 1470.65369, -1356.13000, 136.08659,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso10 = CreateObject(18756, 1470.65369, -1356.13000, 145.87910,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso11 = CreateObject(18756, 1470.65369, -1356.13000, 155.67160,   0.00000, 0.00000, 0.00000);
 
 	new InscripcionPiso;
 	InscripcionPiso = CreateDynamicObject(19173, 1468.62891, -1356.16223, 157.21600,   0.00000, 0.00000, -90.00000);
