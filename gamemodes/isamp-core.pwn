@@ -20,30 +20,31 @@ forward bool:isPlayerSellingDrugs(playerid);
 
 //#include <mapandreas>
 //Includes  moudulos isamp
-#include "isamp-util.inc" 		//Contiene defines básicos utilizados en todo el GM
-#include "isamp-database.inc" 	//Funciones varias para acceso a datos
-#include "isamp-players.inc" 	//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
-#include "isamp-admin.inc" 		//Sistema de admines
-#include "isamp-inventory.inc" 	//Sistema de inventario y maletero
-#include "isamp-vehicles.inc" 	//Sistema de vehiculos
-#include "isamp-drugs.inc" 		//Sistema de drogas
-#include "isamp-factions.inc" 	//Sistema de facciones
-#include "isamp-jobs.inc" 		//Definiciones y funciones para los JOBS
-#include "isamp-business.inc" 	//Sistema de negocios
-#include "isamp-houses.inc" 	//Sistema de casas
-#include "isamp-keychain.inc" 	//Sistema de llaveros
-#include "isamp-thiefjob.inc" 	//Sistema del job de ladron
-#include "isamp-tazer.inc" 		//Sistema del tazer
-#include "isamp-animations.inc" //Sistema de animaciones
-#include "isamp-itemspma.inc"	//Sistema de items auxiliares para la pma (conos, barricadas, etc)
-#include "isamp-sprintrace.inc" //Sistema de picadas (carreras)
-#include "isamp-gangzones.inc"  //Sistema de control de barrios
-#include "isamp-mapeos.inc"  	//Mapeos del GM
-#include "isamp-saludocoordinado.inc" //Sistema de saludo coordinado
-#include "isamp-norespawnautos" // Sistema de no respawn autos.
-#include "isamp-animhablar.inc" //Sistema de animacion mover las manos cuando hablamos.
-#include "isamp-descripcionyo.inc" //Sistema de descripción /yo.
-#include "isamp-maletin.inc" //sistema maletin
+#include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
+#include "isamp-database.inc" 			//Funciones varias para acceso a datos
+#include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
+#include "isamp-admin.inc" 				//Sistema de admines
+#include "isamp-inventory.inc" 			//Sistema de inventario y maletero
+#include "isamp-vehicles.inc" 			//Sistema de vehiculos
+#include "isamp-drugs.inc" 				//Sistema de drogas
+#include "isamp-factions.inc" 			//Sistema de facciones
+#include "isamp-jobs.inc" 				//Definiciones y funciones para los JOBS
+#include "isamp-business.inc" 			//Sistema de negocios
+#include "isamp-houses.inc" 			//Sistema de casas
+#include "isamp-keychain.inc" 			//Sistema de llaveros
+#include "isamp-thiefjob.inc" 			//Sistema del job de ladron
+#include "isamp-tazer.inc" 				//Sistema del tazer
+#include "isamp-animations.inc" 		//Sistema de animaciones
+#include "isamp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
+#include "isamp-sprintrace.inc"			//Sistema de picadas (carreras)
+#include "isamp-gangzones.inc"  		//Sistema de control de barrios
+#include "isamp-mapeos.inc"  			//Mapeos del GM
+#include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
+#include "isamp-norespawnautos" 		// Sistema de no respawn autos.
+#include "isamp-animhablar.inc" 		//Sistema de animacion mover las manos cuando hablamos.
+#include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
+#include "isamp-maletin.inc" 			//sistema maletin
+#include "isamp-ascensor.inc" 			//sistema de ascensores
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -959,6 +960,7 @@ forward OnPlayerConnectEx(playerid);
 forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
+forward CerrarPuertaDeAscensor(numeroDePiso);
 //==============================================================================
 
 main() {
@@ -15753,11 +15755,12 @@ CMD:b(playerid, params[])
 	SetTimerEx("TimeB", 5000, false, "i", playerid);
 	}
 	return 1;
-	}
+}
+
 public TimeB(playerid)
 {
-TiempoEsperaB[playerid] = 0;
-return 1;
+	TiempoEsperaB[playerid] = 0;
+	return 1;
 }
 	
 CMD:mp(playerid, params[])

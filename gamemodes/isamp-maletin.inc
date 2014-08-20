@@ -26,16 +26,16 @@ stock BorrarMaletinTodos()
 
 stock BorrarMaletinEx(playerid)
 {
-  RemovePlayerAttachedObject(playerid, 7);
-    return 1;
+	RemovePlayerAttachedObject(playerid, 7);
+	return 1;
 }
 
 
 stock CrearMaletinEx(playerid)
 {
-ConM[playerid] = 1;
-SetPlayerAttachedObject(playerid,7,1210,5,0.301999,0.082999,-0.012000,0.000000,-90.599975,-0.999999,1.000000,1.000000,1.000000);
-return 1;
+	ConM[playerid] = 1;
+	SetPlayerAttachedObject(playerid,7,1210,5,0.301999,0.082999,-0.012000,0.000000,-90.599975,-0.999999,1.000000,1.000000,1.000000);
+	return 1;
 }
 
 stock Tienemaletin(playerid)
