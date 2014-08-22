@@ -12,7 +12,8 @@ enum tThiefJob {
 	pTheftPersonLimit,
 	pRob247Limit,
 	pTheft247Limit,
-	pRobHouseLimit
+	pRobHouseLimit,
+	pRob2HouseLimit
 };
 new ThiefJobInfo[MAX_PLAYERS][tThiefJob];
 
@@ -31,6 +32,7 @@ stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pTheftLastVictimPID] = INVALID_PLAYER_ID;
 	ThiefJobInfo[playerid][pTheftPersonLimit] = 0;
 	ThiefJobInfo[playerid][pRobHouseLimit] = 0;
+	ThiefJobInfo[playerid][pRob2HouseLimit] = 0;
 	ThiefJobInfo[playerid][pRob247Limit] = 0;
 	ThiefJobInfo[playerid][pTheft247Limit] = 0;
 
@@ -68,6 +70,7 @@ public OnThiefJobDataLoad(playerid) {
 		cache_get_field_content(0, "pTheftLastVictimPID", result);ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
 		cache_get_field_content(0, "pTheftPersonLimit", result);ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
 		cache_get_field_content(0, "pRobHouseLimit", result); 	ThiefJobInfo[playerid][pRobHouseLimit] 	= strval(result);
+		cache_get_field_content(0, "pRob2HouseLimit", result); 	ThiefJobInfo[playerid][pRobHouseLimit] 	= strval(result);
 		cache_get_field_content(0, "pRob247Limit", result); 	ThiefJobInfo[playerid][pRob247Limit] 		= strval(result);
 		cache_get_field_content(0, "pTheft247Limit", result); 	ThiefJobInfo[playerid][pTheft247Limit] 	= strval(result);
 	}
@@ -88,7 +91,7 @@ forward saveThiefJob(playerid);
 public saveThiefJob(playerid){
 	new query[512];
 	
-	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d WHERE `accountid`=%d",			
+	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d,pRob2HouseLimit=%d WHERE `accountid`=%d",			
             ThiefJobInfo[playerid][pFelonExp],
 			ThiefJobInfo[playerid][pFelonLevel],
 			ThiefJobInfo[playerid][pRobPersonLimit],
@@ -98,6 +101,7 @@ public saveThiefJob(playerid){
 			ThiefJobInfo[playerid][pRob247Limit],
 			ThiefJobInfo[playerid][pTheft247Limit],
 			ThiefJobInfo[playerid][pRobHouseLimit],
+			ThiefJobInfo[playerid][pRob2HouseLimit],
 			getPlayerMysqlId(playerid));
 
 	mysql_function_query(dbHandle, query, false, "", "");
@@ -203,6 +207,32 @@ public theftTimer(playerid, type, biz) {
 			KillTimer(GetPVarInt(playerid, "theftTimer"));
 			printf("%s hurto casa", GetPlayerNameEx(playerid));
         }
+	} else if(type == 3){
+	    if(theftTime[playerid] > 0) {
+	        if(theftTime[playerid] == policeCallTime[playerid]) {
+			    		
+				robberyAlert(playerid,"asalto en domicilio particular","anónimo","",biz);
+				
+		        SendClientMessage(playerid, COLOR_WHITE, "¡Un vecino ha notado tu entrada forzosa y ha llamado a la policía!");
+		        SendClientMessage(playerid, COLOR_WHITE, "Puedes utilizar /correr para escapar dejando la bolsa de objetos o esperar para terminar.");
+		    }
+		    format(string, sizeof(string), "~w~Robando objetos ~r~%d~w~ segundos", theftTime[playerid]);
+	 		GameTextForPlayer(playerid, string, 1000, 4);
+	        theftTime[playerid]--;
+        } else if(theftTime[playerid] == 0) {
+			new takeMoney = (280 * felonLevel) + random(900 * felonLevel); 
+            theftTime[playerid] = -1;
+			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d objetos de valor, ¡escapa antes de que venga la policía!", takeMoney);
+			TogglePlayerControllable(playerid, true);
+			GivePlayerCash(playerid, takeMoney);
+			if(ThiefJobInfo[playerid][pFelonLevel] == 6) {
+		 		GiveJobExp(playerid, JOB_FELON, 10);
+		 	}
+			DeletePVar(playerid, "stealAmount");
+			SetPVarInt(playerid, "disabled", DISABLE_NONE);
+			KillTimer(GetPVarInt(playerid, "theftTimer"));
+			printf("%s asalto casa", GetPlayerNameEx(playerid));
+        }
 	}
 	return 1;
 }
@@ -290,6 +320,9 @@ stock updateThiefCounters(playerid){
 
 	if(ThiefJobInfo[playerid][pRobHouseLimit] > 0)
 		ThiefJobInfo[playerid][pRobHouseLimit]--;
+		
+	if(ThiefJobInfo[playerid][pRob2HouseLimit] > 0)
+	    ThiefJobInfo[playerid][pRob2HouseLimit]--;
 		
 	if(ThiefJobInfo[playerid][pTheft247Limit] > 0)
 		ThiefJobInfo[playerid][pTheft247Limit]--;
@@ -477,8 +510,8 @@ CMD:asaltartienda(playerid, params[]) {
 	    return 1;
 	}
 
-    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2 && Business[business][bType] != BIZ_CLUB && Business[business][bType] != BIZ_CLUB2 && Business[business][bType] != BIZ_REST && Business[business][bType] != BIZ_HARD && Business[business][bType] != BIZ_PIZZERIA && Business[business][bType] != BIZ_BURGER1 && Business[business][bType] != BIZ_BURGER2 && Business[business][bType] != BIZ_BELL)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 / Local de ropa / Bar / Discoteca o Club Nocturno / Restaurant / Comidas rápidas.");
+    if(Business[business][bType] != BIZ_247 && Business[business][bType] != BIZ_CLOT && Business[business][bType] != BIZ_CLOT2 && Business[business][bType] != BIZ_CLUB && Business[business][bType] != BIZ_CLUB2 && Business[business][bType] != BIZ_REST && Business[business][bType] != BIZ_HARD)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 / Local de ropa / Bar / Discoteca o Club Nocturno / Restaurant.");
 
 	if(!hasFireGun(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano.");
@@ -494,7 +527,38 @@ CMD:asaltartienda(playerid, params[]) {
 	ThiefJobInfo[playerid][pRob247Limit] = 60 * 60;
 	return 1;
 }
+CMD:asaltarcasa(playerid, params[]) {
+    new house = GetPlayerHouse(playerid);
 
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
+
+	if(!hasFireGun(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano.");
+	
+	if(ThiefJobInfo[playerid][pFelonLevel] < 6)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas más experiencia para utilizar este comando.");
+
+	if(ThiefJobInfo[playerid][pRob2HouseLimit] != 0)
+ 	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a asaltar.", ThiefJobInfo[playerid][pRob2HouseLimit] / 60);
+	    return 1;
+	}
+
+	if(house == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
+
+ 	if(house == PlayerInfo[playerid][pHouseKey])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes robar tu propia casa!");
+
+	PlayerActionMessage(playerid, 15.0, "empieza a buscar objetos de valor y los almacena en una bolsa.");
+	policeCallTime[playerid] = 20 + random(60);
+	SetPVarInt(playerid, "theftTimer", SetTimerEx("theftTimer", 1000, true, "iii", playerid, 3, house));
+	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
+	theftTime[playerid] = 100;
+	ThiefJobInfo[playerid][pRob2HouseLimit] = 50 * 60;
+	return 1;
+}
 CMD:hurtarcasa(playerid, params[]) {
 	new house = GetPlayerHouse(playerid);
 
