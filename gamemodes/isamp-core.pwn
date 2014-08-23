@@ -384,8 +384,7 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	TAFKT[MAX_PLAYERS],
 	cTomarVW[MAX_PLAYERS];
 	
-new TiempoEsperaB[MAX_PLAYERS] = 0,
-    TiempoEsperaMps[MAX_PLAYERS] = 0;
+new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 //Sistema camaras policia
 new Camara[MAX_PLAYERS];
@@ -960,7 +959,6 @@ forward OnPlayerConnectEx(playerid);
 forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
-forward TimeB(playerid);
 forward TimeMps(playerid);
 //==============================================================================
 
@@ -8434,7 +8432,7 @@ stock LoadPickups() {
 	
 	// Licencia de armas
 	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
-	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
+	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 
 	// Departamentos Bracone y Mercier
 	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
@@ -15751,20 +15749,11 @@ CMD:b(playerid, params[])
 		    SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d segundos.", PlayerInfo[playerid][pMuteB]);
 		return 1;
 	}
-	if(TiempoEsperaB[playerid] != 0)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
 	format(string, sizeof(string), "%s", text);
 	PlayerLocalMessage(playerid, 15.0, string);
-	if(PlayerInfo[playerid][pAdmin] == 0) {
-	TiempoEsperaB[playerid] = 1;
-	SetTimerEx("TimeB", 5000, false, "i", playerid);
-	}
-	return 1;
-}
-
-public TimeB(playerid)
-{
-	TiempoEsperaB[playerid] = 0;
+	if(PlayerInfo[playerid][pAdmin] == 0)
+	    PlayerInfo[playerid][pMuteB] = 5;
+	    
 	return 1;
 }
 	
@@ -15776,21 +15765,22 @@ CMD:mp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
 	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
-	{
+
     if(TiempoEsperaMps[playerid] != 0)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
     OnPlayerPrivmsg(playerid, targetid, text);
-	if(PlayerInfo[playerid][pAdmin] == 0) {
-	TiempoEsperaMps[playerid] = 1;
-	SetTimerEx("TimeMps", 5000, false, "i", playerid);
+	if(PlayerInfo[playerid][pAdmin] == 0)
+	{
+		TiempoEsperaMps[playerid] = 1;
+		SetTimerEx("TimeMps", 5000, false, "i", playerid);
 	}
     return 1;
 }
-}
+
 public TimeMps(playerid)
 {
-TiempoEsperaMps[playerid] = 0;
-return 1;
+	TiempoEsperaMps[playerid] = 0;
+	return 1;
 }
 
 
