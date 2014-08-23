@@ -8432,11 +8432,11 @@ stock LoadPickups() {
 	
 	// Licencia de armas
 	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
-	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
 
 	// Departamentos Bracone y Mercier
 	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
-	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
+	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
