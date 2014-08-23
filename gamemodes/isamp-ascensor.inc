@@ -40,7 +40,7 @@ stock bool:IsPlayerOnLift(playerid)
 
 	GetObjectPos(ascensor, cx, cy, cz);
 
-	if(IsPlayerInRangeOfPoint(playerid, 3, cx, cy, cz))
+	if(IsPlayerInRangeOfPoint(playerid, 2, cx, cy, cz))
 	    return true;
 	else
 	    return false;
@@ -65,13 +65,13 @@ stock GetLiftFloor()
 
 stock GetPlayerFloor(playerid)
 {
-    if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 50.5699)) return 0;
-    else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 105.8405)) return 6;
-    else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 115.6330)) return 7;
-    else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 125.4255)) return 8;
-    else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 135.2180)) return 9;
-    else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 145.0105)) return 10;
-	else if(IsPlayerInRangeOfPoint(playerid, 4, 1468.7391, -1356.1432, 154.8030)) return 11;
+    if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 50.5699)) return 0;
+    else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 105.8405)) return 6;
+    else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 115.6330)) return 7;
+    else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 125.4255)) return 8;
+    else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 135.2180)) return 9;
+    else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 145.0105)) return 10;
+	else if(IsPlayerInRangeOfPoint(playerid, 3, 1468.7391, -1356.1432, 154.8030)) return 11;
 	else return -1;
 }
 
@@ -236,9 +236,9 @@ CMD:piso(playerid, params[])
 	new piso;
 
 	if(sscanf(params, "i", piso))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /piso [0,6,7,8,9,10 u 11]");
+	    return SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /piso [0, 6, 7, 8, 9, 10 u 11]");
 	if(piso != 0 && (piso < 6 || piso > 11))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /piso [0,6,7,8,9,10 u 11]");
+	    return SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /piso [0, 6, 7, 8, 9, 10 u 11]");
 	if(IsPlayerOnLift(playerid) == false)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el ascensor para usarlo!");
 	if(piso == GetLiftFloor())
