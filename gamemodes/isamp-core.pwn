@@ -46,6 +46,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
+#include "isamp-lojack.inc"             //Sistema de lojack
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -1772,7 +1773,7 @@ public OnPlayerSpawn(playerid) {
     for (new playermaletin; playermaletin < MAX_PLAYERS; playermaletin++)
 	{
 	if (PlayerInfo[playermaletin][pBriefcaseObject] == 1){
-	SetPlayerAttachedObject(playermaletin,0,1210,5,0.301999,0.082999,-0.012000,0.000000,-90.599975,-0.999999,1.000000,1.000000,1.000000);
+	CrearMaletinEx(playermaletin);
 	}
 	}
 
