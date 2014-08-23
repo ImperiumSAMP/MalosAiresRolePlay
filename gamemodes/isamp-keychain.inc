@@ -186,16 +186,19 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 		vehicleid;
 	
 	if(keyid < 0 || keyid >= playerKeyCount[playerid]) //Me fijo que el tipo tenga llaves, sino revienta todo :D
-		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Llave no válida");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Llave no válida.");
 	
 	if(user == INVALID_PLAYER_ID || user == playerid || !ProxDetectorS(2.0, playerid, user))
-		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El usuario no es válido o se encuentra muy lejos");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El usuario no es válido o se encuentra muy lejos.");
 			
-	vehicleid=playerKeys[playerid][keyid][ckCarSqlId];
+	vehicleid = playerKeys[playerid][keyid][ckCarSqlId];
 	
 	if(!playerOwnsCar(playerid,vehicleid))
-		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El vehiculo no te pertenece");
+		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El vehiculo no te pertenece.");
 		
+ 	if(playerHasCarKey(user, vehicleid))
+     	return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El usuario ya posee una llave de este vehículo.");
+
 	//Le doy la llave
 	addKeyToPlayer(user,vehicleid,playerid);
 	
@@ -203,7 +206,7 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 	receiverName=GetPlayerNameEx(user);
 	format(message,128,"entrega una llave a %s",receiverName);
 	PlayerActionMessage(playerid, 15.0, message);
-	SendFMessage(user, COLOR_WHITE, "Â¡Has recibido una llave del %s!", getVehicleDescription(vehicleid));	
+	SendFMessage(user, COLOR_WHITE, "¡Has recibido una llave del %s!", getVehicleDescription(vehicleid));
 	SendFMessage(playerid,COLOR_LIGHTYELLOW2,"Le has dado una llave de tu %s a %s",GetVehicleName(vehicleid),receiverName);
 	
 	return 1;
@@ -220,16 +223,31 @@ stock printCarKeys(playerid,target) {
 }
 
 
-CMD:llavero(playerid, params[]) {
-	new subCmd[16],keyId,user;
+CMD:llavero(playerid, params[])
+{
+	new
+		subCmd[16],
+		keyId,
+		user;
 	
-	if(sscanf(params,"s[16]",subCmd)==0 && strcmp(subCmd,"ver",true)==0)
+	if(!sscanf(params, "s[16]", subCmd) && !strcmp(subCmd, "ver", true))
 		return listPlayerKeys(playerid);
-	else if(sscanf(params,"s[16]iu",subCmd,keyId,user)==0 && strcmp(subCmd,"darcopia",true)==0)			
-		return playerGiveKeyToPlayer(playerid,keyId-1,user);
 
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llavero ver | /llavero darcopia [nroLlave] [ID/ParteDelNombre]");
-	return 1;	
+	else if(!sscanf(params, "s[16]i", subCmd, keyId) && !strcmp(subCmd, "desechar", true))
+ 	{
+ 	    new vehicleid = playerKeys[playerid][keyId-1][ckCarSqlId];
+		if(playerOwnsCar(playerid, vehicleid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desechar una llave del auto que eres dueño.");
+		removeKeyFromPlayer(playerid, vehicleid);
+		SendFMessage(playerid, COLOR_WHITE, "Has desechado la llave Nro %d", keyId);
+	}
+	
+	else if(!sscanf(params, "s[16]iu", subCmd, keyId, user) && !strcmp(subCmd, "darcopia", true))
+		return playerGiveKeyToPlayer(playerid, keyId-1, user);
+
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llavero [comando]");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - desechar [nroLlave] - darcopia [nroLlave] [ID/Jugador]");
+	return 1;
 }
 
 CMD:cambiarcerradura(playerid, params[]){
