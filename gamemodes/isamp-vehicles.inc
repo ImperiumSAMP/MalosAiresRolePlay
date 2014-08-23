@@ -10,8 +10,9 @@
 //Defines
 #define MAX_VEH                 1001
 #define MAX_RENTCAR             30
-#define SLOT_TYPE_TRUNK         2
+
 #define MAX_TRUNK_SLOTS         10
+#define SLOT_TYPE_TRUNK         2
 
 //====[TIPOS DE VEHICULOS]======================================================
 #define	VEH_NONE				0	// Ninguno, no spawnea.
@@ -114,6 +115,19 @@ enum SlotInfo {
 };
 
 new TrunkInfo[MAX_VEH][MAX_TRUNK_SLOTS][SlotInfo];
+
+stock getItemType(itemid)
+{
+	switch(itemid) {
+		case 1 .. 15, 16 .. 38, 41, 43:
+			return ITEM_WEAPON;
+		case 47, 48, 49, 50, 51, 52, 53, 54:
+			return ITEM_OTHER;
+		case -1, 0:
+			return ITEM_NONE;
+	}
+	return ITEM_NONE;
+}
 
 stock getTrunkItem(trunkid, trunkslot)
 {
@@ -855,7 +869,8 @@ public IsABike(vehicleid)
 	return 0;
 }
 
-//============[VEHICLE BUSINESS LOGIC]====================================================
+//===========================[VEHICLE BUSINESS LOGIC]===========================
+
 SetEngine(vehicleid, status)
 {
     GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
@@ -864,24 +879,21 @@ SetEngine(vehicleid, status)
 	    case 0: // Apagar.
 	    {
          	if(VehicleInfo[vehicleid][VehEngine] == 1)
-         	{
          	    VehicleInfo[vehicleid][VehEngine] = 0;
-         	}
-         	else return 0;
+         	else
+			 	return 0;
 	    }
 	    case 1: // Encender.
 		{
 		  	if(VehicleInfo[vehicleid][VehEngine] != 1)
-         	{
-         	    VehicleInfo[vehicleid][VehEngine] = 1;
-         	}
-         	else return 0;
+			  VehicleInfo[vehicleid][VehEngine] = 1;
+         	else
+			 	return 0;
 		}
 	}
 	SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], 0, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
 	return 1;
 }
-
 
 stock setVehicleRandomPlates() {
 	new
@@ -908,7 +920,7 @@ stock setVehicleRandomPlates() {
 	return 1;
 }
 
-//============[VEHICLE EVENT HANDLERS]====================================================
+//========================[VEHICLE EVENT HANDLERS]==============================
 
 public OnVehicleStreamIn(vehicleid, forplayerid) {
     return 1;
@@ -943,8 +955,8 @@ public OnVehicleSpawn(vehicleid) {
 	return 1;
 }
 
-//============[VEHICLE COMMANDS]====================================================
-//[CMD_VEHICULOS]
+//=============================[VEHICLE COMMANDS]===============================
+
 CMD:mal(playerid, params[]) {
  	cmd_maletero(playerid, params);
 	return 1;
@@ -1001,14 +1013,9 @@ CMD:maletero(playerid, params[]) {
        	
 	} else {
 		if(strcmp(text, "guardardroga", true) == 0) {
-		
-			if(isPlayerSellingDrugs(playerid))
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes utilizarlo mientras vendes drogas.");
-			    
             if(strcmp(returnstr, "marihuana", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-                
                 if(PlayerInfo[playerid][pMarijuana] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1018,7 +1025,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "lsd", true) == 0) {
     			if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(PlayerInfo[playerid][pLSD] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1028,7 +1034,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "extasis", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(PlayerInfo[playerid][pEcstasy] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1038,7 +1043,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "cocaina", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(PlayerInfo[playerid][pCocaine] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1051,11 +1055,9 @@ CMD:maletero(playerid, params[]) {
             }
             
 	    } else if(strcmp(text, "tomardroga", true) == 0) {
-	    
 	       	if(strcmp(returnstr, "marihuana", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
                 if(VehicleInfo[vehicleid][VehMarijuana] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1065,7 +1067,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "lsd", true) == 0) {
     			if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(VehicleInfo[vehicleid][VehLSD] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1075,7 +1076,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "extasis", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(VehicleInfo[vehicleid][VehEcstasy] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -1085,7 +1085,6 @@ CMD:maletero(playerid, params[]) {
             } else if(strcmp(returnstr, "cocaina", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-
             	if(VehicleInfo[vehicleid][VehCocaine] < returnid2)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 
@@ -2040,14 +2039,14 @@ CMD:motor(playerid,params[]) {
 
 CMD:cambiarpatente(playerid, params[])
 {
-	new vehicleid,
-	    string[32];
+	new vehicleid, string[32];
+	
 	if(PlayerInfo[playerid][pAdmin] < 3)
 	    return 1;
     if(sscanf(params, "is[32]", vehicleid, string))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarpatente [idvehiculo] [patente]");
+
 	VehicleInfo[vehicleid][VehPlate] = string;
 	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);
-
 	return 1;
 }
