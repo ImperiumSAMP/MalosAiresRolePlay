@@ -26,6 +26,7 @@ new
 	PMJail3[2],
 	TMTune[5][2],
 	SIDEDoor[6][2];
+	
 new puertaIzquierdaPiso0,  puertaDerechaPiso0,
     puertaIzquierdaPiso6,  puertaDerechaPiso6,
     puertaIzquierdaPiso7,  puertaDerechaPiso7,
@@ -5361,6 +5362,38 @@ stock LoadMap() {
 	
 	//========================DEPTOS MERCIER-BRACONE============================
 	
+	//MAPEO DPTO 11
+	CreateDynamicObject(19379, 1469.31836, -1337.24829, 161.52690,   0.00000, 90.00000, 0.00000);
+	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 157.05090,   90.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
+	CreateDynamicObject(15048, 1455.10034, -1342.49939, 158.42329,   0.00000, 0.00000, 0.00000);
+	Textura = CreateDynamicObject(19462, 1464.05249, -1345.75305, 156.69910,   90.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 15048, "labigsave", "ah_wallstyle1", 0xFFA9A9A9);
+	Textura = CreateDynamicObject(19462, 1464.05249, -1333.86877, 156.69914,   90.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 15048, "labigsave", "ah_wallstyle1", 0xFFA9A9A9);
+	CreateDynamicObject(1506, 1464.04224, -1347.58606, 154.83000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1506, 1471.47205, -1342.49585, 158.43021,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1502, 1474.31726, -1337.10400, 158.42599,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(14720, 1476.96484, -1333.69263, 154.82629,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2315, 1467.47021, -1335.32031, 154.62849,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1792, 1468.63147, -1335.23206, 155.21088,   0.00000, 0.00000, -9.24000);
+	CreateDynamicObject(2101, 1467.52368, -1335.35767, 155.12103,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2229, 1466.72290, -1334.38342, 154.82591,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2229, 1470.29175, -1334.38342, 154.82590,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1753, 1469.19922, -1339.24622, 154.62259,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(1746, 1466.21045, -1337.52661, 154.62260,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2165, 1474.88904, -1342.92651, 154.83351,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1714, 1475.20386, -1344.37195, 154.83058,   0.00000, 0.00000, -198.89998);
+	CreateDynamicObject(2111, 1473.72961, -1338.03186, 155.20990,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, 1475.31519, -1337.68811, 155.44853,   0.00000, 0.00000, 12.00000);
+	CreateDynamicObject(2120, 1473.52039, -1336.29053, 155.44853,   0.00000, 0.00000, 98.76001);
+	CreateDynamicObject(2120, 1472.04407, -1338.47729, 155.44853,   0.00000, 0.00000, 187.32004);
+	CreateDynamicObject(2120, 1473.89136, -1339.77771, 155.44853,   0.00000, 0.00000, 269.75998);
+	CreateDynamicObject(1797, 1476.83276, -1338.33496, 158.42999,   0.00000, 0.00000, -90.00000);
+	Textura = CreateDynamicObject(2297, 1474.75781, -1339.51917, 158.41208,   0.00000, 0.00000, 45.47999);
+	SetDynamicObjectMaterial(Textura, 3, 1797, "cj_s_beds", "CJ_WOOD5", -1);
+	CreateDynamicObject(2576, 1475.78833, -1332.87598, 158.39281,   0.00000, 0.00000, 0.00000);
+	//MAPEO DPTO 10
 	CreateDynamicObject(19379, 1469.31836, -1337.24829, 151.52690,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 147.05090,   90.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
@@ -5389,8 +5422,6 @@ stock LoadMap() {
 	CreateDynamicObject(2566, 1475.86426, -1334.94495, 149.00681,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2576, 1474.87195, -1340.54895, 148.41879,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2296, 1478.53699, -1340.21899, 148.42905,   0.00000, 0.00000, 180.00000);
-	//MAPEO DPTO 9
-	//MAPEO DPTO 9
 	//MAPEO DPTO 9
 	CreateDynamicObject(19379, 1469.31836, -1337.24829, 141.52690,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 137.05090,   90.00000, 0.00000, 0.00000);
@@ -5421,8 +5452,6 @@ stock LoadMap() {
 	CreateDynamicObject(2576, 1474.87195, -1340.54895, 138.41879,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2296, 1478.53699, -1340.21899, 138.42905,   0.00000, 0.00000, 180.00000);
 	//MAPEO DPTO 8
-	//MAPEO DPTO 8
-	//MAPEO DPTO 8
 	CreateDynamicObject(19379, 1469.31836, -1337.24829, 131.52690,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 127.05090,   90.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
@@ -5451,8 +5480,6 @@ stock LoadMap() {
 	CreateDynamicObject(2566, 1475.86426, -1334.94495, 129.00681,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2576, 1474.87195, -1340.54895, 128.41879,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2296, 1478.53699, -1340.21899, 128.42905,   0.00000, 0.00000, 180.00000);
-	//MAPEO DPTO 7
-	//MAPEO DPTO 7
 	//MAPEO DPTO 7
 	CreateDynamicObject(19379, 1469.31836, -1337.24829, 121.52690,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 117.05090,   90.00000, 0.00000, 0.00000);
@@ -5483,8 +5510,6 @@ stock LoadMap() {
 	CreateDynamicObject(2576, 1474.87195, -1340.54895, 118.41879,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2296, 1478.53699, -1340.21899, 118.42905,   0.00000, 0.00000, 180.00000);
 	//MAPEO DPTO 6
-	//MAPEO DPTO 6
-	//MAPEO DPTO 6
 	CreateDynamicObject(19379, 1469.31836, -1337.24829, 111.52690,   0.00000, 90.00000, 0.00000);
 	Textura = CreateDynamicObject(19377, 1463.98962, -1339.68323, 107.05090,   90.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
@@ -5514,16 +5539,11 @@ stock LoadMap() {
 	CreateDynamicObject(2576, 1474.87195, -1340.54895, 108.41879,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(2296, 1478.53699, -1340.21899, 108.42905,   0.00000, 0.00000, 180.00000);
 
-
-
-
-	//PASILLOS DEPTO
-	//PASILLOS DEPTO
-	//PASILLOS DEPTO
+	//=======================PASILLOS ASCENSOR DEPTOS===========================
 
 	ascensor = CreateObject(18755, 1470.77930, -1356.14099, 51.44730,   0.00000, 0.00000, 0.00000);
 
-	puertaIzquierdaPiso0  = CreateObject(18757, 1470.65369, -1356.13599, 51.46690,   0.00000, 0.00000, 0.00000);
+	puertaIzquierdaPiso0 = CreateObject(18757, 1470.65369, -1354.41602, 51.46690,   0.00000, 0.00000, 0.00000);
 	puertaIzquierdaPiso6  = CreateObject(18757, 1470.65369, -1356.13599, 106.70910,   0.00000, 0.00000, 0.00000);
 	puertaIzquierdaPiso7  = CreateObject(18757, 1470.65369, -1356.13599, 116.50160,   0.00000, 0.00000, 0.00000);
 	puertaIzquierdaPiso8  = CreateObject(18757, 1470.65369, -1356.13599, 126.29410,   0.00000, 0.00000, 0.00000);
@@ -5531,7 +5551,7 @@ stock LoadMap() {
 	puertaIzquierdaPiso10 = CreateObject(18757, 1470.65369, -1356.13599, 145.87910,   0.00000, 0.00000, 0.00000);
 	puertaIzquierdaPiso11 = CreateObject(18757, 1470.65369, -1356.13599, 155.67160,   0.00000, 0.00000, 0.00000);
 
-	puertaDerechaPiso0  = CreateObject(18756, 1470.65369, -1356.13000, 51.46690,   0.00000, 0.00000, 0.00000);
+	puertaDerechaPiso0 = CreateObject(18756, 1470.65369, -1357.8719, 51.46690,   0.00000, 0.00000, 0.00000);
 	puertaDerechaPiso6  = CreateObject(18756, 1470.65369, -1356.13000, 106.70910,   0.00000, 0.00000, 0.00000);
 	puertaDerechaPiso7  = CreateObject(18756, 1470.65369, -1356.13000, 116.50160,   0.00000, 0.00000, 0.00000);
 	puertaDerechaPiso8  = CreateObject(18756, 1470.65369, -1356.13000, 126.29410,   0.00000, 0.00000, 0.00000);
@@ -5540,8 +5560,14 @@ stock LoadMap() {
 	puertaDerechaPiso11 = CreateObject(18756, 1470.65369, -1356.13000, 155.67160,   0.00000, 0.00000, 0.00000);
 
 	new InscripcionPiso;
-	InscripcionPiso = CreateDynamicObject(19173, 1468.62891, -1356.16223, 157.21600,   0.00000, 0.00000, -90.00000);
-	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Piso 11", 60, "Arial", 40, 1, 0xFF000000, 0, 1);
+
+	InscripcionPiso = CreateDynamicObject(19464, 1463.01172, -1354.81116, 21.66200,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(InscripcionPiso, 0, "TORRE", 140, "Magneto", 120, 0, 0xFFFFFFFF, 0, 1);
+	InscripcionPiso = CreateDynamicObject(19464, 1463.01172, -1360.73120, 21.66200,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Bracone &", 140, "Magneto", 115, 0, 0xFFFFFFFF, 0, 1);
+	InscripcionPiso = CreateDynamicObject(19464, 1463.01172, -1366.65125, 21.66200,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Mercier", 140, "Magneto", 115, 0, 0xFFFFFFFF, 0, 1);
+
 	InscripcionPiso = CreateDynamicObject(19173, 1468.86853, -1356.28455, 153.27800,   0.00000, 0.00000, -90.00000);
 	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Piso 11", 60, "Arial", 40, 1, 0xFF000000, 0, 1);
 	InscripcionPiso = CreateDynamicObject(19173, 1468.86853, -1356.28455, 143.48550,   0.00000, 0.00000, -90.00000);
@@ -5554,6 +5580,10 @@ stock LoadMap() {
 	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Piso 7", 60, "Arial", 40, 1, 0xFF000000, 0, 1);
 	InscripcionPiso = CreateDynamicObject(19173, 1468.86853, -1356.28455, 104.31550,   0.00000, 0.00000, -90.00000);
 	SetDynamicObjectMaterialText(InscripcionPiso, 0, "Piso 6", 60, "Arial", 40, 1, 0xFF000000, 0, 1);
+	InscripcionPiso = CreateDynamicObject(19173, 1468.86853, -1356.28455, 53.77284,   0.00000, 0.00000, -90.00000);
+	SetDynamicObjectMaterialText(InscripcionPiso, 0, "P.Baja", 60, "Arial", 40, 1, 0xFF000000, 0, 1);
+	InscripcionPiso = CreateDynamicObject(19464, 1465.29443, -1356.23010, 51.17050,   0.00000, 0.00000, 180.00000);
+	SetDynamicObjectMaterialText(InscripcionPiso, 0, "TORRE Bracone&Mercier", 140, "Magneto", 40, 0, 0xFF000000, 0, 1);
 
 	//Paredes grandes mientras se sube
 	Textura = CreateDynamicObject(19377, 1468.62197, -1353.91016, 89.09500,   0.00000, 0.00000, 0.00000);
@@ -5568,15 +5598,6 @@ stock LoadMap() {
 	CreateDynamicObject(19377, 1468.88940, -1351.01794, 78.53741,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(19377, 1468.88940, -1351.01794, 68.04646,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(19377, 1468.88940, -1351.01794, 57.56784,   0.00000, 0.00000, 90.00000);
-
-	//Paredes grandes del piso 11
-	CreateDynamicObject(19379, 1465.35925, -1354.19263, 155.09460,   0.00000, 0.00000, 0.00000);
-	Textura = CreateDynamicObject(19379, 1465.25928, -1363.82385, 155.09460,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
-	Textura = CreateDynamicObject(19379, 1470.14697, -1368.69666, 155.09460,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
-	Textura = CreateDynamicObject(19379, 1475.02637, -1363.84195, 155.09460,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
 
 	//paredes extras a prueba de los 5 pasillos con deptos
 	CreateDynamicObject(19367, 1465.67334, -1350.87695, 106.57600,   0.00000, 0.00000, 90.00000);
@@ -5613,7 +5634,6 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(19462, 1464.03836, -1355.72778, 145.74600,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
 	CreateDynamicObject(19462, 1465.81897, -1355.73730, 143.91720,   0.00000, 90.00000, 0.00000);
-
 
 	CreateDynamicObject(19459, 1465.33130, -1356.10449, 50.9315,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19454, 1466.91650, -1356.09302, 52.49060,   0.00000, 90.00000, 0.00000);
@@ -5658,32 +5678,31 @@ stock LoadMap() {
 	CreateDynamicObject(1506, 1465.65515, -1350.94812, 134.20750,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19367, 1467.04712, -1358.24695, 126.16100,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(19454, 1468.78198, -1353.91016, 138.77991,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19454, 1468.78198, -1353.91016, 152.06039,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19462, 1466.93896, -1355.73730, 143.91420,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19454, 1466.95886, -1355.73499, 146.89861,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19367, 1467.05334, -1350.88025, 145.74600,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(19367, 1468.71582, -1352.56799, 145.74600,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1506, 1465.65515, -1350.94812, 144.00000,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(19367, 1467.04712, -1358.24695, 145.74600,   0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19454, 1468.78198, -1353.91016, 148.57240,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19462, 1466.89331, -1354.08020, 155.53850,   90.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19462, 1470.14465, -1363.38416, 153.70670,   0.00000, 90.00000, 90.00000);
-	CreateDynamicObject(19462, 1470.14465, -1366.88416, 153.70670,   0.00000, 90.00000, 90.00000);
-	CreateDynamicObject(19462, 1468.71582, -1359.88794, 155.53850,   90.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19462, 1470.38416, -1361.53247, 155.53850,   90.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19462, 1473.21460, -1361.52954, 155.53850,   90.00000, 0.00000, 90.00000);
-	CreateDynamicObject(19462, 1468.72046, -1353.40417, 158.35970,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(19379, 1470.14343, -1354.62781, 160.01230,   0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19379, 1470.14343, -1364.26184, 160.01230,   0.00000, 90.00000, 0.00000);
-	CreateDynamicObject(19462, 1467.07898, -1356.81787, 153.70670,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19454, 1468.77026, -1353.92627, 142.26790,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19454, 1468.78198, -1353.91016, 148.57240,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19454, 1468.78198, -1353.91016, 152.06039,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19462, 1466.93896, -1355.73730, 153.70670,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19454, 1466.95886, -1355.73499, 156.69110,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19367, 1467.04712, -1358.24695, 155.53850,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19367, 1467.05334, -1350.88025, 155.53850,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19367, 1468.71582, -1352.56799, 155.53850,   0.00000, 0.00000, 0.00000);
+	Textura = CreateDynamicObject(19462, 1464.03833, -1355.72778, 155.53850,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 10932, "station_sfse", "ws_trainstationwin1", -1);
+	CreateDynamicObject(19367, 1465.67334, -1350.87695, 155.53850,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19367, 1465.66711, -1358.25000, 155.53850,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19454, 1465.81897, -1355.73499, 156.69411,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(19462, 1465.81897, -1355.73730, 153.70970,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(1506, 1465.65515, -1350.94812, 153.79250,   0.00000, 0.00000, 0.00000);
 
-	CreateDynamicObject(1523, 1473.00781, -1361.64746, 153.73840,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(2799, 1465.76868, -1366.53772, 154.29320,   0.00000, 0.00000, 30.18000);
-	CreateDynamicObject(2799, 1465.77417, -1363.99536, 154.29320,   0.00000, 0.00000, 30.18000);
-	CreateDynamicObject(3922, 1474.36389, -1366.05078, 153.79449,   0.00000, 0.00000, -93.30000);
-	CreateDynamicObject(2800, 1465.76868, -1366.53772, 154.29320,   0.00000, 0.00000, 30.18000);
-	CreateDynamicObject(2800, 1465.77417, -1363.99536, 154.29320,   0.00000, 0.00000, 30.18000);
+//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
 	
 	return 1;
 }

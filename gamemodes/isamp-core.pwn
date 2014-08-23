@@ -44,7 +44,7 @@ forward bool:isPlayerSellingDrugs(playerid);
 #include "isamp-animhablar.inc" 		//Sistema de animacion mover las manos cuando hablamos.
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
-#include "isamp-ascensor.inc" 			//sistema de ascensores
+#include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -960,7 +960,6 @@ forward OnPlayerConnectEx(playerid);
 forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
-forward CerrarPuertaDeAscensor(numeroDePiso);
 forward TimeB(playerid);
 forward TimeMps(playerid);
 //==============================================================================
