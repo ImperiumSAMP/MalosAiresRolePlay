@@ -4253,27 +4253,36 @@ public BackupClear(playerid, calledbytimer) {
 	return 1;
 }
 
-stock chargeTaxis(){
-	if(--TaxiTimer<0){
+stock chargeTaxis()
+{
+	if(--TaxiTimer<0)
+	{
 		new string[128];
 		TaxiTimer=PRICE_TAXI_INTERVAL;
-		foreach(new playerid : Player) {
-			if(gPlayerLogged[playerid]) {
-				if(PlayerInfo[playerid][pJob] == JOB_TAXI && jobDuty[playerid] && TransportPassenger[playerid] < 999 && TaxiTimer==PRICE_TAXI_INTERVAL) {
-				    if(GetPlayerCash(TransportPassenger[playerid]) >= PRICE_TAXI) {
+		foreach(new playerid : Player)
+		{
+			if(gPlayerLogged[playerid])
+			{
+				if(PlayerInfo[playerid][pJob] == JOB_TAXI && jobDuty[playerid] && TransportPassenger[playerid] < 999 && TaxiTimer==PRICE_TAXI_INTERVAL)
+				{
+					if(GetPlayerCash(TransportPassenger[playerid]) >= PRICE_TAXI)
+					{
 						TransportCost[playerid] += PRICE_TAXI;
 						format(string, sizeof(string), "~w~Tarifa: ~g~$%d", TransportCost[playerid]);
 						GameTextForPlayer(playerid, string , 1000, 4);
 						format(string, sizeof(string), "~r~Tarifa: ~g~$%d", TransportCost[playerid]);
-					    GameTextForPlayer(TransportPassenger[playerid], string, 1000, 4);
-					} else {
-					    GameTextForPlayer(playerid, "~r~El pasajero se ha quedado sin efectivo..." , 1000, 4);
-					    GameTextForPlayer(TransportPassenger[playerid], "~r~Te has quedado sin dinero...", 1000, 4);
+						GameTextForPlayer(TransportPassenger[playerid], string, 1000, 4);
+					}
+					else
+					{
+						GameTextForPlayer(playerid, "~r~El pasajero se ha quedado sin efectivo..." , 1000, 4);
+						GameTextForPlayer(TransportPassenger[playerid], "~r~Te has quedado sin dinero...", 1000, 4);
+						RemovePlayerFromVehicle(TransportPassenger[playerid]);
 					}
 				}
 			}
 		}
-  	}
+	}
 }
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
@@ -4761,7 +4770,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			StopAudioStreamForPlayer(playerid);
 			isHearingVehicleRedio[playerid] = false;
 		}
-		
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
 	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
@@ -12840,7 +12848,7 @@ CMD:mostrarced(playerid, params[])
 		SendClientMessage(targetid, COLOR_LIGHTGREEN, "================[Cédula de Identificación del Automotor]===============");
 	    SendFMessage(targetid, COLOR_WHITE, "Vehículo ID: %d", vehicleid);
 	    SendFMessage(targetid, COLOR_WHITE, "Modelo %s", GetVehicleName(vehicleid));
-	    SendFMessage(targetid, COLOR_WHITE, "Titular: %s", GetPlayerNameEx(playerid));
+	    SendFMessage(targetid, COLOR_WHITE, "Titular: %s", VehicleInfo[vehicleid][VehOwnerName]);
 	    SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Registro Nacional de la Propiedad del Automotor");
 	    SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	    PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma una cédula verde del bolsillo y se la muestra a");
