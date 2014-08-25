@@ -4265,7 +4265,7 @@ stock chargeTaxis()
 			{
 				if(PlayerInfo[playerid][pJob] == JOB_TAXI && jobDuty[playerid] && TransportPassenger[playerid] < 999 && TaxiTimer==PRICE_TAXI_INTERVAL)
 				{
-					if(GetPlayerCash(TransportPassenger[playerid]) >= PRICE_TAXI)
+					if(GetPlayerCash(TransportPassenger[playerid]) >= TransportCost[playerid])
 					{
 						TransportCost[playerid] += PRICE_TAXI;
 						format(string, sizeof(string), "~w~Tarifa: ~g~$%d", TransportCost[playerid]);
