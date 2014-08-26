@@ -19,7 +19,7 @@ new LockerStatus[MAX_HOUSES];
 
 forward GetLockerItem(lockerid, lockerslot); // Devuelve el nro de item del slot indicado del armario de la casa. En caso de error retorna -1.
 forward GetLockerParam(lockerid, lockerslot); // Devuelve el parametro "cantidad" del slot indicado del armario de la casa. En caso de error retorna -1.
-forward SetLockerItemAndParam(lockerid, lockerslot, itemid, param); // Setea item y cantidad en el slot indicado.
+forward SetLockerItemAndParam(lockerid, lockerslot, itemid, param); // Setea item y cantidad en el slot indicado. Guardado instantaneo en la DB.
 forward ResetLocker(lockerid); // Borra todo slot del armario de la casa y lo resetea a cero.
 forward GetHouseMaxLockerSlots(houseid); // Devuelve el nro de slots que tiene una casa X (se basa en su precio).
 forward SearchLockerForItem(lockerid, itemid); // Busca un item pasado por parametro dentro de un armario. Si existe, devuelve el slot en el que está, sino retorna -1.

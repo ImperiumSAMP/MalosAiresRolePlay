@@ -3,7 +3,7 @@
 #endif
 #define _isamp_items_included
 
-//==============================ITEM SYSYEM=====================================
+//==============================ITEM SYSTEM=====================================
 
 #define ITEM_NONE               -1
 #define ITEM_WEAPON             1

@@ -117,7 +117,7 @@ new TrunkInfo[MAX_VEH][MAX_TRUNK_SLOTS][SlotInfo];
 
 forward GetTrunkItem(trunkid, trunkslot); // Devuelve el nro de item del slot indicado del maletero del vehiculo. En caso de error retorna -1.
 forward GetTrunkParam(trunkid, trunkslot); // Devuelve el parametro "cantidad" del slot indicado del maletero del vehiculo. En caso de error retorna -1.
-forward SetTrunkItemAndParam(trunkid, trunkslot, itemid, param); // Setea item y cantidad en el slot indicado.
+forward SetTrunkItemAndParam(trunkid, trunkslot, itemid, param); // Setea item y cantidad en el slot indicado. Guardado instantaneo en la DB.
 forward ResetTrunk(trunkid); // Borra todo slot del maletero del vehiculo y lo resetea a cero.
 forward SearchTrunkForItem(trunkid, itemid); // Busca un item pasado por parametro dentro de un maletero. Si existe, devuelve el slot en el que está, sino retorna -1.
 forward SearchTrunkFreeSlot(trunkid); // Busca por el primer slot vacio en el maletero y devuelve su posicion. De no haber espacio retorna -1.
