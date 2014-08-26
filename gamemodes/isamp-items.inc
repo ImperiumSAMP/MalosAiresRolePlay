@@ -100,7 +100,9 @@ stock GetItemType(itemid)
 
 stock GetItemName(itemid)
 {
-	return ServerItems[itemid][Name];
+	new str[40];
+	format(str, sizeof(str), "%s" , ServerItems[itemid][Name]);
+	return str;
 }
 
 stock GetItemParamName(itemid)

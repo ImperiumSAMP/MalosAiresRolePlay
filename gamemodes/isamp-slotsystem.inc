@@ -94,7 +94,7 @@ stock SaveSlotInfo(type, id, slot) {
 		 	{
 				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
 					type,
-					id,
+					PlayerInfo[id][pID],
 					slot,
 					InvInfo[id][slot][Item],
 					InvInfo[id][slot][Amount]
@@ -103,7 +103,7 @@ stock SaveSlotInfo(type, id, slot) {
 			    {
 		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
 				    	type,
-				    	id,
+				    	PlayerInfo[id][pID],
 				    	slot
 					);
 				}
