@@ -23,6 +23,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "isamp-admin.inc" 				//Sistema de admines
+#include "isamp-items.inc" 				//Sistema de items
 #include "isamp-inventory.inc" 			//Sistema de inventario y maletero
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
@@ -1878,7 +1879,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 				PlayerInfo[playerid][pA] = 180.0000;
 				
 				ResetPlayerWantedLevelEx(playerid);
-				resetInv(playerid);
+				ResetInv(playerid);
 				FactionInfo[FAC_PMA][fBank] += PlayerInfo[playerid][pJailTime];
 				SaveFactions();
 			}
@@ -2480,7 +2481,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 						House[id][HousePrice] = id2;
 						new form[128];
 						format(form, sizeof form, "{878EE7}[INFO]:{C8C8C8} el precio de la casa %d ha sido ajustado a $%d.", id,id2);
-						resetLocker(id);
+						ResetLocker(id);
 						SendClientMessage(playerid, COLOR_ADMINCMD,form);
 						saveHouse(id);
 				}
@@ -3299,8 +3300,6 @@ public OnPlayerDataLoad(playerid) {
 		
 		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName],1,MAX_PLAYER_NAME);
 		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected],1,25);
-		cache_get_field_content(0, "pInv0", 					InvInfo[playerid][inv0],1,16);
-		cache_get_field_content(0, "pInv1", 					InvInfo[playerid][inv1],1,16);
 		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf],1,64);
 		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy],1,24);
 
@@ -3316,6 +3315,7 @@ public OnPlayerDataLoad(playerid) {
 
         loadThiefJobData(playerid,PlayerInfo[playerid][pID]); //Info del job de ladrón
 		loadPlayerCarKeys(playerid); //Llavero del usuario
+		LoadInvInfo(playerid); // Info de su inventario
 		
        	CreatePlayerBasicNeeds(playerid);
        	
@@ -3852,11 +3852,9 @@ public SaveAccount(playerid) {
 		}
 
 		// String.
-		format(query, sizeof(query), "UPDATE accounts SET Ip = '%s', Name = '%s', pInv0 = '%s', pInv1 = '%s'",
+		format(query, sizeof(query), "UPDATE accounts SET Ip = '%s', Name = '%s'",
 			PlayerInfo[playerid][pIP],
-			name,
-			InvInfo[playerid][inv0],
-			InvInfo[playerid][inv1]
+			name
 		);
 
 		// Integer.
@@ -4369,7 +4367,7 @@ public antiCheatTimer() {
 		if(gPlayerLogged[playerid] == 1) {
 		    if(PlayerInfo[playerid][pAdmin] < 1) {
 				if(!isWeaponAllowed(weapon)) {
-				    format(string, sizeof(string), "arma %d [%s] ", weapon, itemName[weapon]);
+				    format(string, sizeof(string), "arma %d [%s] ", weapon, GetItemName(weapon));
 					KickPlayer(playerid, "el sistema", string);
 				}
 			}
@@ -4413,8 +4411,8 @@ public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
 	} else
 		if(refilltype == 2)
 		{
-		    setInvParam(playerid, validslot, getInvParam(playerid, validslot) + refillamount);
-		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al %d porciento por $%d.", getInvParam(playerid, validslot), refillprice);
+		    SetInvItemAndParam(playerid, validslot, 48, GetInvParam(playerid, validslot) + refillamount);
+		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al %d porciento por $%d.", GetInvParam(playerid, validslot), refillprice);
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
@@ -4983,7 +4981,7 @@ public matsTimer(playerid) {
 		
     TogglePlayerControllable(playerid, true);
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
+	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			validslot = i;
 			break;
 	    }
@@ -4999,7 +4997,7 @@ public matsTimer(playerid) {
 		    }
 		}
 		eventStep[playerid] = 3;
-		setTrunkItemAndParam(vehicleid, validslot, 47, MISSION_BOX_MATS + (MISSION_BOX_EXTRA * eventParam[playerid]) * (random(MISSION_MATS_MAX_BOXES) + 1 + MISSION_MATS_MIN_BOXES));
+		SetTrunkItemAndParam(vehicleid, validslot, 47, MISSION_BOX_MATS + (MISSION_BOX_EXTRA * eventParam[playerid]) * (random(MISSION_MATS_MAX_BOXES) + 1 + MISSION_MATS_MIN_BOXES));
 		SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
 		SendClientMessage(playerid, COLOR_LIGHTGREEN, "SMS de anónimo: vuelve al HQ con la carga, solo alguien con experiencia podrá ensamblarlas.");
 	}
@@ -5013,7 +5011,7 @@ public buyMatsTimer(playerid, amount) {
 
     TogglePlayerControllable(playerid, true);
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
+	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
 			validslot = i;
 			break;
 	    }
@@ -5022,7 +5020,7 @@ public buyMatsTimer(playerid, amount) {
         SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
         GivePlayerCash(playerid, amount * PRICE_MATS);
 	} else {
-		setTrunkItemAndParam(vehicleid, validslot, 47, amount);
+		SetTrunkItemAndParam(vehicleid, validslot, 47, amount);
 		SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
 		SendClientMessage(playerid, COLOR_WHITE, "Vuelve al HQ con la carga y utiliza /descargar.");
 	}
@@ -5043,8 +5041,8 @@ public buyDrugsTimer(playerid, amount) {
 	}
 	
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
-	        setTrunkItemAndParam(vehicleid, i, 49, amount);
+	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
+	        SetTrunkItemAndParam(vehicleid, i, 49, amount);
 			charged = true;
 			break;
 	    }
@@ -5070,8 +5068,8 @@ public buyProductsTimer(playerid, amount) {
     TogglePlayerControllable(playerid, true);
 
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
-	    	setTrunkItemAndParam(vehicleid, i, 50, amount);
+	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
+	    	SetTrunkItemAndParam(vehicleid, i, 50, amount);
 			charged = true;
 			break;
 	    }
@@ -5125,16 +5123,16 @@ CMD:descargar(playerid, params[]) {
 			new totalAmount = 0;
        		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
 			{
-			    if(getTrunkItem(vehicleid, i) == 50)
+			    if(GetTrunkItem(vehicleid, i) == 50)
 				{
-			        amount = getTrunkParam(vehicleid, i);
+			        amount = GetTrunkParam(vehicleid, i);
 					if(Business[biz][bProducts] + amount > 500) // Si supera el maximo de productos permitido por negocio
 					{
 						SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas mercaderia al negocio. El depósito está lleno.");
 						break;
 					}
-					totalAmount += getTrunkParam(vehicleid, i);
-					setTrunkItemAndParam(vehicleid, i, 0, 0);
+					totalAmount += GetTrunkParam(vehicleid, i);
+					SetTrunkItemAndParam(vehicleid, i, 0, 0);
 					Business[biz][bProducts] += amount;
 			    }
 			}
@@ -5154,9 +5152,9 @@ CMD:descargar(playerid, params[]) {
         if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
             if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
                 for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-				    if(getTrunkItem(vehicleid, i) == 47) {
-				        amount += getTrunkParam(vehicleid, i);
-				        setTrunkItemAndParam(vehicleid, i, 0, 0);
+				    if(GetTrunkItem(vehicleid, i) == 47) {
+				        amount += GetTrunkParam(vehicleid, i);
+				        SetTrunkItemAndParam(vehicleid, i, 0, 0);
 				    }
 				}
 				FactionInfo[factionid][fMaterials] += amount;
@@ -5205,10 +5203,10 @@ public OnPlayerEnterCheckpoint(playerid) {
 			matsCount = 0;
 			
 	    for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleID); i++) {
-		    if(getTrunkItem(vehicleID, i) == 47) {
-		        matsCount = getTrunkParam(vehicleID, i);
+		    if(GetTrunkItem(vehicleID, i) == 47) {
+		        matsCount = GetTrunkParam(vehicleID, i);
 				FactionInfo[faction][fMaterials] += matsCount;
-				setTrunkItemAndParam(vehicleID, i, 0, 0);
+				SetTrunkItemAndParam(vehicleID, i, 0, 0);
 		    }
 		}
 		GameTextForPlayer(playerid, "Descargando vehiculo...", 4000, 4);
@@ -6493,66 +6491,6 @@ SaveFactions() {
 	}
 
 	print("[INFO]: facciones guardadas.");
-	return 1;
-}
-
-// Obtenemos la ID del item.
-stock getInvItem(playerid, invslot) {
-	new
-	    itemid = -1;
-
-
-	switch(invslot) {
-	    case 0:
-	    	sscanf(InvInfo[playerid][inv0], "i{i}", itemid);
-	    case 1:
-			sscanf(InvInfo[playerid][inv1], "i{i}", itemid);
-	}
-	return itemid;
-}
-
-// Obtenemos el parámetro adicional (EJ: balas).
-stock getInvParam(playerid, invslot) {
-	new
-	    param = -1;
-
-	switch(invslot) {
-	    case 0:
-	    	sscanf(InvInfo[playerid][inv0], "{i}i", param);
-	    case 1:
-			sscanf(InvInfo[playerid][inv1], "{i}i", param);
-	}
-	return param;
-}
-
-// Seteamos el item.
-stock setInvItem(playerid, invslot, itemid) {
-	switch(invslot) {
-	    case 0:	{
-			format(InvInfo[playerid][inv0], 16, "%d -1", itemid);
-		}
-	    case 1:	{
-			format(InvInfo[playerid][inv1], 16, "%d -1", itemid);
-		}
-	}
-}
-
-// Seteamos el parámetro adicional.
-stock setInvParam(playerid, invslot, param) {
-	switch(invslot) {
-	    case 0:	{
-			format(InvInfo[playerid][inv0], 16, "%d %d", getInvItem(playerid, invslot), param);
-		}
-	    case 1:	{
-			format(InvInfo[playerid][inv1], 16, "%d %d", getInvItem(playerid, invslot), param);
-		}
-	}
-}
-
-// Reseteamos.
-stock resetInv(playerid) {
-	strmid(InvInfo[playerid][inv0], "-1 -1", 0, 16);
-	strmid(InvInfo[playerid][inv1], "-1 -1", 0, 16);
 	return 1;
 }
 
@@ -8731,7 +8669,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(getItemType(getInvItem(playerid, i)) == ITEM_NONE || (getInvItem(playerid, i) == 53 && getInvParam(playerid, i) < 4))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 53 && GetInvParam(playerid, i) < 4))
 							{
 								validslot = i;
 								break;
@@ -8739,12 +8677,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						}
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(getItemType(getInvItem(playerid, validslot)) == ITEM_NONE)
-		    			{
-							setInvItem(playerid, validslot, 53);
-							setInvParam(playerid, validslot, 1);
-						} else
-						    setInvParam(playerid, validslot, getInvParam(playerid, validslot) + 1);
+		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
+		    			    SetInvItemAndParam(playerid, validslot, 53, 1);
+						else
+						    SetInvItemAndParam(playerid, validslot, 53, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -PRICE_ALFAJOR);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un alfajor y se lo guarda.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo has guardado en tu inventario!", PRICE_ALFAJOR);
@@ -8816,7 +8752,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
       					new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(getItemType(getInvItem(playerid, i)) == ITEM_NONE)
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE)
 							{
 								validslot = i;
 								break;
@@ -8824,8 +8760,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						}
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-						setInvItem(playerid, validslot, 48);
-						setInvParam(playerid, validslot, 0);
+						SetInvItemAndParam(playerid, validslot, 48, 0);
 						GivePlayerCash(playerid, -PRICE_FUELCAN);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", PRICE_FUELCAN);
@@ -8852,7 +8787,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(getItemType(getInvItem(playerid, i)) == ITEM_NONE || (getInvItem(playerid, i) == 52 && getInvParam(playerid, i) < 2))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 52 && GetInvParam(playerid, i) < 2))
 							{
 								validslot = i;
 								break;
@@ -8860,12 +8795,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						}
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(getItemType(getInvItem(playerid, validslot)) == ITEM_NONE)
-		    			{
-							setInvItem(playerid, validslot, 52);
-							setInvParam(playerid, validslot, 1);
-						} else
-						    setInvParam(playerid, validslot, getInvParam(playerid, validslot) + 1);
+		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
+		    				SetInvItemAndParam(playerid, validslot, 52, 1);
+						else
+						    SetInvItemAndParam(playerid, validslot, 52, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -PRICE_SANDWICH);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un sandwich y se lo guarda.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Se ha guardado en tu inventario!", PRICE_SANDWICH);
@@ -8880,7 +8813,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(getItemType(getInvItem(playerid, i)) == ITEM_NONE || (getInvItem(playerid, i) == 54 && getInvParam(playerid, i) < 2))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 54 && GetInvParam(playerid, i) < 2))
 							{
 								validslot = i;
 								break;
@@ -8888,12 +8821,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						}
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(getItemType(getInvItem(playerid, validslot)) == ITEM_NONE)
-		    			{
-							setInvItem(playerid, validslot, 54);
-							setInvParam(playerid, validslot, 1);
-						} else
-						    setInvParam(playerid, validslot, getInvParam(playerid, validslot) + 1);
+		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
+							SetInvItemAndParam(playerid, validslot, 54, 1);
+						else
+						    SetInvItemAndParam(playerid, validslot, 54, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -PRICE_WATERBOTTLE);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. Se ha guardado en tu inventario!", PRICE_WATERBOTTLE);
@@ -10714,77 +10645,59 @@ CMD:inv(playerid, params[]) {
 
 CMD:inventario(playerid, params[]) {
 	new
-	    itemid,
-	    param,
 	    returnid,
 	    text[128];
 
     if(sscanf(params, "s[128]I(-1)", text, returnid)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot] - guardar [slot, opcional] - desechar - consumir [slot]");
-		SendClientMessage(playerid, COLOR_WHITE, "======================[Inventario]======================");
-	    for(new i = 0; i < INV_MAX_SLOTS; i++) {
-	        itemid = getInvItem(playerid, i);
-	        param = getInvParam(playerid, i);
-	        if(getItemType(itemid) == ITEM_WEAPON) {
-	        	SendFMessage(playerid, COLOR_WHITE, " - %d- Arma: %s - Munición: %d", i, itemName[itemid], param);
-			} else if(getItemType(itemid) == ITEM_OTHER) {
-                SendFMessage(playerid, COLOR_WHITE, " - %d- Item: %s - Cantidad: %d", i, itemName[itemid], param);
-			} else {
-			    SendFMessage(playerid, COLOR_WHITE, " - %d- Nada", i);
-			}
-	    }
-    	SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
+		PrintInvForPlayer(playerid, playerid);
     } else {
 		if(strcmp(text, "tomar", true) == 0) {
 		
-	        if(getItemType(getInvItem(playerid, returnid)) == ITEM_WEAPON) {
-	            GivePlayerWeapon(playerid, getInvItem(playerid, returnid), getInvParam(playerid, returnid));
-				setInvItem(playerid, returnid, -1);
-	        } else if(getInvItem(playerid, returnid) == 100) {
-	            SendClientMessage(playerid, COLOR_YELLOW2, "Las partes de armas no pueden ser tomadas, deben ser ensambladas por alguien con experiencia.");
-			} else {
+	        if(GetItemType(GetInvItem(playerid, returnid)) == ITEM_WEAPON) {
+	            GivePlayerWeapon(playerid, GetInvItem(playerid, returnid), GetInvParam(playerid, returnid));
+	            SetInvItemAndParam(playerid, returnid, 0, 0);
+			} else
 	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	        }
 	        
 	    } else if(strcmp(text, "desechar", true) == 0) {
 	    
 	        if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "No puedes desechar un arma agonizando");
-	        if(getItemType(getInvItem(playerid, returnid)) != ITEM_NONE) {
+	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
+	        if(GetInvItem(playerid, returnid) == 0) {
 	        	new string[128];
-      			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", itemName[getInvItem(playerid, returnid)]);
+      			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(GetInvItem(playerid, returnid)));
          		PlayerActionMessage(playerid, 8.0, string);
-				setInvItem(playerid, returnid, -1);
-	        } else {
+				SetInvItemAndParam(playerid, returnid, 0, 0);
+	        } else
 	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	        }
 	        
  		} else if(strcmp(text, "consumir", true) == 0) {
 
-			if(getInvItem(playerid, returnid) == 52) {
+			if(GetInvItem(playerid, returnid) == 52) {
 	            PlayerActionMessage(playerid, 15.0, "saca un sandwich de su bolsillo y se lo come.");
 	            PlayerEat(playerid, 40.0);
-	            if(getInvParam(playerid, returnid) - 1 > 0)
-	            	setInvParam(playerid, returnid, getInvParam(playerid, returnid) - 1);
+	            if(GetInvParam(playerid, returnid) - 1 > 0)
+	            	SetInvItemAndParam(playerid, returnid, 52, GetInvParam(playerid, returnid) - 1);
 				else
-					setInvItem(playerid, returnid, -1);
+					SetInvItemAndParam(playerid, returnid, 0, 0);
 	        } else
-				if(getInvItem(playerid, returnid) == 53) {
+				if(GetInvItem(playerid, returnid) == 53) {
 		            PlayerActionMessage(playerid, 15.0, "saca un alfajor de su bolsillo y se lo come.");
 		            PlayerEat(playerid, 15.0);
-		            if(getInvParam(playerid, returnid) - 1 > 0)
-		            	setInvParam(playerid, returnid, getInvParam(playerid, returnid) - 1);
+		            if(GetInvParam(playerid, returnid) - 1 > 0)
+		            	SetInvItemAndParam(playerid, returnid, 53, GetInvParam(playerid, returnid) - 1);
 					else
-						setInvItem(playerid, returnid, -1);
+						SetInvItemAndParam(playerid, returnid, 0, 0);
 				} else
-					if(getInvItem(playerid, returnid) == 54) {
+					if(GetInvItem(playerid, returnid) == 54) {
 			            PlayerActionMessage(playerid, 15.0, "saca una botellita de agua de su bolsillo y se la toma.");
 			            PlayerDrink(playerid, 50.0);
-			            if(getInvParam(playerid, returnid) - 1 > 0)
-			            	setInvParam(playerid, returnid, getInvParam(playerid, returnid) - 1);
+			            if(GetInvParam(playerid, returnid) - 1 > 0)
+			            	SetInvItemAndParam(playerid, returnid, 54, GetInvParam(playerid, returnid) - 1);
 						else
-							setInvItem(playerid, returnid, -1);
+							SetInvItemAndParam(playerid, returnid, 0, 0);
 					} else
   						SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 
@@ -10797,20 +10710,13 @@ CMD:inventario(playerid, params[]) {
 			if((PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid]) || (PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid]))
     			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
 			new weaponID = GetPlayerWeapon(playerid);
-   			if(weaponID != 1 && weaponID != 3 && weaponID != 4 && (weaponID < 10 || weaponID > 24) &&
-				weaponID != 28 && weaponID != 32 && weaponID != 41 && weaponID != 43)
+   			if(!HasItemInvPermission(weaponID))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 
 			new validslot;
 			if(returnid == -1)
 			{
-				validslot = -1;
-				for(new i = 0; i < INV_MAX_SLOTS; i++) {
-    				if(getItemType(getInvItem(playerid, i)) == ITEM_NONE) {
-						validslot = i;
-						break;
-				   	}
-				}
+			    validslot = SearchInvFreeSlot(playerid);
 				if(validslot == -1)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "¡El inventario se encuentra lleno!");
        		} else
@@ -10818,14 +10724,13 @@ CMD:inventario(playerid, params[]) {
 			        validslot = returnid;
 			   		if(validslot < 0 || validslot >= INV_MAX_SLOTS)
 					   	return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-		        	if(getItemType(getInvItem(playerid, validslot)) != ITEM_NONE)
+		        	if(GetInvItem(playerid, validslot) == 0)
 		        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 				}
 				
     		SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
-		    setInvItem(playerid, validslot, GetPlayerWeapon(playerid));
-			setInvParam(playerid, validslot, GetPlayerAmmo(playerid));
+			SetInvItemAndParam(playerid, validslot, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
 			RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 	    }
 	}
@@ -11270,7 +11175,7 @@ CMD:comprar(playerid, params[]) {
 					GivePlayerWeapon(playerid, realWeapon, ammo);
 				    GivePlayerCash(playerid, -totalPrice);
 				    new string[128];
-				    format(string, sizeof(string), "ha comprado un/a %s con %d municiones a un total de $%d.", itemName[realWeapon], ammo, totalPrice);
+				    format(string, sizeof(string), "ha comprado un/a %s con %d municiones a un total de $%d.", GetItemName(realWeapon), ammo, totalPrice);
 				    PlayerActionMessage(playerid, 15.0, string);
 					Business[business][bTill] += totalPrice / 2; // la mitad para evitar abusos de sacar armas gratis para el dueño
 					Business[business][bProducts]--;
@@ -11344,7 +11249,7 @@ CMD:comprar(playerid, params[]) {
 		Business[business][bTill] += itemPrice[realWeapon];
 		Business[business][bProducts] --;
 		saveBusiness(business);
-		format(content, sizeof(content), "le paga al vendedor y compra un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon]);
+		format(content, sizeof(content), "le paga al vendedor y compra un/a %s por un total de $%d.", GetItemName(realWeapon), itemPrice[realWeapon]);
 		PlayerActionMessage(playerid, 15.0, content);
 
 	} else if(business == 0) {
@@ -11378,19 +11283,19 @@ CMD:comprar(playerid, params[]) {
 
 					for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
 					{
-					    if(getTrunkItem(vehicleid, i) == 49)
+					    if(GetTrunkItem(vehicleid, i) == 49)
 						{
-							param += getTrunkParam(vehicleid, i);
+							param += GetTrunkParam(vehicleid, i);
 							if(param == amount || amount > param)
 							{
-							    setTrunkItemAndParam(vehicleid, i, 0, 0);
+							    SetTrunkItemAndParam(vehicleid, i, 0, 0);
 							    result = param;
 							    break;
 							} else
 								if(param > amount)
 								{
 		    						param -= amount;
-		    						setTrunkItemAndParam(vehicleid, i, 49, param); // Crea el nuevo
+		    						SetTrunkItemAndParam(vehicleid, i, 49, param); // Crea el nuevo
 							    	result = amount;
 							    	break;
 								}
@@ -11512,7 +11417,7 @@ CMD:comprar(playerid, params[]) {
 				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon]) {
 							GivePlayerWeapon(playerid, realWeapon, 1);
 					    	GivePlayerCash(playerid, -itemPrice[realWeapon]);
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon]);
+					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", GetItemName(realWeapon), itemPrice[realWeapon]);
 						} else {
 							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon]);
 						}
@@ -11533,7 +11438,7 @@ CMD:comprar(playerid, params[]) {
 				        if(GetPlayerCash(playerid) >= itemPrice[realWeapon]) {
 							GivePlayerWeapon(playerid, realWeapon, 1);
 					    	GivePlayerCash(playerid, -itemPrice[realWeapon]);
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", itemName[realWeapon], itemPrice[realWeapon]);
+					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", GetItemName(realWeapon), itemPrice[realWeapon]);
 						} else {
 							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemPrice[realWeapon]);
 						}
@@ -11889,18 +11794,9 @@ CMD:quitar(playerid, params[])
 	{
  		PlayerPlayerActionMessage(playerid, targetID, 10.0, "le ha quitado todas las armas a");
 		ResetPlayerWeapons(targetID);
-		new itemid = -1;
 		for(new invslot = 0; invslot < INV_MAX_SLOTS; invslot++) {
-			switch(invslot) {
-				    case 0:
-				    	sscanf(InvInfo[targetID][inv0], "i{i}", itemid);
-				    case 1:
-						sscanf(InvInfo[targetID][inv1], "i{i}", itemid);
-				}
-			switch(itemid) {
-					case 1 .. 9, 16 .. 38, 41:
-						setInvItem(targetID, invslot, 0);
-				}
+		    if(GetItemType(GetInvItem(targetID, invslot)) == ITEM_WEAPON)
+		        SetInvItemAndParam(playerid, invslot, 0, 0);
 		}
 	}
 	return 1;
@@ -12748,7 +12644,9 @@ CMD:bolsillo(playerid, params[])
 
 stock ShowInv(playerid, targetid)
 {
-	new itemid, param, pWeapons[13], pAmmo[13], weaponName[64];
+	new pWeapons[13],
+		pAmmo[13],
+		weaponName[64];
 
 	SendFMessage(playerid, COLOR_LIGHTGREEN, "==================[%s] (%d)=================", GetPlayerNameEx(targetid), targetid);
 	for(new i = 1; i <= 12; i++) {
@@ -12758,19 +12656,7 @@ stock ShowInv(playerid, targetid)
 			SendFMessage(playerid, COLOR_WHITE, "- Arma encontrada: %s.", weaponName);
 		}
 	}
-	SendClientMessage(playerid, COLOR_WHITE, "======================[Inventario]======================");
-    for(new x = 0; x < INV_MAX_SLOTS; x++) {
-    	itemid = getInvItem(targetid, x);
-        param = getInvParam(targetid, x);
-        if(getItemType(itemid) == ITEM_WEAPON) {
-	       	SendFMessage(playerid, COLOR_WHITE, " - %d- Arma: %s - Munición: %d", x, itemName[itemid], param);
-		} else
-			if(getItemType(itemid) == ITEM_OTHER) {
-        		SendFMessage(playerid, COLOR_WHITE, " - %d- Item: %s - Cantidad: %d", x, itemName[itemid], param);
-			} else {
-		    		SendFMessage(playerid, COLOR_WHITE, " - %d- Nada", x);
-				}
-  	}
+	PrintInvForPlayer(targetid, playerid);
 }
 
 stock ShowPocket(playerid, targetid)
@@ -13989,7 +13875,7 @@ CMD:dar(playerid, params[])
 
 	GivePlayerWeapon(target, pWeapon, pAmmo);
  	RemovePlayerWeapon(playerid, pWeapon);
-	format(string, sizeof(string), "le entrega un/a %s a", itemName[pWeapon]);
+	format(string, sizeof(string), "le entrega un/a %s a", GetItemName(pWeapon));
  	PlayerPlayerActionMessage(playerid, target, 15.0, string);
 	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
@@ -14729,7 +14615,7 @@ CMD:ensamblar(playerid, params[])
 	{
 		GivePlayerWeapon(playerid, weapon, 50);
 		FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] -= mats;
-		SendFMessage(playerid, COLOR_WHITE, "Has ensamblado un/a %s con 50 municiones por %d piezas.", itemName[weapon], mats);
+		SendFMessage(playerid, COLOR_WHITE, "Has ensamblado un/a %s con 50 municiones por %d piezas.", GetItemName(weapon), mats);
 	}
 	return 1;
 }
@@ -16233,8 +16119,8 @@ CMD:llenar(playerid, params[])
 	} else
 		{
 			for(new i = 0; i < INV_MAX_SLOTS; i++) {
-			    if(getInvItem(playerid, i) == 48) {
-			    	preamount = getInvParam(playerid, i);
+			    if(GetInvItem(playerid, i) == 48) {
+			    	preamount = GetInvParam(playerid, i);
 					validslot = i;
 					break;
 			    }

@@ -11,9 +11,6 @@
 #define MAX_VEH                 1001
 #define MAX_RENTCAR             30
 
-#define MAX_TRUNK_SLOTS         10
-#define SLOT_TYPE_TRUNK         2
-
 //====[TIPOS DE VEHICULOS]======================================================
 #define	VEH_NONE				0	// Ninguno, no spawnea.
 #define	VEH_DEALERSHIP 			1	// De venta.
@@ -107,51 +104,48 @@ stock getVehicleSqlId(vehicleid){
 	return VehicleInfo[vehicleid][VehSQLID];
 }
 
-//=========================VEHICLE TRUNK FUNCTIONS==============================
+//================================CONSTANTES====================================
 
-enum SlotInfo {
-	Item,
-	Amount,
-};
+#define MAX_TRUNK_SLOTS         10
+#define SLOT_TYPE_TRUNK         2
+
+//============================VARIABLES INTERNAS================================
 
 new TrunkInfo[MAX_VEH][MAX_TRUNK_SLOTS][SlotInfo];
 
-stock getItemType(itemid)
-{
-	switch(itemid) {
-		case 1 .. 15, 16 .. 38, 41, 43:
-			return ITEM_WEAPON;
-		case 47, 48, 49, 50, 51, 52, 53, 54:
-			return ITEM_OTHER;
-		case -1, 0:
-			return ITEM_NONE;
-	}
-	return ITEM_NONE;
-}
+//============================TRUNK FUNCTIONS===================================
 
-stock getTrunkItem(trunkid, trunkslot)
-{
-	new itemid = -1;
+forward GetTrunkItem(trunkid, trunkslot); // Devuelve el nro de item del slot indicado del maletero del vehiculo. En caso de error retorna -1.
+forward GetTrunkParam(trunkid, trunkslot); // Devuelve el parametro "cantidad" del slot indicado del maletero del vehiculo. En caso de error retorna -1.
+forward SetTrunkItemAndParam(trunkid, trunkslot, itemid, param); // Setea item y cantidad en el slot indicado.
+forward ResetTrunk(trunkid); // Borra todo slot del maletero del vehiculo y lo resetea a cero.
+forward SearchTrunkForItem(trunkid, itemid); // Busca un item pasado por parametro dentro de un maletero. Si existe, devuelve el slot en el que está, sino retorna -1.
+forward SearchTrunkFreeSlot(trunkid); // Busca por el primer slot vacio en el maletero y devuelve su posicion. De no haber espacio retorna -1.
+forward PrintTrunkForPlayer(trunkid, targetid); // Imprime el maletero del vehiculo al jugador indicado.
 
+//==================VEHICLE TRUNK FUNCTIONS IMPLEMENTATION======================
+
+stock GetTrunkItem(trunkid, trunkslot)
+{
 	if(trunkslot >= 0 && trunkslot < MAX_TRUNK_SLOTS)
-		itemid = TrunkInfo[trunkid][trunkslot][Item];
-	return itemid;
+		return TrunkInfo[trunkid][trunkslot][Item];
+	else
+		return -1;
 }
 
-stock getTrunkParam(trunkid, trunkslot)
+stock GetTrunkParam(trunkid, trunkslot)
 {
-	new param = -1;
-
 	if(trunkslot >= 0 && trunkslot < MAX_TRUNK_SLOTS)
-		param = TrunkInfo[trunkid][trunkslot][Amount];
-	return param;
+		return TrunkInfo[trunkid][trunkslot][Amount];
+	else
+		return-1;
 }
 
-stock setTrunkItemAndParam(trunkid, trunkslot, itemid, param)
+stock SetTrunkItemAndParam(trunkid, trunkslot, itemid, param)
 {
 	if(trunkslot >= 0 && trunkslot < MAX_TRUNK_SLOTS)
 	{
-	    if(getTrunkItem(trunkid, trunkslot) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
+	    if(GetTrunkItem(trunkid, trunkslot) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
 	    {
 			TrunkInfo[trunkid][trunkslot][Item] = 0;
 			TrunkInfo[trunkid][trunkslot][Amount] = 0;
@@ -164,20 +158,51 @@ stock setTrunkItemAndParam(trunkid, trunkslot, itemid, param)
 	return 1;
 }
 
-stock resetTrunk(trunkid)
+stock ResetTrunk(trunkid)
 {
 	for(new i = 0; i < MAX_TRUNK_SLOTS; i++)
 	{
+		TrunkInfo[trunkid][i][Amount] = 0;
+		TrunkInfo[trunkid][i][Item] = 0;
 	    if(TrunkInfo[trunkid][i][Item] > 0)
-	    {
-		    TrunkInfo[trunkid][i][Amount] = 0;
-		    TrunkInfo[trunkid][i][Item] = 0;
 		    SaveSlotInfo(SLOT_TYPE_TRUNK, trunkid, i);
-		} else
-		    {
-				TrunkInfo[trunkid][i][Amount] = 0;
-		    	TrunkInfo[trunkid][i][Item] = 0;
-		    }
+	}
+	return 1;
+}
+
+stock SearchTrunkForItem(trunkid, itemid)
+{
+	for(new i = 0; i < MAX_TRUNK_SLOTS; i++)
+	{
+		if(TrunkInfo[trunkid][i][Item] == itemid)
+		    return i;
+	}
+	return -1;
+}
+
+stock SearchTrunkFreeSlot(trunkid)
+{
+	for(new i = 0; i < MAX_TRUNK_SLOTS; i++)
+	{
+		if(TrunkInfo[trunkid][i][Item] == 0)
+		    return i;
+	}
+	return -1;
+}
+
+stock PrintTrunkForPlayer(trunkid, targetid)
+{
+	new
+	    itemid;
+
+ 	SendClientMessage(targetid, COLOR_WHITE, "=======================[Maletero]======================");
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(trunkid); i++)
+	{
+		itemid = GetTrunkItem(trunkid, i);
+	    if(itemid > 0)
+			SendFMessage(targetid, COLOR_WHITE, " - %d- Item: %s - %s: %d", i, GetItemName(itemid), GetItemParamName(itemid), GetTrunkParam(trunkid, i));
+	    else
+	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacio", i);
 	}
 	return 1;
 }
@@ -748,7 +773,7 @@ resetVehicle(id) {
 	for(new i = 0; i < 14; i++) {
         VehicleInfo[id][VehCompSlot][i] = 0;
 	}
-	resetTrunk(id);
+	ResetTrunk(id);
 	return 1;
 }
 
@@ -961,12 +986,10 @@ CMD:mal(playerid, params[]) {
  	cmd_maletero(playerid, params);
 	return 1;
 }
-
+        
 CMD:maletero(playerid, params[]) {
 	new
 	    vehicleid,
-	    itemid,
-	    param,
 	    returnstr[32],
 	    returnid2,
 	    text[128];
@@ -985,18 +1008,7 @@ CMD:maletero(playerid, params[]) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot de item] - guardar [slot, opcional] - guardardroga [tipo] [cantidad] - tomardroga [tipo] [cantidad]");
      	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8}guardardinero [cantidad] - tomardinero [slot de item]");
-       	SendClientMessage(playerid, COLOR_WHITE, "=======================[Maletero]======================");
-		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-            itemid = getTrunkItem(vehicleid, i);
-            param = getTrunkParam(vehicleid, i);
-            if(getItemType(itemid) == ITEM_WEAPON) {
-            	SendFMessage(playerid, COLOR_WHITE, " - %d- Arma: %s - Munición: %d", i, itemName[itemid], param);
-			} else if(getItemType(itemid) == ITEM_OTHER) {
-                SendFMessage(playerid, COLOR_WHITE, " - %d- Item: %s - Cantidad: %d", i, itemName[itemid], param);
-			} else {
-			    SendFMessage(playerid, COLOR_WHITE, " - %d- Nada", i);
-			}
-        }
+		PrintTrunkForPlayer(vehicleid, playerid);
 		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
 		}
@@ -1106,37 +1118,31 @@ CMD:maletero(playerid, params[]) {
 			if(GetPlayerCash(playerid) < amount)
    				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad de efectivo.");
 
-			new validslot = -1;
-			for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-			    if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
-					validslot = i;
-					break;
-			    }
-			}
+			new validslot = SearchTrunkFreeSlot(vehicleid);
 			if(validslot == -1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
 				
 			SetPVarInt(playerid, "cantSaveItems", 1);
    			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-   			setTrunkItemAndParam(vehicleid, validslot, 51, amount);
+   			SetTrunkItemAndParam(vehicleid, validslot, 51, amount);
 			GivePlayerCash(playerid, -amount);
 
 		} else if(strcmp(text, "tomardinero", true) == 0) {
 
 			new slot = strval(returnstr);
-	        if(getTrunkItem(vehicleid, slot) != 51)
+	        if(GetTrunkItem(vehicleid, slot) != 51)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 				
-    		GivePlayerCash(playerid, getTrunkParam(vehicleid, slot));
-    		setTrunkItemAndParam(vehicleid, slot, 0, 0);
+    		GivePlayerCash(playerid, GetTrunkParam(vehicleid, slot));
+    		SetTrunkItemAndParam(vehicleid, slot, 0, 0);
     		
 	    } else if(strcmp(text, "tomar", true) == 0) {
 	    
-	        if(getItemType(getTrunkItem(vehicleid, strval(returnstr))) != ITEM_WEAPON)
+	        if(GetItemType(GetTrunkItem(vehicleid, strval(returnstr))) != ITEM_WEAPON)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 				
-		    GivePlayerWeapon(playerid, getTrunkItem(vehicleid, strval(returnstr)), getTrunkParam(vehicleid, strval(returnstr)));
-		    setTrunkItemAndParam(vehicleid, strval(returnstr), 0, 0);
+		    GivePlayerWeapon(playerid, GetTrunkItem(vehicleid, strval(returnstr)), GetTrunkParam(vehicleid, strval(returnstr)));
+		    SetTrunkItemAndParam(vehicleid, strval(returnstr), 0, 0);
 	        
 	    } else if(strcmp(text, "guardar", true) == 0) {
 	    
@@ -1153,13 +1159,7 @@ CMD:maletero(playerid, params[]) {
 
 			new validslot;
 			if(strcmp(returnstr, "-1",true) == 0) {
-				validslot = -1;
-				for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    			if(getItemType(getTrunkItem(vehicleid, i)) == ITEM_NONE) {
-						validslot = i;
-						break;
-				   	}
-				}
+				validslot = SearchTrunkFreeSlot(vehicleid);
 				if(validslot == -1)
 					return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
  			} else
@@ -1167,13 +1167,13 @@ CMD:maletero(playerid, params[]) {
 					validslot = strval(returnstr);
 	 	 			if(validslot < 0 || validslot >= GetVehicleMaxTrunkSlots(vehicleid))
 	 	 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-	   	    		if(getItemType(getTrunkItem(vehicleid, validslot)) != ITEM_NONE)
+	   	    		if(GetItemType(GetTrunkItem(vehicleid, validslot)) != ITEM_NONE)
 						return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 				}
 				
    			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
-			setTrunkItemAndParam(vehicleid, validslot, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
+			SetTrunkItemAndParam(vehicleid, validslot, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
 			RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 	    }
 	}
@@ -1191,8 +1191,8 @@ CMD:usarbidon(playerid, params[]) {
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar fuera del vehículo.");
 
 	for(new i = 0; i < INV_MAX_SLOTS; i++) {
-	    if(getInvItem(playerid, i) == 48) {
-	        gasAmount = getInvParam(playerid, i);
+	    if(GetInvItem(playerid, i) == 48) {
+	        gasAmount = GetInvParam(playerid, i);
 	    	if(gasAmount > 0) {
 	    	    validslot = i;
 	    	    break;
@@ -1208,15 +1208,15 @@ CMD:usarbidon(playerid, params[]) {
         if(refillAmount >= gasAmount) {
             SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, VehicleInfo[vehicleid][VehFuel] += gasAmount));
             GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
-			setInvParam(playerid, validslot, 0);
+			SetInvItemAndParam(playerid, validslot, 0, 0);
 			PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía todo el contenido del bidón dentro.");
             SendFMessage(playerid, COLOR_WHITE, "Has vaciado el bidón, tu vehículo ahora tiene un %d por ciento de combustible.", VehicleInfo[vehicleid][VehFuel]);
         } else {
             SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, 100));
             GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
-            setInvParam(playerid, validslot, gasAmount - refillAmount);
+            SetInvItemAndParam(playerid, validslot, 48, gasAmount - refillAmount);
             PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía parte del bidón dentro.");
-            SendFMessage(playerid, COLOR_WHITE, "Has llenado el tanque de tu vehículo tu bidón ahora tiene un %d por ciento de combustible.", getInvParam(playerid, validslot));
+            SendFMessage(playerid, COLOR_WHITE, "Has llenado el tanque de tu vehículo tu bidón ahora tiene un %d por ciento de combustible.", GetInvParam(playerid, validslot));
         }
 	} else {
 	    SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
@@ -1547,7 +1547,7 @@ CMD:avehiculo(playerid, params[])
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuel - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avestacionar - /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
@@ -1825,7 +1825,7 @@ CMD:avmodelo(playerid, params[])
     SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, modelid);
 	GetVehiclePos(vehicleid, cx, cy, cz);
 	GetVehicleZAngle(vehicleid, angle);
-	resetTrunk(vehicleid);
+	ResetTrunk(vehicleid);
 	for(new i = 0; i < 14; i++) {
  	    VehicleInfo[vehicleid][VehCompSlot][i] = 0;
  	}
@@ -1997,9 +1997,9 @@ CMD:avcrearperma(playerid, params[])
 	return 1;
 }
 
-CMD:motor(playerid,params[]) {
-    new
-		vehicleid = GetPlayerVehicleID(playerid);
+CMD:motor(playerid,params[])
+{
+    new vehicleid = GetPlayerVehicleID(playerid);
 
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)	{
 		GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
@@ -2038,14 +2038,14 @@ CMD:motor(playerid,params[]) {
 	return 1;
 }
 
-CMD:cambiarpatente(playerid, params[])
+CMD:avpatente(playerid, params[])
 {
 	new vehicleid, string[32];
 	
 	if(PlayerInfo[playerid][pAdmin] < 3)
 	    return 1;
     if(sscanf(params, "is[32]", vehicleid, string))
-        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarpatente [idvehiculo] [patente]");
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avpatente [idvehiculo] [patente]");
 
 	VehicleInfo[vehicleid][VehPlate] = string;
 	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);

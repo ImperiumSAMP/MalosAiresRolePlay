@@ -83,13 +83,6 @@ enum pInfo {
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
-enum Inv {
-	inv0[16],
-	inv1[16],
-};
-
-new InvInfo[MAX_PLAYERS][Inv];
-
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];
 }
