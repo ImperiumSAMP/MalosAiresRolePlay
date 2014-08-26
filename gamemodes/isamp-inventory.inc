@@ -213,7 +213,7 @@ CMD:inventario(playerid, params[]) {
 			        validslot = returnid;
 			   		if(validslot < 0 || validslot >= INV_MAX_SLOTS)
 					   	return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-		        	if(GetInvItem(playerid, validslot) == 0)
+		        	if(GetInvItem(playerid, validslot) != 0)
 		        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 				}
 
