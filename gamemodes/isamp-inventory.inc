@@ -140,7 +140,7 @@ CMD:inventario(playerid, params[]) {
 
     if(sscanf(params, "s[128]I(-1)I(-1)", text, returnid, targetid)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot] - guardar [slot, opcional] - desechar - consumir [slot] - dar [slot] [ID/Jugador]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot] - guardar [slot, opcional] - desechar [slot] - consumir [slot] - dar [slot] [ID/Jugador]");
 		PrintInvForPlayer(playerid, playerid);
     } else {
 		if(strcmp(text, "tomar", true) == 0) {
@@ -159,6 +159,8 @@ CMD:inventario(playerid, params[]) {
 	        	new string[128];
       			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(GetInvItem(playerid, returnid)));
          		PlayerActionMessage(playerid, 8.0, string);
+				if(GetInvItem(playerid, returnid) == 55)
+			    	DeleteBriefCaseForPlayer(playerid);
 				SetInvItemAndParam(playerid, returnid, 0, 0);
 	        } else
 	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");

@@ -32,8 +32,8 @@ stock DeleteBriefCaseForPlayer(playerid)
 
 stock GiveBriefCasePlayerToPlayer(playerid, targetid)
 {
-    SetPlayerAttachedObject(targetid, 7, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
-    RemovePlayerAttachedObject(playerid, 7);
+    SetPlayerAttachedObject(targetid, 9, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
+    RemovePlayerAttachedObject(playerid, 9);
     return 1;
 }
 
@@ -63,6 +63,7 @@ CMD:maletin(playerid, params[])
 		    GivePlayerCash(playerid, amount);
 			SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney - amount);
 			PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
+			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 			
 	} else if(strcmp(command, "guardar", true) == 0) {
 		
@@ -75,6 +76,7 @@ CMD:maletin(playerid, params[])
 	    GivePlayerCash(playerid, -amount);
 		SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney + amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y guarda algo en su interior.");
+		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	}
 	return 1;
 }
