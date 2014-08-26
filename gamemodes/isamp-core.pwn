@@ -1771,13 +1771,6 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype) {
 
 public OnPlayerSpawn(playerid) {
 
-    for (new playermaletin; playermaletin < MAX_PLAYERS; playermaletin++)
-	{
-	if (PlayerInfo[playermaletin][pBriefcaseObject] == 1){
-	CrearMaletinEx(playermaletin);
-	}
-	}
-
     //---------------PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES--------------
 	ApplyAnimation(playerid, "ATTRACTORS", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BLOWJOBZ", "null", 0.0, 0, 0, 0, 0, 0);
@@ -1828,7 +1821,9 @@ public OnPlayerSpawn(playerid) {
 		    initiateHospital(playerid);
 		}
 	}
-	/*}*/
+	
+	LoadBriefCaseForPlayer(playerid);
+	
 	return 1;
 }
 
@@ -3285,8 +3280,6 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pMuteB", result); 			PlayerInfo[playerid][pMuteB] 			= strval(result);
 		cache_get_field_content(0, "pRentCarID", result); 		PlayerInfo[playerid][pRentCarID] 		= strval(result);
 		cache_get_field_content(0, "pRentCarRID", result); 		PlayerInfo[playerid][pRentCarRID] 		= strval(result);
-		cache_get_field_content(0, "pBriefcaseCash", result); 	PlayerInfo[playerid][pBriefcaseCash] 	= strval(result);
-		cache_get_field_content(0, "pBriefcaseObject", result); PlayerInfo[playerid][pBriefcaseObject] 	= strval(result);
 		cache_get_field_content(0, "pMarijuana", result); 		PlayerInfo[playerid][pMarijuana] 		= strval(result);
 		cache_get_field_content(0, "pLSD", result); 			PlayerInfo[playerid][pLSD] 				= strval(result);
 		cache_get_field_content(0, "pEcstasy", result); 			PlayerInfo[playerid][pEcstasy] 			= strval(result);
@@ -3899,9 +3892,7 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pLighter],
 			PlayerInfo[playerid][pRadio],
 			PlayerInfo[playerid][pFightStyle],
-			PlayerInfo[playerid][pAdictionAbstinence], 
-			PlayerInfo[playerid][pBriefcaseCash],
-			PlayerInfo[playerid][pBriefcaseObject]
+			PlayerInfo[playerid][pAdictionAbstinence]
 		);
 		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `PhoneBook`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
@@ -8836,11 +8827,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < PRICE_MALETIN)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						if (PlayerInfo[playerid][pBriefcaseObject] != 0)
+						if(SearchInvForItem(playerid, 55) != -1)
                             return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tenés un maletín!");
-                        PlayerInfo[playerid][pBriefcaseObject] = 1;
+						new validslot = SearchInvFreeSlot(playerid);
+						if(validslot == -1)
+						    return SendClientMessage (playerid, COLOR_LIGHTBLUE, "No tienes espacio en el inventario.");
+
+						SetInvItemAndParam(playerid, validslot, 55, 0);
+						LoadBriefCaseForPlayer(playerid);
 						GivePlayerCash(playerid, -PRICE_MALETIN);
-						CrearMaletinEx(playerid);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d!", PRICE_MALETIN);
 		   				Business[business][bTill] += PRICE_MALETIN;

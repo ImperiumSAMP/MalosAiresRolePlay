@@ -2,152 +2,79 @@
 	#endinput
 #endif
 #define _isamp_maletin_included
-new ConM[MAX_PLAYERS];
-#define MAX_DINERO_MALETIN 100000
 
+//=============================SISTEMA DE MALETINES=============================
 
-stock CrearMaletinTodos()
+//================================CONSTANTES====================================
+
+#define MAX_DINERO_MALETIN 200000
+
+//===============================FUNCIONES======================================
+
+forward LoadBreifCaseForPlayer(playerid); // Carga el objeto visible del maletin al jugador.
+forward DeleteBriefCaseForPlayer(playerid); // Borra el objeto visible del jugador.
+forward GiveBriefCasePlayerToPlayer(playerid, targetid); // Pasa el objeto visible de un jugador a otro.
+
+//======================IMPLEMENTACION DE FUNCIONES=============================
+
+stock LoadBriefCaseForPlayer(playerid)
 {
-    for(new i = 0; i < MAX_PLAYERS; i++)
-    {
-        CrearMaletinEx(i);
-	}
+	if(SearchInvForItem(playerid, 55) != -1)
+	    SetPlayerAttachedObject(playerid, 9, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
 	return 1;
 }
 
-stock BorrarMaletinTodos()
+stock DeleteBriefCaseForPlayer(playerid)
 {
-    for(new i = 0; i < MAX_PLAYERS; i++)
-    {
-        BorrarMaletinEx(i);
-	}
+	RemovePlayerAttachedObject(playerid, 9);
 	return 1;
 }
 
-stock BorrarMaletinEx(playerid)
+stock GiveBriefCasePlayerToPlayer(playerid, targetid)
 {
-	RemovePlayerAttachedObject(playerid, 7);
-	return 1;
-}
-
-
-stock CrearMaletinEx(playerid)
-{
-	ConM[playerid] = 1;
-	SetPlayerAttachedObject(playerid,7,1210,5,0.301999,0.082999,-0.012000,0.000000,-90.599975,-0.999999,1.000000,1.000000,1.000000);
-	return 1;
-}
-
-stock Tienemaletin(playerid)
-{
-	return ConM[playerid];
-}
-
-////Aca terminan los Stocks
-
-///Aca comienza el sistema de maletin
-CMD:dmaletin(playerid, params[])
-{
-    new Cash = GetPlayerCash(playerid), amount;
-    new str[100];
-    if (sscanf (params, "d", amount)) return SendClientMessage (playerid, COLOR_RED, "{5CCAF1}[Sintaxis]:{C8C8C8} /dmaletin (Monto)");
-    {
-        if (amount > MAX_DINERO_MALETIN) return SendClientMessage (playerid, COLOR_GREY, "No podés depositar más de $100000 en el maletín.");
-        if (PlayerInfo[playerid][pBriefcaseCash] == MAX_DINERO_MALETIN) return SendClientMessage (playerid, COLOR_WHITE, "El maletín está lleno, no podés depositar más dinero en él.");
-        if(PlayerInfo[playerid][pBriefcaseObject] == 0) return SendClientMessage(playerid, COLOR_GREY, "No tenés un maletín en tu mano, compralo en algún 24-7");
-        {      
-            if(amount + PlayerInfo[playerid][pBriefcaseCash] > MAX_DINERO_MALETIN) return SendClientMessage(playerid, COLOR_WHITE, "No podés depositar más de $100000 en el maletín.");
-                
-            if (Cash >= amount && amount > 0) {
-                    GivePlayerCash(playerid, -amount);
-                    PlayerInfo[playerid][pBriefcaseCash] += amount;
-                    format (str, sizeof(str), "Depositaste $%d en tu maletín.", amount);
-                    SendClientMessage (playerid, COLOR_GREY, str);
-					SaveAccount(playerid);
-                    } else {
-                    SendClientMessage (playerid, COLOR_GREY, "No tenés esa cantidad de dinero.");
-            }
-        }
-    }
-    return 1;
-	}
-
-CMD:maletin (playerid, params[])
-{
-new str[100];
-if(PlayerInfo[playerid][pBriefcaseObject] == 0) return SendClientMessage(playerid, COLOR_GREY, "No tenés un maletín en tu mano, compralo en algún 24-7");
-format(str, sizeof(str), "El maletin contiene $%d", PlayerInfo[playerid][pBriefcaseCash]); 
-SendClientMessage (playerid, -1, str);
-
-return 1;
-}
-
-CMD:rmaletin (playerid, params[]){
-    new
-    cash = PlayerInfo[playerid][pBriefcaseCash],
-    amount,
-    str[90];
-    if (sscanf (params, "d", amount))
-    return SendClientMessage (playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /rmaletin [monto]");
-    {
-        if(PlayerInfo[playerid][pBriefcaseObject] == 0) return SendClientMessage(playerid, COLOR_GREY, "No tenés un maletín en tu mano, compralo en algún 24-7");
-        {
-			if(amount <= 0 || amount > cash) return SendClientMessage (playerid, COLOR_GREY, "Cantidad de dinero inválida.");
-            {
-                GivePlayerCash(playerid, amount);
-                PlayerInfo[playerid][pBriefcaseCash] -= amount;
-                format (str, sizeof(str), "Retiraste $%d de tu maletín.", amount);
-                SendClientMessage (playerid, COLOR_GREY, str);
-				SaveAccount(playerid);
-            }
-        }
-    }
+    SetPlayerAttachedObject(targetid, 7, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
+    RemovePlayerAttachedObject(playerid, 7);
     return 1;
 }
-CMD:darmaletin(playerid, params[])
+
+//================================COMANDOS======================================
+
+CMD:maletin(playerid, params[])
 {
-new
- targetid;
-if(sscanf(params, "u", targetid)) return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /darmaletin [id/ParteDelNombre]");
-if(PlayerInfo[playerid][pBriefcaseObject] == 0) return SendClientMessage(playerid, COLOR_GREY, "No tenés un maletín en tu mano, compralo en algún 24-7");
-if(PlayerInfo[targetid][pBriefcaseObject] == 1) return SendClientMessage(playerid, COLOR_GREY, "El sujeto ya tiene un maletin en su mano.");
-if(IsPlayerConnected(targetid) && targetid != INVALID_PLAYER_ID && PlayerInfo[targetid][pBriefcaseObject] == 0){
-   PlayerPlayerActionMessage(playerid, targetid, 15.0, "le entregó un maletín a");
-   PlayerInfo[targetid][pBriefcaseCash]= PlayerInfo[playerid][pBriefcaseCash];
-   BorrarMaletinEx(playerid);
-   CrearMaletinEx(targetid);
-   PlayerInfo[targetid][pBriefcaseObject] = 1;
-   PlayerInfo[playerid][pBriefcaseCash] = 0;
-   PlayerInfo[playerid][pBriefcaseObject] = 0;
-   SaveAccount(playerid);
-  } else {
-  SendClientMessage(playerid, COLOR_GREY, "Jugador no conectado o inválido.");
-  }
-return 1;
+	new
+	    command[40],
+	    amount,
+	    validslot = SearchInvForItem(playerid, 55);
+
+	if(validslot == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de un malet�n en tu inventario.");
+		
+	if(sscanf(params, "s[40]i", command, amount))
+	{
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /maletin [comando]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} retirar [dinero] - guardar [dinero]");
+
+	} else if(strcmp(command, "retirar", true) == 0) {
+		
+		    new briefCaseMoney = GetInvParam(playerid, validslot);
+		    if(amount <= 0 || amount > briefCaseMoney)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inv�lida.");
+		        
+		    GivePlayerCash(playerid, amount);
+			SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney - amount);
+			PlayerActionMessage(playerid, 15.0, "abre su malet�n y retira algo de su interior.");
+			
+	} else if(strcmp(command, "guardar", true) == 0) {
+		
+	    new briefCaseMoney = GetInvParam(playerid, validslot);
+	    if(amount <= 0 || amount > GetPlayerCash(playerid))
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inv�lida.");
+		if(amount + briefCaseMoney > MAX_DINERO_MALETIN)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "�Tanto dinero no entra en el malet�n!");
+
+	    GivePlayerCash(playerid, -amount);
+		SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney + amount);
+		PlayerActionMessage(playerid, 15.0, "abre su malet�n y guarda algo en su interior.");
+	}
+	return 1;
 }
-
-CMD:desecharmaletin(playerid, params[])
-{
-if(PlayerInfo[playerid][pBriefcaseObject] == 0) return SendClientMessage(playerid, COLOR_GREY, "No tenés un maletín en tu mano, compralo en algún 24-7");
-PlayerInfo[playerid][pBriefcaseCash] = 0;
-PlayerInfo[playerid][pBriefcaseObject] = 0;
-BorrarMaletinEx(playerid);
-SendClientMessage(playerid, -1, "Desechaste tu maletín.");
-SaveAccount(playerid);
-return 1;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
