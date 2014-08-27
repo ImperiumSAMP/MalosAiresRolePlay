@@ -13703,6 +13703,14 @@ CMD:cancelar(playerid,params[]) {
 				}
 			}
 		}
+	} else if(strcmp(text,"casa",true) == 0) {
+	   new 
+	       sellerid = HouseOffer[playerid];
+	   
+	   if(sellerid == INVALID_PLAYER_ID)
+            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
+	   KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));	
+	   CancelHouseTransfer(playerid,0);
 	}
 	return 1;
 }
@@ -15884,7 +15892,7 @@ CMD:exp10de(playerid, params[]) {
 
 //=======================SISTEMA DE BARRERAS PARA LOS ADMIN=====================
 
-#define MAX_ADMIN_OBJECTS       300
+#define MAX_ADMIN_OBJECTS       450
 new adminServerObjectsCant = 0;
 new adminServerObjects[MAX_ADMIN_OBJECTS];
 
