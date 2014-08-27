@@ -15595,7 +15595,7 @@ CMD:ao(playerid, params[]) {
 	if(sscanf(params, "s[256]", text)) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/a)ooc [mensaje]");
 	} else {
-	    if(PlayerInfo[playerid][pAdmin] < 4) {
+	    if(PlayerInfo[playerid][pAdmin] < 2) {
 			format(string, sizeof(string), "(( [Anuncio] Mod %s: %s ))", GetPlayerNameEx(playerid), text);
 		} else {
 		    format(string, sizeof(string), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
