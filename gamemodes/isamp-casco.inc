@@ -75,24 +75,24 @@ CMD:cas(playerid, params[])
 
 CMD:casco(playerid, params[])
 {
-    if(SearchInvForItem(playerid, 56) == -1 && SearchInvForItem(playerid, 57) == -1 &&
-	   SearchInvForItem(playerid, 58) == -1 && SearchInvForItem(playerid, 59) == -1 &&
-	   SearchInvForItem(playerid, 60) == -1)
-		return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes un casco!");
-    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    /*-------------*/
     new casco1 = SearchInvForItem(playerid, 56),
         casco2 = SearchInvForItem(playerid, 57),
 		casco3 = SearchInvForItem(playerid, 58),
 		casco4 = SearchInvForItem(playerid, 59),
 		casco5 = SearchInvForItem(playerid, 60),
 		item;
-	if(casco1 != -1) item = casco1;
-	else if (casco2 != -1) item = casco2;
-	else if (casco3 != -1) item = casco3;
-	else if (casco4 != -1) item = casco4;
-	else if (casco5 != -1) item = casco5;
+    if(casco1 == -1 && casco2 == -1 &&
+	   casco3 == -1 && casco4 == -1 &&
+	   casco5 == -1)
+		return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes un casco!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    /*-------------*/
+	if		(casco1 != -1) item = GetInvItem(playerid, casco1);
+	else if (casco2 != -1) item = GetInvItem(playerid, casco2);
+	else if (casco3 != -1) item = GetInvItem(playerid, casco3);
+	else if (casco4 != -1) item = GetInvItem(playerid, casco4);
+	else if (casco5 != -1) item = GetInvItem(playerid, casco5);
 
     if(HelmetB[playerid])
     
