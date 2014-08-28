@@ -161,6 +161,10 @@ CMD:inventario(playerid, params[]) {
          		PlayerActionMessage(playerid, 8.0, string);
 				if(GetInvItem(playerid, returnid) == 55)
 			    	DeleteBriefCaseForPlayer(playerid);
+                if( GetInvItem(playerid, returnid) == 56 || GetInvItem(playerid, returnid) == 57 ||
+					GetInvItem(playerid, returnid) == 58 || GetInvItem(playerid, returnid) == 59 ||
+					GetInvItem(playerid, returnid) == 60)
+			    	DeleteHelmetForPlayer(playerid);
 				SetInvItemAndParam(playerid, returnid, 0, 0);
 	        } else
 	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
@@ -253,6 +257,11 @@ CMD:inventario(playerid, params[]) {
 			SetInvItemAndParam(playerid, returnid, 0, 0);
 			if(itemid == 55)
 			    GiveBriefCasePlayerToPlayer(playerid, targetid);
+			if(itemid > 55 && itemid <=60)
+			{
+			    DeleteHelmetForPlayer(playerid);
+			    LoadHelmetForPlayer(targetid, itemid);
+			}
 		}
 	}
 	return 1;
