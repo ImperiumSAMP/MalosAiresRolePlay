@@ -153,21 +153,17 @@ CMD:inventario(playerid, params[]) {
 
 	    } else if(strcmp(text, "desechar", true) == 0) {
 
+			new itemid = GetInvItem(playerid, returnid), string[128];
+			
 	        if(PlayerInfo[playerid][pHealth] < 25.0)
 	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
-	        if(GetInvItem(playerid, returnid) != 0) {
-	        	new string[128];
-      			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(GetInvItem(playerid, returnid)));
-         		PlayerActionMessage(playerid, 8.0, string);
-				if(GetInvItem(playerid, returnid) == 55)
-			    	DeleteBriefCaseForPlayer(playerid);
-                if( GetInvItem(playerid, returnid) == 56 || GetInvItem(playerid, returnid) == 57 ||
-					GetInvItem(playerid, returnid) == 58 || GetInvItem(playerid, returnid) == 59 ||
-					GetInvItem(playerid, returnid) == 60)
-			    	DeleteHelmetForPlayer(playerid);
-				SetInvItemAndParam(playerid, returnid, 0, 0);
-	        } else
-	            SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+	        if(itemid == 0 || itemid == -1)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+      		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
+            PlayerActionMessage(playerid, 8.0, string);
+			SetInvItemAndParam(playerid, returnid, 0, 0);
+			if(GetItemType(itemid) == ITEM_OTHER) // Si el item a desechar no es un arma (es decir que puede ser o no que sea un item lógico visible)
+				DeleteVisibleItemForPlayer(playerid, itemid);
 
  		} else if(strcmp(text, "consumir", true) == 0) {
 
@@ -255,13 +251,8 @@ CMD:inventario(playerid, params[]) {
 			PlayerPlayerActionMessage(playerid, targetid, 15.0, string);
 			SetInvItemAndParam(targetid, targetslot, itemid, GetInvParam(playerid, returnid));
 			SetInvItemAndParam(playerid, returnid, 0, 0);
-			if(itemid == 55)
-			    GiveBriefCasePlayerToPlayer(playerid, targetid);
-			if(itemid > 55 && itemid <=60)
-			{
-			    DeleteHelmetForPlayer(playerid);
-			    LoadHelmetForPlayer(targetid, itemid);
-			}
+			if(GetItemType(itemid) == ITEM_OTHER)
+			    GiveVisibleItemPlayerToPlayer(playerid, targetid, itemid);
 		}
 	}
 	return 1;

@@ -12,6 +12,7 @@ new
 
 forward LoadHelmetForPlayer(playerid, itemid); // Carga el objeto visible del casco al jugador.
 forward DeleteHelmetForPlayer(playerid); // Borra el objeto visible del jugador.
+forward GiveHelmetPlayerToPlayer(playerid, targetid, itemid); // Le pasa el casco visible de un jugador al otro.
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
 stock DeleteHelmetForPlayer(playerid)
@@ -43,7 +44,14 @@ stock LoadHelmetForPlayer(playerid, itemid)
 	return 1;
 }
 
-stock MoveHelmetHeadToHand(playerid, itemid)
+stock GiveHelmetPlayerToPlayer(playerid, targetid, itemid)
+{
+	DeleteHelmetForPlayer(playerid);
+	MoveHelmetToHand(targetid, itemid);
+	return 1;
+}
+
+stock MoveHelmetToHand(playerid, itemid)
 {
     if(SearchInvForItem(playerid, itemid) != -1)
 	{
@@ -57,7 +65,7 @@ stock MoveHelmetHeadToHand(playerid, itemid)
 		    case 60: SetPlayerAttachedObject(playerid, 6, 18979, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
 	    }
 	    new string[64];
-	    format(string, sizeof(string), "se quita el %s y lo sostiene en su mano derecha.", GetItemName(itemid));
+	    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(itemid));
     	PlayerActionMessage(playerid, 15.0, string);
     	RightHand[playerid] = itemid; //a futuro PlayerInfo[playerid][RightHand]
     	HelmetB[playerid] = false;
@@ -81,22 +89,19 @@ CMD:casco(playerid, params[])
 		casco4 = SearchInvForItem(playerid, 59),
 		casco5 = SearchInvForItem(playerid, 60),
 		item;
-    if(casco1 == -1 && casco2 == -1 &&
-	   casco3 == -1 && casco4 == -1 &&
-	   casco5 == -1)
+    if(casco1 == -1 && casco2 == -1 && casco3 == -1 && casco4 == -1 && casco5 == -1)
 		return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes un casco!");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    /*-------------*/
-	if		(casco1 != -1) item = GetInvItem(playerid, casco1);
-	else if (casco2 != -1) item = GetInvItem(playerid, casco2);
-	else if (casco3 != -1) item = GetInvItem(playerid, casco3);
-	else if (casco4 != -1) item = GetInvItem(playerid, casco4);
-	else if (casco5 != -1) item = GetInvItem(playerid, casco5);
+
+	if (casco1 != -1) item = GetInvItem(playerid, casco1);
+		else if (casco2 != -1) item = GetInvItem(playerid, casco2);
+			else if (casco3 != -1) item = GetInvItem(playerid, casco3);
+				else if (casco4 != -1) item = GetInvItem(playerid, casco4);
+					else if (casco5 != -1) item = GetInvItem(playerid, casco5);
 
     if(HelmetB[playerid])
-    
-        MoveHelmetHeadToHand(playerid, item);
+        MoveHelmetToHand(playerid, item);
 	else
 		LoadHelmetForPlayer(playerid, item);
 	return 1;
