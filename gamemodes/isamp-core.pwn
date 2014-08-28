@@ -11159,7 +11159,7 @@ CMD:comprar(playerid, params[]) {
 		}
 		if(Business[business][bProducts] < 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
-		if(weapon < 1 || weapon > 10)
+		if(weapon < 1 || weapon > 15)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
         new item;
         switch(weapon)
