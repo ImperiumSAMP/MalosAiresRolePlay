@@ -245,7 +245,18 @@ CMD:inventario(playerid, params[]) {
 			new targetslot = SearchInvFreeSlot(targetid);
 			if(targetslot == -1)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "El inventario del sujeto se encuentra lleno.");
-
+			if(GetItemType(itemid) == ITEM_OTHER) // hacer un campo nuevo en items para saber si pueden ser stackeables (si puede tener mas de uno encima)
+			{
+			    if(itemid == ITEM_ID_CASCOCOMUN || itemid == ITEM_ID_CASCOMOTOCROSS || itemid == ITEM_ID_CASCOROJO ||
+			        itemid == ITEM_ID_CASCOBLANCO || itemid == ITEM_ID_CASCOROSA) // arreglar lo de la mano de juan(si ya tiene algo) y lo de comparar contra los 5 cascos (quse se pueda repetir)
+				{
+					if(SearchInvForItem(targetid, ITEM_ID_CASCOCOMUN) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOMOTOCROSS) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOROJO) != -1 ||
+						SearchInvForItem(targetid, ITEM_ID_CASCOBLANCO) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOROSA) != -1)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya posee ese item.");
+				} else
+				    if(SearchInvForItem(targetid, itemid) == -1)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya posee ese item.");
+			}
 			new string[128];
 			format(string, sizeof(string), "le entrega un/a %s a", GetItemName(itemid));
 			PlayerPlayerActionMessage(playerid, targetid, 15.0, string);

@@ -71,7 +71,7 @@ stock HelmetToHead(playerid, itemid)
 		    case 60: SetPlayerAttachedObject(playerid, 8, 18979, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
 	    }
 	    new string[124];
-	    format(string, sizeof(string), "se coloca el %s.", GetItemName(itemid));
+	    format(string, sizeof(string), "se coloca el %s en la cabeza.", GetItemName(itemid));
     	PlayerActionMessage(playerid, 15.0, string);
 	    EditAttachedObject(playerid, 8);
 	    RightHand[playerid] = -1;

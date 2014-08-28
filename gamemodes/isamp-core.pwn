@@ -10637,15 +10637,6 @@ CMD:abrir(playerid, params[]) {
 	return 1;
 }
 
-CMD:ultveh(playerid, params[]) {
-	new
-		string[128];
-
-	format(string, sizeof(string), "Ultimo vehículo: %d", LastVeh[playerid]);
-	SendClientMessage(playerid, COLOR_YELLOW2, string);
-	return 1;
-}
-
 CMD:ayuda(playerid,params[]) {
 
     SendClientMessage(playerid, COLOR_YELLOW, " ");
