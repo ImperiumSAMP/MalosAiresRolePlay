@@ -77,11 +77,11 @@ static const ServerItems[][ItemInfo] = {
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, true},
 /*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, true},
 /*55*/	{"Maletín", "Dinero", ITEM_OTHER, true},
-/*56*/  {"Casco Común", "Modelo", ITEM_OTHER, true}, //objectid 18645
-/*57*/  {"Casco de Motocross", "Modelo", ITEM_OTHER, true}, //objectid 18976
-/*58*/  {"Casco Rojo", "Modelo", ITEM_OTHER, true}, //objectid 18977
-/*59*/  {"Casco Blanco", "Modelo", ITEM_OTHER, true}, //objectid 18978
-/*60*/  {"Casco Rosa", "Modelo", ITEM_OTHER, true} //objectid 18979
+/*56*/  {"Casco Común", "Cantidad", ITEM_OTHER, true}, //objectid 18645
+/*57*/  {"Casco de Motocross", "Cantidad", ITEM_OTHER, true}, //objectid 18976
+/*58*/  {"Casco Rojo", "Cantidad", ITEM_OTHER, true}, //objectid 18977
+/*59*/  {"Casco Blanco", "Cantidad", ITEM_OTHER, true}, //objectid 18978
+/*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, true} //objectid 18979
 
 
 };

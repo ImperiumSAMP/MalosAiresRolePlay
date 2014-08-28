@@ -11206,6 +11206,7 @@ CMD:comprar(playerid, params[]) {
 			Business[business][bTill] += price;
 			Business[business][bProducts] --;
 			saveBusiness(business);
+			SetInvItemAndParam(playerid, validslot, item, 1);
 			LoadHelmetForPlayer(playerid, item);
 			HelmetB[playerid] = true;
           /*LABURAR ACA*/
