@@ -1236,7 +1236,7 @@ public ResetStats(playerid) {
 	SeatBelt[playerid] = false;
 	
 	/* Casco de moto */
-	HelmetB[playerid] = false;
+	HelmetOnHead[playerid] = false;
 	
 	/* SISTEMA DE MANO */
 	RightHand[playerid] = -1; //a futuro se debería cargar en la db
@@ -1782,6 +1782,7 @@ public OnPlayerSpawn(playerid) {
 	}
 	
 	LoadBriefCaseForPlayer(playerid);
+	LoadHelmetForPlayer(playerid, -1);
 
 	return 1;
 }
@@ -11126,8 +11127,9 @@ CMD:comprar(playerid, params[]) {
 		   			   SearchInvForItem(playerid, ITEM_ID_CASCOROJO) != -1 || SearchInvForItem(playerid, ITEM_ID_CASCOBLANCO) != -1 ||
 			  		   SearchInvForItem(playerid, ITEM_ID_CASCOROSA) != -1)
 		                return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tienes un casco!");
-					MoveHelmetToHand(playerid, itemid);
-					HelmetB[playerid] = true;
+          			SetInvItemAndParam(playerid, validslot, itemid, 1);
+					LoadHelmetForPlayer(playerid, itemid);
+					return 1;
 				}
 				SetInvItemAndParam(playerid, validslot, itemid, 1);
 			}

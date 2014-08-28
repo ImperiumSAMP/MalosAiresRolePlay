@@ -6,25 +6,60 @@
 //=============================SISTEMA DE CASCO=============================
 new
     //Casco de moto
-	bool:HelmetB[MAX_PLAYERS];
+	bool:HelmetOnHead[MAX_PLAYERS];
 
 //===============================FUNCIONES======================================
 
-forward LoadHelmetForPlayer(playerid, itemid); // Carga el objeto visible del casco al jugador.
+forward LoadHelmetForPlayer(playerid, itemid = -1); // Carga el objeto visible del casco a la mano del jugador. Se puede opcionalmente indicar cual es el casco pasandole la ID. Si no se sabe el casco se pasa -1.
 forward DeleteHelmetForPlayer(playerid); // Borra el objeto visible del jugador.
 forward GiveHelmetPlayerToPlayer(playerid, targetid, itemid); // Le pasa el casco visible de un jugador al otro.
+forward HelmetToHead(playerid, itemid); // Ubica lógica y visiblemente el casco en la cabeza del jugador (si tiene uno).
+forward HelmetToHand(playerid, itemid); // Ubica lógica y visiblemente el casco en la mano del jugador (si tiene uno)
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
+
 stock DeleteHelmetForPlayer(playerid)
 {
-	RemovePlayerAttachedObject(playerid, 8);
-	RemovePlayerAttachedObject(playerid, 6);
+	if(HelmetOnHead[playerid] == true)
+	{
+		RemovePlayerAttachedObject(playerid, 8);
+		HelmetOnHead[playerid] = false;
+	}
+	else
+ 		{
+ 		    RightHand[playerid] = -1;
+			RemovePlayerAttachedObject(playerid, 6);
+		}
 	return 1;
 }
 
-stock LoadHelmetForPlayer(playerid, itemid)
+stock LoadHelmetForPlayer(playerid, itemid = -1)
 {
-	if(SearchInvForItem(playerid, itemid) != -1)
+	if(itemid != -1)
+	{
+		if(SearchInvForItem(playerid, itemid) != -1)
+		    HelmetToHand(playerid, itemid);
+	} else
+	    {
+		    if(SearchInvForItem(playerid, ITEM_ID_CASCOCOMUN) != -1) HelmetToHand(playerid, ITEM_ID_CASCOCOMUN);
+				else if(SearchInvForItem(playerid, ITEM_ID_CASCOMOTOCROSS) != -1) HelmetToHand(playerid, ITEM_ID_CASCOMOTOCROSS);
+	  				else if(SearchInvForItem(playerid, ITEM_ID_CASCOROJO) != -1) HelmetToHand(playerid, ITEM_ID_CASCOROJO);
+					else if(SearchInvForItem(playerid, ITEM_ID_CASCOBLANCO) != -1) HelmetToHand(playerid, ITEM_ID_CASCOBLANCO);
+						else if(SearchInvForItem(playerid, ITEM_ID_CASCOROSA) != -1) HelmetToHand(playerid, ITEM_ID_CASCOROSA);
+		}
+	return 1;
+}
+
+stock GiveHelmetPlayerToPlayer(playerid, targetid, itemid)
+{
+	DeleteHelmetForPlayer(playerid);
+	HelmetToHand(targetid, itemid);
+	return 1;
+}
+
+stock HelmetToHead(playerid, itemid)
+{
+    if(SearchInvForItem(playerid, itemid) != -1 && RightHand[playerid] == itemid && HelmetOnHead[playerid] == false)
 	{
 	    DeleteHelmetForPlayer(playerid);
 		switch(itemid)
@@ -35,23 +70,17 @@ stock LoadHelmetForPlayer(playerid, itemid)
 		    case 59: SetPlayerAttachedObject(playerid, 8, 18978, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
 		    case 60: SetPlayerAttachedObject(playerid, 8, 18979, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
 	    }
-		new string[64];
+	    new string[124];
 	    format(string, sizeof(string), "se coloca el %s.", GetItemName(itemid));
     	PlayerActionMessage(playerid, 15.0, string);
 	    EditAttachedObject(playerid, 8);
-    	HelmetB[playerid] = true;
+	    RightHand[playerid] = -1;
+    	HelmetOnHead[playerid] = true;
 	}
 	return 1;
 }
 
-stock GiveHelmetPlayerToPlayer(playerid, targetid, itemid)
-{
-	DeleteHelmetForPlayer(playerid);
-	MoveHelmetToHand(targetid, itemid);
-	return 1;
-}
-
-stock MoveHelmetToHand(playerid, itemid)
+stock HelmetToHand(playerid, itemid)
 {
     if(SearchInvForItem(playerid, itemid) != -1)
 	{
@@ -64,11 +93,11 @@ stock MoveHelmetToHand(playerid, itemid)
 		    case 59: SetPlayerAttachedObject(playerid, 6, 18978, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
 		    case 60: SetPlayerAttachedObject(playerid, 6, 18979, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
 	    }
-	    new string[64];
+	    new string[124];
 	    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(itemid));
     	PlayerActionMessage(playerid, 15.0, string);
     	RightHand[playerid] = itemid; //a futuro PlayerInfo[playerid][RightHand]
-    	HelmetB[playerid] = false;
+    	HelmetOnHead[playerid] = false;
 	}
 	return 1;
 }
@@ -100,10 +129,10 @@ CMD:casco(playerid, params[])
 				else if (casco4 != -1) item = GetInvItem(playerid, casco4);
 					else if (casco5 != -1) item = GetInvItem(playerid, casco5);
 
-    if(HelmetB[playerid])
-        MoveHelmetToHand(playerid, item);
+    if(HelmetOnHead[playerid])
+        HelmetToHand(playerid, item);
 	else
-		LoadHelmetForPlayer(playerid, item);
+		HelmetToHead(playerid, item);
 	return 1;
 }
 

@@ -100,7 +100,6 @@ static const ServerItems[][ItemInfo] = {
 /*59*/  {"Casco Blanco", "Cantidad", ITEM_OTHER, 560, true}, //objectid 18978
 /*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, 700, true} //objectid 18979
 
-
 };
 
 //==============================FUNCIONES=======================================
@@ -109,7 +108,7 @@ forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto en
 forward GetItemType(itemid); // Devuelve el tipo del item.
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
-forward GetItemPrice(itemid); // Devuelve el precio del item.
+forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
 forward DeleteVisibleItemForPlayer(playerid, itemid); // Si el item es visible, lo borra para ese jugador.
 forward GiveVisibleItemPlayerToPlayer(playerid, targetid, itemid); // Si el item es visible, lo borra para el jugador X y lo crea para el jugador Y.
 
