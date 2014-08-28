@@ -63,7 +63,7 @@ static const ServerItems[][ItemInfo] = {
 /*39*/	{"Carga C4", "Cantidad", ITEM_WEAPON, false},
 /*40*/	{"Detonador", "Cantidad", ITEM_WEAPON, true},
 /*41*/	{"Aerosol", "Contenido", ITEM_WEAPON, true},
-/*42*/	{"Extinguidor", "Contenido", ITEM_WEAPON, false},
+/*42*/	{"Matafuegos", "Contenido", ITEM_WEAPON, false},
 /*43*/	{"Cámara fotográfica", "Fotos", ITEM_WEAPON, true},
 /*44*/	{"Visión nocturna", "Cantidad", ITEM_WEAPON, false},
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, false},
@@ -76,7 +76,13 @@ static const ServerItems[][ItemInfo] = {
 /*52*/	{"Sandwich", "Cantidad", ITEM_OTHER, true},
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, true},
 /*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, true},
-/*55*/	{"Maletín", "Dinero", ITEM_OTHER, true}
+/*55*/	{"Maletín", "Dinero", ITEM_OTHER, true},
+/*56*/  {"Casco Común", "Modelo", ITEM_OTHER, true}, //objectid 18645
+/*57*/  {"Casco de Motocross", "Modelo", ITEM_OTHER, true}, //objectid 18976
+/*58*/  {"Casco Rojo", "Modelo", ITEM_OTHER, true}, //objectid 18977
+/*59*/  {"Casco Blanco", "Modelo", ITEM_OTHER, true}, //objectid 18978
+/*60*/  {"Casco Rosa", "Modelo", ITEM_OTHER, true} //objectid 18979
+
 
 };
 

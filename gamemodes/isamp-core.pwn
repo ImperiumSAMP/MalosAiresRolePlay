@@ -48,6 +48,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
 #include "isamp-lojack.inc"             //Sistema de lojack
+#include "isamp-casco.inc"              //Cascos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -159,6 +160,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_ASPIRIN           35
 #define PRICE_WATERBOTTLE       40
 #define PRICE_MALETIN           500
+#define PRICE_HELMET1           650
+#define PRICE_HELMET2           1150
+#define PRICE_HELMET3           560
+#define PRICE_HELMET4           560
+#define PRICE_HELMET5           700
 
 #define HEALTH_ASPIRIN          10
 
@@ -332,6 +338,9 @@ new
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
 	
+	//Cinturón de seguridad
+	bool:SeatBelt[MAX_PLAYERS],
+
 	//Venta de casas
 	bool:OfferingHouse[MAX_PLAYERS],
 	HouseOfferPrice[MAX_PLAYERS],
@@ -1288,6 +1297,15 @@ public ResetStats(playerid) {
 	PlayerInfo[playerid][pAdictionPercent] = 0.0;
 	PlayerInfo[playerid][pAdictionAbstinence] = 999999999;
 	
+	/* Cinturón de Seguridad */
+	SeatBelt[playerid] = false;
+	
+	/* Casco de moto */
+	HelmetB[playerid] = false;
+	
+	/* SISTEMA DE MANO */
+	RightHand[playerid] = -1; //a futuro se debería cargar en la db
+	
 	resetTazer(playerid);
 
 	MechanicCallTime[playerid] = 0;
@@ -1829,7 +1847,7 @@ public OnPlayerSpawn(playerid) {
 	}
 	
 	LoadBriefCaseForPlayer(playerid);
-	
+
 	return 1;
 }
 
@@ -4739,6 +4757,15 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	if(playerid == INVALID_PLAYER_ID) {
 	    return 1;
 	}
+	if(newstate == PLAYER_STATE_ONFOOT)
+	{
+	    if(SeatBelt[playerid])
+	    {
+	        PlayerActionMessage(playerid, 15.0, "se desabrocha el cinturón de seguridad.");
+	        SeatBelt[playerid] = false;
+		}
+ 	}
+	        
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_PASSENGER) {
 	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI) {
 			if(TransportCost[TransportDriver[playerid]] > 0 && TransportDriver[playerid] < 999) {
@@ -10687,7 +10714,7 @@ CMD:ayuda(playerid,params[]) {
 
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins (/vercint)uron");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle /animhablar");
@@ -11124,34 +11151,67 @@ CMD:comprar(playerid, params[]) {
 			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 3) Baston - $%d 			8) Consolador doble punta - $%d", itemPrice[15], itemPrice[10]);
 			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 4) Palo de golf - $%d		9) Vibrador - $%d", itemPrice[2], itemPrice[12]);
 			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 5) Bate - $%d				10) Vibrador plateado - $%d", itemPrice[5], itemPrice[13]);
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "------------------------------------------------------");
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "11) Casco Común - $%d       12) Casco de Motocross - $%d", PRICE_HELMET1, PRICE_HELMET2);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "13) Casco Rojo - $%d       	14) Casco Blanco - $%d", PRICE_HELMET3, PRICE_HELMET4);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "15) Casco Rosa - $%d", PRICE_HELMET5);
 			return 1;
 		}
 		if(Business[business][bProducts] < 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
 		if(weapon < 1 || weapon > 10)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+        new item;
         switch(weapon)
-		{
-			case 1: realWeapon = 1;
-			case 2: realWeapon = 6;
-			case 3: realWeapon = 15;
-			case 4: realWeapon = 2;
-			case 5: realWeapon = 5;
-			case 6: realWeapon = 7;
-			case 7: realWeapon = 11;
-			case 8: realWeapon = 10;
-			case 9: realWeapon = 12;
-			case 10: realWeapon = 13;
-	    }
-	    if(GetPlayerCash(playerid) < itemPrice[realWeapon])
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
-		GivePlayerCash(playerid, -itemPrice[realWeapon]);
-		GivePlayerWeapon(playerid, realWeapon, 1);
-		Business[business][bTill] += itemPrice[realWeapon];
-		Business[business][bProducts] --;
-		saveBusiness(business);
-		format(content, sizeof(content), "le paga al vendedor y compra un/a %s por un total de $%d.", GetItemName(realWeapon), itemPrice[realWeapon]);
-		PlayerActionMessage(playerid, 15.0, content);
+  		{
+			case 1: item = 1;
+			case 2: item = 6;
+			case 3: item = 15;
+			case 4: item = 2;
+			case 5: item = 5;
+			case 6: item = 7;
+			case 7: item = 11;
+			case 8: item = 10;
+			case 9: item = 12;
+			case 10: item = 13;
+			case 11: item = 56;
+   			case 12: item = 57;
+   			case 13: item = 58;
+   			case 14: item = 59;
+   			case 15: item = 60;
+     	}
+     	if(GetItemType(item) == ITEM_WEAPON)
+     	{
+ 			if(GetPlayerCash(playerid) < itemPrice[item])
+          		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+		   	GivePlayerCash(playerid, -itemPrice[item]);
+		   	GivePlayerWeapon(playerid, item, 1);
+			Business[business][bTill] += itemPrice[item];
+			Business[business][bProducts] --;
+			saveBusiness(business);
+	  	} else
+  		if(GetItemType(item) == ITEM_OTHER)
+     	{
+			new price /*= GetItemBasePrice(item)*/,
+				validslot = SearchInvFreeSlot(playerid);
+			if(GetPlayerCash(playerid) < price)
+          		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+            if(validslot == -1)
+            	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu inventario se encuentra lleno!");
+            if(SearchInvForItem(playerid, 56) != -1 || SearchInvForItem(playerid, 57) != -1 ||
+   			   SearchInvForItem(playerid, 58) != -1 || SearchInvForItem(playerid, 59) != -1 ||
+	  		   SearchInvForItem(playerid, 60) != -1)
+                return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tenés un casco!");
+            GivePlayerCash(playerid, -price);
+			Business[business][bTill] += price;
+			Business[business][bProducts] --;
+			saveBusiness(business);
+			LoadHelmetForPlayer(playerid, item);
+			HelmetB[playerid] = true;
+          /*LABURAR ACA*/
+		}
+ 		format(content, sizeof(content), "le paga al vendedor y compra un/a %s.", GetItemName(item));
+	  	PlayerActionMessage(playerid, 15.0, content);
 
 	} else if(business == 0) {
 		if(PlayerToPoint(4.0, playerid, 2333.2856, -1948.3102, 13.5783)) {
@@ -14971,6 +15031,62 @@ CMD:emisoraoff(playerid, params[])
 	vehicleRedio[vehicleid] = 0;
 	return 1;
 }
+
+//==================================CINTURON====================================
+CMD:cin(playerid, params[])
+{
+	cmd_cinturon(playerid, params);
+	return 1;
+}
+
+CMD:cinturon(playerid, params[])
+{
+	new vehicleid = GetPlayerVehicleID(playerid),
+		vType = GetVehicleType(vehicleid);
+	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY && vType != VTYPE_MONSTER))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
+	if(SeatBelt[playerid])
+	{
+		PlayerActionMessage(playerid, 15.0, "se desabrocha el cinturón de seguridad.");
+	    SeatBelt[playerid] = false;
+	}
+	else
+	{
+	    PlayerActionMessage(playerid, 15.0, "se abrocha el cinturón de seguridad.");
+	    SeatBelt[playerid] = true;
+	}
+	return 1;
+}
+
+CMD:vercint(playerid,params[])
+{
+	cmd_vercinturon(playerid, params);
+	return 1;
+}
+
+CMD:vercinturon(playerid, params[])
+{
+	new targetid;
+	
+	if(sscanf(params, "u", targetid))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercint(uron) [id/ParteDelNombre]");
+	if(targetid == INVALID_PLAYER_ID)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(!ProxDetectorS(5.0, playerid, targetid))
+  	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
+    new vehicleid = GetPlayerVehicleID(targetid),
+		vType = GetVehicleType(vehicleid);
+	if(!IsPlayerInAnyVehicle(targetid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY && vType != VTYPE_MONSTER))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El jugador no esta en un vehiculo / el vehículo no posee cinturón!");
+	/*--------------*/
+	if(SeatBelt[targetid])
+		SendFMessage(playerid, COLOR_WHITE, "El cinturón de %s se encuentra abrochado.", GetPlayerNameEx(targetid));
+	else
+	    SendFMessage(playerid, COLOR_WHITE, "El cinturón de %s se encuentra desabrochado.", GetPlayerNameEx(targetid));
+	return 1;
+}
+
+
 
 //=============================COMANDOS CTR-MAN=================================
 
