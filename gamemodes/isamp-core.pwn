@@ -1777,6 +1777,7 @@ public OnPlayerSpawn(playerid) {
 	}
 	
 	LoadHandItem(playerid);
+	LoadVisibleItemsForPlayer(playerid);
 
 	return 1;
 }
@@ -7962,14 +7963,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				PlayerTextDrawHide(playerid, RegTDAge[playerid]);
 				PlayerTextDrawHide(playerid, RegTDOrigin[playerid]);
 				PlayerTextDrawHide(playerid, RegTDArrow[playerid]);
-
 				PlayerInfo[playerid][pRegStep] = 0;
-
-				/*PlayerInfo[playerid][pA] = 358.4098;
-				PlayerInfo[playerid][pX] = 1481.2329;
-				PlayerInfo[playerid][pY] = -1751.8094;
-				PlayerInfo[playerid][pZ] = 15.4453;*/
-
 				PlayerInfo[playerid][pA] = 176.6281;
 				PlayerInfo[playerid][pX] = 1685.7615;
 				PlayerInfo[playerid][pY] = -2241.1375;

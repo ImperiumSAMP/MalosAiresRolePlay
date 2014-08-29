@@ -106,7 +106,7 @@ CMD:casco(playerid, params[])
 	} else
 	    {
 	        if(handitem != 0)
-	            return SendClientMessage (playerid, COLOR_YELLOW2, "No puedes sacarte el casco, ya que tienes algo en tus manos.");
+	            return SendClientMessage (playerid, COLOR_YELLOW2, "No puedes sacarte el casco ya que tienes algo en tus manos.");
 
 			new invitem, invparam, invslot;
 			if(casco1 != -1) { invitem = ITEM_ID_CASCOCOMUN; invslot = casco1; }

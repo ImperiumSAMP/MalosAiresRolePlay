@@ -153,7 +153,7 @@ CMD:inventario(playerid, params[]) {
 
     if(sscanf(params, "s[128]I(-1)I(-1)", text, returnid, targetid)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot] - guardar [slot, opcional] - desechar [slot] - consumir [slot] - dar [slot] [ID/Jugador]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot] - guardar [slot, opcional] - desechar [slot] - consumir [slot]");
 		PrintInvForPlayer(playerid, playerid);
     } else {
 		if(strcmp(text, "tomar", true) == 0) {
@@ -237,38 +237,6 @@ CMD:inventario(playerid, params[]) {
 			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
 			SetInvItemAndParam(playerid, validslot, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
 			RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
-			
-	    } else if(strcmp(text, "dar", true) == 0) {
-	    
-			if(targetid == -1 || returnid == -1)
-                return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /inv dar [slot] [ID/Jugador]");
-           	if(PlayerInfo[playerid][pLevel] < 3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-	        if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes dar un item agonizando.");
-  			if(targetid == INVALID_PLAYER_ID || targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
-   			if(PlayerInfo[targetid][pLevel] < 3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡El usuario debe ser al menos nivel 3 para utilizar este comando!");
-			if(returnid < 0 || returnid >= INV_MAX_SLOTS)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-			new itemid = GetInvItem(playerid, returnid);
-  			if(itemid == 0)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en ese slot.");
-			new targetslot = SearchInvFreeSlot(targetid);
-			if(targetslot == -1)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "El inventario del sujeto se encuentra lleno.");
-
-			new string[128];
-			format(string, sizeof(string), "le entrega un/a %s a", GetItemName(itemid));
-			PlayerPlayerActionMessage(playerid, targetid, 15.0, string);
-			SetInvItemAndParam(targetid, targetslot, itemid, GetInvParam(playerid, returnid));
-			SetInvItemAndParam(playerid, returnid, 0, 0);
-			if(GetItemType(itemid) == ITEM_OTHER)
-			{
-			    DeleteItemForPlayer(playerid, itemid);
-			    GiveItemHandToHand(playerid, targetid, itemid);
-			}
 		}
 	}
 	return 1;
