@@ -13662,7 +13662,7 @@ CMD:cancelar(playerid,params[]) {
 	       sellerid = BusinessOffer[playerid];
 	   
 	   if(sellerid == INVALID_PLAYER_ID)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
+            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo un negocio.");
 	   KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));	
 	   CancelBusinessTransfer(playerid,0);
 	}
