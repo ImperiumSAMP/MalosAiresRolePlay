@@ -86,7 +86,3 @@ stock getPlayerMysqlId(playerid){
 stock isPlayerJailed(playerid){
 	return PlayerInfo[playerid][pJailed];
 }
-
-new
-	RightHand[MAX_PLAYERS];
-	

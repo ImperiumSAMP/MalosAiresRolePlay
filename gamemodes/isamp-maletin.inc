@@ -11,30 +11,22 @@
 
 //===============================FUNCIONES======================================
 
-forward LoadBreifCaseForPlayer(playerid); // Carga el objeto visible del maletin al jugador.
-forward DeleteBriefCaseForPlayer(playerid); // Borra el objeto visible del jugador.
-forward GiveBriefCasePlayerToPlayer(playerid, targetid); // Pasa el objeto visible de un jugador a otro.
+forward BriefCaseToHand(playerid, targetid); // Crea el objeto visible en la mano del jugador.
+forward GiveBriefCaseHandToHand(playerid, targetid); // Borra el objeto visible de un jugador y se lo asigna a otro.
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
 
-stock LoadBriefCaseForPlayer(playerid)
+stock BriefCaseToHand(playerid)
 {
-	if(SearchInvForItem(playerid, 55) != -1)
-	    SetPlayerAttachedObject(playerid, 9, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
-	return 1;
-}
-
-stock DeleteBriefCaseForPlayer(playerid)
-{
-	RemovePlayerAttachedObject(playerid, 9);
-	return 1;
-}
-
-stock GiveBriefCasePlayerToPlayer(playerid, targetid)
-{
-    SetPlayerAttachedObject(targetid, 9, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
-    RemovePlayerAttachedObject(playerid, 9);
+    SetPlayerAttachedObject(playerid, 6, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
     return 1;
+}
+
+stock GiveBriefCaseHandToHand(playerid, targetid)
+{
+	RemovePlayerAttachedObject(playerid, 6);
+	SetPlayerAttachedObject(targetid, 6, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
+	return 1;
 }
 
 //================================COMANDOS======================================
@@ -44,10 +36,10 @@ CMD:maletin(playerid, params[])
 	new
 	    command[40],
 	    amount,
-	    validslot = SearchInvForItem(playerid, 55);
+	    briefCaseMoney = GetHandParam(playerid);
 
-	if(validslot == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de un maletín en tu inventario.");
+	if(GetHandItem(playerid) != ITEM_ID_MALETIN)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de un maletín en tus manos.");
 		
 	if(sscanf(params, "s[40]i", command, amount))
 	{
@@ -56,25 +48,23 @@ CMD:maletin(playerid, params[])
 
 	} else if(strcmp(command, "retirar", true) == 0) {
 		
-		    new briefCaseMoney = GetInvParam(playerid, validslot);
 		    if(amount <= 0 || amount > briefCaseMoney)
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inválida.");
 		        
 		    GivePlayerCash(playerid, amount);
-			SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney - amount);
+			SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney - amount);
 			PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
 			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 			
 	} else if(strcmp(command, "guardar", true) == 0) {
 		
-	    new briefCaseMoney = GetInvParam(playerid, validslot);
 	    if(amount <= 0 || amount > GetPlayerCash(playerid))
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inválida.");
 		if(amount + briefCaseMoney > MAX_DINERO_MALETIN)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tanto dinero no entra en el maletín!");
 
 	    GivePlayerCash(playerid, -amount);
-		SetInvItemAndParam(playerid, validslot, 55, briefCaseMoney + amount);
+		SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney + amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y guarda algo en su interior.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	}

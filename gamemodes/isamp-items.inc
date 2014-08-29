@@ -109,8 +109,10 @@ forward GetItemType(itemid); // Devuelve el tipo del item.
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
-forward DeleteVisibleItemForPlayer(playerid, itemid); // Si el item es visible, lo borra para ese jugador.
-forward GiveVisibleItemPlayerToPlayer(playerid, targetid, itemid); // Si el item es visible, lo borra para el jugador X y lo crea para el jugador Y.
+forward GiveItemHandToHand(playerid, targetid, itemid); // Si el item es visible, lo borra de la mano del jugador X y lo crea para la mano del jugador Y.
+forward LoadHandItem(playerid); // Crea el objeto visible que el usuario tenga en el modelo logico de la mano.
+forward DeleteItemFromPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
+forward DeleteItemFromHand(playerid); // Borra visualmente el objeto que tenga en la mano (por default index 6)
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -143,30 +145,51 @@ stock GetItemPrice(itemid)
 	return ServerItems[itemid][BasePrice];
 }
 
-stock DeleteVisibleItemForPlayer(playerid, itemid)
+stock DeleteItemForPlayer(playerid, itemid)
 {
-	switch(itemid)
-	{
-	    case ITEM_ID_CASCOCOMUN: DeleteHelmetForPlayer(playerid);
-	    case ITEM_ID_CASCOMOTOCROSS: DeleteHelmetForPlayer(playerid);
-	    case ITEM_ID_CASCOROJO: DeleteHelmetForPlayer(playerid);
-	    case ITEM_ID_CASCOBLANCO: DeleteHelmetForPlayer(playerid);
-	    case ITEM_ID_CASCOROSA: DeleteHelmetForPlayer(playerid);
-	    case ITEM_ID_MALETIN: DeleteBriefCaseForPlayer(playerid);
+    switch(itemid)
+    {
+		case ITEM_ID_CASCOCOMUN: DeleteItemFromHead(playerid);
+		case ITEM_ID_CASCOMOTOCROSS: DeleteItemFromHead(playerid);
+		case ITEM_ID_CASCOROJO: DeleteItemFromHead(playerid);
+		case ITEM_ID_CASCOBLANCO: DeleteItemFromHead(playerid);
+		case ITEM_ID_CASCOROSA: DeleteItemFromHead(playerid);
+		default: return 1;
 	}
 	return 1;
 }
 
-stock GiveVisibleItemPlayerToPlayer(playerid, targetid, itemid)
+stock GiveItemHandToHand(playerid, targetid, itemid)
 {
 	switch(itemid)
 	{
-		case ITEM_ID_CASCOCOMUN: GiveHelmetPlayerToPlayer(playerid, targetid, ITEM_ID_CASCOCOMUN);
-		case ITEM_ID_CASCOMOTOCROSS: GiveHelmetPlayerToPlayer(playerid, targetid, ITEM_ID_CASCOMOTOCROSS);
-		case ITEM_ID_CASCOROJO: GiveHelmetPlayerToPlayer(playerid, targetid, ITEM_ID_CASCOROJO);
-		case ITEM_ID_CASCOBLANCO: GiveHelmetPlayerToPlayer(playerid, targetid, ITEM_ID_CASCOBLANCO);
-		case ITEM_ID_CASCOROSA: GiveHelmetPlayerToPlayer(playerid, targetid, ITEM_ID_CASCOROSA);
-		case ITEM_ID_MALETIN: GiveBriefCasePlayerToPlayer(playerid, targetid);
+		case ITEM_ID_CASCOCOMUN: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOCOMUN);
+		case ITEM_ID_CASCOMOTOCROSS: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOMOTOCROSS);
+		case ITEM_ID_CASCOROJO: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOROJO);
+		case ITEM_ID_CASCOBLANCO: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOBLANCO);
+		case ITEM_ID_CASCOROSA: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOROSA);
+		case ITEM_ID_MALETIN: GiveBriefCaseHandToHand(playerid, targetid);
 	}
+	return 1;
+}
+
+stock LoadHandItem(playerid)
+{
+	switch(GetHandItem(playerid))
+	{
+		case ITEM_ID_CASCOCOMUN: HelmetToHand(playerid, ITEM_ID_CASCOCOMUN);
+		case ITEM_ID_CASCOMOTOCROSS: HelmetToHand(playerid, ITEM_ID_CASCOMOTOCROSS);
+		case ITEM_ID_CASCOROJO: HelmetToHand(playerid, ITEM_ID_CASCOROJO);
+		case ITEM_ID_CASCOBLANCO: HelmetToHand(playerid, ITEM_ID_CASCOBLANCO);
+		case ITEM_ID_CASCOROSA: HelmetToHand(playerid, ITEM_ID_CASCOROSA);
+		case ITEM_ID_MALETIN: BriefCaseToHand(playerid, ITEM_ID_MALETIN);
+	}
+	return 1;
+}
+
+
+stock DeleteItemFromHand(playerid)
+{
+	RemovePlayerAttachedObject(playerid, 6);
 	return 1;
 }

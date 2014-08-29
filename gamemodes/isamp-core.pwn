@@ -25,6 +25,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-admin.inc" 				//Sistema de admines
 #include "isamp-items.inc" 				//Sistema de items
 #include "isamp-inventory.inc" 			//Sistema de inventario y maletero
+#include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-factions.inc" 			//Sistema de facciones
@@ -48,7 +49,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
 #include "isamp-lojack.inc"             //Sistema de lojack
-#include "isamp-casco.inc"              //Cascos
+#include "isamp-casco.inc"              //Sistema de cascos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -1235,12 +1236,6 @@ public ResetStats(playerid) {
 	/* Cinturón de Seguridad */
 	SeatBelt[playerid] = false;
 	
-	/* Casco de moto */
-	HelmetOnHead[playerid] = false;
-	
-	/* SISTEMA DE MANO */
-	RightHand[playerid] = -1; //a futuro se debería cargar en la db
-	
 	resetTazer(playerid);
 
 	MechanicCallTime[playerid] = 0;
@@ -1781,8 +1776,7 @@ public OnPlayerSpawn(playerid) {
 		}
 	}
 	
-	LoadBriefCaseForPlayer(playerid);
-	LoadHelmetForPlayer(playerid, -1);
+	LoadHandItem(playerid);
 
 	return 1;
 }
@@ -3266,9 +3260,10 @@ public OnPlayerDataLoad(playerid) {
 
         gPlayerLogged[playerid] = 1;
 
-        loadThiefJobData(playerid,PlayerInfo[playerid][pID]); //Info del job de ladrón
-		loadPlayerCarKeys(playerid); //Llavero del usuario
+        loadThiefJobData(playerid,PlayerInfo[playerid][pID]); // Info del job de ladrón
+		loadPlayerCarKeys(playerid); // Llavero del usuario
 		LoadInvInfo(playerid); // Info de su inventario
+		LoadHandInfo(playerid); // Info de lo que tiene en mano
 		
        	CreatePlayerBasicNeeds(playerid);
        	
@@ -7029,27 +7024,6 @@ stock IsAtDealership(playerid) {
     return 0;
 }
 
-stock IsAtHardware(playerid) {
-    if(PlayerToPoint(3.0, playerid, 1164.9186, -1470.5299, 15.7918)) {
-        return 1;
-    }
-    return 0;
-}
-
-stock IsAtSportShop(playerid) {
-    if(PlayerToPoint(3.0, playerid, 1158.2301, -1451.9669, 15.7969)) {
-        return 1;
-    }
-    return 0;
-}
-
-stock IsAtSexShop(playerid) {
-    if(PlayerToPoint(3.0, playerid, 1214.5698, -13.3521, 1000.9219)) {
-        return 1;
-    }
-    return 0;
-}
-
 stock IsVehicleParkedAtDealership(vehicleid) {
     if (ParkedVehicleToPoint(35.0, vehicleid, 2128.0864, -1135.3912, 25.5855) ||
 		ParkedVehicleToPoint(50.0, vehicleid, 537.3366, -1293.2140, 17.2422) ||
@@ -8629,7 +8603,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 53 && GetInvParam(playerid, i) < 4))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_ALFAJOR && GetInvParam(playerid, i) < 4))
 							{
 								validslot = i;
 								break;
@@ -8638,9 +8612,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
 		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-		    			    SetInvItemAndParam(playerid, validslot, 53, 1);
+		    			    SetInvItemAndParam(playerid, validslot, ITEM_ID_ALFAJOR, 1);
 						else
-						    SetInvItemAndParam(playerid, validslot, 53, GetInvParam(playerid, validslot) + 1);
+						    SetInvItemAndParam(playerid, validslot, ITEM_ID_ALFAJOR, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_ALFAJOR));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un alfajor y se lo guarda.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo has guardado en tu inventario!", GetItemPrice(ITEM_ID_ALFAJOR));
@@ -8720,7 +8694,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						}
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-						SetInvItemAndParam(playerid, validslot, 48, 0);
+						SetInvItemAndParam(playerid, validslot, ITEM_ID_BIDON, 0);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_BIDON));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", GetItemPrice(ITEM_ID_BIDON));
@@ -8735,7 +8709,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CAMARA)*35);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cámara fotográfica.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado una cámara fotográfica por $%d.", GetItemPrice(ITEM_ID_CAMARA)*35);
-						GivePlayerWeapon(playerid, 43, 35);
+						GivePlayerWeapon(playerid, ITEM_ID_CAMARA, 35);
  						Business[business][bTill] += GetItemPrice(ITEM_ID_CAMARA)*35;
         				Business[business][bProducts]--;
 				        saveBusiness(business);
@@ -8747,7 +8721,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 52 && GetInvParam(playerid, i) < 2))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_SANDWICH && GetInvParam(playerid, i) < 2))
 							{
 								validslot = i;
 								break;
@@ -8756,9 +8730,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
 		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-		    				SetInvItemAndParam(playerid, validslot, 52, 1);
+		    				SetInvItemAndParam(playerid, validslot, ITEM_ID_SANDWICH, 1);
 						else
-						    SetInvItemAndParam(playerid, validslot, 52, GetInvParam(playerid, validslot) + 1);
+						    SetInvItemAndParam(playerid, validslot, ITEM_ID_SANDWICH, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un sandwich y se lo guarda.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Se ha guardado en tu inventario!", GetItemPrice(ITEM_ID_SANDWICH));
@@ -8773,7 +8747,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						new validslot = -1;
 						for(new i = 0; i < INV_MAX_SLOTS; i++)
 						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == 54 && GetInvParam(playerid, i) < 2))
+					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_AGUAMINERAL && GetInvParam(playerid, i) < 2))
 							{
 								validslot = i;
 								break;
@@ -8782,9 +8756,9 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(validslot < 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
 		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-							SetInvItemAndParam(playerid, validslot, 54, 1);
+							SetInvItemAndParam(playerid, validslot, ITEM_ID_AGUAMINERAL, 1);
 						else
-						    SetInvItemAndParam(playerid, validslot, 54, GetInvParam(playerid, validslot) + 1);
+						    SetInvItemAndParam(playerid, validslot, ITEM_ID_AGUAMINERAL, GetInvParam(playerid, validslot) + 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_AGUAMINERAL));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. Se ha guardado en tu inventario!", GetItemPrice(ITEM_ID_AGUAMINERAL));
@@ -8796,14 +8770,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MALETIN))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						if(SearchInvForItem(playerid, 55) != -1)
-                            return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tenés un maletín!");
-						new validslot = SearchInvFreeSlot(playerid);
-						if(validslot == -1)
-						    return SendClientMessage (playerid, COLOR_LIGHTBLUE, "No tienes espacio en el inventario.");
-
-						SetInvItemAndParam(playerid, validslot, 55, 0);
-						LoadBriefCaseForPlayer(playerid);
+					    if(GetHandItem(playerid) != 0)
+					        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
+						SetHandItemAndParam(playerid, ITEM_ID_MALETIN, 0);
+						LoadHandItem(playerid);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d!", GetItemPrice(ITEM_ID_MALETIN));
@@ -11100,30 +11070,20 @@ CMD:comprar(playerid, params[]) {
      	itemprice = GetItemPrice(itemid);
      	if(GetPlayerCash(playerid) < itemprice)
           		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
-		if(GetItemType(itemid) == ITEM_WEAPON)
-     	{
-		   	GivePlayerWeapon(playerid, itemid, 1);
-		} else
-		  	if(GetItemType(itemid) == ITEM_OTHER)
+		switch(GetItemType(itemid))
+		{
+		    case ITEM_WEAPON:
+		    {
+		        GivePlayerWeapon(playerid, itemid, 1);
+	  		}
+			case ITEM_OTHER:
 			{
-				new validslot = SearchInvFreeSlot(playerid);
-
-	            if(validslot == -1)
-	            	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu inventario se encuentra lleno!");
-				// Esta linea por ahora no tiene sentido ya que el unico item vendido es el casco (que no sea arma). Para evitarla (junto con la de mas abajo), generalizar comparaciones a un solo casco (por ende al mismo itemid), no a los cinco.
-				if(itemid == ITEM_ID_CASCOCOMUN || itemid == ITEM_ID_CASCOMOTOCROSS || itemid == ITEM_ID_CASCOROJO ||
-				    itemid == ITEM_ID_CASCOBLANCO || itemid == ITEM_ID_CASCOROSA)
-				{
-		            if(SearchInvForItem(playerid, ITEM_ID_CASCOCOMUN) != -1 || SearchInvForItem(playerid, ITEM_ID_CASCOMOTOCROSS) != -1 ||
-		   			   SearchInvForItem(playerid, ITEM_ID_CASCOROJO) != -1 || SearchInvForItem(playerid, ITEM_ID_CASCOBLANCO) != -1 ||
-			  		   SearchInvForItem(playerid, ITEM_ID_CASCOROSA) != -1)
-		                return SendClientMessage (playerid, COLOR_LIGHTBLUE, "¡Ya tienes un casco!");
-          			SetInvItemAndParam(playerid, validslot, itemid, 1);
-					LoadHelmetForPlayer(playerid, itemid);
-					return 1;
-				}
-				SetInvItemAndParam(playerid, validslot, itemid, 1);
+			    if(GetHandItem(playerid) != 0)
+			        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
+				SetHandItemAndParam(playerid, itemid, 1);
+				LoadHandItem(playerid);
 			}
+		}
         GivePlayerCash(playerid, -itemprice);
         Business[business][bTill] += itemprice;
         Business[business][bProducts] --;
@@ -11282,48 +11242,6 @@ CMD:comprar(playerid, params[]) {
 		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
 			} else
 				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
-		} else if(business == 0 && IsAtHardware(playerid)) {
-			    if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Manopla. - $%d          3 - Baston. - $%d", GetItemPrice(1), GetItemPrice(15));
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Pala. - $%d", GetItemPrice(6));
-				} else if(weapon >= 1 && weapon <= 3) {
-					    switch(weapon) {
-							case 1: realWeapon = 1;
-							case 2: realWeapon = 6;
-							case 3: realWeapon = 15;
-					    }
-				        if(GetPlayerCash(playerid) >= GetItemPrice(realWeapon)) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	GivePlayerCash(playerid, -GetItemPrice(realWeapon));
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", GetItemName(realWeapon), GetItemPrice(realWeapon));
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", GetItemPrice(realWeapon));
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
-				}
-		} else if(business == 0 && IsAtSportShop(playerid)) {
-			    if(sscanf(params, "d", weapon)) {
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Palo de golf. - $%d          3 - Palo de pool. - $%d", GetItemPrice(2), GetItemPrice(7));
-					SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Bate. - $%d", GetItemPrice(5));
-				} else if(weapon >= 1 && weapon <= 3) {
-					    switch(weapon) {
-							case 1: realWeapon = 2;
-							case 2: realWeapon = 5;
-							case 3: realWeapon = 7;
-					    }
-				        if(GetPlayerCash(playerid) >= GetItemPrice(realWeapon)) {
-							GivePlayerWeapon(playerid, realWeapon, 1);
-					    	GivePlayerCash(playerid, -GetItemPrice(realWeapon));
-					    	SendFMessage(playerid, COLOR_WHITE, "Has comprado un/a %s por un total de $%d.", GetItemName(realWeapon), GetItemPrice(realWeapon));
-						} else {
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", GetItemPrice(realWeapon));
-						}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 3.");
-				}
 		}
 	}
 	return 1;
@@ -15158,11 +15076,8 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 {
     if(response)
     {
-        if(isUsingMaskInSlot[playerid] == index)
-        {
-        	RemovePlayerAttachedObject(playerid, index);
-        	SetPlayerAttachedObject(playerid, index, PlayerInfo[playerid][pMask], boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
-		}
+   		RemovePlayerAttachedObject(playerid, index);
+   		SetPlayerAttachedObject(playerid, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
 	}
 	return 1;
 }

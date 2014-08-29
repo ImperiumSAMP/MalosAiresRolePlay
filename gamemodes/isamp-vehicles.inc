@@ -162,10 +162,12 @@ stock ResetTrunk(trunkid)
 {
 	for(new i = 0; i < MAX_TRUNK_SLOTS; i++)
 	{
-		TrunkInfo[trunkid][i][Amount] = 0;
-		TrunkInfo[trunkid][i][Item] = 0;
-	    if(TrunkInfo[trunkid][i][Item] > 0)
+		if(TrunkInfo[trunkid][i][Item] > 0)
+		{
+			TrunkInfo[trunkid][i][Amount] = 0;
+			TrunkInfo[trunkid][i][Item] = 0;
 		    SaveSlotInfo(SLOT_TYPE_TRUNK, trunkid, i);
+		}
 	}
 	return 1;
 }
@@ -192,8 +194,7 @@ stock SearchTrunkFreeSlot(trunkid)
 
 stock PrintTrunkForPlayer(trunkid, targetid)
 {
-	new
-	    itemid;
+	new itemid;
 
  	SendClientMessage(targetid, COLOR_WHITE, "=======================[Maletero]======================");
 	for(new i = 0; i < GetVehicleMaxTrunkSlots(trunkid); i++)

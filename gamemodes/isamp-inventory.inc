@@ -69,10 +69,12 @@ stock ResetInv(playerid)
 {
 	for(new i = 0; i < INV_MAX_SLOTS; i++)
 	{
-		InvInfo[playerid][i][Item] = 0;
-		InvInfo[playerid][i][Amount] = 0;
 	    if(InvInfo[playerid][i][Item] > 0)
+	    {
+			InvInfo[playerid][i][Item] = 0;
+			InvInfo[playerid][i][Amount] = 0;
    			SaveSlotInfo(SLOT_TYPE_INV, playerid, i);
+		}
 	}
 	return 1;
 }
@@ -99,8 +101,7 @@ stock SearchInvForItem(playerid, itemid)
 
 stock PrintInvForPlayer(playerid, targetid)
 {
-	new
-	    itemid;
+	new itemid;
 
  	SendClientMessage(targetid, COLOR_WHITE, "======================[Inventario]======================");
 	for(new i = 0; i < INV_MAX_SLOTS; i++)
@@ -162,8 +163,8 @@ CMD:inventario(playerid, params[]) {
       		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
             PlayerActionMessage(playerid, 8.0, string);
 			SetInvItemAndParam(playerid, returnid, 0, 0);
-			if(GetItemType(itemid) == ITEM_OTHER) // Si el item a desechar no es un arma (es decir que puede ser o no que sea un item lógico visible)
-				DeleteVisibleItemForPlayer(playerid, itemid);
+			if(GetItemType(itemid) == ITEM_OTHER) // Si el item a desechar no es un arma (es decir que puede o no ser un item lógico visible)
+				DeleteItemForPlayer(playerid, itemid);
 
  		} else if(strcmp(text, "consumir", true) == 0) {
 
@@ -245,25 +246,17 @@ CMD:inventario(playerid, params[]) {
 			new targetslot = SearchInvFreeSlot(targetid);
 			if(targetslot == -1)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "El inventario del sujeto se encuentra lleno.");
-			if(GetItemType(itemid) == ITEM_OTHER) // hacer un campo nuevo en items para saber si pueden ser stackeables (si puede tener mas de uno encima)
-			{
-			    if(itemid == ITEM_ID_CASCOCOMUN || itemid == ITEM_ID_CASCOMOTOCROSS || itemid == ITEM_ID_CASCOROJO ||
-			        itemid == ITEM_ID_CASCOBLANCO || itemid == ITEM_ID_CASCOROSA) // arreglar lo de la mano de juan(si ya tiene algo) y lo de comparar contra los 5 cascos (quse se pueda repetir)
-				{
-					if(SearchInvForItem(targetid, ITEM_ID_CASCOCOMUN) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOMOTOCROSS) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOROJO) != -1 ||
-						SearchInvForItem(targetid, ITEM_ID_CASCOBLANCO) != -1 || SearchInvForItem(targetid, ITEM_ID_CASCOROSA) != -1)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya posee ese item.");
-				} else
-				    if(SearchInvForItem(targetid, itemid) == -1)
-						return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya posee ese item.");
-			}
+
 			new string[128];
 			format(string, sizeof(string), "le entrega un/a %s a", GetItemName(itemid));
 			PlayerPlayerActionMessage(playerid, targetid, 15.0, string);
 			SetInvItemAndParam(targetid, targetslot, itemid, GetInvParam(playerid, returnid));
 			SetInvItemAndParam(playerid, returnid, 0, 0);
 			if(GetItemType(itemid) == ITEM_OTHER)
-			    GiveVisibleItemPlayerToPlayer(playerid, targetid, itemid);
+			{
+			    DeleteItemForPlayer(playerid, itemid);
+			    GiveItemHandToHand(playerid, targetid, itemid);
+			}
 		}
 	}
 	return 1;

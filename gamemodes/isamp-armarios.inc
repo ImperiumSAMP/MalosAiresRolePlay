@@ -65,10 +65,12 @@ stock ResetLocker(lockerid)
 {
 	for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
 	{
-		LockerInfo[lockerid][i][Item] = 0;
-		LockerInfo[lockerid][i][Amount] = 0;
 	    if(LockerInfo[lockerid][i][Item] > 0)
+	    {
+   			LockerInfo[lockerid][i][Item] = 0;
+			LockerInfo[lockerid][i][Amount] = 0;
 		    SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, i);
+		}
 	}
 	return 1;
 }
@@ -95,8 +97,7 @@ stock SearchLockerFreeSlot(lockerid)
 
 stock PrintLockerForPlayer(lockerid, targetid)
 {
-	new
-	    itemid;
+	new itemid;
 
  	SendClientMessage(targetid, COLOR_WHITE, "=======================[Armario]=======================");
 	for(new i = 0; i < GetHouseMaxLockerSlots(lockerid); i++)
