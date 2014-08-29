@@ -1828,7 +1828,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 				PlayerInfo[playerid][pA] = 180.0000;
 				
 				ResetPlayerWantedLevelEx(playerid);
-				ResetInv(playerid);
+				ResetAndSaveInv(playerid);
 				FactionInfo[FAC_PMA][fBank] += PlayerInfo[playerid][pJailTime];
 				SaveFactions();
 			}

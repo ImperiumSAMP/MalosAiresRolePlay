@@ -19,6 +19,7 @@ forward GetHandItem(playerid);
 forward GetHandParam(playerid);
 forward SetHandItemAndParam(playerid, itemid, param);
 forward ResetHand(playerid);
+forward ResetAndSaveHand(playerid);
 forward PrintHandForPlayer(playerid, targetid);
 forward LoadHandInfo(playerid);
 
@@ -50,6 +51,13 @@ stock SetHandItemAndParam(playerid, itemid, param)
 
 stock ResetHand(playerid)
 {
+	HandInfo[playerid][Item] = 0;
+	HandInfo[playerid][Amount] = 0;
+	return 1;
+}
+
+stock ResetAndSaveHand(playerid)
+{
 	if(HandInfo[playerid][Item] > 0)
 	{
 		HandInfo[playerid][Item] = 0;
@@ -63,7 +71,7 @@ stock PrintHandForPlayer(playerid, targetid)
 {
 	new itemid = GetHandItem(playerid);
 
-	SendClientMessage(targetid, COLOR_WHITE, "======================[En la mano]======================");
+	SendClientMessage(targetid, COLOR_WHITE, "======================[En la mano]=====================");
  	if(itemid > 0)
 		SendFMessage(targetid, COLOR_WHITE, " - Item: %s - %s: %d", GetItemName(itemid), GetItemParamName(itemid), GetHandParam(playerid));
 	else
@@ -77,6 +85,7 @@ stock LoadHandInfo(playerid)
 	new
 		query[128];
 		
+	ResetHand(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
 	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_HAND, PlayerInfo[playerid][pID]);
 	mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_HAND, playerid);
 	return 1;
@@ -88,7 +97,7 @@ CMD:mano(playerid, params[])
 {
 	new command[128], targetid, string[128], itemid = GetHandItem(playerid), itemparam = GetHandParam(playerid);
 	    
-	if(sscanf(params, "s[128]i", command, targetid))
+	if(sscanf(params, "s[128]I(-1)", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} dar [ID/Jugador] - desechar");

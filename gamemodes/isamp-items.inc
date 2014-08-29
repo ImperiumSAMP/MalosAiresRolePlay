@@ -93,7 +93,7 @@ static const ServerItems[][ItemInfo] = {
 /*52*/	{"Sandwich", "Cantidad", ITEM_OTHER, 60, true},
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, 30, true},
 /*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, 40, true},
-/*55*/	{"Maletín", "Dinero", ITEM_OTHER, 500, true},
+/*55*/	{"Maletín", "Dinero", ITEM_OTHER, 500, false},
 /*56*/  {"Casco Común", "Cantidad", ITEM_OTHER, 650, true}, //objectid 18645
 /*57*/  {"Casco de Motocross", "Cantidad", ITEM_OTHER, 1150, true}, //objectid 18976
 /*58*/  {"Casco Rojo", "Cantidad", ITEM_OTHER, 560, true}, //objectid 18977
