@@ -13657,6 +13657,14 @@ CMD:cancelar(playerid,params[]) {
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
 	   KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));	
 	   CancelHouseTransfer(playerid,0);
+	} else if(strcmp(text,"negocio",true) == 0) {
+	   new 
+	       sellerid = BusinessOffer[playerid];
+	   
+	   if(sellerid == INVALID_PLAYER_ID)
+            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
+	   KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));	
+	   CancelBusinessTransfer(playerid,0);
 	}
 	return 1;
 }
