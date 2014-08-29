@@ -14190,7 +14190,7 @@ TIMER:CancelBusinessTransfer(playerid, reason) {
 	    	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has rechazado la oferta.");
 			SendFMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "%s ha rechazado la oferta.", GetPlayerNameEx(playerid));
 		}
-	OfferingBusiness[HouseOffer[playerid]] = false;
+	OfferingBusiness[BusinessOffer[playerid]] = false;
 	BusinessOfferPrice[playerid] = -1;
 	BusinessOffer[playerid] = INVALID_PLAYER_ID;
 	return 1;
