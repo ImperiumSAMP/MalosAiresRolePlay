@@ -230,11 +230,36 @@ CMD:armario(playerid, params[])
 
  		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
-   		if(GetItemType(GetLockerItem(houseid, param1)) != ITEM_WEAPON)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+        if(PlayerInfo[playerid][pLevel] < 3)
+            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
+			
+		new
+		    itemslot = param1,
+			itemid = GetLockerItem(houseid, itemslot),
+			itemparam = GetLockerParam(houseid, itemslot);
+			
+		switch(GetItemType(itemid))
+		{
+		    case ITEM_WEAPON:
+			{
+		           GivePlayerWeapon(playerid, itemid, itemparam);
+		           SetLockerItemAndParam(houseid, itemslot, 0 ,0);
+			}
+	        case ITEM_OTHER:
+	        {
+				if(GetHandItem(playerid) != 0)
+				    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");
 
-   		GivePlayerWeapon(playerid, GetLockerItem(houseid, param1), GetLockerParam(houseid, param1));
-   		SetLockerItemAndParam(houseid, param1, 0 ,0);
+				new str[128];
+				format(str, sizeof(str), "toma un/a %s del armario con su mano.", GetItemName(itemid));
+				PlayerActionMessage(playerid, 15.0, str);
+				SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica.
+				LoadHandItem(playerid); // Creación gráfica.
+   				SetLockerItemAndParam(houseid, itemslot, 0, 0); // Borrado lógico del item del armario.
+			}
+			default:
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+		}
 
 	} else if(strcmp(text, "guardar", true) == 0) {
 
@@ -248,25 +273,51 @@ CMD:armario(playerid, params[])
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
 		if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-		if(GetPlayerWeapon(playerid) < 1 || (GetPlayerWeapon(playerid) > 34 && GetPlayerWeapon(playerid) != 43))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+
+		// Primero nos fijamos si tiene un arma (falta asignar logicamente las armas a las manos, ya que por ahora están fuera de ese modelo)
+		new
+			itemid = GetPlayerWeapon(playerid),
+			validslot;
+			
+		if(GetItemType(itemid) == ITEM_WEAPON)
+		{
+			if(itemid < 1 || (itemid > 34 && itemid != 43))
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+		} else 	// Ahora, si no tiene un arma, nos fijamos si tiene algun item en la mano que quiera guardar
+		    itemid = GetHandItem(playerid);
+   		if(itemid == 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus manos!");
+
 		if(param1 == -1) // Si no eligió donde guardarlo
 		{
-			param1 = SearchLockerFreeSlot(houseid);
-			if(param1 == -1)
+			validslot = SearchLockerFreeSlot(houseid);
+			if(validslot == -1)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡El armario se encuentra lleno!");
 		} else // Si nos dijo donde guardarlo
 			{
-			    if(param1 < 0 || param1 >= GetHouseMaxLockerSlots(houseid))
+			    validslot = param1;
+			    if(validslot < 0 || validslot >= GetHouseMaxLockerSlots(houseid))
 			        return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-				if(GetItemType(GetLockerItem(houseid, param1)) != ITEM_NONE)
+				if(GetLockerItem(houseid, validslot) != 0)
 				    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 			}
 
-     	SetPVarInt(playerid, "cantSaveItems", 1);
+		// Nueva comprobación para ver en cual caso era en el que entramos (ya que al no estar integrado todavia las armas a sistema de mano, es necesario)
+  		if(GetItemType(itemid) == ITEM_WEAPON)
+        {
+			SetLockerItemAndParam(houseid, validslot, itemid, GetPlayerAmmo(playerid));
+			RemovePlayerWeapon(playerid, itemid);
+		} else
+		    {
+				SetLockerItemAndParam(houseid, validslot, itemid, GetHandParam(playerid));
+				SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
+				DeleteItemFromHand(playerid); // Borrado gráfico.
+				new str[128];
+				format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
+				PlayerActionMessage(playerid, 15.0, str);
+			}
+  		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
-		SetLockerItemAndParam(houseid, param1, GetPlayerWeapon(playerid), GetPlayerAmmo(playerid));
-		RemovePlayerWeapon(playerid, GetPlayerWeapon(playerid));
 
 	} else if(strcmp(text, "tomardroga", true) == 0) {
 

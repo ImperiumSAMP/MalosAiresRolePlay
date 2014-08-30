@@ -837,7 +837,7 @@ forward buyMatsTimer(playerid, amount);
 forward buyDrugsTimer(playerid, amount);
 forward buyProductsTimer(playerid, amount);
 forward robberyCancel(playerid);
-forward fuelCar(playerid, refillprice, refillamount, refilltype, validslot);
+forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
 forward antiCheatTimer();
 forward globalUpdate();
@@ -1172,7 +1172,7 @@ public ResetStats(playerid) {
 	HouseOffer[playerid] = INVALID_PLAYER_ID;
 
 	//Venta de negocios
-	OfferingBusiness[playerid] = false;,
+	OfferingBusiness[playerid] = false;
 	BusinessOfferPrice[playerid] = -1;
 	BusinessOffer[playerid] = INVALID_PLAYER_ID;
 	
@@ -4354,7 +4354,7 @@ public antiCheatTimer() {
 		}
 	}
 }
-public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
+public fuelCar(playerid, refillprice, refillamount, refilltype)
 {
 	if(refilltype == 1)
 	{
@@ -4363,8 +4363,8 @@ public fuelCar(playerid, refillprice, refillamount, refilltype, validslot)
 	} else
 		if(refilltype == 2)
 		{
-		    SetInvItemAndParam(playerid, validslot, 48, GetInvParam(playerid, validslot) + refillamount);
-		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al %d porciento por $%d.", GetInvParam(playerid, validslot), refillprice);
+		    SetHandItemAndParam(playerid, ITEM_ID_BIDON, GetHandParam(playerid) + refillamount);
+		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al %d porciento por $%d.", GetHandParam(playerid), refillprice);
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
@@ -8599,24 +8599,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_ALFAJOR))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new validslot = -1;
-						for(new i = 0; i < INV_MAX_SLOTS; i++)
-						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_ALFAJOR && GetInvParam(playerid, i) < 4))
-							{
-								validslot = i;
-								break;
-	    					}
-						}
-						if(validslot < 0)
-						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-		    			    SetInvItemAndParam(playerid, validslot, ITEM_ID_ALFAJOR, 1);
-						else
-						    SetInvItemAndParam(playerid, validslot, ITEM_ID_ALFAJOR, GetInvParam(playerid, validslot) + 1);
+						if(GetHandItem(playerid) != 0)
+						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
+	  					SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, 1);
+	  					LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_ALFAJOR));
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un alfajor y se lo guarda.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo has guardado en tu inventario!", GetItemPrice(ITEM_ID_ALFAJOR));
+						PlayerActionMessage(playerid, 15.0, "agarra un alfajor Jorgito y le paga al empleado su precio.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo tienes en la mano!", GetItemPrice(ITEM_ID_ALFAJOR));
 						Business[business][bTill] += GetItemPrice(ITEM_ID_ALFAJOR);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -8682,18 +8671,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_BIDON))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-      					new validslot = -1;
-						for(new i = 0; i < INV_MAX_SLOTS; i++)
-						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE)
-							{
-								validslot = i;
-								break;
-	    					}
-						}
-						if(validslot < 0)
-						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-						SetInvItemAndParam(playerid, validslot, ITEM_ID_BIDON, 0);
+						if(GetHandItem(playerid) != 0)
+						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
+
+						SetHandItemAndParam(playerid, ITEM_ID_BIDON, 0);
+						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_BIDON));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", GetItemPrice(ITEM_ID_BIDON));
@@ -8717,24 +8699,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_SANDWICH))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new validslot = -1;
-						for(new i = 0; i < INV_MAX_SLOTS; i++)
-						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_SANDWICH && GetInvParam(playerid, i) < 2))
-							{
-								validslot = i;
-								break;
-	    					}
-						}
-						if(validslot < 0)
-						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-		    				SetInvItemAndParam(playerid, validslot, ITEM_ID_SANDWICH, 1);
-						else
-						    SetInvItemAndParam(playerid, validslot, ITEM_ID_SANDWICH, GetInvParam(playerid, validslot) + 1);
+						if(GetHandItem(playerid) != 0)
+						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
+
+						SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, 1);
+						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un sandwich y se lo guarda.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Se ha guardado en tu inventario!", GetItemPrice(ITEM_ID_SANDWICH));
+						PlayerActionMessage(playerid, 15.0, "agarra un sandwich de jamon y queso y le paga al empleado su precio.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_SANDWICH);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -8743,24 +8715,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_AGUAMINERAL))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new validslot = -1;
-						for(new i = 0; i < INV_MAX_SLOTS; i++)
-						{
-					    	if(GetItemType(GetInvItem(playerid, i)) == ITEM_NONE || (GetInvItem(playerid, i) == ITEM_ID_AGUAMINERAL && GetInvParam(playerid, i) < 2))
-							{
-								validslot = i;
-								break;
-	    					}
-						}
-						if(validslot < 0)
-						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en el inventario.");
-		    			if(GetItemType(GetInvItem(playerid, validslot)) == ITEM_NONE)
-							SetInvItemAndParam(playerid, validslot, ITEM_ID_AGUAMINERAL, 1);
-						else
-						    SetInvItemAndParam(playerid, validslot, ITEM_ID_AGUAMINERAL, GetInvParam(playerid, validslot) + 1);
+						if(GetHandItem(playerid) != 0)
+						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
+
+						SetHandItemAndParam(playerid, ITEM_ID_AGUAMINERAL, 1);
+						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_AGUAMINERAL));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. Se ha guardado en tu inventario!", GetItemPrice(ITEM_ID_AGUAMINERAL));
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_AGUAMINERAL));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_AGUAMINERAL);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -8772,10 +8734,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					    if(GetHandItem(playerid) != 0)
 					        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
 						SetHandItemAndParam(playerid, ITEM_ID_MALETIN, 0);
-						LoadHandItem(playerid);
+						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d!", GetItemPrice(ITEM_ID_MALETIN));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin y lo agarra con su mano.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d! Lo tienes en la mano.", GetItemPrice(ITEM_ID_MALETIN));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MALETIN);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -15678,7 +15640,7 @@ CMD:ao(playerid, params[]) {
 
 CMD:bidon(playerid, params[]) {
 	SendClientMessage(playerid, COLOR_WHITE, "Info: para llenar el bidón deberás estar a pie en una estación de servicio y escribir '/llenar', para usarlo deberás...");
-	SendClientMessage(playerid, COLOR_WHITE, "situarte junto al tanque del vehículo y tipear '/usarbidon', el estado del bidón lo puedes ver usando '/inv'.");
+	SendClientMessage(playerid, COLOR_WHITE, "situarte junto al tanque del vehículo y tipear '/usarbidon', el estado del bidón lo puedes ver usando '/mano'.");
 	return 1;
 }
 
@@ -16057,7 +16019,7 @@ public AFKText(playerid)
 
 CMD:llenar(playerid, params[])
 {
-	new refillprice, refillamount, refilltype, preamount, vehicleid, validslot = -1;
+	new refillprice, refillamount, refilltype, preamount, vehicleid;
 
 	if(!IsAtGasStation(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un dispenser de combustible en alguna estación de servicio.");
@@ -16077,14 +16039,7 @@ CMD:llenar(playerid, params[])
         PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el tanque del vehículo.");
 	} else
 		{
-			for(new i = 0; i < INV_MAX_SLOTS; i++) {
-			    if(GetInvItem(playerid, i) == 48) {
-			    	preamount = GetInvParam(playerid, i);
-					validslot = i;
-					break;
-			    }
-			}
-			if(validslot == -1)
+			if(GetHandItem(playerid) != ITEM_ID_BIDON)
    				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de un vehículo o tener un bidón con nafta para utilizar este comando.");
 			else
 			{
@@ -16103,7 +16058,7 @@ CMD:llenar(playerid, params[])
  	TogglePlayerControllable(playerid, false);
 	GameTextForPlayer(playerid, "~w~Cargando nafta", 6000, 4);
 	fillingFuel[playerid] = true;
-	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiiii", playerid, refillprice, refillamount, refilltype, validslot));
+	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
 	return 1;
 }
 

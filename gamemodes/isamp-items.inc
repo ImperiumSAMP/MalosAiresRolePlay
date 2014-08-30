@@ -86,7 +86,7 @@ static const ServerItems[][ItemInfo] = {
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, 0, false},
 /*46*/	{"Paracaídas", "Cantidad", ITEM_WEAPON, 0, false},
 /*47*/	{"Caja de materiales", "Cantidad", ITEM_OTHER, 45, false},
-/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 120, true},
+/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 120, false},
 /*49*/	{"Bolsa de materia prima", "Cantidad", ITEM_OTHER, 10, false},
 /*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false},
 /*51*/	{"Dinero", "Cantidad", ITEM_OTHER, 1, false},
@@ -94,11 +94,11 @@ static const ServerItems[][ItemInfo] = {
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, 30, true},
 /*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, 40, true},
 /*55*/	{"Maletín", "Dinero", ITEM_OTHER, 500, false},
-/*56*/  {"Casco Común", "Cantidad", ITEM_OTHER, 650, true}, //objectid 18645
-/*57*/  {"Casco de Motocross", "Cantidad", ITEM_OTHER, 1150, true}, //objectid 18976
-/*58*/  {"Casco Rojo", "Cantidad", ITEM_OTHER, 560, true}, //objectid 18977
-/*59*/  {"Casco Blanco", "Cantidad", ITEM_OTHER, 560, true}, //objectid 18978
-/*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, 700, true} //objectid 18979
+/*56*/  {"Casco Común", "Cantidad", ITEM_OTHER, 650, false}, //objectid 18645
+/*57*/  {"Casco de Motocross", "Cantidad", ITEM_OTHER, 1150, false}, //objectid 18976
+/*58*/  {"Casco Rojo", "Cantidad", ITEM_OTHER, 560, false}, //objectid 18977
+/*59*/  {"Casco Blanco", "Cantidad", ITEM_OTHER, 560, false}, //objectid 18978
+/*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, 700, false} //objectid 18979
 
 };
 
@@ -173,7 +173,6 @@ stock LoadHandItem(playerid)
 	}
 	return 1;
 }
-
 
 stock DeleteItemFromHand(playerid)
 {

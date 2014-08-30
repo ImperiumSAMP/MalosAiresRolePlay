@@ -100,7 +100,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[128]I(-1)", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} dar [ID/Jugador] - desechar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - desechar");
 		PrintHandForPlayer(playerid, playerid);
     } else {
         if(strcmp(command, "dar", true) == 0) {
@@ -135,6 +135,41 @@ CMD:mano(playerid, params[])
 			PlayerActionMessage(playerid, 8.0, string);
 			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
 			DeleteItemFromHand(playerid); // Borrado gráfico.
+			
+		} else if(strcmp(command, "usar", true) == 0) {
+
+			if(GetHandItem(playerid) == ITEM_ID_SANDWICH) {
+	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sandwich de jamon y queso.");
+	            PlayerEat(playerid, 40.0);
+	            if(GetHandParam(playerid) - 1 > 0)
+	            	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
+				else
+				{
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
+					DeleteItemFromHand(playerid); // Borrado gráfico.
+				}
+	        } else if(GetHandItem(playerid) == ITEM_ID_ALFAJOR) {
+         		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
+		        PlayerEat(playerid, 15.0);
+		        if(GetHandParam(playerid) - 1 > 0)
+		          	SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, GetHandParam(playerid) - 1);
+				else
+				{
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
+					DeleteItemFromHand(playerid); // Borrado gráfico.
+				}
+			} else if(GetHandItem(playerid) == ITEM_ID_AGUAMINERAL) {
+				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
+			    PlayerDrink(playerid, 50.0);
+			    if(GetHandParam(playerid) - 1 > 0)
+			      	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
+				else
+				{
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
+					DeleteItemFromHand(playerid); // Borrado gráfico.
+				}
+			} else
+  				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		}
 	}
 	return 1;
