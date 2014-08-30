@@ -174,6 +174,8 @@ CMD:inventario(playerid, params[]) {
 	            {
 					if(GetHandItem(playerid) != 0)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");
+					if(!HasItemInvPermission(itemid)) // Si el item en inventario es un item que no se puede guardar manualmente en el inventario (como el casco, pero que el sistema lo guarda allí)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 
 					new str[128];
 					format(str, sizeof(str), "toma un/a %s de su inventario con su mano.", GetItemName(itemid));

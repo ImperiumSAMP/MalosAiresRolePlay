@@ -40,9 +40,6 @@ stock HelmetToHead(playerid, itemid)
 		    case ITEM_ID_CASCOROSA: SetPlayerAttachedObject(playerid, 8, 18979, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
 			default: return 1;
 	    }
-	    new string[124];
-	    format(string, sizeof(string), "se coloca el %s en la cabeza.", GetItemName(itemid));
-    	PlayerActionMessage(playerid, 15.0, string);
 	    EditAttachedObject(playerid, 8);
 	}
 	return 1;
@@ -61,9 +58,6 @@ stock HelmetToHand(playerid, itemid)
 		    case ITEM_ID_CASCOROSA: SetPlayerAttachedObject(playerid, 6, 18979, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
             default: return 1;
 	    }
-	    new string[124];
-	    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(itemid));
-    	PlayerActionMessage(playerid, 15.0, string);
 	}
 	return 1;
 }
@@ -101,6 +95,9 @@ CMD:casco(playerid, params[])
 			DeleteItemFromHand(playerid);
             SetInvItemAndParam(playerid, validslot, handitem, handparam);
             HelmetToHead(playerid, handitem);
+		    new string[124];
+		    format(string, sizeof(string), "se coloca el %s en la cabeza.", GetItemName(handitem));
+	    	PlayerActionMessage(playerid, 15.0, string);
 		} else
 		    return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes ningún casco en tus manos!");
 	} else
@@ -120,6 +117,9 @@ CMD:casco(playerid, params[])
 			DeleteItemFromHead(playerid);
 			SetHandItemAndParam(playerid, invitem, invparam);
 			HelmetToHand(playerid, invitem);
+   			new string[124];
+		    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(invitem));
+	    	PlayerActionMessage(playerid, 15.0, string);
 		}
 	return 1;
 }

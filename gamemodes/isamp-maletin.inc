@@ -11,7 +11,7 @@
 
 //===============================FUNCIONES======================================
 
-forward BriefCaseToHand(playerid, targetid); // Crea el objeto visible en la mano del jugador.
+forward BriefCaseToHand(playerid); // Crea el objeto visible en la mano del jugador.
 forward GiveBriefCaseHandToHand(playerid, targetid); // Borra el objeto visible de un jugador y se lo asigna a otro.
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
@@ -24,8 +24,8 @@ stock BriefCaseToHand(playerid)
 
 stock GiveBriefCaseHandToHand(playerid, targetid)
 {
-	RemovePlayerAttachedObject(playerid, 6);
-	SetPlayerAttachedObject(targetid, 6, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
+	DeleteItemFromHand(playerid);
+	BriefCaseToHand(targetid);
 	return 1;
 }
 

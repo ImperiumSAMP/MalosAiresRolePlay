@@ -156,6 +156,7 @@ stock GiveItemHandToHand(playerid, targetid, itemid)
 		case ITEM_ID_CASCOBLANCO: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOBLANCO);
 		case ITEM_ID_CASCOROSA: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOROSA);
 		case ITEM_ID_MALETIN: GiveBriefCaseHandToHand(playerid, targetid);
+		case ITEM_ID_BIDON: GiveGasCanHandToHand(playerid, targetid);
 	}
 	return 1;
 }
@@ -169,7 +170,8 @@ stock LoadHandItem(playerid)
 		case ITEM_ID_CASCOROJO: HelmetToHand(playerid, ITEM_ID_CASCOROJO);
 		case ITEM_ID_CASCOBLANCO: HelmetToHand(playerid, ITEM_ID_CASCOBLANCO);
 		case ITEM_ID_CASCOROSA: HelmetToHand(playerid, ITEM_ID_CASCOROSA);
-		case ITEM_ID_MALETIN: BriefCaseToHand(playerid, ITEM_ID_MALETIN);
+		case ITEM_ID_MALETIN: BriefCaseToHand(playerid);
+		case ITEM_ID_BIDON: GasCanToHand(playerid);
 	}
 	return 1;
 }
@@ -201,5 +203,20 @@ stock DeleteItemForPlayer(playerid, itemid)
 		case ITEM_ID_CASCOROSA: DeleteItemFromHead(playerid);
 		default: return 1;
 	}
+	return 1;
+}
+
+//===============================GASCAN=========================================
+
+stock GasCanToHand(playerid)
+{
+    SetPlayerAttachedObject(playerid, 6, 1650, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
+    return 1;
+}
+
+stock GiveGasCanHandToHand(playerid, targetid)
+{
+	DeleteItemFromHand(playerid);
+	GasCanToHand(targetid);
 	return 1;
 }
