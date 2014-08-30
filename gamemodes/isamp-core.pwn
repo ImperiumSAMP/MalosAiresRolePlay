@@ -1171,6 +1171,11 @@ public ResetStats(playerid) {
 	HouseOfferPrice[playerid] = -1;
 	HouseOffer[playerid] = INVALID_PLAYER_ID;
 
+	//Venta de negocios
+	OfferingBusiness[playerid] = false;,
+	BusinessOfferPrice[playerid] = -1;
+	BusinessOffer[playerid] = INVALID_PLAYER_ID;
+	
 	// s0beit detector.
 	firstSpawn[playerid] = 1;
 	cheater[playerid] = 0;
