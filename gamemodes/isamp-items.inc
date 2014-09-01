@@ -107,6 +107,7 @@ static const ServerItems[][ItemInfo] = {
 
 forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.
 forward GetItemType(itemid); // Devuelve el tipo del item.
+forward GetItemModelObject(itemid); //Devuelve el modelo de objeto (visible)
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
@@ -115,6 +116,7 @@ forward LoadHandItem(playerid); // Crea el objeto visible que el usuario tenga e
 forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
 forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
 forward DeleteItemFromHand(playerid); // Borra visualmente el objeto que tenga en la mano (por default index 6)
+
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -126,6 +128,11 @@ stock bool:HasItemInvPermission(itemid)
 stock GetItemType(itemid)
 {
 	return ServerItems[itemid][Type];
+}
+
+stock GetItemModelObject(itemid)
+{
+	return ServerItems[itemid][ObjectModel];
 }
 
 stock GetItemName(itemid)

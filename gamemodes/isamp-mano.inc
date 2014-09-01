@@ -100,7 +100,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[128]I(-1)", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - desechar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - tirar");
 		PrintHandForPlayer(playerid, playerid);
     } else {
         if(strcmp(command, "dar", true) == 0) {
@@ -124,17 +124,14 @@ CMD:mano(playerid, params[])
 			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
 			GiveItemHandToHand(playerid, targetid, itemid); // Creación y borrado grafico.
 			
-		} else if(strcmp(command, "desechar", true) == 0) {
+		} else if(strcmp(command, "tirar", true) == 0) {
 		
  			if(PlayerInfo[playerid][pHealth] < 25.0)
 	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
  			if(itemid == 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus manos.");
 			    
-			format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 8.0, string);
-			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-			DeleteItemFromHand(playerid); // Borrado gráfico.
+			DropObject(playerid);
 			
 		} else if(strcmp(command, "usar", true) == 0) {
 
