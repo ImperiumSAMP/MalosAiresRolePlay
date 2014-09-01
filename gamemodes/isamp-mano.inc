@@ -95,7 +95,12 @@ stock LoadHandInfo(playerid)
 
 CMD:mano(playerid, params[])
 {
-	new command[128], targetid, string[128], itemid = GetHandItem(playerid), itemparam = GetHandParam(playerid);
+	new
+		command[128],
+		targetid,
+		string[128],
+		itemid = GetHandItem(playerid),
+		itemparam = GetHandParam(playerid);
 	    
 	if(sscanf(params, "s[128]I(-1)", command, targetid))
 	{

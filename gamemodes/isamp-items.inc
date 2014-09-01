@@ -86,10 +86,10 @@ static const ServerItems[][ItemInfo] = {
 /*44*/	{"Visión nocturna", "Cantidad", ITEM_WEAPON, 0, false, 368},
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, 0, false, 369},
 /*46*/	{"Paracaídas", "Cantidad", ITEM_WEAPON, 0, false, 371},
-/*47*/	{"Caja de materiales", "Cantidad", ITEM_OTHER, 45, false, 352},
+/*47*/	{"Caja de materiales", "Cantidad", ITEM_OTHER, 45, false, 2969},
 /*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 120, false, 1650},
 /*49*/	{"Bolsa de materia prima", "Cantidad", ITEM_OTHER, 10, false, 2060},
-/*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false, 2900},
+/*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false, 2694},
 /*51*/	{"Dinero", "Cantidad", ITEM_OTHER, 1, false, 1212},
 /*52*/	{"Sandwich", "Cantidad", ITEM_OTHER, 60, true, 2769},
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, 30, true, 0},
@@ -107,7 +107,7 @@ static const ServerItems[][ItemInfo] = {
 
 forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.
 forward GetItemType(itemid); // Devuelve el tipo del item.
-forward GetItemModelObject(itemid); //Devuelve el modelo de objeto (visible)
+forward GetItemObjectModel(itemid); //Devuelve el modelo de objeto (visible)
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
@@ -116,7 +116,6 @@ forward LoadHandItem(playerid); // Crea el objeto visible que el usuario tenga e
 forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
 forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
 forward DeleteItemFromHand(playerid); // Borra visualmente el objeto que tenga en la mano (por default index 6)
-
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -130,7 +129,7 @@ stock GetItemType(itemid)
 	return ServerItems[itemid][Type];
 }
 
-stock GetItemModelObject(itemid)
+stock GetItemObjectModel(itemid)
 {
 	return ServerItems[itemid][ObjectModel];
 }

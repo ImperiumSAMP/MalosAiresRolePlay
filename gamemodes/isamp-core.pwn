@@ -970,7 +970,8 @@ public OnGameModeInit() {
 	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, 1);                  // Respawn de vehículos de renta.
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, 1);   // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, 1); // 5 min.		- Sistema de hambre y sed.
-	timersID[15] = SetTimer ("VHealth", 1000, 1); // Cada 1 seg. -Revisa la vida del auto y si es menor a 400 le vuelve a setear vida 400.
+	timersID[15] = SetTimer("VHealth", 1000, 1); // Cada 1 seg. -Revisa la vida del auto y si es menor a 400 le vuelve a setear vida 400.
+	timersID[16] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
 	//====[MENUS]===============================================================
 	new
 		price[32];
@@ -1863,15 +1864,15 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-    if (TextAnim[playerid])
-{
- if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
- {
- ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
- ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
- timersID[16] = SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
- }
-}
+    if(TextAnim[playerid])
+	{
+		 if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+		 {
+			 ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+			 ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+			 SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
+		 }
+	}
 
 	if(Muted[playerid])	{
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
@@ -12415,6 +12416,7 @@ stock ShowInv(playerid, targetid)
 			SendFMessage(playerid, COLOR_WHITE, "- Arma encontrada: %s.", weaponName);
 		}
 	}
+	PrintHandForPlayer(targetid, playerid);
 	PrintInvForPlayer(targetid, playerid);
 }
 
@@ -16044,6 +16046,7 @@ CMD:llenar(playerid, params[])
    				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de un vehículo o tener un bidón con nafta para utilizar este comando.");
 			else
 			{
+			    preamount = GetHandParam(playerid);
 				refilltype = 2;
 				PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el bidón de combustible.");
 
