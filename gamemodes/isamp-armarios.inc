@@ -75,7 +75,7 @@ stock ResetLocker(lockerid)
 	return 1;
 }
 
-stock searchLockerForItem(lockerid, itemid)
+stock SearchLockerForItem(lockerid, itemid)
 {
 	for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
 	{

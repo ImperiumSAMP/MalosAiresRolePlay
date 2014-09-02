@@ -31,6 +31,7 @@ enum HouseSystem {
 	LSD,
 	Ecstasy,
 	Cocaine,
+	hRadio
 };
 
 new House[MAX_HOUSES][HouseSystem];

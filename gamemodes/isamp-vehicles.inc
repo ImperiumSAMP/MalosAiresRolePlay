@@ -77,11 +77,10 @@ enum Cars {
 	VehMarijuana,
 	VehLSD,
 	VehEcstasy,
-	VehCocaine
+	VehCocaine,
+	VehRadio
 };
 new VehicleInfo[MAX_VEH][Cars];
-
-new vehicleRedio[MAX_VEH];
 
 enum RCars {
 	rVehicleID,
@@ -977,7 +976,7 @@ public OnVehicleSpawn(vehicleid) {
 	}
 	VehicleInfo[vehicleid][VehBonnet] = 0; // le cerramos el capot
 	VehicleInfo[vehicleid][VehBoot] = 0; // Le cerramos el maletero
-	vehicleRedio[vehicleid] = 0; // Le apagamos la radio
+	VehicleInfo[vehicleid][VehRadio] = 0; // Le apagamos la radio
 	return 1;
 }
 

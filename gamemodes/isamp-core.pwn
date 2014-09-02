@@ -286,8 +286,8 @@ new
 	eventStep[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
-	// Sistema de radios en autos
-	bool:isHearingVehicleRedio[MAX_PLAYERS],
+	// Sistema de streams de radios
+	bool:hearingRadioStream[MAX_PLAYERS],
 	
 	// Sistema de hambre y sed
 	Bar:pThirstBar[MAX_PLAYERS],
@@ -333,12 +333,6 @@ new
 	bool:OfferingHouse[MAX_PLAYERS],
 	HouseOfferPrice[MAX_PLAYERS],
 	HouseOffer[MAX_PLAYERS],
-	
-	
-	//Venta de negocios
-	bool:OfferingBusiness[MAX_PLAYERS],
-	BusinessOfferPrice[MAX_PLAYERS],
-	BusinessOffer[MAX_PLAYERS],
 
 	//workedTime[MAX_PLAYERS],
 	lastPoliceCallNumber = 0,
@@ -448,6 +442,7 @@ enum BuildingSystem {
 	blFaction,
 	Text3D:blOutsideLabel,
 	Text3D:blInsideLabel,
+	blRadio
 };
 
 new Building[MAX_BUILDINGS][BuildingSystem];
@@ -1209,8 +1204,8 @@ public ResetStats(playerid) {
 	/* Sistema de Picadas */
 	resetSprintRace(playerid);
 
-	/* Sistema de radios para autos */
-	isHearingVehicleRedio[playerid] = false;
+	/* Sistema de stream de radios */
+	hearingRadioStream[playerid] = false;
 	
 	/* Sistema de entrevistas para CTRMAN */
 	InterviewOffer[playerid] = 999;
@@ -1479,7 +1474,7 @@ public OnPlayerDisconnect(playerid, reason) {
 
 	deleteAbandonedSprintRace(playerid);
 	
-	if(isHearingVehicleRedio[playerid])
+	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
 		
 	DeletePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
@@ -1850,7 +1845,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	CopDuty[playerid] = 0;
 	SIDEDuty[playerid] = 0;
 	
-	if(isHearingVehicleRedio[playerid])
+	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
 		
 	return 1;
@@ -4726,10 +4721,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 		
-		if(isHearingVehicleRedio[playerid] == true)
+		if(hearingRadioStream[playerid])
 		{
 			StopAudioStreamForPlayer(playerid);
-			isHearingVehicleRedio[playerid] = false;
+			hearingRadioStream[playerid] = false;
 		}
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
@@ -4762,10 +4757,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 		
-		if(isHearingVehicleRedio[playerid] == true)
+		if(hearingRadioStream[playerid])
 		{
 			StopAudioStreamForPlayer(playerid);
-			isHearingVehicleRedio[playerid] = false;
+			hearingRadioStream[playerid] = false;
 		}
 		
 	}
@@ -4790,12 +4785,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 			RemovePlayerFromVehicle(playerid);
 		}
-		// Sistema de radio en autos
-		new vID;
-		vID = GetPlayerVehicleID(playerid);
- 		if(vehicleRedio[vID] > 0)
-	    	PlayCarRedioForPlayer(playerid, vehicleRedio[vID]);
-		//---------------------------
+	//===============================RADIO EN AUTO==============================
+ 		if(VehicleInfo[vehicleid][VehRadio] > 0)
+	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
+	//==========================================================================
 	}
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
 	    LastVeh[playerid] = vehicleid;
@@ -4808,10 +4801,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		
 		vehicleid = GetPlayerVehicleID(playerid);
 		
-		// Sistema de radio en autos
-		if(vehicleRedio[vehicleid] > 0)
-	    	PlayCarRedioForPlayer(playerid, vehicleRedio[vehicleid]);
-		//--------------------------
+	//===============================RADIO EN AUTO==============================
+		if(VehicleInfo[vehicleid][VehRadio] > 0)
+	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
+	//==========================================================================
 
         if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
 			format(string, sizeof(string), "~w~%s", GetVehicleName(vehicleid));
@@ -8076,6 +8069,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						SetPlayerVirtualWorld(playerid, House[i][InsideWorld]);
 						SetPlayerFacingAngle(playerid, House[i][ExitAngle]);
 						SetCameraBehindPlayer(playerid);
+						PlayRadioStreamForPlayer(playerid, House[i][hRadio]);
 					} else {
 						GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 					}
@@ -8092,6 +8086,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							SetPlayerVirtualWorld(playerid, Building[i][blInsideWorld]);
 							SetPlayerPos(playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]);
 							SetPlayerFacingAngle(playerid, Building[i][blInsideAngle]);
+							PlayRadioStreamForPlayer(playerid, Building[i][blRadio]);
 							GivePlayerCash(playerid, -Building[i][blEntranceFee]);
 							if(Building[i][blEntranceFee] > 0) {
 								format(string, sizeof(string), "¡Te han cobrado $%d para ingresar al edificio %s!", Building[i][blEntranceFee], Building[i][blText]);
@@ -8127,6 +8122,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
 		                SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
 		                SetCameraBehindPlayer(playerid);
+		                PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
 		            } else
 		                {
 			                if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
@@ -8140,6 +8136,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
 							SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
 							SetCameraBehindPlayer(playerid);
+							PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
 							GivePlayerCash(playerid, -Business[i][bEntranceFee]);
 							if(Business[i][bEntranceFee] > 0)
 							{
@@ -8149,23 +8146,14 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU || Business[i][bType] == BIZ_HARD)
 			    				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
 							else
-								if(Business[i][bType] == BIZ_CLUB){
+								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
 							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
-								    PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
-									isHearingVehicleRedio[playerid] = true;
-										}
 								else
-								    if(Business[i][bType] == BIZ_CLUB2){
-							    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
-										PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash");
-										isHearingVehicleRedio[playerid] = true;
-											}
-								    else
-								        if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
-								            SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-									    else
-										    if(Business[i][bType] == BIZ_CASINO)
-									    	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+        							if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
+			            				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+				    				else
+									    if(Business[i][bType] == BIZ_CASINO)
+									   	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
 							if(Business[i][bProducts] == 0)
 								GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
 							Business[i][bTill] += Business[i][bEntranceFee];
@@ -8185,6 +8173,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							SetPlayerVirtualWorld(playerid, 0);
 							SetPlayerFacingAngle(playerid,House[i][EntranceAngle]);
 							SetCameraBehindPlayer(playerid);
+							PlayRadioStreamForPlayer(playerid, 0);
 						} else {
 							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 						}
@@ -8203,6 +8192,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							SetPlayerPos(playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]);
 							SetPlayerFacingAngle(playerid, Building[i][blOutsideAngle]);
 							SetCameraBehindPlayer(playerid);
+							PlayRadioStreamForPlayer(playerid, 0);
 						} else {
 							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 						}
@@ -8219,18 +8209,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 							DestroySelectionMenu(playerid);
 							CancelSelectTextDraw(playerid);
 						}
-						if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2){
-						   if(isHearingVehicleRedio[playerid]){
-		                      StopAudioStreamForPlayer(playerid);
-						      SendClientMessage(playerid, -1, "Sales del boliche y la musica deja de sonar.");
-							}
-						}
 						if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1) {
 							SetPlayerInterior(playerid, Business[i][bOutsideInt]);
 							SetPlayerVirtualWorld(playerid, 0);
 							SetPlayerPos(playerid,Business[i][bOutsideX],Business[i][bOutsideY],Business[i][bOutsideZ]);
 		                    SetPlayerFacingAngle(playerid, Business[i][bOutsideAngle]);
 		                    SetCameraBehindPlayer(playerid);
+		                    PlayRadioStreamForPlayer(playerid, 0);
 						} else {
 							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 						}
@@ -9755,7 +9740,7 @@ CMD:aedificios(playerid, params[])
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de edificios]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aeinfo /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida - /aecosto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aecerrado - /aetele - /aepickup - /aefaccion");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
 	return 1;
 }
 
@@ -9868,6 +9853,26 @@ CMD:aetexto(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);
 		saveBuilding(blid);
 	}
+	return 1;
+}
+
+CMD:aeradio(playerid, params[])
+{
+	new
+	    blid,
+		radio;
+
+    if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+	if(sscanf(params, "ii", blid, radio))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeradio [ID edificio] [ID radio]");
+	if(blid < 1 || blid >= MAX_BUILDINGS)
+	    return  SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
+	if(radio < 0 || radio > 15)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+
+	Building[blid][blRadio] = radio;
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del edificio %d a %d.", blid, Building[blid][blRadio]);
 	return 1;
 }
 
@@ -14145,57 +14150,27 @@ CMD:beber(playerid, params[])
 	return 1;
 }
 
-TIMER:CancelBusinessTransfer(playerid, reason) {
-	if(reason == 1) {
-		SendClientMessage(playerid, COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que no has respondido en 30 segundos.");
-		SendClientMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que el comprador no ha respondido en 30 segundos.");
-	} else
-		if(reason == 0) {
-	    	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has rechazado la oferta.");
-			SendFMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "%s ha rechazado la oferta.", GetPlayerNameEx(playerid));
-		}
-	OfferingBusiness[BusinessOffer[playerid]] = false;
-	BusinessOfferPrice[playerid] = -1;
-	BusinessOffer[playerid] = INVALID_PLAYER_ID;
-	return 1;
-}
-
-CMD:negociovendera(playerid, params[])
-{
-	new bizID = PlayerInfo[playerid][pBizKey], targetid, price, name[MAX_PLAYER_NAME];
-
-	if(sscanf(params, "ui", targetid, price))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negociovendera [ID/Jugador] [Precio]");
-	if(PlayerInfo[playerid][pBizKey] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener un negocio para utilizar este comando!");
-	if(!PlayerToPoint(6.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la puerta de tu negocio.");
-   	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
-  	if(price < 1 || price > 30000000)
-   		return SendClientMessage(playerid, COLOR_YELLOW2, "El precio no puede ser menor a $1 ni mayor a $30,000,000.");
-  	if(OfferingBusiness[playerid])
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras vendiendo un negocio.");
-	if(!ProxDetectorS(4.0, playerid, targetid))
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
- 	    
-	GetPlayerName(playerid, name, sizeof(name));
-    if(strcmp(Business[bizID][bOwner], name, true) == 0)
-    {
-		OfferingBusiness[playerid] = true;
-		BusinessOfferPrice[targetid] = price;
-		BusinessOffer[targetid] = playerid;
-		SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreces las llaves y escritura de tu negocio a %s por $%d.",GetPlayerNameEx(targetid), price);
-		SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te esta ofreciendo venderte su negocio por $%d.", GetPlayerNameEx(playerid), price);
-		SendClientMessage(targetid, COLOR_LIGHTBLUE, "Utiliza '/aceptar negocio' para aceptar la oferta o '/cancelar negocio' para cancelar.");
-	 	SetPVarInt(targetid, "CancelBusinessTransfer", SetTimerEx("CancelBusinessTransfer", 30 * 1000, 0, "ii", targetid, 1));
-	} else
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Error, el negocio no está a tu nombre (Consulta a un administrador).");
-	return 1;
-}
-
 CMD:ayudacasa(playerid, params[]) {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Casa]: /comprarcasa - /vendercasa - /casavendera [id] - /puerta - /armario");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Casa]: /comprarcasa - /vendercasa - /casavendera [id] - /puerta - /armario - /radiocasa");
+	return 1;
+}
+
+CMD:radiocasa(playerid, params[])
+{
+	new
+	    radio,
+	    houseid = GetPlayerHouse(playerid);
+
+	if(sscanf(params, "i", radio))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /radiocasa [ID radio]");
+	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en tu casa.");
+	if(radio < 0 || radio > 15)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+
+    House[houseid][hRadio] = radio;
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio de tu casa a %d.", House[houseid][hRadio]);
+	PlayRadioStreamForPlayer(playerid, House[houseid][hRadio]);
 	return 1;
 }
 
@@ -14768,12 +14743,13 @@ CMD:tuning(playerid, params[])
 
 //==========================SISTEMA DE RADIO PARA AUTOS=========================
 
-stock PlayCarRedioForPlayer(playerid, redio)
+stock PlayRadioStreamForPlayer(playerid, radio)
 {
-	if(isHearingVehicleRedio[playerid])
+	if(hearingRadioStream[playerid])
  		StopAudioStreamForPlayer(playerid);
-	switch(redio)
+	switch(radio)
 	{
+	    case 0: return 1;
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
 	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
 	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
@@ -14790,21 +14766,22 @@ stock PlayCarRedioForPlayer(playerid, redio)
 	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
 	    case 15: PlayAudioStreamForPlayer(playerid, "http://shaincast.caster.fm:21294/listen.mp3?authn895d6da463526b42933687420dbd458f");//radio CTR
 	}
-	isHearingVehicleRedio[playerid] = true;
+	hearingRadioStream[playerid] = true;
+	return 1;
 }
 
 CMD:emisora(playerid, params[])
 {
-    new redio, vType, vehicleid = GetPlayerVehicleID(playerid);
+    new radio, vType, vehicleid = GetPlayerVehicleID(playerid);
 	vType = GetVehicleType(vehicleid);
 
-	if(sscanf(params, "i", redio))
+	if(sscanf(params, "i", radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-15]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
-	if(redio < 1 || redio > 15)
+	if(radio < 1 || radio > 15)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15.");
 
 	foreach(new i : Player)
@@ -14812,10 +14789,10 @@ CMD:emisora(playerid, params[])
 		if(IsPlayerInVehicle(i, vehicleid))
 		{
 			SendFMessage(i, COLOR_ACT1, "%s sintoniza una radio en el estéreo del auto.", GetPlayerNameEx(playerid));
-  			PlayCarRedioForPlayer(i, redio);
+  			PlayRadioStreamForPlayer(i, radio);
 		}
 	}
-	vehicleRedio[vehicleid] = redio;
+	VehicleInfo[vehicleid][VehRadio] = radio;
 	return 1;
 }
 
@@ -14833,11 +14810,11 @@ CMD:emisoraoff(playerid, params[])
 		if(IsPlayerInVehicle(i, vehicleid))
 		{
 			SendFMessage(i, COLOR_ACT1, "%s apaga la radio sintonizada en el estéreo del auto.", GetPlayerNameEx(playerid));
-		    if(isHearingVehicleRedio[i])
+		    if(hearingRadioStream[i])
 		        StopAudioStreamForPlayer(i);
 		}
 	}
-	vehicleRedio[vehicleid] = 0;
+	VehicleInfo[vehicleid][VehRadio] = 0;
 	return 1;
 }
 

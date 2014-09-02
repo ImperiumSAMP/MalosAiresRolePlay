@@ -123,9 +123,15 @@ enum BusinessSystem {
 	bInsidePickup,
 	Text3D:bOutsideLabel,
 	Text3D:bInsideLabel,
+	bRadio
 }
 new Business[MAX_BUSINESS][BusinessSystem];
 new bool:openBizPermission[MAX_BUSINESS];
+
+	//Venta de negocios
+new	bool:OfferingBusiness[MAX_PLAYERS],
+	BusinessOfferPrice[MAX_PLAYERS],
+	BusinessOffer[MAX_PLAYERS];
 
 stock GetPlayerBusiness(playerid) {
 	for(new i = 1; i < MAX_BUSINESS; i++) {
@@ -235,7 +241,7 @@ CMD:aninsert(playerid, params[]) {
 
 CMD:ayudanegocio(playerid, params[]) {
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[NEGOCIO]: /comprarnegocio - /vendernegocio - /infonegocio - /entradanegocio - /nombrenegocio - /abrirnegocio");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /ayudaproductos");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /ayudaproductos - /radionegocio");
 	return 1;
 }
 
@@ -462,6 +468,27 @@ CMD:comprarnegocio(playerid,params[]) {
 	return 1;
 }
 
+CMD:radionegocio(playerid,params[])
+{
+	new
+	    radio,
+	    bizID = PlayerInfo[playerid][pBizKey];
+
+	if(sscanf(params, "i", radio))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /radionegocio [ID radio]");
+	if(bizID == 0 || Business[PlayerInfo[playerid][pBizKey]][bOwnerSQLID] != PlayerInfo[playerid][pID])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en tu negocio.");
+	if(radio < 0 || radio > 15)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+
+	Business[bizID][bRadio] = radio;
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del negocio a %d.", Business[bizID][bRadio]);
+	PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+	return 1;
+}
+
 CMD:vendernegocio(playerid,params[]) {
 	new
 	    string[128],
@@ -487,6 +514,55 @@ CMD:vendernegocio(playerid,params[]) {
 	} else {
 		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún negocio para vender!");
 	}
+	return 1;
+}
+
+TIMER:CancelBusinessTransfer(playerid, reason) {
+	if(reason == 1) {
+		SendClientMessage(playerid, COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que no has respondido en 30 segundos.");
+		SendClientMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que el comprador no ha respondido en 30 segundos.");
+	} else
+		if(reason == 0) {
+	    	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has rechazado la oferta.");
+			SendFMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "%s ha rechazado la oferta.", GetPlayerNameEx(playerid));
+		}
+	OfferingBusiness[BusinessOffer[playerid]] = false;
+	BusinessOfferPrice[playerid] = -1;
+	BusinessOffer[playerid] = INVALID_PLAYER_ID;
+	return 1;
+}
+
+CMD:negociovendera(playerid, params[])
+{
+	new bizID = PlayerInfo[playerid][pBizKey], targetid, price, name[MAX_PLAYER_NAME];
+
+	if(sscanf(params, "ui", targetid, price))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negociovendera [ID/Jugador] [Precio]");
+	if(PlayerInfo[playerid][pBizKey] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener un negocio para utilizar este comando!");
+	if(!PlayerToPoint(6.0, playerid, Business[bizID][bOutsideX], Business[bizID][bOutsideY], Business[bizID][bOutsideZ]))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la puerta de tu negocio.");
+   	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+  	if(price < 1 || price > 30000000)
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "El precio no puede ser menor a $1 ni mayor a $30,000,000.");
+  	if(OfferingBusiness[playerid])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras vendiendo un negocio.");
+	if(!ProxDetectorS(4.0, playerid, targetid))
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
+
+	GetPlayerName(playerid, name, sizeof(name));
+    if(strcmp(Business[bizID][bOwner], name, true) == 0)
+    {
+		OfferingBusiness[playerid] = true;
+		BusinessOfferPrice[targetid] = price;
+		BusinessOffer[targetid] = playerid;
+		SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreces las llaves y escritura de tu negocio a %s por $%d.",GetPlayerNameEx(targetid), price);
+		SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te esta ofreciendo venderte su negocio por $%d.", GetPlayerNameEx(playerid), price);
+		SendClientMessage(targetid, COLOR_LIGHTBLUE, "Utiliza '/aceptar negocio' para aceptar la oferta o '/cancelar negocio' para cancelar.");
+	 	SetPVarInt(targetid, "CancelBusinessTransfer", SetTimerEx("CancelBusinessTransfer", 30 * 1000, 0, "ii", targetid, 1));
+	} else
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Error, el negocio no está a tu nombre (Consulta a un administrador).");
 	return 1;
 }
 
