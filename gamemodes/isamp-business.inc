@@ -416,6 +416,7 @@ CMD:infonegocio(playerid,params[]) {
             SendClientMessage(playerid, COLOR_WHITE, string);
             format(string, sizeof(string), "Entrada: 	$%d", Business[bizID][bEntranceFee]);
             SendClientMessage(playerid, COLOR_WHITE, string);
+            SendFMessage(playerid, COLOR_WHITE, "Radio:  %d", Business[bizID][bRadio]);
             SendClientMessage(playerid, COLOR_WHITE, "--------------------------------------");
 			return 1;
 		} else {
