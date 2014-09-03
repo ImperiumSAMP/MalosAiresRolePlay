@@ -51,6 +51,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-lojack.inc"             //Sistema de lojack
 #include "isamp-casco.inc"              //Sistema de cascos
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
+#include "isamp-robobanco.inc"          //Robo a banco.
+
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -900,6 +902,13 @@ forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
+forward TimeReducirEntorno(playerid);
+forward TimeDetonacionPuerta(playerid);
+forward TimeDetonacionBoveda(playerid);
+forward TimeDineroBoveda(playerid);
+forward TimeHoldMoney(playerid);
+
+
 //==============================================================================
 
 main() {
