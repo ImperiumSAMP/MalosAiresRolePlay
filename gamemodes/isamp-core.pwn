@@ -1197,6 +1197,23 @@ public ResetStats(playerid) {
 	TuningClient[playerid] = 999;
 	DestuningOffer[playerid] = 999;
 	
+	/*Sistema Robo Banco */
+	TheftBank[MAX_PLAYERS] = 0;
+    groupinvite[MAX_PLAYERS] = false;
+	GroupLeader[MAX_PLAYERS] = 0 ;
+	LeaderInvite[MAX_PLAYERS] = INVALID_PLAYER_ID;
+	MembersGroup[MAX_MEMBERS_GROUP] = 0;
+	ConectedMembers[MAX_PLAYERS] = 0;
+	ReduciendoEntorno[MAX_PLAYERS] = 0;
+	EntornoReducido[MAX_PLAYERS] = 0;
+	DetonandoPuerta[MAX_PLAYERS] = 0;
+	DetonacionPuertaBoveda[MAX_PLAYERS] = 0;
+	DetonandoBoveda[MAX_PLAYERS] = 0;
+	DetonacionBoveda[MAX_PLAYERS] = 0;
+	TomandoDineroBoveda[MAX_PLAYERS] = 0;
+	DineroBoveda[MAX_PLAYERS] = 0;
+	HoldMoney[MAX_PLAYERS] = 0;
+	
 	// Revision de usuarios
 	ReviseOffer[playerid] = 999;
 	
@@ -1479,6 +1496,12 @@ public OnPlayerDisconnect(playerid, reason) {
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
 		
+	if(HoldMoney[playerid] == 1)
+	{
+	GivePlayerCash(playerid, -200000);
+	KillTimer(TimeHoldMoney[playerid]);
+	}
+	
 	DeletePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
 	
 	PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
@@ -1846,6 +1869,12 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	
 	CopDuty[playerid] = 0;
 	SIDEDuty[playerid] = 0;
+	
+	if(HoldMoney[playerid] == 1)
+	{
+	GivePlayerCash(playerid, -200000);
+	KillTimer(TimeHoldMoney[playerid]);
+	}
 	
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
