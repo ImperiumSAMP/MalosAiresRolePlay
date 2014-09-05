@@ -5,7 +5,7 @@
 
 #define MAX_MEMBERS_GROUP 3
 #define DINERO_BOVEDA     200000
- 
+
  new 
     TheftBank[MAX_PLAYERS] = 0,
     bool:groupinvite[MAX_PLAYERS],
@@ -21,8 +21,8 @@
 	DetonacionBoveda[MAX_PLAYERS] = 0,
 	TomandoDineroBoveda[MAX_PLAYERS] = 0,
 	DineroBoveda[MAX_PLAYERS] = 0,
+	HoldingMoney[MAX_PLAYERS], 
 	HoldMoney[MAX_PLAYERS] = 0;
- 
  
  CMD:robarbanco(playerid, params[]) 
 { 
@@ -418,7 +418,7 @@ CMD:tomardineroboveda(playerid, params[])
  TomandoDineroBoveda[playerid] = 1;
  HoldMoney[playerid] = 1;
  SetTimerEx("TimeDineroBoveda", 30000, false, "i", playerid);
- SetTimerEx("TimeHoldMoney", 1200000, false, "i", playerid);
+ HoldingMoney[playerid] = SetTimerEx("TimeHoldMoney", 1200000, false, "i", playerid);
  return 1;
 }					
 
