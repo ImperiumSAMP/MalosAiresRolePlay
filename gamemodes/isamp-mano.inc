@@ -127,7 +127,7 @@ CMD:mano(playerid, params[])
             PlayerPlayerActionMessage(playerid, targetid, 15.0, string);
 			SetHandItemAndParam(targetid, itemid, itemparam); // Creación lógica.
 			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-			GiveItemHandToHand(playerid, targetid, itemid); // Creación y borrado grafico.
+			GiveItemHandToHand(playerid, targetid); // Creación y borrado grafico.
 			
 		} else if(strcmp(command, "tirar", true) == 0) {
 		
@@ -148,7 +148,7 @@ CMD:mano(playerid, params[])
 				else
 				{
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteItemFromHand(playerid); // Borrado gráfico.
+					DeleteHandItem(playerid); // Borrado gráfico.
 				}
 	        } else if(GetHandItem(playerid) == ITEM_ID_ALFAJOR) {
          		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
@@ -158,7 +158,7 @@ CMD:mano(playerid, params[])
 				else
 				{
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteItemFromHand(playerid); // Borrado gráfico.
+					DeleteHandItem(playerid); // Borrado gráfico.
 				}
 			} else if(GetHandItem(playerid) == ITEM_ID_AGUAMINERAL) {
 				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
@@ -168,7 +168,7 @@ CMD:mano(playerid, params[])
 				else
 				{
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteItemFromHand(playerid); // Borrado gráfico.
+					DeleteHandItem(playerid); // Borrado gráfico.
 				}
 			} else
   				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");

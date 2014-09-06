@@ -311,7 +311,7 @@ CMD:armario(playerid, params[])
 		    {
 				SetLockerItemAndParam(houseid, validslot, itemid, GetHandParam(playerid));
 				SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-				DeleteItemFromHand(playerid); // Borrado gráfico.
+				DeleteHandItem(playerid); // Borrado gráfico.
 				new str[128];
 				format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
 				PlayerActionMessage(playerid, 15.0, str);

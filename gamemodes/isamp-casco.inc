@@ -5,21 +5,16 @@
 
 //=============================SISTEMA DE CASCO=================================
 
+//===============================CONSTANTES=====================================
+
+//==============================DATA STORAGE====================================
+
 //===============================FUNCIONES======================================
 
-forward GiveHelmetHandToHand(playerid, targetid, itemid); // Le pasa el casco visible de un jugador al otro.
 forward HelmetToHead(playerid, itemid); // Ubica visiblemente el casco en la cabeza del jugador.
-forward HelmetToHand(playerid, itemid); // Ubica visiblemente el casco en la mano del jugador.
 forward DeleteItemFromHead(playerid);// Borra visiblemente el item de la cabeza del jugador.
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
-
-stock GiveHelmetHandToHand(playerid, targetid, itemid)
-{
-	DeleteItemFromHand(playerid);
-	HelmetToHand(targetid, itemid);
-	return 1;
-}
 
 stock DeleteItemFromHead(playerid)
 {
@@ -41,23 +36,6 @@ stock HelmetToHead(playerid, itemid)
 			default: return 1;
 	    }
 	    EditAttachedObject(playerid, 8);
-	}
-	return 1;
-}
-
-stock HelmetToHand(playerid, itemid)
-{
-    if(GetHandItem(playerid) == itemid)
-	{
-		switch(itemid)
-		{
-		    case ITEM_ID_CASCOCOMUN: SetPlayerAttachedObject(playerid, 6, 18645, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
-		    case ITEM_ID_CASCOMOTOCROSS: SetPlayerAttachedObject(playerid, 6, 18976, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
-		    case ITEM_ID_CASCOROJO: SetPlayerAttachedObject(playerid, 6, 18977, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
-		    case ITEM_ID_CASCOBLANCO: SetPlayerAttachedObject(playerid, 6, 18978, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
-		    case ITEM_ID_CASCOROSA: SetPlayerAttachedObject(playerid, 6, 18979, 5, 0.070000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000);
-            default: return 1;
-	    }
 	}
 	return 1;
 }
@@ -92,7 +70,7 @@ CMD:casco(playerid, params[])
 			if(validslot == -1)
 			    return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes espacio en el inventario para equiparte el casco!");
 			SetHandItemAndParam(playerid, 0, 0);
-			DeleteItemFromHand(playerid);
+			DeleteHandItem(playerid);
             SetInvItemAndParam(playerid, validslot, handitem, handparam);
             HelmetToHead(playerid, handitem);
 		    new string[124];
@@ -116,7 +94,7 @@ CMD:casco(playerid, params[])
 			SetInvItemAndParam(playerid, invslot, 0, 0);
 			DeleteItemFromHead(playerid);
 			SetHandItemAndParam(playerid, invitem, invparam);
-			HelmetToHand(playerid, invitem);
+			LoadHandItem(playerid);
    			new string[124];
 		    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(invitem));
 	    	PlayerActionMessage(playerid, 15.0, string);

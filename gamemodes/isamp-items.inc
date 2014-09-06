@@ -5,6 +5,8 @@
 
 //==============================ITEM SYSTEM=====================================
 
+//================================CONSTANTES====================================
+
 #define ITEM_NONE               -1
 #define ITEM_WEAPON             1
 #define ITEM_OTHER              2
@@ -25,6 +27,12 @@
 #define ITEM_ID_CASCOROJO       58
 #define ITEM_ID_CASCOBLANCO     59
 #define ITEM_ID_CASCOROSA       60
+#define ITEM_ID_REPUESTOAUTO    61
+#define ITEM_ID_BARRETA        	62
+
+#define BONE_ID_LEFTHAND        5
+
+#define INDEX_ID_HAND      		6 // Por ahora se elige este index arbitrario para manejar la mano.
 
 //==============================DATA STORAGE====================================
 
@@ -35,12 +43,12 @@ enum ItemInfo {
 	BasePrice,
 	bool:InvAvailable,
 	ObjectModel,
-	Float:xpos,
-	Float:ypos,
-	Float:zpos,
-	Float:rxpos,
-	Float:rypos,
-	Float:rzpos
+	Float:XPos, // Posicion para attachear en mano izquierda
+	Float:YPos,
+	Float:ZPos,
+	Float:RxPos,
+	Float:RyPos,
+	Float:RzPos
 };
 
 static const ServerItems[][ItemInfo] = {
@@ -108,59 +116,61 @@ static const ServerItems[][ItemInfo] = {
 /*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, 700, false, 18979, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0},
 /*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 150, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0},
 /*62*/  {"Barreta", "Cantidad", ITEM_OTHER, 150, false, 18634, 0.108, 0.012, -0.109, -102.7, -135.4}
+
 };
 
 //==============================FUNCIONES=======================================
 
 forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.
 forward GetItemType(itemid); // Devuelve el tipo del item.
-forward GetItemObjectModel(itemid); //Devuelve el modelo de objeto (visible)
+forward GetItemObjectModel(itemid); // Devuelve la id del modelo de objeto (visible) del item.
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
-forward GiveItemHandToHand(playerid, targetid, itemid); // Si el item es visible, lo borra de la mano del jugador X y lo crea para la mano del jugador Y.
-forward LoadHandItem(playerid); // Crea el objeto visible que el usuario tenga en el modelo logico de la mano.
+
+forward LoadHandItem(playerid); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
+forward DeleteHandItem(playerid); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
+forward GiveItemHandToHand(playerid, targetid); // Si el item es visible, lo borra de la mano del jugador X y lo crea para la mano del jugador Y (se maneja en INDEX_ID_HAND).
 forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
 forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
-forward DeleteItemFromHand(playerid); // Borra visualmente el objeto que tenga en la mano (por default index 6)
-forward Float:GetItemXpos(itemid); //Devuelve la posición X del objeto en la mano izquierda
-forward Float:GetItemYpos(itemid); //Devuelve la posición Y del objeto en la mano izquierda
-forward Float:GetItemZpos(itemid); //Devuelve la posición Z del objeto en la mano izquierda
-forward Float:GetItemRXpos(itemid); //Devuelve la posición RX del objeto en la mano izquierda
-forward Float:GetItemRYpos(itemid); //Devuelve la posición RY del objeto en la mano izquierda
-forward Float:GetItemRZpos(itemid); //Devuelve la posición RZ del objeto en la mano izquierda
-forward LoadRightHandItem(playerid, itemid = 0); //Crea el objeto visible GENERICO que el usuario tenga en la mano
+
+forward Float:GetItemXPos(itemid); //Devuelve la posición X del objeto en BONE_ID_LEFTHAND.
+forward Float:GetItemYPos(itemid); //Devuelve la posición Y del objeto en BONE_ID_LEFTHAND.
+forward Float:GetItemZPos(itemid); //Devuelve la posición Z del objeto en BONE_ID_LEFTHAND.
+forward Float:GetItemRxPos(itemid); //Devuelve la posición RX del objeto en BONE_ID_LEFTHAND.
+forward Float:GetItemRyPos(itemid); //Devuelve la posición RY del objeto en BONE_ID_LEFTHAND.
+forward Float:GetItemRzPos(itemid); //Devuelve la posición RZ del objeto en BONE_ID_LEFTHAND.
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
-stock Float:GetItemXpos(itemid)
+stock Float:GetItemXPos(itemid)
 {
-	return ServerItems[itemid][xpos];
+	return ServerItems[itemid][XPos];
 }
 
-stock Float:GetItemYpos(itemid)
+stock Float:GetItemYPos(itemid)
 {
-	return ServerItems[itemid][ypos];
+	return ServerItems[itemid][YPos];
 }
 
-stock Float:GetItemZpos(itemid)
+stock Float:GetItemZPos(itemid)
 {
-	return ServerItems[itemid][zpos];
+	return ServerItems[itemid][ZPos];
 }
 
-stock Float:GetItemRXpos(itemid)
+stock Float:GetItemRxPos(itemid)
 {
-	return ServerItems[itemid][rxpos];
+	return ServerItems[itemid][RxPos];
 }
 
-stock Float:GetItemRYpos(itemid)
+stock Float:GetItemRyPos(itemid)
 {
-	return ServerItems[itemid][rypos];
+	return ServerItems[itemid][RyPos];
 }
 
-stock Float:GetItemRZpos(itemid)
+stock Float:GetItemRzPos(itemid)
 {
-	return ServerItems[itemid][rzpos];
+	return ServerItems[itemid][RzPos];
 }
 
 stock bool:HasItemInvPermission(itemid)
@@ -197,47 +207,27 @@ stock GetItemPrice(itemid)
 	return ServerItems[itemid][BasePrice];
 }
 
-stock GiveItemHandToHand(playerid, targetid, itemid)
-{
-	switch(itemid)
-	{
-		case ITEM_ID_CASCOCOMUN: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOCOMUN);
-		case ITEM_ID_CASCOMOTOCROSS: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOMOTOCROSS);
-		case ITEM_ID_CASCOROJO: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOROJO);
-		case ITEM_ID_CASCOBLANCO: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOBLANCO);
-		case ITEM_ID_CASCOROSA: GiveHelmetHandToHand(playerid, targetid, ITEM_ID_CASCOROSA);
-		case ITEM_ID_MALETIN: GiveBriefCaseHandToHand(playerid, targetid);
-		case ITEM_ID_BIDON: GiveGasCanHandToHand(playerid, targetid);
-	}
-	return 1;
-}
-
-stock LoadRightHandItem(playerid, itemid = 0)
-{
-	if(GetItemObjectModel(itemid) != 0)
-	{
-	    SetPlayerAttachedObject(playerid, 6, GetItemObjectModel(itemid), 5, GetItemXpos(itemid), GetItemYpos(itemid), GetItemZpos(itemid), GetItemRXpos(itemid), GetItemRYpos(itemid), GetItemRZpos(itemid), 1.0, 1.0, 1.0);
-	}
-	return 1;
-}
 stock LoadHandItem(playerid)
 {
-	switch(GetHandItem(playerid))
+	new itemid = GetHandItem(playerid);
+	
+	if(GetItemType(itemid) != ITEM_WEAPON && GetItemObjectModel(itemid) != 0) // Las armas no porque SAMP las attachea al setear una. Y si posee un objeto visible asociado.
 	{
-		case ITEM_ID_CASCOCOMUN: HelmetToHand(playerid, ITEM_ID_CASCOCOMUN);
-		case ITEM_ID_CASCOMOTOCROSS: HelmetToHand(playerid, ITEM_ID_CASCOMOTOCROSS);
-		case ITEM_ID_CASCOROJO: HelmetToHand(playerid, ITEM_ID_CASCOROJO);
-		case ITEM_ID_CASCOBLANCO: HelmetToHand(playerid, ITEM_ID_CASCOBLANCO);
-		case ITEM_ID_CASCOROSA: HelmetToHand(playerid, ITEM_ID_CASCOROSA);
-		case ITEM_ID_MALETIN: BriefCaseToHand(playerid);
-		case ITEM_ID_BIDON: GasCanToHand(playerid);
+		SetPlayerAttachedObject(playerid, INDEX_ID_HAND, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
 	}
 	return 1;
 }
 
-stock DeleteItemFromHand(playerid)
+stock DeleteHandItem(playerid)
 {
-	RemovePlayerAttachedObject(playerid, 6);
+	RemovePlayerAttachedObject(playerid, INDEX_ID_HAND);
+	return 1;
+}
+
+stock GiveItemHandToHand(playerid, targetid)
+{
+	DeleteHandItem(playerid);
+	LoadHandItem(targetid);
 	return 1;
 }
 
@@ -265,17 +255,4 @@ stock DeleteItemForPlayer(playerid, itemid)
 	return 1;
 }
 
-//===============================GASCAN=========================================
-
-stock GasCanToHand(playerid)
-{
-    SetPlayerAttachedObject(playerid, 6, 1650, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
-    return 1;
-}
-
-stock GiveGasCanHandToHand(playerid, targetid)
-{
-	DeleteItemFromHand(playerid);
-	GasCanToHand(targetid);
-	return 1;
-}
+//================================COMANDOS======================================

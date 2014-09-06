@@ -3,6 +3,10 @@
 #endif
 #define _isamp_drugs_included
 
+//============================SISTEMA DE DROGAS=================================
+
+//================================CONSTANTES====================================
+
 #define ADICTION_UPDATE_TIME    300 // tiempo cada cuanto se actualiza la adiccion, en segundos, 5 min
 #define ADICTION_MARIJUANA 		0.10 // cuanto suma una dosis al total porcentual de adiccion a las drogas
 #define ADICTION_LSD       		0.25
@@ -11,6 +15,7 @@
 #define ADICTION_REHAB_PRICE    14000
 #define ADICTION_ABSTINENCE_MAX 36000 // tiempo maximo para que te pida consumir con el minimo porcentaje de adiccion, en segundos 10 horas
 
+//==============================DATA STORAGE====================================
 
 new
     /* Sistema de adiccion y drogas */
@@ -24,7 +29,12 @@ new
 	bool:DrugEffectCocaine[MAX_PLAYERS],
 	bool:DrugEffectMarijuana[MAX_PLAYERS];
 
-//===========================SISTEMA DE DROGAS==================================
+//===============================FUNCIONES======================================
+
+//======================IMPLEMENTACION DE FUNCIONES=============================
+
+//================================COMANDOS======================================
+
 
 TIMER:CancelDrugTransfer(playerid, timer) {
 	if(timer == 1)

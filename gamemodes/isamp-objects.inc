@@ -73,7 +73,7 @@ stock DropObject(playerid)
 	GetPlayerPos(playerid, ServerObject[j][sX], ServerObject[j][sY], ServerObject[j][sZ]);
 	ServerObject[j][sZ] -= 0.7;
 	SetHandItemAndParam(playerid, 0, 0);
-	DeleteItemFromHand(playerid);
+	DeleteHandItem(playerid);
 	ServerObject[j][sRealObject] = CreateDynamicObject(GetItemObjectModel(ServerObject[j][sItemID]), ServerObject[j][sX], ServerObject[j][sY], ServerObject[j][sZ], 0.0, 0.0, 0.0, GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
     ServerObject[j][sTimeLeft] = SERVER_OBJECT_LIFETIME;
 	SendFMessage(playerid, COLOR_WHITE, "Has depositado un/a %s en el suelo", GetItemName(ServerObject[j][sItemID]) );

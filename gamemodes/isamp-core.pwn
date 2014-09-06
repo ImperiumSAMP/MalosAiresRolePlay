@@ -43,7 +43,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-gangzones.inc"  		//Sistema de control de barrios
 #include "isamp-mapeos.inc"  			//Mapeos del GM
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
-#include "isamp-norespawnautos" 		// Sistema de no respawn autos.
 #include "isamp-animhablar.inc" 		//Sistema de animacion mover las manos cuando hablamos.
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
@@ -960,20 +959,21 @@ public OnGameModeInit() {
 	//SetWeather(weatherVariables[0]);
 
 	//===================================[TIMERS]===============================
-	timersID[0] = SetTimer("accountTimer", 1200000, 1); 						// 20 min. 	- Guardado de cuentas.
-	timersID[1] = SetTimer("fuelTimer", GAS_UPDATE_TIME, 1); 					// 15 seg.   - Actualiza la gasolina de los vehículos.
-	timersID[2] = SetTimer("globalUpdate", 1000, 1);							// 1 seg.   - Actualiza el score y la hora/fecha.
-	timersID[5] = SetTimer("JailTimer", 1000, 1);                               // 1 seg.   - Actualiza el jail de los jugadores.
-	timersID[6] = SetTimer("vehicleTimer", 3400, 1);                            // 3 seg.	- Actualiza motores dañados.
-	timersID[8] = SetTimer("antiCheatTimer", 500, 1);
-	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, 1);                  // Respawn de vehículos de renta.
-	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, 1);   // 5 min.	- Sistema de drogas.
-	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, 1); // 5 min.		- Sistema de hambre y sed.
-	timersID[15] = SetTimer("VHealth", 1000, 1); // Cada 1 seg. -Revisa la vida del auto y si es menor a 400 le vuelve a setear vida 400.
-	timersID[16] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
+	
+	timersID[0] = SetTimer("accountTimer", 1200000, true); 						// 20 min. 	- Guardado de cuentas.
+	timersID[1] = SetTimer("fuelTimer", GAS_UPDATE_TIME, true); 				// 15 seg.   - Actualiza la gasolina de los vehículos.
+	timersID[2] = SetTimer("globalUpdate", 1000, true);							// 1 seg.   - Actualiza el score y la hora/fecha.
+	timersID[5] = SetTimer("JailTimer", 1000, true);                            // 1 seg.   - Actualiza el jail de los jugadores.
+	timersID[6] = SetTimer("vehicleTimer", 1000, true);                    		// 1 seg.	- Actualiza motores dañados y evita explosiones.
+	timersID[8] = SetTimer("antiCheatTimer", 500, true);
+	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, true);               // Respawn de vehículos de renta.
+	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
+	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
+	timersID[15] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
+
 	//====[MENUS]===============================================================
-	new
-		price[32];
+
+	new price[32];
 
 	// Negocio de teléfonos
 	phoneMenu = CreateMenu("Telefonos", 2, 200.0, 100.0, 150.0, 150.0);
@@ -1014,16 +1014,14 @@ public OnGameModeExit() {
 	KillTimer(timersID[6]);
 	KillTimer(timersID[9]);
 	KillTimer(timersID[10]);
+	KillTimer(timersID[12]);
+	KillTimer(timersID[13]);
+	KillTimer(timersID[14]);
 	KillTimer(timersID[15]);
-	KillTimer(timersID[16]);
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
 	}
-
-	KillTimer(timersID[12]);
-	KillTimer(timersID[13]);
-	KillTimer(timersID[14]);
 	TextDrawDestroy(RegTDBorder1);
 	TextDrawDestroy(RegTDBorder2);
 	TextDrawDestroy(RegTDBackground);
@@ -6872,21 +6870,34 @@ public speedoTimer(playerid) {
 	return 1;
 }
 
-public vehicleTimer() {
+public vehicleTimer()
+{
 	new vehicleid;
-	foreach(new i : Player)	{
-		if(IsPlayerInAnyVehicle(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER) {
+	foreach(new i : Player)
+	{
+		if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
+		{
 			vehicleid = GetPlayerVehicleID(i);
 			GetVehicleHealth(vehicleid, VehicleInfo[vehicleid][VehHP]);
-			if(VehicleInfo[vehicleid][VehHP] <= 500 && VehicleInfo[vehicleid][VehType] != VEH_CREATED)	{
-			    GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-				if(VehicleInfo[vehicleid][VehEngine] == 1) {
-					SetVehicleParamsEx(vehicleid, 0, VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], 0, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-					SendClientMessage(i, COLOR_YELLOW2, "¡El motor del vehículo se encuentra dañado, debes llamar a un mecánico!");
-					PlayerDoMessage(i , 15.0, "El motor del vehículo está muy averiado y se ha apagado");
-				}
+			if(VehicleInfo[vehicleid][VehHP] <= 500 && VehicleInfo[vehicleid][VehType] != VEH_CREATED && VehicleInfo[vehicleid][VehEngine] == 1)
+			{
+				SetEngine(vehicleid, 0);
+				SendClientMessage(i, COLOR_YELLOW2, "¡El motor del vehículo se encuentra dañado, debes llamar a un mecánico!");
+				PlayerDoMessage(i , 15.0, "El motor del vehículo está muy averiado y se ha apagado");
 			}
 		}
+	}
+	for(new v = 0; v < MAX_VEHICLES; v++)
+	{
+		new Float:Z_angle;
+	    new Float:vHealth;
+	    GetVehicleHealth(v, vHealth);
+	    if(vHealth < 400)
+	    {
+	         SetVehicleHealth (v, 400);
+			 GetVehicleZAngle(v, Z_angle);
+	         SetVehicleZAngle(v, Z_angle + 0.1); //con esto el vehiculo si esta dado vuelta, vuelve a ponerse como debe.
+	    }
 	}
 }
 
@@ -14088,6 +14099,7 @@ CMD:emisoraoff(playerid, params[])
 }
 
 //==================================CINTURON====================================
+
 CMD:cin(playerid, params[])
 {
 	cmd_cinturon(playerid, params);

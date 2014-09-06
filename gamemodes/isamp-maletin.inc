@@ -9,25 +9,11 @@
 
 #define MAX_DINERO_MALETIN 200000
 
+//==============================DATA STORAGE====================================
+
 //===============================FUNCIONES======================================
 
-forward BriefCaseToHand(playerid); // Crea el objeto visible en la mano del jugador.
-forward GiveBriefCaseHandToHand(playerid, targetid); // Borra el objeto visible de un jugador y se lo asigna a otro.
-
 //======================IMPLEMENTACION DE FUNCIONES=============================
-
-stock BriefCaseToHand(playerid)
-{
-    SetPlayerAttachedObject(playerid, 6, 1210, 5, 0.301999, 0.082999, -0.012000, 0.000000, -90.599975, -0.999999, 1.000000, 1.000000, 1.000000);
-    return 1;
-}
-
-stock GiveBriefCaseHandToHand(playerid, targetid)
-{
-	DeleteItemFromHand(playerid);
-	BriefCaseToHand(targetid);
-	return 1;
-}
 
 //================================COMANDOS======================================
 

@@ -247,7 +247,7 @@ CMD:inventario(playerid, params[]) {
 			    {
 					SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid));
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteItemFromHand(playerid); // Borrado gráfico.
+					DeleteHandItem(playerid); // Borrado gráfico.
 					SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
 				}
   			SetPVarInt(playerid, "cantSaveItems", 1);

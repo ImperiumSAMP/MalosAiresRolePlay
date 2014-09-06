@@ -1,42 +1,58 @@
-#if defined _isamp_lojack_auto
+#if defined _isamp_lojack_included
 	#endinput
 #endif
-#define _isamp_lojack_auto
+#define _isamp_lojack_included
 
-#define GpsPrice    500
-COMMAND:lojack(playerid, params[])
-{
-new vehicleid;                                            // Las variables que vamos a usar despues, vehicleid es para la id del auto en cuestiÃ³n
-new cash = GetPlayerCash(playerid);    // esta detecta directamente cuÃ¡nta plata tiene el jugador (aunque no es estrictamente necesaria es mas entendible)
-new Float: X, Float: Y, Float: Z; //Las pos son valores flotantes (llevan puntos y comas) creamos tres variables flotantes que almacenen las coordenadas, aunq se puede usar un array pero no cambia nada
+//============================SISTEMA DE GPS LOJACK=============================
 
-if (sscanf(params, "d", vehicleid)) return SendClientMessage (playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lojack [VehicleID]"); // la condicion chequea que no hayan sido introducidos correctamente los parametros completos, y de ser asi, retorna mandando el msj con la sintaxis
+//================================CONSTANTES====================================
+
+#define PRICE_GPS   		500
+
+//==============================DATA STORAGE====================================
+
+//===============================FUNCIONES======================================
+
+forward FindGps(playerid);
+
+//======================IMPLEMENTACION DE FUNCIONES=============================
+
+public FindGps(playerid)
 {
-    if(!playerOwnsCar(playerid,vehicleid))
-		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El vehiculo no te pertenece");
+	DisablePlayerCheckpoint(playerid);
+	return 1;
+}
+
+//================================COMANDOS======================================
+
+CMD:lojack(playerid, params[])
+{
+	new
+		vehicleid,
+		Float: X,
+		Float: Y,
+		Float: Z;
+
+	if(sscanf(params, "i", vehicleid))
+		return SendClientMessage (playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lojack [ID vehículo]");
+    if(!playerOwnsCar(playerid, vehicleid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehiculo no te pertenece.");
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Requieres de un telefono para utilizar el Lojack!");
-	foreach(new rplayer : Player)
-			{
-			 if(IsPlayerInVehicle(rplayer,vehicleid)) 
-			     return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes localizar tu vehiculo en este momento.");	
-			}
-    if (cash < GpsPrice) return SendClientMessage (playerid, COLOR_GREY, "No tenÃ©s dinero suficiente para rastrear el vehÃ­culo. ($500)"); // esta parte es entendible supongo, la condicion indica q si la guita del jugador es menor ( < ) a 500, el costo de rastreo, retorna mandando el msj de que necesitas $500
-    {
-        GivePlayerCash (playerid, -GpsPrice);     // resta al jugador el costo de rastreo, $500
-        GetVehiclePos (vehicleid, X, Y, Z); // consigue la posicion de vehicleid, la id del auto a localizar
-        SetPlayerCheckpoint (playerid, X, Y, Z, 3);     // crea el checkpoint, en la posicion, 3 es el tamaÃ±o
-        SendClientMessage (playerid, COLOR_GREY, "Â¡Lograste rastrear el vehÃ­culo!");    // manda msj
-        SetTimerEx ("findgps", 240000, false, "d", playerid); // esto crea un timer de 4 minutos (se mide en milisegs, 240000 = 240 segundos),total cuando llegas al checkpoint y lo sobrepasas desaparece, creamos esto para evitar bugs y q despues de un tiempo desaparezca.
-    }
-}
-return 1;
-}
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Requieres de un telefono para utilizar el Lojack!");
+	if(GetPlayerCash(playerid) < PRICE_GPS)
+		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para rastrear el vehículo. ($500)");
 
-forward findgps (playerid); // declaracion de la funcion (fingps, el nombre de la funcion del timer)
-public findgps (playerid)
-{
-DisablePlayerCheckpoint(playerid); // indica que pasados los 4 minutos, es eliminado el checkpoint.
-return 1;
+	foreach(new i : Player)
+	{
+ 		if(IsPlayerInVehicle(i, vehicleid))
+   			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes localizar tu vehiculo en este momento.");
+	}
+
+	GivePlayerCash(playerid, -PRICE_GPS);
+	GetVehiclePos(vehicleid, X, Y, Z);
+	SetPlayerCheckpoint (playerid, X, Y, Z, 3);
+	SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡Lograste rastrear el vehículo!");
+	SetTimerEx("FindGps", 60 * 1000, false, "i", playerid);
+	return 1;
 }
 
