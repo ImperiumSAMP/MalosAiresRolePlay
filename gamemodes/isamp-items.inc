@@ -123,8 +123,45 @@ forward LoadHandItem(playerid); // Crea el objeto visible que el usuario tenga e
 forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
 forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
 forward DeleteItemFromHand(playerid); // Borra visualmente el objeto que tenga en la mano (por default index 6)
+forward Float:GetItemXpos(itemid); //Devuelve la posición X del objeto en la mano izquierda
+forward Float:GetItemYpos(itemid); //Devuelve la posición Y del objeto en la mano izquierda
+forward Float:GetItemZpos(itemid); //Devuelve la posición Z del objeto en la mano izquierda
+forward Float:GetItemRXpos(itemid); //Devuelve la posición RX del objeto en la mano izquierda
+forward Float:GetItemRYpos(itemid); //Devuelve la posición RY del objeto en la mano izquierda
+forward Float:GetItemRZpos(itemid); //Devuelve la posición RZ del objeto en la mano izquierda
+forward LoadRightHandItem(playerid, itemid = 0); //Crea el objeto visible GENERICO que el usuario tenga en la mano
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
+
+stock Float:GetItemXpos(itemid)
+{
+	return ServerItems[itemid][xpos];
+}
+
+stock Float:GetItemYpos(itemid)
+{
+	return ServerItems[itemid][ypos];
+}
+
+stock Float:GetItemZpos(itemid)
+{
+	return ServerItems[itemid][zpos];
+}
+
+stock Float:GetItemRXpos(itemid)
+{
+	return ServerItems[itemid][rxpos];
+}
+
+stock Float:GetItemRYpos(itemid)
+{
+	return ServerItems[itemid][rypos];
+}
+
+stock Float:GetItemRZpos(itemid)
+{
+	return ServerItems[itemid][rzpos];
+}
 
 stock bool:HasItemInvPermission(itemid)
 {
@@ -175,6 +212,14 @@ stock GiveItemHandToHand(playerid, targetid, itemid)
 	return 1;
 }
 
+stock LoadRightHandItem(playerid, itemid = 0)
+{
+	if(GetItemObjectModel(itemid) != 0)
+	{
+	    SetPlayerAttachedObject(playerid, 6, GetItemObjectModel(itemid), 5, GetItemXpos(itemid), GetItemYpos(itemid), GetItemZpos(itemid), GetItemRXpos(itemid), GetItemRYpos(itemid), GetItemRZpos(itemid), 1.0, 1.0, 1.0);
+	}
+	return 1;
+}
 stock LoadHandItem(playerid)
 {
 	switch(GetHandItem(playerid))
