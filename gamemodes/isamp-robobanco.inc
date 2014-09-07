@@ -83,6 +83,7 @@ stock ResetRobberyGroup(playerid)
 	    {
 	    	RobberyGroupNumber[RobberyGroup[playerid][MembersID][i]] = ROBBERY_GROUP_NONE;
 	    	PlayerRobberyStage[RobberyGroup[playerid][MembersID][i]] = 0;
+	    	RobberyGroup[playerid][MembersID][i] = INVALID_PLAYER_ID;
 		}
 	}
 	RobberyGroup[playerid][RobberyStage] = 0;
