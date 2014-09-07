@@ -71,6 +71,18 @@ stock isPlayerSideOnDuty(playerid){
 	return PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1;
 }
 
+forward CountCopsOnDuty();
+stock CountCopsOnDuty()
+{
+	new aux;
+ 	foreach(new i : Player)
+ 	{
+        if(isPlayerCopOnDuty(i))
+    	    aux ++;
+ 	}
+ 	return aux;
+}
+
 //=======================COMANDOS DE ADMIN PARA FACCIONES=======================
 
 CMD:afacciones(playerid, params[]) {

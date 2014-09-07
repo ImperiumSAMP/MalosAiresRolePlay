@@ -30,6 +30,7 @@
 #define ITEM_ID_REPUESTOAUTO    61
 #define ITEM_ID_BARRETA        	62
 
+#define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
 
 #define INDEX_ID_HAND      		6 // Por ahora se elige este index arbitrario para manejar la mano.
