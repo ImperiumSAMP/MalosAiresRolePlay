@@ -11,7 +11,7 @@
 #define DINERO_BOVEDA     		200000
 
 #define MIN_DUTYCOPS_NEEDED  	3
-#define MIN_GROUPMEMBERS_NEEDED 4
+#define MIN_THIEFS_NEEDED 		4
 
 #define ROBBERY_GROUP_NONE      -1
 
@@ -19,7 +19,7 @@
 #define POS_BANK_DOOR_Y         -15.85
 #define POS_BANK_DOOR_Z         26.74
 
-#define STAGE_COMPLETED         MIN_GROUPMEMBERS_NEEDED
+#define STAGE_COMPLETED         MIN_THIEFS_NEEDED
 
 #define STAGE_INICIO_ROBO       0
 #define STAGE_REDUCIR_ENTORNO   1
@@ -47,12 +47,20 @@ new RobberyGroup[MAX_PLAYERS][RobberyGroupInfo],
 
 //===============================FUNCIONES======================================
 
-forward ResetBankRobberyGroup(playerid);
+forward ResetRobberyGroup(playerid);
 forward bool:AddRobberyGroupMember(leaderid, playerid); // Agrega a "playerid" como miembro del grupo de robo del lider "leaderid". Si tuvo éxito, devuelve true. Si no hay espacio, false.
-forward CountRobberyGroupMembers(leaderGroup); // Cuenta la cantidad de miembros conectados que hay en un grupo de robo (no incluye al lider).
+forward CountRobberyGroupMembers(leaderGroup); // Cuenta la cantidad de miembros conectados que hay en un grupo de robo (incluye al lider).
 forward CancelGroupOffer(playerid, reason);
 forward PrintRobberyGroupForPlayer(leaderid, playerid); // Imprime los miembros del grupo de "liderid" al jugador "playerid". Cabe mencionar que en este sistema, la id del lider coincide con la del grupo.
 forward GetRobberyGroupStage(group); // Devuelve la etapa en la que se encuentra el grupo de robo.
+
+forward TimeReducirEntorno(playerid);
+forward TimeDetonacionPuerta(playerid);
+forward TimeDetonacionBoveda(playerid);
+forward TimeDineroBoveda(playerid);
+forward TimeHoldMoney(playerid);
+
+forward IsPlayerRobberyGroupLider(playerid); // Devuelve true si el jugador es lider de un grupo, false en caso contrario.
 
 //======================IMPLEMENTACION DE FUNCIONES=============================
 
@@ -61,11 +69,24 @@ stock GetRobberyGroupStage(group)
 	return RobberyGroup[group][RobberyStage];
 }
 
+stock IsPlayerRobberyGroupLider(playerid)
+{
+    return (RobberyGroup[playerid][ActiveLeadership] == true && RobberyGroupNumber[playerid] == playerid);
+}
+
 stock ResetRobberyGroup(playerid)
 {
 	RobberyGroup[playerid][ActiveLeadership] = false;
 	for(new i = 0; i < MAX_GROUP_MEMBERS; i++)
-		RobberyGroup[playerid][MembersID][i] = INVALID_PLAYER_ID;
+	{
+	    if(RobberyGroup[playerid][MembersID][i] != INVALID_PLAYER_ID)
+	    {
+	    	RobberyGroupNumber[RobberyGroup[playerid][MembersID][i]] = ROBBERY_GROUP_NONE;
+	    	PlayerRobberyStage[RobberyGroup[playerid][MembersID][i]] = 0;
+		}
+	}
+	RobberyGroup[playerid][RobberyStage] = 0;
+	RobberyGroup[playerid][RobberyStageProgress] = 0;
     RobberyGroupNumber[playerid] = ROBBERY_GROUP_NONE;
     GroupOffer[playerid] = INVALID_PLAYER_ID;
 	HoldingMoneyTimer[playerid] = 0;
@@ -139,6 +160,51 @@ stock PrintRobberyGroupForPlayer(leaderid, playerid)
 
 //================================COMANDOS======================================
 
+CMD:grupoayuda(playerid, params[])
+{
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
+
+	SendClientMessage(playerid, COLOR_WHITE, "[Comandos]: /grupocrear /grupoeliminar /grupoinfo /grupoinvitar /grupoaceptar /grupocancelar /grupoexpulsar");
+	SendClientMessage(playerid, COLOR_WHITE, "[Info]: Para asaltar un banco, deberás crear un grupo e invitar a otros delincuentes para que se unan a este.");
+	SendClientMessage(playerid, COLOR_WHITE, "[Comandos]: /gruporobarbanco /gruporeducirentorno /grupodetonarpuerta /grupodetonarboveda /gruporobardinero");
+	return 1;
+}
+
+CMD:grupoexpulsar(playerid, params[])
+{
+	new
+		memberslot,
+		memberid;
+
+	if(!IsPlayerRobberyGroupLider(playerid))
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No eres lider de ningún grupo de robo.");
+	if(sscanf(params, "i", memberslot))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /grupoexpulsar  [slot miembro]");
+	if(memberslot < 0 || memberslot > MAX_GROUP_MEMBERS)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot de miembro inválido. Puedes mirarlo en /grupoinfo.");
+	memberid = RobberyGroup[playerid][MembersID][memberslot];
+	if(memberid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No figura ningún miembro en ese slot. Puedes mirarlo en /grupoinfo.");
+	
+	SendFMessage(playerid, COLOR_WHITE, "Has expulsado a %s del grupo de robo.", GetPlayerNameEx(memberid));
+	SendFMessage(memberid, COLOR_WHITE, "Has sido expulsado por %s del grupo de robo.", GetPlayerNameEx(playerid));
+	RobberyGroupNumber[memberid] = ROBBERY_GROUP_NONE;
+	PlayerRobberyStage[memberid] = 0;
+	RobberyGroup[playerid][MembersID][memberslot] = INVALID_PLAYER_ID;
+	return 1;
+}
+
+CMD:grupoeliminar(playerid, params[])
+{
+	if(!IsPlayerRobberyGroupLider(playerid))
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No eres lider de ningún grupo de robo.");
+    	
+	ResetRobberyGroup(playerid);
+	SendClientMessage(playerid, COLOR_WHITE, "Has eliminado el grupo de robo del cual eras lider. Mas info en /grupoayuda.");
+	return 1;
+}
+
 CMD:grupocrear(playerid, params[])
 { 
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
@@ -150,8 +216,7 @@ CMD:grupocrear(playerid, params[])
 	
     RobberyGroup[playerid][ActiveLeadership] = true;
     RobberyGroupNumber[playerid] = playerid; // La id del grupo es la id del leader.
-	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Malos Aires.");
-	SendClientMessage(playerid, COLOR_WHITE, "Para ver los miembros del grupo utiliza /grupomiembros. Par mas ayuda usa /grupoayuda.");
+	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Malos Aires. Mas info en /grupoayuda.");
   	return 1;
 }
 
@@ -160,6 +225,7 @@ CMD:grupoinfo(playerid, params[])
 	new
 		group = RobberyGroupNumber[playerid],
 		str[128];
+		
 	if(group != ROBBERY_GROUP_NONE)
 	{
 	    PrintRobberyGroupForPlayer(group, playerid);
@@ -171,7 +237,7 @@ CMD:grupoinfo(playerid, params[])
 	        case STAGE_DETONAR_BOVEDA: format(str, sizeof(str), "Detonación de la bóveda");
 	        case STAGE_TOMAR_DINERO: format(str, sizeof(str), "Extracción de dinero de la bóveda");
 		}
-	    SendFMessage(playerid, COLOR_WHITE, "Etapa: %s - Progreso: %d de %d", str, RobberyGroup[group][RobberyStageProgress], MIN_GROUPMEMBERS_NEEDED);
+	    SendFMessage(playerid, COLOR_WHITE, "Etapa: %s - Progreso: %d de %d", str, RobberyGroup[group][RobberyStageProgress], MIN_THIEFS_NEEDED);
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "============================================================");
 	}
 	return 1;
@@ -181,7 +247,7 @@ CMD:grupoinvitar(playerid, params[])
 {
 	new targetid;
 
-	if(RobberyGroup[playerid][ActiveLeadership])
+	if(IsPlayerRobberyGroupLider(playerid))
 	{
 		if(sscanf(params, "u", targetid))
 	    	return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /grupoinvitar  [ID/Jugador]");
@@ -242,20 +308,20 @@ CMD:grupocancelar(playerid, params[])
 
 //================================COMANDOS======================================
 
-CMD:robarbanco(playerid, params[])
+CMD:gruporobarbanco(playerid, params[])
 {
-	if(!RobberyGroup[playerid][ActiveLeadership])
+	if(!IsPlayerRobberyGroupLider(playerid))
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
 	if(!IsPlayerInRangeOfPoint(playerid, 10.0, POS_BANK_DOOR_X, POS_BANK_DOOR_Y, POS_BANK_DOOR_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Deben estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
-	for(new i = 0; i < MIN_GROUPMEMBERS_NEEDED; i++)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+	for(new i = 0; i < MIN_THIEFS_NEEDED; i++)
  	{
 		if(!IsPlayerInRangeOfPoint(RobberyGroup[playerid][MembersID][i], 10.0, POS_BANK_DOOR_X, POS_BANK_DOOR_Y, POS_BANK_DOOR_Z))
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "Deben estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
 	}
  	if(CountCopsOnDuty() < MIN_DUTYCOPS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Deben haber minimo tres policias en servicio conectados.");
-	if(CountRobberyGroupMembers(playerid) < MIN_GROUPMEMBERS_NEEDED)
+	if(CountRobberyGroupMembers(playerid) < MIN_THIEFS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 	if(GetRobberyGroupStage(playerid) != STAGE_INICIO_ROBO)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu grupo ya se encuentra en una etapa mas avanzada del robo.");
@@ -263,7 +329,8 @@ CMD:robarbanco(playerid, params[])
  	RobberyGroup[playerid][RobberyStage] = STAGE_REDUCIR_ENTORNO;
  	RobberyGroup[playerid][RobberyStageProgress] = 0;
  	PoliceBankRobberyAlarm();
- 	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Comienzas a robar el banco de malos aires, reduce a los rehenes, detona las bovedas y llevate el dinero.");
+ 	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Comienzas a robar el banco de malos aires. Tienes que hacerlo rapido pues la alarma silenciosa avisó a la policía.");
+ 	SendClientMessage(playerid, COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
  	return 1;
 }
 
@@ -283,13 +350,15 @@ stock PoliceBankRobberyAlarm()
 }
 
 
-CMD:reducirentorno(playerid, params[])
+CMD:gruporeducirentorno(playerid, params[])
 {
+	if(RobberyGroupNumber[playerid] == ROBBERY_GROUP_NONE)
+    	return 1;
 	if(PlayerRobberyStage[playerid] != STAGE_INICIO_ROBO)
 	    return 1;
 	if(GetRobberyGroupStage(RobberyGroupNumber[playerid]) != STAGE_REDUCIR_ENTORNO)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
-  	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_GROUPMEMBERS_NEEDED)
+  	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 
 	PlayerActionMessage(playerid, 15.0, "toma su arma y apunta a las personas que estan en el lugar, haciendo que estas se tiren al suelo.");
@@ -314,7 +383,7 @@ public TimeReducirEntorno(playerid)
 
 //==============================================================================
 
-CMD:detonarpuerta(playerid, params[])
+CMD:grupodetonarpuerta(playerid, params[])
 {
 	if(RobberyGroupNumber[playerid] == ROBBERY_GROUP_NONE)
     	return 1;
@@ -322,7 +391,7 @@ CMD:detonarpuerta(playerid, params[])
 	    return 1;
 	if(GetRobberyGroupStage(RobberyGroupNumber[playerid]) != STAGE_DETONAR_PUERTA)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
-	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_GROUPMEMBERS_NEEDED)
+	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
         return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 
 	PlayerActionMessage(playerid, 15.0, "coloca un detonador en la puerta de entrada hacia las bovedas y se aleja esperando la explosión");
@@ -346,7 +415,7 @@ public TimeDetonacionPuerta(playerid)
 				
 //==============================================================================
 
-CMD:detonarboveda(playerid, params[])
+CMD:grupodetonarboveda(playerid, params[])
 {
 	if(RobberyGroupNumber[playerid] == ROBBERY_GROUP_NONE)
     	return 1;
@@ -354,7 +423,7 @@ CMD:detonarboveda(playerid, params[])
 	    return 1;
 	if(GetRobberyGroupStage(RobberyGroupNumber[playerid]) != STAGE_DETONAR_BOVEDA)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
- 	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_GROUPMEMBERS_NEEDED)
+ 	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 
 	PlayerActionMessage(playerid, 15.0, "coloca un detonador en la puerta de entrada hacia las bovedas y se aleja esperando la explosión.");
@@ -377,17 +446,17 @@ public TimeDetonacionBoveda(playerid)
 		
 //==============================================================================
 
-CMD:tomardineroboveda(playerid, params[])
+CMD:gruporobardinero(playerid, params[])
 {	
 	if(RobberyGroupNumber[playerid] == ROBBERY_GROUP_NONE)
     	return 1;
 	if(PlayerRobberyStage[playerid] != STAGE_DETONAR_BOVEDA)
 	    return 1;
-	if(!RobberyGroup[playerid][ActiveLeadership])
+	if(IsPlayerRobberyGroupLider(playerid))
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
 	if(GetRobberyGroupStage(RobberyGroupNumber[playerid]) != STAGE_TOMAR_DINERO)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
-   	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_GROUPMEMBERS_NEEDED)
+   	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una bolsa y comienza a retirar dinero de la boveda.");

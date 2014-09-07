@@ -28,11 +28,11 @@ stock HelmetToHead(playerid, itemid)
 	{
 		switch(itemid)
 		{
-		    case ITEM_ID_CASCOCOMUN: SetPlayerAttachedObject(playerid, 8, 18645, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
-		    case ITEM_ID_CASCOMOTOCROSS: SetPlayerAttachedObject(playerid, 8, 18976, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
-		    case ITEM_ID_CASCOROJO: SetPlayerAttachedObject(playerid, 8, 18977, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
-		    case ITEM_ID_CASCOBLANCO: SetPlayerAttachedObject(playerid, 8, 18978, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
-		    case ITEM_ID_CASCOROSA: SetPlayerAttachedObject(playerid, 8, 18979, 2, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
+		    case ITEM_ID_CASCOCOMUN: SetPlayerAttachedObject(playerid, 8, 18645, BONE_ID_HEAD, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
+		    case ITEM_ID_CASCOMOTOCROSS: SetPlayerAttachedObject(playerid, 8, 18976, BONE_ID_HEAD, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
+		    case ITEM_ID_CASCOROJO: SetPlayerAttachedObject(playerid, 8, 18977, BONE_ID_HEAD, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
+		    case ITEM_ID_CASCOBLANCO: SetPlayerAttachedObject(playerid, 8, 18978, BONE_ID_HEAD, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
+		    case ITEM_ID_CASCOROSA: SetPlayerAttachedObject(playerid, 8, 18979, BONE_ID_HEAD, 0.070000, 0.000000, 0.000000, 88.000000, 77.000000, 0.000000);
 			default: return 1;
 	    }
 	    EditAttachedObject(playerid, 8);

@@ -901,12 +901,6 @@ forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
-forward TimeReducirEntorno(playerid);
-forward TimeDetonacionPuerta(playerid);
-forward TimeDetonacionBoveda(playerid);
-forward TimeDineroBoveda(playerid);
-forward TimeHoldMoney(playerid);
-
 
 //==============================================================================
 
