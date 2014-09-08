@@ -10,6 +10,8 @@
 #define POS_CAR_DEMOLITION_X 	2199.0042
 #define POS_CAR_DEMOLITION_Y	-2033.5476
 #define POS_CAR_DEMOLITION_Z 	13.5339
+
+#define STOLEN_CAR_MISSING_TIME 60 // En minutos, tiempo hasta que vuelva a aparecer una vez demolido.
 	
 // Falta fijar cooldowns de ganzua puente y demoler? y ademas fijar limite por payday?
 // No cuenta en intentos fallidos de puente o ganzua. Falta subir experiencia por intentos exitosos.
@@ -48,13 +50,9 @@ CMD:demoler(playerid, params[])
     repuestos = (floatround(vehiclehp, floatround_round) / 125) * 2;
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
     LoadHandItem(playerid);
-    foreach(new i : Player)
-    {
-		if(IsPlayerInVehicle(i, vehicleid))
-		    RemovePlayerFromVehicle(i);
-	}
+    SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
     SetVehiclePos(vehicleid, 8888.0, 8888.0, 0.0);
-    SetTimerEx("RespawnDemolishedVehicle", 60 * 60 * 1000, false, "i", vehicleid);
+    SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
     PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
     SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
 	// fijaer cooldown para volver a demoler? o un maximo de hasta X por payday (con o sin cooldown entre demolers?) Mismo para /puente

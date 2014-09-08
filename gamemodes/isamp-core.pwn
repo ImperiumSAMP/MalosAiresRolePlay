@@ -85,7 +85,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 #define POS_POLICE_DUTY_X 		221.3295
 #define POS_POLICE_DUTY_Y       185.9018
-#define POS_POLICE_DUTY_Z       1002.4682
+#define POS_POLICE_DUTY_Z       1002.7682
 
 #define POS_SIDE_DUTY_X         261.8023
 #define POS_SIDE_DUTY_Y			109.7926
@@ -5009,7 +5009,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 	} else if(pickupid == P_CAR_DEMOLITION) {
 		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
-			GameTextForPlayer(playerid, "~w~Utiliza /demoler para desarmar el vehículo robado.", 2000, 4);
+			GameTextForPlayer(playerid, "~w~Utiliza /demoler para desarmar el vehiculo robado.", 2000, 4);
 		return 1;
 		
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
@@ -7760,7 +7760,7 @@ stock LoadPickups() {
 
 	// Departamentos Bracone y Mercier
 	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
-	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo.", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);

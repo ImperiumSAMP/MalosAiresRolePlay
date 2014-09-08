@@ -76,7 +76,7 @@ stock DropObject(playerid)
 	DeleteHandItem(playerid);
 	ServerObject[j][sRealObject] = CreateDynamicObject(GetItemObjectModel(ServerObject[j][sItemID]), ServerObject[j][sX], ServerObject[j][sY], ServerObject[j][sZ], 0.0, 0.0, 0.0, GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
     ServerObject[j][sTimeLeft] = SERVER_OBJECT_LIFETIME;
-	SendFMessage(playerid, COLOR_WHITE, "Has depositado un/a %s en el suelo", GetItemName(ServerObject[j][sItemID]) );
+	SendFMessage(playerid, COLOR_WHITE, "Has depositado un/a %s en el suelo.", GetItemName(ServerObject[j][sItemID]) );
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
@@ -102,7 +102,7 @@ stock TakeObject(playerid)
 
 	SetHandItemAndParam(playerid, ServerObject[j][sItemID], ServerObject[j][sAmount]);
 	LoadHandItem(playerid);
-	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo", GetItemName(ServerObject[j][sItemID]) );
+	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[j][sItemID]) );
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	ResetObject(j);
 	return 1;
