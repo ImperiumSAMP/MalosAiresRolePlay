@@ -5009,7 +5009,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 	} else if(pickupid == P_CAR_DEMOLITION) {
 		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
-			GameTextForPlayer(playerid, "~w~Utiliza /demoler para obtener ganancias del auto robado", 2000, 4);
+			GameTextForPlayer(playerid, "~w~Utiliza /demoler para desarmar el vehículo robado.", 2000, 4);
 		return 1;
 		
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
@@ -7752,7 +7752,7 @@ stock LoadPickups() {
 	P_HOSP_HEAL = CreateDynamicPickup(1240, 1, POS_HOSP_HEAL_X, POS_HOSP_HEAL_Y, POS_HOSP_HEAL_Z + 1.0, -1);
 	
 	// Robo de autos
-	P_CAR_DEMOLITION = CreateDynamicPickup(1239, 1, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z + 1.0, -1);
+	P_CAR_DEMOLITION = CreateDynamicPickup(1239, 1, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z, -1);
 	
 	// Licencia de armas
 	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);

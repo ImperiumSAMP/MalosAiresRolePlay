@@ -11,6 +11,9 @@
 #define POS_CAR_DEMOLITION_Y	-2033.5476
 #define POS_CAR_DEMOLITION_Z 	13.5339
 	
+// Falta fijar cooldowns de ganzua puente y demoler? y ademas fijar limite por payday?
+// No cuenta en intentos fallidos de puente o ganzua. Falta subir experiencia por intentos exitosos.
+	
 //============================FUNCIONES PUBLICAS================================
 
 //============================FUNCIONES INTERNAS================================
@@ -33,23 +36,37 @@ CMD:demoler(playerid, params[])
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento de conductor de un vehículo!");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes demoler un auto robado el cualquier lugar.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes demoler un auto robado en cualquier lugar.");
 	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes demoler vehículos personales)");
 	if(playerHasCarKey(playerid, vehicleid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes demoler un auto del cual tienes las llaves.");
 	if(GetHandItem(playerid) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tus manos para agarrar los repuestos.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
 
  	GetVehicleHealth(vehicleid, vehiclehp);
     repuestos = (floatround(vehiclehp, floatround_round) / 125) * 2;
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
     LoadHandItem(playerid);
-    SetVehicleToRespawn(vehicleid);
-    PlayerActionMessage(playerid, 15.0, "Le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuele.");
-    SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto", repuestos);
+    foreach(new i : Player)
+    {
+		if(IsPlayerInVehicle(i, vehicleid))
+		    RemovePlayerFromVehicle(i);
+	}
+    SetVehiclePos(vehicleid, 8888.0, 8888.0, 0.0);
+    SetTimerEx("RespawnDemolishedVehicle", 60 * 60 * 1000, false, "i", vehicleid);
+    PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
+    SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
 	// fijaer cooldown para volver a demoler? o un maximo de hasta X por payday (con o sin cooldown entre demolers?) Mismo para /puente
 	// Congelar auto en 9999.9999.9999 por X tiempo? o respawnear al toque.
+	// ver ganancia (repuestos) x precio de auto
+	return 1;
+}
+
+forward RespawnDemolishedVehicle(vehicleid);
+public RespawnDemolishedVehicle(vehicleid)
+{
+	SetVehicleToRespawn(vehicleid);
 	return 1;
 }
 
@@ -65,7 +82,7 @@ CMD:ganzua(playerid, params[])
 	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para poder robar autos.");
 	if(IsPlayerInAnyVehicle(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba de un vehiculo!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
 	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus manos.");
 	if(vehicleid == INVALID_VEHICLE_ID)
@@ -74,8 +91,8 @@ CMD:ganzua(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas está abiertas.");
 
   	TogglePlayerControllable(playerid, false);
-  	PlayerActionMessage(playerid, 15.0, "Toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo");
-    SendClientMessage(playerid, COLOR_WHITE, "Forzando la cerradura, aguarda un momento...");
+  	PlayerActionMessage(playerid, 15.0, "toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo");
+    SendClientMessage(playerid, COLOR_WHITE, "Comienzas a trabajar en la cerradura del vehículo, aguarda un momento...");
     SetTimerEx("UsarGanzua", 20 * 1000, 0, "ii", playerid, vehicleid);
     
     if(random(10) > 4)
@@ -87,7 +104,7 @@ CMD:ganzua(playerid, params[])
 		{
 		    if(isPlayerCopOnDuty(i))
 		    {
-		        SendClientMessage(i, COLOR_PMA, "[Dpto. de policía]: un civil ha reportado un robo de auto. Hemos marcado la ubicacion en el radar.");
+		        SendClientMessage(i, COLOR_PMA, "[Dpto. de policía]: Un civil ha reportado un robo de auto en curso. Hemos marcado la ubicacion en el radar.");
                 SendFMessage(i, COLOR_PMA, "[Dpto. de policía]: El modelo del vehículo es un %s y la zona es %s.", GetVehicleName(vehicleid), location);
                 SetPlayerCheckpoint(i, pos[0], pos[1], pos[2], 3.0);
 			}
@@ -137,7 +154,7 @@ CMD:puente(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El motor del vehículo ya se encuentra prendido.");
 	    
   	TogglePlayerControllable(playerid, false);
-  	PlayerActionMessage(playerid, 15.0, "Se inclina hacia abajo en el asiento del conductor y realiza unas maniobras");
+  	PlayerActionMessage(playerid, 15.0, "se inclina hacia abajo en el asiento del conductor y realiza unas maniobras.");
     SendClientMessage(playerid, COLOR_WHITE, "Desarmas la parte inferior del tablero y trabajas en el cableado. Aguarda un momento...");
     SetTimerEx("PuenteMotor", 20 * 1000, 0, "ii", playerid, vehicleid);
 	return 1;
