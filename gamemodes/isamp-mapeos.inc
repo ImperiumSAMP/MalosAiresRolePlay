@@ -424,6 +424,43 @@ stock removeBuildings(playerid) {
     RemoveBuildingForPlayer(playerid, 1308, 2519.9531, -1942.0469, 11.4609, 0.25);
     RemoveBuildingForPlayer(playerid, 671, 2536.7344, -1968.2500, 12.8828, 0.25);
     RemoveBuildingForPlayer(playerid, 671, 2536.1172, -1947.9766, 12.8828, 0.25);
+    
+    //=========================BOLICHE FRENTE A LA PLAYA========================
+	RemoveBuildingForPlayer(playerid, 6076, 836.5859, -1743.2969, 19.6094, 0.25);
+	RemoveBuildingForPlayer(playerid, 6098, 836.5859, -1743.2969, 19.6094, 0.25);
+	
+	//=======================FIX CASA CON CAÑON=================================
+	RemoveBuildingForPlayer(playerid, 2046, 2806.2266, -1174.5703, 1026.3594, 0.25);
+	RemoveBuildingForPlayer(playerid, 2049, 2805.2109, -1173.4922, 1026.5234, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2810.3047, -1172.8516, 1025.2109, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2810.3047, -1172.8516, 1025.0469, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2810.3047, -1172.8516, 1024.8750, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2810.3047, -1172.8516, 1024.7031, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2811.6016, -1172.8516, 1024.8750, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2811.6016, -1172.8516, 1024.7031, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2811.6016, -1172.8516, 1025.0469, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2811.6016, -1172.8516, 1025.2109, 0.25);
+	RemoveBuildingForPlayer(playerid, 2048, 2805.2109, -1172.0547, 1026.8906, 0.25);
+	RemoveBuildingForPlayer(playerid, 2055, 2805.1953, -1170.5391, 1026.5078, 0.25);
+	RemoveBuildingForPlayer(playerid, 2060, 2810.0234, -1171.2266, 1024.7031, 0.25);
+	RemoveBuildingForPlayer(playerid, 2064, 2810.8359, -1171.8984, 1025.2031, 0.25);
+	RemoveBuildingForPlayer(playerid, 2068, 2809.2031, -1169.3672, 1027.5313, 0.25);
+	RemoveBuildingForPlayer(playerid, 1821, 2810.5938, -1167.6172, 1024.5625, 0.25);
+	RemoveBuildingForPlayer(playerid, 2053, 2810.6094, -1167.5781, 1024.6328, 0.25);
+	RemoveBuildingForPlayer(playerid, 2058, 2809.6406, -1165.3359, 1024.5781, 0.25);
+	RemoveBuildingForPlayer(playerid, 2297, 2811.0234, -1165.0625, 1024.5625, 0.25);
+	RemoveBuildingForPlayer(playerid, 2050, 2813.1250, -1173.3359, 1026.3359, 0.25);
+	RemoveBuildingForPlayer(playerid, 2051, 2813.1250, -1171.2891, 1026.3359, 0.25);
+	RemoveBuildingForPlayer(playerid, 2121, 2813.9531, -1172.4609, 1025.0859, 0.25);
+	RemoveBuildingForPlayer(playerid, 2121, 2815.3828, -1172.4844, 1025.0859, 0.25);
+	RemoveBuildingForPlayer(playerid, 2156, 2813.6484, -1167.0000, 1024.5703, 0.25);
+	RemoveBuildingForPlayer(playerid, 2047, 2817.3125, -1170.9688, 1031.1719, 0.25);
+	RemoveBuildingForPlayer(playerid, 2160, 2815.8984, -1164.9063, 1024.5625, 0.25);
+	RemoveBuildingForPlayer(playerid, 2159, 2817.2656, -1164.9063, 1024.5625, 0.25);
+	RemoveBuildingForPlayer(playerid, 2157, 2818.7109, -1173.9531, 1024.5703, 0.25);
+	RemoveBuildingForPlayer(playerid, 2157, 2818.6406, -1164.9063, 1024.5625, 0.25);
+	RemoveBuildingForPlayer(playerid, 2046, 2819.4453, -1174.0000, 1026.3594, 0.25);
+	RemoveBuildingForPlayer(playerid, 2157, 2820.6328, -1167.3125, 1024.5703, 0.25);
 }
 
 stock LoadMap() {
@@ -5700,9 +5737,163 @@ stock LoadMap() {
 	CreateDynamicObject(19462, 1465.81897, -1355.73730, 153.70970,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(1506, 1465.65515, -1350.94812, 153.79250,   0.00000, 0.00000, 0.00000);
 
-//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
-//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
-//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
+
+	//=========================BOLICHE FRENTE A LA PLAYA============================
+	Textura = CreateDynamicObject(6098, 836.58588, -1743.29688, 19.60940,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 2369, "shopping_acc", "CJ_Black_metal", 0xFFF3F3F3);
+	SetDynamicObjectMaterial(Textura, 1, 6205, "lawartg", "luxorwall01_128", 0xFF3C3C46);
+	SetDynamicObjectMaterial(Textura, 4, 7308, "vgnshopnmall", "gaulle_3", -1);
+
+	//=============================ANTRO BAR BOLICHE================================
+	CreateObject(18024, 2000.00000, 2000.00000, 1003.95313,   0.00000, 0.00000, 0.00000);
+	Textura = CreateDynamicObject(17951, 2002.74243, 1990.13135, 1002.60651,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 5791, "shutters_lawn", "shutter02LA", -1);
+	Textura = CreateDynamicObject(17951, 1992.62231, 1990.13135, 1002.60651,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 5791, "shutters_lawn", "shutter03LA", -1);
+	CreateDynamicObject(2649, 1997.66479, 2008.50806, 1003.26660,   0.00000, 90.00000, -90.00000);
+	CreateDynamicObject(2649, 2004.20020, 2008.52759, 1005.60217,   0.00000, 90.00000, -90.00000);
+	CreateDynamicObject(2653, 1992.61719, 2006.24097, 1006.50000,   0.00000, 180.00000, 90.00000);
+	CreateDynamicObject(2653, 2001.25586, 2005.05225, 1006.44800,   0.00000, 180.00000, 0.00000);
+	CreateDynamicObject(2649, 1993.83154, 2001.61572, 1005.90540,   90.00000, -90.00000, -90.00000);
+	CreateDynamicObject(1497, 1996.89905, 1990.12598, 1000.78943,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19359, 1997.47803, 1990.09668, 1001.74658,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19157, 1992.56299, 2005.40942, 1007.18939,   180.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19159, 1992.56567, 2005.40796, 1004.43866,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14439, 1994.18799, 1999.19556, 1006.15582,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19143, 1994.26880, 2003.20752, 1004.60883,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18724, 1992.56567, 2005.40796, 1004.43872,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19144, 1993.90869, 2003.20752, 1004.60883,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19145, 1993.56860, 2003.20752, 1004.60883,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19146, 1993.22852, 2003.20752, 1004.60883,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19147, 3992.88843, 2003.20752, 1004.60883,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19148, 1994.66797, 2003.22339, 1004.60883,   0.00000, 0.00000, -157.02000);
+	CreateDynamicObject(19149, 1992.50806, 2003.22339, 1004.60883,   0.00000, 0.00000, -157.02000);
+	CreateDynamicObject(19150, 1992.08813, 2003.22339, 1004.60883,   0.00000, 0.00000, -157.02000);
+	CreateDynamicObject(19151, 1991.70801, 2003.22339, 1004.60883,   0.00000, 0.00000, -157.02000);
+	CreateDynamicObject(19152, 1991.26807, 2003.22339, 1004.60883,   0.00000, 0.00000, -157.02000);
+	CreateDynamicObject(2780, 1993.90527, 2007.79639, 1006.4859,   20.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2232, 1994.90942, 2004.42627, 1001.88159,   0.00000, 0.00000, 14.40000);
+	CreateDynamicObject(2232, 1990.64819, 2004.46704, 1001.88159,   0.00000, 0.00000, 30.78000);
+	CreateDynamicObject(2232, 1990.65454, 2008.34082, 1001.88159,   0.00000, 0.00000, 55.44000);
+	CreateDynamicObject(2232, 1990.64819, 2004.46704, 1003.07385,   0.00000, 0.00000, 30.78000);
+	CreateDynamicObject(2232, 1990.65454, 2008.34082, 1003.07800,   0.00000, 0.00000, 55.44000);
+	CreateDynamicObject(2878, 2009.22241, 1997.53003, 1002.19733,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(2878, 2007.73999, 2001.25928, 1002.19733,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(19359, 2008.55933, 2001.34814, 1002.33771,   0.00000, 0.00000, 90.00000);
+	Textura = CreateDynamicObject(1432, 2003.26514, 1991.83252, 1000.90460,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 2003.26514, 1994.85254, 1000.90460,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 2000.80908, 1993.15820, 1000.90460,   0.00000, 0.00000, 180.00000);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1991.77026, 1991.85913, 1000.90460,   0.00000, 0.00000, 212.82002);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1991.45825, 1994.74951, 1000.90460,   0.00000, 0.00000, 137.52005);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1994.59473, 1992.11475, 1000.90460,   0.00000, 0.00000, 208.13997);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1994.39111, 1994.91089, 1000.90460,   0.00000, 0.00000, 260.75992);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1992.71582, 1997.16992, 1000.90460,   0.00000, 0.00000, 300.41998);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1991.36377, 1999.92407, 1000.90460,   0.00000, 0.00000, 240.12000);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(1432, 1994.62622, 1999.40063, 1000.90460,   0.00000, 0.00000, 209.87993);
+	SetDynamicObjectMaterial(Textura, 2, 1810, "cj_seating", "CJ_SHEET2", -1);
+	CreateDynamicObject(1486, 1995.10425, 2004.26611, 1002.63257,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1486, 1999.86279, 2006.89868, 1001.90698,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1509, 2001.60376, 4007.03979, 1001.96002,   0.00000, 0.00000, 51.72000);
+	CreateDynamicObject(1541, 2001.45850, 2007.37939, 1001.95502,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1547, 2002.64136, 2006.92261, 1001.76428,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1548, 2004.00952, 2006.97803, 1001.76428,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1666, 1994.49927, 1999.03101, 1001.58521,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1666, 1992.86328, 1997.29517, 1001.58521,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1666, 1991.46411, 1994.66260, 1001.58521,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1664, 1994.51758, 1992.12866, 1001.68518,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1664, 2000.87891, 1993.20557, 1001.68518,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1664, 2003.27246, 1994.99976, 1001.68518,   0.00000, 0.00000, 0.48000);
+	CreateDynamicObject(3119, 1994.53345, 2009.17163, 1001.58063,   0.00000, 0.00000, 152.27991);
+	CreateDynamicObject(3119, 1990.00391, 2003.84839, 1001.09265,   0.00000, 0.00000, 183.78001);
+	CreateDynamicObject(1355, 2004.86206, 2008.47339, 1000.99835,   0.00000, 0.00000, -47.99999);
+	CreateDynamicObject(1355, 2004.90454, 2008.51978, 1001.41779,   0.00000, 70.00000, -137.81998);
+	CreateDynamicObject(2670, 1995.65088, 1994.88843, 1000.88733,   0.00000, 0.00000, 39.05999);
+	CreateDynamicObject(2671, 1994.14844, 1998.97559, 1000.80798,   0.00000, 0.00000, 39.06000);
+	CreateDynamicObject(2673, 1998.72778, 2005.51465, 1000.88733,   0.00000, 0.00000, 98.88000);
+	CreateDynamicObject(2674, 2001.51196, 1994.26685, 1000.81042,   0.00000, 0.00000, 167.16000);
+	CreateDynamicObject(2674, 2004.48877, 1991.32104, 1000.81042,   0.00000, 0.00000, 218.45999);
+	CreateDynamicObject(2670, 1990.63818, 1991.69214, 1000.88733,   0.00000, 0.00000, -43.26001);
+	CreateDynamicObject(2671, 1992.63330, 1995.54932, 1000.80798,   0.00000, 0.00000, 121.08000);
+	CreateDynamicObject(2671, 1998.09790, 1996.46387, 1000.80798,   0.00000, 0.00000, -8.46000);
+	CreateDynamicObject(2674, 1997.22974, 1998.58447, 1000.81042,   0.00000, 0.00000, 167.16000);
+	CreateDynamicObject(2670, 1998.81909, 2000.26050, 1000.88733,   0.00000, 0.00000, -81.95999);
+	CreateDynamicObject(2674, 2008.20459, 1999.60547, 1001.03052,   0.00000, 0.00000, 224.34007);
+	CreateDynamicObject(2671, 2001.35498, 2005.24536, 1000.80798,   0.00000, 0.00000, -2.94000);
+	CreateDynamicObject(2670, 2004.56470, 2004.94580, 1000.88733,   0.00000, 0.00000, -71.46001);
+	CreateDynamicObject(2673, 1996.48022, 2007.64331, 1000.88733,   0.00000, 0.00000, 152.22000);
+	CreateDynamicObject(2673, 1995.95703, 1991.12720, 1000.88733,   0.00000, 0.00000, 262.67993);
+	CreateDynamicObject(2671, 2000.15894, 1991.65698, 1000.80798,   0.00000, 0.00000, 12.96000);
+	Textura = CreateDynamicObject(16151, 2002.75220, 2007.89917, 1001.13599,   0.00000, 0.00000, 90.00000); //UFO
+	SetDynamicObjectMaterial(Textura, 7, 18024, "intclotheshiphop", "cj_bricks", -1);
+	SetDynamicObjectMaterial(Textura, 6, 1810, "cj_seating", "CJ_SHEET2", -1);
+	Textura = CreateDynamicObject(17951, 2009.87451, 1999.2877, 1002.78387,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18028, "cj_bar2", "CJ_nastybar_D2", -1);
+	CreateDynamicObject(19446, 2009.87598, 1999.50220, 1006.30060,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14840, 2005.31323, 2004.05127, 1003.90778,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(17969, 2005.27954, 1994.04834, 1002.96680,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2670, 1996.38721, 2004.45093, 1000.88733,   0.00000, 0.00000, -232.26003);
+	CreateDynamicObject(2670, 2000.21680, 2000.08423, 1000.88733,   0.00000, 0.00000, -25.92001);
+	CreateDynamicObject(2671, 2002.81738, 2001.31494, 1000.80798,   0.00000, 0.00000, -42.23999);
+	Textura = CreateDynamicObject(19172, 1990.01733, 1994.96021, 1003.10193,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 8328, "vgsssignage04", "homies_1", -1);
+	CreateDynamicObject(2653, 2004.97632, 2001.71387, 1004.11017,   90.00000, 0.00000, -90.00000);
+	CreateDynamicObject(14439, 1989.71509, 1991.02075, 1006.27527,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(14439, 2015.13501, 1991.02075, 1006.27533,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(17969, 1993.44580, 2008.91772, 1002.96680,   -10.00000, 0.00000, 90.00000);
+	CreateDynamicObject(19359, 2008.20483, 1997.45557, 1002.33771,   0.00000, 0.00000, 90.00000);
+
+	//==============================FIX DEPTO WOOZY=============================
+	CreateDynamicObject(19380, -2173.78345, 639.91302, 1049.77441,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1557, -2171.83545, 639.89178, 1051.37329,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1557, -2168.81006, 639.89398, 1051.37329,   0.00000, 0.00000, 180.00000);
+
+	//==============================FIX RESTO INVISIBLE=========================
+	CreateDynamicObject(18981, 438.23386, -59.60804, 999.33893,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(18981, 444.92401, -57.74580, 998.17303,   0.00000, 90.00000, 0.00000);
+	CreateDynamicObject(18981, 442.47885, -69.58891, 999.33893,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1557, 439.85699, -49.21550, 998.66217,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1557, 442.88599, -49.21320, 998.66217,   0.00000, 0.00000, 180.00000);
+	Textura = CreateDynamicObject(18981, 443.97189, -61.22620, 999.33893,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18029, "genintintsmallrest", "GB_restaursmll05", -1);
+	Textura = CreateDynamicObject(18981, 441.67053, -48.78267, 999.33893,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 18029, "genintintsmallrest", "GB_restaursmll05", -1);
+	
+	//==============================FIX CASA CON CAÑON==========================
+	CreateDynamicObject(2297, 2811.60791, -1165.25024, 1024.55701,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1742, 2813.24048, -1171.31360, 1024.55078,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(1764, 2812.90967, -1172.91687, 1024.54932,   0.00000, 0.00000, 194.51991);
+	CreateDynamicObject(1765, 2809.82007, -1173.25269, 1024.54285,   0.00000, 0.00000, 131.03999);
+	CreateDynamicObject(2108, 2812.87329, -1173.74500, 1024.57007,   0.00000, 0.00000, 22.26000);
+	CreateDynamicObject(1817, 2810.61694, -1171.90332, 1024.54968,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1999, 2805.73267, -1171.51758, 1024.55103,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(1671, 2806.43140, -1170.54578, 1025.02014,   0.00000, 0.00000, -90.71997);
+	CreateDynamicObject(2147, 2820.33423, -1165.17395, 1024.56140,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2135, 2815.33936, -1165.16589, 1024.54016,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2136, 2816.32007, -1165.16614, 1024.54016,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2139, 2818.31006, -1165.18298, 1024.54016,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2140, 2814.34497, -1165.16589, 1024.54016,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2138, 2819.31006, -1165.17700, 1024.55127,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, 2814.02246, -1172.14917, 1025.14844,   0.00000, 0.00000, 124.62003);
+	CreateDynamicObject(2120, 2815.39160, -1172.26428, 1025.14844,   0.00000, 0.00000, 76.02004);
+	CreateDynamicObject(1737, 2818.27173, -1169.42517, 1024.54919,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(2120, 2818.36743, -1168.64124, 1025.14844,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, 2819.16748, -1168.64124, 1025.14844,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2120, 2819.16748, -1170.26123, 1025.14844,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2120, 2818.36743, -1170.26123, 1025.14844,   0.00000, 0.00000, -90.00000);
+
+
 	
 	return 1;
 }
