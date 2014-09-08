@@ -51,6 +51,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-casco.inc"              //Sistema de cascos
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
+#include "isamp-carthief.inc"          	//Robo de autos.
 
 
 // Configuraciones.
@@ -70,7 +71,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
 #define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
 #define MAX_TEXTDRAWS           10
-#define MAX_ZONE_NAME 			28
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
 #define MAX_LOGIN_ATTEMPTS      5
 #define TUT_TIME                10000                                           // Tiempo para reintentar el tutorial.
@@ -399,6 +399,7 @@ new
 	P_DRUGFARM_MATS,
 	P_TUNE[5],
 	P_PRODS_SHOP,
+	P_CAR_DEMOLITION,
 	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
@@ -5005,6 +5006,11 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
 		GameTextForPlayer(playerid, string, 2000, 4);
 		return 1;
+
+	} else if(pickupid == P_CAR_DEMOLITION) {
+		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
+			GameTextForPlayer(playerid, "~w~Utiliza /demoler para obtener ganancias del auto robado", 2000, 4);
+		return 1;
 		
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
 		GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
@@ -6871,6 +6877,7 @@ public vehicleTimer()
 	{
 		new Float:Z_angle;
 	    new Float:vHealth;
+		GetVehicleParamsEx(v, VehicleInfo[v][VehEngine], VehicleInfo[v][VehLights], VehicleInfo[v][VehAlarm], vlocked, VehicleInfo[v][VehBonnet], VehicleInfo[v][VehBoot], VehicleInfo[v][VehObjective]);
 	    GetVehicleHealth(v, vHealth);
 	    if(vHealth < 400)
 	    {
@@ -7743,6 +7750,9 @@ stock LoadPickups() {
 
 	// Curarse en hospital
 	P_HOSP_HEAL = CreateDynamicPickup(1240, 1, POS_HOSP_HEAL_X, POS_HOSP_HEAL_Y, POS_HOSP_HEAL_Z + 1.0, -1);
+	
+	// Robo de autos
+	P_CAR_DEMOLITION = CreateDynamicPickup(1239, 1, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z + 1.0, -1);
 	
 	// Licencia de armas
 	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
