@@ -30,6 +30,8 @@ forward DropObject(playerid); //Deposita un objeto en el suelo y devuelve 1. Si 
 forward TakeObject(playerid); //Toma un objecto del suelo y devuelve 1. Si el jugador no pudo tomarlo retorna 0.
 forward ResetObject(pos); //Resetea los valores del índice que se le indica.
 forward ServerObjectsCleaningTimer(); // Limpia los objetos con mucho tiempo de vida
+forward LookObject(playerid); // Permite al jugador examinar un objeto sin agarrarlo.
+forward GetClosestObject(playerid); // Devuelve el index del objeto mas cercano. Retorna -1 si no hay un objeto cercano.
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -81,30 +83,46 @@ stock DropObject(playerid)
 	return 1;
 }
 
+stock GetClosestObject(playerid)
+{
+	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
+	{
+	    if(IsPlayerInRangeOfPoint(playerid, 1.4, ServerObject[i][sX], ServerObject[i][sY], ServerObject[i][sZ]))
+	        return i;
+	}
+	return -1;
+}
+
+stock LookObject(playerid)
+{
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+
+	new object = GetClosestObject(playerid);
+	if(object == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
+
+	SendFMessage(playerid, COLOR_WHITE, "Examinas el objeto y ves un/a: %s - %s: %d", GetItemName(ServerObject[object][sItemID]), GetItemParamName(ServerObject[object][sItemID]), ServerObject[object][sAmount]);
+	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
 stock TakeObject(playerid)
 {
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	if(GetHandItem(playerid) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el objeto ya que tienes algo en tus manos.");
-		
-	new j = -1;
-	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
-	{
-	    if(IsPlayerInRangeOfPoint(playerid, 1.4, ServerObject[i][sX], ServerObject[i][sY], ServerObject[i][sZ]) )
-	    {
-	        j = i;
-			break;
-		}
-	}
-	if(j == -1)
+
+	new object = GetClosestObject(playerid);
+	if(object == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
 
-	SetHandItemAndParam(playerid, ServerObject[j][sItemID], ServerObject[j][sAmount]);
+	SetHandItemAndParam(playerid, ServerObject[object][sItemID], ServerObject[object][sAmount]);
 	LoadHandItem(playerid);
-	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[j][sItemID]) );
+	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[object][sItemID]));
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
-	ResetObject(j);
+	ResetObject(object);
 	return 1;
 }
 	
@@ -134,5 +152,15 @@ CMD:agarrarobjeto(playerid, params[])
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	TakeObject(playerid);
+	return 1;
+}
+
+CMD:examinarobjeto(playerid, params[])
+{
+	if(PlayerInfo[playerid][pHealth] < 25.0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	LookObject(playerid);
 	return 1;
 }
