@@ -11,7 +11,7 @@
 #define POS_CAR_DEMOLITION_Y	-2033.5476
 #define POS_CAR_DEMOLITION_Z 	13.5339
 
-#define STOLEN_CAR_MISSING_TIME 60 // En minutos, tiempo hasta que vuelva a aparecer una vez demolido.
+#define STOLEN_CAR_MISSING_TIME 60 // En minutos, tiempo hasta que vuelva a aparecer una vez desarmado.
 	
 // Falta fijar cooldowns de ganzua puente y demoler? y ademas fijar limite por payday?
 // No cuenta en intentos fallidos de puente o ganzua. Falta subir experiencia por intentos exitosos.
@@ -24,7 +24,7 @@
 
 //================================COMANDOS======================================
 
-CMD:demoler(playerid, params[])
+CMD:desarmar(playerid, params[])
 {
 	new
 		vehicleid = GetPlayerVehicleID(playerid),
@@ -34,15 +34,15 @@ CMD:demoler(playerid, params[])
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
 	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para poder robar autos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento de conductor de un vehículo!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes demoler un auto robado en cualquier lugar.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes dirigirte al desarmadero con el vehículo robado.");
 	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes demoler vehículos personales)");
+	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes desarmar vehículos personales)");
 	if(playerHasCarKey(playerid, vehicleid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes demoler un auto del cual tienes las llaves.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desarmar un auto del cual tienes las llaves.");
 	if(GetHandItem(playerid) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
 
@@ -51,7 +51,7 @@ CMD:demoler(playerid, params[])
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
     LoadHandItem(playerid);
     SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
-    SetVehiclePos(vehicleid, 8888.0, 8888.0, 0.0);
+    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);
     SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
     PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
     SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
@@ -68,7 +68,7 @@ public RespawnDemolishedVehicle(vehicleid)
 	return 1;
 }
 
-CMD:ganzua(playerid, params[])
+CMD:barreta(playerid, params[])
 {
 	new
 		vehicleid = GetClosestVehicle(playerid, 4.0),
@@ -78,7 +78,7 @@ CMD:ganzua(playerid, params[])
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
 	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para poder robar autos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
 	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
@@ -90,8 +90,8 @@ CMD:ganzua(playerid, params[])
 
   	TogglePlayerControllable(playerid, false);
   	PlayerActionMessage(playerid, 15.0, "toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo");
-    SendClientMessage(playerid, COLOR_WHITE, "Comienzas a trabajar en la cerradura del vehículo, aguarda un momento...");
-    SetTimerEx("UsarGanzua", 20 * 1000, 0, "ii", playerid, vehicleid);
+    GameTextForPlayer(playerid, "Forzando cerradura, aguarda...", 20 * 1000, 4);
+    SetTimerEx("UsarBarreta", 20 * 1000, 0, "ii", playerid, vehicleid);
     
     if(random(10) > 4)
     {
@@ -111,8 +111,8 @@ CMD:ganzua(playerid, params[])
 	return 1;
 }
 
-forward UsarGanzua(playerid, vehicleid);
-public UsarGanzua(playerid, vehicleid)
+forward UsarBarreta(playerid, vehicleid);
+public UsarBarreta(playerid, vehicleid)
 {
     TogglePlayerControllable(playerid, true);
 
@@ -133,6 +133,8 @@ public UsarGanzua(playerid, vehicleid)
 	{
  		VehicleInfo[vehicleid][VehLocked] = 0;
  		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con exito la cerradura.");
+		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
+ 			GiveJobExp(playerid, JOB_FELON, 2);
  	}
 	return 1;
 }
@@ -153,7 +155,7 @@ CMD:puente(playerid, params[])
 	    
   	TogglePlayerControllable(playerid, false);
   	PlayerActionMessage(playerid, 15.0, "se inclina hacia abajo en el asiento del conductor y realiza unas maniobras.");
-    SendClientMessage(playerid, COLOR_WHITE, "Desarmas la parte inferior del tablero y trabajas en el cableado. Aguarda un momento...");
+  	GameTextForPlayer(playerid, "Desarmando tambor de arranque, aguarda...", 20 * 1000, 4);
     SetTimerEx("PuenteMotor", 20 * 1000, 0, "ii", playerid, vehicleid);
 	return 1;
 }
@@ -166,6 +168,8 @@ public PuenteMotor(playerid, vehicleid)
     {
         SetEngine(vehicleid, 1);
         SendClientMessage(playerid, COLOR_WHITE, "¡Perfecto! Conectas los cables correctos y el motor enciende. ¡Huye de aquí!");
+		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
+ 			GiveJobExp(playerid, JOB_FELON, 2);
 	}
 	else
 		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables adecuados.");

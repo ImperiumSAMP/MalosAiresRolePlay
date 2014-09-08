@@ -279,29 +279,30 @@ public robberyCancel(playerid) {
 	return 1;
 }
 
-public GiveJobExp(playerid, job, exp) {
-    if(job == JOB_FELON) {
-        new
-			level = ThiefJobInfo[playerid][pFelonLevel];
-			
-		if(level >= 6) {
-			return 2;
-		}
-
-		if(ThiefJobInfo[playerid][pFelonExp] + exp >= GetJobExpNeeded(playerid, job)) {
+public GiveJobExp(playerid, job, exp)
+{
+    if(job == JOB_FELON)
+	{
+		if(ThiefJobInfo[playerid][pFelonExp] + exp >= GetJobExpNeeded(playerid, job))
+		{
 			ThiefJobInfo[playerid][pFelonLevel]++;
 			ThiefJobInfo[playerid][pFelonExp] = 0;
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡Ahora eres un delincuente más experimentado y tienes acceso a nuevos comandos!");
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-		}
-		ThiefJobInfo[playerid][pFelonExp] += exp;
+		} else
+			ThiefJobInfo[playerid][pFelonExp] += exp;
 	}
 	return 1;
 }
 
-stock GetJobExpNeeded(playerid, job) {
-	if(job == JOB_FELON) {
-        new level = ThiefJobInfo[playerid][pFelonLevel], result;
+stock GetJobExpNeeded(playerid, job)
+{
+	if(job == JOB_FELON)
+	{
+        new
+			level = ThiefJobInfo[playerid][pFelonLevel],
+			result;
+			
         result = (level * level + 15) * (JOB_EXP_MULTIPLIER + level);
 		return result;
 	}
@@ -705,6 +706,7 @@ CMD:delincuenteayuda(playerid, params[]) {
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 	    return 1;
 	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp /grupoayuda");
+	SendClientMessage(playerid, COLOR_WHITE, "[Robo al banco]: /grupoayuda [Robo de vehículos]: /barreta /puente /desarmar");
 	SendClientMessage(playerid, COLOR_WHITE, "Info: al delinquir conseguirás puntos de experiencia, dependiendo de tu nivel de delincuente algunos...");
 	SendClientMessage(playerid, COLOR_WHITE, "delitos no otorgarán más conocimiento del que ya tienes.");
 	return 1;
