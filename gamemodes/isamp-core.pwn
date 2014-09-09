@@ -8037,6 +8037,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         SetPlayerInterior(playerid, 0);
                         SetPlayerPos(playerid,2348.5415,-1210.8560,30.2480);
                	}
+				case 8:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1430.0485,-1151.9353,36.8923);
+                        SetPlayerCameraLookAt(playerid, 1465.9761,-1172.3713,23.8700);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1466.8362,-1172.6542,15.9016);
+               	}
+				case 9:
+                {       TogglePlayerControllable(playerid, 0);
+                        Camara[playerid] = 1;
+                        SetPlayerCameraPos(playerid,1542.1896,-1714.8029,28.7414);
+                        SetPlayerCameraLookAt(playerid, 1507.4358,-1736.1678,13.3828);
+                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
+                        SetPlayerInterior(playerid, 0);
+                        SetPlayerPos(playerid,1512.8125,-1736.2164,5.3828);
+               	}
             }
          }
           return 1;
@@ -11924,7 +11942,7 @@ CMD:camaras(playerid, params[])
 {
 	if(IsPlayerInRangeOfPoint(playerid, 2.0, 219.36, 188.31, 1003.00))
 	{
-		ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Cámaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grotti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)","Ok", "");
+		ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Cámaras Policia Metropolitana","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grotti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)\n{2EFE2E}Camara 9 {FFFFFF}(Banco de Malos Aires)\n{2EFE2E}Camara 10 {FFFFFF}(Ayuntamiento)","Ok", "");
 	}
 	return 1;
 }
