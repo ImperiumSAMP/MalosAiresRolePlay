@@ -15,21 +15,21 @@
 
 #define ROBBERY_GROUP_NONE      -1
 
-#define POS_BANK_MAIN_DOOR_X    2305.53
-#define POS_BANK_MAIN_DOOR_Y    -15.85
-#define POS_BANK_MAIN_DOOR_Z    26.74
+#define POS_BANK_MAIN_DOOR_X    1496.4603
+#define POS_BANK_MAIN_DOOR_Y    -1134.2139
+#define POS_BANK_MAIN_DOOR_Z    1015.3535
 
-#define POS_BANK_ACCESS_DOOR_X  2315.58
-#define POS_BANK_ACCESS_DOOR_Y  0.09
-#define POS_BANK_ACCESS_DOOR_Z  26.74
+#define POS_BANK_ACCESS_DOOR_X  1489.2488
+#define POS_BANK_ACCESS_DOOR_Y  -1150.4886
+#define POS_BANK_ACCESS_DOOR_Z  1015.3535
 
-#define POS_BANK_SAFE_DOOR_X    0.0 // MAPEO DE BOVEDA
-#define POS_BANK_SAFE_DOOR_Y  	0.0 // MAPEO DE BOVEDA
-#define POS_BANK_SAFE_DOOR_Z    0.0 // MAPEO DE BOVEDA
+#define POS_BANK_SAFE_DOOR_X    1485.5316
+#define POS_BANK_SAFE_DOOR_Y  	-1129.0477
+#define POS_BANK_SAFE_DOOR_Z    1002.7582
 
-#define POS_BANK_INSIDE_SAFE_X  0.0 // MAPEO DE BOVEDA
-#define POS_BANK_INSIDE_SAFE_Y  0.0 // MAPEO DE BOVEDA
-#define POS_BANK_INSIDE_SAFE_Z  0.0 // MAPEO DE BOVEDA
+#define POS_BANK_INSIDE_SAFE_X  1485.6517
+#define POS_BANK_INSIDE_SAFE_Y  -1120.5665
+#define POS_BANK_INSIDE_SAFE_Z  1002.7562
 
 #define STAGE_COMPLETED         MIN_THIEFS_NEEDED
 
@@ -334,8 +334,8 @@ CMD:gruporobarbanco(playerid, params[])
 	
 	if(!IsPlayerRobberyGroupLider(playerid))
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
-	if(!IsPlayerInRangeOfPoint(playerid, 10.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
 	if(!hasFireGun(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano para iniciar el asalto.");
 	for(new i = 0; i < GROUP_MEMBERS; i++)
@@ -343,8 +343,8 @@ CMD:gruporobarbanco(playerid, params[])
  	    memberid = RobberyGroup[playerid][MembersID][i];
 		if(memberid != INVALID_PLAYER_ID && IsPlayerConnected(memberid))
 		{
-			if(!IsPlayerInRangeOfPoint(memberid, 10.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+			if(!IsPlayerInRangeOfPoint(memberid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
 			if(!hasFireGun(memberid))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Todo tu equipo debe contar con algun arma de fuego en la mano.");
 		}
@@ -450,6 +450,8 @@ public DetonarPuerta(playerid)
         RobberyGroup[group][RobberyStage] = STAGE_DETONAR_BOVEDA;
         RobberyGroup[group][RobberyStageProgress] = 0;
         PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y destruye la puerta principal, dejando un agujero en esta");
+		DestroyDynamicObject(BANK_ACCESS_DOOR1);
+		DestroyDynamicObject(BANK_ACCESS_DOOR2);
 	} else
 		PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y daña la puerta principal");
 	return 1;
@@ -465,10 +467,9 @@ CMD:grupodetonarboveda(playerid, params[])
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
  	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
-	/*
 	if(!IsPlayerInRangeOfPoint(playerid, 1.4, POS_BANK_SAFE_DOOR_X, POS_BANK_SAFE_DOOR_Y, POS_BANK_SAFE_DOOR_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la bóveda del banco.");
-	*/
+
 	PlayerActionMessage(playerid, 15.0, "comienza a colocar una carga explosiva en la puerta de la bóveda del Banco.");
 	PlayerRobberyStage[playerid] = STAGE_DETONAR_BOVEDA;
 	TogglePlayerControllable(playerid, false);
@@ -482,13 +483,14 @@ public DetonarBoveda(playerid)
 {
 	new group = RobberyGroupNumber[playerid];
 
-	//CreateExplosion(POS_BANK_SAFE_DOOR_X, POS_BANK_SAFE_DOOR_Y, POS_BANK_SAFE_DOOR_Z, 0, 5.0);
+	CreateExplosion(POS_BANK_SAFE_DOOR_X, POS_BANK_SAFE_DOOR_Y, POS_BANK_SAFE_DOOR_Z, 0, 5.0);
 	RobberyGroup[group][RobberyStageProgress]++;
 	if(RobberyGroup[group][RobberyStageProgress] == STAGE_COMPLETED)
 	{
 	    RobberyGroup[group][RobberyStage] = STAGE_TOMAR_DINERO;
 	    RobberyGroup[group][RobberyStageProgress] = 0;
 		PlayerDoMessage(playerid, 15.0, "La carga de C4 explota y la bóveda cede, pudiendose apreciar una gran cantidad de dinero dentro");
+		DestroyDynamicObject(BANK_SAFE_DOOR);
 	} else
 	    PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y daña la parte delantera de la bóveda");
 	return 1;
@@ -506,10 +508,9 @@ CMD:gruporobardinero(playerid, params[])
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
    	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
-	/*
-	if(!IsPlayerInRangeOfPoint(playerid, 1.4, POS_BANK_INSIDE_SAFE_X, POS_BANK_INSIDE_SAFE_Y, POS_BANK_INSIDE_SAFE_Z))
+	if(!IsPlayerInRangeOfPoint(playerid, 4.0, POS_BANK_INSIDE_SAFE_X, POS_BANK_INSIDE_SAFE_Y, POS_BANK_INSIDE_SAFE_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la bóveda del Banco.");
-	*/
+
 	PlayerActionMessage(playerid, 15.0, "toma una bolsa y comienza a retirar dinero de la boveda.");
 	SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 30 segundos mientras llenas las bolsas de dinero.");
 	PlayerRobberyStage[playerid] = STAGE_TOMAR_DINERO;
