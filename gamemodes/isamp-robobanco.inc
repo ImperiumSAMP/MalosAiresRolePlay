@@ -71,7 +71,10 @@ stock GetRobberyGroupStage(group)
 
 stock IsPlayerRobberyGroupLider(playerid)
 {
-    return (RobberyGroup[playerid][ActiveLeadership] == true && RobberyGroupNumber[playerid] == playerid);
+	if(RobberyGroup[playerid][ActiveLeadership] == true && RobberyGroupNumber[playerid] == playerid)
+	    return true;
+	else
+	    return false;
 }
 
 stock ResetRobberyGroup(playerid)
