@@ -101,6 +101,7 @@ stock bool:AddRobberyGroupMember(leaderid, playerid)
 	    if(RobberyGroup[leaderid][MembersID][i] == INVALID_PLAYER_ID)
 	    {
 	        RobberyGroup[leaderid][MembersID][i] = playerid;
+	        RobberyGroupNumber[playerid] = leaderid;
 	        return true;
 		}
 	}

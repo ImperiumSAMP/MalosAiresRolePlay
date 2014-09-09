@@ -5009,7 +5009,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 	} else if(pickupid == P_CAR_DEMOLITION) {
 		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
-			GameTextForPlayer(playerid, "~w~Utiliza /demoler para desarmar el vehiculo robado.", 2000, 4);
+			GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
 		return 1;
 		
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
@@ -14310,11 +14310,11 @@ CMD:mascara(playerid, params[])
 		PlayerActionMessage(playerid, 15.0, "agarra un pañuelo de su bolsillo y se la coloca en la cara para tapar su rostro.");
 		isUsingMaskInSlot[playerid] = index;
   		EditAttachedObject(playerid, index);
-					foreach(new i:Player)
-					{
-						if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-							ShowPlayerNameTagForPlayer(i, playerid, 0);
-					}
+		foreach(new i:Player)
+		{
+			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
+				ShowPlayerNameTagForPlayer(i, playerid, 0);
+		}
 	} else
 		{
 			RemovePlayerAttachedObject(playerid, isUsingMaskInSlot[playerid]);
