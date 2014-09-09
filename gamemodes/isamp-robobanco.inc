@@ -337,7 +337,8 @@ CMD:gruporobarbanco(playerid, params[])
  	RobberyGroup[playerid][RobberyStage] = STAGE_REDUCIR_ENTORNO;
  	RobberyGroup[playerid][RobberyStageProgress] = 0;
  	PoliceBankRobberyAlarm();
- 	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Comienzas a robar el banco de malos aires. Tienes que hacerlo rapido pues la alarma silenciosa avisó a la policía.");
+ 	PlayerDoMessage(playerid, 15.0, "Un grupo armado de sujetos entra al banco violentamente y desenfundan sus armas");
+	PlayerDoMessage(playerid, 15.0, "Uno de los empleados oprimió el boton de la alarma, forzando la inminente llegada de la policía");
  	SendClientMessage(playerid, COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
  	return 1;
 }
@@ -373,6 +374,8 @@ CMD:gruporeducirentorno(playerid, params[])
 	PlayerActionMessage(playerid, 15.0, "toma su arma y apunta a las personas que estan en el lugar, haciendo que estas se tiren al suelo.");
 	PlayerRobberyStage[playerid] = STAGE_REDUCIR_ENTORNO;
 	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
+	ApplyAnimation(playerid, "SHOP", "ROB_Loop_Threat", 4.0, 0, 0, 0, 0, 0);
+	GameTextForPlayer(playerid, "Reduciendo empleados y clientes...", 20 * 1000, 4);
  	SetTimerEx("TimeReducirEntorno", 20 * 1000, false, "i", playerid);
  	return 1;
 }
@@ -385,7 +388,8 @@ public TimeReducirEntorno(playerid)
 	if(RobberyGroup[group][RobberyStageProgress] == STAGE_COMPLETED)
 	{
         RobberyGroup[group][RobberyStage] = STAGE_DETONAR_PUERTA;
-		PlayerDoMessage(playerid, 15.0, "Uno de los rehenes oprimió el boton de la alarma. Detona las puertas y toma el dinero antes que llegue la policía.(/detonarpuerta)");
+        RobberyGroup[group][RobberyStageProgress] = 0;
+		PlayerDoMessage(playerid, 15.0, "Los empleados y clientes se encuentran reducidos en el piso. Es hora de la siguiente etapa");
 	}
 	return 1;
 }
@@ -405,7 +409,10 @@ CMD:grupodetonarpuerta(playerid, params[])
 
 	PlayerActionMessage(playerid, 15.0, "coloca un detonador en la puerta de entrada hacia las bovedas y se aleja esperando la explosión");
 	PlayerRobberyStage[playerid] = STAGE_DETONAR_PUERTA;
- 	SetTimerEx("TimeDetonacionPuerta", 5 * 1000, false, "i", playerid);
+	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+	TogglePlayerControllable(playerid, false);
+	GameTextForPlayer(playerid, "Detonando puerta...", 10 * 1000, 4);
+ 	SetTimerEx("TimeDetonacionPuerta", 10 * 1000, false, "i", playerid);
  	return 1;
 }
 
@@ -413,11 +420,14 @@ CMD:grupodetonarpuerta(playerid, params[])
 public TimeDetonacionPuerta(playerid)
 {
 	new group = RobberyGroupNumber[playerid];
+	
+	TogglePlayerControllable(playerid, true);
 	RobberyGroup[group][RobberyStageProgress]++;
 	if(RobberyGroup[group][RobberyStageProgress] == STAGE_COMPLETED)
 	{
         RobberyGroup[group][RobberyStage] = STAGE_DETONAR_BOVEDA;
-		PlayerDoMessage(playerid, 15.0, "La puerta principal se rompió con la ultima detonación. Ya se puede acceder a la bóveda (/detonarboveda)");
+        RobberyGroup[group][RobberyStageProgress] = 0;
+		PlayerDoMessage(playerid, 15.0, "La puerta principal se rompió con la ultima detonación. Ya se puede acceder a la bóveda");
 	}
 	return 1;
 }
@@ -435,20 +445,26 @@ CMD:grupodetonarboveda(playerid, params[])
  	if(CountRobberyGroupMembers(RobberyGroupNumber[playerid]) < MIN_THIEFS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Recuerda que en tu grupo de robo deben ser cuatro, de lo contrario no podras robar el banco.");
 
-	PlayerActionMessage(playerid, 15.0, "coloca un detonador en la puerta de entrada hacia las bovedas y se aleja esperando la explosión.");
+	PlayerActionMessage(playerid, 15.0, "coloca un detonador en la bóveda y se aleja esperando la explosión.");
 	PlayerRobberyStage[playerid] = STAGE_DETONAR_BOVEDA;
- 	SetTimerEx("TimeDetonacionBoveda", 5 * 1000, false, "i", playerid);
+	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+	TogglePlayerControllable(playerid, false);
+	GameTextForPlayer(playerid, "Detonando la boveda...", 10 * 1000, 4);
+ 	SetTimerEx("TimeDetonacionBoveda", 10 * 1000, false, "i", playerid);
  	return 1;
 }
 			
 public TimeDetonacionBoveda(playerid)
 {
 	new group = RobberyGroupNumber[playerid];
+	
+	TogglePlayerControllable(playerid, true);
 	RobberyGroup[group][RobberyStageProgress]++;
 	if(RobberyGroup[group][RobberyStageProgress] == STAGE_COMPLETED)
 	{
 	    RobberyGroup[group][RobberyStage] = STAGE_TOMAR_DINERO;
-		PlayerDoMessage(playerid, 15.0, "La puerta de la bóveda fue detonada. Retira todo el dinero que puedas y escapa antes que llegue la policía. (/tomardineroboveda)");
+	    RobberyGroup[group][RobberyStageProgress] = 0;
+		PlayerDoMessage(playerid, 15.0, "La puerta de la bóveda fue detonada y dentro de ella se aprecia una gran cantidad de dinero");
 	}
 	return 1;
 }
@@ -471,6 +487,8 @@ CMD:gruporobardinero(playerid, params[])
 	PlayerActionMessage(playerid, 15.0, "toma una bolsa y comienza a retirar dinero de la boveda.");
 	SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 30 segundos mientras llenas las bolsas de dinero.");
 	PlayerRobberyStage[playerid] = STAGE_TOMAR_DINERO;
+	TogglePlayerControllable(playerid, false);
+	GameTextForPlayer(playerid, "Guardando el dinero...", 30 * 1000, 4);
 	SetTimerEx("TimeDineroBoveda", 30 * 1000, false, "i", playerid);
  	return 1;
 }
@@ -481,6 +499,7 @@ public TimeDineroBoveda(playerid)
 		memberid,
 		groupid = RobberyGroupNumber[playerid];
 
+    TogglePlayerControllable(playerid, true);
 	RobberyGroup[groupid][RobberyStageProgress] = STAGE_COMPLETED;
 	GivePlayerCash(playerid, DINERO_BOVEDA);
 	HoldingMoney[playerid] = true;
