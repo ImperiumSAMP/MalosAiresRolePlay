@@ -65,7 +65,7 @@ new MedDuty[MAX_PLAYERS],
 
 stock isPlayerCopOnDuty(playerid)
 {
-	if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1)
+	if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid])
 	    return true;
 	else
 	    return false;
@@ -73,7 +73,7 @@ stock isPlayerCopOnDuty(playerid)
 
 stock isPlayerSideOnDuty(playerid)
 {
-	if(PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1)
+	if(PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid])
 	    return true;
 	else
 		return false;
@@ -85,7 +85,7 @@ public CountCopsOnDuty()
 	new aux = 0;
  	foreach(new i : Player)
  	{
-        if(IsPlayerConnected(i) && isPlayerCopOnDuty(i))
+        if(isPlayerCopOnDuty(i))
     	    aux ++;
  	}
  	return aux;
