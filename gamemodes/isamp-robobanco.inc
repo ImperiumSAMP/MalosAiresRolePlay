@@ -186,7 +186,7 @@ CMD:grupoexpulsar(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No eres lider de ningún grupo de robo.");
 	if(sscanf(params, "i", memberslot))
 		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /grupoexpulsar  [slot miembro]");
-	if(memberslot < 0 || memberslot > MAX_GROUP_MEMBERS)
+	if(memberslot < 0 || memberslot >= MAX_GROUP_MEMBERS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot de miembro inválido. Puedes mirarlo en /grupoinfo.");
 	memberid = RobberyGroup[playerid][MembersID][memberslot];
 	if(memberid == INVALID_PLAYER_ID)
@@ -319,10 +319,13 @@ CMD:gruporobarbanco(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
 	if(!IsPlayerInRangeOfPoint(playerid, 10.0, POS_BANK_DOOR_X, POS_BANK_DOOR_Y, POS_BANK_DOOR_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
-	for(new i = 0; i < MIN_THIEFS_NEEDED; i++)
+	for(new i = 0; i < MAX_GROUP_MEMBERS; i++)
  	{
-		if(!IsPlayerInRangeOfPoint(RobberyGroup[playerid][MembersID][i], 10.0, POS_BANK_DOOR_X, POS_BANK_DOOR_Y, POS_BANK_DOOR_Z))
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+		if(IsPlayerConnected(RobberyGroup[playerid][MembersID][i]))
+		{
+			if(!IsPlayerInRangeOfPoint(RobberyGroup[playerid][MembersID][i], 10.0, POS_BANK_DOOR_X, POS_BANK_DOOR_Y, POS_BANK_DOOR_Z))
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta.");
+		}
 	}
  	if(CountCopsOnDuty() < MIN_DUTYCOPS_NEEDED)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Deben haber minimo tres policias en servicio conectados.");
@@ -339,11 +342,12 @@ CMD:gruporobarbanco(playerid, params[])
  	return 1;
 }
 
-stock PoliceBankRobberyAlarm()
+forward PoliceBankRobberyAlarm();
+public PoliceBankRobberyAlarm()
 {
 	new string[128];
 
-	format(string, sizeof(string), "[Dpto. de policía]: La alarma del banco de Malos Aires ha sido activada: estan robando el banco. Acudan de inmediato.");
+	format(string, sizeof(string), "[Dpto. de policía]: Ha sonado la alarma del Banco Central de Malos Aires. ¡Lo están robando!");
  	foreach(new i : Player)
  	{
 		if(isPlayerCopOnDuty(i))

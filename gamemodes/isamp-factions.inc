@@ -63,21 +63,29 @@ new MedDuty[MAX_PLAYERS],
 
 //General functions
 
-stock isPlayerCopOnDuty(playerid){
-	return PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1;
+stock isPlayerCopOnDuty(playerid)
+{
+	if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1)
+	    return true;
+	else
+	    return false;
 }
 
-stock isPlayerSideOnDuty(playerid){
-	return PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1;
+stock isPlayerSideOnDuty(playerid)
+{
+	if(PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1)
+	    return true;
+	else
+		return false;
 }
 
 forward CountCopsOnDuty();
-stock CountCopsOnDuty()
+public CountCopsOnDuty()
 {
-	new aux;
+	new aux = 0;
  	foreach(new i : Player)
  	{
-        if(isPlayerCopOnDuty(i))
+        if(IsPlayerConnected(i) && isPlayerCopOnDuty(i))
     	    aux ++;
  	}
  	return aux;
