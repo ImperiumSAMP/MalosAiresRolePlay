@@ -3883,6 +3883,7 @@ public globalUpdate() {
 	}
 
 	chargeTaxis();
+	UpdateBankRobberyCooldown();
 	
 	foreach(new playerid : Player) {
 	    playerCount++;
