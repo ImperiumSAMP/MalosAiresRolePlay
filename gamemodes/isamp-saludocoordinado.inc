@@ -39,12 +39,12 @@ CMD:saludo(playerid, params[])
 {
 	new
 		count,
-		cmd;
+		cmd[128];
 		
-	if(sscanf(params, "%s", cmd))
+	if(sscanf(params, "s[128]", cmd))
 		return SendClientMessage (playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saludo [comando]");
 
-	if(strcmp(params, "aceptar") == 0)
+	if(strcmp(cmd, "aceptar") == 0)
 	{
 		foreach(Player, i)
 		{

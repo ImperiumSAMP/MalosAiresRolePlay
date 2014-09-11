@@ -6866,7 +6866,7 @@ public vehicleTimer()
 			}
 		}
 	}
-	for(new v = 0; v < MAX_VEHICLES; v++)
+	for(new v = 0; v < MAX_VEH; v++)
 	{
 		new Float:Z_angle;
 	    new Float:vHealth;
