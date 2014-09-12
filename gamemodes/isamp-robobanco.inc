@@ -80,6 +80,7 @@ forward CountRobberyGroupMembers(group); // Cuenta la cantidad de miembros conec
 forward PrintRobberyGroupInfo(group, playerid); // Imprime la informacion del grupo "group" al jugador "playerid".
 forward GetRobberyGroupStage(group); // Devuelve la etapa del robo en la que se encuentra el grupo "group".
 forward PlayerLeaveRobberyGroup(playerid); // Borra todo el grupo si "playerid" es el lider. Sino, borra al miembro "playerid" del grupo.
+forward RobberyGroupMessage(group, color, const string[]); // Manda un mensaje a todo las personas del grupo (lider y miembros).
 
 forward CancelRobberyGroupOffer(playerid, reason);
 forward ReducirEmpleados(playerid);
@@ -95,7 +96,7 @@ stock UpdateBankRobberyCooldown()
 	if(bankRobberyCooldown > 0)
 	{
 		bankRobberyCooldown--;
-		if(bankRobberyCooldown == ((BANK_ROBBERY_COOLDOWN - 3) * 60 * 60)) // A las 3 horas del robo, se crean devuelta las puertas
+		if(bankRobberyCooldown == ((BANK_ROBBERY_COOLDOWN - 1) * 60 * 60)) // A la hora del robo, se crean devuelta las puertas.
 		{
 			if(!IsValidDynamicObject(BANK_ACCESS_DOOR1))
 				BANK_ACCESS_DOOR1 = CreateDynamicObject(2911, 1488.29553, -1150.96753, 1014.39673,   0.00000, 0.00000, 0.00000);
@@ -207,7 +208,7 @@ stock PrintRobberyGroupInfo(group, playerid)
 		str[128];
 	
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==========[Grupo de robo al Banco Central de Malos Aires]==========");
-	SendFMessage(playerid, COLOR_WHITE, " Lider: %s (ID %d)", GetPlayerNameEx(RobberyGroup[group][LeaderID]), RobberyGroup[group][LeaderID]);
+	SendFMessage(playerid, COLOR_WHITE, " Jefe: %s (ID %d)", GetPlayerNameEx(RobberyGroup[group][LeaderID]), RobberyGroup[group][LeaderID]);
 	for(new i = 0; i < GROUP_MEMBERS; i++)
 	{
 	    memberid = RobberyGroup[group][MembersID][i];
@@ -231,6 +232,20 @@ stock PrintRobberyGroupInfo(group, playerid)
 	}
 	SendFMessage(playerid, COLOR_WHITE, "Etapa: %s - Progreso: %d de %d", str, RobberyGroup[group][RobberyStageProgress], MIN_THIEFS_NEEDED);
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "============================================================");
+	return 1;
+}
+
+stock RobberyGroupMessage(group, color, const string[])
+{
+	if(RobberyGroup[group][Active] == true)
+	{
+        SendClientMessage(RobberyGroup[group][LeaderID], color, string);
+		for(new i = 0; i < GROUP_MEMBERS; i++)
+		{
+		    if(IsPlayerConnected(RobberyGroup[group][MembersID][i]))
+				SendClientMessage(RobberyGroup[group][MembersID][i], color, string);
+		}
+	}
 	return 1;
 }
 
@@ -446,7 +461,6 @@ CMD:robarbanco(playerid, params[])
 	
 	if(!IsPlayerRobberyGroupLeader(playerid))
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
-
 	if(bankRobberyCooldown > 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Las bovedas del banco están vacias, no tiene sentido. (OOC: El banco todavía no está disponible para asaltar)");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
@@ -476,10 +490,10 @@ CMD:robarbanco(playerid, params[])
  	pRobberyStage[playerid] = STAGE_INICIO_ROBO;
  	PlayerDoMessage(playerid, 15.0, "Un grupo armado de sujetos entra al banco violentamente y desenfundan sus armas");
 	PlayerDoMessage(playerid, 15.0, "Uno de los empleados oprime el boton de la alarma, forzando la inminente llegada de la policía");
-	RobberyGroupMessage(pRobberyGroup[playerid], COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
+	RobberyGroupMessage(group, COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
     PoliceBankRobberyAlarm();
     bankRobberyCooldown = BANK_ROBBERY_COOLDOWN * 60 * 60;
-    format(string, sizeof(string), "%s (ID %d) ha iniciado un robo al Banco Central de Malos Aires.", GetPlayerNameEx(playerid), playerid);
+    format(string, sizeof(string), "[ADMIN INFO]: %s (ID %d) ha iniciado un robo al Banco Central de Malos Aires.", GetPlayerNameEx(playerid), playerid);
 	AdministratorMessage(COLOR_LIGHTBLUE, string, 1);
 	return 1;
 }
@@ -604,7 +618,7 @@ public DetonarBoveda(playerid)
 {
 	new group = pRobberyGroup[playerid];
 
-	CreateExplosion(POS_BANK_SAFE_DOOR_X, POS_BANK_SAFE_DOOR_Y, POS_BANK_SAFE_DOOR_Z, 0, 10.0);
+	CreateExplosion(POS_BANK_SAFE_DOOR_X, POS_BANK_SAFE_DOOR_Y, POS_BANK_SAFE_DOOR_Z, 6, 10.0);
 	SetPVarInt(playerid, "disabled", DISABLE_NONE);
 	RobberyGroup[group][RobberyStageProgress]++;
 	if(RobberyGroup[group][RobberyStageProgress] == STAGE_COMPLETED)
@@ -660,18 +674,4 @@ public RobarBoveda(playerid)
 public TimeHoldMoney(playerid)
 {
     pHoldingMoney[playerid] = false;
-}
-
-stock RobberyGroupMessage(group, color, const string[])
-{
-	if(RobberyGroup[group][Active] == true)
-	{
-        SendClientMessage(RobberyGroup[group][LeaderID], color, string);
-		for(new i = 0; i < GROUP_MEMBERS; i++)
-		{
-		    if(IsPlayerConnected(RobberyGroup[group][MembersID][i]))
-				SendClientMessage(RobberyGroup[group][MembersID][i], color, string);
-		}
-	}
-	return 1;
 }

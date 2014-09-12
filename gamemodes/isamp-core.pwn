@@ -1164,9 +1164,7 @@ public ResetStats(playerid) {
 	ResetHouseOffer(playerid);
 
 	//Venta de negocios
-	OfferingBusiness[playerid] = false;
-	BusinessOfferPrice[playerid] = -1;
-	BusinessOffer[playerid] = INVALID_PLAYER_ID;
+	ResetBusinessOffer(playerid);
 	
 	// s0beit detector.
 	firstSpawn[playerid] = 1;
@@ -9453,7 +9451,7 @@ CMD:aesalida(playerid, params[]) {
 		Building[blid][blInsideAngle] = exitAngle + 180;
 		Building[blid][blInsideInt] = exitInterior;
 		Building[blid][blInsideWorld] = blid * 1000;
-		format(string, sizeof(string), "Salida del negocio [%d] seteada a X:%f Y:%f Z:%f A:%f Interior:%d", blid, exitX, exitY, exitZ, exitAngle, exitInterior);
+		format(string, sizeof(string), "Salida del edificio [%d] seteada a X:%f Y:%f Z:%f A:%f Interior:%d", blid, exitX, exitY, exitZ, exitAngle, exitInterior);
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);
 		saveBuilding(blid);
 	}
@@ -9568,7 +9566,7 @@ CMD:aetele(playerid, params[])
     if(PlayerInfo[playerid][pAdmin] < 2)
 		return 1;
 	if(sscanf(params, "i", blid))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetele [IDedificio]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetele [ID edificio]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
 
@@ -13040,51 +13038,7 @@ CMD:aceptar(playerid,params[]) {
 	
 		startSprintRaceChallenge(playerid); // sistema de picadas
 		return 1;
-	} else if(strcmp(text,"negocio",true) == 0) {
-	    new sellerid = BusinessOffer[playerid];
-	    new price = BusinessOfferPrice[playerid];
-        if(sellerid == INVALID_PLAYER_ID)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo un negocio.");
-		if(!IsPlayerConnected(sellerid) || !OfferingBusiness[sellerid])
-		{
-		    KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
-		    CancelBusinessTransfer(playerid, 0);
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Hubo un error durante la venta, cancelando...");
-		}
-		if(!ProxDetectorS(4.0, playerid, sellerid))
- 	    	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
-		if(GetPlayerCash(playerid) < price)
-		{
-		    KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
-		    SendClientMessage(sellerid, COLOR_YELLOW2, "El jugador no tiene el dinero necesario, cancelando...");
-		    CancelBusinessTransfer(playerid, 0);
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, cancelando...");
-		}
-		if(PlayerInfo[playerid][pBizKey] != 0)
-		{
-		    KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
-		    SendClientMessage(sellerid, COLOR_YELLOW2, "El jugador ya tiene un negocio, cancelando...");
-		    CancelBusinessTransfer(playerid, 0);
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un negocio, cancelando...");
-		}
-		new businessid = PlayerInfo[sellerid][pBizKey];
-		new name[MAX_PLAYER_NAME];
-		GetPlayerName(playerid, name, sizeof(name));
-	    Business[businessid][bLocked] = 1;
-		strmid(Business[businessid][bOwner], name, 0, strlen(name), 255);
-		Business[businessid][bOwnerSQLID] = PlayerInfo[playerid][pID];
-		GivePlayerCash(playerid, -price);
-        GivePlayerCash(sellerid, price);
-        PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-        PlayerPlaySound(sellerid, 1052, 0.0, 0.0, 0.0);
-        PlayerInfo[playerid][pBizKey] = businessid;
-        PlayerInfo[sellerid][pBizKey] = 0;
-        PlayerPlayerActionMessage(sellerid, playerid, 15.0 , "toma las llaves y la escritura de su negocio y se las entrega a");
-  		SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el negocio por $%d!", price);
-  		SendFMessage(sellerid, COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido tu negocio por $%d!", price);
-  		KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
-		CancelBusinessTransfer(playerid, 2);
-		}
+	} 
 	return 1;
 }
 
@@ -13133,14 +13087,6 @@ CMD:cancelar(playerid,params[]) {
 				}
 			}
 		}
-	} else if(strcmp(text,"negocio",true) == 0) {
-	   new 
-	       sellerid = BusinessOffer[playerid];
-	   
-	   if(sellerid == INVALID_PLAYER_ID)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo un negocio.");
-	   KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));	
-	   CancelBusinessTransfer(playerid,0);
 	}
 	return 1;
 }

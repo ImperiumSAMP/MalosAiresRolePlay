@@ -54,14 +54,13 @@ stock ResetHouseOffer(playerid)
     OfferingHouse[playerid] = false;
 	HouseOfferPrice[playerid] = -1;
 	HouseOffer[playerid] = INVALID_PLAYER_ID;
-	return 1;
 }
 	
 //=============================COMANDOS DE CASA=================================
 
 CMD:ayudacasa(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Casa]: /casacomprar - /casavender - /casavendera [ID/Jugador] [Precio] - /casaradio [ID radio] - /puerta - /armario");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaradio - /puerta - /armario");
 	return 1;
 }
 
@@ -86,13 +85,13 @@ CMD:casaradio(playerid, params[])
 
 CMD:casacomprar(playerid, params[])
 {
-    new
-        name[MAX_PLAYER_NAME];
+    new name[MAX_PLAYER_NAME];
 
 	GetPlayerName(playerid, name, sizeof(name));
 
 	if(PlayerInfo[playerid][pHouseKey] != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de una casa!");
+		
     for(new h = 0; h < sizeof(House); h++)
 	{
 		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 0)
@@ -136,7 +135,7 @@ CMD:casavender(playerid, params[])
 	House[house][Locked] = 1;
 	House[house][Owned] = 0;
 	strmid(House[house][Owner], "Ninguno", 0, strlen("Ninguno"), 255);
-	GivePlayerCash(playerid, House[house][HousePrice] / 3 * 2);
+	GivePlayerCash(playerid, House[house][HousePrice] / 3 * 2); // 66 % del valor original.
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 	SendFMessage(playerid, COLOR_WHITE, "¡Has vendido tu casa por $%d!", House[house][HousePrice] / 3 * 2);
 	PlayerInfo[playerid][pHouseKey] = 0;
@@ -177,7 +176,7 @@ CMD:casavendera(playerid, params[])
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreces las llaves y escritura de tu casa a %s por $%d.", GetPlayerNameEx(targetid), price);
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te esta ofreciendo venderte su casa por $%d.", GetPlayerNameEx(playerid), price);
 	SendClientMessage(targetid, COLOR_LIGHTBLUE, "Utiliza '/casaaceptar' para aceptar la oferta o '/casacancelar' para cancelar.");
-	SetPVarInt(targetid, "CancelHouseTransfer", SetTimerEx("CancelHouseTransfer", 15 * 1000, 0, "ii", targetid, 1));
+	SetPVarInt(targetid, "CancelHouseTransfer", SetTimerEx("CancelHouseTransfer", 15 * 1000, false, "ii", targetid, 1));
 	return 1;
 }
 
@@ -186,7 +185,7 @@ CMD:casaaceptar(playerid, params[])
 	new
 		sellerid = HouseOffer[playerid],
 	    price = HouseOfferPrice[playerid],
-	    houseid = PlayerInfo[sellerid][pHouseKey],
+	    houseid,
 	    name[MAX_PLAYER_NAME];
 
 	if(sellerid == INVALID_PLAYER_ID)
@@ -197,6 +196,8 @@ CMD:casaaceptar(playerid, params[])
 	    CancelHouseTransfer(playerid, 2);
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Hubo un error durante la venta, cancelando...");
 	}
+	if(!ProxDetectorS(4.0, playerid, sellerid))
+ 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
 	if(GetPlayerCash(playerid) < price)
 	{
 	    KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
@@ -211,9 +212,8 @@ CMD:casaaceptar(playerid, params[])
 		SendClientMessage(sellerid, COLOR_YELLOW2, "El jugador ya tiene una casa, cancelando...");
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una casa, cancelando...");
 	}
-	if(!ProxDetectorS(4.0, playerid, sellerid))
- 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
- 	   	
+
+	houseid = PlayerInfo[sellerid][pHouseKey];
 	GetPlayerName(playerid, name, sizeof(name));
 	House[houseid][Locked] = 1;
 	House[houseid][Owned] = 1;
@@ -225,7 +225,7 @@ CMD:casaaceptar(playerid, params[])
     PlayerInfo[playerid][pHouseKey] = houseid;
     PlayerInfo[sellerid][pHouseKey] = 0;
     PlayerPlayerActionMessage(sellerid, playerid, 15.0 , "toma las llaves y la escritura de su casa y se las entrega a");
-  	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado la casa por $%d!", price);
+  	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado la casa por $%d! Usa /ayudacasa para ver los comandos disponibles.", price);
   	SendFMessage(sellerid, COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido tu casa por $%d!", price);
   	KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
 	CancelHouseTransfer(playerid, 2);
@@ -234,8 +234,7 @@ CMD:casaaceptar(playerid, params[])
 
 CMD:casacancelar(playerid, params[])
 {
-	new
-		sellerid = HouseOffer[playerid];
+	new sellerid = HouseOffer[playerid];
 
 	if(sellerid == INVALID_PLAYER_ID)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
@@ -273,7 +272,7 @@ CMD:puerta(playerid, params[])
 	GetPlayerName(playerid, name, sizeof(name));
 	if(house == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una casa!");
-	if(!PlayerToPoint(2.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]) && (!PlayerToPoint(2.0, playerid, House[house][ExitX], House[house][ExitY], House[house][ExitZ]) || GetPlayerVirtualWorld(playerid) != house + 15000))
+	if(!PlayerToPoint(1.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]) && (!PlayerToPoint(2.0, playerid, House[house][ExitX], House[house][ExitY], House[house][ExitZ]) || GetPlayerVirtualWorld(playerid) != house + 15000))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la puerta de tu casa.");
 
 	if(House[house][Locked] == 1)
@@ -849,10 +848,10 @@ CMD:acdesc(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acsalida [ID casa] [Descripción]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
-
 	if(strfind(desc, "|", true ) != -1)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} el símbolo | no está permitido.");
 
+	mysql_real_escape_string(desc, desc);
 	strmid(House[houseid][Description], desc, 0, strlen(desc), 128);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la descripción de la casa %d ha sido cambiada a %s.", houseid, desc);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
