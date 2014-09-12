@@ -2978,8 +2978,8 @@ public OnHouseDataLoad(id) {
 		cache_get_field_content(0, "Cocaine", result); 				House[id][Cocaine]				= strval(result);
 		cache_get_field_content(0, "Ecstasy", result); 				House[id][Ecstasy]				= strval(result);
 
-		cache_get_field_content(0, "Description", 					House[id][Description],128);
-		cache_get_field_content(0, "Owner", 						House[id][Owner],MAX_PLAYER_NAME);
+		cache_get_field_content(0, "Description", 					House[id][Description],1,128);
+		cache_get_field_content(0, "Owner", 						House[id][Owner],1,MAX_PLAYER_NAME);
 
 		cache_get_field_content(0, "EntranceX", result); 			House[id][EntranceX] 			= floatstr(result);
 		cache_get_field_content(0, "EntranceY", result); 			House[id][EntranceY] 			= floatstr(result);

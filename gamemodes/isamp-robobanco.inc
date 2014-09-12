@@ -237,9 +237,14 @@ stock PrintRobberyGroupInfo(group, playerid)
 stock ResetRobberyGroup(group)
 {
 	RobberyGroup[group][Active] = false;
-	RobberyGroup[group][LeaderID] = INVALID_PLAYER_ID;
 	RobberyGroup[group][RobberyStage] = 0;
 	RobberyGroup[group][RobberyStageProgress] = 0;
+	if(RobberyGroup[group][LeaderID] != INVALID_PLAYER_ID)
+	{
+		pRobberyGroup[RobberyGroup[group][LeaderID]] = ROBBERY_GROUP_NONE;
+		pRobberyStage[RobberyGroup[group][LeaderID]] = 0;
+		RobberyGroup[group][LeaderID] = INVALID_PLAYER_ID;
+	}
 	for(new i = 0; i < GROUP_MEMBERS; i++)
 	{
 	    if(RobberyGroup[group][MembersID][i] != INVALID_PLAYER_ID)
@@ -648,7 +653,7 @@ public RobarBoveda(playerid)
 	pHoldingMoney[playerid] = true;
 	pHoldingMoneyTimer[playerid] = SetTimerEx("TimeHoldMoney", 20 * 60 * 1000, false, "i", playerid);
 	RobberyGroupMessage(group, COLOR_WHITE, "¡El lider ha terminado de guardar el dinero, huye rapido o te atraparán! (OOC: El dinero se pierde si el lider deslogea/muere)");
-	ResetRobberyGroup(playerid);
+	ResetRobberyGroup(group);
 	return 1;
 }								
 
