@@ -393,6 +393,7 @@ new
 	P_PRODS_SHOP,
 	P_CAR_DEMOLITION,
 	P_BLACK_MARKET[3],
+	P_CARPART_SHOP,
 	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
@@ -1167,7 +1168,6 @@ public ResetStats(playerid) {
 	LastCP[playerid] = -1;
 	CollectedProds[playerid] = 0;
 	jobBreak[playerid] = 80;
-	ResetRepairOffer(playerid);
 	
 	/* Sistema de Mecanicos y Tuning */
 	ResetRepairOffer(playerid);
@@ -4994,6 +4994,11 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 			GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
 		return 1;
 		
+	} else if(pickupid == P_CARPART_SHOP) {
+		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
+			GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
+		return 1;
+				
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
 		GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
 		return 1;
@@ -7687,6 +7692,9 @@ stock LoadPickups() {
     P_TUNE[3] = CreateDynamicPickup(1239, 1, 1044.7301, -1027.6169, 32.1016, -1);
     P_TUNE[4] = CreateDynamicPickup(1239, 1, 2391.1355, 1041.8885, 10.8203, -1);
 
+	// Venta de repuestos
+	P_CARPART_SHOP = CreateDynamicPickup(1239, 1, 976.1300, -1254.8500, 16.9400, -1);
+
 	// Black Markets
 	P_BLACK_MARKET[0] = CreateDynamicPickup(1239, 1, 2659.6992, -2056.4814, 13.4214, -1);
 	P_BLACK_MARKET[1] = CreateDynamicPickup(1239, 1, 1296.0912, -990.3329, 32.6260, -1);
@@ -10322,8 +10330,8 @@ CMD:vender(playerid, params[])
 		    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: No estoy interesado.");
 
     	GivePlayerCash(playerid, GetItemPrice(item) * GetHandParam(playerid) / 2); // Paga el 50% del valor original
-		SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, te daré $%d por tu %s - %s: %d", GetItemName(item), GetItemParamName(item), GetHandParam(playerid));
-		PlayerActionMessage(playerid, 15.0, "Hace un intercambio de un paquete desconocido con un sujeto.");
+		SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, te daré $%d por tu %s - %s: %d", GetItemPrice(item) * GetHandParam(playerid) / 2, GetItemName(item), GetItemParamName(item), GetHandParam(playerid));
+		PlayerActionMessage(playerid, 15.0, "realiza un intercambio de un paquete desconocido con un sujeto.");
 		SetHandItemAndParam(playerid, 0, 0);
 		DeleteHandItem(playerid);
 		return 1;

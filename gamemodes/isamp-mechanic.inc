@@ -257,16 +257,20 @@ CMD:meccomprar(playerid, params[])
         return 1;
 	if(sscanf(params, "i", cant))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /meccomprar [Cantidad de repuestos]");
- 	if(GetHandItem(playerid) != 0)
+	if(!IsPlayerInRangeOfPoint(playerid, 15.0, 976.1300, -1254.8500, 16.9400))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar repuestos en cualquier lado.");
+	if(GetHandItem(playerid) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
-	if(cant < 1 || cant > 25)
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+	if(cant < 1 || cant > 20)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes sostener menos de 1 o mas de 25 repuestos con la mano.");
 	if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant)
 	{
 	    SendFMessage(playerid, COLOR_YELLOW2, "No tienes el efectivo necesario, necesitas $%d. (Costo por repuesto: $%d)", GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant, GetItemPrice(ITEM_ID_REPUESTOAUTO));
 		return 1;
 	}
-	
+
 	SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, cant);
 	LoadHandItem(playerid);
 	GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant);
@@ -284,6 +288,8 @@ CMD:mecguardar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún repuesto en la mano para guardar en el deposito del taller.");
 	if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de repuestos y tuning.");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 
 	format(string, sizeof(string), "[Taller Mecánico]: %s ha guardado %d repuestos en el depósito del taller.", GetPlayerNameEx(playerid), GetHandParam(playerid));
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
@@ -313,6 +319,8 @@ CMD:mecretirar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas repuestos en el deposito del taller: está vacio.");
 	if(FactionInfo[FAC_MECH][fMaterials] < cant)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay tantos repuestos en el deposito del taller.");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 
 	format(string, sizeof(string), "[Taller Mecánico]: %s ha retirado %d repuestos del depósito del taller.", GetPlayerNameEx(playerid), cant);
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
