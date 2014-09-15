@@ -52,7 +52,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
 #include "isamp-carthief.inc"          	//Robo de autos.
-
+#include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -124,7 +124,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_JOBS                10017
 #define DLG_GUIDE               10018
 #define DLG_247                 10019
-#define DLG_TUNING              10020
 #define DLG_TUNING_COLOR1       10021
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
@@ -245,7 +244,6 @@ new
  	STARS = 0,
     iGMXTick,
     SIDEGateTimer,
-    TMTuneTimers[5],
 	timersID[24],
 	pSpeedoTimer[MAX_PLAYERS],
 	// Menus.
@@ -308,12 +306,6 @@ new
 	// Mecánico.
 	MechanicCall = 999,
 	MechanicCallTime[MAX_PLAYERS],
-	RepairOffer[MAX_PLAYERS],
-	RepairPrice[MAX_PLAYERS],
-	RepairType[MAX_PLAYERS],
-	TuningOffer[MAX_PLAYERS],
-	TuningClient[MAX_PLAYERS],
-	DestuningOffer[MAX_PLAYERS],
 	
 	// Taxi/Bus.
 	TaxiCall = 999,
@@ -400,6 +392,7 @@ new
 	P_TUNE[5],
 	P_PRODS_SHOP,
 	P_CAR_DEMOLITION,
+	P_BLACK_MARKET[3],
 	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
@@ -852,11 +845,6 @@ forward GiveJobExp(playerid, job, exp);
 forward BackupClear(playerid, calledbytimer);
 forward FixHour(hour);
 forward CloseGate(gateID);
-forward CloseTuneGate0();
-forward CloseTuneGate1();
-forward CloseTuneGate2();
-forward CloseTuneGate3();
-forward CloseTuneGate4();
 forward AllowAd(playerid);
 forward Reparacion(playerid);
 forward Cerrajeria(playerid);
@@ -1179,14 +1167,10 @@ public ResetStats(playerid) {
 	LastCP[playerid] = -1;
 	CollectedProds[playerid] = 0;
 	jobBreak[playerid] = 80;
-	RepairOffer[playerid] = 999;
-	RepairPrice[playerid] = 0;
-	RepairType[playerid] = 0;
+	ResetRepairOffer(playerid);
 	
-	/* Sistema de Tuning */
-	TuningOffer[playerid] = 999;
-	TuningClient[playerid] = 999;
-	DestuningOffer[playerid] = 999;
+	/* Sistema de Mecanicos y Tuning */
+	ResetRepairOffer(playerid);
 	
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
@@ -4941,7 +4925,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	for(new i = 0; i < 5; i++) {
 	    if(pickupid == P_TUNE[i]) {
 	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
-	            GameTextForPlayer(playerid, "~w~Escribe /ptunear para abrir o cerrar el taller", 2000, 4);
+	            GameTextForPlayer(playerid, "~w~Escribe /mectaller para abrir o cerrar el taller", 2000, 4);
 	        } else {
 	        	GameTextForPlayer(playerid, "~w~Para personalizar tu vehiculo llama al 555", 2000, 4);
 	        }
@@ -4952,6 +4936,13 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	for(new i = 0; i < sizeof(P_GUIDE); i++) {
 	    if(pickupid == P_GUIDE[i]) {
 	        GameTextForPlayer(playerid, "~w~/guia para ver una lista de lugares disponibles.", 2000, 4);
+	        return 1;
+	    }
+	}
+	
+	for(new i = 0; i < sizeof(P_BLACK_MARKET); i++) {
+	    if(pickupid == P_BLACK_MARKET[i]) {
+	        GameTextForPlayer(playerid, "~w~Mercado negro - Utiliza /comprar o /vender.", 2000, 4);
 	        return 1;
 	    }
 	}
@@ -6985,54 +6976,6 @@ SetPlayerFaction(targetid, factionid, rank)
 	}
 }
 
-public Cerrajeria(playerid) {
-    new string[128], vehicleid;
-	if(GetPlayerCash(playerid) >= RepairPrice[playerid]) {
-		TogglePlayerControllable(playerid, true);
-		vehicleid = GetPlayerVehicleID(playerid);
-		deleteExtraKeysForCar(vehicleid);
-		format(string, sizeof(string), "La cerradura de su vehículo ha sido cambiada por %s (costo: $%d).", GetPlayerNameEx(RepairOffer[playerid]), RepairPrice[playerid]);
-		SendClientMessage(playerid, COLOR_YELLOW2, string);
-		format(string, sizeof(string), "Cambiaste la cerradura del vehículo de %s, $%d han sido añadidos a su PayDay.", GetPlayerNameEx(playerid), RepairPrice[playerid]);
-		SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, string);
-		PlayerInfo[RepairOffer[playerid]][pPayCheck] += RepairPrice[playerid];
-		GivePlayerCash(playerid, -RepairPrice[playerid]);
-		RepairOffer[playerid] = 999;
-		RepairPrice[playerid] = 0;
-		RepairType[playerid] = 0;
-	} else {
-	    TogglePlayerControllable(playerid, true);
-	    SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, "El jugador no tiene el dinero necesario.");
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-	    RepairOffer[playerid] = 999;
-		RepairType[playerid] = 0;
-	}
-}
-
-public Reparacion(playerid) {
-    new string[128], vehicleid;
-	if(GetPlayerCash(playerid) >= RepairPrice[playerid]) {
-		TogglePlayerControllable(playerid, true);
-		vehicleid = GetPlayerVehicleID(playerid);
-		RepairVehicle(vehicleid);
-		VehicleInfo[vehicleid][VehHP] = 100;
-		format(string, sizeof(string), "Su vehículo ha sido reparado por %s (costo: $%d).", GetPlayerNameEx(RepairOffer[playerid]), RepairPrice[playerid]);
-		SendClientMessage(playerid, COLOR_YELLOW2, string);
-		format(string, sizeof(string), "Reparaste el vehículo de %s, $%d han sido añadidos a su PayDay.", GetPlayerNameEx(playerid), RepairPrice[playerid]);
-		SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, string);
-		PlayerInfo[RepairOffer[playerid]][pPayCheck] += RepairPrice[playerid];
-		GivePlayerCash(playerid, -RepairPrice[playerid]);
-		RepairOffer[playerid] = 999;
-		RepairPrice[playerid] = 0;
-	} else {
-	    TogglePlayerControllable(playerid, true);
-	    SendClientMessage(RepairOffer[playerid], COLOR_YELLOW2, "El jugador no tiene el dinero necesario.");
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-	    RepairOffer[playerid] = 999;
-		RepairPrice[playerid] = 0;
-	}
-}
-
 public PhoneAnimation(playerid) {
 	if(!IsPlayerInAnyVehicle(playerid))	{
 		SetPlayerSpecialAction(playerid,SPECIAL_ACTION_USECELLPHONE);
@@ -7155,46 +7098,6 @@ public CloseGate(gateID) {
 	}*/
 	
 	
-	return 1;
-}
-
-public CloseTuneGate0() {
-    if(TMTune[0][0] == 1) {
-	    TMTune[0][0] = 0;
-	    MoveObject(TMTune[0][1], -2716.01, 217.88, 5.48, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
-}
-
-public CloseTuneGate1() {
-    if(TMTune[1][0] == 1) {  
-	    TMTune[1][0] = 0;
-	    MoveObject(TMTune[1][1],  2644.83, -2039.06, 14.32, 1, 0.00, 0.00, 73.08);
-	}
-	return 1;
-}
-
-public CloseTuneGate2() {
-    if(TMTune[2][0] == 1) {
-	    TMTune[2][0] = 0;
-	    MoveObject(TMTune[2][1], -1935.01, 238.70, 33.69, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
-}
-
-public CloseTuneGate3() {
-    if(TMTune[3][0] == 1) {
-	    TMTune[3][0] = 0;
-	    MoveObject(TMTune[3][1], 1043.17, -1025.85, 33.66, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
-}
-
-public CloseTuneGate4() {
-    if(TMTune[4][0] == 1) {
-	    TMTune[4][0] = 0;
-	    MoveObject(TMTune[4][1], 2387.38, 1043.45, 11.82, 1, 0.00, 0.00, 0.00);
-	}
 	return 1;
 }
 
@@ -7784,6 +7687,12 @@ stock LoadPickups() {
     P_TUNE[3] = CreateDynamicPickup(1239, 1, 1044.7301, -1027.6169, 32.1016, -1);
     P_TUNE[4] = CreateDynamicPickup(1239, 1, 2391.1355, 1041.8885, 10.8203, -1);
 
+	// Black Markets
+	P_BLACK_MARKET[0] = CreateDynamicPickup(1239, 1, 2659.6992, -2056.4814, 13.4214, -1);
+	P_BLACK_MARKET[1] = CreateDynamicPickup(1239, 1, 1296.0912, -990.3329, 32.6260, -1);
+	P_BLACK_MARKET[2] = CreateDynamicPickup(1239, 1, 1598.7982, -2137.0635, 13.4390, -1);
+
+	// Renta de autos
 	P_CAR_RENT1 = CreateDynamicPickup(1239, 1, 1569.8145, -2243.8796, 13.5184, -1);
 	P_CAR_RENT2	= CreateDynamicPickup(1239, 1, 1276.8502, -1309.8553, 13.3107, -1);
 	P_CAR_RENT3 = CreateDynamicPickup(1239, 1, 611.9272, -1294.7240, 15.2081, -1);
@@ -10101,7 +10010,7 @@ CMD:ayuda(playerid,params[]) {
 		    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[HMA]:{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /equipomec /reparar /remolcar (/pt)unear /tunear /tuning /destunear /cambiarcerradura");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /ayudamec");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar");
@@ -10400,6 +10309,27 @@ CMD:numero(playerid, params[]) {
 	return 1;
 }
 
+CMD:vender(playerid, params[])
+{
+	// Mercado Negro
+	if(PlayerToPoint(2.0, playerid, 2659.6992, -2056.4814, 13.4214) || PlayerToPoint(2.0, playerid, 1296.0912, -990.3329, 32.6260) || PlayerToPoint(2.0, playerid, 1598.7982, -2137.0635, 13.4390))
+	{
+	    new item = GetHandItem(playerid);
+	    
+		if(item == 0)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus manos para vender.");
+		if(item != ITEM_ID_REPUESTOAUTO && item != ITEM_ID_BARRETA && item != ITEM_ID_PRODUCTOS && item != ITEM_ID_MATERIALES)
+		    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: No estoy interesado.");
+
+    	GivePlayerCash(playerid, GetItemPrice(item) * GetHandParam(playerid) / 2); // Paga el 50% del valor original
+		SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, te daré $%d por tu %s - %s: %d", GetItemName(item), GetItemParamName(item), GetHandParam(playerid));
+		PlayerActionMessage(playerid, 15.0, "Hace un intercambio de un paquete desconocido con un sujeto.");
+		SetHandItemAndParam(playerid, 0, 0);
+		DeleteHandItem(playerid);
+		return 1;
+	}
+	return 1;
+}
 
 CMD:comprar(playerid, params[]) {
 	new
@@ -10685,7 +10615,40 @@ CMD:comprar(playerid, params[]) {
 			SetTimerEx("buyProductsTimer", 4000, false, "ii", playerid, amount);
 			TogglePlayerControllable(playerid, false);
 			GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
+			
+		// Mercado Negro
+		} else if(PlayerToPoint(2.0, playerid, 2659.6992, -2056.4814, 13.4214) ||
+  					PlayerToPoint(2.0, playerid, 1296.0912, -990.3329, 32.6260) ||
+		            PlayerToPoint(2.0, playerid, 1598.7982, -2137.0635, 13.4390)) {
 
+			new
+			    item,
+				option,
+				cant;
+
+			if(sscanf(params, "ii", option, cant))
+			{
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [Item] [Cantidad]");
+				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d", GetItemPrice(ITEM_ID_BARRETA));
+				return 1;
+			}
+			if(GetHandItem(playerid) != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas.");
+			if(cant < 1 || cant > 5)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 o mas de 5.");
+   			switch(option)
+   			{
+   			    case 1: item = ITEM_ID_BARRETA;
+   			    default: return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [Item] [Cantidad]");
+			}
+			if(GetPlayerCash(playerid) < GetItemPrice(item) * cant)
+			    return SendClientMessage(playerid, COLOR_WHITE, "Vendedor: Tomatela de acá y volvé cuando tengas el dinero.");
+
+			SetHandItemAndParam(playerid, item, cant);
+			LoadHandItem(playerid);
+			GivePlayerCash(playerid, -GetItemPrice(item) * cant);
+			return 1;
+		
 		} else if(PlayerToPoint(4.0, playerid, 2349.8408, -1216.3939, 22.5000)) {
 			if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
 				new amount;
@@ -10914,7 +10877,7 @@ CMD:ayudap(playerid, params[])
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /remolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
  	if(PlayerInfo[playerid][pRank] <= 4)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
 	return 1;
@@ -12937,35 +12900,7 @@ CMD:aceptar(playerid,params[]) {
 		PlayerPlayerActionMessage(idToShow, playerid, 15.0, "ha revisado en busca de objetos a");
 		ReviseOffer[playerid] = 999;
 		return 1;
-		
-	} else if(strcmp(text,"reparacion",true) == 0) {
-	
-		if(RepairOffer[playerid] == 999)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie te ha ofrecido una reparación!");
-		if(GetPlayerCash(playerid) < RepairPrice[playerid])
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente para pagar la reparación!");
-        if(IsPlayerConnected(RepairOffer[playerid]))
-		{
-		    if(IsPlayerInAnyVehicle(playerid))
-			{
-				if(!ProxDetectorS(6.0, playerid, RepairOffer[playerid]))
-					return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está cerca tuyo.");
-				
-				if(RepairType[playerid]==1){
-					GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
-					GameTextForPlayer(RepairOffer[playerid], "Reparando vehiculo...", 6000, 1);
-					TogglePlayerControllable(playerid, false);
-					SetTimerEx("Reparacion", 6000, false, "i", playerid);
-				} else if(RepairType[playerid]==2){
-					GameTextForPlayer(playerid, "El mecánico está cambiando la cerradura...", 6000, 1);
-					GameTextForPlayer(RepairOffer[playerid], "Cambiando cerradura...", 6000, 1);
-					TogglePlayerControllable(playerid, false);
-					SetTimerEx("Cerrajeria", 6000, false, "i", playerid);
-				}
-				return 1;
-			}
-		}
-		
+
 	} else if(strcmp(text,"taxi",true) == 0) {
 	    new
 			Float:ptX,
@@ -12992,47 +12927,6 @@ CMD:aceptar(playerid,params[]) {
             SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie ha llamado a un taxi!");
 	    	return 1;
         }
-        
-	} else if(strcmp(text,"tuning",true) == 0){
-	
-		if(TuningOffer[playerid] == 999)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie te ha ofrecido un tuneo!");
-   		if(!ProxDetectorS(5.0, playerid, TuningOffer[playerid]))
-  	    	return SendClientMessage(playerid, COLOR_WHITE, "El mecánico no está cerca tuyo.");
-		if(!IsPlayerConnected(TuningOffer[playerid]))
-		    return SendClientMessage(playerid, COLOR_WHITE, "El mecanico no está conectado.");
-		TuningClient[TuningOffer[playerid]] = playerid;
-		GameTextForPlayer(playerid, "Has aceptado la propuesta de tuneo.", 6000, 1);
-		SendClientMessage(TuningOffer[playerid], COLOR_YELLOW, "Aceptaron tu propuesta, usa /tuning arriba del vehiculo.");
-		return 1;
-		
-	} else if(strcmp(text,"destuneo",true) == 0){
-	
- 		if(DestuningOffer[playerid] == 999)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie te ha ofrecido sacarle el tuning al vehiculo!");
-	    if(!ProxDetectorS(5.0, playerid, DestuningOffer[playerid]))
-	  		return SendClientMessage(playerid, COLOR_WHITE, "El mecánico no está cerca tuyo.");
-	    if(!IsPlayerConnected(DestuningOffer[playerid]))
-		    return SendClientMessage(playerid, COLOR_WHITE, "El mecanico no está conectado.");
-	    if(!IsPlayerInAnyVehicle(playerid))
-			return SendClientMessage(playerid, COLOR_WHITE, "No estás en un ningún vehiculo.");
-		new vID = GetPlayerVehicleID(playerid);
-	    if(GetVehicleType(vID) != VTYPE_CAR)
-	    	return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo invalido.");
-	    if(!playerHasCarKey(playerid,vID))
-			return SendClientMessage(playerid, COLOR_WHITE, "No eres dueño de ese vehiculo.");
-	    PlayerActionMessage(DestuningOffer[playerid], 15.0, "comienza a desarmar el vehiculo y remover las partes tuneadas.");
-		for(new i = 0; i < 14; i++)
-		{
-			new itemToRemove = VehicleInfo[vID][VehCompSlot][i];
-			if(itemToRemove != 0)
-			{
-		       	RemoveVehicleComponent(vID, itemToRemove);
-		       	VehicleInfo[vID][VehCompSlot][i] = 0;
-			}
-		}
-		DestuningOffer[playerid] = 999;
-		return 1;
 
 	} else if(strcmp(text,"picada",true) == 0){
 	
@@ -13750,282 +13644,6 @@ CMD:ensamblar(playerid, params[])
 		FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] -= mats;
 		SendFMessage(playerid, COLOR_WHITE, "Has ensamblado un/a %s con 50 municiones por %d piezas.", GetItemName(weapon), mats);
 	}
-	return 1;
-}
-
-//============================COMANDOS DE MECANICOS=============================
-
-CMD:equipomec(playerid, params[])
-{
-	new option;
-
-	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-	    return 1;
-	if(sscanf(params, "i", option))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipomec [ropa] (1-5)");
-	if(option < 1 || option > 5)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipomec [ropa] (1-5)");
-    if(!PlayerToPoint(3.0, playerid, 1584.5441, -1819.6831, 13.3418)) // Oficina del taller
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la oficina del taller, al lado de los estantes donde se guardan las vestimentas de trabajo.");
-   	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio");
-
-	RemovePlayerWeapon(playerid, 41); // Evitamos acumulacion de sprays
-	if(option == 5)
-	{
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-        PlayerActionMessage(playerid, 15.0, "devuelve su ropa de trabajo al estante y se viste con la propia.");
-	} else
-	    {
-			switch(option)
-			{
-			    case 1: SetPlayerSkin(playerid, 8);
-			    case 2: SetPlayerSkin(playerid, 50);
-			    case 3: SetPlayerSkin(playerid, 42);
-			    case 4: SetPlayerSkin(playerid, 268);
-			}
-			GivePlayerWeapon(playerid, 41, 500);
-			PlayerActionMessage(playerid, 15.0, "toma unas vestimentas del estante y se las pone. Luego agarra un aerosol de pintura.");
-		}
-	return 1;
-}
-
-CMD:reparar(playerid,params[])
-{
-	new target, vehicleid, price;
-
-    if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-        return 1;
-	if(sscanf(params, "ud", target, price))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /reparar [ID/Jugador] [precio]");
-	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en servicio.");
- 	if(price < 0 || price > JOB_MECH_MAXPRICE)
-	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "¡El precio no debe ser mayor a %d o menor a 0!", JOB_MECH_MAXPRICE);
-	    return 1;
- 	}
- 	if(target == INVALID_PLAYER_ID || target == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido.");
- 	if(!ProxDetectorS(8.0, playerid, target) || !IsPlayerInAnyVehicle(target))
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no está dentro de un vehiculo.");
-	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(target) == PLAYER_STATE_PASSENGER)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
-					
-    vehicleid = GetPlayerVehicleID(target);
-	GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s reparar su auto por $%d.", GetPlayerNameEx(target), price);
-	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido reparar su vehículo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
-	RepairOffer[target] = playerid;
-	RepairPrice[target] = price;
-	RepairType[target] = 1;
-	return 1;
-}
-
-CMD:remolcar(playerid, params[])
-{
-	new vehicleid = GetPlayerVehicleID(playerid), targetVehicleid = GetClosestVehicle(playerid, 7.0);
-	    
-    if(PlayerInfo[playerid][pFaction] != FAC_MECH && PlayerInfo[playerid][pFaction] != FAC_PMA)
-        return 1;
-	if(GetVehicleModel(vehicleid) != 525 || GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes que estar conduciendo una grúa!");
-	if(targetVehicleid == INVALID_VEHICLE_ID)
-	    return 1;
-
-	if(IsTrailerAttachedToVehicle(vehicleid))
-		DetachTrailerFromVehicle(vehicleid);
-	else
-		AttachTrailerToVehicle(targetVehicleid, vehicleid);
-	return 1;
-}
-
-CMD:pt(playerid, params[])
-{
-	cmd_ptunear(playerid, params);
-	return 1;
-}
-
-CMD:ptunear(playerid, params[])
-{
-	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-		return 1;
-	if(PlayerInfo[playerid][pRank] > 3) {
-        SendFMessage(playerid, COLOR_YELLOW2, "Debes ser al menos un '%s' para poder utilizar este comando.", GetRankName(FAC_MECH, 3));
-        return 1;
-	}
- 	if(PlayerToPoint(10.0, playerid, -2714.6985, 222.1743, 4.3281)) {
-	 	// Wheel Arch Angels San Fierro.
- 	    if(TMTune[0][0] <= 0) {
- 	        TMTune[0][0] = 1;
- 	    	MoveObject(TMTune[0][1], -2716.01, 217.88, 10, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[0] = SetTimer("CloseTuneGate0", 1000 * 60 * 5, false);
-		} else {
-		    KillTimer(TMTuneTimers[0]);
-		    TMTune[0][0] = 0;
-		    MoveObject(TMTune[0][1], -2716.01, 217.88, 5.48, 1, 0.00, 0.00, 0.00);
-		}
-	} else if(PlayerToPoint(10.0, playerid, 2649.7874, -2037.5381, 13.5500)) {
-		// Loco Low Co. Los Santos.
- 	    if(TMTune[1][0] <= 0) {
- 	        TMTune[1][0] = 1;
- 	    	MoveObject(TMTune[1][1], 2651.19, -2039.01, 14.32, 1, 0.00, 0.00, -73.08);
- 	    	TMTuneTimers[1] = SetTimer("CloseTuneGate1", 1000 * 60 * 5, false);
-		} else {
-			KillTimer(TMTuneTimers[1]);
-		    TMTune[1][0] = 0;
-		    MoveObject(TMTune[1][1], 2644.83, -2039.06, 14.32, 1, 0.00, 0.00, -73.08);
-		}
-	} else if(PlayerToPoint(10.0, playerid, -1931.3779, 237.0436, 34.3470)) {
-		// TransFender San Fierro.
- 	    if(TMTune[2][0] <= 0) {
- 	        TMTune[2][0] = 1;
- 	    	MoveObject(TMTune[2][1],  -1927.87, 238.66, 33.70, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[2] = SetTimer("CloseTuneGate2", 1000 * 60 * 5, false);
-		} else {
-		    KillTimer(TMTuneTimers[2]);
-		    TMTune[2][0] = 0;
-		    MoveObject(TMTune[2][1], -1935.01, 238.70, 33.69, 1, 0.00, 0.00, 0.00);
-		}
-	} else if(PlayerToPoint(10.0, playerid, 1044.7301, -1027.6169, 32.1016)) {
-		// TransFender Los Santos.
- 	    if(TMTune[3][0] <= 0) {
- 	        TMTune[3][0] = 1;
- 	    	MoveObject(TMTune[3][1], 1050.63, -1025.82, 33.66, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[3] = SetTimer("CloseTuneGate3", 1000 * 60 * 5, false);
-		} else {
-		    KillTimer(TMTuneTimers[3]);
-		    TMTune[3][0] = 0;
-		    MoveObject(TMTune[3][1], 1043.17, -1025.85, 33.66, 1, 0.00, 0.00, 0.00);
-		}
-	} else if(PlayerToPoint(10.0, playerid, 2391.1355, 1041.8885, 10.8203)) {
-		// TransFender Las Venturas.
- 	    if(TMTune[4][0] <= 0) {
- 	        TMTune[4][0] = 1;
- 	    	MoveObject(TMTune[4][1], 2394.90, 1043.69, 11.82, 1, 0.00, 90.00, 90.00);
-       		TMTuneTimers[4] = SetTimer("CloseTuneGate4", 1000 * 60 * 5, false);
-		} else {
-		    KillTimer(TMTuneTimers[4]);
-		    TMTune[4][0] = 0;
-		    MoveObject(TMTune[4][1], 2387.38, 1043.45, 11.82, 1, 0.00, 0.00, 0.00);
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la puerta de un Transfender, Loco Low Co. o Wheel Arch Angels.");
-	}
-	return 1;
-}
-
-forward FinOfertaDestuning(playerid);
-public FinOfertaDestuning(playerid)
-{
-	DestuningOffer[playerid] = 999;
-}
-
-CMD:destunear(playerid, params[])
-{
-	new target;
-	
- 	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-  		return 1;
-    if(sscanf(params, "u", target))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /destunear [idDueño]");
- 	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio");
-    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie!");
-  	if(target == INVALID_PLAYER_ID)
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador invalido.");
-  	if(!ProxDetectorS(5.0, playerid, target))
-  	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
-    if(!IsPlayerInRangeOfPoint(playerid, 15.0, 1595.9249, -1840.6959, 13.4859))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
-	if(!IsPlayerInAnyVehicle(target))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no esta en un vehiculo.");
-	new vID = GetPlayerVehicleID(target);
-    if(GetVehicleType(vID) != VTYPE_CAR)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
-    if(!playerHasCarKey(playerid,vID))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de ese vehiculo.");
-	    
-    DestuningOffer[target] = playerid;
-    SetTimerEx("FinOfertaDestuning", 15000, false, "i", target);
-    SendClientMessage(target, COLOR_WHITE, "Te han ofrecido destunear tu auto, usa /aceptar destuneo si asi lo deseas. Tienes 15 segundos para responder.");
-    SendClientMessage(playerid, COLOR_WHITE, "Le has propuesto al cliente destunear su auto, espera a su respuesta. La propuesta termina en 15 segundos.");
-	return 1;
-}
-
-forward FinOfertaTuning(playerid);
-public FinOfertaTuning(playerid)
-{
-    TuningOffer[TuningClient[playerid]] = 999;
-	TuningClient[playerid] = 999;
-}
-
-CMD:tunear(playerid,params[])
-{
-	new target, tuningVehicleID;
-
-    if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-        return 1;
-	if(sscanf(params, "u", target))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tunear [idDueño]");
-	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio");
- 	if(PlayerInfo[playerid][pRank] > 4)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente.");
-	if(TuningClient[playerid] < 999)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes una propuesta con otro cliente!");
-  	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de conductor en el auto que vas a tunear!");
- 	if(target == INVALID_PLAYER_ID)
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador invalido.");
-  	if(!ProxDetectorS(5.0, playerid, target))
-  	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
-	tuningVehicleID = GetPlayerVehicleID(playerid);
-	if(!playerHasCarKey(playerid,tuningVehicleID))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de este vehiculo.");
-    if(GetVehicleType(tuningVehicleID) != VTYPE_CAR && GetVehicleType(tuningVehicleID) != VTYPE_BIKE)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
-    if(!IsPlayerInRangeOfPoint(playerid, 15.0, 1595.9249, -1840.6959, 13.4859))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
-
-    SendClientMessage(target, COLOR_LIGHTBLUE, "Te han ofrecido un tuneo, usa /aceptar tuning si asi lo deseas. La oferta y el tiempo para tunearlo terminar en 2 minutos.");
-    SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has ofrecido un tuneo, el tiempo para terminar de tunearlo termina en 2 minutos.");
-	SetTimerEx("FinOfertaTuning", 120000, false, "i", playerid);
-	TuningOffer[target] = playerid;
-	return 1;
-}
-
-CMD:tuning(playerid, params[])
-{
-    new clientID = TuningClient[playerid];
-    
-    if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-        return 1;
-    if(!jobDuty[playerid])
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
-    if(clientID == 999)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes autorizacion del dueño para tunear este vehículo.");
-	if(TuningOffer[clientID] != playerid)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes autorizacion del dueño para tunear este vehículo.");
-    if(!IsPlayerInRangeOfPoint(playerid, 15.0, 1595.9249, -1840.6959, 13.4859))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
-    if(PlayerInfo[playerid][pRank] > 4)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente.");
- 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de conductor del auto que vas a tunear!");
-	new vID = GetPlayerVehicleID(playerid);
-  	if(!playerHasCarKey(playerid,vID))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este auto no es de tu cliente.");
-   	if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehiculo invalido.");
-
-	new title[64];
-	new content[256];
-	format(title, sizeof(title), "Menú de tuning del Taller Mercury");
-	format(content, sizeof(content), "Color 1 $1500\nColor 2 $1500\nLlantas $4000\nSuspension Hidraulica $4000\nOxido Nitroso $10000");
-	TogglePlayerControllable(playerid, false);
-	ShowPlayerDialog(playerid, DLG_TUNING, DIALOG_STYLE_LIST, title, content, "Seleccionar", "Cerrar");
 	return 1;
 }
 
@@ -15330,10 +14948,4 @@ CMD:llenar(playerid, params[])
 	fillingFuel[playerid] = true;
 	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
 	return 1;
-}
-
-stock setRepairOffer(playerid,target,price,type=1){
-	RepairOffer[target] = playerid;
-	RepairPrice[target] = price;
-	RepairType[target] = type;
 }

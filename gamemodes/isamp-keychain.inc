@@ -249,32 +249,3 @@ CMD:llavero(playerid, params[])
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - desechar [nroLlave] - darcopia [nroLlave] [ID/Jugador]");
 	return 1;
 }
-
-CMD:cambiarcerradura(playerid, params[]){
-	new target,price;
-	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
-        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No eres mecanico.");
-	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en servicio.");
-	if(sscanf(params, "ud", target, price))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarcerradura [ID/Jugador] [precio]");
-	
-	if(price < 0 || price > JOB_MECH_MAXPRICE)
-	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "Â¡El precio no debe ser mayor a %d o menor a 0!", JOB_MECH_MAXPRICE);
-	    return 1;
- 	}
- 	if(target == INVALID_PLAYER_ID || target == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido.");
- 	if(!ProxDetectorS(8.0, playerid, target) || !IsPlayerInAnyVehicle(target))
- 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} el jugador no se encuentra cerca tuyo o no está dentro de un vehículo.");
-	if(IsPlayerInAnyVehicle(playerid) || GetPlayerState(target) == PLAYER_STATE_PASSENGER)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehículo desde adentro, ni tampoco repararselo a un pasajero.");
-	if(!playerOwnsCar(target,GetPlayerVehicleID(target)))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El auto no pertenece al usuario.");
-		
-	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura del auto por $%d.", GetPlayerNameEx(target), price);
-	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido cambiar la cerradura del vehículo por {D30000}$%d{33CCFF}, escribe /aceptar reparacion para aceptar.", GetPlayerNameEx(playerid), price);
-	setRepairOffer(playerid,target,price,2);
-	return 1;
-}

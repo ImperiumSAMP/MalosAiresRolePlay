@@ -12,9 +12,10 @@
 #define POS_CAR_DEMOLITION_Z 	13.5339
 
 #define STOLEN_CAR_MISSING_TIME 60 // En minutos, tiempo hasta que vuelva a aparecer una vez desarmado.
-	
-// Falta fijar cooldowns de ganzua puente y demoler? y ademas fijar limite por payday?
-// No cuenta en intentos fallidos de puente o ganzua. Falta subir experiencia por intentos exitosos.
+
+#define CMD_BARRETA_COOLDOWN    50 // En minutos
+#define CMD_PUENTE_COOLDOWN     50 // En minutos
+#define CMD_DESARMAR_COOLDOWN   60 // En minutos
 	
 //============================FUNCIONES PUBLICAS================================
 
@@ -23,50 +24,6 @@
 //=========================IMPLEMENTACIÓN DE FUNCIONES==========================
 
 //================================COMANDOS======================================
-
-CMD:desarmar(playerid, params[])
-{
-	new
-		vehicleid = GetPlayerVehicleID(playerid),
-		Float:vehiclehp,
-		repuestos;
-
-	if(PlayerInfo[playerid][pJob] != JOB_FELON)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
-	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
-	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes dirigirte al desarmadero con el vehículo robado.");
-	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
-	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes desarmar vehículos personales)");
-	if(playerHasCarKey(playerid, vehicleid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desarmar un auto del cual tienes las llaves.");
-	if(GetHandItem(playerid) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
-
- 	GetVehicleHealth(vehicleid, vehiclehp);
-    repuestos = (floatround(vehiclehp, floatround_round) / 125) * 2;
-    SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
-    LoadHandItem(playerid);
-    SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
-    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);
-    SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
-    PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
-    SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
-	// fijaer cooldown para volver a demoler? o un maximo de hasta X por payday (con o sin cooldown entre demolers?) Mismo para /puente
-	// Congelar auto en 9999.9999.9999 por X tiempo? o respawnear al toque.
-	// ver ganancia (repuestos) x precio de auto
-	return 1;
-}
-
-forward RespawnDemolishedVehicle(vehicleid);
-public RespawnDemolishedVehicle(vehicleid)
-{
-	SetVehicleToRespawn(vehicleid);
-	return 1;
-}
 
 CMD:barreta(playerid, params[])
 {
@@ -79,6 +36,11 @@ CMD:barreta(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
 	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
+	if(ThiefJobInfo[playerid][pForceDoorLimit] != 0)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a forzar una cerradura.", ThiefJobInfo[playerid][pForceDoorLimit] / 60);
+	    return 1;
+	}
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
 	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
@@ -135,6 +97,7 @@ public UsarBarreta(playerid, vehicleid)
  		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con exito la cerradura.");
 		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
  			GiveJobExp(playerid, JOB_FELON, 2);
+        ThiefJobInfo[playerid][pForceDoorLimit] = CMD_BARRETA_COOLDOWN * 60;
  	}
 	return 1;
 }
@@ -147,6 +110,11 @@ CMD:puente(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
 	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para poder robar autos.");
+	if(ThiefJobInfo[playerid][pForceEngineLimit] != 0)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a puentear el arranque.", ThiefJobInfo[playerid][pForceEngineLimit] / 60);
+	    return 1;
+	}
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento de conductor de un vehículo!");
 	GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
@@ -170,9 +138,56 @@ public PuenteMotor(playerid, vehicleid)
         SendClientMessage(playerid, COLOR_WHITE, "¡Perfecto! Conectas los cables correctos y el motor enciende. ¡Huye de aquí!");
 		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
  			GiveJobExp(playerid, JOB_FELON, 2);
+        ThiefJobInfo[playerid][pForceEngineLimit] = CMD_PUENTE_COOLDOWN * 60;
 	}
 	else
 		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables adecuados.");
 	return 1;
 }
 
+CMD:desarmar(playerid, params[])
+{
+	new
+		vehicleid = GetPlayerVehicleID(playerid),
+		Float:vehiclehp,
+		repuestos;
+
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
+	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
+	if(ThiefJobInfo[playerid][pDesarmCarLimit] != 0)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a desarmar un vehículo.", ThiefJobInfo[playerid][pDesarmCarLimit] / 60);
+	    return 1;
+	}
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
+	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes dirigirte al desarmadero con el vehículo robado.");
+	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
+	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes desarmar vehículos personales)");
+	if(playerHasCarKey(playerid, vehicleid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desarmar un auto del cual tienes las llaves.");
+	if(GetHandItem(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
+
+ 	GetVehicleHealth(vehicleid, vehiclehp);
+    repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 2;
+    SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
+    LoadHandItem(playerid);
+    SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
+    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);
+    SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
+    PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
+    SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
+    ThiefJobInfo[playerid][pDesarmCarLimit] = CMD_DESARMAR_COOLDOWN * 60;
+	return 1;
+}
+
+forward RespawnDemolishedVehicle(vehicleid);
+public RespawnDemolishedVehicle(vehicleid)
+{
+	SetVehicleToRespawn(vehicleid);
+	return 1;
+}

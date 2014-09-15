@@ -115,7 +115,7 @@ static const ServerItems[][ItemInfo] = {
 /*58*/  {"Casco Rojo", "Cantidad", ITEM_OTHER, 560, false, 18977, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0},
 /*59*/  {"Casco Blanco", "Cantidad", ITEM_OTHER, 560, false, 18978, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0},
 /*60*/  {"Casco Rosa", "Cantidad", ITEM_OTHER, 700, false, 18979, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0},
-/*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 150, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0},
+/*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 125, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0},
 /*62*/  {"Barreta", "Cantidad", ITEM_OTHER, 150, false, 18634, 0.108, 0.012, -0.109, -102.7, -135.4}
 
 };

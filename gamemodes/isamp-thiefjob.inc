@@ -13,7 +13,10 @@ enum tThiefJob {
 	pRob247Limit,
 	pTheft247Limit,
 	pRobHouseLimit,
-	pRob2HouseLimit
+	pRob2HouseLimit,
+	pForceDoorLimit,
+	pForceEngineLimit,
+	pDesarmCarLimit
 };
 new ThiefJobInfo[MAX_PLAYERS][tThiefJob];
 
@@ -35,6 +38,9 @@ stock resetThiefVariables(playerid){
 	ThiefJobInfo[playerid][pRob2HouseLimit] = 0;
 	ThiefJobInfo[playerid][pRob247Limit] = 0;
 	ThiefJobInfo[playerid][pTheft247Limit] = 0;
+	ThiefJobInfo[playerid][pForceDoorLimit] = 0;
+	ThiefJobInfo[playerid][pForceEngineLimit] = 0;
+	ThiefJobInfo[playerid][pDesarmCarLimit] = 0;
 
 	theftTime[playerid] = -1;
 	felon[playerid] = INVALID_PLAYER_ID;
@@ -73,6 +79,9 @@ public OnThiefJobDataLoad(playerid) {
 		cache_get_field_content(0, "pRob2HouseLimit", result); 	ThiefJobInfo[playerid][pRobHouseLimit] 	= strval(result);
 		cache_get_field_content(0, "pRob247Limit", result); 	ThiefJobInfo[playerid][pRob247Limit] 		= strval(result);
 		cache_get_field_content(0, "pTheft247Limit", result); 	ThiefJobInfo[playerid][pTheft247Limit] 	= strval(result);
+		cache_get_field_content(0, "pForceDoorLimit", result);	ThiefJobInfo[playerid][pForceDoorLimit] 	= strval(result);
+		cache_get_field_content(0, "pForceEngineLimit", result);ThiefJobInfo[playerid][pForceEngineLimit] 	= strval(result);
+		cache_get_field_content(0, "pDesarmCarLimit", result);	ThiefJobInfo[playerid][pDesarmCarLimit] 	= strval(result);
 	}
 }
 
@@ -91,7 +100,7 @@ forward saveThiefJob(playerid);
 public saveThiefJob(playerid){
 	new query[512];
 	
-	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d,pRob2HouseLimit=%d WHERE `accountid`=%d",			
+	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d,pRob2HouseLimit=%d,pForceDoorLimit=%d,pForceEngineLimit=%d,pDesarmCarLimit=%d WHERE `accountid`=%d",
             ThiefJobInfo[playerid][pFelonExp],
 			ThiefJobInfo[playerid][pFelonLevel],
 			ThiefJobInfo[playerid][pRobPersonLimit],
@@ -102,6 +111,9 @@ public saveThiefJob(playerid){
 			ThiefJobInfo[playerid][pTheft247Limit],
 			ThiefJobInfo[playerid][pRobHouseLimit],
 			ThiefJobInfo[playerid][pRob2HouseLimit],
+			ThiefJobInfo[playerid][pForceDoorLimit],
+			ThiefJobInfo[playerid][pForceEngineLimit],
+			ThiefJobInfo[playerid][pDesarmCarLimit],
 			getPlayerMysqlId(playerid));
 
 	mysql_function_query(dbHandle, query, false, "", "");
@@ -309,7 +321,8 @@ stock GetJobExpNeeded(playerid, job)
 	return 0;
 }
 
-stock updateThiefCounters(playerid){
+stock updateThiefCounters(playerid)
+{
 	if(ThiefJobInfo[playerid][pRobPersonLimit] > 0)
 		ThiefJobInfo[playerid][pRobPersonLimit]--;
 		
@@ -318,15 +331,24 @@ stock updateThiefCounters(playerid){
 		
 	if(ThiefJobInfo[playerid][pRob247Limit] > 0)
 		ThiefJobInfo[playerid][pRob247Limit]--;
-
+		
 	if(ThiefJobInfo[playerid][pRobHouseLimit] > 0)
 		ThiefJobInfo[playerid][pRobHouseLimit]--;
 		
 	if(ThiefJobInfo[playerid][pRob2HouseLimit] > 0)
 	    ThiefJobInfo[playerid][pRob2HouseLimit]--;
-		
+	    
 	if(ThiefJobInfo[playerid][pTheft247Limit] > 0)
 		ThiefJobInfo[playerid][pTheft247Limit]--;
+
+	if(ThiefJobInfo[playerid][pForceDoorLimit] > 0)
+	    ThiefJobInfo[playerid][pForceDoorLimit]--;
+	    
+	if(ThiefJobInfo[playerid][pForceEngineLimit] > 0)
+	    ThiefJobInfo[playerid][pForceEngineLimit]--;
+	    
+	if(ThiefJobInfo[playerid][pDesarmCarLimit] > 0)
+	    ThiefJobInfo[playerid][pDesarmCarLimit]--;
 }
 
 // Thief system commands
