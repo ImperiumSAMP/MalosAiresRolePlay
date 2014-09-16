@@ -394,7 +394,8 @@ new
 	P_CAR_DEMOLITION,
 	P_BLACK_MARKET[3],
 	P_CARPART_SHOP,
-	P_POLICE_CAMERAS;
+	P_POLICE_CAMERAS,
+	P_AUTO_REPARACION;
 
 //====[ENUMS]===================================================================
 
@@ -4955,6 +4956,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
 		return 1;
 		
+    } else if(pickupid == P_AUTO_REPARACION) {
+		GameTextForPlayer(playerid, "~w~Escribe /repararauto para reparar tu vehiculo.", 2000, 4);
+		return 1;		
+		
 	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
 		return 1;
@@ -7640,6 +7645,8 @@ stock LoadPickups() {
 	/* Cámaras de Seguridad PMA */
 	P_POLICE_CAMERAS = CreateDynamicPickup(1239, 1, 219.36, 188.31, 1003.00, -1);
 	CreateDynamic3DTextLabel("Cámaras de Seguridad de la Ciudad", COLOR_WHITE, 219.36, 188.31, 1003.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
+	
+	P_AUTO_REPARACION = CreateDynamicPickup(1239, 1, 1637.3402,-1908.3518,13.1225, -1);
 	
 	/* Gimnasio */
 	P_FIGHT_STYLE = CreateDynamicPickup(1239, 1, 766.3723, 13.8237, 1000.7015, -1);

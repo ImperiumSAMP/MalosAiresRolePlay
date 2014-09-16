@@ -8,6 +8,7 @@
 //================================CONSTANTES====================================
 
 #define DLG_TUNING              10020
+#define PRICE_REPARACION_AUTO   650
 
 #define MEC_OFFICE_X			1584.54
 #define MEC_OFFICE_Y        	-1819.68
@@ -39,6 +40,7 @@ forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
 
 forward Cerrajeria(playerid);
+forward AutoReparacion(playerid);
 forward Reparacion(playerid);
 forward Destuning(playerid);
 
@@ -49,6 +51,8 @@ forward CloseTuneGate1();
 forward CloseTuneGate2();
 forward CloseTuneGate3();
 forward CloseTuneGate4();
+forward CountMecasDuty();
+
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -202,6 +206,39 @@ public Destuning(playerid)
 	return 1;
 }
 
+stock isPlayerMecOnDuty(playerid)
+{
+	if(PlayerInfo[playerid][pFaction]  == FAC_MECH && jobDuty[playerid])
+	    return true;
+	else
+	    return false;
+}
+
+public CountMecasDuty()
+{
+	new aux = 0;
+ 	foreach(new i : Player)
+ 	{
+	
+        if(isPlayerMecOnDuty(i))
+    	    aux ++;
+ 	}
+ 	return aux;
+}
+
+public AutoReparacion(playerid)
+{
+    new
+		vehicleid = GetPlayerVehicleID(playerid);
+		
+	RepairVehicle(vehicleid);
+    VehicleInfo[vehicleid][VehHP] = 100;
+	FactionInfo[FAC_MECH][fBank] += PRICE_REPARACION_AUTO;
+	GivePlayerCash(playerid, -PRICE_REPARACION_AUTO);
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente al costo de $650.");
+	TogglePlayerControllable(playerid, true);
+    return 1;
+}
 //================================COMANDOS======================================
 
 CMD:ayudamec(playerid, params[])
@@ -670,5 +707,30 @@ CMD:mectaller(playerid, params[])
 	} else {
 		SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la puerta de un Transfender, Loco Low Co. o Wheel Arch Angels.");
 	}
+	return 1;
+}
+
+CMD:repararauto(playerid, params[])
+{
+    new
+	    idauto; 
+  
+    if(sscanf(params, "i", idauto))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /repararauto  [IdAuto]");
+    if(IsPlayerInRangeOfPoint(5,playerid, 1637.3402,-1908.3518,13.1225)) 
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca del punto de reparación.");
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
+	if(!playerOwnsCar(playerid, idauto))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehiculo no te pertenece.");
+	if(GetPlayerCash(playerid) < PRICE_REPARACION_AUTO)
+		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($650)");
+	if(CountMecasDuty() >= 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
+	
+	PlayerDoMessage(playerid, 15.0, "Unos mecanicos salen del taller, examinan el vehiculo y comienzan a repararlo.");
+	GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
+	TogglePlayerControllable(playerid, false);
+	SetTimerEx("AutoReparacion", 6000, false, "i", playerid);
 	return 1;
 }
