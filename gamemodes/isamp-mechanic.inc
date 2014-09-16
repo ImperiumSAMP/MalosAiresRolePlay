@@ -721,8 +721,6 @@ CMD:repararauto(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca del punto de reparación.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
-	if(!playerOwnsCar(playerid, idauto))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehiculo no te pertenece.");
 	if(GetPlayerCash(playerid) < PRICE_REPARACION_AUTO)
 		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($650)");
 	if(CountMecasDuty() >= 1)
