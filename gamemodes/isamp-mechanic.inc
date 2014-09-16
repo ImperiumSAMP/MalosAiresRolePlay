@@ -712,11 +712,6 @@ CMD:mectaller(playerid, params[])
 
 CMD:repararauto(playerid, params[])
 {
-    new
-	    idauto; 
-  
-    if(sscanf(params, "i", idauto))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /repararauto  [IdAuto]");
     if(IsPlayerInRangeOfPoint(5,playerid, 1637.3402,-1908.3518,13.1225)) 
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca del punto de reparación.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
