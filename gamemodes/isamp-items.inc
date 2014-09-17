@@ -129,9 +129,6 @@ forward GetItemName(itemid); // Devuelve un string con el nombre del item.
 forward GetItemParamName(itemid); // Devuelve un string con el nombre del parametro que le sigue al nombre del item.
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
 
-forward LoadHandItem(playerid); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
-forward DeleteHandItem(playerid); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
-forward GiveItemHandToHand(playerid, targetid); // Si el item es visible, lo borra de la mano del jugador X y lo crea para la mano del jugador Y (se maneja en INDEX_ID_HAND).
 forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
 forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
 
@@ -141,6 +138,9 @@ forward Float:GetItemZPos(itemid); //Devuelve la posición Z del objeto en BONE_I
 forward Float:GetItemRxPos(itemid); //Devuelve la posición RX del objeto en BONE_ID_LEFTHAND.
 forward Float:GetItemRyPos(itemid); //Devuelve la posición RY del objeto en BONE_ID_LEFTHAND.
 forward Float:GetItemRzPos(itemid); //Devuelve la posición RZ del objeto en BONE_ID_LEFTHAND.
+
+forward LoadHandItem(playerid); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
+forward DeleteHandItem(playerid); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -211,7 +211,7 @@ stock GetItemPrice(itemid)
 stock LoadHandItem(playerid)
 {
 	new itemid = GetHandItem(playerid);
-	
+
 	if(GetItemType(itemid) != ITEM_WEAPON && GetItemObjectModel(itemid) != 0) // Las armas no porque SAMP las attachea al setear una. Y si posee un objeto visible asociado.
 	{
 		SetPlayerAttachedObject(playerid, INDEX_ID_HAND, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
@@ -222,13 +222,6 @@ stock LoadHandItem(playerid)
 stock DeleteHandItem(playerid)
 {
 	RemovePlayerAttachedObject(playerid, INDEX_ID_HAND);
-	return 1;
-}
-
-stock GiveItemHandToHand(playerid, targetid)
-{
-	DeleteHandItem(playerid);
-	LoadHandItem(targetid);
 	return 1;
 }
 

@@ -1158,8 +1158,7 @@ CMD:maletero(playerid, params[]) {
 					new str[128];
 					format(str, sizeof(str), "toma un/a %s del maletero con su mano.", GetItemName(itemid));
 					PlayerActionMessage(playerid, 15.0, str);
-					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica.
-					LoadHandItem(playerid); // Creación gráfica.
+					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica y grafica.
 	   				SetTrunkItemAndParam(vehicleid, itemslot, 0, 0); // Borrado lógico del item del maletero.
 				}
 				default:
@@ -1211,8 +1210,7 @@ CMD:maletero(playerid, params[]) {
 			} else
 			    {
 					SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid));
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteHandItem(playerid); // Borrado gráfico.
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico.
 					new str[128];
 					format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
 					PlayerActionMessage(playerid, 15.0, str);

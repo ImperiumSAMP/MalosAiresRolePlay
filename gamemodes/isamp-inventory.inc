@@ -180,8 +180,7 @@ CMD:inventario(playerid, params[]) {
 					new str[128];
 					format(str, sizeof(str), "toma un/a %s de su inventario con su mano.", GetItemName(itemid));
 					PlayerActionMessage(playerid, 15.0, str);
-					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica.
-					LoadHandItem(playerid); // Creación gráfica.
+					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica y grafica en la mano.
      				SetInvItemAndParam(playerid, itemslot, 0, 0); // Borrado lógico del item del inventario.
 				}
 				default:
@@ -246,8 +245,7 @@ CMD:inventario(playerid, params[]) {
 			} else
 			    {
 					SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid));
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteHandItem(playerid); // Borrado gráfico.
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico de la mano.
 					SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
 				}
   			SetPVarInt(playerid, "cantSaveItems", 1);

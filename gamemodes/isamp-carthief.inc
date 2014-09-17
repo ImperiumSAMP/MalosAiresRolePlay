@@ -84,10 +84,8 @@ public UsarBarreta(playerid, vehicleid)
 	if(random(10) > 4)
 	{
 		if(GetHandParam(playerid) == 1)
-		{
 			SetHandItemAndParam(playerid, 0, 0);
-			DeleteHandItem(playerid);
-		} else
+		else
 			SetHandItemAndParam(playerid, ITEM_ID_BARRETA, GetHandParam(playerid) - 1);
 	    SendClientMessage(playerid, COLOR_WHITE, "La barreta cedió y se rompió.");
 	}
@@ -175,7 +173,6 @@ CMD:desarmar(playerid, params[])
  	GetVehicleHealth(vehicleid, vehiclehp);
     repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 2;
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
-    LoadHandItem(playerid);
     SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
     SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);
     SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);

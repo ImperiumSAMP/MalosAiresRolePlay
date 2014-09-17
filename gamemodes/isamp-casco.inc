@@ -70,7 +70,6 @@ CMD:casco(playerid, params[])
 			if(validslot == -1)
 			    return SendClientMessage (playerid, COLOR_YELLOW2, "¡No tienes espacio en el inventario para equiparte el casco!");
 			SetHandItemAndParam(playerid, 0, 0);
-			DeleteHandItem(playerid);
             SetInvItemAndParam(playerid, validslot, handitem, handparam);
             HelmetToHead(playerid, handitem);
 		    new string[124];
@@ -94,7 +93,6 @@ CMD:casco(playerid, params[])
 			SetInvItemAndParam(playerid, invslot, 0, 0);
 			DeleteItemFromHead(playerid);
 			SetHandItemAndParam(playerid, invitem, invparam);
-			LoadHandItem(playerid);
    			new string[124];
 		    format(string, sizeof(string), "sostiene su %s en su mano derecha.", GetItemName(invitem));
 	    	PlayerActionMessage(playerid, 15.0, string);

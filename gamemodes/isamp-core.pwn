@@ -491,25 +491,25 @@ static const gSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordina
 	{"Dillimore",                   {580.70,-674.80,-9.50,861.00,-404.70,200.00}},
 	{"Doherty",                     {-2270.00,-324.10,-0.00,-1794.90,-222.50,200.00}},
 	{"Doherty",                     {-2173.00,-222.50,-0.00,-1794.90,265.20,200.00}},
-	{"Centro",                    {-1982.30,744.10,-6.10,-1871.70,1274.20,200.00}},
-	{"Centro",                    {-1871.70,1176.40,-4.50,-1620.30,1274.20,200.00}},
-	{"Centro",                    {-1700.00,744.20,-6.10,-1580.00,1176.50,200.00}},
-	{"Centro",                    {-1580.00,744.20,-6.10,-1499.80,1025.90,200.00}},
-	{"Centro",                    {-2078.60,578.30,-7.60,-1499.80,744.20,200.00}},
-	{"Centro",                    {-1993.20,265.20,-9.10,-1794.90,578.30,200.00}},
-	{"Microcentro",         {1463.90,-1430.80,-89.00,1724.70,-1290.80,110.90}},
-	{"Microcentro",         {1724.70,-1430.80,-89.00,1812.60,-1250.90,110.90}},
-	{"Microcentro",         {1463.90,-1290.80,-89.00,1724.70,-1150.80,110.90}},
-	{"Microcentro",         {1370.80,-1384.90,-89.00,1463.90,-1170.80,110.90}},
-	{"Microcentro",         {1724.70,-1250.90,-89.00,1812.60,-1150.80,110.90}},
-	{"Microcentro",         {1370.80,-1170.80,-89.00,1463.90,-1130.80,110.90}},
-	{"Microcentro",         {1378.30,-1130.80,-89.00,1463.90,-1026.30,110.90}},
-	{"Microcentro",         {1391.00,-1026.30,-89.00,1463.90,-926.90,110.90}},
-	{"Microcentro",         {1507.50,-1385.20,110.90,1582.50,-1325.30,335.90}},
-	{"Playa de olivos",                  {2632.80,-1852.80,-89.00,2959.30,-1668.10,110.90}},
-	{"Playa de olivos",                  {2632.80,-1668.10,-89.00,2747.70,-1393.40,110.90}},
-	{"Playa de olivos",                  {2747.70,-1668.10,-89.00,2959.30,-1498.60,110.90}},
-	{"Playa de olivos",                  {2747.70,-1498.60,-89.00,2959.30,-1120.00,110.90}},
+	{"Centro",                    	{-1982.30,744.10,-6.10,-1871.70,1274.20,200.00}},
+	{"Centro",                    	{-1871.70,1176.40,-4.50,-1620.30,1274.20,200.00}},
+	{"Centro",                    	{-1700.00,744.20,-6.10,-1580.00,1176.50,200.00}},
+	{"Centro",                    	{-1580.00,744.20,-6.10,-1499.80,1025.90,200.00}},
+	{"Centro",                    	{-2078.60,578.30,-7.60,-1499.80,744.20,200.00}},
+	{"Centro",                    	{-1993.20,265.20,-9.10,-1794.90,578.30,200.00}},
+	{"Microcentro",         		{1463.90,-1430.80,-89.00,1724.70,-1290.80,110.90}},
+	{"Microcentro",         		{1724.70,-1430.80,-89.00,1812.60,-1250.90,110.90}},
+	{"Microcentro",         		{1463.90,-1290.80,-89.00,1724.70,-1150.80,110.90}},
+	{"Microcentro",         		{1370.80,-1384.90,-89.00,1463.90,-1170.80,110.90}},
+	{"Microcentro",         		{1724.70,-1250.90,-89.00,1812.60,-1150.80,110.90}},
+	{"Microcentro",         		{1370.80,-1170.80,-89.00,1463.90,-1130.80,110.90}},
+	{"Microcentro",         		{1378.30,-1130.80,-89.00,1463.90,-1026.30,110.90}},
+	{"Microcentro",         		{1391.00,-1026.30,-89.00,1463.90,-926.90,110.90}},
+	{"Microcentro",         		{1507.50,-1385.20,110.90,1582.50,-1325.30,335.90}},
+	{"Playa de olivos",             {2632.80,-1852.80,-89.00,2959.30,-1668.10,110.90}},
+	{"Playa de olivos",             {2632.80,-1668.10,-89.00,2747.70,-1393.40,110.90}},
+	{"Playa de olivos",             {2747.70,-1668.10,-89.00,2959.30,-1498.60,110.90}},
+	{"Playa de olivos",             {2747.70,-1498.60,-89.00,2959.30,-1120.00,110.90}},
 	{"East Los Santos",             {2421.00,-1628.50,-89.00,2632.80,-1454.30,110.90}},
 	{"East Los Santos",             {2222.50,-1628.50,-89.00,2421.00,-1494.00,110.90}},
 	{"East Los Santos",             {2266.20,-1494.00,-89.00,2381.60,-1372.00,110.90}},
@@ -642,12 +642,12 @@ static const gSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordina
 	{"Little Mexico",               {1758.90,-1722.20,-89.00,1812.60,-1577.50,110.90}},
 	{"Los Flores",                  {2581.70,-1454.30,-89.00,2632.80,-1393.40,110.90}},
 	{"Los Flores",                  {2581.70,-1393.40,-89.00,2747.70,-1135.00,110.90}},
-	{"Aeroparque",    {1249.60,-2394.30,-89.00,1852.00,-2179.20,110.90}},
-	{"Aeroparque",    {1852.00,-2394.30,-89.00,2089.00,-2179.20,110.90}},
-	{"Aeroparque",    {1382.70,-2730.80,-89.00,2201.80,-2394.30,110.90}},
-	{"Aeroparque",    {1974.60,-2394.30,-39.00,2089.00,-2256.50,60.90}},
-	{"Aeroparque",    {1400.90,-2669.20,-39.00,2189.80,-2597.20,60.90}},
-	{"Aeroparque",    {2051.60,-2597.20,-39.00,2152.40,-2394.30,60.90}},
+	{"Aeroparque",    				{1249.60,-2394.30,-89.00,1852.00,-2179.20,110.90}},
+	{"Aeroparque",    				{1852.00,-2394.30,-89.00,2089.00,-2179.20,110.90}},
+	{"Aeroparque",    				{1382.70,-2730.80,-89.00,2201.80,-2394.30,110.90}},
+	{"Aeroparque",    				{1974.60,-2394.30,-39.00,2089.00,-2256.50,60.90}},
+	{"Aeroparque",    				{1400.90,-2669.20,-39.00,2189.80,-2597.20,60.90}},
+	{"Aeroparque",    				{2051.60,-2597.20,-39.00,2152.40,-2394.30,60.90}},
 	{"Marina",                      {647.70,-1804.20,-89.00,851.40,-1577.50,110.90}},
 	{"Marina",                      {647.70,-1577.50,-89.00,807.90,-1416.20,110.90}},
 	{"Marina",                      {807.90,-1577.50,-89.00,926.90,-1416.20,110.90}},
@@ -692,7 +692,7 @@ static const gSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordina
 	{"Palisades",                   {-2994.40,458.40,-6.10,-2741.00,1339.60,200.00}},
 	{"Palomino Creek",              {2160.20,-149.00,0.00,2576.90,228.30,200.00}},
 	{"Paradiso",                    {-2741.00,793.40,-6.10,-2533.00,1268.40,200.00}},
-	{"Plaza de mayo",             {1440.90,-1722.20,-89.00,1583.50,-1577.50,110.90}},
+	{"Plaza de mayo",             	{1440.90,-1722.20,-89.00,1583.50,-1577.50,110.90}},
 	{"Pilgrim",                     {2437.30,1383.20,-89.00,2624.40,1783.20,110.90}},
 	{"Pilgrim",                     {2624.40,1383.20,-89.00,2685.10,1783.20,110.90}},
 	{"Pilson Intersection",         {1098.30,2243.20,-89.00,1377.30,2507.20,110.90}},
@@ -8010,7 +8010,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(GetHandItem(playerid) != 0)
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
 	  					SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, 1);
-	  					LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_ALFAJOR));
 						PlayerActionMessage(playerid, 15.0, "agarra un alfajor Jorgito y le paga al empleado su precio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo tienes en la mano!", GetItemPrice(ITEM_ID_ALFAJOR));
@@ -8083,7 +8082,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
 
 						SetHandItemAndParam(playerid, ITEM_ID_BIDON, 0);
-						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_BIDON));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", GetItemPrice(ITEM_ID_BIDON));
@@ -8111,7 +8109,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
 
 						SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, 1);
-						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
 						PlayerActionMessage(playerid, 15.0, "agarra un sandwich de jamon y queso y le paga al empleado su precio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
@@ -8127,7 +8124,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
 
 						SetHandItemAndParam(playerid, ITEM_ID_AGUAMINERAL, 1);
-						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_AGUAMINERAL));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_AGUAMINERAL));
@@ -8142,7 +8138,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					    if(GetHandItem(playerid) != 0)
 					        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
 						SetHandItemAndParam(playerid, ITEM_ID_MALETIN, 0);
-						LoadHandItem(playerid); // Creación gráfica del item.
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin y lo agarra con su mano.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d! Lo tienes en la mano.", GetItemPrice(ITEM_ID_MALETIN));
@@ -10340,7 +10335,6 @@ CMD:vender(playerid, params[])
 		SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, te daré $%d por tu %s - %s: %d", GetItemPrice(item) * GetHandParam(playerid) / 2, GetItemName(item), GetItemParamName(item), GetHandParam(playerid));
 		PlayerActionMessage(playerid, 15.0, "realiza un intercambio de un paquete desconocido con un sujeto.");
 		SetHandItemAndParam(playerid, 0, 0);
-		DeleteHandItem(playerid);
 		return 1;
 	}
 	return 1;
@@ -10491,7 +10485,6 @@ CMD:comprar(playerid, params[]) {
 			    if(GetHandItem(playerid) != 0)
 			        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
 				SetHandItemAndParam(playerid, itemid, 1);
-				LoadHandItem(playerid);
 			}
 		}
         GivePlayerCash(playerid, -itemprice);
@@ -10660,7 +10653,6 @@ CMD:comprar(playerid, params[]) {
 			    return SendClientMessage(playerid, COLOR_WHITE, "Vendedor: Tomatela de acá y volvé cuando tengas el dinero.");
 
 			SetHandItemAndParam(playerid, item, cant);
-			LoadHandItem(playerid);
 			GivePlayerCash(playerid, -GetItemPrice(item) * cant);
 			return 1;
 		

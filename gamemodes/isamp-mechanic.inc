@@ -40,7 +40,7 @@ forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
 
 forward Cerrajeria(playerid);
-forward AutoReparacion(playerid);
+forward AutoReparacion(playerid, price, repuestos);
 forward Reparacion(playerid);
 forward Destuning(playerid);
 
@@ -160,10 +160,8 @@ public Reparacion(playerid)
 				if(RepairProducts[playerid] > 0)
 	   			{
 					if(GetHandParam(mechanic) == RepairProducts[playerid])
-					{
 					    SetHandItemAndParam(mechanic, 0, 0);
-					    DeleteHandItem(mechanic);
-					} else
+					else
 					  	 SetHandItemAndParam(mechanic, ITEM_ID_REPUESTOAUTO, GetHandParam(mechanic) - RepairProducts[playerid]);
 					FactionInfo[FAC_MECH][fBank] += RepairProducts[playerid] * GetItemPrice(ITEM_ID_REPUESTOAUTO);
 				}
@@ -226,17 +224,22 @@ public CountMecasDuty()
  	return aux;
 }
 
-public AutoReparacion(playerid)
+public AutoReparacion(playerid, price, repuestos)
 {
-    new
-		vehicleid = GetPlayerVehicleID(playerid);
-		
+    new	vehicleid = GetPlayerVehicleID(playerid);
+
+	TogglePlayerControllable(playerid, true);
+	
+	if(GetPlayerCash(playerid) < price)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+	    
 	RepairVehicle(vehicleid);
     VehicleInfo[vehicleid][VehHP] = 100;
-	FactionInfo[FAC_MECH][fBank] += PRICE_REPARACION_AUTO;
-	GivePlayerCash(playerid, -PRICE_REPARACION_AUTO);
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente al costo de $650.");
-	TogglePlayerControllable(playerid, true);
+	FactionInfo[FAC_MECH][fBank] += price;
+	if(FactionInfo[FAC_MECH][fMaterials] >= repuestos)
+	    FactionInfo[FAC_MECH][fMaterials] -= repuestos;
+	GivePlayerCash(playerid, -price);
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente.");
     return 1;
 }
 //================================COMANDOS======================================
@@ -309,7 +312,6 @@ CMD:meccomprar(playerid, params[])
 	}
 
 	SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, cant);
-	LoadHandItem(playerid);
 	GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant);
 	SendFMessage(playerid, COLOR_WHITE, "Has comprado %d repuestos a un precio de $%d.", cant, GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant);
 	return 1;
@@ -332,7 +334,6 @@ CMD:mecguardar(playerid, params[])
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
 	FactionInfo[FAC_MECH][fMaterials] += GetHandParam(playerid);
 	SetHandItemAndParam(playerid, 0, 0);
-	DeleteHandItem(playerid);
 	return 1;
 }
 
@@ -363,7 +364,6 @@ CMD:mecretirar(playerid, params[])
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
 	FactionInfo[FAC_MECH][fMaterials] -= cant;
 	SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, cant);
-	LoadHandItem(playerid);
 	return 1;
 }
 
@@ -712,18 +712,28 @@ CMD:mectaller(playerid, params[])
 
 CMD:repararauto(playerid, params[])
 {
-    if(IsPlayerInRangeOfPoint(5,playerid, 1637.3402,-1908.3518,13.1225)) 
+	new
+		vehicleid = GetPlayerVehicleID(playerid),
+		repuestos,
+		price;
+	
+    if(!IsPlayerInRangeOfPoint(playerid, 3.0, 1637.3402, -1908.3518, 13.1225))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca del punto de reparación.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
-	if(GetPlayerCash(playerid) < PRICE_REPARACION_AUTO)
-		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($650)");
 	if(CountMecasDuty() >= 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
-	
+
+	repuestos = GetRepairMaterialCost(vehicleid);
+	price = GetRepairMaterialCost(vehicleid) * GetItemPrice(ITEM_ID_REPUESTOAUTO) + 600;
+	if(GetPlayerCash(playerid) < price)
+	{
+		SendFMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($%d)", price);
+		return 1;
+	}
 	PlayerDoMessage(playerid, 15.0, "Unos mecanicos salen del taller, examinan el vehiculo y comienzan a repararlo.");
 	GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
 	TogglePlayerControllable(playerid, false);
-	SetTimerEx("AutoReparacion", 6000, false, "i", playerid);
+	SetTimerEx("AutoReparacion", 60 * 1000 + repuestos * 60 * 1000, false, "i", playerid, price, repuestos); // 1 minuto reparación basica y si se necesitan, 1 min por repuesto requerido.
 	return 1;
 }

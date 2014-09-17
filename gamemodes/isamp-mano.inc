@@ -39,6 +39,7 @@ stock SetHandItemAndParam(playerid, itemid, param)
 {
 	if(GetHandItem(playerid) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
 	{
+	    DeleteHandItem(playerid);
 		HandInfo[playerid][Item] = 0;
 		HandInfo[playerid][Amount] = 0;
 		SaveSlotInfo(SLOT_TYPE_HAND, playerid, 0); // Borramos el anterior
@@ -46,6 +47,10 @@ stock SetHandItemAndParam(playerid, itemid, param)
 	HandInfo[playerid][Item] = itemid;
 	HandInfo[playerid][Amount] = param;
 	SaveSlotInfo(SLOT_TYPE_HAND, playerid, 0);
+	if(itemid != 0)
+	    LoadHandItem(playerid);
+	else
+	    DeleteHandItem(playerid);
 	return 1;
 }
 
@@ -125,9 +130,8 @@ CMD:mano(playerid, params[])
 			    
 			format(string, sizeof(string), "le entrega un/a %s a", GetItemName(itemid));
             PlayerPlayerActionMessage(playerid, targetid, 15.0, string);
-			SetHandItemAndParam(targetid, itemid, itemparam); // Creación lógica.
-			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-			GiveItemHandToHand(playerid, targetid); // Creación y borrado grafico.
+			SetHandItemAndParam(targetid, itemid, itemparam); // Creación lógica y grafica.
+			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico.
 			
 		} else if(strcmp(command, "tirar", true) == 0) {
 		
@@ -146,30 +150,21 @@ CMD:mano(playerid, params[])
 	            if(GetHandParam(playerid) - 1 > 0)
 	            	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
 				else
-				{
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteHandItem(playerid); // Borrado gráfico.
-				}
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico
 	        } else if(GetHandItem(playerid) == ITEM_ID_ALFAJOR) {
          		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
 		        PlayerEat(playerid, 15.0);
 		        if(GetHandParam(playerid) - 1 > 0)
 		          	SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, GetHandParam(playerid) - 1);
 				else
-				{
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteHandItem(playerid); // Borrado gráfico.
-				}
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico
 			} else if(GetHandItem(playerid) == ITEM_ID_AGUAMINERAL) {
 				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
 			    PlayerDrink(playerid, 50.0);
 			    if(GetHandParam(playerid) - 1 > 0)
 			      	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
 				else
-				{
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico.
-					DeleteHandItem(playerid); // Borrado gráfico.
-				}
+					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico
 			} else
   				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		}
