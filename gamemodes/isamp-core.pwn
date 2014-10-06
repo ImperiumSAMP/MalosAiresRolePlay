@@ -372,6 +372,9 @@ new TiempoEsperaMps[MAX_PLAYERS] = 0;
 //Sistema camaras policia
 new Camara[MAX_PLAYERS];
 
+//Ocultar tag
+new hidename[MAX_PLAYERS];
+
 // Pickups
 new
 	P_BANK,
@@ -1175,6 +1178,9 @@ public ResetStats(playerid) {
 	
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
+	
+	/*Ocultar tag*/
+	hidename[playerid] = -1;
 	
 	// Revision de usuarios
 	ReviseOffer[playerid] = 999;
@@ -14957,3 +14963,19 @@ CMD:llenar(playerid, params[])
 	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
 	return 1;
 }
+
+CMD:ocultartag(playerid,params[])
+{
+    if (hidename[playerid] == -1)
+	{
+        for(new i = 0; i < MAX_PLAYERS; i++) ShowPlayerNameTagForPlayer(playerid, i, false);
+		SendClientMessage(playerid, COLOR_LIGHTBLUE, "Estas ocultando el nombre de todos los jugadores. (/ocultartag para mostrarlos nuevamente).");
+        hidename[playerid] = 1;
+    } else
+	    {
+		    for(new i = 0; i < MAX_PLAYERS; i++) ShowPlayerNameTagForPlayer(playerid, i, true);
+			SendClientMessage(playerid, COLOR_LIGHTBLUE, "Estas mostrando el nombre de todos los jugadores. (/ocultartag para ocultarlos nuevamente).");
+            hidename[playerid] = -1;
+		}
+	return 1;	
+}          
