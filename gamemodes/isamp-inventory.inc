@@ -204,7 +204,8 @@ CMD:inventario(playerid, params[]) {
 				DeleteItemForPlayer(playerid, itemid);
 
 	    } else if(strcmp(text, "guardar", true) == 0) {
-
+            if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	        if(PlayerInfo[playerid][pHealth] < 25.0)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
 			if(GetPVarInt(playerid, "cantSaveItems") == 1)

@@ -13889,7 +13889,6 @@ CMD:mascara(playerid, params[])
 		if(index == 999)
   			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio para equiparte items.");
 		SetPlayerAttachedObject(playerid, index, PlayerInfo[playerid][pMask], 2, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
-		PlayerActionMessage(playerid, 15.0, "agarra un pañuelo de su bolsillo y se la coloca en la cara para tapar su rostro.");
 		isUsingMaskInSlot[playerid] = index;
   		EditAttachedObject(playerid, index);
 		foreach(new i:Player)
@@ -13899,6 +13898,8 @@ CMD:mascara(playerid, params[])
 		}
 	} else
 		{
+		    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 			RemovePlayerAttachedObject(playerid, isUsingMaskInSlot[playerid]);
 			PlayerActionMessage(playerid, 15.0, "quita el pañuelo que ocultaba su rostro y lo guarda en su bolsillo.");
 			isUsingMaskInSlot[playerid] = -1;
