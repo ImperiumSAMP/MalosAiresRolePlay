@@ -895,6 +895,7 @@ forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
+forward TimeReplenishYo(playerid);
 
 //==============================================================================
 
@@ -14979,3 +14980,47 @@ CMD:ocultartag(playerid,params[])
 		}
 	return 1;	
 }          
+
+stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[]) {   // 
+    new 
+        string[100]; 
+
+    format(string, sizeof(string), "%s", str); 
+    SetPlayerChatBubble(playerid, string, COLOR_ACT1, drawdistance, timeexpire); 
+	if(GCounter[playerid] != 0)
+		Delete3DTextLabel(DescLabel[playerid]);
+
+    return 1; 
+} 
+
+CMD:cme(playerid, params[]) { 
+    new 
+        str[100], 
+        text[100];
+		
+    if(!sscanf(params, "s", text)) { 
+        format(str, sizeof(str), "%s", text); 
+        PlayerAmeMessage(playerid, 15.0, 8000, str);           // Dura 10 segundos y se ve en un rango de 15.0
+		if(GCounter[playerid] != 0)
+        SetTimerEx("TimeReplenishYo", 12000, false, "i", playerid);
+    } else { 
+        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /ame [texto]"); 
+        SendClientMessage(playerid, COLOR_GREY, "No olvides que el /ame es para indicar acciones, no una descripción (/yo)");       // Podes sacarlo si queres, es solo que capaz alguien cree que es igual al /yo 
+    } 
+    return 1; 
+}  
+	
+public TimeReplenishYo(playerid)
+{
+    new
+	    str[100],
+	    Float:X,
+	    Float:Y,
+	    Float:Z;
+	    
+    GetPlayerPos(playerid, X, Y, Z);
+	format(str, sizeof(str), "%s", textodescripcion[playerid]);
+	DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid], COLOR_RED, X, Y, Z, 10, -1);
+	Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
+    return 1;
+}
