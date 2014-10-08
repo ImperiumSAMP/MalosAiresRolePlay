@@ -14996,16 +14996,19 @@ stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[]) {   //
 CMD:cme(playerid, params[]) { 
     new 
         str[100], 
+		string[100],
         text[100];
 		
     if(!sscanf(params, "s", text)) { 
         format(str, sizeof(str), "%s", text); 
-        PlayerAmeMessage(playerid, 15.0, 8000, str);           // Dura 10 segundos y se ve en un rango de 15.0
+        PlayerCmeMessage(playerid, 15.0, 8000, str);           // Dura 10 segundos y se ve en un rango de 15.0
+		format(string, sizeof(string), "=> %s %s", GetPlayerNameEx(playerid), text);
+		SendClientMessage(playerid, COLOR_ACT1, string); 
 		if(GCounter[playerid] != 0)
         SetTimerEx("TimeReplenishYo", 12000, false, "i", playerid);
     } else { 
-        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /ame [texto]"); 
-        SendClientMessage(playerid, COLOR_GREY, "No olvides que el /ame es para indicar acciones, no una descripción (/yo)");       // Podes sacarlo si queres, es solo que capaz alguien cree que es igual al /yo 
+        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cme [texto]"); 
+        SendClientMessage(playerid, COLOR_GREY, "No olvides que el /cme es para indicar acciones, no una descripción (/yo)");   
     } 
     return 1; 
 }  
