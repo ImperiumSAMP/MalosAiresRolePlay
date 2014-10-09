@@ -51,7 +51,8 @@ CMD:barreta(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas está abiertas.");
 
   	TogglePlayerControllable(playerid, false);
-  	PlayerActionMessage(playerid, 15.0, "toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo");
+  	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
+  	PlayerActionMessage(playerid, 15.0, "toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo.");
     GameTextForPlayer(playerid, "Forzando cerradura, aguarda...", 20 * 1000, 4);
     SetTimerEx("UsarBarreta", 20 * 1000, 0, "ii", playerid, vehicleid);
     
@@ -77,7 +78,8 @@ forward UsarBarreta(playerid, vehicleid);
 public UsarBarreta(playerid, vehicleid)
 {
     TogglePlayerControllable(playerid, true);
-
+    SetPVarInt(playerid, "disabled", DISABLE_NONE);
+    
 	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus manos.");
 
@@ -120,6 +122,7 @@ CMD:puente(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El motor del vehículo ya se encuentra prendido.");
 	    
   	TogglePlayerControllable(playerid, false);
+  	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
   	PlayerActionMessage(playerid, 15.0, "se inclina hacia abajo en el asiento del conductor y realiza unas maniobras.");
   	GameTextForPlayer(playerid, "Desarmando tambor de arranque, aguarda...", 20 * 1000, 4);
     SetTimerEx("PuenteMotor", 20 * 1000, 0, "ii", playerid, vehicleid);
@@ -130,6 +133,8 @@ forward PuenteMotor(playerid, vehicleid);
 public PuenteMotor(playerid, vehicleid)
 {
     TogglePlayerControllable(playerid, true);
+    SetPVarInt(playerid, "disabled", DISABLE_NONE);
+    
     if(random(10) > 4)
     {
         SetEngine(vehicleid, 1);
@@ -171,7 +176,7 @@ CMD:desarmar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
 
  	GetVehicleHealth(vehicleid, vehiclehp);
-    repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 2;
+    repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 3;
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
     SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
     SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);

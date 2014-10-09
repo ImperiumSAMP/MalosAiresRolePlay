@@ -727,9 +727,9 @@ CMD:verexp(playerid, params[]) {
 CMD:delincuenteayuda(playerid, params[]) {
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 	    return 1;
-	SendClientMessage(playerid, COLOR_WHITE, "[Delincuente]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp /grupoayuda");
-	SendClientMessage(playerid, COLOR_WHITE, "[Robo al banco]: /grupoayuda [Robo de vehículos]: /barreta /puente /desarmar");
-	SendClientMessage(playerid, COLOR_WHITE, "Info: al delinquir conseguirás puntos de experiencia, dependiendo de tu nivel de delincuente algunos...");
-	SendClientMessage(playerid, COLOR_WHITE, "delitos no otorgarán más conocimiento del que ya tienes.");
+	SendClientMessage(playerid, COLOR_WHITE, "[Ladron]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp");
+	SendClientMessage(playerid, COLOR_WHITE, "[Ladron de bancos]: /grupoayuda");
+    SendClientMessage(playerid, COLOR_WHITE, "[Ladron de vehículos]: /barreta /puente /desarmar");
+	SendClientMessage(playerid, COLOR_WHITE, "Info: al robar con un comando de tu nivel obtendrás experiencia para subir de nivel y desbloquear nuevos comandos.");
 	return 1;
 }

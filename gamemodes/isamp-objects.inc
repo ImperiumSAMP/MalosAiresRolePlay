@@ -143,22 +143,13 @@ stock ResetObject(pos)
 
 //================================COMANDOS======================================
 
-CMD:agarrarobjeto(playerid, params[])
+CMD:examinar(playerid, params[])
 {
 	if(PlayerInfo[playerid][pHealth] < 25.0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	TakeObject(playerid);
-	return 1;
-}
-
-CMD:examinarobjeto(playerid, params[])
-{
-	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
-    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+		
 	LookObject(playerid);
 	return 1;
 }

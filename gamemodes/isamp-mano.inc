@@ -110,7 +110,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[128]I(-1)", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - tirar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - tirar - agarrar");
 		PrintHandForPlayer(playerid, playerid);
     } else {
         if(strcmp(command, "dar", true) == 0) {
@@ -137,10 +137,17 @@ CMD:mano(playerid, params[])
 		
  			if(PlayerInfo[playerid][pHealth] < 25.0)
 	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
- 			if(itemid == 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus manos.");
 			    
 			DropObject(playerid);
+
+		} else if(strcmp(command, "agarrar", true) == 0) {
+
+			if(PlayerInfo[playerid][pHealth] < 25.0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
+		    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+
+			TakeObject(playerid);
 			
 		} else if(strcmp(command, "usar", true) == 0) {
 

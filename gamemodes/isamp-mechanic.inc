@@ -167,7 +167,7 @@ public Reparacion(playerid)
 				}
 				RepairVehicle(vehicleid);
 				VehicleInfo[vehicleid][VehHP] = 100;
-				SendFMessage(playerid, COLOR_YELLOW2, "Su vehículo ha sido reparado por %s (costo: $%d).", GetPlayerNameEx(RepairOffer[playerid]), RepairPrice[playerid]);
+				SendFMessage(playerid, COLOR_YELLOW2, "Su vehículo ha sido reparado por %s (costo: $%d).", GetPlayerNameEx(mechanic), RepairPrice[playerid]);
 				SendFMessage(mechanic, COLOR_YELLOW2, "Reparaste el vehículo de %s, $%d han sido añadidos a su PayDay.", GetPlayerNameEx(playerid), RepairPrice[playerid] - RepairProducts[playerid] * GetItemPrice(ITEM_ID_REPUESTOAUTO));
 				PlayerInfo[mechanic][pPayCheck] += RepairPrice[playerid] - RepairProducts[playerid] * GetItemPrice(ITEM_ID_REPUESTOAUTO);
 				GivePlayerCash(playerid, -RepairPrice[playerid]);
@@ -178,7 +178,7 @@ public Reparacion(playerid)
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 		}
 	TogglePlayerControllable(playerid, true);
-    ResetRepairOffer(playerid);
+	EndRepairOffer(playerid);
     return 1;
 }
 
@@ -303,8 +303,8 @@ CMD:meccomprar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
-	if(cant < 1 || cant > 20)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes sostener menos de 1 o mas de 25 repuestos con la mano.");
+	if(cant < 1 || cant > 15)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes sostener menos de 1 o mas de 15 repuestos con la mano.");
 	if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant)
 	{
 	    SendFMessage(playerid, COLOR_YELLOW2, "No tienes el efectivo necesario, necesitas $%d. (Costo por repuesto: $%d)", GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant, GetItemPrice(ITEM_ID_REPUESTOAUTO));
@@ -425,9 +425,9 @@ CMD:mecreparar(playerid,params[])
         SendFMessage(playerid, COLOR_YELLOW2, "El vehículo está muy dañado: para repararlo necesitas %d repuesto/s nuevos en la mano.", repuestos);
 		return 1;
 	}
- 	if(price < (repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO)) + 1 || price > JOB_MECH_MAXPRICE)
+ 	if(price < (repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO)) || price > JOB_MECH_MAXPRICE)
 	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "¡El precio no debe ser mayor a %d o menor a %d!", JOB_MECH_MAXPRICE, repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO));
+	    SendFMessage(playerid, COLOR_YELLOW2, "¡El precio no debe ser menor a %d (Costo material) ni mayor a %d!", repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO), JOB_MECH_MAXPRICE);
 	    return 1;
  	}
 
