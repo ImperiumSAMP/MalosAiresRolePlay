@@ -15027,3 +15027,19 @@ public TimeReplenishYo(playerid)
 	Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
     return 1;
 }
+
+CMD:levelchorro(playerid,params[])
+{
+    new
+        jugador;
+	
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+    if(!sscanf(params, "d", jugador)) { 
+        ThiefJobInfo[jugador][pFelonLevel] = 8;
+		
+    } else { 
+        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /levelchorro [player]"); 
+    } 
+	return 1;
+}
