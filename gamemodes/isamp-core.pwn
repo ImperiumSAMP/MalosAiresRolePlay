@@ -53,6 +53,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-robobanco.inc"          //Robo a banco.
 #include "isamp-carthief.inc"          	//Robo de autos.
 #include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
+#include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -280,8 +281,6 @@ new
 	cheater[MAX_PLAYERS],
 	
 	bool:smoking[MAX_PLAYERS],
-    eventParam[MAX_PLAYERS],
-	eventStep[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
 	// Sistema de streams de radios
@@ -339,7 +338,6 @@ new
 	gTime[3],
 	SpawnAttempts[MAX_PLAYERS],
 	FactionRequest[MAX_PLAYERS],
-	Mobile[MAX_PLAYERS],
 	PhoneOnline[MAX_PLAYERS],
 	HospHealing[MAX_PLAYERS],
 	Muted[MAX_PLAYERS],
@@ -818,7 +816,6 @@ static const gSAZones[][SAZONE_MAIN] = {  // Majority of names and area coordina
 forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
 forward theftTimer(playerid, type, biz);
 forward matsFinish(playerid, matsCount);
-forward eventStepTimer(playerid);
 forward garbageTimer(playerid, garbcp);
 forward matsTimer(playerid);
 forward buyMatsTimer(playerid, amount);
@@ -829,7 +826,6 @@ forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
 forward antiCheatTimer();
 forward globalUpdate();
-forward eventTimer(playerid);
 forward accountTimer();
 forward restartTimer(type);
 forward vehicleTimer();
@@ -1163,8 +1159,6 @@ public ResetStats(playerid)
 	cheater[playerid] = 0;
 	
 	smoking[playerid] = false;
-	eventStep[playerid] = 0;
-    eventParam[playerid] = 0;
 	LastVeh[playerid] = 0;
 	AllowAdv[playerid] = 1;
 
@@ -1180,6 +1174,9 @@ public ResetStats(playerid)
 
 	// Revision de usuarios
 	ReviseOffer[playerid] = 999;
+	
+	/* Sistema de misiones automaticas */
+	ResetMissionEventVariables(playerid);
 	
 	/* Sistema de camaras */
 	usingCamera[playerid] = false;
@@ -1369,8 +1366,6 @@ public OnPlayerDisconnect(playerid, reason) {
     KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
     KillTimer(GetPVarInt(playerid, "tutTimer"));
     KillTimer(GetPVarInt(playerid, "garbT"));
-    KillTimer(GetPVarInt(playerid, "eventTimer"));
-    KillTimer(GetPVarInt(playerid, "eventStepTimer"));
     KillTimer(GetPVarInt(playerid, "matsTimer"));
     KillTimer(GetPVarInt(playerid, "buyMatsTimer"));
     KillTimer(GetPVarInt(playerid, "buyDrugsTimer"));
@@ -1380,6 +1375,7 @@ public OnPlayerDisconnect(playerid, reason) {
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
 	KillTimer(cAFKTimer[playerid]);
+	KillMissionEventTimer(playerid);
 	
 	if(GetPlayerSpecialAction(Mobile[playerid] == SPECIAL_ACTION_USECELLPHONE && !IsPlayerInAnyVehicle(Mobile[playerid]))) {
 		SetPlayerSpecialAction(Mobile[playerid], SPECIAL_ACTION_STOPUSECELLPHONE);
@@ -1887,37 +1883,12 @@ public OnPlayerText(playerid, text[]) {
 	else
 		name = "Enmascarado";
 
-    if(Mobile[playerid] == NUM_MISSION) {
-		if((strcmp("si", text, true, strlen(text)) == 0) && (strlen(text) == strlen("si"))) {
-			SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: ¡vamos, súbete a la van y di 'listo' una vez arriba!");
-            Mobile[playerid] = NUM_MISSION2;
-            jobDuty[playerid] = true;
-            SetVehicleParamsForPlayer(FactionInfo[PlayerInfo[playerid][pFaction]][fMissionVeh], playerid, 1, 0);
-		} else if((strcmp("no", text, true, strlen(text)) == 0) && (strlen(text) == strlen("no"))) {
-			SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: tú te lo pierdes, adiós...");
-            Mobile[playerid] = 255;
-            PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
-		    eventStep[playerid] = 0;
-		} else {
-			SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: ¡no tengo tiempo para vueltas, di 'si' o 'no'!");
-		}
-		return 0;
-	} else if(Mobile[playerid] == NUM_MISSION2) {
-		if((strcmp("listo", text, true, strlen(text)) == 0) && (strlen(text) == strlen("listo"))) {
-		    if(GetPlayerVehicleID(playerid) == FactionInfo[PlayerInfo[playerid][pFaction]][fMissionVeh]) {
-				SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: te he marcado la localización en el GPS, vé a buscar los paquetes y llévalos a tu HQ.");
-	            SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
-	            eventStep[playerid] = 2;
-	            Mobile[playerid] = 255;
-				PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
-			} else {
-			    SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: ¡súbete a la van, no tengo tiempo para vueltas!");
-			}
-		} else {
-			SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: ¡no tengo tiempo para vueltas, di 'listo' una vez arriba!");
-		}
-		return 0;
-	} else if(Mobile[playerid] == 911) {
+	if(CheckMissionEventStep2(playerid, text))
+	    return 0;
+	if(CheckMissionEventStep3(playerid, text))
+	    return 0;
+    
+	else if(Mobile[playerid] == 911) {
 		if((strcmp("policia", text, true, strlen(text)) == 0) && (strlen(text) == strlen("policia"))) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: policía metropolitana, por favor de un breve informe de lo ocurrido.");
 			Mobile[playerid] = 912;
@@ -2750,8 +2721,8 @@ public OnPlayerDataLoad(playerid) {
 	    format(query, sizeof(query),"SELECT * FROM `bans` WHERE (pID = %d OR pIP = '%s') AND banActive = 1", PlayerInfo[playerid][pID], PlayerInfo[playerid][pIP]);
 		mysql_function_query(dbHandle, query, true, "OnBanDataLoad", "i", playerid);
 
-        SetPVarInt(playerid, "eventTimer", SetTimerEx("eventTimer", 60 * 1000 * JOB_EVENT_TIMER + random(JOB_EVENT_MAXTIMER), true, "i", playerid));
-
+        CreateMissionEventTimer(playerid);
+        
         // Seteamos el dinero del jugador.
         SetPlayerCash(playerid,PlayerInfo[playerid][pCash]);
         SetPlayerWantedLevelEx(playerid, PlayerInfo[playerid][pWantedLevel]);
@@ -3847,38 +3818,6 @@ public fuelCarWithCan(playerid, vehicleid, totalfuel)
 	return 1;
 }
 
-public eventTimer(playerid) {
-	new
-		bool:alreadyMission = false,
-	    faction = PlayerInfo[playerid][pFaction];
-	    
-	if(PlayerInfo[playerid][pJailed] == 0) {
-		if(random(3) == 1) {
-			if(faction > 0 && FactionInfo[faction][fType] == FAC_TYPE_ILLEGAL && eventStep[playerid] == 0) {
-			    foreach(new i : Player) {
-			        if(PlayerInfo[i][pFaction] == faction && eventStep[i] > 0) {
-			            alreadyMission = true;
-			            break;
-			        }
-			    }
-			    if(!alreadyMission) {
-					PlayerDoMessage(playerid, 15.0, "Un teléfono ha comenzado a sonar.");
-					SendClientMessage(playerid, COLOR_WHITE, "Tienes una llamada, utiliza /atender o /colgar.");
-					SetPVarInt(playerid, "eventStepTimer", SetTimerEx("eventStepTimer", 35000, false, "i", playerid));
-					eventStep[playerid] = 1;
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-public eventStepTimer(playerid) {
-	PlayerDoMessage(playerid, 15.0, "Han colgado...");
-	eventStep[playerid] = 0;
-	return 1;
-}
-
 public globalUpdate() {
 	new
 	    playerCount = 0,
@@ -4400,36 +4339,6 @@ public garbageTimer(playerid, garbcp) {
 	return 1;
 }
 
-public matsTimer(playerid) {
-	new
-	    vehicleid = GetPlayerVehicleID(playerid),
-		validslot = -1;
-		
-    TogglePlayerControllable(playerid, true);
-	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
-			validslot = i;
-			break;
-	    }
-	}
-	if(validslot == -1) {
-        SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
-        SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
-		SetVehiclePos(vehicleid, 2767.2983, -2417.6804, 13.7573);
-	} else {
-	    foreach(new i : Player) {
-		    if(playerid != i && PlayerInfo[i][pFaction] == PlayerInfo[playerid][pFaction] && GetPlayerVehicleID(i) == GetPlayerVehicleID(playerid)) {
-				eventParam[playerid]++;
-		    }
-		}
-		eventStep[playerid] = 3;
-		SetTrunkItemAndParam(vehicleid, validslot, 47, MISSION_BOX_MATS + (MISSION_BOX_EXTRA * eventParam[playerid]) * (random(MISSION_MATS_MAX_BOXES) + 1 + MISSION_MATS_MIN_BOXES));
-		SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
-		SendClientMessage(playerid, COLOR_LIGHTGREEN, "SMS de anónimo: vuelve al HQ con la carga, solo alguien con experiencia podrá ensamblarlas.");
-	}
-	return 1;
-}
-
 public buyMatsTimer(playerid, amount) {
 	new
 	    vehicleid = GetPlayerVehicleID(playerid),
@@ -4509,24 +4418,6 @@ public buyProductsTimer(playerid, amount) {
 			PlayerActionMessage(playerid, 15.0, "compra algunos productos y los carga en el vehículo.");
 		}
 	return 1;
-}
-
-//=====================DESCARGA DE MATERIALES PARA MAFIAS=======================
-
-public matsFinish(playerid, matsCount) {
-	new
-		vehicleID = GetPlayerVehicleID(playerid);
-	
-	TogglePlayerControllable(playerid, true);
-	eventStep[playerid] = 0;
-	SetVehicleParamsForPlayer(vehicleID, playerid, 0, 0);
-	RemovePlayerFromVehicle(playerid);
-	jobDuty[playerid] = false;
-	SendFMessage(playerid, COLOR_WHITE, "Has descargado %d materiales en el HQ y recibido una ganancia de $%d.", matsCount, MISSION_MATS_REWARD + MISSION_MATS_EXTRA * eventParam[playerid]);
-	SetTimerEx("respawnVeh", 1500, false, "i", vehicleID);
-	GivePlayerCash(playerid, MISSION_MATS_REWARD + MISSION_MATS_EXTRA * eventParam[playerid]);
-	eventParam[playerid] = 0;
-    return 1;
 }
 
 //=============================DESCARGA DE ITEMS================================
@@ -4624,30 +4515,8 @@ public OnPlayerEnterCheckpoint(playerid) {
 	if(MechanicCallTime[playerid] > 0 && faction == FAC_MECH)
 	    MechanicCallTime[playerid] = 0;
 
-	if(eventStep[playerid] == 3) {
-	    new
-			matsCount = 0;
-			
-	    for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleID); i++) {
-		    if(GetTrunkItem(vehicleID, i) == 47) {
-		        matsCount = GetTrunkParam(vehicleID, i);
-				FactionInfo[faction][fMaterials] += matsCount;
-				SetTrunkItemAndParam(vehicleID, i, 0, 0);
-		    }
-		}
-		GameTextForPlayer(playerid, "Descargando vehiculo...", 4000, 4);
-		TogglePlayerControllable(playerid, false);
-		SetPVarInt(playerid, "matsFinish", SetTimerEx("matsFinish", 4000, false, "ii", playerid, matsCount));
-	} else if(eventStep[playerid] == 2) {
-	    if(FactionInfo[faction][fMissionVeh] == vehicleID) {
-	        GameTextForPlayer(playerid, "Cargando materiales...", 4000, 4);
-			TogglePlayerControllable(playerid, false);
-			SetPVarInt(playerid, "matsTimer", SetTimerEx("matsTimer", 4000, false, "i", playerid));
-		} else {
-		    SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
-		    GameTextForPlayer(playerid, "Debes estar en el vehículo de la misión.", 1000, 4);
-		}
-	}
+	CheckMissionEventStep4(playerid);
+	
     if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleID][VehJob] == JOB_FARM) {
     	if(CollectedProds[playerid] < JOB_FARM_MAXPRODS) {
     	   	new rCP = -1;
@@ -10097,12 +9966,10 @@ CMD:atender(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
 		return 1;
 	}
-	if(eventStep[playerid] == 1) {
-	    SendClientMessage(playerid, COLOR_FADE1, "Anónimo dice: nos han llegado nuevas partes, ¿deseas ir a recogerlas? recibirás además $1000 en mano.");
-	    Mobile[playerid] = NUM_MISSION;
-	    KillTimer(GetPVarInt(playerid, "eventStepTimer"));
+	
+	if(CheckMissionEventStep1(playerid))
 	    return 1;
-	}
+
 	foreach(new i : Player) {
 		if(Mobile[i] == playerid) {
 			Mobile[playerid] = i;
@@ -10169,17 +10036,17 @@ CMD:msg(playerid, params[]) {
 	return 1;
 }
 
-CMD:colgar(playerid, params[]) {
-	new
-		caller = Mobile[playerid];
+CMD:colgar(playerid, params[])
+{
+	new caller = Mobile[playerid];
 
-	if(IsPlayerConnected(caller) && caller != INVALID_PLAYER_ID && caller != 255) {
-		if(eventStep[playerid] == 1) {
-		    PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
-		    eventStep[playerid] = 0;
-		    return 1;
-		}
-		if(caller < 255) {
+	if(CheckCancelMissionEventStep1(playerid))
+	    return 1;
+	    
+	if(IsPlayerConnected(caller) && caller != INVALID_PLAYER_ID && caller != 255)
+	{
+		if(caller < 255)
+		{
 		    PlayerDoMessage(playerid, 15.0, "Han colgado...");
 		    PlayerDoMessage(caller, 15.0, "Han colgado...");
 			if(!IsPlayerInAnyVehicle(playerid)) {
