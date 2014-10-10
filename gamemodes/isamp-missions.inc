@@ -7,8 +7,8 @@
 
 //=================================CONSTANTES===================================
 
-#define MISSION_EVENT_TIME      30 // En minutos, tiempo mínimo entre misiones.
-#define MISSION_EVENT_EXTRATIME 30 // En minutos, máximo que se le puede agregar al tiempo mínimo entre misiones.
+#define MISSION_EVENT_TIME      4 // En minutos, tiempo mínimo entre misiones.
+#define MISSION_EVENT_EXTRATIME 3 // En minutos, máximo que se le puede agregar al tiempo mínimo entre misiones.
 
 #define MISSION_NONE            0
 #define MISSION_MAT             1
