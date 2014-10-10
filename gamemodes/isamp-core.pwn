@@ -66,7 +66,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
 #define MAX_BUILDINGS           100
-#define MAX_CAMARAS             10                                              // Maximo de camaras seteadas del "Sistema de camaras"
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
 #define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
@@ -127,7 +126,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_TUNING_COLOR1       10021
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
-#define CAMARAS_POLICIA         10024
+#define DLG_CAMARAS_POLICIA     10024
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 											// 5 minutos
@@ -302,6 +301,9 @@ new
 	
 	// Revision de usuarios
 	ReviseOffer[MAX_PLAYERS],
+
+	//Sistema camaras policia
+	bool:usingCamera[MAX_PLAYERS],
 	
 	// Mecánico.
 	MechanicCall = 999,
@@ -345,6 +347,7 @@ new
 	OOCStatus = 0,
 	PMsEnabled[MAX_PLAYERS],
 	NewsEnabled[MAX_PLAYERS],
+	NicksEnabled[MAX_PLAYERS],
 	RadioEnabled[MAX_PLAYERS],
 	FactionEnabled[MAX_PLAYERS],
 	TicketOffer[MAX_PLAYERS],
@@ -368,12 +371,6 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	cTomarVW[MAX_PLAYERS];
 	
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
-
-//Sistema camaras policia
-new Camara[MAX_PLAYERS];
-
-//Ocultar tag
-new hidename[MAX_PLAYERS];
 
 // Pickups
 new
@@ -1147,7 +1144,8 @@ public OnPlayerConnectEx(playerid) {
 	return 1;
 }
 
-public ResetStats(playerid) {
+public ResetStats(playerid)
+{
     MedDuty[playerid] = 0;
     OfferingVehicle[playerid] = false;
     VehicleOfferPrice[playerid] = -1;
@@ -1179,12 +1177,12 @@ public ResetStats(playerid) {
 	
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
-	
-	/*Ocultar tag*/
-	hidename[playerid] = -1;
-	
+
 	// Revision de usuarios
 	ReviseOffer[playerid] = 999;
+	
+	/* Sistema de camaras */
+	usingCamera[playerid] = false;
 	
 	/* Sistema de máscaras */
 	isUsingMaskInSlot[playerid] = -1;
@@ -1225,7 +1223,15 @@ public ResetStats(playerid) {
 	
 	/* Cinturón de Seguridad */
 	SeatBelt[playerid] = false;
+
+	/* Sistema de toggle*/
+	PMsEnabled[playerid] = 1;
+	NicksEnabled[playerid] = 1;
+	NewsEnabled[playerid] = 1;
+	RadioEnabled[playerid] = 1;
+	FactionEnabled[playerid] = 1;
 	
+	/* Sistema de tazer */
 	resetTazer(playerid);
 
 	MechanicCallTime[playerid] = 0;
@@ -1251,10 +1257,6 @@ public ResetStats(playerid) {
 	PlayerCuffed[playerid] = 0;
 	CopDuty[playerid] = 0;
 	SIDEDuty[playerid] = 0;
-	PMsEnabled[playerid] = 1;
-	NewsEnabled[playerid] = 1;
-	RadioEnabled[playerid] = 1;
-	FactionEnabled[playerid] = 1;
 	AdminDuty[playerid] = 0;
 	StartedCall[playerid] = 0;
 	Muted[playerid] = 0;
@@ -1360,7 +1362,6 @@ public OnPlayerDisconnect(playerid, reason) {
     GCounter[playerid] = 0;
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	Delete3DTextLabel(DescLabel[playerid]);
-	Camara[playerid] = 0;
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
@@ -1865,7 +1866,8 @@ public OnPlayerText(playerid, text[]) {
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
 		return 0;
 	}
-	if(Camara[playerid] == 1)	{
+	
+	if(usingCamera[playerid]) {
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
 		return 0;
 	}
@@ -2074,7 +2076,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			x_info = strtok(cmdtext, idx);
 			if(!strlen(x_info))
 			{
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [gasoil - mps - telefono - noticias - faccion - radio]");
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [gasoil - mps - telefono - noticias - faccion - radio - nicks]");
 				return 1;
 			}
 			if(strcmp(x_info,"gasoil",true) == 0)
@@ -2101,6 +2103,25 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
 				    PMsEnabled[playerid] = 1;
+				}
+			}
+ 	  		else if(strcmp(x_info,"nicks",true) == 0)
+			{
+				if(NicksEnabled[playerid])
+				{
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no veras los nicks de los demas jugadores sobre sus cabezas.");
+				    NicksEnabled[playerid] = 0;
+				    foreach(new i : Player)
+				    	ShowPlayerNameTagForPlayer(playerid, i, false);
+				}
+				else
+				{
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
+				    NicksEnabled[playerid] = 1;
+				    foreach(new i : Player)
+				    {
+				    	ShowPlayerNameTagForPlayer(playerid, i, true);
+				    }
 				}
 			}
 	  		else if(strcmp(x_info,"noticias",true) == 0)
@@ -2464,7 +2485,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 }
 
 public OnPlayerCommandReceived(playerid, cmdtext[]) {
-	if(Camara[playerid] == 1 && strcmp(cmdtext,"/salircam")!=0)
+	if(usingCamera[playerid] && strcmp(cmdtext,"/salircam")!=0)
 	{
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Para utilizar un comando antes debes salir de la cámara.");
 	    return 0;
@@ -7873,114 +7894,89 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
 	switch(dialogid)
 	{
-		case CAMARAS_POLICIA:
+		case DLG_CAMARAS_POLICIA:
         {
-          if(response)
-          {
-	         switch(listitem)
-              {
-                 case 0:
-                {
-
-                        TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+        	if(response)
+          	{
+           		TogglePlayerControllable(playerid, false);
+                usingCamera[playerid] = true;
+                SendClientMessage(playerid, COLOR_WHITE, "Te encuentras mirando una camara de seguridad. Para salir utiliza /salircam.");
+	         	switch(listitem)
+				{
+    				case 0:
+	   				{
                         SetPlayerCameraPos(playerid,1810.6332,-1881.8149,19.5813);
                         SetPlayerCameraLookAt(playerid,1826.7717,-1855.4510,13.5781);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-						SetPlayerPos(playerid,1808.0325,-1875.4358,14.1098);
-
-                }
-                case 1:
-                {
-                        TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+						SetPlayerPos(playerid, 1808.0325, -1875.4358, 14.1098);
+	                }
+	                case 1:
+	                {
                         SetPlayerCameraPos(playerid,1597.0785,-1881.5038,27.7953);
                         SetPlayerCameraLookAt(playerid,1622.404,-1867.609,13.167);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1625.4521,-1869.5902,8.3828);
-
-                }
-                case 2:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 1625.4521, -1869.5902, 8.3828);
+	                }
+	                case 2:
+	                {
                         SetPlayerCameraPos(playerid, 1176.9811,-1343.1915,19.4488);
                         SetPlayerCameraLookAt(playerid,1189.4771,-1324.0830,13.5669);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1194.1521,-1325.6360,9.3984);
-
-                }
-                case 3:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 1194.1521, -1325.6360, 9.3984);
+	                }
+	                case 3:
+	                {
                         SetPlayerCameraPos(playerid,493.8351,-1271.0554,31.1417);
                         SetPlayerCameraLookAt(playerid,536.0699,-1266.2397,16.5363);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,541.5012,-1257.4186,10.5401);
-
-                }
-                case 4:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 541.5012, -1257.4186, 10.5401);
+	                }
+	                case 4:
+	                {
                         SetPlayerCameraPos(playerid,807.4939,-1307.5045,28.8984);
                         SetPlayerCameraLookAt(playerid,783.412,-1327.025,13.254);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,778.0953,-1323.9830,9.3906);
-
-                }
-                case 5:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 778.0953, -1323.9830, 9.3906);
+	                }
+	                case 5:
+	                {
                         SetPlayerCameraPos(playerid,1289.1920,-944.2938,59.1594);
                         SetPlayerCameraLookAt(playerid,1316.086,-914.297,37.690);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1315.8170,-915.3012,32.0215);
-                }
-                case 6:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 1315.8170, -915.3012, 32.0215);
+	                }
+	                case 6:
+	                {
                         SetPlayerCameraPos(playerid, 1354.3875,-1725.0841,23.1490);
                         SetPlayerCameraLookAt(playerid, 1352.600,-1740.055,13.171);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1366.0573,-1754.3422,14.0174);
-                }
-                case 7:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 1366.0573, -1754.3422, 14.0174);
+	                }
+	                case 7:
+	                {
                         SetPlayerCameraPos(playerid,2352.8774,-1249.7654,36.8919);
                         SetPlayerCameraLookAt(playerid, 2374.472,-1211.521,27.135);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,2348.5415,-1210.8560,30.2480);
-               	}
-				case 8:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 2348.5415, -1210.8560, 30.2480);
+	               	}
+					case 8:
+	                {
                         SetPlayerCameraPos(playerid,1430.0485,-1151.9353,36.8923);
                         SetPlayerCameraLookAt(playerid, 1465.9761,-1172.3713,23.8700);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1466.8362,-1172.6542,15.9016);
-               	}
-				case 9:
-                {       TogglePlayerControllable(playerid, 0);
-                        Camara[playerid] = 1;
+                        SetPlayerPos(playerid, 1466.8362, -1172.6542, 15.9016);
+	               	}
+					case 9:
+	                {
                         SetPlayerCameraPos(playerid,1542.1896,-1714.8029,28.7414);
                         SetPlayerCameraLookAt(playerid, 1507.4358,-1736.1678,13.3828);
-                        SendClientMessage(playerid, -1,"{2EFE2E}Sistema de seguridad: {FFFFFF}Has entrado en una camara usa /salircam.");
                         SetPlayerInterior(playerid, 0);
-                        SetPlayerPos(playerid,1512.8125,-1736.2164,5.3828);
-               	}
-            }
-         }
-          return 1;
-      }
+                        SetPlayerPos(playerid, 1512.8125, -1736.2164, 5.3828);
+	               	}
+            	}
+   			}
+        	return 1;
+      	}
         case DLG_247:
 		{
             new business = GetPlayerBusiness(playerid);
@@ -8147,7 +8143,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						SetHandItemAndParam(playerid, ITEM_ID_MALETIN, 0);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin y lo agarra con su mano.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d! Lo tienes en la mano.", GetItemPrice(ITEM_ID_MALETIN));
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d! Lo tienes en la mano. Usa /maletin para más información.", GetItemPrice(ITEM_ID_MALETIN));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MALETIN);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -11909,25 +11905,24 @@ CMD:equipo(playerid, params[]) {
 CMD:camaras(playerid, params[])
 {
 	if(IsPlayerInRangeOfPoint(playerid, 2.0, 219.36, 188.31, 1003.00))
-	{
-		ShowPlayerDialog(playerid, CAMARAS_POLICIA, DIALOG_STYLE_LIST, "{2EFE2E}Cámaras","{2EFE2E}Camara 1 {FFFFFF}(24-7 Unity)\n{2EFE2E}Camara 2 {FFFFFF}(Taller Mercury)\n{2EFE2E}Camara 3 {FFFFFF}(Hospital)\n{2EFE2E}Camara 4 {FFFFFF}(Grotti)\n{2EFE2E}Camara 5 {FFFFFF}(Ctr-Man)\n{2EFE2E}Camara 6 {FFFFFF}(24-7 Norte)\n{2EFE2E}Camara 7 {FFFFFF}(24-7 Ayuntamiento)\n{2EFE2E}Camara 8 {FFFFFF}(24-7 Este)\n{2EFE2E}Camara 9 {FFFFFF}(Banco de Malos Aires)\n{2EFE2E}Camara 10 {FFFFFF}(Ayuntamiento)", "Ok", "");
-	}
+		ShowPlayerDialog(playerid, DLG_CAMARAS_POLICIA, DIALOG_STYLE_LIST, "Camaras disponibles", "24-7 Unity\nTaller Mercury\nHospital Central\nConsecionarios Grotti\nCentral CTR-MAN\n24-7 Norte\n24-7 Ayuntamiento\n24-7 Este\nBanco de Malos Aires\nAyuntamiento", "Ok", "Cerrar");
 	return 1;
 }
 
 CMD:salircam(playerid, params[])
 {
-	if(Camara[playerid] == 0) return SendClientMessage(playerid, -1,"¡No estas en una camara!");
-	{
-		TogglePlayerControllable(playerid, 1);
-		Camara[playerid] = 0;
-		SetCameraBehindPlayer(playerid);
-		SetPlayerPos(playerid,219.36, 188.31, 1003.00);
-		SetPlayerVirtualWorld(playerid, 16002);
-		SetPlayerInterior(playerid, 3);
-	}
+	if(usingCamera[playerid] == false)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras mirando ninguna cámara.");
+
+	TogglePlayerControllable(playerid, true);
+	usingCamera[playerid] = false;
+	SetCameraBehindPlayer(playerid);
+	SetPlayerPos(playerid,219.36, 188.31, 1003.00);
+	SetPlayerVirtualWorld(playerid, 16002);
+	SetPlayerInterior(playerid, 3);
 	return 1;
 }
+
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
 CMD:bol(playerid, params[])
@@ -13960,6 +13955,8 @@ public OnPlayerStreamIn(playerid, forplayerid)
 	    if(PlayerInfo[forplayerid][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
 	    	ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
 	}
+	if(NicksEnabled[playerid] == 0)
+	    ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
 	return 1;
 }
 
@@ -14964,22 +14961,6 @@ CMD:llenar(playerid, params[])
 	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
 	return 1;
 }
-
-CMD:ocultartag(playerid,params[])
-{
-    if (hidename[playerid] == -1)
-	{
-        for(new i = 0; i < MAX_PLAYERS; i++) ShowPlayerNameTagForPlayer(playerid, i, false);
-		SendClientMessage(playerid, COLOR_LIGHTBLUE, "Estas ocultando el nombre de todos los jugadores. (/ocultartag para mostrarlos nuevamente).");
-        hidename[playerid] = 1;
-    } else
-	    {
-		    for(new i = 0; i < MAX_PLAYERS; i++) ShowPlayerNameTagForPlayer(playerid, i, true);
-			SendClientMessage(playerid, COLOR_LIGHTBLUE, "Estas mostrando el nombre de todos los jugadores. (/ocultartag para ocultarlos nuevamente).");
-            hidename[playerid] = -1;
-		}
-	return 1;	
-}          
 
 stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[]) {   // 
     new 

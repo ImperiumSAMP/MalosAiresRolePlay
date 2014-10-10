@@ -6,7 +6,7 @@
 //=============================OBJECT SYSTEM====================================
 
 #define MAX_SERVER_OBJECTS   	500
-#define SERVER_OBJECT_LIFETIME  240 // En minutos
+#define SERVER_OBJECT_LIFETIME  300 // En minutos
 #define SERVER_OBJECT_UPD_TIME  10 // Cada diez minutos
 
 //==============================DATA STORAGE====================================
@@ -67,7 +67,7 @@ stock DropObject(playerid)
 		}
 	}
 	if(j == -1)
-	    return SendClientMessage(playerid, COLOR_RED, "[ERROR] Se ha alcanzado el máximo de objetos permitidos, reportar a un administrador");
+	    return SendClientMessage(playerid, COLOR_RED, "[ERROR] Se ha alcanzado el máximo de objetos permitidos, reportar a un administrador.");
 
 	ServerObject[j][sItemID] = GetHandItem(playerid);
 	ServerObject[j][sAmount] = GetHandParam(playerid);

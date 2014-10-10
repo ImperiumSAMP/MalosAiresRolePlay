@@ -372,7 +372,7 @@ CMD:mecdeposito(playerid, params[])
  	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
 
-	SendFMessage(playerid, COLOR_WHITE, "[Taller Mecánico]: Actualmente nuestro deposito cuenta con %d repuestos y partes de vehículos.", FactionInfo[FAC_MECH][fMaterials]);
+	SendFMessage(playerid, COLOR_WHITE, "[Taller Mecánico]: Actualmente nuestro deposito cuenta con %d repuestos de vehículos.", FactionInfo[FAC_MECH][fMaterials]);
  	return 1;
 }
 

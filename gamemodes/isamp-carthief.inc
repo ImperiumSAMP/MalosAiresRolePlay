@@ -41,6 +41,8 @@ CMD:barreta(playerid, params[])
 	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a forzar una cerradura.", ThiefJobInfo[playerid][pForceDoorLimit] / 60);
 	    return 1;
 	}
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en este momento!");
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
 	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
@@ -48,7 +50,7 @@ CMD:barreta(playerid, params[])
 	if(vehicleid == INVALID_VEHICLE_ID)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningun vehiculo.");
 	if(VehicleInfo[vehicleid][VehLocked] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas está abiertas.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas están abiertas.");
 
   	TogglePlayerControllable(playerid, false);
   	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
@@ -115,6 +117,8 @@ CMD:puente(playerid, params[])
 	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a puentear el arranque.", ThiefJobInfo[playerid][pForceEngineLimit] / 60);
 	    return 1;
 	}
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en este momento!");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento de conductor de un vehículo!");
 	GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
@@ -144,7 +148,7 @@ public PuenteMotor(playerid, vehicleid)
         ThiefJobInfo[playerid][pForceEngineLimit] = CMD_PUENTE_COOLDOWN * 60;
 	}
 	else
-		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables adecuados.");
+		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables correctos.");
 	return 1;
 }
 
@@ -164,6 +168,8 @@ CMD:desarmar(playerid, params[])
 	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a desarmar un vehículo.", ThiefJobInfo[playerid][pDesarmCarLimit] / 60);
 	    return 1;
 	}
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en este momento!");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z))
@@ -176,10 +182,10 @@ CMD:desarmar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
 
  	GetVehicleHealth(vehicleid, vehiclehp);
-    repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 3;
+    repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 3; // Entrega una cantidad de repuestos proporcional al buen estado (hp) del auto
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
     SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
-    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0);
+    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0); // Lo hacemos desaparecer un rato
     SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
     PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
     SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);

@@ -31,16 +31,17 @@ CMD:maletin(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /maletin [comando]");
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} retirar [dinero] - guardar [dinero]");
+        SendFMessage(playerid, COLOR_WHITE, "El maletín contiene $%d pesos.", briefCaseMoney);
 
 	} else if(strcmp(command, "retirar", true) == 0) {
 		
-		    if(amount <= 0 || amount > briefCaseMoney)
-		        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inválida.");
+	    if(amount <= 0 || amount > briefCaseMoney)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inválida.");
 		        
-		    GivePlayerCash(playerid, amount);
-			SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney - amount);
-			PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
-			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+	    GivePlayerCash(playerid, amount);
+		SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney - amount);
+		PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
+		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 			
 	} else if(strcmp(command, "guardar", true) == 0) {
 		

@@ -9,8 +9,7 @@
 
 #define BANK_ROBBERY_COOLDOWN   30 // En horas, tiempo para que el banco pueda volver a ser robado.
 
-#define MIN_DINERO_BOVEDA     	150000
-#define MAX_DINERO_BOVEDA     	200000
+#define MAX_DINERO_BOVEDA     	150000
 
 #define MAX_ROBBERY_GROUPS      3 // Maximo de grupos simultaneos en el servidor
 #define GROUP_MEMBERS 			3 // No incluye al lider
@@ -663,7 +662,7 @@ public RobarBoveda(playerid)
 
     TogglePlayerControllable(playerid, true);
     SetPVarInt(playerid, "disabled", DISABLE_NONE);
-	GivePlayerCash(playerid, MIN_DINERO_BOVEDA + random(MAX_DINERO_BOVEDA - MIN_DINERO_BOVEDA));
+	GivePlayerCash(playerid, MAX_DINERO_BOVEDA);
 	pHoldingMoney[playerid] = true;
 	pHoldingMoneyTimer[playerid] = SetTimerEx("TimeHoldMoney", 20 * 60 * 1000, false, "i", playerid);
 	RobberyGroupMessage(group, COLOR_WHITE, "¡El lider ha terminado de guardar el dinero, huye rapido o te atraparán! (OOC: El dinero se pierde si el lider deslogea/muere)");
