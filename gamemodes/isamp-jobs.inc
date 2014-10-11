@@ -6,18 +6,6 @@
 // Misiones.
 #define JOB_EVENT_TIMER         55//25  // Tiempo en minutos minimo entre eventos de empleo.
 #define JOB_EVENT_MAXTIMER      90//60  // Tiempo extra random, varía entre 0 y la cantidad especificada y se añaden al mínimo.
-#define MISSION_MATS_MIN_BOXES  1   // Mínimo de cajas por misión.
-#define MISSION_MATS_MAX_BOXES  5   // Máximo de cajas por misión.
-#define MISSION_MATS_REWARD     1000 // Recompensa en dinero por la misión.
-#define MISSION_MATS_EXTRA      500 //  Recompensa en dinero por cada miembro acompañante.
-
-#define MISSION_BOX_MATS        125	// Materiales por caja.
-#define MISSION_BOX_EXTRA       50   // Extra * cantidad de gente en el vehículo.
-
-// Números telefónicos.
-#define NUM_MISSION          	424
-#define NUM_MISSION2            425
-
 
 //====[EMPLEOS]=================================================================
 //#define JOB_MECH              1 		// Mecánicos.
@@ -46,8 +34,6 @@
 
 #define JOB_GARB_MONEY       	4000 	// MONEY + random(MONEY / 2)
 
-#define JOB_MECH_MAXPRICE       1500 	// Máximo que pueden cobrar los mecánicos.
-
 #define JOB_EXP_MULTIPLIER      3
 //
 #define BLD_PMA                 2
@@ -56,7 +42,7 @@
 #define BLD_SIDE                31
 #define BLD_MAN                 36
 
-#define JOB_WAITTIME            5												// Número de PayDays que tienes que esperar para poder tomar otro empleo.
+#define JOB_WAITTIME            5  // Número de PayDays que tienes que esperar para poder tomar otro empleo.
 #define JOB_NAME_FIELD_MAX		32
 
 //Enums

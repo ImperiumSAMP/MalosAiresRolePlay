@@ -163,6 +163,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_LIC_FLYING        25400
 #define PRICE_CLOTHES1          250
 #define PRICE_CLOTHES2          3500
+
 // Materiales por unidad.
 #define MATS_KNUCKLES           1
 #define MATS_KNIFE              3
@@ -317,6 +318,14 @@ new
 	TransportCost[MAX_PLAYERS],
 	TaxiTimer=PRICE_TAXI_INTERVAL,
 	
+	// Sistema de toggle 
+	PhoneEnabled[MAX_PLAYERS],
+	PMsEnabled[MAX_PLAYERS],
+	NewsEnabled[MAX_PLAYERS],
+	NicksEnabled[MAX_PLAYERS],
+	RadioEnabled[MAX_PLAYERS],
+	FactionEnabled[MAX_PLAYERS],
+	
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
 	
@@ -338,24 +347,12 @@ new
 	gTime[3],
 	SpawnAttempts[MAX_PLAYERS],
 	FactionRequest[MAX_PLAYERS],
-	PhoneOnline[MAX_PLAYERS],
 	HospHealing[MAX_PLAYERS],
 	Muted[MAX_PLAYERS],
 	StartedCall[MAX_PLAYERS],
 	OOCStatus = 0,
-	PMsEnabled[MAX_PLAYERS],
-	NewsEnabled[MAX_PLAYERS],
-	NicksEnabled[MAX_PLAYERS],
-	RadioEnabled[MAX_PLAYERS],
-	FactionEnabled[MAX_PLAYERS],
 	TicketOffer[MAX_PLAYERS],
-	TicketMoney[MAX_PLAYERS],
-	MatsHolding[MAX_PLAYERS],
-	DrugsHolding[MAX_PLAYERS],
-	DrugsIntake[MAX_PLAYERS],
-	TrackingPlayer[MAX_PLAYERS],
-	UserExists[MAX_PLAYERS],
-	CanDoTut[MAX_PLAYERS];
+	TicketMoney[MAX_PLAYERS];
 
 new Float:GUIDE_POS[][3] = {
 	{1675.1625,-2245.8516,13.5655},
@@ -832,7 +829,6 @@ forward vehicleTimer();
 forward speedoTimer(playerid);
 
 forward licenseTimer(playerid, lic);
-forward TutTimer(playerid);
 forward fuelTimer();
 forward healTimer(playerid);
 forward cantSaveItems(playerid);
@@ -1221,12 +1217,13 @@ public ResetStats(playerid)
 	/* Cinturón de Seguridad */
 	SeatBelt[playerid] = false;
 
-	/* Sistema de toggle*/
+	/* Sistema de toggle */
 	PMsEnabled[playerid] = 1;
 	NicksEnabled[playerid] = 1;
 	NewsEnabled[playerid] = 1;
 	RadioEnabled[playerid] = 1;
 	FactionEnabled[playerid] = 1;
+	PhoneEnabled[playerid] = 1;
 	
 	/* Sistema de tazer */
 	resetTazer(playerid);
@@ -1242,13 +1239,7 @@ public ResetStats(playerid)
 	carryingProd[playerid] = false;
     jobDuty[playerid] = false;
 	RegCounter[playerid] = 1;
-	CanDoTut[playerid] = 1;
 	Choice[playerid] = 0;
-	UserExists[playerid] = 0;
-	TrackingPlayer[playerid] = 0;
-	DrugsIntake[playerid] = 0;
-	DrugsHolding[playerid] = 0;
-	MatsHolding[playerid] = 0;
 	TicketOffer[playerid] = 999;
 	TicketMoney[playerid] = 0;
 	PlayerCuffed[playerid] = 0;
@@ -1257,9 +1248,7 @@ public ResetStats(playerid)
 	AdminDuty[playerid] = 0;
 	StartedCall[playerid] = 0;
 	Muted[playerid] = 0;
-	PhoneOnline[playerid] = 0;
 	HospHealing[playerid] = 0;
-	ShowFuel[playerid] = 1;
 	SetPlayerColor(playerid, COLOR_NOTLOGGED);
 	SpawnAttempts[playerid] = 0;
 	FactionRequest[playerid] = 0;
@@ -2047,21 +2036,8 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			x_info = strtok(cmdtext, idx);
 			if(!strlen(x_info))
 			{
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [gasoil - mps - telefono - noticias - faccion - radio - nicks]");
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks]");
 				return 1;
-			}
-			if(strcmp(x_info,"gasoil",true) == 0)
-			{
-				if(ShowFuel[playerid] == 1)
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás información de la gasolina.");
-					ShowFuel[playerid] = 0;
-				}
-				else
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás información de la gasolina.");
-				    ShowFuel[playerid] = 1;
-				}
 			}
 	  		else if(strcmp(x_info,"mps",true) == 0)
 			{
@@ -2090,9 +2066,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
 				    NicksEnabled[playerid] = 1;
 				    foreach(new i : Player)
-				    {
 				    	ShowPlayerNameTagForPlayer(playerid, i, true);
-				    }
 				}
 			}
 	  		else if(strcmp(x_info,"noticias",true) == 0)
@@ -2136,15 +2110,15 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			}
 	  		else if(strcmp(x_info,"telefono",true) == 0)
 			{
-				if(PhoneOnline[playerid])
+				if(PhoneEnabled[playerid])
 				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
-		            PhoneOnline[playerid] = 0;
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
+		            PhoneEnabled[playerid] = 0;
 				}
 				else
 				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
-				    PhoneOnline[playerid] = 1;
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encedido tu teléfono.");
+				    PhoneEnabled[playerid] = 1;
 				}
 			}
 		}
@@ -3176,14 +3150,6 @@ public OnVehicleDataLoad(id) {
 			}
 
 			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
-			if(VehicleInfo[id][VehJob] == JOB_TAXI && VehicleInfo[id][VehModel] == 466) {
-	   			new
-	   			    Float:wWide,
-				    Float:wLong,
-					Float:height;
-
-				GetVehicleModelInfo(VehicleInfo[id][VehModel], VEHICLE_MODEL_INFO_SIZE, wWide, wLong, height);
-			}
 		}
 		SetVehicleNumberPlate(id, VehicleInfo[id][VehPlate]);
 		SetVehicleToRespawn(id);
@@ -7211,24 +7177,18 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		            RegCounter[playerid] = 1;
 		        }
 				switch(RegCounter[playerid]) {
-				    case 1: {
+				    case 1:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: latino");
-					}
-					case 2: {
+					case 2:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: europeo");
-					}
-					case 3: {
+					case 3:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: americano");
-					}
-					case 4:	{
+					case 4:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: asiatico");
-					}
-					case 5:	{
+					case 5:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: africano");
-					}
-					case 6:	{
+					case 6:
 				        PlayerTextDrawSetString(playerid, RegTDOrigin[playerid], "Origen: indefinido");
-					}
 				}
 			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
 			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
@@ -8457,12 +8417,6 @@ public licenseTimer(playerid, lic) {
 	}
 	return 1;
 }
-
-public TutTimer(playerid) {
-    CanDoTut[playerid] = 1;
-    return 1;
-}
-
 
 //====[ZCMD COMMANDS]===========================================================
 CMD:pos(playerid, params[]) {
@@ -9978,52 +9932,48 @@ CMD:atender(playerid, params[])
 CMD:sms(playerid, params[])
 	return cmd_msg(playerid, params);
 
-CMD:msg(playerid, params[]) {
-	new
-		phonenumber,
-		string[128],
-		text[128];
+CMD:msg(playerid, params[])
+{
+	new phonenumber, string[128], text[128];
 
-	if(sscanf(params, "ds[128]", phonenumber, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
-	else {
-		if(PlayerInfo[playerid][pPhoneNumber] == 0) {
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+	if(sscanf(params, "ds[128]", phonenumber, text))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
+	if(PlayerInfo[playerid][pPhoneNumber] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+	if(PhoneEnabled[playerid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
+	if(GetPlayerCash(playerid) < PRICE_TEXT)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El mensaje no ha podido ser enviado (puede que no tengas dinero o que el jugador no se encuentre conectado).");
+
+	PlayerActionMessage(playerid,15.0,"toma su teléfono celular y comienza a escribir un mensaje.");
+	
+	if(phonenumber == 3900)
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: gracias por comunicarte con CTR-MAN, tu mensaje será recibido.");
+		foreach(new i : Player)
+		{
+			if(PlayerInfo[i][pFaction] == FAC_MAN)
+				SendFMessage(i, COLOR_WHITE, "[Nuevo mensaje a la radio de %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+    	}
+		return 1;
+	}
+	
+	foreach(new i : Player)
+	{
+		if(PlayerInfo[i][pPhoneNumber] == phonenumber && phonenumber != 0)
+		{
+  			if(PhoneEnabled[i] == 0)
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "El teléfono al que quieres contactar no se encuentra en servicio.");
+
+			SendClientMessage(playerid, COLOR_YELLOW2, "Mensaje de texto enviado.");
+			SendFMessage(i,COLOR_LIGHTGREEN, "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
+			SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %d: %s", PlayerInfo[i][pPhoneNumber], text);
+			PhoneAnimation(playerid);
+			SMSLog(string);
+			GivePlayerCash(playerid, -PRICE_TEXT);
+			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
 			return 1;
 		}
-		if(GetPlayerCash(playerid) >= PRICE_TEXT) {
-			PlayerActionMessage(playerid,15.0,"toma su teléfono celular y comienza a escribir un mensaje.");
-			if(phonenumber == 3900)
-			{
-			    SendClientMessage(playerid, COLOR_WHITE, "Telefonista: gracias por comunicarte con CTR-MAN, tu mensaje será recibido.");
-			    foreach(new i : Player)
-			    {
-			        if(PlayerInfo[i][pFaction] == FAC_MAN)
-			            SendFMessage(i, COLOR_WHITE, "[Nuevo mensaje a la radio de %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
-			    }
-			    return 1;
-			}
-			foreach(new i : Player) {
-				if(PlayerInfo[i][pPhoneNumber] == phonenumber && phonenumber != 0) {
-					if(IsPlayerConnected(i) && i != INVALID_PLAYER_ID) {
-				        if(PhoneOnline[i]) {
-				            SendClientMessage(playerid, COLOR_YELLOW2, "El teléfono al que te quieres contactar no se encuentra en servicio.");
-				            return 1;
-				        }
-				        SendClientMessage(playerid, COLOR_YELLOW2, "Mensaje de texto enviado.");
-						format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber],text);
-						SendClientMessage(i,COLOR_LIGHTGREEN, string);
-						format(string, sizeof(string), "SMS para %d: %s", PlayerInfo[i][pPhoneNumber],text);
-						SendClientMessage(playerid, COLOR_LIGHTGREEN, string);
-						PhoneAnimation(playerid);
-						SMSLog(string);
-						GivePlayerCash(playerid, -PRICE_TEXT);
-						Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
-						return 1;
-					}
-				}
-			}
-		}
-		SendClientMessage(playerid, COLOR_YELLOW2, "El mensaje no ha podido ser enviado (puede que no tengas dinero o que el jugador no se encuentre conectado).");
 	}
 	return 1;
 }
@@ -10041,14 +9991,12 @@ CMD:colgar(playerid, params[])
 		{
 		    PlayerDoMessage(playerid, 15.0, "Han colgado...");
 		    PlayerDoMessage(caller, 15.0, "Han colgado...");
-			if(!IsPlayerInAnyVehicle(playerid)) {
+			if(!IsPlayerInAnyVehicle(playerid))
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_STOPUSECELLPHONE);
-			}
-			if(!IsPlayerInAnyVehicle(caller)) {
+			if(!IsPlayerInAnyVehicle(caller))
 				SetPlayerSpecialAction(caller, SPECIAL_ACTION_STOPUSECELLPHONE);
-			}
-			PlayerActionMessage(playerid,15.0,"guarda su teléfono celular en el bolsillo.");
-			PlayerActionMessage(caller,15.0,"guarda su teléfono celular en el bolsillo.");
+			PlayerActionMessage(playerid,15.0,"cuelga y guarda su teléfono celular en el bolsillo.");
+			PlayerActionMessage(caller,15.0,"cuelga y guarda su teléfono celular en el bolsillo.");
 			Mobile[caller] = 255;
 			if(StartedCall[playerid]) {
 			    //TODO: Implementar tiempo de llamada
@@ -10072,87 +10020,80 @@ CMD:colgar(playerid, params[])
 }
 
 
-CMD:llamar(playerid, params[]) {
-	new
-		workers,
-  	    number;
+CMD:llamar(playerid, params[])
+{
+	new workers, number;
 
-    if(sscanf(params, "d", number)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
-	else {
-		if(PlayerInfo[playerid][pPhoneNumber] == 0) {
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
-			return 1;
+    if(sscanf(params, "i", number))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
+	if(PlayerInfo[playerid][pPhoneNumber] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
+	if(PhoneEnabled[playerid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
+	if(Mobile[playerid] != 255)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
+	if(number == PlayerInfo[playerid][pPhoneNumber])
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
+	    
+	PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
+	
+	if(number == 911)
+	{
+		Mobile[playerid] = 911;
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Emergencias: ¿que servicio solicita, policia o paramedico?");
+		return 1;
+	}
+	
+	if(number == 555)
+	{
+		foreach(new i : Player)
+		{
+			if(PlayerInfo[i][pFaction] == FAC_MECH && jobDuty[i])
+				workers++;
 		}
-		if(Mobile[playerid] != 255) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
-			return 1;
+		if(workers < 1)
+  			return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay mecanicos disponibles por el momento.");
+
+		Mobile[playerid] = 555;
+		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Malos Aires, ¿en qué le podemos ayudar?");
+		return 1;
+	}
+	
+	if(number == 444)
+	{
+ 		if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI)
+   			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo mientras te encuentras en servicio como taxista!");
+
+		foreach(new i : Player)
+		{
+			if(PlayerInfo[i][pJob] == JOB_TAXI && jobDuty[i])
+				workers++;
 		}
-		PlayerActionMessage(playerid,15.0,"toma un teléfono celular de su bolsillo y marca un número.");
-		// ----
-		if(number == 911) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Emergencias: ¿que servicio solicita, policia o paramedico?");
-			Mobile[playerid] = 911;
+		if(workers < 1)
+			return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay vehículos disponibles por el momento.");
+
+		Mobile[playerid] = 444;
+		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
+		return 1;
+	}
+	
+	foreach(new i : Player)
+	{
+		if(PlayerInfo[i][pPhoneNumber] == number && number != 0)
+		{
+    		if(PhoneEnabled[i] == 0 || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
+		    	return SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
+			if(Mobile[i] != 255)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "La linea se encuentra ocupada.");
+
+			Mobile[playerid] = i;
+			PlayerDoMessage(i, 15.0, "Un teléfono ha comenzado a sonar.");
+			SendFMessage(i, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
+            StartedCall[playerid] = 1;
+            StartedCall[i] = 0;
+            if(!IsPlayerInAnyVehicle(playerid))
+				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
 			return 1;
-		}
-		if(number == 555) {
-			foreach(new i : Player) {
-				if(PlayerInfo[i][pFaction] == FAC_MECH && jobDuty[i]) {
-					workers++;
-				}
-			}
-			if(workers < 1) {
-			    SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay mecanicos disponibles por el momento.");
-			    return 1;
-			}
-			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Malos Aires, ¿en qué le podemos ayudar?");
-			Mobile[playerid] = 555;
-			return 1;
-		}
-		if(number == 444) {
-		    if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI) {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo mientras te encuentras en servicio como taxista!");
-			    return 1;
-		    }
-			foreach(new i : Player) {
-				if(PlayerInfo[i][pJob] == JOB_TAXI && jobDuty[i]) {
-					workers++;
-				}
-			}
-			if(workers < 1) {
-			    SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay vehículos disponibles por el momento.");
-			    return 1;
-			}
-			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
-			Mobile[playerid] = 444;
-			return 1;
-		}
-		if(number == PlayerInfo[playerid][pPhoneNumber]) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
-			return 1;
-	    }
-	    // ----
-		foreach(new giveplayerid : Player) {
-			if(PlayerInfo[giveplayerid][pPhoneNumber] == number && number != 0) {
-				Mobile[playerid] = giveplayerid; //caller connecting
-				if(!IsPlayerConnected(giveplayerid) || giveplayerid == INVALID_PLAYER_ID) {
-					SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: no se ha podido contactar el número que ha marcado.");
-					return 1;
-				}
-		        if(PhoneOnline[giveplayerid] || PlayerInfo[giveplayerid][pSpectating] != INVALID_PLAYER_ID) {
-		            SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
-		            return 1;
-		        }
-				if(Mobile[giveplayerid] == 255) {
-					PlayerDoMessage(giveplayerid, 15.0, "Un teléfono ha comenzado a sonar.");
-					SendFMessage(giveplayerid, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
-                    StartedCall[playerid] = 1;
-                    StartedCall[giveplayerid] = 0;
-                    if(!IsPlayerInAnyVehicle(playerid)) {
-                    	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
-                    }
-					return 1;
-				}
-			}
 		}
 	}
 	return 1;
@@ -14223,12 +14164,14 @@ CMD:mp(playerid, params[])
 
 	if(sscanf(params, "us[128]", targetid, text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
+	if(PMsEnabled[playerid] == 0 && !AdminDuty[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes los mps bloqueados. Usa '/toggle mps' para activarlos.");
 	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
-
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
     if(TiempoEsperaMps[playerid] != 0)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
-    OnPlayerPrivmsg(playerid, targetid, text);
+
+	OnPlayerPrivmsg(playerid, targetid, text);
 	if(PlayerInfo[playerid][pAdmin] == 0)
 	{
 		TiempoEsperaMps[playerid] = 1;

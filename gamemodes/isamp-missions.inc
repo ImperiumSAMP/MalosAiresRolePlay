@@ -20,6 +20,11 @@
 #define MAX_MISSION_DRUG_POS    4
 #define MAX_MISSION_CAR_POS     3
 
+#define MISSION_MATS_REWARD     1000 // Recompensa en dinero por la misión.
+#define MISSION_MATS_EXTRA      500 //  Recompensa en dinero por cada miembro acompañante.
+#define MISSION_MATS_BOX        125	 // Materiales por caja.
+#define MISSION_MATS_BOX_EXTRA  90   // Extra * cantidad de gente en el vehículo.
+
 //=================================VARIABLES====================================
 
 new pMissionEvent[MAX_PLAYERS],
@@ -514,7 +519,7 @@ public MissionMaterialsLoad(playerid, vehicleid)
 					pMissionEventParam[playerid]++;
 			}
 			pMissionEventStep[playerid] = 5;
-			SetTrunkItemAndParam(vehicleid, validslot, ITEM_ID_MATERIALES, MISSION_BOX_MATS + (MISSION_BOX_EXTRA * pMissionEventParam[playerid]) * (random(MISSION_MATS_MAX_BOXES) + 1 + MISSION_MATS_MIN_BOXES));
+			SetTrunkItemAndParam(vehicleid, validslot, ITEM_ID_MATERIALES, MISSION_MATS_BOX + MISSION_MATS_BOX_EXTRA * pMissionEventParam[playerid]);
 			SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 3.0);
 			SendClientMessage(playerid, COLOR_LIGHTGREEN, "SMS de anónimo: vuelve al HQ con la carga. Solo alguien con experiencia podrá ensamblarlas.");
 		}

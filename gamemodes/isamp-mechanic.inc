@@ -10,6 +10,8 @@
 #define DLG_TUNING              10020
 #define PRICE_REPARACION_AUTO   650
 
+#define JOB_MECH_MAXPRICE       1500 	// Máximo que pueden cobrar los mecánicos.
+
 #define MEC_OFFICE_X			1584.54
 #define MEC_OFFICE_Y        	-1819.68
 #define MEC_OFFICE_Z        	13.34
