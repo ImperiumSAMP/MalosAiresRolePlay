@@ -1883,12 +1883,12 @@ public OnPlayerText(playerid, text[]) {
 	else
 		name = "Enmascarado";
 
-	if(CheckMissionEventStep2(playerid, text))
+	if(CheckMissionEvent(playerid, 2, text))
 	    return 0;
-	if(CheckMissionEventStep3(playerid, text))
+	if(CheckMissionEvent(playerid, 3, text))
 	    return 0;
     
-	else if(Mobile[playerid] == 911) {
+	if(Mobile[playerid] == 911) {
 		if((strcmp("policia", text, true, strlen(text)) == 0) && (strlen(text) == strlen("policia"))) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: policía metropolitana, por favor de un breve informe de lo ocurrido.");
 			Mobile[playerid] = 912;
@@ -4507,7 +4507,8 @@ public OnPlayerEnterCheckpoint(playerid) {
 	if(MechanicCallTime[playerid] > 0 && faction == FAC_MECH)
 	    MechanicCallTime[playerid] = 0;
 
-	CheckMissionEventStep4(playerid);
+	if(CheckMissionEvent(playerid, 4)) {}
+		else CheckMissionEvent(playerid, 5);
 	
     if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleID][VehJob] == JOB_FARM) {
     	if(CollectedProds[playerid] < JOB_FARM_MAXPRODS) {
@@ -9958,7 +9959,7 @@ CMD:atender(playerid, params[])
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
 	
-	if(CheckMissionEventStep1(playerid))
+	if(CheckMissionEvent(playerid, 1))
 	    return 1;
 
 	foreach(new i : Player) {
@@ -10031,7 +10032,7 @@ CMD:colgar(playerid, params[])
 {
 	new caller = Mobile[playerid];
 
-	if(CheckCancelMissionEventStep1(playerid))
+	if(PlayerCancelMissionEvent(playerid))
 	    return 1;
 	    
 	if(IsPlayerConnected(caller) && caller != INVALID_PLAYER_ID && caller != 255)

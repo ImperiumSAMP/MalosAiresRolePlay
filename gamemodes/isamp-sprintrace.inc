@@ -5,6 +5,8 @@
 
 //=================================DEFINES======================================
 
+#define MAX_SPRINTRACE_POS      27
+
 //==================================NEWS========================================
 
 new /* Sistema de picadas */
@@ -16,7 +18,7 @@ new /* Sistema de picadas */
 	SprintRaceCancelOfferTimer[MAX_PLAYERS];
 
 /* Sistema de picadas - Posiciones de llegada */
-new Float:SPRINT_RACE_POS[27][3] = {
+static const Float:SPRINT_RACE_POS[MAX_SPRINTRACE_POS][3] = {
     {1846.5231,-1366.7672,12.9625},
 	{1820.0952,-1828.6703,12.9792},
 	{1682.6759,-2163.8623,17.0619},
@@ -148,7 +150,7 @@ startSprintRaceChallenge(playerid)
 								SendClientMessage(challengerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
 								GivePlayerCash(playerid, -moneyBet);
 								GivePlayerCash(challengerid, -moneyBet);
-								new randomPos = random (27);
+								new randomPos = random(MAX_SPRINTRACE_POS);
 								SetPlayerRaceCheckpoint(playerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
 							    SetPlayerRaceCheckpoint(challengerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
 								SendClientMessage(playerid, COLOR_YELLOW2, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
