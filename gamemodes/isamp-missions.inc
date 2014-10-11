@@ -309,7 +309,7 @@ stock CheckMissionEventStep4(playerid)
 				}
 				GameTextForPlayer(playerid, "Descargando materiales del vehículo...", 4000, 4);
 				TogglePlayerControllable(playerid, false);
-				SetTimerEx("MissionMatUnload", 4000, false, "ii", playerid, matsCount);
+				SetTimerEx("MissionMatUnload", 4000, false, "iii", playerid, matsCount, vehicleid);
 			}
 			else if(pMissionEventStep[playerid] == 4)
 			{
@@ -391,9 +391,12 @@ stock CheckMissionEventStep4(playerid)
       				    GetVehicleHealth(vehicleid, vhp);
       				    if(vhp > 500.0 && VehicleInfo[vehicleid][VehEngine] == 1)
       				    {
-      				        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aqui tienes $%d por el coche. Nunca nos vimos.", GetVehiclePrice(vehicleid, 100) / 180);
-							GivePlayerCash(playerid, GetVehiclePrice(vehicleid, 100) / 180);
-							SetVehicleToRespawn(vehicleid);
+      				        new price = GetVehiclePrice(vehicleid, 100) / 180;
+      				        if(price < 3000)
+							  	price = 3000;
+      				        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aqui tienes $%d por el coche. Nunca nos vimos.", price);
+							GivePlayerCash(playerid, price);
+							HideStolenCar(vehicleid);
 							PlayerActionMessage(playerid, 15.0, "le entrega un vehículo a un sujeto desconocido y recibe a cambio un paquete.");
 					  	} else
       				        SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Te dije que estuviese en buen estado y andando, no esta porquería. Dios mio...");

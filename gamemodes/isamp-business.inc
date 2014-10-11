@@ -133,11 +133,12 @@ new	bool:OfferingBusiness[MAX_PLAYERS],
 	BusinessOfferPrice[MAX_PLAYERS],
 	BusinessOffer[MAX_PLAYERS];
 
-stock GetPlayerBusiness(playerid) {
-	for(new i = 1; i < MAX_BUSINESS; i++) {
-	    if(Business[i][bInsideInt] == GetPlayerInterior(playerid) && Business[i][bInsideWorld] == GetPlayerVirtualWorld(playerid) && Business[i][bInsideWorld] != 0) {
+stock GetPlayerBusiness(playerid)
+{
+	for(new i = 1; i < MAX_BUSINESS; i++)
+	{
+	    if(Business[i][bInsideInt] == GetPlayerInterior(playerid) && Business[i][bInsideWorld] == GetPlayerVirtualWorld(playerid) && Business[i][bInsideWorld] != 0)
 			return i;
-		}
 	}
 	return 0;
 }

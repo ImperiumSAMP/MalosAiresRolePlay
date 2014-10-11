@@ -246,7 +246,7 @@ CMD:piso(playerid, params[])
 	if(IsLiftBeingUsed())
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El ascensor está en uso!");
 
-    PlayerActionMessage(playerid, 15.0, "presiona un botón el en panel del ascensor.");
+    PlayerActionMessage(playerid, 15.0, "presiona un botón en el panel del ascensor.");
 	MoveLiftTo(piso);
 
 	return 1;

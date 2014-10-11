@@ -3367,20 +3367,12 @@ stock GetPlayerSpeed(playerid, bool:kmh) {
     return kmh?floatround(rtn * 100 * 1.61):floatround(rtn * 100);
 }
 
-stock GetPlayerBuilding(playerid) {
-	for(new i = 1; i < MAX_BUILDINGS; i++) {
-	    if(Building[i][blInsideInt] == GetPlayerInterior(playerid) && Building[i][blInsideWorld] == GetPlayerVirtualWorld(playerid) && Building[i][blInsideWorld] != 0) {
+stock GetPlayerBuilding(playerid)
+{
+	for(new i = 1; i < MAX_BUILDINGS; i++)
+	{
+	    if(Building[i][blInsideInt] == GetPlayerInterior(playerid) && Building[i][blInsideWorld] == GetPlayerVirtualWorld(playerid) && Building[i][blInsideWorld] != 0)
 			return i;
-		}
-	}
-	return 0;
-}
-
-stock GetPlayerHouse(playerid) {
-	for(new i = 1; i < MAX_HOUSES; i++) {
-	    if(House[i][ExitInterior] == GetPlayerInterior(playerid) && House[i][InsideWorld] == GetPlayerVirtualWorld(playerid) && House[i][InsideWorld] != 0) {
-			return i;
-		}
 	}
 	return 0;
 }

@@ -19,9 +19,66 @@
 	
 //============================FUNCIONES PUBLICAS================================
 
+forward HideStolenCar(vehicleid); // Hace desaparecer el auto durante STOLEN_CAR_MISSING_TIME minutos.
+
 //============================FUNCIONES INTERNAS================================
 
+forward UsarBarreta(playerid, vehicleid);
+forward PuenteMotor(playerid, vehicleid);
+
 //=========================IMPLEMENTACIÓN DE FUNCIONES==========================
+
+public UsarBarreta(playerid, vehicleid)
+{
+    TogglePlayerControllable(playerid, true);
+    SetPVarInt(playerid, "disabled", DISABLE_NONE);
+
+	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus manos.");
+
+	if(random(10) > 4)
+	{
+		if(GetHandParam(playerid) == 1)
+			SetHandItemAndParam(playerid, 0, 0);
+		else
+			SetHandItemAndParam(playerid, ITEM_ID_BARRETA, GetHandParam(playerid) - 1);
+	    SendClientMessage(playerid, COLOR_WHITE, "La barreta cedió y se rompió.");
+	}
+	else
+	{
+ 		VehicleInfo[vehicleid][VehLocked] = 0;
+ 		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con exito la cerradura.");
+		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
+ 			GiveJobExp(playerid, JOB_FELON, 2);
+        ThiefJobInfo[playerid][pForceDoorLimit] = CMD_BARRETA_COOLDOWN * 60;
+ 	}
+	return 1;
+}
+
+public PuenteMotor(playerid, vehicleid)
+{
+    TogglePlayerControllable(playerid, true);
+    SetPVarInt(playerid, "disabled", DISABLE_NONE);
+
+    if(random(10) > 4)
+    {
+        SetEngine(vehicleid, 1);
+        SendClientMessage(playerid, COLOR_WHITE, "¡Perfecto! Conectas los cables correctos y el motor enciende. ¡Huye de aquí!");
+		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
+ 			GiveJobExp(playerid, JOB_FELON, 2);
+        ThiefJobInfo[playerid][pForceEngineLimit] = CMD_PUENTE_COOLDOWN * 60;
+	}
+	else
+		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables correctos.");
+	return 1;
+}
+
+stock HideStolenCar(vehicleid)
+{
+	SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
+    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0); // Lo hacemos desaparecer un rato
+    SetTimerEx("respawnVeh", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
+}
 
 //================================COMANDOS======================================
 
@@ -76,34 +133,6 @@ CMD:barreta(playerid, params[])
 	return 1;
 }
 
-forward UsarBarreta(playerid, vehicleid);
-public UsarBarreta(playerid, vehicleid)
-{
-    TogglePlayerControllable(playerid, true);
-    SetPVarInt(playerid, "disabled", DISABLE_NONE);
-    
-	if(GetHandItem(playerid) != ITEM_ID_BARRETA)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus manos.");
-
-	if(random(10) > 4)
-	{
-		if(GetHandParam(playerid) == 1)
-			SetHandItemAndParam(playerid, 0, 0);
-		else
-			SetHandItemAndParam(playerid, ITEM_ID_BARRETA, GetHandParam(playerid) - 1);
-	    SendClientMessage(playerid, COLOR_WHITE, "La barreta cedió y se rompió.");
-	}
-	else
-	{
- 		VehicleInfo[vehicleid][VehLocked] = 0;
- 		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con exito la cerradura.");
-		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
- 			GiveJobExp(playerid, JOB_FELON, 2);
-        ThiefJobInfo[playerid][pForceDoorLimit] = CMD_BARRETA_COOLDOWN * 60;
- 	}
-	return 1;
-}
-
 CMD:puente(playerid, params[])
 {
 	new vehicleid = GetPlayerVehicleID(playerid);
@@ -130,25 +159,6 @@ CMD:puente(playerid, params[])
   	PlayerActionMessage(playerid, 15.0, "se inclina hacia abajo en el asiento del conductor y realiza unas maniobras.");
   	GameTextForPlayer(playerid, "Desarmando tambor de arranque, aguarda...", 20 * 1000, 4);
     SetTimerEx("PuenteMotor", 20 * 1000, 0, "ii", playerid, vehicleid);
-	return 1;
-}
-
-forward PuenteMotor(playerid, vehicleid);
-public PuenteMotor(playerid, vehicleid)
-{
-    TogglePlayerControllable(playerid, true);
-    SetPVarInt(playerid, "disabled", DISABLE_NONE);
-    
-    if(random(10) > 4)
-    {
-        SetEngine(vehicleid, 1);
-        SendClientMessage(playerid, COLOR_WHITE, "¡Perfecto! Conectas los cables correctos y el motor enciende. ¡Huye de aquí!");
-		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
- 			GiveJobExp(playerid, JOB_FELON, 2);
-        ThiefJobInfo[playerid][pForceEngineLimit] = CMD_PUENTE_COOLDOWN * 60;
-	}
-	else
-		SendClientMessage(playerid, COLOR_WHITE, "Mala suerte, has fallado en tu intento por conectar los cables correctos.");
 	return 1;
 }
 
@@ -184,18 +194,9 @@ CMD:desarmar(playerid, params[])
  	GetVehicleHealth(vehicleid, vehiclehp);
     repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 3; // Entrega una cantidad de repuestos proporcional al buen estado (hp) del auto
     SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, repuestos);
-    SetVehicleToRespawn(vehicleid); // Respawn para sacar a los jugadores del vehículo (no funciona loopear y sacar a los que esten en el vehículo)
-    SetVehiclePos(vehicleid, 8888.0, 8888.0, 888.0); // Lo hacemos desaparecer un rato
-    SetTimerEx("RespawnDemolishedVehicle", STOLEN_CAR_MISSING_TIME * 60 * 1000, false, "i", vehicleid);
+    HideStolenCar(vehicleid);
     PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
     SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);
     ThiefJobInfo[playerid][pDesarmCarLimit] = CMD_DESARMAR_COOLDOWN * 60;
-	return 1;
-}
-
-forward RespawnDemolishedVehicle(vehicleid);
-public RespawnDemolishedVehicle(vehicleid)
-{
-	SetVehicleToRespawn(vehicleid);
 	return 1;
 }

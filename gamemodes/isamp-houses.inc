@@ -55,6 +55,16 @@ stock ResetHouseOffer(playerid)
 	HouseOfferPrice[playerid] = -1;
 	HouseOffer[playerid] = INVALID_PLAYER_ID;
 }
+
+stock GetPlayerHouse(playerid)
+{
+	for(new i = 1; i < MAX_HOUSES; i++)
+	{
+	    if(House[i][ExitInterior] == GetPlayerInterior(playerid) && House[i][InsideWorld] == GetPlayerVirtualWorld(playerid) && House[i][InsideWorld] != 0)
+			return i;
+	}
+	return 0;
+}
 	
 //=============================COMANDOS DE CASA=================================
 
