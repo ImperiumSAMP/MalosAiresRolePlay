@@ -183,7 +183,7 @@ stock SearchTrunkForItem(trunkid, itemid)
 
 stock SearchTrunkFreeSlot(trunkid)
 {
-	for(new i = 0; i < MAX_TRUNK_SLOTS; i++)
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(trunkid); i++)
 	{
 		if(TrunkInfo[trunkid][i][Item] == 0)
 		    return i;

@@ -4469,7 +4469,7 @@ CMD:descargar(playerid, params[]) {
         if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
             if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
                 for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-				    if(GetTrunkItem(vehicleid, i) == 47) {
+				    if(GetTrunkItem(vehicleid, i) == ITEM_ID_MATERIALES) {
 				        amount += GetTrunkParam(vehicleid, i);
 				        SetTrunkItemAndParam(vehicleid, i, 0, 0);
 				    }
@@ -9961,11 +9961,10 @@ CMD:servicios(playerid, params[]) {
     return 1;
 }
 
-CMD:atender(playerid, params[]) {
-	if(Mobile[playerid] != 255) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
-		return 1;
-	}
+CMD:atender(playerid, params[])
+{
+	if(Mobile[playerid] != 255)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
 	
 	if(CheckMissionEventStep1(playerid))
 	    return 1;

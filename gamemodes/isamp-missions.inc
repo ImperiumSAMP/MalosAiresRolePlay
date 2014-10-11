@@ -65,6 +65,22 @@ stock ResetMissionEventVariables(playerid)
 	pMissionEventParam2[playerid] = 0;
 }
 
+CMD:missioneventdebug(playerid, params[])
+{
+	new targetid;
+	
+	if(PlayerInfo[playerid][pAdmin] > 20)
+	    return 1;
+	if(sscanf(params, "i", targetid))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /missioneventdebug [playerid]");
+	SendFMessage(playerid, COLOR_YELLOW, "pMissionEvent [%d] = %d", targetid, pMissionEvent[targetid]);
+	SendFMessage(playerid, COLOR_YELLOW, "pMissionEventStep [%d] = %d", targetid, pMissionEventStep[targetid]);
+	SendFMessage(playerid, COLOR_YELLOW, "pMissionEventParam [%d] = %d", targetid, pMissionEventParam[targetid]);
+	SendFMessage(playerid, COLOR_YELLOW, "pMissionEventParam2 [%d] = %d", targetid, pMissionEventParam2[targetid]);
+	SendFMessage(playerid, COLOR_YELLOW, "pMissionEventTimer [%d] = %d", targetid, pMissionEventTimer[targetid]);
+	return 1;
+}
+
 public MissionEvent(playerid)
 {
 	new factionID = PlayerInfo[playerid][pFaction];
@@ -99,12 +115,13 @@ stock bool:CheckMissionEventStep1(playerid)
 {
     if(pMissionEventStep[playerid] == 1)
 	{
+        PlayerActionMessage(playerid, 15.0, "saca su teléfono y atiende la llamada.");
 	    switch(pMissionEvent[playerid])
 		{
 		    case MISSION_MAT:
-		 		SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: nos ha llegado un cargamento de materiales, ¿vienes a buscarlo?. También recibirás efectivo.");
+		 		SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: nos ha llegado un cargamento de materiales, ¿vienes a buscarlo? También recibirás efectivo.");
 		    case MISSION_DRUG:
-		 		SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: ando necesitando algo de merca, ¿tienes algo disponible?. Pago bien.");
+		 		SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: ando necesitando algo de merca, ¿tienes algo disponible? Pago bien.");
 		    case MISSION_CAR:
 		    	SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tengo un trabajo para ti: consígueme el auto que te indique. Dinero facil, ¿qué dices?");
 		}
@@ -119,7 +136,7 @@ stock bool:CheckCancelMissionEventStep1(playerid)
 {
 	if(pMissionEventStep[playerid] == 1)
 	{
-	    PlayerActionMessage(playerid, 15.0, "cuelga y guarda su teléfono celular en el bolsillo.");
+	    PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
      	ResetMissionEventVariables(playerid);
 	    return true;
 	}
@@ -189,7 +206,7 @@ stock bool:CheckMissionEventStep2(playerid, text[])
 		else if((strcmp("no", text, true) == 0) && (strlen(text) == strlen("no")))
 		{
 			SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tú te lo pierdes, adiós...");
-            PlayerActionMessage(playerid, 15.0, "cuelga y guarda su teléfono celular en el bolsillo.");
+            PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
             Mobile[playerid] = 255;
             ResetMissionEventVariables(playerid);
 		}
@@ -216,7 +233,7 @@ stock bool:CheckMissionEventStep3(playerid, text[])
 			            SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 4.0);
 			            pMissionEventStep[playerid] = 4;
 			            Mobile[playerid] = 255;
-						PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
+						PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
 					} else
 					    SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: ¡súbete a la van, no tengo tiempo para vueltas!");
 				} else
@@ -226,17 +243,17 @@ stock bool:CheckMissionEventStep3(playerid, text[])
 			{
 				if((strcmp("si", text, true) == 0) && (strlen(text) == strlen("si")))
 				{
-					SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: Excelente, llevame la mercancia al lugar que te he pasado al celular. No tardes.");
+					SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: Excelente, llevame la mercancia al lugar que te he pasado al celular. No te demores.");
                     SetPlayerCheckpoint(playerid, 2465.5369, -955.8604, 80.0118, 4.0);
 					pMissionEventStep[playerid] = 4;
 			        Mobile[playerid] = 255;
            			jobDuty[playerid] = true;
-					PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
+					PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
 				}
 				else if((strcmp("no", text, true) == 0) && (strlen(text) == strlen("no")))
 				{
 					SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tú te lo pierdes, adiós...");
-		            PlayerActionMessage(playerid, 15.0, "cuelga y guarda su teléfono celular en el bolsillo.");
+		            PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
 		            Mobile[playerid] = 255;
               		ResetMissionEventVariables(playerid);
 				}
@@ -252,12 +269,12 @@ stock bool:CheckMissionEventStep3(playerid, text[])
 					pMissionEventStep[playerid] = 4;
 			        Mobile[playerid] = 255;
            			jobDuty[playerid] = true;
-					PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
+					PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
 				}
 				else if((strcmp("no", text, true) == 0) && (strlen(text) == strlen("no")))
 				{
 					SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tú te lo pierdes, adiós...");
-		            PlayerActionMessage(playerid, 15.0, "cuelga y guarda su teléfono celular en el bolsillo.");
+		            PlayerActionMessage(playerid, 15.0, "cuelga la llamada y guarda su teléfono celular en el bolsillo.");
 		            Mobile[playerid] = 255;
               		ResetMissionEventVariables(playerid);
 				}
@@ -281,16 +298,14 @@ stock CheckMissionEventStep4(playerid)
 	        
 			if(pMissionEventStep[playerid] == 5)
 			{
-			    new matsCount = 0;
+			    new matsCount = 0,
+			        validslot = SearchTrunkForItem(vehicleid, ITEM_ID_MATERIALES);
 
-			    for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
-				{
-				    if(GetTrunkItem(vehicleid, i) == ITEM_ID_MATERIALES)
-					{
-				        matsCount = GetTrunkParam(vehicleid, i);
-						FactionInfo[factionid][fMaterials] += matsCount;
-						SetTrunkItemAndParam(vehicleid, i, 0, 0);
-				    }
+			    if(validslot != -1)
+			    {
+       				matsCount = GetTrunkParam(vehicleid, validslot);
+					FactionInfo[factionid][fMaterials] += matsCount;
+					SetTrunkItemAndParam(vehicleid, validslot, 0, 0);
 				}
 				GameTextForPlayer(playerid, "Descargando materiales del vehículo...", 4000, 4);
 				TogglePlayerControllable(playerid, false);
@@ -322,7 +337,7 @@ stock CheckMissionEventStep4(playerid)
 			                SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 50);
 							GivePlayerCash(playerid, pMissionEventParam[playerid] * 50);
 							PlayerInfo[playerid][pMarijuana] -= pMissionEventParam[playerid];
-							PlayerActionMessage(playerid, 8.0, "Le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
+							PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
 						} else
 			        	    SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: No tienes la cantidad que te he pedido idiota. Me haces perder el tiempo.");
 			        }
@@ -333,7 +348,7 @@ stock CheckMissionEventStep4(playerid)
 			                SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 60);
 							GivePlayerCash(playerid, pMissionEventParam[playerid] * 60);
 							PlayerInfo[playerid][pLSD] -= pMissionEventParam[playerid];
-							PlayerActionMessage(playerid, 8.0, "Le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
+							PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
 						} else
 			        	    SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: No tienes la cantidad que te he pedido idiota. Me haces perder el tiempo.");
 			        }
@@ -344,7 +359,7 @@ stock CheckMissionEventStep4(playerid)
 			                SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 70);
 							GivePlayerCash(playerid, pMissionEventParam[playerid] * 70);
 							PlayerInfo[playerid][pEcstasy] -= pMissionEventParam[playerid];
-							PlayerActionMessage(playerid, 8.0, "Le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
+							PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
 						} else
 			        	    SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: No tienes la cantidad que te he pedido idiota. Me haces perder el tiempo.");
 			        }
@@ -355,7 +370,7 @@ stock CheckMissionEventStep4(playerid)
 			                SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 80);
 							GivePlayerCash(playerid, pMissionEventParam[playerid] * 80);
 							PlayerInfo[playerid][pCocaine] -= pMissionEventParam[playerid];
-							PlayerActionMessage(playerid, 8.0, "Le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
+							PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
 						} else
 			        	    SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: No tienes la cantidad que te he pedido idiota. Me haces perder el tiempo.");
 			        }
@@ -379,7 +394,7 @@ stock CheckMissionEventStep4(playerid)
       				        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aqui tienes $%d por el coche. Nunca nos vimos.", GetVehiclePrice(vehicleid, 100) / 180);
 							GivePlayerCash(playerid, GetVehiclePrice(vehicleid, 100) / 180);
 							SetVehicleToRespawn(vehicleid);
-							PlayerActionMessage(playerid, 15.0, "Le entrega un vehículo a un sujeto desconocido y recibe a cambio un paquete.");
+							PlayerActionMessage(playerid, 15.0, "le entrega un vehículo a un sujeto desconocido y recibe a cambio un paquete.");
 					  	} else
       				        SendClientMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Te dije que estuviese en buen estado y andando, no esta porquería. Dios mio...");
       				} else
@@ -396,24 +411,16 @@ stock CheckMissionEventStep4(playerid)
 
 public MissionMatLoad(playerid, vehicleid)
 {
-	new validslot = -1;
+	new validslot;
 
     TogglePlayerControllable(playerid, true);
     
-	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
-	{
-	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE)
-		{
-			validslot = i;
-			break;
-	    }
-	}
-	
+    validslot = SearchTrunkFreeSlot(vehicleid);
 	if(validslot == -1)
 	{
         SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
-		SetVehiclePos(vehicleid, 2767.2983, -2417.6804, 13.7573);
 		SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
+    	SetVehiclePos(vehicleid, 2767.2983, -2417.6804, 13.7573);
 	} else
 		{
 		    foreach(new i : Player)

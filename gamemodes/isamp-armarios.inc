@@ -87,7 +87,7 @@ stock SearchLockerForItem(lockerid, itemid)
 
 stock SearchLockerFreeSlot(lockerid)
 {
-    for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
+    for(new i = 0; i < GetHouseMaxLockerSlots(lockerid); i++)
     {
         if(LockerInfo[lockerid][i][Item] == 0)
             return i;
