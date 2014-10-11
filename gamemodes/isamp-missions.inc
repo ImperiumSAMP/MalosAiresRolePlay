@@ -317,10 +317,10 @@ stock CheckMissionEventStep4(playerid)
 				{
 			        GameTextForPlayer(playerid, "Cargando materiales...", 4000, 4);
 					TogglePlayerControllable(playerid, false);
-					SetTimerEx("MissionMatLoad", 4000, false, "i", playerid, vehicleid);
+					SetTimerEx("MissionMatLoad", 4000, false, "ii", playerid, vehicleid);
 				} else {
-				    SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
-				    GameTextForPlayer(playerid, "Debes estar en el vehículo de la misión.", 1000, 4);
+				    SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 4.0);
+				    GameTextForPlayer(playerid, "Debes estar en el vehiculo de la mision.", 1000, 4);
 				}
 			}
 		}
@@ -419,8 +419,8 @@ public MissionMatLoad(playerid, vehicleid)
 	if(validslot == -1)
 	{
         SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
-		SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 5.4);
-    	SetVehiclePos(vehicleid, 2767.2983, -2417.6804, 13.7573);
+		SetVehiclePos(vehicleid, 2767.2983, -2417.6804, 13.7573);
+		SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 4.0);
 	} else
 		{
 		    foreach(new i : Player)
