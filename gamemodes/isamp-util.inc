@@ -173,4 +173,5 @@ enum sInfo {
 new ServerInfo[sInfo];
 
 new Choice[MAX_PLAYERS],
-	Mobile[MAX_PLAYERS];
+	Mobile[MAX_PLAYERS],
+	AdminDuty[MAX_PLAYERS];

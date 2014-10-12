@@ -22,7 +22,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
-#include "isamp-admin.inc" 				//Sistema de admines
 #include "isamp-items.inc" 				//Sistema de items
 #include "isamp-inventory.inc" 			//Sistema de inventario y maletero
 #include "isamp-mano.inc" 				//Sistema de items en la mano
@@ -43,11 +42,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-gangzones.inc"  		//Sistema de control de barrios
 #include "isamp-mapeos.inc"  			//Mapeos del GM
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
-#include "isamp-animhablar.inc" 		//Sistema de animacion mover las manos cuando hablamos.
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
-#include "isamp-lojack.inc"             //Sistema de lojack
 #include "isamp-casco.inc"              //Sistema de cascos
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
@@ -319,12 +316,13 @@ new
 	TaxiTimer=PRICE_TAXI_INTERVAL,
 	
 	// Sistema de toggle 
-	PhoneEnabled[MAX_PLAYERS],
-	PMsEnabled[MAX_PLAYERS],
-	NewsEnabled[MAX_PLAYERS],
-	NicksEnabled[MAX_PLAYERS],
-	RadioEnabled[MAX_PLAYERS],
-	FactionEnabled[MAX_PLAYERS],
+	bool:PhoneEnabled[MAX_PLAYERS],
+	bool:PMsEnabled[MAX_PLAYERS],
+	bool:NewsEnabled[MAX_PLAYERS],
+	bool:NicksEnabled[MAX_PLAYERS],
+	bool:RadioEnabled[MAX_PLAYERS],
+	bool:FactionEnabled[MAX_PLAYERS],
+	bool:TalkAnimEnabled[MAX_PLAYERS],
 	
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
@@ -885,6 +883,7 @@ forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
 forward TimeReplenishYo(playerid);
+forward EndAnim(playerid);
 
 //==============================================================================
 
@@ -1218,12 +1217,13 @@ public ResetStats(playerid)
 	SeatBelt[playerid] = false;
 
 	/* Sistema de toggle */
-	PMsEnabled[playerid] = 1;
-	NicksEnabled[playerid] = 1;
-	NewsEnabled[playerid] = 1;
-	RadioEnabled[playerid] = 1;
-	FactionEnabled[playerid] = 1;
-	PhoneEnabled[playerid] = 1;
+	PMsEnabled[playerid] = true;
+	NicksEnabled[playerid] = true;
+	NewsEnabled[playerid] = true;
+	RadioEnabled[playerid] = true;
+	FactionEnabled[playerid] = true;
+	PhoneEnabled[playerid] = true;
+	TalkAnimEnabled[playerid] = false;
 	
 	/* Sistema de tazer */
 	resetTazer(playerid);
@@ -1837,14 +1837,11 @@ public OnPlayerText(playerid, text[]) {
 
     if(!gPlayerLogged[playerid]) return 0;
 
-    if(TextAnim[playerid])
+    if(TalkAnimEnabled[playerid] && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	{
-		 if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-		 {
-			 ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
-			 ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
-			 SetTimerEx("EndAnim", strlen (text) * 200, false, "i", playerid);
-		 }
+ 		ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
+ 		ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 1, 1, 1);
+ 		SetTimerEx("EndAnim", strlen(text) * 200, false, "i", playerid);
 	}
 
 	if(Muted[playerid])	{
@@ -2044,12 +2041,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(PMsEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes privados.");
-				    PMsEnabled[playerid] = 0;
+				    PMsEnabled[playerid] = false;
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
-				    PMsEnabled[playerid] = 1;
+				    PMsEnabled[playerid] = true;
 				}
 			}
  	  		else if(strcmp(x_info,"nicks",true) == 0)
@@ -2057,14 +2054,14 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(NicksEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no veras los nicks de los demas jugadores sobre sus cabezas.");
-				    NicksEnabled[playerid] = 0;
+				    NicksEnabled[playerid] = false;
 				    foreach(new i : Player)
 				    	ShowPlayerNameTagForPlayer(playerid, i, false);
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
-				    NicksEnabled[playerid] = 1;
+				    NicksEnabled[playerid] = true;
 				    foreach(new i : Player)
 				    	ShowPlayerNameTagForPlayer(playerid, i, true);
 				}
@@ -2074,12 +2071,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(NewsEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás noticias de CTR-MAN.");
-				    NewsEnabled[playerid] = 0;
+				    NewsEnabled[playerid] = false;
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás noticias de CTR-MAN.");
-				    NewsEnabled[playerid] = 1;
+				    NewsEnabled[playerid] = true;
 				}
 			}
  			else if(strcmp(x_info,"faccion",true) == 0)
@@ -2087,12 +2084,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(FactionEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes OOC de tu facción.");
-				    FactionEnabled[playerid] = 0;
+				    FactionEnabled[playerid] = false;
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
-				    FactionEnabled[playerid] = 1;
+				    FactionEnabled[playerid] = true;
 				}
 			}
  			else if(strcmp(x_info,"radio",true) == 0)
@@ -2100,12 +2097,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(RadioEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
-				    RadioEnabled[playerid] = 0;
+				    RadioEnabled[playerid] = false;
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
-				    RadioEnabled[playerid] = 1;
+				    RadioEnabled[playerid] = true;
 				}
 			}
 	  		else if(strcmp(x_info,"telefono",true) == 0)
@@ -2113,12 +2110,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(PhoneEnabled[playerid])
 				{
 				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
-		            PhoneEnabled[playerid] = 0;
+		            PhoneEnabled[playerid] = false;
 				}
 				else
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encedido tu teléfono.");
-				    PhoneEnabled[playerid] = 1;
+				    PhoneEnabled[playerid] = true;
 				}
 			}
 		}
@@ -8910,7 +8907,7 @@ CMD:departamento(playerid, params[])
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player) {
-		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i] == 1 && PlayerInfo[i][pRadio] != 0) {
+		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0) {
 			SendClientMessage(i, COLOR_LIGHTGREEN, string);
 		}
   	}
@@ -9509,7 +9506,7 @@ CMD:radio(playerid, params[])
 	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
 	{
- 		if(PlayerInfo[i][pFaction] == factionID && RadioEnabled[i] == 1 && PlayerInfo[i][pRadio] != 0)
+ 		if(PlayerInfo[i][pFaction] == factionID && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0)
    			SendClientMessage(i, COLOR_PMA, string);
 	}
 	FactionChatLog(string);
@@ -9678,7 +9675,7 @@ CMD:f(playerid, params[])
 	format(string, sizeof(string), "(( [%s] %s %s(%d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
 	foreach(new i : Player)
 	{
- 		if(PlayerInfo[i][pFaction] == faction && FactionEnabled[i] == 1)
+ 		if(PlayerInfo[i][pFaction] == faction && FactionEnabled[i])
    			SendClientMessage(i, COLOR_FACTIONCHAT, string);
 		else // Para no spamear al admin con 2 veces el mismo mensaje
 		{
@@ -9817,10 +9814,10 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins (/vercint)uron /mano");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /intentar /gooc /toggle /animhablar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas /llavero");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
 
     if(PlayerInfo[playerid][pFaction] != 0)
 	{
@@ -9940,7 +9937,7 @@ CMD:msg(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
-	if(PhoneEnabled[playerid] == 0)
+	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(GetPlayerCash(playerid) < PRICE_TEXT)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El mensaje no ha podido ser enviado (puede que no tengas dinero o que el jugador no se encuentre conectado).");
@@ -9962,7 +9959,7 @@ CMD:msg(playerid, params[])
 	{
 		if(PlayerInfo[i][pPhoneNumber] == phonenumber && phonenumber != 0)
 		{
-  			if(PhoneEnabled[i] == 0)
+  			if(!PhoneEnabled[i])
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "El teléfono al que quieres contactar no se encuentra en servicio.");
 
 			SendClientMessage(playerid, COLOR_YELLOW2, "Mensaje de texto enviado.");
@@ -10028,7 +10025,7 @@ CMD:llamar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
-	if(PhoneEnabled[playerid] == 0)
+	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
@@ -10081,7 +10078,7 @@ CMD:llamar(playerid, params[])
 	{
 		if(PlayerInfo[i][pPhoneNumber] == number && number != 0)
 		{
-    		if(PhoneEnabled[i] == 0 || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
+    		if(!PhoneEnabled[i] || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
 		    	return SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
 			if(Mobile[i] != 255)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "La linea se encuentra ocupada.");
@@ -13599,9 +13596,10 @@ CMD:n(playerid, params[]) {
 
 CMD:noticia(playerid, params[])
 {
+    new string[128], text[128], closestVeh = GetClosestVehicle(playerid, 7.0);
+    
 	if(PlayerInfo[playerid][pFaction] != FAC_MAN && InterviewActive[playerid] == false)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres reportero / No estás en una entrevista!");
-    new string[128], text[128], closestVeh = GetClosestVehicle(playerid, 7.0);
   	if(sscanf(params, "s[128]", text))
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/n)oticia [texto]");
 	if(!IsPlayerInAnyVehicle(playerid) && (closestVeh == INVALID_VEHICLE_ID || VehicleInfo[closestVeh][VehFaction] != FAC_MAN) && GetPlayerBuilding(playerid) != BLD_MAN)
@@ -13610,11 +13608,12 @@ CMD:noticia(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en algún vehiculo de la facción para transmitir!");
 	if(InterviewActive[playerid] && !ProxDetectorS(5.0, playerid, InterviewOffer[playerid]))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para poder transmitir debes estar cerca del reportero que te ofreció la entrevista.");
+
 	format(string, sizeof(string), "[Noticias] por %s: %s", GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
 	{
 	    if(NewsEnabled[i])
-	        SendClientMessage(i,COLOR_LIGHTGREEN, string);
+	        SendClientMessage(i, COLOR_LIGHTGREEN, string);
 	}
 	return 1;
 }
@@ -13755,7 +13754,7 @@ public OnPlayerStreamIn(playerid, forplayerid)
 	    if(PlayerInfo[forplayerid][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
 	    	ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
 	}
-	if(NicksEnabled[playerid] == 0)
+	if(!NicksEnabled[playerid])
 	    ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
 	return 1;
 }
@@ -14164,7 +14163,7 @@ CMD:mp(playerid, params[])
 
 	if(sscanf(params, "us[128]", targetid, text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
-	if(PMsEnabled[playerid] == 0 && !AdminDuty[playerid])
+	if(!PMsEnabled[playerid] && !AdminDuty[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes los mps bloqueados. Usa '/toggle mps' para activarlos.");
 	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
@@ -14784,7 +14783,7 @@ CMD:cme(playerid, params[]) {
 		
     if(!sscanf(params, "s", text)) { 
         format(str, sizeof(str), "%s", text); 
-        PlayerCmeMessage(playerid, 15.0, 8000, str);           // Dura 10 segundos y se ve en un rango de 15.0
+        PlayerCmeMessage(playerid, 15.0, 8000, str); // Dura 10 segundos y se ve en un rango de 15.0
 		format(string, sizeof(string), "=> %s %s", GetPlayerNameEx(playerid), text);
 		SendClientMessage(playerid, COLOR_ACT1, string); 
 		if(GCounter[playerid] != 0)
@@ -14809,4 +14808,23 @@ public TimeReplenishYo(playerid)
 	DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid], COLOR_RED, X, Y, Z, 10, -1);
 	Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
     return 1;
+}
+
+CMD:animhablar(playerid, params[])
+{
+	if(!TalkAnimEnabled[playerid])
+	{
+ 		TalkAnimEnabled[playerid] = true;
+ 		SendClientMessage(playerid, COLOR_WHITE, "Animación al hablar: {FF4600}ACTIVADA{C8C8C8}");
+	} else {
+		TalkAnimEnabled[playerid] = false;
+		SendClientMessage(playerid, COLOR_WHITE, "Animación al hablar: {FF4600}DESACTIVADA{C8C8C8}");
+	}
+	return 1;
+}
+
+public EndAnim(playerid)
+{
+	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
+	return 1;
 }
