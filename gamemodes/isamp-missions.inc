@@ -96,7 +96,7 @@ CMD:missioneventdebug(playerid, params[])
 {
 	new targetid;
 	
-	if(PlayerInfo[playerid][pAdmin] > 20)
+	if(PlayerInfo[playerid][pAdmin] < 20)
 	    return 1;
 	if(sscanf(params, "i", targetid))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /missioneventdebug [playerid]");

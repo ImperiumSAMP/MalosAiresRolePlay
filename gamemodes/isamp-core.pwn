@@ -52,6 +52,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-carthief.inc"          	//Robo de autos.
 #include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
+#include "isamp-racesystem.inc"         //Sistema de carreras
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -946,6 +947,7 @@ public OnGameModeInit() {
 	AddMenuItem(licenseMenu, 1, price);
 	//==========================================================================
 	SetNameTagDrawDistance(30.0);
+	ResetServerRacesVariables();
 	return 1;
 }
 
@@ -1150,6 +1152,9 @@ public ResetStats(playerid)
 	/* Sistema de Picadas */
 	resetSprintRace(playerid);
 
+	/* Sistema de carreras */
+	ResetPlayerRaceVariables(playerid);
+	
 	/* Sistema de stream de radios */
 	hearingRadioStream[playerid] = false;
 	
@@ -4117,7 +4122,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	//==========================================================================
 	}
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
-	    LastVeh[playerid] = vehicleid;
 
 		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
 		    // Si no es una bicicleta mostramos el velocímetro.
@@ -4593,6 +4597,7 @@ public OnPlayerLeaveCheckpoint(playerid) {
 
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
+    OnDriverRaceCheckpoint(playerid, PlayerRaceInfo[playerid][pRaceID]);
 	deleteFinishedSprintRace(playerid);
 	return 1;
 }
@@ -9230,7 +9235,7 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron");
 
     if(PlayerInfo[playerid][pFaction] != 0)
