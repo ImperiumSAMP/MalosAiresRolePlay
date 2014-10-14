@@ -49,6 +49,15 @@ new
 	HouseOfferPrice[MAX_PLAYERS],
 	HouseOffer[MAX_PLAYERS];
 	
+//================================FUNCIONES=====================================
+
+forward ResetHouseOffer(playerid);
+forward GetPlayerHouse(playerid);
+forward bool:EnterHouse(playerid);
+forward bool:LeaveHouse(playerid);
+
+//========================IMPLEMENTACION DE FUNCIONES===========================
+	
 stock ResetHouseOffer(playerid)
 {
     OfferingHouse[playerid] = false;
@@ -65,7 +74,54 @@ stock GetPlayerHouse(playerid)
 	}
 	return 0;
 }
-	
+
+stock bool:EnterHouse(playerid)
+{
+	for(new i = 1; i < MAX_HOUSES; i++)
+	{
+		if(PlayerToPoint(1.0, playerid,House[i][EntranceX], House[i][EntranceY], House[i][EntranceZ]))
+		{
+			if(House[i][Locked] == 0 || AdminDuty[playerid])
+			{
+				SetPlayerInterior(playerid,House[i][ExitInterior]);
+				SetPlayerPos(playerid,House[i][ExitX], House[i][ExitY], House[i][ExitZ]);
+				SetPlayerVirtualWorld(playerid, House[i][InsideWorld]);
+				SetPlayerFacingAngle(playerid, House[i][ExitAngle]);
+				SetCameraBehindPlayer(playerid);
+				PlayRadioStreamForPlayer(playerid, House[i][hRadio]);
+			} else
+				GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
+			return true;
+		}
+	}
+	return false;
+}
+
+stock bool:LeaveHouse(playerid)
+{
+	for(new i = 0; i < sizeof(House); i++)
+	{
+		if(PlayerToPoint(1.0, playerid, House[i][ExitX], House[i][ExitY], House[i][ExitZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == House[i][InsideWorld])
+			{
+		        if(House[i][Locked] == 0 || AdminDuty[playerid])
+				{
+					SetPlayerInterior(playerid,House[i][EntranceInterior]);
+					SetPlayerPos(playerid,House[i][EntranceX],House[i][EntranceY],House[i][EntranceZ]);
+					SetPlayerVirtualWorld(playerid, 0);
+					SetPlayerFacingAngle(playerid,House[i][EntranceAngle]);
+					SetCameraBehindPlayer(playerid);
+					PlayRadioStreamForPlayer(playerid, 0);
+				} else
+					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 //=============================COMANDOS DE CASA=================================
 
 CMD:ayudacasa(playerid, params[])

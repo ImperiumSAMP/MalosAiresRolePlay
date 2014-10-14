@@ -31,6 +31,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-jobs.inc" 				//Definiciones y funciones para los JOBS
 #include "isamp-business.inc" 			//Sistema de negocios
 #include "isamp-houses.inc" 			//Sistema de casas
+#include "isamp-buildings.inc"          //Sistema de edificios
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
@@ -63,7 +64,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
-#define MAX_BUILDINGS           100
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
 #define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
@@ -399,38 +399,6 @@ enum pLicInfo {
 	Float:lDMaxSpeed,
 };
 new playerLicense[MAX_PLAYERS][pLicInfo];
-
-enum BuildingSystem {
-	blID,
-	blText[64],
-	blText2[64],
-	blEntranceFee,
-	blLocked,
-	Float:blOutsideX,
-	Float:blOutsideY,
-	Float:blOutsideZ,
-	Float:blOutsideAngle,
-	Float:blInsideX,
-	Float:blInsideY,
-	Float:blInsideZ,
-	Float:blInsideAngle,
-	blInsideInt,
-	blOutsideInt,
-	blPickupModel,
-	// Datos temporales.
-	bool:blLoaded,
-	bool:blInsert,
-	bool:blDelete,
-	blInsideWorld,
-	blOutsidePickup,
-	blInsidePickup,
-	blFaction,
-	Text3D:blOutsideLabel,
-	Text3D:blInsideLabel,
-	blRadio
-};
-
-new Building[MAX_BUILDINGS][BuildingSystem];
 
 enum SAZONE_MAIN {
 		SAZONE_NAME[28],
@@ -1143,10 +1111,10 @@ public ResetStats(playerid)
     VehicleOffer[playerid] = INVALID_PLAYER_ID;
     VehicleOfferID[playerid] = -1;
     
-    //Venta de casas
+    /* Venta de casas */
 	ResetHouseOffer(playerid);
 
-	//Venta de negocios
+	/* Venta de negocios */
 	ResetBusinessOffer(playerid);
 	
 	// s0beit detector.
@@ -1167,7 +1135,7 @@ public ResetStats(playerid)
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
 
-	// Revision de usuarios
+	/* Revision de usuarios */
 	ReviseOffer[playerid] = 999;
 	
 	/* Sistema de misiones automaticas */
@@ -3328,16 +3296,6 @@ stock GetPlayerSpeed(playerid, bool:kmh) {
 	}
     rtn = floatsqroot(floatabs(floatpower(Vx + Vy + Vz,2)));
     return kmh?floatround(rtn * 100 * 1.61):floatround(rtn * 100);
-}
-
-stock GetPlayerBuilding(playerid)
-{
-	for(new i = 1; i < MAX_BUILDINGS; i++)
-	{
-	    if(Building[i][blInsideInt] == GetPlayerInterior(playerid) && Building[i][blInsideWorld] == GetPlayerVirtualWorld(playerid) && Building[i][blInsideWorld] != 0)
-			return i;
-	}
-	return 0;
 }
 
 //=========================INGRESOS POR ENTORNO A NEGOCIOS======================
@@ -7296,169 +7254,31 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	    }
 	    
 	    if(GetPVarInt(playerid, "disabled") == DISABLE_NONE) {
+
 			/*  Entrada a casas. */
-			for(new i = 1; i < MAX_HOUSES; i++) {
-				if (PlayerToPoint(1.0, playerid,House[i][EntranceX], House[i][EntranceY], House[i][EntranceZ]))	{
-					if(House[i][Locked] == 0 || AdminDuty[playerid] >= 1) {
-						SetPlayerInterior(playerid,House[i][ExitInterior]);
-						SetPlayerPos(playerid,House[i][ExitX], House[i][ExitY], House[i][ExitZ]);
-						SetPlayerVirtualWorld(playerid, House[i][InsideWorld]);
-						SetPlayerFacingAngle(playerid, House[i][ExitAngle]);
-						SetCameraBehindPlayer(playerid);
-						PlayRadioStreamForPlayer(playerid, House[i][hRadio]);
-					} else {
-						GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
-					}
-					return 1;
-				}
-			}
+			if(EnterHouse(playerid))
+			    return 1;
 
 			/*  Entrada a edificios. */
-			for(new i = 1; i < MAX_BUILDINGS; i++) {
-				if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ])) {
-					if(Building[i][blLocked] == 0 || AdminDuty[playerid] >= 1) {
-					    if(Building[i][blEntranceFee] == 0 || GetPlayerCash(playerid) >= Building[i][blEntranceFee]) {
-							SetPlayerInterior(playerid, Building[i][blInsideInt]);
-							SetPlayerVirtualWorld(playerid, Building[i][blInsideWorld]);
-							SetPlayerPos(playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]);
-							SetPlayerFacingAngle(playerid, Building[i][blInsideAngle]);
-							PlayRadioStreamForPlayer(playerid, Building[i][blRadio]);
-							GivePlayerCash(playerid, -Building[i][blEntranceFee]);
-							if(Building[i][blEntranceFee] > 0) {
-								format(string, sizeof(string), "¡Te han cobrado $%d para ingresar al edificio %s!", Building[i][blEntranceFee], Building[i][blText]);
-							} else {
-							    format(string, sizeof(string), "¡Bienvenido al edificio %s!", Building[i][blText]);
-							}
-							SendClientMessage(playerid, COLOR_YELLOW2,string);
-							SetCameraBehindPlayer(playerid);
-						} else {
-							GameTextForPlayer(playerid, "~r~No tienes el dinero suficiente!", 2000, 2);
-						}
-					} else {
-						GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
-					}
-					return 1;
-				}
-			}
-
+			if(EnterBuilding(playerid))
+			    return 1;
+			    
 			/* Entrada a negocios. */
-			for(new i = 1; i < MAX_BUSINESS; i++)
-			{
-				if (PlayerToPoint(1.0, playerid,Business[i][bOutsideX], Business[i][bOutsideY], Business[i][bOutsideZ]))
-				{
-					if(Business[i][bEnterable] == 0)
-					{
-						SendClientMessage(playerid,COLOR_YELLOW2,"Negocio temporalmente deshabilitado.");
-						return 1;
-					}
-					if(PlayerInfo[playerid][pBizKey] == i)
-					{
-		            	SetPlayerInterior(playerid, Business[i][bInsideInt]);
-						SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
-						SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
-		                SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
-		                SetCameraBehindPlayer(playerid);
-		                PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-		            } else
-		                {
-			                if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
-								GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
-								return 1;
-							}
-							if(GetPlayerCash(playerid) < Business[i][bEntranceFee])
-								return SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
-							SetPlayerInterior(playerid, Business[i][bInsideInt]);
-							SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
-							SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
-							SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
-							SetCameraBehindPlayer(playerid);
-							PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-							GivePlayerCash(playerid, -Business[i][bEntranceFee]);
-							if(Business[i][bEntranceFee] > 0)
-							{
-								format(string, sizeof(string), "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
-                                SendClientMessage(playerid, COLOR_YELLOW2, string);
-							}
-							if(Business[i][bType] == BIZ_247 || Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2 ||Business[i][bType] == BIZ_AMMU || Business[i][bType] == BIZ_HARD)
-			    				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
-							else
-								if(Business[i][bType] == BIZ_CLUB || Business[i][bType] == BIZ_CLUB2)
-							    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
-								else
-        							if(Business[i][bType] == BIZ_REST || Business[i][bType] == BIZ_PIZZERIA)
-			            				SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-				    				else
-									    if(Business[i][bType] == BIZ_CASINO)
-									   	    SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
-							if(Business[i][bProducts] == 0)
-								GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
-							Business[i][bTill] += Business[i][bEntranceFee];
-							saveBusiness(i);
-						}
-					return 1;
-				}
-			}
+			if(EnterBusiness(playerid))
+			    return 1;
 
-			/* Salida de casas. */
-			for(new i = 0; i < sizeof(House); i++) {
-				if (PlayerToPoint(3.0, playerid, House[i][ExitX], House[i][ExitY], House[i][ExitZ])) {
-					if(GetPlayerVirtualWorld(playerid) == House[i][InsideWorld]) {
-				        if(House[i][Locked] == 0 || AdminDuty[playerid] >= 1) {
-							SetPlayerInterior(playerid,House[i][EntranceInterior]);
-							SetPlayerPos(playerid,House[i][EntranceX],House[i][EntranceY],House[i][EntranceZ]);
-							SetPlayerVirtualWorld(playerid, 0);
-							SetPlayerFacingAngle(playerid,House[i][EntranceAngle]);
-							SetCameraBehindPlayer(playerid);
-							PlayRadioStreamForPlayer(playerid, 0);
-						} else {
-							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
-						}
-						return 1;
-					}
-				}
-			}
+            /*  Salida de casas. */
+			if(LeaveHouse(playerid))
+			    return 1;
 
 			/* Salida de edificios. */
-			for(new i = 0; i < sizeof(Building); i++) {
-				if(PlayerToPoint(3, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ])) {
-				    if(GetPlayerVirtualWorld(playerid) == Building[i][blInsideWorld]) {
-						if(Building[i][blLocked] == 0 || AdminDuty[playerid] >= 1) {
-							SetPlayerInterior(playerid, Building[i][blOutsideInt]);
-							SetPlayerVirtualWorld(playerid, 0);
-							SetPlayerPos(playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]);
-							SetPlayerFacingAngle(playerid, Building[i][blOutsideAngle]);
-							SetCameraBehindPlayer(playerid);
-							PlayRadioStreamForPlayer(playerid, 0);
-						} else {
-							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
-						}
-						return 1;
-					}
-				}
-			}
+			if(LeaveBuilding(playerid))
+			    return 1;
 
 			/* Salida de negocios. */
-			for(new i = 0; i < MAX_BUSINESS; i++) {
-				if (PlayerToPoint(3, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ])) {
-				    if(GetPlayerVirtualWorld(playerid) == Business[i][bInsideWorld]) {
-				        if(Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2) {
-							DestroySelectionMenu(playerid);
-							CancelSelectTextDraw(playerid);
-						}
-						if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1) {
-							SetPlayerInterior(playerid, Business[i][bOutsideInt]);
-							SetPlayerVirtualWorld(playerid, 0);
-							SetPlayerPos(playerid,Business[i][bOutsideX],Business[i][bOutsideY],Business[i][bOutsideZ]);
-		                    SetPlayerFacingAngle(playerid, Business[i][bOutsideAngle]);
-		                    SetCameraBehindPlayer(playerid);
-		                    PlayRadioStreamForPlayer(playerid, 0);
-						} else {
-							GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
-						}
-						return 1;
-					}
-				}
-			}
+			if(LeaveBusiness(playerid))
+			    return 1;
+			    
 		} else {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 		}
@@ -8284,95 +8104,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
             PlayerActionMessage(playerid, 15.0, "comienza a instalar las nuevas llantas en el vehiculo.");
 			GivePlayerCash(playerid, -4000);
-    		new vID = GetPlayerVehicleID(playerid);
+    		new vID = GetPlayerVehicleID(playerid),
+    		    wheel;
 			switch(listitem)
 			{
-			    case 0:
-			    {
-			        AddVehicleComponent(vID, OFFROAD_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = OFFROAD_WHEEL_ID;
-			    }
-			    case 1:
-			    {
-			        AddVehicleComponent(vID, SHADOW_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = SHADOW_WHEEL_ID;
-			    }
-			    case 2:
-			    {
-			        AddVehicleComponent(vID, MEGA_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = MEGA_WHEEL_ID;
-			    }
-			    case 3:
-			    {
-			        AddVehicleComponent(vID, RIMSHINE_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = RIMSHINE_WHEEL_ID;
-			    }
-			    case 4:
-			    {
-			        AddVehicleComponent(vID, WIRES_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = WIRES_WHEEL_ID;
-			    }
-			    case 5:
-			    {
-			        AddVehicleComponent(vID, CLASSIC_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = CLASSIC_WHEEL_ID;
-			    }
-			    case 6:
-			    {
-			        AddVehicleComponent(vID, TWIST_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = TWIST_WHEEL_ID;
-			    }
-			    case 7:
-			    {
-			        AddVehicleComponent(vID, CUTTER_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = CUTTER_WHEEL_ID;
-			    }
-			    case 8:
-			    {
-			        AddVehicleComponent(vID, SWITCH_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = SWITCH_WHEEL_ID;
-			    }
-			    case 9:
-			    {
-			        AddVehicleComponent(vID, GROVE_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = GROVE_WHEEL_ID;
-			    }
-			    case 10:
-			    {
-			        AddVehicleComponent(vID, IMPORT_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = IMPORT_WHEEL_ID;
-			    }
-			    case 11:
-			    {
-			        AddVehicleComponent(vID, DOLLAR_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = DOLLAR_WHEEL_ID;
-			    }
-			    case 12:
-			    {
-			        AddVehicleComponent(vID, TRANCE_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = TRANCE_WHEEL_ID;
-			    }
-			    case 13:
-			    {
-			        AddVehicleComponent(vID, ATOMIC_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = ATOMIC_WHEEL_ID;
-			    }
-			    case 14:
-			    {
-			        AddVehicleComponent(vID, AHAB_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = AHAB_WHEEL_ID;
-			    }
-			    case 15:
-			    {
-			        AddVehicleComponent(vID, VIRTUAL_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = VIRTUAL_WHEEL_ID;
-			    }
-			    case 16:
-			    {
-			        AddVehicleComponent(vID, ACCESS_WHEEL_ID);
-			        VehicleInfo[vID][VehCompSlot][7] = ACCESS_WHEEL_ID;
-			    }
+			    case 0: wheel = OFFROAD_WHEEL_ID;
+			    case 1: wheel = SHADOW_WHEEL_ID;
+			    case 2: wheel = MEGA_WHEEL_ID;
+			    case 3: wheel = RIMSHINE_WHEEL_ID;
+			    case 4: wheel = WIRES_WHEEL_ID;
+			    case 5: wheel = CLASSIC_WHEEL_ID;
+			    case 6: wheel = TWIST_WHEEL_ID;
+			    case 7: wheel = CUTTER_WHEEL_ID;
+			    case 8: wheel = SWITCH_WHEEL_ID;
+			    case 9: wheel = GROVE_WHEEL_ID;
+			    case 10: wheel = IMPORT_WHEEL_ID;
+			    case 11: wheel = DOLLAR_WHEEL_ID;
+			    case 12: wheel = TRANCE_WHEEL_ID;
+			    case 13: wheel = ATOMIC_WHEEL_ID;
+			    case 14: wheel = AHAB_WHEEL_ID;
+			    case 15: wheel = VIRTUAL_WHEEL_ID;
+			    case 16: wheel = ACCESS_WHEEL_ID;
 			}
+   			AddVehicleComponent(vID, wheel);
+			VehicleInfo[vID][VehCompSlot][7] = wheel;
   		}
   		
 //======================FIN SISTEMA DE TUNING DE MECANICOS======================
@@ -8960,353 +8715,6 @@ CMD:darlider(playerid, params[])
 	SetPlayerFaction(targetid, factionid, 1);
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]:{C8C8C8} has hecho a %s líder de la facción ID: %d (%s).", GetPlayerNameEx(targetid), factionid, FactionInfo[factionid][fName]);
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "{878EE7}[INFO]:{C8C8C8} el administrador %s te ha hecho líder de la facción %s.", GetPlayerNameEx(playerid), FactionInfo[factionid][fName]);
-	return 1;
-}
-
-//========================COMANDOS ADMIN DE EDIFICIOS===========================
-
-CMD:aedificios(playerid, params[])
-{
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de edificios]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aeinfo /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida - /aecosto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
-	return 1;
-}
-
-CMD:aeinfo(playerid, params[])
-{
-	new id;
-
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
-	if(sscanf(params, "i", id))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeinfo [IDedificio]");
-	if(id < 1 || id >= MAX_BUILDINGS)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
-
-	SendFMessage(playerid, COLOR_WHITE, "=======================[Negocio %d '%s']=======================", id, Building[id][blText]);
-	SendFMessage(playerid, COLOR_WHITE, "- Texto: %s", Building[id][blText]);
-	SendFMessage(playerid, COLOR_WHITE, "- Texto2: %s", Building[id][blText2]);
-	SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Building[id][blEntranceFee]);
-	SendFMessage(playerid, COLOR_WHITE, "- Cerrado: %d", Building[id][blLocked]);
-	SendFMessage(playerid, COLOR_WHITE, "- Facción: %d", Building[id][blFaction]);
-	return 1;
-}
-
-CMD:aeremove(playerid, params[]) {
-	new
-	    blid;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "d", blid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeremove [idedificio]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blDelete] = true;
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aeinsert(playerid, params[]) {
-	new
-	    blid,
-	    name[32],
-      	Float:entAngle,
-	    locked,
-	    fee,
-	    faction,
-		pickupModel;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dddds[32]", fee, locked, pickupModel,  faction, name))
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeinsert [costo entrada] [locked] [modelo pickup] [faccion, 0 = n/a] [text (64 ch)]");
-	else if(locked != 1 && locked != 0) {
-	    SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} el valor 'locked' no puede ser diferente a 1 o 0.");
-	} else {
-		for(new i = 1; i < MAX_BUILDINGS; i++) {
-		    if(!Building[i][blLoaded]) {
-		        Building[i][blLoaded] = true;
-				blid = i;
-				break;
-			}
-		}
-
-	    GetPlayerPos(playerid, Building[blid][blOutsideX], Building[blid][blOutsideY], Building[blid][blOutsideZ]);
-	    GetPlayerFacingAngle(playerid, entAngle);
-
-	    Building[blid][blOutsideInt] = GetPlayerInterior(playerid);
-		Building[blid][blOutsideAngle] = entAngle + 180;
-		Building[blid][blEntranceFee] = fee;
-		Building[blid][blLocked] = locked;
-		Building[blid][blPickupModel] = pickupModel;
-		Building[blid][blFaction] = faction;
-		Building[blid][blInsert] = true;
-		mysql_real_escape_string(name, name,1,sizeof(name));
-	 	strmid(Building[blid][blText], (name), 0, strlen((name)), 64);
-	 	saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aegetid(playerid, params[]) {
-    if(PlayerInfo[playerid][pAdmin] < 10)
-		return 1;
-
-	for(new i = 1; i < MAX_BUILDINGS; i++) {
-		if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ])) {
-		    SendFMessage(playerid, COLOR_WHITE, "ID del edificio: %d", i);
-		    return 1;
-		}
-	}
-	SendClientMessage(playerid, COLOR_WHITE, "No se ha encontrado ningún edificio en tu posición.");
-	return 1;
-}
-
-CMD:aetexto(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-		text[64];
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "ds[64]", blid, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto [idedificio] [texto 64 chars]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS && strlen(text) <= 64) {
-	 	mysql_real_escape_string(text, text, 1, sizeof(text));
-	 	strmid(Building[blid][blText], (text), 0, strlen((text)), 64);
-		format(string, sizeof(string), "Has seteado el texto del edificio [%d] a '%s'.", blid, text);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aeradio(playerid, params[])
-{
-	new
-	    blid,
-		radio;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-	if(sscanf(params, "ii", blid, radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeradio [ID edificio] [ID radio]");
-	if(blid < 1 || blid >= MAX_BUILDINGS)
-	    return  SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
-	if(radio < 0 || radio > 15)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
-
-	Building[blid][blRadio] = radio;
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del edificio %d a %d.", blid, Building[blid][blRadio]);
-	return 1;
-}
-
-CMD:aetexto2(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-		text[64];
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "ds[64]", blid, text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto2 [idedificio] [texto 64 chars]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS && strlen(text) <= 64) {
-	 	mysql_real_escape_string(text, text, 1, sizeof (text));
-	 	strmid(Building[blid][blText2], (text), 0, strlen((text)), 64);
-		format(string, sizeof(string), "Has seteado el texto2 del edificio [%d] a '%s'.", blid, text);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aeentrada(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    entranceInterior,
-		Float:entranceX,
-		Float:entranceY,
-		Float:entranceZ,
-		Float:entranceAngle;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "d", blid)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeentrada [idedificio] - setea la entrada a tu posición, tu ángulo será el adoptado al salir.");
-	}
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-	    GetPlayerPos(playerid, entranceX, entranceY, entranceZ);
-	    GetPlayerFacingAngle(playerid, entranceAngle);
-	    entranceInterior = GetPlayerInterior(playerid);
-		Building[blid][blOutsideX] = entranceX;
-		Building[blid][blOutsideY] = entranceY;
-		Building[blid][blOutsideZ] = entranceZ;
-		Building[blid][blOutsideAngle] = entranceAngle + 180;
-		Building[blid][blOutsideInt] = entranceInterior;
-		format(string, sizeof(string), "Entrada del edificio [%d] seteada a X:%f Y:%f Z:%f A:%f Interior:%d", blid, entranceX, entranceY, entranceZ, entranceAngle, entranceInterior);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aesalida(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    exitInterior,
-		Float:exitX,
-		Float:exitY,
-		Float:exitZ,
-		Float:exitAngle;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "d", blid)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aesalida [idedificio] - setea la salida a tu posición, tu ángulo será el adoptado al ingresar.");
-	}
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		GetPlayerPos(playerid, exitX, exitY, exitZ);
-	    GetPlayerFacingAngle(playerid, exitAngle);
-	    exitInterior = GetPlayerInterior(playerid);
-		Building[blid][blInsideX] = exitX;
-		Building[blid][blInsideY] = exitY;
-		Building[blid][blInsideZ] = exitZ;
-		Building[blid][blInsideAngle] = exitAngle + 180;
-		Building[blid][blInsideInt] = exitInterior;
-		Building[blid][blInsideWorld] = blid * 1000;
-		format(string, sizeof(string), "Salida del edificio [%d] seteada a X:%f Y:%f Z:%f A:%f Interior:%d", blid, exitX, exitY, exitZ, exitAngle, exitInterior);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aecosto(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    cost;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", blid, cost)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aecosto [idedificio] [costo de entrada]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blEntranceFee] = cost;
-		format(string, sizeof(string), "Has seteado el costo de entrada al edificio [%d] a %d.", blid, cost);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aefaccion(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    faction;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", blid, faction)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aefaccion [idedificio] [facción, 0 = ninguna]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blFaction] = faction;
-		format(string, sizeof(string), "Has seteado la facción del edificio [%d] a %d.", blid, faction);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aepickup(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    pickupModel;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", blid, pickupModel)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aepickup [idedificio] [id modelo]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blPickupModel] = pickupModel;
-		format(string, sizeof(string), "Has seteado el pickup del edificio [%d] a %d.", blid, pickupModel);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aevworld(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    vworld;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", blid, vworld)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aevworld [idedificio] [mundo virtual]");
-	else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blInsideWorld] = vworld;
-		format(string, sizeof(string), "Has seteado el mundo virtual del edificio [%d] a %d.", blid, vworld);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aecerrado(playerid, params[]) {
-	new
-	    string[128],
-	    blid,
-	    locked;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "dd", blid, locked)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aecerrado [idedificio] [1=SI, 0=NO]");
-	else if(locked < 0 || locked > 1) {
-	    SendClientMessage(playerid, COLOR_ADMINCMD, "El valor no puede ser menor a 0 o mayor a 1.");
-	    return 1;
-	} else if(blid >= 1 && blid < MAX_BUILDINGS) {
-		Building[blid][blLocked] = locked;
-		switch(locked) {
-		    case 0: format(string, sizeof(string), "Has abierto el edificio [%d]", blid);
-		    case 1: format(string, sizeof(string), "Has cerrado el edificio [%d]", blid);
-		}
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		saveBuilding(blid);
-	}
-	return 1;
-}
-
-CMD:aetele(playerid, params[])
-{
-	new blid;
-
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
-	if(sscanf(params, "i", blid))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetele [ID edificio]");
-	if(blid < 1 || blid >= MAX_BUILDINGS)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
-
-	SetPlayerPos(playerid, Building[blid][blOutsideX], Building[blid][blOutsideY], Building[blid][blOutsideZ]);
-	SetPlayerInterior(playerid, Building[blid][blOutsideInt]);
 	return 1;
 }
 
@@ -9950,7 +9358,7 @@ CMD:msg(playerid, params[])
 		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pFaction] == FAC_MAN)
-				SendFMessage(i, COLOR_WHITE, "[Nuevo mensaje a la radio de %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+				SendFMessage(i, COLOR_WHITE, "[Mensaje a CTR-MAN del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
     	}
 		return 1;
 	}
@@ -11813,27 +11221,38 @@ CMD:mostrarced(playerid, params[])
 
     if(sscanf(params, "ui", targetid, vehicleid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mostrarced [ID/Jugador] [ID vehículo]");
-    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
-	if(!ProxDetectorS(2.0, playerid, targetid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra demasiado lejos.");
-	if(vehicleid < 1 || vehicleid > MAX_VEH)
+    if(!IsPlayerConnected(targetid) || !ProxDetectorS(2.0, playerid, targetid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o demasiado lejos.");
+	if(vehicleid < 1 || vehicleid >= MAX_VEH)
         return SendClientMessage(playerid, COLOR_YELLOW2, "Vehículo inválido.");
 
-	if( playerHasCarKey(playerid,vehicleid) ||
-	    (VehicleInfo[vehicleid][VehType] == VEH_FACTION && PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction]) ||
-	    (VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] == vehicleid) )
+	if(playerOwnsCar(playerid, vehicleid))
 	{
-		SendClientMessage(targetid, COLOR_LIGHTGREEN, "================[Cédula de Identificación del Automotor]===============");
-	    SendFMessage(targetid, COLOR_WHITE, "Vehículo ID: %d", vehicleid);
+		SendClientMessage(targetid, COLOR_LIGHTGREEN, "================[Cédula Verde de Identificación del Automotor]===============");
+		SendFMessage(targetid, COLOR_WHITE, "Vehículo ID: %d", vehicleid);
+	    SendFMessage(targetid, COLOR_WHITE, "Patente %s", VehicleInfo[vehicleid][VehPlate]);
 	    SendFMessage(targetid, COLOR_WHITE, "Modelo %s", GetVehicleName(vehicleid));
 	    SendFMessage(targetid, COLOR_WHITE, "Titular: %s", VehicleInfo[vehicleid][VehOwnerName]);
 	    SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Registro Nacional de la Propiedad del Automotor");
-	    SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
+	    SendClientMessage(targetid, COLOR_LIGHTGREEN, "====================================================================");
 	    PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma una cédula verde del bolsillo y se la muestra a");
     }
+    else if(playerHasCarKey(playerid, vehicleid) ||
+	    (VehicleInfo[vehicleid][VehType] == VEH_FACTION && PlayerInfo[playerid][pFaction] == VehicleInfo[vehicleid][VehFaction]) ||
+	    (VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] == vehicleid) )
+	{
+		SendClientMessage(targetid, COLOR_LIGHTBLUE, "================[Cédula Azul de Identificación del Automotor]===============");
+        SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
+		SendFMessage(targetid, COLOR_WHITE, "Vehículo ID: %d", vehicleid);
+	    SendFMessage(targetid, COLOR_WHITE, "Patente %s", VehicleInfo[vehicleid][VehPlate]);
+	    SendFMessage(targetid, COLOR_WHITE, "Modelo %s", GetVehicleName(vehicleid));
+	    SendFMessage(targetid, COLOR_WHITE, "Titular: %s", VehicleInfo[vehicleid][VehOwnerName]);
+	    SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Registro Nacional de la Propiedad del Automotor");
+	    SendClientMessage(targetid, COLOR_LIGHTBLUE, "===================================================================");
+	    PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma una cédula azul del bolsillo y se la muestra a");
+    }
     else
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la cédula de ese vehículo, ¡No es tuyo!");
+		SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ninguna cédula de ese vehículo.");
 	return 1;
 }
 
@@ -12742,12 +12161,14 @@ CMD:aceptar(playerid,params[]) {
 	return 1;
 }
 
-CMD:cancelar(playerid,params[]) {
-	new
-		text[128];
+CMD:cancelar(playerid,params[])
+{
+	new text[128];
 
-	if(sscanf(params, "s[64]", text)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cancelar [comando]");
-	else if(strcmp(text,"mecanico",true) == 0) {
+	if(sscanf(params, "s[64]", text))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cancelar [comando]");
+
+	if(strcmp(text,"mecanico",true) == 0) {
 		if(IsPlayerConnected(MechanicCall)) {
 			if(MechanicCall == playerid) {
 				MechanicCall = 999;
@@ -12756,13 +12177,13 @@ CMD:cancelar(playerid,params[]) {
 				return 1;
 			}
 		}
+		
 	} else if(strcmp(text, "vehiculo", true) == 0) {
-		// Comprobamos que exista una oferta para este jugador.
         if(VehicleOffer[playerid] == INVALID_PLAYER_ID)
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido un vehículo.");
-
 		KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
 		CancelVehicleTransfer(playerid, 0);
+		
 	} else if(strcmp(text,"taxi",true) == 0) {
 	    if(TaxiCall < 999) {
 	        if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI && TaxiCallTime[playerid] > 0) {
@@ -12791,41 +12212,38 @@ CMD:cancelar(playerid,params[]) {
 	return 1;
 }
 
-CMD:comprarlic(playerid,params[]) {
-	if(PlayerToPoint(1.0, playerid, 222.96, 145.17, 1003) && GetPlayerVirtualWorld(playerid) == 16002) {
-        if(PlayerInfo[playerid][pWepLic] == 0) {
-			if(GetPlayerCash(playerid) >= PRICE_LIC_GUN) {
-				GivePlayerCash(playerid, -PRICE_LIC_GUN);
-				SendClientMessage(playerid, COLOR_WHITE,"¡Felicidades! has conseguido una licencia para armas cortas y de caza.");
-				PlayerInfo[playerid][pWepLic] = 1;
-			} else {
-				SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-			}
-		} else {
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes esta licencia!");
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el lugar correcto de la comisaría!");
-	}
+CMD:comprarlic(playerid,params[])
+{
+	if(!PlayerToPoint(1.0, playerid, 222.96, 145.17, 1003) || GetPlayerVirtualWorld(playerid) != 16002)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el lugar correcto de la comisaría!");
+  	if(PlayerInfo[playerid][pWepLic] != 0)
+  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes esta licencia!");
+	if(GetPlayerCash(playerid) < PRICE_LIC_GUN)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+
+	GivePlayerCash(playerid, -PRICE_LIC_GUN);
+	SendClientMessage(playerid, COLOR_WHITE,"¡Felicidades! has conseguido una licencia para armas cortas y de caza.");
+	PlayerInfo[playerid][pWepLic] = 1;
 	return 1;
 }
 
-CMD:intentar(playerid, params[]) {
-	new
-	    succeed = 1 + random(2),
+CMD:intentar(playerid, params[])
+{
+	new succeed = random(2),
 	    string[128];
 	    
-	if(sscanf(params, "s[128]", string)) {
-		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /intentar [texto]");
-	} else {
-		if(succeed == 1) {
-			format(string, sizeof(string), "[Intentar] %s intentó %s y tuvo éxito.", GetPlayerNameEx(playerid), string);
-			ProxDetector(10.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
-		} else if(succeed == 2)	{
+	if(sscanf(params, "s[128]", string))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /intentar [texto]");
+
+	if(succeed == 0)
+	{
+		format(string, sizeof(string), "[Intentar] %s intentó %s y tuvo éxito.", GetPlayerNameEx(playerid), string);
+		ProxDetector(15.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	} else if(succeed == 1)
+		{
 			format(string, sizeof(string), "[Intentar] %s intentó %s y falló.", GetPlayerNameEx(playerid), string);
-			ProxDetector(10.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+			ProxDetector(15.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 		}
-	}
 	return 1;
 }
 
@@ -12861,25 +12279,22 @@ CMD:dar(playerid, params[])
 	return 1;
 }
 
-CMD:ventanillas(playerid, params[]) {
-	new
-	    vehicleid;
+CMD:ventanillas(playerid, params[])
+{
+	new vehicleid = GetPlayerVehicleID(playerid);
 	    
-	if(IsPlayerInAnyVehicle(playerid)) {
-	    vehicleid = GetPlayerVehicleID(playerid);
-	   	if(GetVehicleType(vehicleid) == VTYPE_CAR) {
-		    if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 1) {
-				PlayerActionMessage(playerid,15.0,"ha abierto las ventanillas del vehículo.");
-				CarWindowStatus[GetPlayerVehicleID(playerid)] = 0;
-		    } else if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 0) {
-				PlayerActionMessage(playerid,15.0,"ha cerrado las ventanillas del vehículo.");
-				CarWindowStatus[GetPlayerVehicleID(playerid)] = 1;
-		    }
-		} else {
-			SendClientMessage(playerid, COLOR_YELLOW2,"¡Este vehículo no tiene ventanillas!");
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2,"¡Debes estar en un vehículo para utilizar este comando!");
+	if(!IsPlayerInAnyVehicle(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo para utilizar este comando!");
+	if(GetVehicleType(vehicleid) != VTYPE_CAR)
+	    return SendClientMessage(playerid, COLOR_YELLOW2,"¡Este vehículo no tiene ventanillas!");
+	    
+ 	if(CarWindowStatus[vehicleid] == 1)
+	{
+		PlayerActionMessage(playerid, 15.0, "ha abierto las ventanillas del vehículo.");
+		CarWindowStatus[vehicleid] = 0;
+  	} else {
+		PlayerActionMessage(playerid, 15.0, "ha cerrado las ventanillas del vehículo.");
+		CarWindowStatus[vehicleid] = 1;
 	}
 	return 1;
 }
@@ -13476,7 +12891,7 @@ stock PlayRadioStreamForPlayer(playerid, radio)
 	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
 	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
 	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://shaincast.caster.fm:21294/listen.mp3?authn895d6da463526b42933687420dbd458f");//radio CTR
+	    case 15: PlayAudioStreamForPlayer(playerid, "http://shaincast.caster.fm:21294/listen.mp3?authnb6b02a87f4f181869b27c85dd2e74f4a");//radio CTR
 	}
 	hearingRadioStream[playerid] = true;
 	return 1;

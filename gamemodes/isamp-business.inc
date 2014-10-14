@@ -133,6 +133,22 @@ new	bool:OfferingBusiness[MAX_PLAYERS],
 	BusinessOfferPrice[MAX_PLAYERS],
 	BusinessOffer[MAX_PLAYERS];
 
+//==================================FUNCIONES===================================
+
+forward GetPlayerBusiness(playerid);
+forward ResetBusinessOffer(playerid);
+forward bool:EnterBusiness(playerid);
+forward bool:LeaveBusiness(playerid);
+
+//==========================IMPLEMENTACION DE FUNCIONES=========================
+
+stock ResetBusinessOffer(playerid)
+{
+	OfferingBusiness[playerid] = false;
+	BusinessOfferPrice[playerid] = -1;
+	BusinessOffer[playerid] = INVALID_PLAYER_ID;
+}
+
 stock GetPlayerBusiness(playerid)
 {
 	for(new i = 1; i < MAX_BUSINESS; i++)
@@ -143,11 +159,94 @@ stock GetPlayerBusiness(playerid)
 	return 0;
 }
 
-stock ResetBusinessOffer(playerid)
+stock bool:EnterBusiness(playerid)
 {
-	OfferingBusiness[playerid] = false;
-	BusinessOfferPrice[playerid] = -1;
-	BusinessOffer[playerid] = INVALID_PLAYER_ID;
+	for(new i = 1; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(1.0, playerid,Business[i][bOutsideX], Business[i][bOutsideY], Business[i][bOutsideZ]))
+		{
+			if(Business[i][bEnterable] == 0)
+			{
+				SendClientMessage(playerid, COLOR_YELLOW2,"Negocio temporalmente deshabilitado.");
+				return true;
+			}
+			if(PlayerInfo[playerid][pBizKey] == i)
+			{
+	           	SetPlayerInterior(playerid, Business[i][bInsideInt]);
+				SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
+				SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
+	            SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
+	            SetCameraBehindPlayer(playerid);
+	            PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
+    		} else
+		    	{
+			    	if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
+						GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
+						return true;
+					}
+					if(GetPlayerCash(playerid) < Business[i][bEntranceFee]) {
+						SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
+						return true;
+					}
+					SetPlayerInterior(playerid, Business[i][bInsideInt]);
+					SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
+					SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
+					SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
+					SetCameraBehindPlayer(playerid);
+					PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
+					GivePlayerCash(playerid, -Business[i][bEntranceFee]);
+					if(Business[i][bEntranceFee] > 0)
+                        SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
+					switch(Business[i][bType])
+					{
+					    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD:
+			    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
+					    case BIZ_CLUB, BIZ_CLUB2:
+					    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+						case BIZ_REST, BIZ_PIZZERIA, BIZ_BURGER1, BIZ_BURGER2, BIZ_BELL:
+  							SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+						case BIZ_CASINO:
+ 	    					SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+					}
+					if(Business[i][bProducts] == 0)
+						GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
+					Business[i][bTill] += Business[i][bEntranceFee];
+					saveBusiness(i);
+				}
+			return true;
+		}
+	}
+	return false;
+}
+
+stock bool:LeaveBusiness(playerid)
+{
+	for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(1.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+		    if(GetPlayerVirtualWorld(playerid) == Business[i][bInsideWorld])
+			{
+		        if(Business[i][bType] == BIZ_CLOT || Business[i][bType] == BIZ_CLOT2)
+				{
+					DestroySelectionMenu(playerid);
+					CancelSelectTextDraw(playerid);
+				}
+				if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1)
+				{
+					SetPlayerInterior(playerid, Business[i][bOutsideInt]);
+					SetPlayerVirtualWorld(playerid, 0);
+					SetPlayerPos(playerid,Business[i][bOutsideX],Business[i][bOutsideY],Business[i][bOutsideZ]);
+		            SetPlayerFacingAngle(playerid, Business[i][bOutsideAngle]);
+		            SetCameraBehindPlayer(playerid);
+		            PlayRadioStreamForPlayer(playerid, 0);
+				} else
+					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 //=============================COMANDOS DE NEGOCIO==============================
