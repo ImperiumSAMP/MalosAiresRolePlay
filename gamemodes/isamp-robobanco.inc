@@ -340,7 +340,7 @@ CMD:grupoinvitar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(PlayerInfo[targetid][pJob] != JOB_FELON)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene que tener el trabajo de delincuente.");
-	if(ThiefJobInfo[targetid][pFelonLevel] < 7)
+	if(ThiefJobInfo[targetid][pFelonLevel] < 6)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto necesita más experiencia como delincuente para formar un grupo.");
 	if(!ProxDetectorS(4.0, playerid, targetid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto se encuentra muy lejos.");

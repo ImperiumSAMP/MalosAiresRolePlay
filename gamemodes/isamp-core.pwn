@@ -1350,9 +1350,12 @@ public OnPlayerDisconnect(playerid, reason) {
 	    	SetPlayerHealthEx(playerid, 100.0);
     }
     
-    foreach(new i : Player) {
-		if(TaxiAccepted[i] < 999) {
-			if(TaxiAccepted[i] == playerid) {
+    foreach(new i : Player)
+	{
+		if(TaxiAccepted[i] < 999)
+		{
+			if(TaxiAccepted[i] == playerid)
+			{
 				TaxiAccepted[i] = 999;
 				GameTextForPlayer(i, "~w~El cliente~r~ha dejado el juego", 2000, 1);
 				TaxiCallTime[i] = 0;
@@ -1360,7 +1363,8 @@ public OnPlayerDisconnect(playerid, reason) {
 			}
 		}
 
-		if(PlayerInfo[i][pSpectating] == playerid) {
+		if(PlayerInfo[i][pSpectating] == playerid)
+		{
 			PlayerInfo[i][pSpectating] = INVALID_PLAYER_ID;
 			TogglePlayerSpectating(i, false);
 			SetCameraBehindPlayer(i);
@@ -4117,6 +4121,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 
 		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
 		    // Si no es una bicicleta mostramos el velocímetro.
+			KillTimer(pSpeedoTimer[playerid]); // Como las id de timer nunca se repiten, por si las dudas, borramos cualquier timer anterior (si existiese y reemplazamos la id, queda andando para siempre)
 			PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
 			pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
 		}
@@ -9226,6 +9231,7 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo /maletero (/cin)turón (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron");
 
     if(PlayerInfo[playerid][pFaction] != 0)
 	{
@@ -12947,7 +12953,7 @@ CMD:emisoraoff(playerid, params[])
 
 //==================================CINTURON====================================
 
-CMD:cin(playerid, params[])
+CMD:cint(playerid, params[])
 {
 	cmd_cinturon(playerid, params);
 	return 1;

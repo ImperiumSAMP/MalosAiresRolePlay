@@ -254,7 +254,7 @@ stock bool:LeaveBusiness(playerid)
 CMD:ayudanegocio(playerid, params[])
 {
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[NEGOCIO]: /negociocomprar - /negociovender - /negocioinfo - /negocioentrada - /negocionombre - /negociollave");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /negocioradio - /ayudaproductos");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/negociodepositar - /negocioretirar - /negocioradio - /negociovendera - /ayudaproductos");
 	return 1;
 }
 
