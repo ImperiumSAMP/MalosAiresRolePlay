@@ -9,21 +9,15 @@
 #define MAX_RACE_CHECKPOINTS	20
 #define MAX_RACE_DRIVERS        8
 
-//==================================NEWS========================================
-
-
-
-//=============================RESET VARIABLES==================================
-
-
-
-//============================SISTEMA DE CARRERAS===============================
+//================================VARIABLES=====================================
 
 enum rRaceInfo {
 	rCreatorID,
 	rDriversID[MAX_RACE_DRIVERS],
 	rCheckpointsCount,
-	rLaps
+	rLaps,
+	rWinner,
+ 	bool:rStarted
 };
 
 new Float:TrackInfo[MAX_SERVER_RACES][MAX_RACE_CHECKPOINTS][3];
@@ -32,10 +26,56 @@ new RaceInfo[MAX_SERVER_RACES][rRaceInfo];
 enum pPlayerRaceInfo {
 	pRaceID,
 	pLap,
-	pCheckpointCount
+	pCheckpointCount,
+	pRaceOffer
 };
 
 new PlayerRaceInfo[MAX_PLAYERS][pPlayerRaceInfo];
+
+//================================FUNCIONES=====================================
+
+forward ResetPlayerRaceVariables(playerid);
+forward ResetServerRacesVariables();
+forward CancelRaceOffer(playerid);
+
+//=============================RESET VARIABLES==================================
+
+stock ResetServerRacesVariables()
+{
+	for(new i = 0; i < MAX_SERVER_RACES; i++)
+ 		ResetRaceVariables(i);
+}
+
+stock ResetRaceVariables(raceid)
+{
+	if(raceid >= 0 && raceid < MAX_SERVER_RACES)
+	{
+	    if(RaceInfo[raceid][rCreatorID] != INVALID_PLAYER_ID)
+	        ResetPlayerRaceVariables(RaceInfo[raceid][rCreatorID]);
+	    RaceInfo[raceid][rCreatorID] = INVALID_PLAYER_ID;
+		for(new i = 0; i < MAX_RACE_DRIVERS; i++)
+		{
+		    if(RaceInfo[raceid][rDriversID][i] != INVALID_PLAYER_ID)
+		        ResetPlayerRaceVariables(RaceInfo[raceid][rDriversID][i]);
+            RaceInfo[raceid][rDriversID][i] = INVALID_PLAYER_ID;
+		}
+		RaceInfo[raceid][rCheckpointsCount] = 0;
+		RaceInfo[raceid][rLaps] = 0;
+		RaceInfo[raceid][rWinner] = INVALID_PLAYER_ID;
+		RaceInfo[raceid][rStarted] = false;
+	}
+}
+
+stock ResetPlayerRaceVariables(playerid)
+{
+    PlayerRaceInfo[playerid][pRaceID] = -1;
+    PlayerRaceInfo[playerid][pLap] = 0;
+    PlayerRaceInfo[playerid][pCheckpointCount] = 0;
+    PlayerRaceInfo[playerid][pRaceOffer] = INVALID_PLAYER_ID;
+}
+
+//============================DEBUG DE VARIABLES================================
+
 
 CMD:racedebug(playerid, params[])
 {
@@ -71,40 +111,13 @@ CMD:playerracedebug(playerid, params[])
 	return 1;
 }
 
-stock ResetRaceVariables(raceid)
-{
-	if(raceid >= 0 && raceid < MAX_SERVER_RACES)
-	{
-		RaceInfo[raceid][rCreatorID] = INVALID_PLAYER_ID;
-		for(new i = 0; i < MAX_RACE_DRIVERS; i++)
-			RaceInfo[raceid][rDriversID][i] = INVALID_PLAYER_ID;
-		RaceInfo[raceid][rCheckpointsCount] = 0;
-		RaceInfo[raceid][rLaps] = 0;
-	}
-}
+//============================SISTEMA DE CARRERAS===============================
 
-stock ResetServerRacesVariables()
+CMD:carreraayuda(playerid, params[])
 {
-	for(new i = 0; i < MAX_SERVER_RACES; i++)
- 		ResetRaceVariables(i);
-}
-
-CMD:carreraeliminar(playerid, params[])
-{
-	if(PlayerRaceInfo[playerid][pRaceID] == -1)
-	    return 1;
-	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
-	    return 1;
-
-	ResetRaceVariables(PlayerRaceInfo[playerid][pRaceID]);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Sistema de carreras]: /carreracrear - /carrerainfo - /carreraeliminar - /carreravueltas - /carreranuevocp");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/carreraborrarcp - /carrerainvitar - /carreraaceptar - /carreraexpulsar - /carrerainiciar - /carreraabandonar");
 	return 1;
-}
-
-stock ResetPlayerRaceVariables(playerid)
-{
-    PlayerRaceInfo[playerid][pRaceID] = -1;
-    PlayerRaceInfo[playerid][pLap] = 0;
-    PlayerRaceInfo[playerid][pCheckpointCount] = 0;
 }
 
 stock bool:CreateRace(playerid)
@@ -127,14 +140,26 @@ stock bool:CreateRace(playerid)
 
 CMD:carreracrear(playerid, params[])
 {
-    if(PlayerInfo[playerid][pLevel] < 15)
-        return 1;
+    if(PlayerInfo[playerid][pLevel] < 10)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Para organizar carreras debes ser un usuario experimentado en el servidor ((Nivel 10)).");
 	if(PlayerRaceInfo[playerid][pRaceID] != -1)
-	    return 1;
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras en una carrera.");
 	if(CreateRace(playerid))
 	    SendClientMessage(playerid, COLOR_WHITE, "Has creado una carrera. Para ver la lista de comandos disponibles usa /carreraayuda");
 	else
-        SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas espacio para carreras en el servidor: hay otras en curso en este momento");
+        SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas espacio para carreras en el servidor: hay otras corriendose en este momento");
+	return 1;
+}
+
+CMD:carreraeliminar(playerid, params[])
+{
+	if(PlayerRaceInfo[playerid][pRaceID] == -1)
+	    return 1;
+	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
+	    return 1;
+
+    SendClientMessage(playerid, COLOR_WHITE, "Has eliminado la carrera que organizaste.");
+	ResetRaceVariables(PlayerRaceInfo[playerid][pRaceID]);
 	return 1;
 }
 
@@ -144,7 +169,8 @@ stock SetRaceLaps(playerid, raceid, laps)
 	{
 		if(playerid == RaceInfo[raceid][rCreatorID])
 		{
-		   	RaceInfo[raceid][rLaps] = laps;
+			RaceInfo[raceid][rLaps] = laps;
+			SendFMessage(playerid, COLOR_WHITE, "Has seteado la cantidad de vueltas de la carrera en %d.", laps);
 		}
 	}
 }
@@ -157,6 +183,8 @@ CMD:carreravueltas(playerid, params[])
 	    return 1;
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
 	    return 1;
+ 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(sscanf(params, "i", laps))
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /carreravueltas [nro de vueltas] (1-50)");
 	if(laps < 1 || laps > 50)
@@ -180,6 +208,7 @@ stock AddNewRaceCheckpoint(playerid, raceid)
 			 	TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][1] = ypos;
 			    TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][2] = zpos;
 			   	RaceInfo[raceid][rCheckpointsCount]++;
+			   	SendClientMessage(playerid, COLOR_WHITE, "Checkpoint agregado. Puedes quitar el último checkpoint puesto usando /carreraborrarcp.");
 			}
 		}
 	}
@@ -191,6 +220,8 @@ CMD:carreranuevocp(playerid, params[])
 	    return 1;
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
 	    return 1;
+ 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCheckpointsCount] > MAX_RACE_CHECKPOINTS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agregar mas checkpoints en la carrera.");
 
@@ -204,10 +235,14 @@ stock DeleteLastRaceCheckpoint(playerid, raceid)
 	{
 		if(playerid == RaceInfo[raceid][rCreatorID])
 		{
-		    RaceInfo[raceid][rCheckpointsCount]--;
-			TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][0] = 0;
-		 	TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][1] = 0;
-		    TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][2] = 0;
+		    if(RaceInfo[raceid][rCheckpointsCount] > 0)
+		    {
+			    RaceInfo[raceid][rCheckpointsCount]--;
+				TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][0] = 0.0;
+			 	TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][1] = 0.0;
+			    TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][2] = 0.0;
+				SendClientMessage(playerid, COLOR_WHITE, "El último checkpoint que habías agregado ha sido borrado.");
+			}
 		}
 	}
 }
@@ -218,6 +253,8 @@ CMD:carreraborrarcp(playerid, params[])
 	    return 1;
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
 	    return 1;
+ 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCheckpointsCount] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes borrar mas checkpoints en la carrera ya que no tienes ninguno");
 
@@ -262,17 +299,56 @@ CMD:carrerainvitar(playerid, params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /carrerainvitar [ID/Jugador]");
 	if(!IsPlayerConnected(targetid) || !ProxDetectorS(4.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
-	if(PlayerRaceInfo[targetid][pRaceID] != -1 && playerid != targetid)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra en otra carrera.");
-	if(AddNewRaceDriver(playerid, targetid, PlayerRaceInfo[playerid][pRaceID]))
+ 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
+	if(PlayerRaceInfo[targetid][pRaceID] != -1)
 	{
-	    SendFMessage(playerid, COLOR_WHITE, "%s ha ingresado a la carrera.", GetPlayerNameEx(targetid));
-	    SendFMessage(targetid, COLOR_WHITE, "Has ingresado a la carrera organizada por %s.", GetPlayerNameEx(playerid));
-	} else
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas lugar para corredores en la carrera.");
+		if(playerid != targetid)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra en otra carrera.");
+		else // Esto es para poder meternos en nuestra propia carrera una sola vez (si detecta que ya estamos dentro lo anula)
+		{
+		    for(new i = 0; i < MAX_RACE_DRIVERS; i++)
+		    {
+		        if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rDriversID][i] == playerid)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras como corredor en tu carrera.");
+			}
+  		}
+	}
+
+ 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has invitado a %s para que se una a la carrera como piloto. La oferta dura 10 segs.", GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s invitó a correr en una carrera. Usa /carreraaceptar si lo deseas. La oferta dura 10 segs.", GetPlayerNameEx(playerid));
+    PlayerRaceInfo[targetid][pRaceOffer] = playerid;
+    SetTimerEx("CancelRaceOffer", 10000, false, "i", targetid);
 	return 1;
 }
-	
+
+public CancelRaceOffer(playerid)
+{
+    PlayerRaceInfo[playerid][pRaceOffer] = INVALID_PLAYER_ID;
+    return 1;
+}
+
+CMD:carreraaceptar(playerid, params[])
+{
+	new offer = PlayerRaceInfo[playerid][pRaceOffer];
+
+	if(offer == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido unirte a una carrera.");
+	if(PlayerRaceInfo[playerid][pRaceID] != -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras en una carrera.");
+	if(!IsPlayerConnected(offer) || !ProxDetectorS(4.0, playerid, offer))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
+ 	if(RaceInfo[PlayerRaceInfo[offer][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
+	    
+	if(AddNewRaceDriver(offer, playerid, PlayerRaceInfo[offer][pRaceID]))
+	{
+		SendFMessage(offer, COLOR_LIGHTGREEN, "%s ha aceptado la invitación a tu carrera.", GetPlayerNameEx(playerid));
+		SendFMessage(playerid, COLOR_LIGHTGREEN, "Entraste a la carrera de %s. Usa /carreraayuda y /carrerainfo para mas detalles.", GetPlayerNameEx(offer));
+	} else
+	    SendFMessage(playerid, COLOR_YELLOW2, "No hay mas lugar para corredores en la carrera (MAX:%d).", MAX_RACE_DRIVERS);
+	return 1;
+}
 
 stock DeleteRaceDriver(playerid, driverid, raceid)
 {
@@ -285,13 +361,28 @@ stock DeleteRaceDriver(playerid, driverid, raceid)
 			    if(RaceInfo[raceid][rDriversID][i] == driverid)
 			    {
 			        RaceInfo[raceid][rDriversID][i] = INVALID_PLAYER_ID;
-			        PlayerRaceInfo[driverid][pRaceID] = -1;
+					ResetPlayerRaceVariables(driverid);
 			        return true;
 				}
    			}
 		}
 	}
 	return false;
+}
+
+CMD:carreraabandonar(playerid, params[])
+{
+	if(PlayerRaceInfo[playerid][pRaceID] == -1)
+	    return 1;
+	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] == playerid)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes abandonar la carrera si eres el organizador. Debes eliminarla usando /carreraeliminar");
+
+	if(DeleteRaceDriver(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID], playerid, PlayerRaceInfo[playerid][pRaceID]))
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "Has abandonado la carrera.");
+		SendFMessage(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID], COLOR_WHITE, "%s ha abandonado la carrera.", GetPlayerNameEx(playerid));
+	}
+	return 1;
 }
 
 CMD:carreraexpulsar(playerid, params[])
@@ -304,7 +395,7 @@ CMD:carreraexpulsar(playerid, params[])
 	    return 1;
     if(sscanf(params, "d", targetid))
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /carreraexpulsar [ID/Jugador]");
-	if(!IsPlayerConnected(targetid))
+	if(!IsPlayerConnected(targetid) || playerid == targetid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(DeleteRaceDriver(playerid, targetid, PlayerRaceInfo[playerid][pRaceID]))
 	{
@@ -323,6 +414,8 @@ stock PrintRaceInfo(playerid, raceid)
 	    SendClientMessage(playerid, COLOR_WHITE, "==================================");
 	    SendFMessage(playerid, COLOR_WHITE, " - Organizador: %s", GetPlayerNameEx(RaceInfo[raceid][rCreatorID]));
 	    SendFMessage(playerid, COLOR_WHITE, " - Vueltas: %d", RaceInfo[raceid][rLaps]);
+	    if(RaceInfo[raceid][rWinner] != INVALID_PLAYER_ID)
+	    	SendFMessage(playerid, COLOR_WHITE, " - Ganador: %s", GetPlayerNameEx(RaceInfo[raceid][rWinner]));
 		SendClientMessage(playerid, COLOR_WHITE, " - Pilotos:");
 		for(new i = 0; i < MAX_RACE_DRIVERS; i++)
 		{
@@ -361,10 +454,14 @@ stock StartRace(raceid)
 {
 	if(raceid >= 0 && raceid < MAX_SERVER_RACES)
 	{
+	    RaceInfo[raceid][rStarted] = true;
 		for(new i = 0; i < MAX_RACE_DRIVERS; i++)
 		{
 		    if(RaceInfo[raceid][rDriversID][i] != INVALID_PLAYER_ID)
+		    {
 				SetPlayerRaceCheckpoint(RaceInfo[raceid][rDriversID][i], 0, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], 10.0);
+				GameTextForPlayer(RaceInfo[raceid][rDriversID][i], "COMIENZA LA CARRERA", 1000, 6);
+			}
 		}
 	}
 	return 1;
@@ -376,10 +473,12 @@ CMD:carrerainiciar(playerid, params[])
 	    return 1;
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCreatorID] != playerid)
 	    return 1;
+ 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rLaps] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No has seteado la cantidad de vueltas de la carrera. Usa /carreravueltas para ello.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No has seteado la cantidad de vueltas de la carrera. Usa /carreravueltas para hacerlo.");
     if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCheckpointsCount] < 3)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera debe contar con al menos 3 checkpoints. Usa /carreranuevocp para ello.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera debe contar con al menos 3 checkpoints. Usa /carreranuevocp para agregar nuevos checkpoints.");
  	if(CountRaceDrivers(PlayerRaceInfo[playerid][pRaceID]) < 2)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera debe contar con al menos 2 corredores. Usa /carrerainvitar para agregar corredores.");
 
@@ -406,11 +505,17 @@ stock OnDriverRaceCheckpoint(driverid, raceid)
 			else // Sino le seteamos el checkpoint de la largada de la nueva vuelta apuntando al segundo cp.
 				SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], 10.0);
 		}
-		else if(pcp == rcp + 1) // Entró al primer checkpoint luego de una vuelta (largada - bandera a cuadros)
+		else if(pcp == rcp + 1) // Entró al primer checkpoint luego de una vuelta (largada/bandera a cuadros)
 		{
-			if(PlayerRaceInfo[driverid][pLap] == RaceInfo[raceid][rLaps]) // Termina la carrera
+			if(pl == rl) // Termina la carrera
 		    {
-		        SendClientMessage(driverid, COLOR_WHITE, "Has terminado la carrera.");
+		        if(RaceInfo[raceid][rWinner] == INVALID_PLAYER_ID)
+		        {
+					SendClientMessage(driverid, COLOR_WHITE, "¡Felicitaciones, has ganado la carrera!.");
+					GameTextForPlayer(driverid, "¡Ganaste!", 1000, 3);
+                    RaceInfo[raceid][rWinner] = driverid;
+				} else
+				    SendClientMessage(driverid, COLOR_WHITE, "Has terminado la carrera.");
 			} else // Termina la vuelta
 				{
 			        SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], TrackInfo[raceid][2][0], TrackInfo[raceid][2][1], TrackInfo[raceid][2][2], 10.0);
@@ -418,7 +523,7 @@ stock OnDriverRaceCheckpoint(driverid, raceid)
 			        PlayerRaceInfo[driverid][pCheckpointCount] = 1;
 				}
 		}
-		else // Vuelta comun, con checkpoint entre medio de meta y largada
+		else // checkpoint comun, con checkpoint entremedio de meta y largada
 		    SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][0], 10.0);
 	}
 }

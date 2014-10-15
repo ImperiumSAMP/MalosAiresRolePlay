@@ -655,6 +655,8 @@ CMD:hurtar(playerid, params[])
 
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
+ 	if(ThiefJobInfo[playerid][pFelonLevel] < 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "[BUG] Tendrías que empezar el job con nivel 1 de delincuente, repórtalo a un administrador.");
     if(PlayerInfo[playerid][pJailed] > 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo estando encarcelado.");
 	if(IsPlayerInAnyVehicle(playerid) && GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_BIKE)
@@ -694,7 +696,7 @@ CMD:hurtar(playerid, params[])
         SendClientMessage(playerid, COLOR_WHITE, "¡Has fallado y el sujeto lo ha notado, mejor comienza a correr!");
 	} else
 	    {
-			takeMoney = random(110 * felonLevel) + 60;
+			takeMoney = random(110 * felonLevel + 1) + 60;
 			if(takeMoney > targetMoney)
    				takeMoney = targetMoney;
 		    SendFMessage(playerid, COLOR_WHITE, "Has tomado $%d del sujeto sin que éste se percate de lo sucedido, actúa como si nada hubiera pasado.", takeMoney);
