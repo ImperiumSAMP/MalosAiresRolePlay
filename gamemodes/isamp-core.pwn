@@ -1044,7 +1044,7 @@ public OnPlayerConnectEx(playerid) {
 		PlayerTextDrawTextSize(playerid, TutTD_Text[playerid][i], 621.000000, 290.000000);
 	}
 	
-	PTD_Speedo[playerid] = CreatePlayerTextDraw(playerid, 486.000000, 404.000000, " ");
+	PTD_Speedo[playerid] = CreatePlayerTextDraw(playerid, 525.000000, 404.000000, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Speedo[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawLetterSize(playerid, PTD_Speedo[playerid], 0.300000, 1.200000);
@@ -1052,7 +1052,7 @@ public OnPlayerConnectEx(playerid) {
 	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, PTD_Speedo[playerid], 1);
 
-	PTD_Speedo2[playerid] = CreatePlayerTextDraw(playerid, 555.000000, 415.000000, " ");
+	PTD_Speedo2[playerid] = CreatePlayerTextDraw(playerid, 594.000000, 415.000000, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Speedo2[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_Speedo2[playerid], 1);
 	PlayerTextDrawLetterSize(playerid, PTD_Speedo2[playerid], 0.300000, 1.200000);

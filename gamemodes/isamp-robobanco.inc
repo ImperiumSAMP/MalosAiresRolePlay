@@ -19,9 +19,9 @@
 
 #define ROBBERY_GROUP_NONE      -1
 
-#define POS_BANK_MAIN_DOOR_X    1496.4603
-#define POS_BANK_MAIN_DOOR_Y    -1134.2139
-#define POS_BANK_MAIN_DOOR_Z    1015.3535
+#define POS_BANK_MAIN_DOOR_X    1505.9563
+#define POS_BANK_MAIN_DOOR_Y    -1134.2867
+#define POS_BANK_MAIN_DOOR_Z    1015.4702
 
 #define POS_BANK_ACCESS_DOOR_X  1489.2488
 #define POS_BANK_ACCESS_DOOR_Y  -1150.4886
@@ -97,10 +97,8 @@ stock UpdateBankRobberyCooldown()
 		bankRobberyCooldown--;
 		if(bankRobberyCooldown == ((BANK_ROBBERY_COOLDOWN - 1) * 60 * 60)) // A la hora del robo, se crean devuelta las puertas.
 		{
-			if(!IsValidDynamicObject(BANK_ACCESS_DOOR1))
-				BANK_ACCESS_DOOR1 = CreateDynamicObject(2911, 1488.29553, -1150.96753, 1014.39673,   0.00000, 0.00000, 0.00000);
-            if(!IsValidDynamicObject(BANK_ACCESS_DOOR2))
-				BANK_ACCESS_DOOR2 = CreateDynamicObject(2911, 1490.31726, -1150.95740, 1014.39673,   0.00000, 0.00000, 180.00000);
+			if(!IsValidDynamicObject(BANK_ACCESS_DOOR))
+				BANK_ACCESS_DOOR = CreateDynamicObject(1495, 1488.47302, -1151.01318, 1014.42529,   0.00000, 0.00000, 0.00000);
             if(!IsValidDynamicObject(BANK_SAFE_DOOR))
 				BANK_SAFE_DOOR = CreateDynamicObject(2634, 1485.59802, -1128.59485, 1003.51611,   0.00000, 0.00000, 180.00000);
 		}
@@ -583,8 +581,7 @@ public DetonarPuerta(playerid)
         RobberyGroup[group][RobberyStage] = STAGE_DETONAR_BOVEDA;
         RobberyGroup[group][RobberyStageProgress] = 0;
         PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y destruye la puerta principal, dejando un agujero en esta");
-		DestroyDynamicObject(BANK_ACCESS_DOOR1);
-		DestroyDynamicObject(BANK_ACCESS_DOOR2);
+		DestroyDynamicObject(BANK_ACCESS_DOOR);
 	} else
 		PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y daña la puerta principal");
 	return 1;
