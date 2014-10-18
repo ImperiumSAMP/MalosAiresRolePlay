@@ -73,12 +73,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define TUT_TIME                10000                                           // Tiempo para reintentar el tutorial.
 
 // Posiciones.
-#define POS_BANK_X              2316.6213
-#define POS_BANK_Y              -7.3026
-#define POS_BANK_Z              26.7422
-#define POS_BANK_A              270.00
-#define POS_BANK_I              0
-#define POS_BANK_W              16001
+#define POS_BANK_X              1479.6465
+#define POS_BANK_Y              -1134.2802
+#define POS_BANK_Z              1015.4130
+#define POS_BANK_I              1
+#define POS_BANK_W              1000
 
 #define POS_POLICE_DUTY_X 		221.3295
 #define POS_POLICE_DUTY_Y       185.9018
@@ -2013,7 +2012,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			x_info = strtok(cmdtext, idx);
 			if(!strlen(x_info))
 			{
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks]");
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
 				return 1;
 			}
 	  		else if(strcmp(x_info,"mps",true) == 0)
@@ -8512,7 +8511,6 @@ CMD:gotobanco(playerid, params[]) {
     SetPlayerPos(playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z);
 	SetPlayerInterior(playerid, POS_BANK_I);
 	SetPlayerVirtualWorld(playerid, POS_BANK_W);
-	SetPlayerFacingAngle(playerid, POS_BANK_A);
 	return 1;
 }
 
