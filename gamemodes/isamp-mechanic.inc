@@ -228,9 +228,12 @@ public CountMecasDuty()
 public AutoReparacion(playerid, price)
 {
     new	vehicleid = GetPlayerVehicleID(playerid);
-
+    
 	TogglePlayerControllable(playerid, true);
+	SetPVarInt(playerid, "disabled", DISABLE_NONE);
 	
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el asiento de conductor del vehículo.");
 	if(GetPlayerCash(playerid) < price)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 	    
@@ -732,6 +735,7 @@ CMD:repararauto(playerid, params[])
 	GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
 	SendFMessage(playerid, COLOR_WHITE, "Su vehículo estará listo en %d segundos.", 60 + 60 * repuestos);
 	TogglePlayerControllable(playerid, false);
+	SetPVarInt(playerid, "disabled", DISABLE_FREEZE);
 	SetTimerEx("AutoReparacion", 60 * 1000 + repuestos * 60 * 1000, false, "ii", playerid, price); // 1 minuto reparación basica y si se necesitan, 1 min por repuesto requerido.
 	return 1;
 }
