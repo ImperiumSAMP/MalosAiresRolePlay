@@ -20,43 +20,50 @@ enum tCarKey {
 new playerKeys[MAX_PLAYERS][MAX_PLAYER_KEYS][tCarKey];
 new playerKeyCount[MAX_PLAYERS];
 
-stock updateCarOwnerName(playerid){
-	new i,vehicleid;
+stock updateCarOwnerName(playerid)
+{
+	new vehicleid;
 
-	for(i=0;i<playerKeyCount[playerid];i++){
-		vehicleid=playerKeys[playerid][i][ckCarSqlId];
-		if(playerOwnsCar(playerid,vehicleid))
+	for(new i = 0; i < playerKeyCount[playerid]; i++)
+	{
+		vehicleid = playerKeys[playerid][i][ckCarSqlId];
+		if(playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid)) // Dueño
 		{
-			format(VehicleInfo[vehicleid][VehOwnerName], 24, "%s", GetPlayerNameEx(playerid));
+			format(VehicleInfo[vehicleid][VehOwnerName], MAX_PLAYER_NAME, "%s", GetPlayerNameEx(playerid));
 			SaveVehicle(vehicleid);
 		}
 	}
 }
 
-stock calculateVehiclesTaxes(playerid) {
-	new tax=0,i;
+stock calculateVehiclesTaxes(playerid)
+{
+	new tax = 0;
 	
-	for(i=0;i<playerKeyCount[playerid];i++)
-		tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 4;
-	
+	for(new i = 0; i < playerKeyCount[playerid]; i++)
+	{
+		if(playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid)) // Dueño
+			tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 4;
+   	}
 	return tax;
 }
 
-stock playerHasCarKey(playerid,carId) {
-	new i;
-	for(i=0;i<playerKeyCount[playerid];i++)
-		if(playerKeys[playerid][i][ckCarSqlId]==carId)
+stock playerHasCarKey(playerid, carId)
+{
+	for(new i = 0; i < playerKeyCount[playerid]; i++)
+	{
+		if(playerKeys[playerid][i][ckCarSqlId] == carId)
 			return true;
-	
+	}
 	return false;
 }
 
-stock playerOwnsCar(playerid,carId){
-	new i;
-	for(i=0;i<playerKeyCount[playerid];i++)
-		if(playerKeys[playerid][i][ckCarSqlId]==carId)
-			return playerKeys[playerid][i][ckOwner]==getPlayerMysqlId(playerid);
-	
+stock playerOwnsCar(playerid, carId)
+{
+	for(new i = 0; i < playerKeyCount[playerid]; i++)
+	{
+		if(playerKeys[playerid][i][ckCarSqlId] == carId)
+			return playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid);
+	}
 	return false;
 }
 

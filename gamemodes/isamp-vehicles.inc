@@ -1357,7 +1357,7 @@ CMD:vehiculo(playerid, params[])
 
 CMD:vehcomprar(playerid, params[])
 {
-	new playerName[24], color1, color2, vehicleid, price, newveh = -1;
+	new playerName[MAX_PLAYER_NAME], color1, color2, vehicleid, price, newveh = -1;
 
 	if(sscanf(params, "ii", color1, color2))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vehcomprar [color1] [color2]");

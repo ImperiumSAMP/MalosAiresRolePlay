@@ -7185,27 +7185,24 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             switch(Choice[playerid]) {
                 case CHOICE_CARSELL: {
                     Choice[playerid] = CHOICE_NONE;
-                   	new vehicleid = GetPlayerVehicleID(playerid), price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
-					if(!IsPlayerInAnyVehicle(playerid))	{
-					    return 1;
-					}
-					if(!IsAtDealership(playerid)) {
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo en cualquier lugar!");
-					    return 1;
-					}
-					if(playerHasCarKey(playerid,vehicleid)) {
-						GivePlayerCash(playerid, price / 2);
-						resetVehicle(vehicleid);
-                        VehicleInfo[vehicleid][VehType] = VEH_NONE;
-						SetVehicleToRespawn(vehicleid);
-						SaveVehicle(vehicleid);
-						removeKeyFromPlayer(playerid,vehicleid);
-						deleteExtraKeysForCar(vehicleid);
-						format(string, sizeof(string), "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
-						SendClientMessage(playerid, COLOR_FADE1, string);
-					} else {
+                   	new vehicleid = GetPlayerVehicleID(playerid),
+					   	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
+					   
+					if(!IsPlayerInAnyVehicle(playerid))
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en un vehículo.");
+					if(!IsAtDealership(playerid))
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo en cualquier lugar!");
+					if(!playerOwnsCar(playerid,vehicleid))
 						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo que no te pertenece!");
-					}
+
+					GivePlayerCash(playerid, price / 2);
+					resetVehicle(vehicleid);
+                    VehicleInfo[vehicleid][VehType] = VEH_NONE;
+					SetVehicleToRespawn(vehicleid);
+					SaveVehicle(vehicleid);
+					removeKeyFromPlayer(playerid,vehicleid);
+					deleteExtraKeysForCar(vehicleid);
+					SendFMessage(playerid, COLOR_WHITE, "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
                 }
             }
             PlayerPlaySound(playerid, 5201, 0.0, 0.0, 0.0);
