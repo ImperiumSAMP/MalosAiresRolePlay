@@ -9,11 +9,10 @@
 #include <time>
 #include <file>
 #include <sscanf2>
-//#include <foreach>
+#include <foreach>
 #include <zcmd>
 #include <streamer>
 #include <Dini>
-#include <progress>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
@@ -255,8 +254,6 @@ new
 	Text:RegTDBackground,
 	Text:RegTDTitle,
 	Text:TutTDBackground,
-	Text:ThirstTD,
-	Text:HungerTD,
 	PlayerText:TutTD_Text[MAX_PLAYERS][8],
 	PlayerText:RegTDGender[MAX_PLAYERS],
 	PlayerText:RegTDSkin[MAX_PLAYERS],
@@ -265,6 +262,9 @@ new
 	PlayerText:RegTDArrow[MAX_PLAYERS],
 	PlayerText:PTD_Speedo[MAX_PLAYERS],
 	PlayerText:PTD_Speedo2[MAX_PLAYERS],
+	PlayerText:PTD_BasicNeeds[MAX_PLAYERS],
+	PlayerText:PTD_Hunger[MAX_PLAYERS],
+	PlayerText:PTD_Thirst[MAX_PLAYERS],
 	PlayerText:PTD_Timer[MAX_PLAYERS],
 	PlayerText:gCurrentPageTextDrawId[MAX_PLAYERS],
 	PlayerText:gHeaderTextDrawId[MAX_PLAYERS],
@@ -285,10 +285,6 @@ new
 	
 	// Sistema de streams de radios
 	bool:hearingRadioStream[MAX_PLAYERS],
-	
-	// Sistema de hambre y sed
-	Bar:pThirstBar[MAX_PLAYERS],
-	Bar:pHungerBar[MAX_PLAYERS],
 	
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
@@ -325,6 +321,7 @@ new
 	bool:RadioEnabled[MAX_PLAYERS],
 	bool:FactionEnabled[MAX_PLAYERS],
 	bool:TalkAnimEnabled[MAX_PLAYERS],
+    bool:HudEnabled[MAX_PLAYERS],
 	
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
@@ -975,8 +972,6 @@ public OnGameModeExit() {
 	TextDrawDestroy(RegTDBackground);
 	TextDrawDestroy(RegTDTitle);
 	TextDrawDestroy(TutTDBackground);
-	TextDrawDestroy(ThirstTD);
-	TextDrawDestroy(HungerTD);
 	DestroyAllDynamic3DTextLabels();
 	DestroyAllDynamicPickups();
 	DestroyAllDynamicObjects();
@@ -1204,6 +1199,7 @@ public ResetStats(playerid)
 	FactionEnabled[playerid] = true;
 	PhoneEnabled[playerid] = true;
 	TalkAnimEnabled[playerid] = false;
+	HudEnabled[playerid] = true;
 	
 	/* Sistema de tazer */
 	resetTazer(playerid);
@@ -1437,10 +1433,9 @@ public OnPlayerDisconnect(playerid, reason) {
 	
 	PlayerLeaveRobberyGroup(playerid);
 	
-	DeletePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
+	HidePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
 	
-	PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-	PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
+	HidePlayerSpeedo(playerid);
 	KillTimer(pSpeedoTimer[playerid]); // Si se desonectó estando arriba del auto, borramos el timer recursivo de la gasolina
 	
 	HideGangZonesToPlayer(playerid);
@@ -2088,6 +2083,23 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
 				    RadioEnabled[playerid] = true;
+				}
+			}
+ 			else if(strcmp(x_info,"hud",true) == 0)
+			{
+				if(HudEnabled[playerid])
+				{
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás las interfaces gráficas del combustible, velocidad, hambre, etc.");
+				    HudEnabled[playerid] = false;
+				    HidePlayerSpeedo(playerid);
+					HidePlayerBasicNeeds(playerid);
+				}
+				else
+				{
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás nuevamente las interfaces gráficas del combustible, velocidad, hambre, etc.");
+				    HudEnabled[playerid] = true;
+				    ShowPlayerSpeedo(playerid);
+				    ShowPlayerBasicNeeds(playerid);
 				}
 			}
 	  		else if(strcmp(x_info,"telefono",true) == 0)
@@ -4067,8 +4079,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
-	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-	    PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
+	    HidePlayerSpeedo(playerid);
 	    KillTimer(pSpeedoTimer[playerid]);
 	    //
 
@@ -4135,9 +4146,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
 		    // Si no es una bicicleta mostramos el velocímetro.
 			KillTimer(pSpeedoTimer[playerid]); // Como las id de timer nunca se repiten, por si las dudas, borramos cualquier timer anterior (si existiese y reemplazamos la id, queda andando para siempre)
-			PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
-			PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
-			pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
+            pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1250, true, "d", playerid);
+			if(HudEnabled[playerid])
+				ShowPlayerSpeedo(playerid);
 		}
 		
 		vehicleid = GetPlayerVehicleID(playerid);
@@ -5006,8 +5017,7 @@ public SetPlayerSpawn(playerid) {
 
     isUsingMaskInSlot[playerid] = -1; // Al spawnear, deja de estar con la mascara puesta
 
-    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-    PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
+    HidePlayerSpeedo(playerid);
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
 
  	switch(PlayerInfo[playerid][pJailed]) {
@@ -6634,8 +6644,25 @@ public speedoTimer(playerid)
 		PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -65281); // Amarillo
 	else
 	   	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -16776961); // Rojo
-    PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
+	   	
+	if(HudEnabled[playerid])
+    	PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
 	return 1;
+}
+
+HidePlayerSpeedo(playerid)
+{
+	PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
+	PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
+}
+
+ShowPlayerSpeedo(playerid)
+{
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	{
+		PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
+		PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
+	}
 }
 
 public vehicleTimer()
@@ -7381,24 +7408,6 @@ stock LoadTDs() {
 	TextDrawColor(textdrawVariables[1], 929337855);
 	TextDrawSetOutline(textdrawVariables[1], 1);
 	TextDrawSetProportional(textdrawVariables[1], 1);
-	
-	ThirstTD = TextDrawCreate(547.000000, 52.000000, "Sed");
-	TextDrawBackgroundColor(ThirstTD, 255);
-	TextDrawFont(ThirstTD, 1);
-	TextDrawLetterSize(ThirstTD, 0.260000, 0.799999);
-	TextDrawColor(ThirstTD, -1);
-	TextDrawSetOutline(ThirstTD, 0);
-	TextDrawSetProportional(ThirstTD, 1);
-	TextDrawSetShadow(ThirstTD, 1);
-
-	HungerTD = TextDrawCreate(547.000000, 58.000000, "Hambre");
-	TextDrawBackgroundColor(HungerTD, 255);
-	TextDrawFont(HungerTD, 1);
-	TextDrawLetterSize(HungerTD, 0.230000, 1.000000);
-	TextDrawColor(HungerTD, -1);
-	TextDrawSetOutline(HungerTD, 0);
-	TextDrawSetProportional(HungerTD, 1);
-	TextDrawSetShadow(HungerTD, 1);
     
 	RegTDBorder1 = TextDrawCreate(635.000000, 106.000000, " ");
 	TextDrawBackgroundColor(RegTDBorder1, 255);
@@ -11357,26 +11366,75 @@ public UpdatePlayerAdiction()
 
 CreatePlayerBasicNeeds(playerid)
 {
-    pThirstBar[playerid] = CreateProgressBar(578.00, 55.00, 27.50, 4.19, 14287103, 100.0);
-	pHungerBar[playerid] = CreateProgressBar(578.00, 61.00, 27.50, 4.19, -120585985, 100.0);
-	
-	TextDrawShowForPlayer(playerid, ThirstTD);
-	TextDrawShowForPlayer(playerid, HungerTD);
+	PTD_BasicNeeds[playerid] = CreatePlayerTextDraw(playerid, 525.000000, 99.000000, "Hambre:~n~Sed:");
+	PlayerTextDrawBackgroundColor(playerid, PTD_BasicNeeds[playerid], 255);
+	PlayerTextDrawFont(playerid, PTD_BasicNeeds[playerid], 1);
+	PlayerTextDrawLetterSize(playerid, PTD_BasicNeeds[playerid], 0.300000, 1.200000);
+	PlayerTextDrawColor(playerid, PTD_BasicNeeds[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, PTD_BasicNeeds[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, PTD_BasicNeeds[playerid], 1);
+	PlayerTextDrawShow(playerid, PTD_BasicNeeds[playerid]);
 
-	SetProgressBarValue(pThirstBar[playerid], PlayerInfo[playerid][pThirst]);
-	SetProgressBarValue(pHungerBar[playerid], PlayerInfo[playerid][pHunger]);
-	ShowProgressBarForPlayer(playerid, pThirstBar[playerid]);
-	ShowProgressBarForPlayer(playerid, pHungerBar[playerid]);
-	UpdateProgressBar(pThirstBar[playerid], playerid);
-	UpdateProgressBar(pHungerBar[playerid], playerid);
+	PTD_Hunger[playerid] = CreatePlayerTextDraw(playerid, 571.000000, 99.000000, " ");
+	PlayerTextDrawBackgroundColor(playerid, PTD_Hunger[playerid], 255);
+	PlayerTextDrawFont(playerid, PTD_Hunger[playerid], 1);
+	PlayerTextDrawLetterSize(playerid, PTD_Hunger[playerid], 0.300000, 1.200000);
+	PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, PTD_Hunger[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, PTD_Hunger[playerid], 1);
+
+	PTD_Thirst[playerid] = CreatePlayerTextDraw(playerid, 552.000000, 110.000000, " ");
+	PlayerTextDrawBackgroundColor(playerid, PTD_Thirst[playerid], 255);
+	PlayerTextDrawFont(playerid, PTD_Thirst[playerid], 1);
+	PlayerTextDrawLetterSize(playerid, PTD_Thirst[playerid], 0.300000, 1.200000);
+	PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, PTD_Thirst[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, PTD_Thirst[playerid], 1);
+	
+	UpdatePlayerBasicNeedsTextdraws(playerid);
 }
 
-DeletePlayerBasicNeeds(playerid)
+ShowPlayerBasicNeeds(playerid)
 {
-	DestroyProgressBar(pThirstBar[playerid]);
-	DestroyProgressBar(pHungerBar[playerid]);
- 	TextDrawHideForPlayer(playerid, ThirstTD);
-    TextDrawHideForPlayer(playerid, HungerTD);
+    PlayerTextDrawShow(playerid, PTD_BasicNeeds[playerid]);
+    PlayerTextDrawShow(playerid, PTD_Hunger[playerid]);
+    PlayerTextDrawShow(playerid, PTD_Thirst[playerid]);
+}
+
+HidePlayerBasicNeeds(playerid)
+{
+	PlayerTextDrawHide(playerid, PTD_BasicNeeds[playerid]);
+	PlayerTextDrawHide(playerid, PTD_Hunger[playerid]);
+	PlayerTextDrawHide(playerid, PTD_Thirst[playerid]);
+}
+
+UpdatePlayerBasicNeedsTextdraws(playerid)
+{
+	new string[12];
+	
+	format(string, sizeof(string), "%.1f%%", PlayerInfo[playerid][pHunger]);
+	PlayerTextDrawSetString(playerid, PTD_Hunger[playerid], string);
+	format(string, sizeof(string), "%.1f%%", PlayerInfo[playerid][pThirst]);
+	PlayerTextDrawSetString(playerid, PTD_Thirst[playerid], string);
+
+	if(PlayerInfo[playerid][pHunger] > 30.0)
+	    PlayerTextDrawColor(playerid, PTD_Hunger[playerid], 16711935); // Verde
+	else if(PlayerInfo[playerid][pHunger] > 15.0)
+	    PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -65281); // Amarillo
+	else
+        PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -16776961); // Rojo
+
+	if(PlayerInfo[playerid][pThirst] > 30.0)
+	    PlayerTextDrawColor(playerid, PTD_Thirst[playerid], 16711935); // Verde
+	else if(PlayerInfo[playerid][pThirst] > 15.0)
+	    PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -65281); // Amarillo
+	else
+        PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -16776961); // Rojo
+	if(HudEnabled[playerid])
+	{
+	    PlayerTextDrawShow(playerid, PTD_Hunger[playerid]);
+	    PlayerTextDrawShow(playerid, PTD_Thirst[playerid]);
+	}
 }
 
 RefillPlayerBasicNeeds(playerid)
@@ -11384,14 +11442,12 @@ RefillPlayerBasicNeeds(playerid)
 	if(PlayerInfo[playerid][pThirst] <= 0.0) // Si murio por falta de agua
 	{
 	    PlayerInfo[playerid][pThirst] = 30.0;
-	    SetProgressBarValue(pThirstBar[playerid], PlayerInfo[playerid][pThirst]);
-	    UpdateProgressBar(pThirstBar[playerid], playerid);
+        UpdatePlayerBasicNeedsTextdraws(playerid);
 	}
 	if(PlayerInfo[playerid][pHunger] <= 0.0) // Si murio por falta de comida
 	{
 	    PlayerInfo[playerid][pHunger] = 30.0;
-	    SetProgressBarValue(pHungerBar[playerid], PlayerInfo[playerid][pHunger]);
-		UpdateProgressBar(pHungerBar[playerid], playerid);
+        UpdatePlayerBasicNeedsTextdraws(playerid);
 	}
 }
 
@@ -11410,9 +11466,7 @@ public UpdatePlayerBasicNeeds()
 					PlayerInfo[playerid][pThirst] = 0.0;
 				else
 					PlayerInfo[playerid][pThirst] -= percentLoss;
-
-			  	SetProgressBarValue(pThirstBar[playerid], PlayerInfo[playerid][pThirst]);
-			    UpdateProgressBar(pThirstBar[playerid], playerid);
+			  	UpdatePlayerBasicNeedsTextdraws(playerid);
 			} else
 			    {
 				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0.0)
@@ -11428,9 +11482,7 @@ public UpdatePlayerBasicNeeds()
 					PlayerInfo[playerid][pHunger] = 0.0;
 				else
 					PlayerInfo[playerid][pHunger] -= percentLoss;
-
-				SetProgressBarValue(pHungerBar[playerid], PlayerInfo[playerid][pHunger]);
-			    UpdateProgressBar(pHungerBar[playerid], playerid);
+				UpdatePlayerBasicNeedsTextdraws(playerid);
 			} else
 				{
 				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0.0)
@@ -11453,8 +11505,7 @@ PlayerDrink(playerid, Float:value)
 	}
 	else
 	    PlayerInfo[playerid][pThirst] += value;
-	SetProgressBarValue(pThirstBar[playerid], PlayerInfo[playerid][pThirst]);
-	UpdateProgressBar(pThirstBar[playerid], playerid);
+	UpdatePlayerBasicNeedsTextdraws(playerid);
 }
 
 PlayerEat(playerid, Float:value)
@@ -11466,8 +11517,7 @@ PlayerEat(playerid, Float:value)
 	}
 	else
 	    PlayerInfo[playerid][pHunger] += value;
-	SetProgressBarValue(pHungerBar[playerid], PlayerInfo[playerid][pHunger]);
-	UpdateProgressBar(pHungerBar[playerid], playerid);
+    UpdatePlayerBasicNeedsTextdraws(playerid);
 }
 
 //=============================COMANDOS DEL SAME================================
