@@ -264,6 +264,7 @@ new
 	PlayerText:RegTDOrigin[MAX_PLAYERS],
 	PlayerText:RegTDArrow[MAX_PLAYERS],
 	PlayerText:PTD_Speedo[MAX_PLAYERS],
+	PlayerText:PTD_Speedo2[MAX_PLAYERS],
 	PlayerText:PTD_Timer[MAX_PLAYERS],
 	PlayerText:gCurrentPageTextDrawId[MAX_PLAYERS],
 	PlayerText:gHeaderTextDrawId[MAX_PLAYERS],
@@ -1043,15 +1044,21 @@ public OnPlayerConnectEx(playerid) {
 		PlayerTextDrawTextSize(playerid, TutTD_Text[playerid][i], 621.000000, 290.000000);
 	}
 	
-	PTD_Speedo[playerid] = CreatePlayerTextDraw(playerid, 620.000000, 376.000000, " ");
-	PlayerTextDrawAlignment(playerid, PTD_Speedo[playerid], 3);
+	PTD_Speedo[playerid] = CreatePlayerTextDraw(playerid, 486.000000, 404.000000, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Speedo[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_Speedo[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, PTD_Speedo[playerid], 0.500000, 1.000000);
+	PlayerTextDrawLetterSize(playerid, PTD_Speedo[playerid], 0.300000, 1.200000);
 	PlayerTextDrawColor(playerid, PTD_Speedo[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 0);
+	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, PTD_Speedo[playerid], 1);
-	PlayerTextDrawSetShadow(playerid, PTD_Speedo[playerid], 1);
+
+	PTD_Speedo2[playerid] = CreatePlayerTextDraw(playerid, 555.000000, 415.000000, " ");
+	PlayerTextDrawBackgroundColor(playerid, PTD_Speedo2[playerid], 255);
+	PlayerTextDrawFont(playerid, PTD_Speedo2[playerid], 1);
+	PlayerTextDrawLetterSize(playerid, PTD_Speedo2[playerid], 0.300000, 1.200000);
+	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -1);
+	PlayerTextDrawSetOutline(playerid, PTD_Speedo2[playerid], 1);
+	PlayerTextDrawSetProportional(playerid, PTD_Speedo2[playerid], 1);
 
 	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 103, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Timer[playerid], 255);
@@ -1433,6 +1440,7 @@ public OnPlayerDisconnect(playerid, reason) {
 	DeletePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
 	
 	PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
+	PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
 	KillTimer(pSpeedoTimer[playerid]); // Si se desonectó estando arriba del auto, borramos el timer recursivo de la gasolina
 	
 	HideGangZonesToPlayer(playerid);
@@ -4060,6 +4068,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
 	    // Ocultar velocímetro.
 	    PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
+	    PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
 	    KillTimer(pSpeedoTimer[playerid]);
 	    //
 
@@ -4127,6 +4136,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		    // Si no es una bicicleta mostramos el velocímetro.
 			KillTimer(pSpeedoTimer[playerid]); // Como las id de timer nunca se repiten, por si las dudas, borramos cualquier timer anterior (si existiese y reemplazamos la id, queda andando para siempre)
 			PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
+			PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
 			pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1500, true, "d", playerid);
 		}
 		
@@ -4997,6 +5007,7 @@ public SetPlayerSpawn(playerid) {
     isUsingMaskInSlot[playerid] = -1; // Al spawnear, deja de estar con la mascara puesta
 
     PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
+    PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
 
  	switch(PlayerInfo[playerid][pJailed]) {
@@ -6609,63 +6620,20 @@ public healTimer(playerid) {
 	return 1;
 }
 
-public speedoTimer(playerid) {
-	new vehicleID = GetPlayerVehicleID(playerid);
-	new string[20];
-	new string2[64];
-
-  	// Actualizamos la información del velocímetro.
-
-	if((VehicleInfo[vehicleID][VehFuel] > 0) && (VehicleInfo[vehicleID][VehFuel] < 100000)) {
-		format(string, sizeof(string), "~g~%s~l~%s", "I", "IIIIIIIII");
-	}
-
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 1)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 2))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "II", "IIIIIIII");
-	}
+public speedoTimer(playerid)
+{
+	new vehicleID = GetPlayerVehicleID(playerid), string[50];
 	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 2)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 3))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "III", "IIIIIII");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 3)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 4))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIII", "IIIIII");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 4)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 5))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIIII", "IIIII");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 5)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 6))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIIIII", "IIII");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 6)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 7))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIII", "III");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 7)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 8))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIIII", "II");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 8)) && (VehicleInfo[vehicleID][VehFuel] < ((100 / 10) * 9))) {
-		format(string, sizeof(string), "~g~%s~l~%s", "IIIIIIIII", "I");
-	}
-	
-	if((VehicleInfo[vehicleID][VehFuel] >= ((100 / 10) * 9)) && (VehicleInfo[vehicleID][VehFuel] <= 100)) {
-		format(string, sizeof(string), "~g~%s", "IIIIIIIIII");
-	}
-	
-	if(VehicleInfo[vehicleID][VehFuel] == 0) {
-		format(string, sizeof(string), "~l~%s", "IIIIIIIIII");
-	}
-				// Format the final fuel-gauge readout
-		//format(FuelString, 50, "~w~Fuel: %s", FuelStatus);
-		// Display the fuel-gauge
-		//TextDrawSetString(APlayerData[playerid][FuelGauge], FuelString);
-
-    format(string2, sizeof(string2), "%d KM/H~n~ ~n~Combustible: ~n~%s", GetPlayerSpeed(playerid, true), string);
-	PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string2);
+ 	format(string, sizeof(string), "Velocidad: %dkm/h~n~Combustible:", GetPlayerSpeed(playerid, true));
+	PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string);
+ 	format(string, sizeof(string), "%d%%", VehicleInfo[vehicleID][VehFuel]);
+ 	PlayerTextDrawSetString(playerid, PTD_Speedo2[playerid], string);
+ 	if(VehicleInfo[vehicleID][VehFuel] > 25)
+ 	    PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], 16711935); // Verde
+	else if(VehicleInfo[vehicleID][VehFuel] > 10)
+		PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -65281); // Amarillo
+	else
+	   	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -16776961); // Rojo
 	return 1;
 }
 
