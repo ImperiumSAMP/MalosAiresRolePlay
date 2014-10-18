@@ -6628,12 +6628,13 @@ public speedoTimer(playerid)
 	PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string);
  	format(string, sizeof(string), "%d%%", VehicleInfo[vehicleID][VehFuel]);
  	PlayerTextDrawSetString(playerid, PTD_Speedo2[playerid], string);
- 	if(VehicleInfo[vehicleID][VehFuel] > 25)
+ 	if(VehicleInfo[vehicleID][VehFuel] > 30)
  	    PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], 16711935); // Verde
-	else if(VehicleInfo[vehicleID][VehFuel] > 10)
+	else if(VehicleInfo[vehicleID][VehFuel] > 15)
 		PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -65281); // Amarillo
 	else
 	   	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -16776961); // Rojo
+    PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
 	return 1;
 }
 
