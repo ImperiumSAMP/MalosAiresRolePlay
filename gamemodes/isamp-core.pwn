@@ -10440,10 +10440,6 @@ CMD:pservicio(playerid, params[])
 		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
 		CopDuty[playerid] = 0;
-		foreach(new i:Player)
-		    {
-		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-			}
 		SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
@@ -10788,10 +10784,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 3, 1); // Macana
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 		            	SetPlayerSkin(playerid, 71); // Vigilante
-						foreach(new i:Player)
-		                {
-		                ShowPlayerNameTagForPlayer(i, playerid, 1);
-			            }
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 8));
 						return 1;
@@ -10804,10 +10796,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 41, 250); // Spraycan
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 		            	SetPlayerSkin(playerid, 266); // Oficial
-						foreach(new i:Player)
-             		    {
-	        	        ShowPlayerNameTagForPlayer(i, playerid, 1);
-            			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 7));
 						return 1;
@@ -10821,10 +10809,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 22, 100); // 9mm
 						GivePlayerWeapon(playerid, 25, 25); // Escopeta
 		            	SetPlayerSkin(playerid, 280); // Cabo
-						foreach(new i:Player)
-            		    {
-           		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-              			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 6));
 						return 1;
@@ -10838,10 +10822,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 24, 50); // Desert Eagle
 						GivePlayerWeapon(playerid, 25, 35); // Escopeta
 		            	SetPlayerSkin(playerid, 284); // Sargento
-						foreach(new i:Player)
-              		    {
-	           	        ShowPlayerNameTagForPlayer(i, playerid, 1);
-	            		}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 5));
 						return 1;
@@ -10856,10 +10836,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 30); // Rifle de Caza
 		            	SetPlayerSkin(playerid, 281); // Sargento Mayor
-						foreach(new i:Player)
-               		    {
-	        	        ShowPlayerNameTagForPlayer(i, playerid, 1);
-             			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 4));
 						return 1;
@@ -10874,10 +10850,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 35); // Rifle de Caza
 		            	SetPlayerSkin(playerid, 283); // Teniente
-						foreach(new i:Player)
-	            	    {
-	         	        ShowPlayerNameTagForPlayer(i, playerid, 1);
-             			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 3));
 						return 1;
@@ -10892,10 +10864,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 40); // Rifle de Caza
 		            	SetPlayerSkin(playerid, 288); // Sub Comisario
-						foreach(new i:Player)
-               		    {
-		                ShowPlayerNameTagForPlayer(i, playerid, 1);
-			            }
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 2));
 						return 1;
@@ -10910,10 +10878,6 @@ CMD:equipo(playerid, params[]) {
 						GivePlayerWeapon(playerid, 25, 50); // Escopeta
 						GivePlayerWeapon(playerid, 33, 50); // Rifle de Caza
 		            	SetPlayerSkin(playerid, 282); // Comisario
-						foreach(new i:Player)
-               		    {
-           		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-            			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(FAC_PMA, 1));
 						return 1;
@@ -10927,12 +10891,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 24, 50);
 		            	GivePlayerWeapon(playerid, 25, 80);
 		            	SetPlayerSkin(playerid, 285);
-					    foreach(new i:Player)
-					    {
-						if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-							ShowPlayerNameTagForPlayer(i, playerid, 0);
-					    }
-
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo o tener autorización a G.E.O.F.", GetRankName(1, 6));
 						return 1;
@@ -10946,11 +10904,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 24, 50);
 		            	GivePlayerWeapon(playerid, 29, 200);
 		            	SetPlayerSkin(playerid, 285);
-						foreach(new i:Player)
-					    {
-						if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-							ShowPlayerNameTagForPlayer(i, playerid, 0);
-					    }
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo o tener autorización a G.E.O.F.", GetRankName(FAC_PMA, 5));
 						return 1;
@@ -10964,11 +10917,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 24, 50);
 		            	GivePlayerWeapon(playerid, 31, 200);
 		            	SetPlayerSkin(playerid, 285);
-						foreach(new i:Player)
-					    {
-						if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-							ShowPlayerNameTagForPlayer(i, playerid, 0);
-					    }
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo o tener autorización a G.E.O.F.", GetRankName(FAC_PMA, 4));
 						return 1;
@@ -10982,11 +10930,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 24, 50);
 		            	GivePlayerWeapon(playerid, 34, 40);
 		            	SetPlayerSkin(playerid, 285);
-						foreach(new i:Player)
-					    {
-						if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-							ShowPlayerNameTagForPlayer(i, playerid, 0);
-					    }
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo o tener autorización a G.E.O.F.", GetRankName(FAC_PMA, 4));
 						return 1;
@@ -11000,10 +10943,6 @@ CMD:equipo(playerid, params[]) {
 		            	GivePlayerWeapon(playerid, 24, 35);
 		            	GivePlayerWeapon(playerid, 29, 200);
                         SetPlayerSkin(playerid, 286);
-						foreach(new i:Player)
-               		    {
-           		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-            			}
 		            } else {
 		            	SendFMessage(playerid, COLOR_YELLOW2, "Debes ser un %s para tener acceso a este equipo.", GetRankName(1, 4));
 						return 1;
