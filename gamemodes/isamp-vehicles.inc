@@ -10,6 +10,7 @@
 //Defines
 #define MAX_VEH                 1001
 #define MAX_RENTCAR             30
+#define MAX_PLAYER_VEHICLES     3
 
 //====[TIPOS DE VEHICULOS]======================================================
 #define	VEH_NONE				0	// Ninguno, no spawnea.
@@ -67,7 +68,6 @@ enum Cars {
 	VehBonnet,
 	VehBoot,
 	VehObjective,
-	VehOwnerSlot,
  	Float:VehHP,
  	VehPlate[32],
  	VehDamage1,
@@ -765,7 +765,6 @@ resetVehicle(id)
     VehicleInfo[id][VehBonnet]		= -1;
     VehicleInfo[id][VehBoot]		= -1;
     VehicleInfo[id][VehLights]		= -1;
-    VehicleInfo[id][VehOwnerSlot]	= 0;
     VehicleInfo[id][VehFuel]		= 0;
     VehicleInfo[id][VehMarijuana]	= 0;
     VehicleInfo[id][VehLSD]			= 0;
@@ -800,7 +799,7 @@ SaveVehicle(id)
  	}
  	VehicleInfo[id][VehEngine] = 0;
 
-	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehOwnerSlot=%d,VehFuel=%d,VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
+	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d,VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
 		VehicleInfo[id][VehModel],
 	    VehicleInfo[id][VehPosX],
 	    VehicleInfo[id][VehPosY],
@@ -821,7 +820,6 @@ SaveVehicle(id)
 	    VehicleInfo[id][VehBonnet],
 	    VehicleInfo[id][VehBoot],
 	    VehicleInfo[id][VehLights],
-	    VehicleInfo[id][VehOwnerSlot],
 	    VehicleInfo[id][VehFuel],
 		VehicleInfo[id][VehHP],
 		VehicleInfo[id][VehPlate],
@@ -1367,7 +1365,12 @@ CMD:vehcomprar(playerid, params[])
 	if(VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP && VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP2 && VehicleInfo[vehicleid][VehType] != VEH_SHIPYARD)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar un vehículo que no está a la venta!");
 	//if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0)
-	if(getPlayerFreeKeySlots(playerid)<1)
+	if(GetPlayerOwnedCarsAmount(playerid) >= MAX_PLAYER_VEHICLES)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "No puedes tener mas de %d vehículos a tu nombre.", MAX_PLAYER_VEHICLES);
+	    return 1;
+	}
+	if(getPlayerFreeKeySlots(playerid) < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehiculos.");
 	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
     if(GetPlayerCash(playerid) < price)
@@ -1710,7 +1713,7 @@ CMD:avinfo(playerid, params[])
   	SendFMessage(playerid, COLOR_WHITE, "- Colores: %d-%d", VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2]);
  	SendFMessage(playerid, COLOR_WHITE, "- Faccion: %d", VehicleInfo[id][VehFaction]);
  	SendFMessage(playerid, COLOR_WHITE, "- Empleo: %d", VehicleInfo[id][VehJob]);
-  	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s pid: %d - slot: %d", VehicleInfo[id][VehOwnerName], VehicleInfo[id][VehOwnerSQLID], VehicleInfo[id][VehOwnerSlot]);
+  	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s pid: %d", VehicleInfo[id][VehOwnerName], VehicleInfo[id][VehOwnerSQLID]);
   	SendFMessage(playerid, COLOR_WHITE, "- Patente: %s", VehicleInfo[id][VehPlate]);
 	SendFMessage(playerid, COLOR_WHITE, "- HP: %f - HP2: %f", hp, VehicleInfo[id][VehHP]);
 	SendFMessage(playerid, COLOR_WHITE, "- Gasolina: %d", VehicleInfo[id][VehFuel]);

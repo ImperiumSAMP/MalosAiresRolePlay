@@ -89,11 +89,11 @@ CMD:playerrobobancodebug(playerid, params[])
 	if(id < 0 || id >= MAX_PLAYERS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID invalida.");
 
-	SendFMessage(playerid, COLOR_YELLOW, "isPlayerInRobberyGroup = %b", isPlayerInRobberyGroup[id]);
-	SendFMessage(playerid, COLOR_YELLOW, "pRobberyStage = %d", pRobberyStage[id]);
-	SendFMessage(playerid, COLOR_YELLOW, "pRobberyGroupOffer = %d", pRobberyGroupOffer[id]);
-	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoney = %b", pHoldingMoney[id]);
-	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoneyTimer = %d", pHoldingMoneyTimer[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "isPlayerInRobberyGroup[%d] = %b", id, isPlayerInRobberyGroup[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pRobberyStage[%d] = %d", id, pRobberyStage[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pRobberyGroupOffer[%d] = %d", id, pRobberyGroupOffer[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoney[%d] = %b", id, pHoldingMoney[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoneyTimer[%d] = %d", id, pHoldingMoneyTimer[id]);
 	return 1;
 }
 	

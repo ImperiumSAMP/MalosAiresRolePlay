@@ -47,6 +47,18 @@ stock calculateVehiclesTaxes(playerid)
 	return tax;
 }
 
+stock GetPlayerOwnedCarsAmount(playerid)
+{
+	new aux = 0;
+
+	for(new i = 0; i < playerKeyCount[playerid]; i++)
+	{
+		if(playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid))
+			aux ++;
+	}
+ 	return aux;
+}
+
 stock playerHasCarKey(playerid, carId)
 {
 	for(new i = 0; i < playerKeyCount[playerid]; i++)

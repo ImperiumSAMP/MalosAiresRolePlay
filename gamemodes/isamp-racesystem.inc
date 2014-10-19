@@ -38,6 +38,7 @@ forward ResetPlayerRaceVariables(playerid);
 forward ResetServerRacesVariables();
 forward CancelRaceOffer(playerid);
 forward OnPlayerLeaveRace(playerid);
+forward OnDriverRaceCheckpoint(driverid);
 
 //=============================RESET VARIABLES==================================
 
@@ -533,8 +534,9 @@ CMD:carrerainiciar(playerid, params[])
 	return 1;
 }
 
-stock OnDriverRaceCheckpoint(driverid, raceid)
+stock OnDriverRaceCheckpoint(driverid)
 {
+	new raceid = PlayerRaceInfo[driverid][pRaceID];
 	if(raceid != -1)
 	{
 		DisablePlayerRaceCheckpoint(driverid);

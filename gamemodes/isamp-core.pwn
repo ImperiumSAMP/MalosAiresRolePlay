@@ -3070,7 +3070,6 @@ public OnVehicleDataLoad(id) {
 		cache_get_field_content(0, "VehEngine", result); 				VehicleInfo[id][VehEngine] 		= strval(result);
 		cache_get_field_content(0, "VehBonnet", result); 				VehicleInfo[id][VehBonnet] 		= strval(result);
 		cache_get_field_content(0, "VehBoot", result); 					VehicleInfo[id][VehBoot] 		= strval(result);
-		cache_get_field_content(0, "VehOwnerSlot", result); 			VehicleInfo[id][VehOwnerSlot] 	= strval(result);
 		cache_get_field_content(0, "VehMarijuana", result); 			VehicleInfo[id][VehMarijuana] 	= strval(result);
 		cache_get_field_content(0, "VehLSD", result); 					VehicleInfo[id][VehLSD] 		= strval(result);
 		cache_get_field_content(0, "VehEcstasy", result); 				VehicleInfo[id][VehEcstasy] 		= strval(result);
@@ -4618,7 +4617,7 @@ public OnPlayerLeaveCheckpoint(playerid) {
 
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
-    OnDriverRaceCheckpoint(playerid, PlayerRaceInfo[playerid][pRaceID]);
+    OnDriverRaceCheckpoint(playerid);
 	deleteFinishedSprintRace(playerid);
 	return 1;
 }
@@ -7630,21 +7629,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-		            case 1:
-					{
-				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_ALFAJOR))
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						if(GetHandItem(playerid) != 0)
-						    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes tus manos ocupadas.");
-	  					SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, 1);
-						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_ALFAJOR));
-						PlayerActionMessage(playerid, 15.0, "agarra un alfajor Jorgito y le paga al empleado su precio.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un alfajor por $%d. Lo tienes en la mano!", GetItemPrice(ITEM_ID_ALFAJOR));
-						Business[business][bTill] += GetItemPrice(ITEM_ID_ALFAJOR);
-			        	Business[business][bProducts]--;
-			        	saveBusiness(business);
-					}
-			        case 2:
+			        case 1:
 					{
 				        if(GetPlayerCash(playerid) < PRICE_CIGARETTES)
 				            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7658,7 +7643,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				        Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
-			        case 3:
+			        case 2:
 					{
 				        if(GetPlayerCash(playerid) < PRICE_LIGHTER)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7672,7 +7657,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
-					case 4:
+					case 3:
 					{
 						if(GetPlayerCash(playerid) < PRICE_PHONE)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
@@ -7687,7 +7672,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
         				saveBusiness(business);
 					}
-					case 5:
+					case 4:
 					{
 				        if(GetPlayerCash(playerid) < PRICE_PHONEBOOK)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7701,7 +7686,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				        Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
-			        case 6:
+			        case 5:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_BIDON))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7716,7 +7701,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
         				Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
-			     	case 7:
+			     	case 6:
 					 {
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAMARA)*35)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7728,7 +7713,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
         				Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
-			        case 8:
+			        case 7:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_SANDWICH))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7743,7 +7728,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 9:
+					case 8:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_AGUAMINERAL))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7758,7 +7743,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 10:
+					case 9:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MALETIN))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7772,7 +7757,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 11:
+					case 10:
 					{
 				        if(GetPlayerCash(playerid) < PRICE_RADIO)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -9549,9 +9534,8 @@ CMD:comprar(playerid, params[]) {
 	    if(Business[business][bProducts] <= 0)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
 		format(title, sizeof(title), "%s", Business[business][bName]);
-		format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Alfajor {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Guía telefónica {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+		format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Guía telefónica {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
             PRICE_ASPIRIN,
-			GetItemPrice(ITEM_ID_ALFAJOR),
 			PRICE_CIGARETTES,
 			PRICE_LIGHTER,
 			PRICE_PHONE,
@@ -11899,13 +11883,10 @@ CMD:aceptar(playerid,params[]) {
 
  	} else if(strcmp(text,"vehiculo",true) == 0) {
     
-        // Comprobamos que exista una oferta para este jugador.
         if(VehicleOffer[playerid] == INVALID_PLAYER_ID)
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido ningún vehículo.");
-
 		if(GetDistanceBetweenPlayers(playerid, VehicleOffer[playerid]) > 4.0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "La persona se encuentra demasiado lejos.");
-
 		if(!IsPlayerConnected(VehicleOffer[playerid])) {
 		    KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
 		    CancelVehicleTransfer(playerid, 0);
@@ -11918,8 +11899,6 @@ CMD:aceptar(playerid,params[]) {
             SendClientMessage(VehicleOffer[playerid], COLOR_YELLOW2, "Debido a un error con la ID del vehículo, la venta ha sido cancelada.");
             return SendClientMessage(playerid, COLOR_YELLOW2, "Error con la ID del vehículo, cancelando...");
 		}
-		
-		// ¿Tiene el dinero necesario?
 		if(GetPlayerCash(playerid) < VehicleOfferPrice[playerid]) {
 		    KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
 		    CancelVehicleTransfer(playerid, 0);
@@ -11927,31 +11906,32 @@ CMD:aceptar(playerid,params[]) {
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, cancelando...");
 		}
 		
-		// Comprobamos que el recipiente tenga un slot libre, si lo tiene realizamos la transacción.
-		if(getPlayerFreeKeySlots(playerid) > 0) {
-		    // Seteamos las variables del vehículo con los datos del nuevo dueño.
-			VehicleInfo[VehicleOfferID[playerid]][VehOwnerSlot] = 0;
+		if(GetPlayerOwnedCarsAmount(playerid) >= MAX_PLAYER_VEHICLES)
+		{
+			KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
+			CancelVehicleTransfer(playerid, 2);
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más de %d vehículos a tu nombre, cancelando...", MAX_PLAYER_VEHICLES);
+		    return SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más vehículos a su nombre, cancelando...");
+		}
+		if(getPlayerFreeKeySlots(playerid) > 0)
+		{
 			VehicleInfo[VehicleOfferID[playerid]][VehOwnerSQLID] = PlayerInfo[playerid][pID];
 			GetPlayerName(playerid, VehicleInfo[VehicleOfferID[playerid]][VehOwnerName], 24);
-
-			
-			// Se lo seteamos a la cuenta del nuevo dueño y realizamos la transacción de dinero.
 			GivePlayerCash(playerid, -VehicleOfferPrice[playerid]);
 			GivePlayerCash(VehicleOffer[playerid], VehicleOfferPrice[playerid]);
-			addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid);
-
 			// Le quitamos el vehículo de la cuenta al vendedor.
 			removeKeyFromPlayer(VehicleOffer[playerid],VehicleOfferID[playerid]);
 			// Y a los que lo tienen prestado 
 			deleteExtraKeysForCar(VehicleOfferID[playerid]);
-
+			
+            addKeyToPlayer(playerid,VehicleOfferID[playerid],playerid);
 			PlayerPlayerActionMessage(VehicleOffer[playerid], playerid, 10.0, "recibe una suma de dinero y le entrega unas llaves a");
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 		} else {
-			SendClientMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más vehículos, cancelando...");
-		    SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más vehículos, cancelando...");
+			SendClientMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más llaves en tu llavero, cancelando...");
+		    SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más llaves en su llavero, cancelando...");
 		}
 		KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
 		CancelVehicleTransfer(playerid, 2);
