@@ -236,10 +236,7 @@ stock RobberyGroupMessage(group, color, const string[])
 	{
         SendClientMessage(RobberyGroup[group][LeaderID], color, string);
 		for(new i = 0; i < GROUP_MEMBERS; i++)
-		{
-		    if(IsPlayerConnected(RobberyGroup[group][MembersID][i]))
-				SendClientMessage(RobberyGroup[group][MembersID][i], color, string);
-		}
+			SendClientMessage(RobberyGroup[group][MembersID][i], color, string);
 	}
 	return 1;
 }

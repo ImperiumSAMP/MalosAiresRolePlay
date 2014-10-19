@@ -1428,6 +1428,7 @@ public OnPlayerDisconnect(playerid, reason) {
 	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
 
 	deleteAbandonedSprintRace(playerid);
+	OnPlayerLeaveRace(playerid);
 	
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
