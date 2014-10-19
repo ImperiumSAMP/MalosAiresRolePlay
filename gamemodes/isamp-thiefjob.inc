@@ -30,7 +30,7 @@ new isUsingMaskInSlot[MAX_PLAYERS]; // -1 si no usa, caso contrario guarda el sl
 stock resetThiefVariables(playerid)
 {
 	ThiefJobInfo[playerid][pFelonExp] = 0;
-	ThiefJobInfo[playerid][pFelonLevel] = 1;
+	ThiefJobInfo[playerid][pFelonLevel] = 0;
 	ThiefJobInfo[playerid][pRobPersonLimit] = 0;
 	ThiefJobInfo[playerid][pRobLastVictimPID] = INVALID_PLAYER_ID;
 	ThiefJobInfo[playerid][pTheftLastVictimPID] = INVALID_PLAYER_ID;
@@ -86,15 +86,20 @@ public OnThiefJobDataLoad(playerid) {
 	}
 }
 
-stock createThiefJob(playersqlid){
-		new query[128];
-		
-		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", playersqlid);
+stock createThiefJob(playerid)
+{
+	new query[128];
+	
+	if(ThiefJobInfo[playerid][pFelonLevel] == 0) // Si nunca tuvo el job, le seteamos el primer nivel y creamos el registro. Si ya alguna vez lo tuvo (!= 0), no seteamos nada porque ya lo pre-cargó cuando se conectó.
+	{
+		ThiefJobInfo[playerid][pFelonLevel] = 1;
+		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", PlayerInfo[playerid][pID]);
 		#if defined _isamp_debug
-		printf("\nCreating thiefJob for player sqlid=%d",playersqlid); 
+		printf("\nCreating thiefJob for player sqlid=%d", PlayerInfo[playerid][pID]);
 		printf("\nQuery is: %s",query);
 		#endif
 		mysql_function_query(dbHandle, query, false, "", "");
+	}
 }
 
 forward saveThiefJob(playerid);

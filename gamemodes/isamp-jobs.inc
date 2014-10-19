@@ -472,9 +472,8 @@ CMD:tomarempleo(playerid,params[])
 			if(id == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
 				return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Sal de aquí! (OOC: Requiere nivel 3)"); // Si es uno nuevo en el servidor o multicuenta
 
-			if(id == JOB_FELON){
-                createThiefJob(PlayerInfo[playerid][pID]);
-			}
+			if(id == JOB_FELON)
+                createThiefJob(playerid);
 
 			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 			PlayerInfo[playerid][pJob] = id;
@@ -513,31 +512,28 @@ CMD:dejarempleo(playerid,params[])
 	return 1;
 }
 
+//===============================COMANDOS DE ADMIN==============================
 
-//Comandos de admin
+CMD:setjob(playerid, params[])
+{
+	new string[128], job, targetid;
 
-//[CMD_A3]
-CMD:setjob(playerid, params[]) {
-	new
-	    string[128],
-		job,
-		targetid;
-
-	if(PlayerInfo[playerid][pAdmin] <= 2)
+	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
 
-	if(sscanf(params,"ud", targetid, job)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setjob [ID-Jugador] [empleo]");
-	} else if(IsPlayerConnected(targetid)) {
-		SendFMessage(targetid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
-		format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
-        PlayerInfo[targetid][pJob] = job;
-
-		if(job == JOB_FELON){
-  			createThiefJob(PlayerInfo[targetid][pID]);
-		}
-	}
+	if(sscanf(params,"ui", targetid, job))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setjob [ID/Jugador] [id empleo]");
+	if(!IsPlayerConnected(targetid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(job < 0 || job >= 20)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Empleo inválido.");
+	    
+	SendFMessage(targetid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
+	format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+    PlayerInfo[targetid][pJob] = job;
+	if(job == JOB_FELON)
+		createThiefJob(playerid);
 	return 1;
 }
 

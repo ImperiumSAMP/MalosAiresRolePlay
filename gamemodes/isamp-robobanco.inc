@@ -60,6 +60,43 @@ new bool:isPlayerInRobberyGroup[MAX_PLAYERS],
 	bool:pHoldingMoney[MAX_PLAYERS],
 	pHoldingMoneyTimer[MAX_PLAYERS];
 	
+//============================DEBUG DE VARIABLES================================
+
+
+CMD:robobancodebug(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+	    return 1;
+
+	SendFMessage(playerid, COLOR_YELLOW, "bankRobberyCooldown = %d", bankRobberyCooldown);
+	SendFMessage(playerid, COLOR_YELLOW, "Active = %b", RobberyGroup[Active]);
+	SendFMessage(playerid, COLOR_YELLOW, "LeaderID = %d", RobberyGroup[LeaderID]);
+	for(new i = 0; i < GROUP_MEMBERS; i++)
+		SendFMessage(playerid, COLOR_YELLOW, "MembersID[%d] = %d", i, RobberyGroup[MembersID][i]);
+	SendFMessage(playerid, COLOR_YELLOW, "RobberyStage = %d", RobberyGroup[RobberyStage]);
+	SendFMessage(playerid, COLOR_YELLOW, "RobberyStageProgress = %d", RobberyGroup[RobberyStageProgress]);
+	return 1;
+}
+
+CMD:playerrobobancodebug(playerid, params[])
+{
+	new id;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+	    return 1;
+	if(sscanf(params, "i", id))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playerrobobancodebug [playerid]");
+	if(id < 0 || id >= MAX_PLAYERS)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID invalida.");
+
+	SendFMessage(playerid, COLOR_YELLOW, "isPlayerInRobberyGroup = %b", isPlayerInRobberyGroup[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pRobberyStage = %d", pRobberyStage[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pRobberyGroupOffer = %d", pRobberyGroupOffer[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoney = %b", pHoldingMoney[id]);
+	SendFMessage(playerid, COLOR_YELLOW, "pHoldingMoneyTimer = %d", pHoldingMoneyTimer[id]);
+	return 1;
+}
+	
 //===============================FUNCIONES======================================
 
 forward UpdateBankRobberyCooldown(); // Actualiza los tiempos de cooldown para volver a robar el banco

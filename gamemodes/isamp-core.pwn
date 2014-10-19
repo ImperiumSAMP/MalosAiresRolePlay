@@ -3302,7 +3302,7 @@ public SaveAccount(playerid) {
 			    
 		mysql_function_query(dbHandle, query, false, "", "");
 
-		if(PlayerInfo[playerid][pJob]==JOB_FELON)
+		if(ThiefJobInfo[playerid][pFelonLevel] >= 1) // Si fue o es delincuente (si tiene una tabla asociada)
 		    saveThiefJob(playerid);
 
 	}
