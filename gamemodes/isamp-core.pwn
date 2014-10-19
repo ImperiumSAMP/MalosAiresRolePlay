@@ -1409,6 +1409,8 @@ public OnPlayerDisconnect(playerid, reason) {
 			}
 		}
 	}
+
+	OnPlayerLeaveRobberyGroup(playerid, 1);
 	
     if(gPlayerLogged[playerid]) {
 		switch(reason) {
@@ -1429,8 +1431,6 @@ public OnPlayerDisconnect(playerid, reason) {
 	
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
-	
-	PlayerLeaveRobberyGroup(playerid);
 	
 	HidePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
 	
@@ -1803,7 +1803,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
 		
-	PlayerLeaveRobberyGroup(playerid);
+	OnPlayerLeaveRobberyGroup(playerid, 2);
 		
 	return 1;
 }
