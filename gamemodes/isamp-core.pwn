@@ -11418,13 +11418,6 @@ CMD:aceptar(playerid,params[]) {
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, cancelando...");
 		}
 		
-		if(GetPlayerOwnedCarsAmount(playerid) >= MAX_PLAYER_VEHICLES)
-		{
-			KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
-			CancelVehicleTransfer(playerid, 2);
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más de %d vehículos a tu nombre, cancelando...", MAX_PLAYER_VEHICLES);
-		    return SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más vehículos a su nombre, cancelando...");
-		}
 		if(getPlayerFreeKeySlots(playerid) > 0)
 		{
 			VehicleInfo[VehicleOfferID[playerid]][VehOwnerSQLID] = PlayerInfo[playerid][pID];

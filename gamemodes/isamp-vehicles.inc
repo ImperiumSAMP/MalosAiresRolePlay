@@ -10,7 +10,6 @@
 //Defines
 #define MAX_VEH                 1001
 #define MAX_RENTCAR             30
-#define MAX_PLAYER_VEHICLES     3
 
 //====[TIPOS DE VEHICULOS]======================================================
 #define	VEH_NONE				0	// Ninguno, no spawnea.
@@ -1365,11 +1364,6 @@ CMD:vehcomprar(playerid, params[])
 	if(VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP && VehicleInfo[vehicleid][VehType] != VEH_DEALERSHIP2 && VehicleInfo[vehicleid][VehType] != VEH_SHIPYARD)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar un vehículo que no está a la venta!");
 	//if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0)
-	if(GetPlayerOwnedCarsAmount(playerid) >= MAX_PLAYER_VEHICLES)
-	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "No puedes tener mas de %d vehículos a tu nombre.", MAX_PLAYER_VEHICLES);
-	    return 1;
-	}
 	if(getPlayerFreeKeySlots(playerid) < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehiculos.");
 	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
