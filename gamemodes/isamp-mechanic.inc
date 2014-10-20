@@ -20,6 +20,10 @@
 #define MEC_TUNING_PLACE_Y      -1840.69
 #define MEC_TUNING_PLACE_Z      13.48
 
+#define MEC_CARPART_SHOP_X      976.1300
+#define MEC_CARPART_SHOP_Y   	-1254.8500
+#define MEC_CARPART_SHOP_Z      16.9400
+
 #define MEC_OFFER_REPARACION    1
 #define MEC_OFFER_CERRADURA     2
 #define MEC_OFFER_TUNING        3
@@ -298,7 +302,7 @@ CMD:meccomprar(playerid, params[])
         return 1;
 	if(sscanf(params, "i", cant))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /meccomprar [Cantidad de repuestos]");
-	if(!IsPlayerInRangeOfPoint(playerid, 15.0, 976.1300, -1254.8500, 16.9400))
+	if(!IsPlayerInRangeOfPoint(playerid, 5.0, MEC_CARPART_SHOP_X, MEC_CARPART_SHOP_Y, MEC_CARPART_SHOP_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar repuestos en cualquier lado.");
 	if(GetHandItem(playerid) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
@@ -445,9 +449,7 @@ CMD:mecreparar(playerid,params[])
 
 CMD:meccerradura(playerid, params[])
 {
-	new
-		target,
-		price;
+	new target, price;
 
 	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
@@ -462,7 +464,7 @@ CMD:meccerradura(playerid, params[])
 	    SendFMessage(playerid, COLOR_YELLOW2, "¡El precio no debe ser mayor a %d o menor a 0!", JOB_MECH_MAXPRICE);
 	    return 1;
  	}
- 	if(target == INVALID_PLAYER_ID || target == playerid || !IsPlayerConnected(target))
+ 	if(!IsPlayerConnected(target) || target == playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
  	if(!ProxDetectorS(5.0, playerid, target) || !IsPlayerInAnyVehicle(target))
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no se encuentra cerca tuyo o no está dentro de un vehículo.");

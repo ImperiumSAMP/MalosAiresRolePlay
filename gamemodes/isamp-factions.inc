@@ -93,8 +93,10 @@ public CountCopsOnDuty()
 
 //=======================COMANDOS DE ADMIN PARA FACCIONES=======================
 
-CMD:afacciones(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
+CMD:afacciones(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdinero /afmats /afskin /afrango /afvehmision");
@@ -137,11 +139,9 @@ CMD:afallowjob(playerid, params[])
 	return 1;
 }
 
-CMD:aftipo(playerid, params[]) {
-	new
-	    string[128],
-	    factionID,
-		type;
+CMD:aftipo(playerid, params[])
+{
+	new string[128], factionID, type;
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;

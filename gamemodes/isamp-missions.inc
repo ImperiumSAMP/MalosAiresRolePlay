@@ -7,8 +7,8 @@
 
 //=================================CONSTANTES===================================
 
-#define MISSION_EVENT_TIME      3 // En minutos, tiempo mínimo entre misiones.
-#define MISSION_EVENT_EXTRATIME 2 // En minutos, máximo que se le puede agregar al tiempo mínimo entre misiones.
+#define MISSION_EVENT_TIME      50 // En minutos, tiempo mínimo entre misiones.
+#define MISSION_EVENT_EXTRATIME 20 // En minutos, máximo que se le puede agregar al tiempo mínimo entre misiones.
 
 #define MISSION_NONE            0
 #define MISSION_MAT             1
@@ -100,6 +100,8 @@ CMD:missioneventdebug(playerid, params[])
 	    return 1;
 	if(sscanf(params, "i", targetid))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /missioneventdebug [playerid]");
+	if(targetid < 0 || targetid >= MAX_PLAYERS)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 
 	SendFMessage(playerid, COLOR_YELLOW, "pMissionEvent [%d] = %d", targetid, pMissionEvent[targetid]);
 	SendFMessage(playerid, COLOR_YELLOW, "pMissionEventStep [%d] = %d", targetid, pMissionEventStep[targetid]);
@@ -192,7 +194,7 @@ stock bool:MissionCar(playerid, step, text[])
 			        while(isCar == false)
 			        {
 			   			vehicleid = 1 + random(MAX_VEH - 1);
-			        	if(GetVehicleType(vehicleid) == VTYPE_CAR)
+			        	if((VehicleInfo[vehicleid][VehType] == VEH_OWNED || VehicleInfo[vehicleid][VehType] == VEH_FACTION) && GetVehicleType(vehicleid) == VTYPE_CAR)
 			        	    isCar = true;
 					}
 					pMissionEventParam[playerid] = vehicleid;
