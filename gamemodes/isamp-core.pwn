@@ -24,6 +24,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-items.inc" 				//Sistema de items
 #include "isamp-inventory.inc" 			//Sistema de inventario y maletero
 #include "isamp-mano.inc" 				//Sistema de items en la mano
+#include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-factions.inc" 			//Sistema de facciones
@@ -46,7 +47,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
-#include "isamp-casco.inc"              //Sistema de cascos
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
 #include "isamp-carthief.inc"          	//Robo de autos.
@@ -759,7 +759,7 @@ public ResetStats(playerid)
 	usingCamera[playerid] = false;
 	
 	/* Sistema de máscaras */
-	isUsingMaskInSlot[playerid] = -1;
+	usingMask[playerid] = false;
 	
 	/* Sistema de Picadas */
 	resetSprintRace(playerid);
@@ -1346,7 +1346,7 @@ public OnPlayerSpawn(playerid) {
 	}
 	
 	LoadHandItem(playerid);
-	LoadVisibleItemsForPlayer(playerid);
+    LoadToysItems(playerid);
 
 	return 1;
 }
@@ -1455,10 +1455,10 @@ public OnPlayerText(playerid, text[]) {
 	}
 
 	new name[24]; // Para ver si mandar mensajes desde la mascara
-	if(isUsingMaskInSlot[playerid] == -1)
-	    name = GetPlayerNameEx(playerid);
+	if(usingMask[playerid])
+	    name = "Enmascarado";
 	else
-		name = "Enmascarado";
+	    name = GetPlayerNameEx(playerid);
 
 	if(CheckMissionEvent(playerid, 2, text))
 	    return 0;
@@ -2285,6 +2285,7 @@ public OnPlayerDataLoad(playerid) {
 		loadPlayerCarKeys(playerid); // Llavero del usuario
 		LoadInvInfo(playerid); // Info de su inventario
 		LoadHandInfo(playerid); // Info de lo que tiene en mano
+		LoadToysInfo(playerid); // Toys
 		
        	CreatePlayerBasicNeeds(playerid);
        	
@@ -4696,7 +4697,7 @@ public SetPlayerSpawn(playerid) {
 	if(PlayerInfo[playerid][pFaction] == FAC_PMA)
 		resetTazer(playerid);
 
-    isUsingMaskInSlot[playerid] = -1; // Al spawnear, deja de estar con la mascara puesta
+    usingMask[playerid] = false; // Al spawnear, deja de estar con la mascara puesta
 
     HidePlayerSpeedo(playerid);
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
@@ -6007,7 +6008,7 @@ PlayerLocalMessage(playerid,Float:radius,message[])
 PlayerActionMessage(playerid,Float:radius,message[])
 {
 	new string[128];
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), message);
 	else
 	    format(string, sizeof(string), "* Enmascarado %s", message);
@@ -6019,7 +6020,7 @@ PlayerActionMessage(playerid,Float:radius,message[])
 PlayerDoMessage(playerid,Float:radius,message[])
 {
 	new string[128];
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s (( %s ))", message, GetPlayerNameEx(playerid));
 	else
 	    format(string, sizeof(string), "* %s (( Enmascarado ))", message);
@@ -6035,9 +6036,9 @@ PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 	name1 = GetPlayerNameEx(playerid);
 	new name2[24];
 	name2 = GetPlayerNameEx(targetid);
-	if(isUsingMaskInSlot[playerid] != -1)
+	if(usingMask[playerid])
 		name1 = "Enmascarado";
-	if(isUsingMaskInSlot[targetid] != -1)
+	if(usingMask[targetid])
 	    name2 = "Enmascarado";
 	
 	format(string, sizeof(string), "* %s %s %s.", name1, message, name2);
@@ -8142,7 +8143,7 @@ CMD:departamento(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
  		format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
@@ -8393,7 +8394,7 @@ CMD:radio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
@@ -8529,7 +8530,7 @@ CMD:gritar(playerid, params[]) {
 	if(sscanf(params, "s[128]", text)) {
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/g)ritar [texto]");
 	} else {
-		if(isUsingMaskInSlot[playerid] == -1)
+		if(!usingMask[playerid])
 			format(string, sizeof(string), "%s grita: ¡¡%s!!", GetPlayerNameEx(playerid), text);
 		else
 		    format(string, sizeof(string), "Enmascarado grita: ¡¡%s!!", text);
@@ -8706,7 +8707,7 @@ CMD:ayuda(playerid,params[]) {
 
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins (/vercint)uron /mano");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins /toy");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
@@ -9169,7 +9170,7 @@ CMD:comprar(playerid, params[]) {
 		    {
 		        GivePlayerWeapon(playerid, itemid, 1);
 	  		}
-			case ITEM_OTHER:
+			default:
 			{
 			    if(GetHandItem(playerid) != 0)
 			        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
@@ -12184,7 +12185,7 @@ CMD:chino(playerid, params[])
 		if(sscanf(params, "s[128]", text))
 			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ch)ino [texto]");
 		new name[24];
-		if(isUsingMaskInSlot[playerid] == -1)
+		if(!usingMask[playerid])
 		    name = GetPlayerNameEx(playerid);
 		else
 			name = "Enmascarado";
@@ -12215,7 +12216,7 @@ CMD:italiano(playerid, params[])
 		if(sscanf(params, "s[128]", text))
 			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/it)aliano [texto]");
 		new name[24];
-		if(isUsingMaskInSlot[playerid] == -1)
+		if(!usingMask[playerid])
 		    name = GetPlayerNameEx(playerid);
 		else
 			name = "Enmascarado";
@@ -12246,7 +12247,7 @@ CMD:ruso(playerid, params[])
 		if(sscanf(params, "s[128]", text))
 			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ru)so [texto]");
 		new name[24];
-		if(isUsingMaskInSlot[playerid] == -1)
+		if(!usingMask[playerid])
 		    name = GetPlayerNameEx(playerid);
 		else
 			name = "Enmascarado";
@@ -12541,38 +12542,27 @@ CMD:mascara(playerid, params[])
 {
 	if(PlayerInfo[playerid][pMask] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una mascara en tu bolsillo.");
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 	{
-		new index = 999;
-		for(new z = 0; z < MAX_PLAYER_ATTACHED_OBJECTS; z++)
-		{
-		    if(!IsPlayerAttachedObjectSlotUsed(playerid, z))
-		    {
-		        index = z;
-		        break;
-			}
-		}
-		if(index == 999)
-  			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio para equiparte items.");
-		SetPlayerAttachedObject(playerid, index, PlayerInfo[playerid][pMask], 2, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
-		isUsingMaskInSlot[playerid] = index;
-  		EditAttachedObject(playerid, index);
-		foreach(new i:Player)
+ 		if(IsPlayerAttachedObjectSlotUsed(playerid, INDEX_ID_MASK))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una mascara puesta.");
+		SetPlayerAttachedObject(playerid, INDEX_ID_MASK, PlayerInfo[playerid][pMask], BONE_ID_HEAD, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
+		usingMask[playerid] = true;
+  		EditAttachedObject(playerid, INDEX_ID_MASK);
+		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
 				ShowPlayerNameTagForPlayer(i, playerid, 0);
 		}
 	} else
 		{
-		    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		    if(GetPVarInt(playerid, "disabled") == DISABLE_STEALING)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-			RemovePlayerAttachedObject(playerid, isUsingMaskInSlot[playerid]);
+			RemovePlayerAttachedObject(playerid, INDEX_ID_MASK);
 			PlayerActionMessage(playerid, 15.0, "quita el pañuelo que ocultaba su rostro y lo guarda en su bolsillo.");
-			isUsingMaskInSlot[playerid] = -1;
-		    foreach(new i:Player)
-		    {
+			usingMask[playerid] = false;
+		    foreach(new i : Player)
 		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-			}
 		}
 	return 1;
 }
@@ -12614,7 +12604,7 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
 
 public OnPlayerStreamIn(playerid, forplayerid)
 {
-	if(isUsingMaskInSlot[playerid] != -1)
+	if(usingMask[playerid])
 	{
 	    if(PlayerInfo[forplayerid][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
 	    	ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
@@ -12624,38 +12614,37 @@ public OnPlayerStreamIn(playerid, forplayerid)
 	return 1;
 }
 
-CMD:cambiarnombre(playerid, params[]) {
+CMD:cambiarnombre(playerid, params[])
+{
 	new string[128], name[24], target;
 	    
 	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
-	if(sscanf(params, "us[24]", target, name)) {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarnombre [playerid/ParteDelNombre] [nombre]");
-	} else if(target != INVALID_PLAYER_ID) {
-	    format(PlayerInfo[target][pName], 24, "%s", name);
-		format(string, sizeof(string), "[Staff] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
-		SetPlayerName(target, PlayerInfo[target][pName]);
-		new
-			houseID = PlayerInfo[target][pHouseKey],
-			bizID = PlayerInfo[target][pBizKey];
+	if(sscanf(params, "us[24]", target, name))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cambiarnombre [ID/Jugador] [nombre]");
+	if(target == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 
-        updateCarOwnerName(target);
-		
-		if(houseID != 0)
-		{
-		    House[houseID][Owner] = name;
-		    saveHouse(houseID);
-		}
-		if(bizID != 0 && Business[bizID][bOwnerSQLID] == PlayerInfo[target][pID])
-		{
-			Business[bizID][bOwner] = name;
-			saveBusiness(bizID);
-		}
-		SendFMessage(target, COLOR_WHITE, "Tu nombre ha sido cambiado a %s por el administrador %s.", GetPlayerNameEx(target), GetPlayerNameEx(playerid));
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	format(PlayerInfo[target][pName], 24, "%s", name);
+	format(string, sizeof(string), "[Staff] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	SetPlayerName(target, PlayerInfo[target][pName]);
+
+	new houseID = PlayerInfo[target][pHouseKey], bizID = PlayerInfo[target][pBizKey];
+
+    updateCarOwnerName(target);
+    
+	if(houseID != 0)
+	{
+	    House[houseID][Owner] = name;
+	    saveHouse(houseID);
 	}
+	if(bizID != 0 && Business[bizID][bOwnerSQLID] == PlayerInfo[target][pID])
+	{
+		Business[bizID][bOwner] = name;
+		saveBusiness(bizID);
+	}
+	SendFMessage(target, COLOR_WHITE, "Tu nombre ha sido cambiado a %s por el administrador %s.", GetPlayerNameEx(target), GetPlayerNameEx(playerid));
 	return 1;
 }
 
@@ -12948,7 +12937,7 @@ CMD:susurrar(playerid, params[])
 	if(playerid == targetid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes susurrarte a tí mismo.");
 
- 	if(isUsingMaskInSlot[playerid] == -1)
+ 	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s susurra: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(string, sizeof(string), "Enmascarado susurra: %s", text);
@@ -12977,7 +12966,7 @@ CMD:local(playerid, params[])
 	if(sscanf(params, "s[128]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /local [mensaje]");
 
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(string, sizeof(string), "Enmascarado dice: %s", text);
@@ -12992,7 +12981,7 @@ CMD:vb(playerid, params[])
 	if(sscanf(params, "s[128]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vb [mensaje]");
 
-	if(isUsingMaskInSlot[playerid] == -1)
+	if(!usingMask[playerid])
 		format(string, sizeof(string), "[Voz baja] %s dice: %s", GetPlayerNameEx(playerid), text);
 	else
 		format(string, sizeof(string), "[Voz baja] Enmascarado dice: %s", text);

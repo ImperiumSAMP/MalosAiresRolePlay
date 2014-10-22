@@ -3,7 +3,7 @@
 #endif
 #define _isamp_mano_included
 
-//===========================ARMARIOS PARA LAS CASAS============================
+//==============================MODELADO DE MANO================================
 
 //================================CONSTANTES====================================
 
@@ -119,10 +119,8 @@ CMD:mano(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
 			if(itemid == 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus manos.");
-	  		if(targetid == INVALID_PLAYER_ID || targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
+	  		if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
-	        if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes dar un item agonizando.");
 			if(PlayerInfo[targetid][pLevel] < 3)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario debe ser al menos nivel 3 para recibir un item.");
 			if(GetHandItem(targetid) != 0)
@@ -134,9 +132,6 @@ CMD:mano(playerid, params[])
 			SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico.
 			
 		} else if(strcmp(command, "tirar", true) == 0) {
-		
- 			if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
 			    
 			DropObject(playerid);
 

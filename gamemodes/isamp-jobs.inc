@@ -201,16 +201,6 @@ new
 	bool:carryingProd[MAX_PLAYERS],
 	jobBreak[MAX_PLAYERS];
 
-/*
-#define JOB_TAXI             	2 		// Conductor.
-#define JOB_FARM             	3 		// Granjero.
-#define JOB_TRAN                4       // Transportista.
-#define JOB_GARB                5       // Basurero.
-#define JOB_FELON               6
-#define JOB_DRUGF          		7
-#define JOB_DRUGD          		8
-*/
-	
 stock jobRequiresVehicle(jobid){
 	return jobid == JOB_FARM || jobid == JOB_DRUGF || jobid == JOB_TRAN || jobid == JOB_GARB;
 }

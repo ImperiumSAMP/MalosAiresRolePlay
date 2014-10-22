@@ -38,7 +38,7 @@ stock GetInvItem(playerid, invslot)
 	if(invslot >= 0 && invslot < INV_MAX_SLOTS)
 		return InvInfo[playerid][invslot][Item];
 	else
-	    return -1;
+  	  	return -1;
 }
 
 stock GetInvParam(playerid, invslot)
@@ -129,8 +129,7 @@ stock PrintInvForPlayer(playerid, targetid)
 
 stock LoadInvInfo(playerid)
 {
-	new
-		query[128];
+	new query[128];
 
 	ResetInv(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
 	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_INV, PlayerInfo[playerid][pID]);
@@ -145,11 +144,9 @@ CMD:inv(playerid, params[]) {
 	return 1;
 }
 
-CMD:inventario(playerid, params[]) {
-	new
-	    returnid,
-	    text[128],
-	    targetid;
+CMD:inventario(playerid, params[])
+{
+	new returnid, text[128], targetid;
 
     if(sscanf(params, "s[128]I(-1)I(-1)", text, returnid, targetid)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
@@ -170,7 +167,7 @@ CMD:inventario(playerid, params[]) {
 		            GivePlayerWeapon(playerid, itemid, itemparam);
 		            SetInvItemAndParam(playerid, itemslot, 0, 0);
 				}
-	            case ITEM_OTHER:
+	            case ITEM_OTHER, ITEM_TOY:
 	            {
 					if(GetHandItem(playerid) != 0)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");
@@ -200,8 +197,6 @@ CMD:inventario(playerid, params[]) {
       		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
             PlayerActionMessage(playerid, 8.0, string);
 			SetInvItemAndParam(playerid, returnid, 0, 0);
-			if(GetItemType(itemid) == ITEM_OTHER) // Si el item a desechar no es un arma (es decir que puede o no ser un item lógico visible)
-				DeleteItemForPlayer(playerid, itemid);
 
 	    } else if(strcmp(text, "guardar", true) == 0) {
             if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)

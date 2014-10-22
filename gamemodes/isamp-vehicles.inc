@@ -1152,7 +1152,7 @@ CMD:maletero(playerid, params[]) {
 			           GivePlayerWeapon(playerid, itemid, itemparam);
 			           SetTrunkItemAndParam(vehicleid, itemslot, 0 ,0);
 				}
-		        case ITEM_OTHER:
+		        case ITEM_OTHER, ITEM_TOY:
 		        {
 					if(GetHandItem(playerid) != 0)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");

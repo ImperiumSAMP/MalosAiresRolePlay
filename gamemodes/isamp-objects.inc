@@ -146,7 +146,7 @@ stock ResetObject(pos)
 CMD:examinar(playerid, params[])
 {
 	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes examinar un objeto agonizando.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 		

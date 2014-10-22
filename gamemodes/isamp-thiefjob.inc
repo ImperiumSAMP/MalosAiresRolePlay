@@ -25,7 +25,7 @@ new policeCallTime[MAX_PLAYERS],
 	felon[MAX_PLAYERS];
 	
 // Sistema de mascaras
-new isUsingMaskInSlot[MAX_PLAYERS]; // -1 si no usa, caso contrario guarda el slot donde la tiene attacheada
+new bool:usingMask[MAX_PLAYERS];
 
 stock resetThiefVariables(playerid)
 {
@@ -264,7 +264,7 @@ stock robberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 {
 	new string[128];
 	
- 	if(isUsingMaskInSlot[playerid] == -1) // Si roba sin mascara le damos sosp
+ 	if(!usingMask[playerid]) // Si roba sin mascara le damos sosp
  	{
 		if(GetPlayerWantedLevelEx(playerid) < 2)
 			SetPlayerWantedLevelEx(playerid, 2);
