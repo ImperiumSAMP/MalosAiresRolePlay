@@ -90,6 +90,30 @@ static const BellMenu[][RES_PRICELIST] = {
 	{"Ensalada del bosque con Villa del Sur", 50, 35.0, 65.0}
 };
 
+static const HardItems[] = {
+	1, // Nudillos
+	6, // Pala
+	15, // Baston
+	2, // Palo de golf
+	5, // Bate
+	7, // Palo de pool
+	11, // Consolador
+	10, // Consolador Doble punta
+	12, // Vibrador
+	13, // Vibrador Plateado
+	ITEM_ID_CASCOCOMUN,
+	ITEM_ID_CASCOMOTOCROSS,
+	ITEM_ID_CASCOROJO,
+	ITEM_ID_CASCOBLANCO,
+	ITEM_ID_CASCOROSA
+};
+
+static const AmmuItems[] = {
+	22, // 9mm
+	24, // Deagle
+	25, // Escopeta
+	33 //Rifle de caza
+};
 
 //Enums
 enum BusinessSystem {
@@ -139,6 +163,10 @@ forward GetPlayerBusiness(playerid);
 forward ResetBusinessOffer(playerid);
 forward bool:EnterBusiness(playerid);
 forward bool:LeaveBusiness(playerid);
+
+forward OnPlayerBuyHard(biz, playerid, params[]);
+forward OnPlayerBuyClot(biz, playerid);
+forward OnPlayerBuyAmmu(biz, playerid, params[]);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
@@ -1050,5 +1078,147 @@ CMD:comer(playerid, params[])
 		case BIZ_BURGER2:	return processRestMenu(params,playerid,i,BurgerMenu,sizeof(BurgerMenu));
 		case BIZ_BELL:		return processRestMenu(params,playerid,i,BellMenu,sizeof(BellMenu));
 	}					
+	return 1;
+}
+
+//===========================NEGOCIO FERRETERIA/HARD============================
+
+ShowHardCatalog(playerid)
+{
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
+ 	for(new i = 0; i < sizeof(HardItems); i++)
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
+	return 1;
+}
+
+public OnPlayerBuyHard(biz, playerid, params[])
+{
+	new option, itemid, itemprice, str[128];
+
+	if(Business[biz][bProducts] < 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+	if(sscanf(params, "i", option))
+		return ShowHardCatalog(playerid);
+	if(option < 0 || option >= sizeof(HardItems))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+        
+	itemid = HardItems[option];
+	itemprice = GetItemPrice(itemid);
+	if(GetPlayerCash(playerid) < itemprice)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+
+	switch(GetItemType(itemid))
+	{
+	    case ITEM_WEAPON:
+	        GivePlayerWeapon(playerid, itemid, 1);
+		default:
+		{
+		    if(GetHandItem(playerid) != 0)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
+			SetHandItemAndParam(playerid, itemid, 1);
+		}
+	}
+    GivePlayerCash(playerid, -itemprice);
+    Business[biz][bTill] += itemprice;
+    Business[biz][bProducts] --;
+    saveBusiness(biz);
+ 	format(str, sizeof(str), "le paga al vendedor y compra un/a %s.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+
+//============================NEGOCIO DE ROPA/CLOT==============================
+
+public OnPlayerBuyClot(biz, playerid)
+{
+	new skintype;
+	
+	if(Business[biz][bProducts] < 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+
+	TogglePlayerControllable(playerid, false);
+	DestroySelectionMenu(playerid);
+	SetPVarInt(playerid, "skinc_active", 1);
+	if(Business[biz][bType] == BIZ_CLOT)
+	{
+		if(PlayerInfo[playerid][pSex] == 1)
+	    	skintype = 1;
+		else
+			skintype = 3;
+	} else
+  		if(Business[biz][bType] == BIZ_CLOT2)
+    	{
+    		if(PlayerInfo[playerid][pSex] == 1)
+	    		skintype = 2;
+			else
+				skintype = 4;
+	    }
+    CreateSelectionMenu(playerid, skintype);
+	SelectTextDraw(playerid, 0xACCBF1FF);
+	return 1;
+}
+
+//===========================NEGOCIO DE ARMAS/AMMU==============================
+
+ShowAmmuCatalog(playerid)
+{
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número] [balas]");
+ 	for(new i = 0; i < sizeof(AmmuItems); i++)
+ 	{
+ 	    if(GetItemType(AmmuItems[i]) == ITEM_WEAPON)
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d por munición", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
+		else
+		    SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
+	}
+	return 1;
+}
+
+public OnPlayerBuyAmmu(biz, playerid, params[])
+{
+	new option, param, itemid, price, str[128];
+	
+	if(Business[biz][bProducts] < 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+    if(sscanf(params, "iI(-1)", option, param))
+        return ShowAmmuCatalog(playerid);
+	if(option < 0 || option >= sizeof(AmmuItems))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+
+	itemid = AmmuItems[option];
+	switch(GetItemType(itemid))
+	{
+		case ITEM_WEAPON:
+		{
+		    if(!PlayerInfo[playerid][pWepLic])
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar si no tienes una licencia de portación de armas.");
+	    	if(param < 1 || param > 200)
+	    	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 bala ni más de 200.");
+			price = GetItemPrice(itemid) * param;
+	  		if(GetPlayerCash(playerid) < price)
+			{
+				SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", price);
+				return 1;
+			}
+
+			GivePlayerWeapon(playerid, itemid, param);
+	  		GivePlayerCash(playerid, -price);
+			Business[biz][bTill] += price / 2; // la mitad para evitar abusos de sacar armas gratis para el dueño
+		}
+		default:
+		{
+  			if(GetHandItem(playerid) != 0)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
+	  		if(GetPlayerCash(playerid) < GetItemPrice(itemid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
+
+			SetHandItemAndParam(playerid, itemid, 1);
+			GivePlayerCash(playerid, -GetItemPrice(itemid));
+			Business[biz][bTill] += GetItemPrice(itemid);
+		}
+	}
+	format(str, sizeof(str), "le paga al vendedor y compra un/a %s.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	Business[biz][bProducts]--;
+	saveBusiness(biz);
 	return 1;
 }

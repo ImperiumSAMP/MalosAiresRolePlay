@@ -4223,6 +4223,7 @@ public OnPlayerLeaveCheckpoint(playerid) {
 
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
+    DisablePlayerRaceCheckpoint(playerid);
     OnDriverRaceCheckpoint(playerid);
 	deleteFinishedSprintRace(playerid);
 	return 1;
@@ -9032,158 +9033,62 @@ CMD:vender(playerid, params[])
 	return 1;
 }
 
-CMD:comprar(playerid, params[]) {
-	new
-	    title[64],
-	    content[600],
-	    weapon,
-	    realWeapon,
-	    ammo,
-	    business = GetPlayerBusiness(playerid);
+CMD:comprar(playerid, params[])
+{
+	new title[64],
+		content[600],
+		business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 
-	if(business != 0 && Business[business][bType] == BIZ_247) {
-	    if(Business[business][bProducts] <= 0)
-     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
-		format(title, sizeof(title), "%s", Business[business][bName]);
-		format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
-            PRICE_ASPIRIN,
-			PRICE_CIGARETTES,
-			PRICE_LIGHTER,
-			PRICE_PHONE,
-			GetItemPrice(ITEM_ID_BIDON),
-			GetItemPrice(ITEM_ID_CAMARA),
-			GetItemPrice(ITEM_ID_SANDWICH),
-			GetItemPrice(ITEM_ID_AGUAMINERAL),
-			GetItemPrice(ITEM_ID_MALETIN),
-			PRICE_RADIO
-			
-		);
-        TogglePlayerControllable(playerid, false);
-        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
-	} else if(business != 0 && Business[business][bType] == BIZ_PHON) {
-	    TogglePlayerControllable(playerid, false);
-		ShowMenuForPlayer(phoneMenu, playerid);
-	} else if(business != 0 && Business[business][bType] == BIZ_AMMU) {
-	    if(PlayerInfo[playerid][pWepLic]) {
-	        if(Business[business][bProducts] <= 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
-			if(sscanf(params, "dd", weapon, ammo)) {
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número] [balas]");
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1 - Pistola 9mm. - $%d por munición", GetItemPrice(22));
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2 - Desert Eagle - $%d por munición", GetItemPrice(24));
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 3 - Escopeta - $%d por munición", GetItemPrice(25));
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 4 - Rifle de caza - $%d por munición", GetItemPrice(33));
-			} else if(weapon >= 1 && weapon <= 4) {
-				if(ammo > 0 && ammo <= 900) {
-				    switch(weapon)
-					{
-						case 1: realWeapon = 22;
-						case 2: realWeapon = 24;
-						case 3: realWeapon = 25;
-						case 4: realWeapon = 33;
-				    }
-				    new totalPrice = GetItemPrice(realWeapon) * ammo;
-			        if(GetPlayerCash(playerid) < totalPrice)
-			        {
-			            SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", totalPrice);
-						return 1;
-					}
-					GivePlayerWeapon(playerid, realWeapon, ammo);
-				    GivePlayerCash(playerid, -totalPrice);
-				    new string[128];
-				    format(string, sizeof(string), "ha comprado un/a %s con %d municiones a un total de $%d.", GetItemName(realWeapon), ammo, totalPrice);
-				    PlayerActionMessage(playerid, 15.0, string);
-					Business[business][bTill] += totalPrice / 2; // la mitad para evitar abusos de sacar armas gratis para el dueño
-					Business[business][bProducts]--;
-					saveBusiness(business);
-				} else {
-			    	SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 bala ni más de 900.");
-				}
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "Número de arma incorrecto, solo puedes de 1 a 4.");
-			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de portación de armas.");
-		}
-
-	} else if(business != 0 && (Business[business][bType] == BIZ_CLOT || Business[business][bType] == BIZ_CLOT2)) {
-	    if(Business[business][bProducts] <= 0)
-     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
-	    new skintype;
-   		TogglePlayerControllable(playerid, false);
-		DestroySelectionMenu(playerid);
-	    SetPVarInt(playerid, "skinc_active", 1);
-		if(Business[business][bType] == BIZ_CLOT)
-		{
-			if(PlayerInfo[playerid][pSex] == 1)
-		    	skintype = 1;
-			else
-				skintype = 3;
-		} else
-  			if(Business[business][bType] == BIZ_CLOT2)
-    		{
-    			if(PlayerInfo[playerid][pSex] == 1)
-		    		skintype = 2;
-				else
-					skintype = 4;
-		    }
-        CreateSelectionMenu(playerid, skintype);
-	    SelectTextDraw(playerid, 0xACCBF1FF);
-
-    } else if(business != 0 && Business[business][bType] == BIZ_HARD) {
-    
-        new option, itemid, itemprice;
-			
-        if(sscanf(params, "i", option))
-		{
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Nudillos - $%d          6) Palo de pool - $%d", GetItemPrice(1), GetItemPrice(7));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 2) Pala - $%d				7) Consolador - $%d", GetItemPrice(6), GetItemPrice(11));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 3) Baston - $%d 			8) Consolador doble punta - $%d", GetItemPrice(15), GetItemPrice(10));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 4) Palo de golf - $%d		9) Vibrador - $%d", GetItemPrice(2), GetItemPrice(12));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 5) Bate - $%d				10) Vibrador plateado - $%d", GetItemPrice(5), GetItemPrice(13));
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================================================");
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "11) Casco Común - $%d       12) Casco de Motocross - $%d", GetItemPrice(ITEM_ID_CASCOCOMUN), GetItemPrice(ITEM_ID_CASCOMOTOCROSS));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "13) Casco Rojo - $%d       	14) Casco Blanco - $%d", GetItemPrice(ITEM_ID_CASCOROJO), GetItemPrice(ITEM_ID_CASCOBLANCO));
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "15) Casco Rosa - $%d", GetItemPrice(ITEM_ID_CASCOROSA));
-			return 1;
-		}
-		if(Business[business][bProducts] < 1)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
-		if(option < 1 || option > 15)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
-        switch(option)
-  		{
-			case 1: itemid = 1; case 2: itemid = 6; case 3: itemid = 15; case 4: itemid = 2; case 5: itemid = 5;
-			case 6: itemid = 7; case 7: itemid = 11; case 8: itemid = 10; case 9: itemid = 12; case 10: itemid = 13;
-			case 11: itemid = 56; case 12: itemid = 57; case 13: itemid = 58; case 14: itemid = 59; case 15: itemid = 60;
-     	}
-     	itemprice = GetItemPrice(itemid);
-     	if(GetPlayerCash(playerid) < itemprice)
-          		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
-		switch(GetItemType(itemid))
-		{
-		    case ITEM_WEAPON:
-		    {
-		        GivePlayerWeapon(playerid, itemid, 1);
-	  		}
-			default:
+	if(business != 0)
+	{
+	    switch(Business[business][bType])
+	    {
+	        case BIZ_247:
 			{
-			    if(GetHandItem(playerid) != 0)
-			        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
-				SetHandItemAndParam(playerid, itemid, 1);
+			    if(Business[business][bProducts] <= 0)
+		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+				format(title, sizeof(title), "%s", Business[business][bName]);
+				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+		            PRICE_ASPIRIN,
+					PRICE_CIGARETTES,
+					PRICE_LIGHTER,
+					PRICE_PHONE,
+					GetItemPrice(ITEM_ID_BIDON),
+					GetItemPrice(ITEM_ID_CAMARA),
+					GetItemPrice(ITEM_ID_SANDWICH),
+					GetItemPrice(ITEM_ID_AGUAMINERAL),
+					GetItemPrice(ITEM_ID_MALETIN),
+					PRICE_RADIO
+
+				);
+		        TogglePlayerControllable(playerid, false);
+		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+			}
+			case BIZ_PHON:
+			{
+			    TogglePlayerControllable(playerid, false);
+				ShowMenuForPlayer(phoneMenu, playerid);
+			}
+			case BIZ_AMMU:
+			{
+			    OnPlayerBuyAmmu(business, playerid, params);
+			    return 1;
+			}
+			case BIZ_CLOT, BIZ_CLOT2:
+			{
+				OnPlayerBuyClot(business, playerid);
+				return 1;
+    		}
+			case BIZ_HARD:
+			{
+		        OnPlayerBuyHard(business, playerid, params);
+		        return 1;
 			}
 		}
-        GivePlayerCash(playerid, -itemprice);
-        Business[business][bTill] += itemprice;
-        Business[business][bProducts] --;
-        saveBusiness(business);
- 		format(content, sizeof(content), "le paga al vendedor y compra un/a %s.", GetItemName(itemid));
-	  	PlayerActionMessage(playerid, 15.0, content);
-
+		
 	} else if(business == 0) {
 		if(PlayerToPoint(4.0, playerid, 2333.2856, -1948.3102, 13.5783)) {
 			if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {

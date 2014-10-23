@@ -176,7 +176,10 @@ stock bool:CreateRace(playerid)
 		    {
 		        ResetRaceVariables(i);
 		        RaceInfo[i][rCreatorID] = playerid;
-		        PlayerRaceInfo[playerid][pRaceID] = i;
+          		RaceInfo[i][rDriversID][0] = playerid;
+          		PlayerRaceInfo[playerid][pRaceID] = i;
+	            PlayerRaceInfo[playerid][pCheckpointCount] = 0;
+	            PlayerRaceInfo[playerid][pLap] = 1;
 		        return true;
 			}
 		}
@@ -338,23 +341,12 @@ CMD:carrerainvitar(playerid, params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /carrerainvitar [ID/Jugador]");
  	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
-	if(!IsPlayerConnected(targetid) || !ProxDetectorS(4.0, playerid, targetid))
+	if(playerid == targetid || !IsPlayerConnected(targetid) || !ProxDetectorS(4.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
 	if(PlayerRaceInfo[targetid][pRaceOffer] != INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador tiene otra invitación a una carrera pendiente, aguarda.");
 	if(PlayerRaceInfo[targetid][pRaceID] != -1)
-	{
-		if(playerid != targetid)
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra en otra carrera.");
-		else // Esto es para poder meternos en nuestra propia carrera una sola vez (si detecta que ya estamos dentro lo anula)
-		{
-		    for(new i = 0; i < MAX_RACE_DRIVERS; i++)
-		    {
-		        if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rDriversID][i] == playerid)
-					return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras como corredor en tu carrera.");
-			}
-  		}
-	}
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra en otra carrera.");
 
  	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has invitado a %s para que se una a la carrera como piloto. La oferta dura 10 segs.", GetPlayerNameEx(targetid));
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te invitó a correr en una carrera. Usa /carreraaceptar si lo deseas. La oferta dura 10 segs.", GetPlayerNameEx(playerid));
@@ -528,6 +520,16 @@ CMD:carrerainiciar(playerid, params[])
  	if(CountRaceDrivers(PlayerRaceInfo[playerid][pRaceID]) < 2)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera debe contar con al menos 2 corredores. Usa /carrerainvitar para agregar corredores.");
 
+	if(random(4) == 0) // 25% de chance de que se alerte a la policia
+	{
+	    new location[MAX_ZONE_NAME];
+	    GetPlayer2DZone(playerid, location, MAX_ZONE_NAME);
+	    foreach(new i : Player)
+		{
+		    if(isPlayerCopOnDuty(i))
+	     		SendFMessage(i, COLOR_PMA, "[Dpto. de policía]: Se ha reportado una carrera ilegal en curso en la zona de %s.", location);
+		}
+	}
 	format(str, sizeof(str), "[Carrera]: %s ha dado inicio a la carrera. ¡A correr!", GetPlayerNameEx(playerid));
 	RaceMessage(PlayerRaceInfo[playerid][pRaceID], COLOR_WHITE, str);
 	StartRace(PlayerRaceInfo[playerid][pRaceID]);
@@ -539,7 +541,6 @@ stock OnDriverRaceCheckpoint(driverid)
 	new raceid = PlayerRaceInfo[driverid][pRaceID];
 	if(raceid != -1)
 	{
-		DisablePlayerRaceCheckpoint(driverid);
 		PlayerRaceInfo[driverid][pCheckpointCount]++;
 
 		new pcp = PlayerRaceInfo[driverid][pCheckpointCount], // pcp = player check point
