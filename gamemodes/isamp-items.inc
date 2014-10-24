@@ -29,6 +29,8 @@
 #define ITEM_ID_CASCOROSA       60
 #define ITEM_ID_REPUESTOAUTO    61
 #define ITEM_ID_BARRETA        	62
+#define ITEM_ID_CASCO_OBRERO   	63
+#define ITEM_ID_SOMBREROCOWBOY	64
 
 #define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
@@ -119,7 +121,35 @@ static const ServerItems[][ItemInfo] = {
 /*59*/  {"Casco Blanco", "Cantidad", ITEM_TOY, 560, false, 18978, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*60*/  {"Casco Rosa", "Cantidad", ITEM_TOY, 700, false, 18979, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 125, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0, 0},
-/*62*/  {"Barreta", "Cantidad", ITEM_OTHER, 150, false, 18634, 0.108, 0.012, -0.109, -102.7, -135.4, 0.0, 0}
+/*62*/  {"Barreta", "Cantidad", ITEM_OTHER, 150, false, 18634, 0.108, 0.012, -0.109, -102.7, -135.4, 0.0, 0},
+/*63*/  {"Casco de obrero", "Cantidad", ITEM_TOY, 400, false, 18638, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*64*/  {"Sombrero de cowboy negro", "Cantidad", ITEM_TOY, 700, false, 19096, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*65*/  {"Sombrero de cowboy marron", "Cantidad", ITEM_TOY, 700, false, 19095, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*66*/  {"Sombrero de cowboy bordó", "Cantidad", ITEM_TOY, 700, false, 19097, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*67*/  {"Reloj Swatch", "Cantidad", ITEM_TOY, 700, false, 19040, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6},
+/*68*/  {"Reloj Rolex", "Cantidad", ITEM_TOY, 3500, false, 19042, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6},
+/*69*/  {"Reloj Casio", "Cantidad", ITEM_TOY, 200, false, 19041, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6},
+/*70*/  {"Reloj Swiss Army", "Cantidad", ITEM_TOY, 1000, false, 19039, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6},
+/*71*/  {"Reloj Festina", "Cantidad", ITEM_TOY, 1500, false, 19043, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6},
+/*72*/  {"Sombrero antiguo", "Cantidad", ITEM_TOY, 500, false, 19352, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*73*/  {"Bigote falso 1", "Cantidad", ITEM_TOY, 200, false, 19351, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*74*/  {"Bigote falso 2", "Cantidad", ITEM_TOY, 200, false, 19350, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*75*/  {"Sombrero blanco", "Cantidad", ITEM_TOY, 400, false, 19488, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*76*/  {"Gorro rojo", "Cantidad", ITEM_TOY, 250, false, 19067, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*77*/  {"Gorro estampado", "Cantidad", ITEM_TOY, 300, false, 19068, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*78*/  {"Gorro negro", "Cantidad", ITEM_TOY, 250, false, 19069, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*79*/  {"Gorro playero negro", "Cantidad", ITEM_TOY, 200, false, 18967, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*80*/  {"Gorro playero a cuadros", "Cantidad", ITEM_TOY, 250, false, 18968, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*81*/  {"Gorra militar", "Cantidad", ITEM_TOY, 300, false, 18926, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*82*/  {"Gorra gris estampada", "Cantidad", ITEM_TOY, 300, false, 18929, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*83*/  {"Gorra blanca estampada", "Cantidad", ITEM_TOY, 300, false, 18933, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*84*/  {"Anteojos de sol", "Cantidad", ITEM_TOY, 350, false, 19033, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*85*/  {"Anteojos deportivos negros", "Cantidad", ITEM_TOY, 800, false, 19138, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*86*/  {"Anteojos deportivos rojos", "Cantidad", ITEM_TOY, 800, false, 19139, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*87*/  {"Anteojos deportivos azul", "Cantidad", ITEM_TOY, 800, false, 19140, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*88*/  {"Anteojos Rayban negros", "Cantidad", ITEM_TOY, 1200, false, 19022, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*89*/  {"Anteojos Rayban verdes", "Cantidad", ITEM_TOY, 1200, false, 19029, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*90*/  {"Anteojos Rayban azules", "Cantidad", ITEM_TOY, 1200, false, 19023, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}
 
 };
 
