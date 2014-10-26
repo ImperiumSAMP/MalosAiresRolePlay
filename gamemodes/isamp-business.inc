@@ -8,7 +8,7 @@
 // Mensajes del sistema.
 #define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana"
 #define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
-#define BUSINESS_TYPES3         "14: Burger King - 15:Comidas Rápidas"
+#define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios"
 
 // Negocios.
 #define BIZ_REST          		1
@@ -26,7 +26,7 @@
 #define BIZ_BURGER1             13
 #define BIZ_BURGER2             14
 #define BIZ_BELL                15
-
+#define BIZ_ACCESS              16
 
 enum RES_PRICELIST {
 		bplItemName[64],
@@ -101,12 +101,19 @@ static const HardItems[] = {
 	10, // Consolador Doble punta
 	12, // Vibrador
 	13, // Vibrador Plateado
-	ITEM_ID_CASCOCOMUN,
-	ITEM_ID_CASCOMOTOCROSS,
-	ITEM_ID_CASCOROJO,
-	ITEM_ID_CASCOBLANCO,
-	ITEM_ID_CASCOROSA,
-	63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90
+	ITEM_ID_CASCOCOMUN, ITEM_ID_CASCOMOTOCROSS, ITEM_ID_CASCOROJO, ITEM_ID_CASCOBLANCO,
+	ITEM_ID_CASCOROSA, ITEM_ID_CASCO_OBRERO
+};
+
+static const AccessItems[] = {
+	ITEM_ID_SOMBRERO_COWBOY_NEGRO, ITEM_ID_SOMBRERO_COWBOY_MARRON, ITEM_ID_SOMBRERO_COWBOY_BORDO,
+	ITEM_ID_RELOJ_SWATCH, ITEM_ID_RELOJ_ROLEX, ITEM_ID_RELOJ_CASIO, ITEM_ID_RELOJ_SWISSARMY,
+	ITEM_ID_RELOJ_FESTINA, ITEM_ID_SOMBRERO_ANTIGUO, ITEM_ID_BIGOTE_FALSO1, ITEM_ID_BIGOTE_FALSO2,
+	ITEM_ID_SOMBRERO_BLANCO, ITEM_ID_GORRO_ROJO, ITEM_ID_GORRO_ESTAMPADO, ITEM_ID_GORRO_NEGRO,
+	ITEM_ID_GORRO_PLAYERO_NEGRO, ITEM_ID_GORRO_PLAYERO_CUADROS, ITEM_ID_GORRA_MILITAR,
+	ITEM_ID_GORRA_GRIS_ESTAMPADA, ITEM_ID_GORRA_BLANCA_ESTAMPADA, ITEM_ID_ANTEOJO_DE_SOL,
+	ITEM_ID_ANTEOJO_DEPORTIVO_NEGRO, ITEM_ID_ANTEOJO_DEPORTIVO_ROJO, ITEM_ID_ANTEOJO_DEPORTIVO_AZUL,
+	ITEM_ID_ANTEOJO_RAYBAN_NEGRO, ITEM_ID_ANTEOJO_RAYBAN_VERDE, ITEM_ID_ANTEOJO_RAYBAN_AZUL
 };
 
 static const AmmuItems[] = {
@@ -168,6 +175,7 @@ forward bool:LeaveBusiness(playerid);
 forward OnPlayerBuyHard(biz, playerid, params[]);
 forward OnPlayerBuyClot(biz, playerid);
 forward OnPlayerBuyAmmu(biz, playerid, params[]);
+forward OnPlayerBuyAccess(biz, playerid, params[]);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
@@ -228,7 +236,7 @@ stock bool:EnterBusiness(playerid)
                         SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
 					switch(Business[i][bType])
 					{
-					    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD:
+					    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD, BIZ_ACCESS:
 			    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
 					    case BIZ_CLUB, BIZ_CLUB2:
 					    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
@@ -1119,6 +1127,44 @@ public OnPlayerBuyHard(biz, playerid, params[])
 			SetHandItemAndParam(playerid, itemid, 1);
 		}
 	}
+    GivePlayerCash(playerid, -itemprice);
+    Business[biz][bTill] += itemprice;
+    Business[biz][bProducts] --;
+    saveBusiness(biz);
+ 	format(str, sizeof(str), "le paga al vendedor y compra un/a %s.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+
+//===========================NEGOCIO DE ACCESORIOS==============================
+
+ShowAccessCatalog(playerid)
+{
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
+ 	for(new i = 0; i < sizeof(AccessItems); i++)
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
+	return 1;
+}
+
+public OnPlayerBuyAccess(biz, playerid, params[])
+{
+	new option, itemid, itemprice, str[128];
+
+	if(Business[biz][bProducts] < 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+	if(sscanf(params, "i", option))
+		return ShowAccessCatalog(playerid);
+	if(option < 0 || option >= sizeof(AccessItems))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+
+	itemid = AccessItems[option];
+	itemprice = GetItemPrice(itemid);
+	if(GetPlayerCash(playerid) < itemprice)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+	if(GetHandItem(playerid) != 0)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
+
+	SetHandItemAndParam(playerid, itemid, 1);
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice;
     Business[biz][bProducts] --;

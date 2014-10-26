@@ -12,25 +12,51 @@
 #define ITEM_OTHER              2
 #define ITEM_TOY                3
 
-#define ITEM_ID_CAMARA		    43
-#define ITEM_ID_MATERIALES      47
-#define ITEM_ID_BIDON		    48
-#define ITEM_ID_MATERIAPRIMA    49
-#define ITEM_ID_PRODUCTOS	    50
-#define ITEM_ID_DINERO    		51
-#define ITEM_ID_SANDWICH	    52
-#define ITEM_ID_ALFAJOR		    53
-#define ITEM_ID_AGUAMINERAL     54
-#define ITEM_ID_MALETIN		    55
-#define ITEM_ID_CASCOCOMUN      56
-#define ITEM_ID_CASCOMOTOCROSS  57
-#define ITEM_ID_CASCOROJO       58
-#define ITEM_ID_CASCOBLANCO     59
-#define ITEM_ID_CASCOROSA       60
-#define ITEM_ID_REPUESTOAUTO    61
-#define ITEM_ID_BARRETA        	62
-#define ITEM_ID_CASCO_OBRERO   	63
-#define ITEM_ID_SOMBREROCOWBOY	64
+#define ITEM_ID_CAMARA		    		43
+#define ITEM_ID_MATERIALES      		47
+#define ITEM_ID_BIDON		    		48
+#define ITEM_ID_MATERIAPRIMA    		49
+#define ITEM_ID_PRODUCTOS	    		50
+#define ITEM_ID_DINERO          		51
+#define ITEM_ID_SANDWICH	    		52
+#define ITEM_ID_ALFAJOR		    		53
+#define ITEM_ID_AGUAMINERAL     		54
+#define ITEM_ID_MALETIN		    		55
+#define ITEM_ID_CASCOCOMUN      		56
+#define ITEM_ID_CASCOMOTOCROSS  		57
+#define ITEM_ID_CASCOROJO       		58
+#define ITEM_ID_CASCOBLANCO     		59
+#define ITEM_ID_CASCOROSA       		60
+#define ITEM_ID_REPUESTOAUTO    		61
+#define ITEM_ID_BARRETA        			62
+#define ITEM_ID_CASCO_OBRERO   			63
+#define ITEM_ID_SOMBRERO_COWBOY_NEGRO	64
+#define ITEM_ID_SOMBRERO_COWBOY_MARRON	65
+#define ITEM_ID_SOMBRERO_COWBOY_BORDO	66
+#define ITEM_ID_RELOJ_SWATCH			67
+#define ITEM_ID_RELOJ_ROLEX				68
+#define ITEM_ID_RELOJ_CASIO				69
+#define ITEM_ID_RELOJ_SWISSARMY   		70
+#define ITEM_ID_RELOJ_FESTINA   		71
+#define ITEM_ID_SOMBRERO_ANTIGUO  		72
+#define ITEM_ID_BIGOTE_FALSO1           73
+#define ITEM_ID_BIGOTE_FALSO2   		74
+#define ITEM_ID_SOMBRERO_BLANCO   		75
+#define ITEM_ID_GORRO_ROJO    			76
+#define ITEM_ID_GORRO_ESTAMPADO   		77
+#define ITEM_ID_GORRO_NEGRO			  	78
+#define ITEM_ID_GORRO_PLAYERO_NEGRO    	79
+#define ITEM_ID_GORRO_PLAYERO_CUADROS 	80
+#define ITEM_ID_GORRA_MILITAR			81
+#define ITEM_ID_GORRA_GRIS_ESTAMPADA 	82
+#define ITEM_ID_GORRA_BLANCA_ESTAMPADA 	83
+#define ITEM_ID_ANTEOJO_DE_SOL			84
+#define ITEM_ID_ANTEOJO_DEPORTIVO_NEGRO	85
+#define ITEM_ID_ANTEOJO_DEPORTIVO_ROJO 	86
+#define ITEM_ID_ANTEOJO_DEPORTIVO_AZUL 	87
+#define ITEM_ID_ANTEOJO_RAYBAN_NEGRO	88
+#define ITEM_ID_ANTEOJO_RAYBAN_VERDE	89
+#define ITEM_ID_ANTEOJO_RAYBAN_AZUL  	90
 
 #define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
@@ -146,7 +172,7 @@ static const ServerItems[][ItemInfo] = {
 /*84*/  {"Anteojos de sol", "Cantidad", ITEM_TOY, 350, false, 19033, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*85*/  {"Anteojos deportivos negros", "Cantidad", ITEM_TOY, 800, false, 19138, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*86*/  {"Anteojos deportivos rojos", "Cantidad", ITEM_TOY, 800, false, 19139, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
-/*87*/  {"Anteojos deportivos azul", "Cantidad", ITEM_TOY, 800, false, 19140, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*87*/  {"Anteojos deportivos azules", "Cantidad", ITEM_TOY, 800, false, 19140, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*88*/  {"Anteojos Rayban negros", "Cantidad", ITEM_TOY, 1200, false, 19022, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*89*/  {"Anteojos Rayban verdes", "Cantidad", ITEM_TOY, 1200, false, 19029, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*90*/  {"Anteojos Rayban azules", "Cantidad", ITEM_TOY, 1200, false, 19023, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}

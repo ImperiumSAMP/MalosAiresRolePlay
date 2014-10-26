@@ -100,6 +100,16 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_POLICE_ARREST_Y     168.1084
 #define POS_POLICE_ARREST_Z     1002.9252
 
+#define POS_BM1_X               2659.6992
+#define POS_BM1_Y               -2056.4814
+#define POS_BM1_Z               13.4214
+#define POS_BM2_X               1296.0912
+#define POS_BM2_Y               -990.3329
+#define POS_BM2_Z               32.6260
+#define POS_BM3_X               1598.7982
+#define POS_BM3_Y               -2137.0635
+#define POS_BM3_Z               13.4390
+
 // Dialogs.
 #define DLG_LOGIN 				10000
 #define DLG_REGISTER        	10001
@@ -428,7 +438,6 @@ forward AllowAd(playerid);
 forward Unfreeze(playerid);
 forward OnPlayerPrivmsg(playerid, recieverid, text[]);
 forward SendFactionMessage(faction, color, string[]);
-forward SetPlayerToFactionSkin(playerid);
 forward SaveAccount(playerid);
 forward SetPlayerSpawn(playerid);
 forward PayDay(playerid);
@@ -2625,18 +2634,7 @@ public OnFactionDataLoad(id) {
 		cache_get_field_content(0, "Bank", result); 					FactionInfo[id][fBank] 		= strval(result);
 		cache_get_field_content(0, "AllowJob", result); 				FactionInfo[id][fAllowJob] 	= strval(result);
 		cache_get_field_content(0, "fMissionVeh", result); 				FactionInfo[id][fMissionVeh]= strval(result);
-		cache_get_field_content(0, "Skin1", result); 					FactionInfo[id][fSkin1] 	= strval(result);
-		cache_get_field_content(0, "Skin2", result); 					FactionInfo[id][fSkin2] 	= strval(result);
-		cache_get_field_content(0, "Skin3", result);				 	FactionInfo[id][fSkin3] 	= strval(result);
-		cache_get_field_content(0, "Skin4", result); 					FactionInfo[id][fSkin4] 	= strval(result);
-		cache_get_field_content(0, "Skin5", result); 					FactionInfo[id][fSkin5] 	= strval(result);
-		cache_get_field_content(0, "Skin6", result); 					FactionInfo[id][fSkin6] 	= strval(result);
-		cache_get_field_content(0, "Skin7", result); 					FactionInfo[id][fSkin7] 	= strval(result);
-		cache_get_field_content(0, "Skin8", result);					FactionInfo[id][fSkin8] 	= strval(result);
-		cache_get_field_content(0, "Skin9", result);					FactionInfo[id][fSkin9] 	= strval(result);
-		cache_get_field_content(0, "Skin10", result); 					FactionInfo[id][fSkin10] 	= strval(result);
 		cache_get_field_content(0, "JoinRank", result); 				FactionInfo[id][fJoinRank] 	= strval(result);
-		cache_get_field_content(0, "UsesSkins", result); 				FactionInfo[id][fUseSkins] 	= strval(result);
 		cache_get_field_content(0, "RankAmount", result); 				FactionInfo[id][fRankAmount]= strval(result);
 		cache_get_field_content(0, "Name",								FactionInfo[id][fName],1,50);
 		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1],1,35);
@@ -2958,6 +2956,7 @@ GetBusinessPayCheck(bizID)
 		case BIZ_BURGER1: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
 		case BIZ_BURGER2: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
 		case BIZ_BELL:      payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
+		case BIZ_ACCESS:    payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
 		default: 			payDayMoney = 0;
 	}
 	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
@@ -4432,9 +4431,9 @@ stock LoadPickups() {
 	P_CARPART_SHOP = CreateDynamicPickup(1239, 1, MEC_CARPART_SHOP_X, MEC_CARPART_SHOP_Y, MEC_CARPART_SHOP_Z, -1);
 
 	// Black Markets
-	P_BLACK_MARKET[0] = CreateDynamicPickup(1239, 1, 2659.6992, -2056.4814, 13.4214, -1);
-	P_BLACK_MARKET[1] = CreateDynamicPickup(1239, 1, 1296.0912, -990.3329, 32.6260, -1);
-	P_BLACK_MARKET[2] = CreateDynamicPickup(1239, 1, 1598.7982, -2137.0635, 13.4390, -1);
+	P_BLACK_MARKET[0] = CreateDynamicPickup(1239, 1, POS_BM1_X, POS_BM1_Y, POS_BM1_Z, -1);
+	P_BLACK_MARKET[1] = CreateDynamicPickup(1239, 1, POS_BM2_X, POS_BM2_Y, POS_BM2_Z, -1);
+	P_BLACK_MARKET[2] = CreateDynamicPickup(1239, 1, POS_BM3_X, POS_BM3_Y, POS_BM3_Z, -1);
 
 	// Renta de autos
 	P_CAR_RENT1 = CreateDynamicPickup(1239, 1, 1569.8145, -2243.8796, 13.5184, -1);
@@ -4686,11 +4685,7 @@ public SetPlayerSpawn(playerid) {
 
 	syncPlayerTime(playerid);
 
-    if(PlayerInfo[playerid][pFaction] != 0 && FactionInfo[PlayerInfo[playerid][pFaction]][fUseSkins] == 1) {
-		SetPlayerToFactionSkin(playerid);
- 	} else {
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	}
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SetPlayerColor(playerid, 0xFFFFFF00);
 	
 	SetPlayerFightingStyle(playerid, PlayerInfo[playerid][pFightStyle]);
@@ -4745,55 +4740,6 @@ public SetPlayerSpawn(playerid) {
 	return 1;
 }
 
-public SetPlayerToFactionSkin(playerid) {
-	new faction = PlayerInfo[playerid][pFaction];
-	new rank = PlayerInfo[playerid][pRank];
-	new rankamount = FactionInfo[faction][fRankAmount];
-	if(faction != 255) {
-		if(FactionInfo[faction][fUseSkins])	{
-			if(rank == 1 && rankamount >= 1) {
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin1]);
-			}
-			else if(rank == 2 && rankamount >= 2)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin2]);
-			}
-			else if(rank == 3 && rankamount >= 3)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin3]);
-			}
-			else if(rank == 4 && rankamount >= 4)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin4]);
-			}
-			else if(rank == 5 && rankamount >= 5)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin5]);
-			}
-			else if(rank == 6 && rankamount >= 6)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin6]);
-			}
-			else if(rank == 7 && rankamount >= 7)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin7]);
-			}
-			else if(rank == 8 && rankamount >= 8)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin8]);
-			}
-			else if(rank == 9 && rankamount >= 9)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin9]);
-			}
-			else if(rank == 10 && rankamount >= 10)
-			{
-				SetPlayerSkin(playerid,FactionInfo[faction][fSkin10]);
-			}
-		}
-	}
-	return 1;
-}
 
 public ProxDetectorS(Float:radi, playerid, targetid)
 {
@@ -5131,21 +5077,22 @@ stock ReloadBizIcon(bizid) {
 	    return 1;
 
 	switch(Business[bizid][bType]) {
-	    case BIZ_REST: 	bizType = "Restaurant";
-	    case BIZ_PHON: 	bizType = "Compañía telefonica";
-	    case BIZ_247: 	bizType = "Tienda 24-7";
-	    case BIZ_AMMU: 	bizType = "Armería";
-	    case BIZ_ADVE: 	bizType = "Publicidad";
-	    case BIZ_CLOT,BIZ_CLOT2: 	bizType = "Tienda de ropa";
-	    case BIZ_CLUB: 	bizType = "Bar";
+	    case BIZ_REST: bizType = "Restaurant";
+	    case BIZ_PHON: bizType = "Compañía telefonica";
+	    case BIZ_247: bizType = "Tienda 24-7";
+	    case BIZ_AMMU: bizType = "Armería";
+	    case BIZ_ADVE: bizType = "Publicidad";
+	    case BIZ_CLOT,BIZ_CLOT2: bizType = "Tienda de ropa";
+	    case BIZ_CLUB: bizType = "Bar";
 	    case BIZ_CASINO: bizType = "Casino";
-	    case BIZ_HARD:	bizType = "Ferretería";
-	    case BIZ_CLUB2:	bizType = "Discoteca/Club Nocturno";
-	    case BIZ_PIZZERIA: 	bizType = "Pizzeria";
-	    case BIZ_BURGER1:    bizType = "McDonals";
-		case BIZ_BURGER2:    bizType = "Burger King";
-		case BIZ_BELL:    bizType = "Comidas Rápidas";
-	    default: 	bizType = "Indefinido";
+	    case BIZ_HARD: bizType = "Ferretería";
+	    case BIZ_CLUB2: bizType = "Discoteca/Club Nocturno";
+	    case BIZ_PIZZERIA: bizType = "Pizzeria";
+	    case BIZ_BURGER1: bizType = "McDonals";
+		case BIZ_BURGER2: bizType = "Burger King";
+		case BIZ_BELL: bizType = "Comidas Rápidas";
+		case BIZ_ACCESS: bizType = "Tienda de accesorios";
+	    default: bizType = "Indefinido";
 	}
 
 	DestroyDynamic3DTextLabel(Business[bizid][bOutsideLabel]);
@@ -5406,21 +5353,10 @@ SaveFactions() {
 		FactionInfo[factionid][fRank9],
 		FactionInfo[factionid][fRank10]);
 
-		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `Skin1`=%d, `Skin2`=%d, `Skin3`=%d, `Skin4`=%d, `Skin5`=%d, `Skin6`=%d, `Skin7`=%d, `Skin8`=%d, `Skin9`=%d, `Skin10`=%d, `JoinRank`=%d, `UsesSkins`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d WHERE `id`=%d",
+		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `JoinRank`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d WHERE `id`=%d",
 		FactionInfo[factionid][fMaterials],
 		FactionInfo[factionid][fBank],
-		FactionInfo[factionid][fSkin1],
-		FactionInfo[factionid][fSkin2],
-		FactionInfo[factionid][fSkin3],
-		FactionInfo[factionid][fSkin4],
-		FactionInfo[factionid][fSkin5],
-		FactionInfo[factionid][fSkin6],
-		FactionInfo[factionid][fSkin7],
-		FactionInfo[factionid][fSkin8],
-		FactionInfo[factionid][fSkin9],
-		FactionInfo[factionid][fSkin10],
 		FactionInfo[factionid][fJoinRank],
-		FactionInfo[factionid][fUseSkins],
 		FactionInfo[factionid][fType],
 		FactionInfo[factionid][fRankAmount],
 		FactionInfo[factionid][fAllowJob],
@@ -5956,7 +5892,8 @@ IsAtGasStation(playerid)
 	return 0;
 }
 
-stock IsAtDealership(playerid) {
+stock IsAtDealership(playerid)
+{
     if (PlayerToPoint(35.0, playerid, 2128.0864, -1135.3912, 25.5855) ||
 		PlayerToPoint(50.0, playerid, 537.3366, -1293.2140, 17.2422) ||
 		PlayerToPoint(35.0, playerid, 2940.2000, -2051.7338, 3.5480)) {
@@ -5965,7 +5902,18 @@ stock IsAtDealership(playerid) {
     return 0;
 }
 
-stock IsVehicleParkedAtDealership(vehicleid) {
+stock IsAtBlackMarket(playerid)
+{
+	if (PlayerToPoint(2.0, playerid, POS_BM1_X, POS_BM1_Y, POS_BM1_Z) ||
+		PlayerToPoint(2.0, playerid, POS_BM2_X, POS_BM2_Y, POS_BM2_Z) ||
+		PlayerToPoint(2.0, playerid, POS_BM3_X, POS_BM3_Y, POS_BM3_Z)) {
+        return 1;
+    }
+    return 0;
+}
+
+stock IsVehicleParkedAtDealership(vehicleid)
+{
     if (ParkedVehicleToPoint(35.0, vehicleid, 2128.0864, -1135.3912, 25.5855) ||
 		ParkedVehicleToPoint(50.0, vehicleid, 537.3366, -1293.2140, 17.2422) ||
 		ParkedVehicleToPoint(35.0, vehicleid, 2940.2000, -2051.7338, 3.5480)) {
@@ -5974,25 +5922,20 @@ stock IsVehicleParkedAtDealership(vehicleid) {
     return 0;
 }
 
-stock ParkedVehicleToPoint(Float:radius, vehicleid, Float:x, Float:y, Float:z) {
-		new
-			Float:oldX,
-			Float:oldY,
-			Float:oldZ,
-			Float:xTemp,
-			Float:yTemp,
-			Float:zTemp;
+stock ParkedVehicleToPoint(Float:radius, vehicleid, Float:x, Float:y, Float:z)
+{
+	new Float:oldX, Float:oldY, Float:oldZ, Float:xTemp, Float:yTemp, Float:zTemp;
 
-		oldX = VehicleInfo[vehicleid][VehPosX];
-		oldY = VehicleInfo[vehicleid][VehPosY];
-		oldZ = VehicleInfo[vehicleid][VehPosZ];
-		xTemp = (oldX -x);
-		yTemp = (oldY -y);
-		zTemp = (oldZ -z);
-		if(((xTemp < radi) && (xTemp > -radius)) && ((yTemp < radius) && (yTemp > -radius)) && ((zTemp < radius) && (zTemp > -radius))) {
-			return 1;
-		}
-		return 0;
+	oldX = VehicleInfo[vehicleid][VehPosX];
+	oldY = VehicleInfo[vehicleid][VehPosY];
+	oldZ = VehicleInfo[vehicleid][VehPosZ];
+	xTemp = (oldX -x);
+	yTemp = (oldY -y);
+	zTemp = (oldZ -z);
+	if(((xTemp < radi) && (xTemp > -radius)) && ((yTemp < radius) && (yTemp > -radius)) && ((zTemp < radius) && (zTemp > -radius))) {
+		return 1;
+	}
+	return 0;
 }
 
 //====[ACTION MESSAGES]=========================================================
@@ -6420,9 +6363,6 @@ SetPlayerFaction(targetid, factionid, rank)
 			PlayerInfo[targetid][pJobAllowed] = 0;
 			PlayerInfo[targetid][pJob] = 0;
 		}
-		
-		if(FactionInfo[factionid][fUseSkins] == 1)
-			SetPlayerSkin(targetid, FactionInfo[factionid][fSkin1]);
 			
 		if(FactionInfo[factionid][fType] == FAC_TYPE_GANG)
 			ShowGangZonesToPlayer(targetid);
@@ -9015,13 +8955,13 @@ CMD:numero(playerid, params[])
 CMD:vender(playerid, params[])
 {
 	// Mercado Negro
-	if(PlayerToPoint(2.0, playerid, 2659.6992, -2056.4814, 13.4214) || PlayerToPoint(2.0, playerid, 1296.0912, -990.3329, 32.6260) || PlayerToPoint(2.0, playerid, 1598.7982, -2137.0635, 13.4390))
+	if(IsAtBlackMarket(playerid))
 	{
 	    new item = GetHandItem(playerid);
 	    
 		if(item == 0)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus manos para vender.");
-		if(item != ITEM_ID_REPUESTOAUTO && item != ITEM_ID_BARRETA && item != ITEM_ID_PRODUCTOS && item != ITEM_ID_MATERIALES)
+		if(item != ITEM_ID_REPUESTOAUTO && item != ITEM_ID_BARRETA && item != ITEM_ID_PRODUCTOS && item != ITEM_ID_MATERIALES && GetItemType(item) != ITEM_TOY)
 		    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: No estoy interesado.");
 
     	GivePlayerCash(playerid, GetItemPrice(item) * GetHandParam(playerid) / 2); // Paga el 50% del valor original
@@ -9035,9 +8975,7 @@ CMD:vender(playerid, params[])
 
 CMD:comprar(playerid, params[])
 {
-	new title[64],
-		content[600],
-		business = GetPlayerBusiness(playerid);
+	new title[64], content[600], business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
@@ -9067,10 +9005,10 @@ CMD:comprar(playerid, params[])
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
 			}
-			case BIZ_PHON:
+			case BIZ_ACCESS:
 			{
-			    TogglePlayerControllable(playerid, false);
-				ShowMenuForPlayer(phoneMenu, playerid);
+			    OnPlayerBuyAccess(business, playerid, params);
+			    return 1;
 			}
 			case BIZ_AMMU:
 			{
@@ -9086,6 +9024,11 @@ CMD:comprar(playerid, params[])
 			{
 		        OnPlayerBuyHard(business, playerid, params);
 		        return 1;
+			}
+			case BIZ_PHON:
+			{
+			    TogglePlayerControllable(playerid, false);
+				ShowMenuForPlayer(phoneMenu, playerid);
 			}
 		}
 		
@@ -9220,14 +9163,9 @@ CMD:comprar(playerid, params[])
 			GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
 			
 		// Mercado Negro
-		} else if(PlayerToPoint(2.0, playerid, 2659.6992, -2056.4814, 13.4214) ||
-  					PlayerToPoint(2.0, playerid, 1296.0912, -990.3329, 32.6260) ||
-		            PlayerToPoint(2.0, playerid, 1598.7982, -2137.0635, 13.4390)) {
+		} else if(IsAtBlackMarket(playerid)) {
 
-			new
-			    item,
-				option,
-				cant;
+			new item, option, cant;
 
 			if(sscanf(params, "ii", option, cant))
 			{
@@ -9829,10 +9767,9 @@ CMD:pservicio(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el vestuario!");
 
 	if(CopDuty[playerid] == 0) {
-		PlayerActionMessage(playerid,15.0,"se coloca el uniforme de policía y toma sus herramientras del armario.");
+		PlayerActionMessage(playerid,15.0,"toma su placa identificatoria y su radio del armario.");
 		SetPlayerArmour(playerid, 100.00);
 		CopDuty[playerid] = 1;
-		SetPlayerToFactionSkin(playerid);
 		format(string, sizeof(string), "[Dpto. de policía]: %s está en servicio como oficial de policía.", GetPlayerNameEx(playerid));
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
 	} else {
@@ -10881,7 +10818,6 @@ CMD:mservicio(playerid, params[])
 	if(MedDuty[playerid] == 0) {
 		PlayerInfo[playerid][pHealth] = 100;
 		MedDuty[playerid] = 1;
-		SetPlayerToFactionSkin(playerid);
 		format(string, sizeof(string), "Anuncio: un paramédico se ha puesto en servicio.", GetPlayerNameEx(playerid));
 		SendClientMessageToAll(COLOR_LIGHTGREEN, string);
 	} else {
