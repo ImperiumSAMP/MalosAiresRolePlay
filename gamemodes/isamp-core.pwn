@@ -8538,6 +8538,7 @@ CMD:checkinv(playerid, params[])
 	SendFMessage(playerid, COLOR_WHITE, "Usuario: %s (%d) - DBID: %d", GetPlayerNameEx(targetID), targetID, PlayerInfo[targetID][pID]);
 	ShowInv(playerid, targetID);
 	ShowPocket(playerid, targetID);
+	PrintToysForPlayer(targetID, playerid);
 	return 1;
 }
 
@@ -9585,6 +9586,7 @@ CMD:revisar(playerid, params[])
 	{
 		ShowInv(playerid, targetID);
 	  	ShowPocket(playerid, targetID);
+	  	PrintToysForPlayer(targetID, playerid);
 		PlayerPlayerActionMessage(playerid, targetID, 15.0, "ha revisado en busca de objetos a");
 	} else
 	    {
@@ -11414,6 +11416,7 @@ CMD:aceptar(playerid,params[]) {
 
 		ShowInv(idToShow, playerid);
   		ShowPocket(idToShow, playerid);
+  		PrintToysForPlayer(playerid, idToShow);
 		PlayerPlayerActionMessage(idToShow, playerid, 15.0, "ha revisado en busca de objetos a");
 		ReviseOffer[playerid] = 999;
 		return 1;

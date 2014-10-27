@@ -57,6 +57,9 @@
 #define ITEM_ID_ANTEOJO_RAYBAN_NEGRO	88
 #define ITEM_ID_ANTEOJO_RAYBAN_VERDE	89
 #define ITEM_ID_ANTEOJO_RAYBAN_AZUL  	90
+#define ITEM_ID_GORRA_SIMPLE_NEGRA      91
+#define ITEM_ID_GORRA_SIMPLE_AZUL       92
+#define ITEM_ID_GORRA_SIMPLE_VERDE      93
 
 #define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
@@ -175,7 +178,10 @@ static const ServerItems[][ItemInfo] = {
 /*87*/  {"Anteojos deportivos azules", "Cantidad", ITEM_TOY, 800, false, 19140, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*88*/  {"Anteojos Rayban negros", "Cantidad", ITEM_TOY, 1200, false, 19022, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*89*/  {"Anteojos Rayban verdes", "Cantidad", ITEM_TOY, 1200, false, 19029, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
-/*90*/  {"Anteojos Rayban azules", "Cantidad", ITEM_TOY, 1200, false, 19023, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}
+/*90*/  {"Anteojos Rayban azules", "Cantidad", ITEM_TOY, 1200, false, 19023, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*91*/  {"Gorra simple negra", "Cantidad", ITEM_TOY, 250, false, 18941, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*92*/  {"Gorra simple azul", "Cantidad", ITEM_TOY, 250, false, 18942, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*93*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 250, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}
 
 };
 
