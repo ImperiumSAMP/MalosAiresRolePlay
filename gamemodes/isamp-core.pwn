@@ -13,6 +13,7 @@
 #include <zcmd>
 #include <streamer>
 #include <Dini>
+#include <md-sort>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
@@ -53,6 +54,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 #include "isamp-racesystem.inc"         //Sistema de carreras
+#include "isamp-notebook.inc"         	//Sistema de agendas
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -135,6 +137,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
 #define DLG_CAMARAS_POLICIA     10024
+// #define DLG_NOTEBOOK		      10025 definido en include para que no tire error
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -13526,3 +13529,4 @@ public EndAnim(playerid)
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
+

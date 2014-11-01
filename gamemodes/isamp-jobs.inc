@@ -252,185 +252,173 @@ public OnJobDataLoad(id) {
 CMD:comenzar(playerid,params[])
 	cmd_trabajar(playerid, params);
 
-CMD:trabajar(playerid,params[]) {
+CMD:trabajar(playerid,params[])
+{
 	new job = PlayerInfo[playerid][pJob];
 	    
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
 		SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
 		jobDuty[playerid] = true;
-	} else if(job != 0) {
-		if(!jobDuty[playerid]) {
-	        if(PlayerInfo[playerid][pCantWork] == 0) {
-			    if(job == JOB_TAXI) {
+	} else
+	    {
+			if(job == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún empleo!");
+			if(jobDuty[playerid])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya te encuentras trabajando!");
+	        if(PlayerInfo[playerid][pCantWork] != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya has trabajado lo suficiente! vé, y espera hasta el próximo día de pago.");
 
-			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_TAXI) {
-						SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un taxista se encuentra en servicio (Tel: 444).");
-						jobDuty[playerid] = true;
-			       	} else {
-		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un taxi!");
-		       	    	return 1;
-			       	}
-			    } else if(job == JOB_FARM) {
-			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_FARM) {
-			    	    SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la cosecha y tipear /terminar para descargarla.");
-                        SendClientMessage(playerid, COLOR_WHITE, "Puedes descargar los materiales cuando quieras, pero te pagarán acorde a la cantidad y no podras volver a trabajar durante este día de pago.");
-						new rCP = -1;
-						while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid]) {
-					 		rCP = random(sizeof(JOB_FARM_POS));
-						}
-						LastCP[playerid] = rCP;
-						SetPlayerCheckpoint(playerid, JOB_FARM_POS[rCP][0], JOB_FARM_POS[rCP][1], JOB_FARM_POS[rCP][2], 5.4);
-						jobDuty[playerid] = true;
-						PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-						SetEngine(GetPlayerVehicleID(playerid), 1);
-			       	} else {
-		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a una cosechadora!");
-		       	    	return 1;
-			       	}
-			    } else if(job == JOB_DRUGF) {
-			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_DRUGF) {
-			    	    SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la materia prima y tipear /terminar.");
-						SendClientMessage(playerid, COLOR_WHITE, "Solo recibirás la paga si terminas completamente con tu trabajo.");
-						new rCP = -1;
-						while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid]) {
-					 		rCP = random(sizeof(JOB_DRUGF_POS));
-						}
-						LastCP[playerid] = rCP;
-						SetPlayerCheckpoint(playerid, JOB_DRUGF_POS[rCP][0], JOB_DRUGF_POS[rCP][1], JOB_DRUGF_POS[rCP][2], 5.4);
-						jobDuty[playerid] = true;
-						PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-						SetEngine(GetPlayerVehicleID(playerid), 1);
-			       	} else {
-		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a una cosechadora!");
-		       	    	return 1;
-			       	}
-			    } else if(job == JOB_DRUGD) {
+			switch(job)
+			{
+			    case JOB_TAXI:
+				{
+			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TAXI)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un taxi!");
+
+					SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un taxista se encuentra en servicio (Tel: 444).");
+					jobDuty[playerid] = true;
+				}
+				case JOB_FARM:
+			    {
+			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_FARM)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a una cosechadora!");
+
+					SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la cosecha y tipear /terminar para descargarla.");
+                    SendClientMessage(playerid, COLOR_WHITE, "Puedes descargar los materiales cuando quieras, pero te pagarán acorde a la cantidad y no podras volver a trabajar durante este día de pago.");
+					new rCP = -1;
+					while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid]) {
+						rCP = random(sizeof(JOB_FARM_POS));
+					}
+					LastCP[playerid] = rCP;
+					SetPlayerCheckpoint(playerid, JOB_FARM_POS[rCP][0], JOB_FARM_POS[rCP][1], JOB_FARM_POS[rCP][2], 5.4);
+					jobDuty[playerid] = true;
+					PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
+					SetEngine(GetPlayerVehicleID(playerid), 1);
+			    }
+				case JOB_DRUGF:
+				{
+			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_DRUGF)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a una cosechadora!");
+
+					SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la materia prima y tipear /terminar.");
+					SendClientMessage(playerid, COLOR_WHITE, "Solo recibirás la paga si terminas completamente con tu trabajo.");
+					new rCP = -1;
+					while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid]) {
+						rCP = random(sizeof(JOB_DRUGF_POS));
+					}
+					LastCP[playerid] = rCP;
+					SetPlayerCheckpoint(playerid, JOB_DRUGF_POS[rCP][0], JOB_DRUGF_POS[rCP][1], JOB_DRUGF_POS[rCP][2], 5.4);
+					jobDuty[playerid] = true;
+					PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
+					SetEngine(GetPlayerVehicleID(playerid), 1);
+			    }
+				case JOB_DRUGD:
+				{
 			        SendClientMessage(playerid, COLOR_WHITE, "Súbete a un vehículo con maletero y dirígete a la granja de drogas. Recuerda que necesitarás algo de espacio en él.");
 			        SendClientMessage(playerid, COLOR_WHITE, "Una vez allí, tipea /comprar para comprar las bolsas de materia prima.");
 			        SetPlayerCheckpoint(playerid, JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2], 5.4);
-				} else if(job == JOB_TRAN) {
-			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_TRAN) {
-			    	    SendClientMessage(playerid, COLOR_WHITE, "Entrega los paquetes en los puntos rojos del mapa y vuelve a buscar más o bien utiliza /terminar cuando lo desees.");
-                        SendClientMessage(playerid, COLOR_WHITE, "Te pagarán acorde a la cantidad de paquetes entregados y no podras volver a trabajar durante este día de pago.");
-						SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
-						jobDuty[playerid] = true;
-						SetEngine(GetPlayerVehicleID(playerid), 1);
-						PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-			       	} else {
-		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión!");
-		       	    	return 1;
-			       	}
-			    } else if(job == JOB_GARB) {
-			    	if(getVehicleType(GetPlayerVehicleID(playerid)) == VEH_JOB && getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_GARB) {
-						new
-						    gbCP = 0,
-							route = random(2);
+				}
+				case JOB_TRAN:
+				{
+			    	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TRAN)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión!");
+
+					SendClientMessage(playerid, COLOR_WHITE, "Entrega los paquetes en los puntos rojos del mapa y vuelve a buscar más o bien utiliza /terminar cuando lo desees.");
+                    SendClientMessage(playerid, COLOR_WHITE, "Te pagarán acorde a la cantidad de paquetes entregados y no podras volver a trabajar durante este día de pago.");
+					SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
+					jobDuty[playerid] = true;
+					SetEngine(GetPlayerVehicleID(playerid), 1);
+					PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
+			    }
+				case JOB_GARB:
+				{
+			    	if(getVehicleType(GetPlayerVehicleID(playerid)) != VEH_JOB || getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_GARB)
+			    	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
+
+					new gbCP = 0, route = random(2);
 						    
-                        SetPVarInt(playerid, "jobVehicle", GetPlayerVehicleID(playerid));
-             			jobDuty[playerid] = true;
-             			if(route == 0) {
-			 	 			SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP][0], JOB_GARB_POS_R0[gbCP][1], JOB_GARB_POS_R0[gbCP][2], 5.4);
-						} else if(route == 1) {
-						    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
-						}
-						PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-						SetEngine(GetPlayerVehicleID(playerid), 1);
-						SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura, al final, serás recompensado por tu trabajo.");
-			       	} else {
-		       	    	SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
-		       	    	return 1;
-			       	}
-			    } else {
+          			SetPVarInt(playerid, "jobVehicle", GetPlayerVehicleID(playerid));
+             		jobDuty[playerid] = true;
+             		if(route == 0) {
+			 	 		SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP][0], JOB_GARB_POS_R0[gbCP][1], JOB_GARB_POS_R0[gbCP][2], 5.4);
+					} else if(route == 1) {
+					    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
+					}
+					PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
+					SetEngine(GetPlayerVehicleID(playerid), 1);
+					SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura, al final, serás recompensado por tu trabajo.");
+			    }
+				default:
 					return 1;
-				}
-			    if(PlayerInfo[playerid][pJobAllowed] == 1 && JobInfo[job][jSkin] > 0) {
-					SetPlayerSkin(playerid, JobInfo[job][jSkin]);
-				}
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya has trabajado lo suficiente! vé, y espera hasta el próximo día de pago.");
 			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya te encuentras trabajando!");
+			if(PlayerInfo[playerid][pJobAllowed] == 1 && JobInfo[job][jSkin] > 0)
+				SetPlayerSkin(playerid, JobInfo[job][jSkin]);
 		}
-	} else {
-		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún empleo!");
-	}
 	return 1;
 }
 
-CMD:terminar(playerid,params[]) {
-	new
-	    job = PlayerInfo[playerid][pJob];
+CMD:terminar(playerid,params[])
+{
+    if(PlayerInfo[playerid][pJob] == 0)
+		return 1;
+    if(!jobDuty[playerid])
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras trabajando!");
 
-    if(job == 0)
-		return 1;
-		
-    if(!jobDuty[playerid]) {
-    	SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras trabajando!");
-		return 1;
-	}
-	
-	if(PlayerInfo[playerid][pJob] == JOB_FARM) {
-		if(PlayerToPoint(20.0, playerid, JOB_FARM_POS[17][0], JOB_FARM_POS[17][1], JOB_FARM_POS[17][2])) {
-            if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_FARM) {
-            	PlayerActionMessage(playerid, 15.0, "descarga todo el producto y estaciona la cosechadora.");
-				SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
-			    PlayerInfo[playerid][pCantWork] = 1;
-			    LastCP[playerid] = -1;
-			    PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
-			    CollectedProds[playerid] = 0;
-				SetVehicleToRespawn(GetPlayerVehicleID(playerid));
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de una cosechadora!");
-		    	return 1;
-			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve y descarga los productos en la zona indicada!");
-		    return 1;
+	switch(PlayerInfo[playerid][pJob])
+	{
+	    case JOB_FARM:
+		{
+			if(!PlayerToPoint(20.0, playerid, JOB_FARM_POS[17][0], JOB_FARM_POS[17][1], JOB_FARM_POS[17][2]))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve y descarga los productos en la zona indicada!");
+    		if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_FARM)
+    		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de una cosechadora!");
+    		    
+     		PlayerActionMessage(playerid, 15.0, "descarga todo el producto y estaciona la cosechadora.");
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
+			PlayerInfo[playerid][pCantWork] = 1;
+			LastCP[playerid] = -1;
+			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
+			CollectedProds[playerid] = 0;
+			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		}
-	} else if(PlayerInfo[playerid][pJob] == JOB_DRUGF) {
-	
-		if(!PlayerToPoint(20.0, playerid, JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2]))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve y descarga los productos en la zona indicada!");
+		case JOB_DRUGF:
+		{
+			if(!PlayerToPoint(20.0, playerid, JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve y descarga los productos en la zona indicada!");
+	        if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_DRUGF)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en una cosechadora!");
+		    if(LastCP[playerid] != sizeof(JOB_DRUGF_POS) - 1)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
 
-        if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_DRUGF)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en una cosechadora!");
-	  
-	    if(LastCP[playerid] != sizeof(JOB_DRUGF_POS) - 1)
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
+			PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+		    PlayerInfo[playerid][pCantWork] = 1;
+		    LastCP[playerid] = -1;
+		    ServerInfo[sDrugRawMats] += 5;
+		    GivePlayerCash(playerid, CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+		    CollectedProds[playerid] = 0;
+			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+		}
+		case JOB_TRAN:
+		{
+			if(!PlayerToPoint(20.0, playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve a la zona indicada!");
+            if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TRAN)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de un camión!");
 
-		PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
-		SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
-	    PlayerInfo[playerid][pCantWork] = 1;
-	    LastCP[playerid] = -1;
-	    ServerInfo[sDrugRawMats] += 5;
-	    GivePlayerCash(playerid, CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
-	    CollectedProds[playerid] = 0;
-	
-		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
-	} else if(PlayerInfo[playerid][pJob] == JOB_TRAN) {
-		if(PlayerToPoint(20.0, playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2])) {
-			if(getVehicleJob(GetPlayerVehicleID(playerid)) == JOB_TRAN) {
-			    SendFMessage(playerid, COLOR_WHITE, "Has descargado %d paquetes por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_TRAN_PRODVALUE);
-			    PlayerInfo[playerid][pCantWork] = 1;
-				carryingProd[playerid] = false;
-			    LastCP[playerid] = -1;
-			    PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
-			    CollectedProds[playerid] = 0;
-				SetVehicleToRespawn(GetPlayerVehicleID(playerid));
-				PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
-			} else {
-			    SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de un camión!");
-		    	return 1;
-			}
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve a la zona indicada!");
-		    return 1;
+			SendFMessage(playerid, COLOR_WHITE, "Has descargado %d paquetes por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_TRAN_PRODVALUE);
+			PlayerInfo[playerid][pCantWork] = 1;
+			carryingProd[playerid] = false;
+			LastCP[playerid] = -1;
+			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
+			CollectedProds[playerid] = 0;
+			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+			PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
 		}
 	}
-	if(PlayerInfo[playerid][pJobAllowed] == 1) {
+	
+	if(PlayerInfo[playerid][pJobAllowed] == 1)
 		SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	}
     jobDuty[playerid] = false;
 	return 1;
 }
