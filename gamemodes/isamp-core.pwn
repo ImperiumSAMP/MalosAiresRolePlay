@@ -13,7 +13,6 @@
 #include <zcmd>
 #include <streamer>
 #include <Dini>
-#include <md-sort>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
