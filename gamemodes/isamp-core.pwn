@@ -333,6 +333,10 @@ new
 	bool:TalkAnimEnabled[MAX_PLAYERS],
     bool:HudEnabled[MAX_PLAYERS],
 	
+	DrinksTaken[MAX_PLAYERS] = 0,
+	BlowingPipette[MAX_PLAYERS] = 0,
+    OfferingPipette[MAX_PLAYERS] = 0,
+	
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
 	
@@ -472,6 +476,9 @@ forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
 forward TimeReplenishYo(playerid);
 forward EndAnim(playerid);
+forward DrunkPlayer(playerid);
+forward AceptarPipeta(playerid);
+forward SoplandoPipeta(playerid);
 
 //==============================================================================
 
@@ -535,6 +542,7 @@ public OnGameModeInit() {
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
 	timersID[15] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
+	timersID[16] = SetTimer("DrunkPlayer", 15000,true); // 15 seg
 
 	//====[MENUS]===============================================================
 
@@ -584,6 +592,7 @@ public OnGameModeExit() {
 	KillTimer(timersID[13]);
 	KillTimer(timersID[14]);
 	KillTimer(timersID[15]);
+	KillTimer(timersID[16]);
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
@@ -598,6 +607,19 @@ public OnGameModeExit() {
 	DestroyAllDynamicObjects();
 	DestroyGangZones();
 	//mysql_close();
+	return 1;
+}
+
+public DrunkPlayer(playerid)
+{
+    if (DrinksTaken[playerid] >= 100)
+	{
+        SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	    SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		DrinksTaken[playerid] = 0;
+	}
+	if (GetPlayerDrunkLevel(playerid) > 1999)
+	    ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 	return 1;
 }
 
@@ -745,6 +767,11 @@ public ResetStats(playerid)
 	// s0beit detector.
 	firstSpawn[playerid] = 1;
 	cheater[playerid] = 0;
+	
+	//Alcoholemia
+	DrinksTaken[playerid] = 0;
+	BlowingPipette[playerid] = 0;
+    OfferingPipette[playerid] = 0;
 	
 	smoking[playerid] = false;
 	LastVeh[playerid] = 0;
@@ -9420,7 +9447,7 @@ CMD:ayudap(playerid, params[])
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /equipo /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta");
  	if(PlayerInfo[playerid][pRank] <= 4)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
 	return 1;
@@ -9854,6 +9881,67 @@ CMD:localizar(playerid,params[])
 public CopTraceAvailable(playerid)
 {
 	CopTrace[playerid] = 0;
+	return 1;
+}
+
+CMD:pipeta(playerid,params[])
+{
+    new 
+        targetid;	
+	 
+	if(sscanf(params, "u", targetid))
+   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pipeta [ID/jugador]");
+    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+		return 1;
+	if(CopDuty[playerid] == 0)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
+	if(OfferingPipette[playerid] == 1)
+	    return SendClientMessage(playerid,COLOR_YELLOW2,"Ya has ofrecido una pipeta para que soplen.");
+	
+	SendFMessage (playerid, COLOR_LIGHTYELLOW2, "Le diste una pipeta para que sople a %s, debes esperar que el sujeto responda.", GetPlayerNameEx(targetid));
+    SendFMessage (targetid, COLOR_LIGHTYELLOW2, "%s te dío una pipeta de alcoholemia para que soples. (Utilizá /soplarpipeta)", GetPlayerNameEx (playerid));
+	BlowingPipette[targetid] = 1;
+	OfferingPipette[playerid] = 1;
+	SetTimerEx("AceptarPipeta", 20000, false, "i", playerid);
+	return 1;
+}
+
+public AceptarPipeta(playerid)
+{
+	OfferingPipette[playerid] = 0;
+	return 1;
+}
+
+CMD:soplarpipeta(playerid,params[])
+{
+    if(BlowingPipette[playerid] == 0)
+	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te esta ofreciendo una pipeta para soplar.");
+		
+	BlowingPipette[playerid] = 0;
+	PlayerActionMessage(playerid, 15.0, "Toma la pipeta ofrecida por el oficial y comienza a soplarla");
+    SetTimerEx("SoplandoPipeta",6000, false, "i", playerid);
+	TogglePlayerControllable(playerid, false);
+    SetTimerEx("Unfreeze", 6000, false, "i", playerid);
+    return 1;
+}
+		
+	
+public SoplandoPipeta(playerid)
+{
+    new
+	    str[280],
+		str2[280];
+	PlayerDoMessage(playerid, 15.0, "Luego de unos segundos la pipeta arroja el resultado");
+	if (GetPlayerDrunkLevel(playerid) > 1999)
+	{
+	    format(str, sizeof(str), "La pipeta indica que %s ha superado el limite permitido de alcohol en sangre.", GetPlayerNameEx(playerid));
+		PlayerDoMessage(playerid, 15.0, str);
+	}
+	else
+	{
+	    format(str2, sizeof(str2), "La pipeta indica que %s no ha sobrepasado el limite permitido de alcohol en sangre.", GetPlayerNameEx(playerid));
+		PlayerDoMessage(playerid, 15.0, str2);
+	}
 	return 1;
 }
 
@@ -11825,6 +11913,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -35);
 		            	       	Business[i][bTill] += 35;
 		               		    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 20;
 		               		    PlayerActionMessage(playerid, 15.0, "se ha comprado una cerveza y la bebe.");
 		               		    PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11837,6 +11926,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -40);
 		             	       	Business[i][bTill] += 40;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 50;
 							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un shot de vodka y lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
           						saveBusiness(i);
@@ -11873,6 +11963,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -40);
 		             		   	Business[i][bTill] += 40;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 25;
 							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de whisky.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11885,6 +11976,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -35);
 		             		   	Business[i][bTill] += 35;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 20;
 								PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de brandy y lo bebe.");
 								PlayerDrink(playerid, 50.0);
 								saveBusiness(i);
@@ -11928,6 +12020,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -50);
 		            	       	Business[i][bTill] += 50;
 		               		    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 25;
 					  			PlayerActionMessage(playerid, 15.0, "ha comprado un vaso de Fernet con Coca y se lo bebe.");
 					  			PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11940,6 +12033,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -60);
 		             	       	Business[i][bTill] += 60;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 50;
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Destornillador y se lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11952,6 +12046,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -60);
 		             	       	Business[i][bTill] += 60;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 20;
 					  			PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Gin Tonic y se lo bebe.");
 					  			PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11964,6 +12059,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -70);
 		             		   	Business[i][bTill] += 70;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 25;
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Cuba Libre y se lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11976,6 +12072,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -80);
 		             		   	Business[i][bTill] += 80;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 20;
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Caipirinha y se la bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11988,6 +12085,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -80);
 		             		   	Business[i][bTill] += 80;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 25;
 								PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Martini y se lo bebe.");
 								PlayerDrink(playerid, 50.0);
 								saveBusiness(i);
@@ -12000,6 +12098,7 @@ CMD:beber(playerid, params[])
 		       					GivePlayerCash(playerid, -150);
 		             	       	Business[i][bTill] += 150;
 		                	    Business[i][bProducts]--;
+								DrinksTaken[playerid] += 25;
 						  		PlayerActionMessage(playerid, 15.0, "ha comprado una botella de Champagne, la descorcha, y se toma una copa.");
                                 PlayerDrink(playerid, 70.0);
 								saveBusiness(i);
