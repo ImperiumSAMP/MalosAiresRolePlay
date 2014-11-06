@@ -53,7 +53,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 #include "isamp-racesystem.inc"         //Sistema de carreras
-#include "isamp-notebook.inc"         	//Sistema de agendas
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -136,7 +135,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
 #define DLG_CAMARAS_POLICIA     10024
-// #define DLG_NOTEBOOK		      10025 definido en include para que no tire error
+// #define DLG_BIZ_HARD            10026
+// #define DLG_BIZ_ACCESS          10027
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -271,10 +271,7 @@ new
 	PlayerText:RegTDOrigin[MAX_PLAYERS],
 	PlayerText:RegTDArrow[MAX_PLAYERS],
 	PlayerText:PTD_Speedo[MAX_PLAYERS],
-	PlayerText:PTD_Speedo2[MAX_PLAYERS],
 	PlayerText:PTD_BasicNeeds[MAX_PLAYERS],
-	PlayerText:PTD_Hunger[MAX_PLAYERS],
-	PlayerText:PTD_Thirst[MAX_PLAYERS],
 	PlayerText:PTD_Timer[MAX_PLAYERS],
 	PlayerText:gCurrentPageTextDrawId[MAX_PLAYERS],
 	PlayerText:gHeaderTextDrawId[MAX_PLAYERS],
@@ -689,14 +686,6 @@ public OnPlayerConnectEx(playerid) {
 	PlayerTextDrawColor(playerid, PTD_Speedo[playerid], -1);
 	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, PTD_Speedo[playerid], 1);
-
-	PTD_Speedo2[playerid] = CreatePlayerTextDraw(playerid, 594.000000, 415.000000, " ");
-	PlayerTextDrawBackgroundColor(playerid, PTD_Speedo2[playerid], 255);
-	PlayerTextDrawFont(playerid, PTD_Speedo2[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, PTD_Speedo2[playerid], 0.300000, 1.200000);
-	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, PTD_Speedo2[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, PTD_Speedo2[playerid], 1);
 
 	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 103, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Timer[playerid], 255);
@@ -6230,28 +6219,22 @@ public healTimer(playerid) {
 
 public speedoTimer(playerid)
 {
-	new vehicleID = GetPlayerVehicleID(playerid), string[50];
-	
- 	format(string, sizeof(string), "Velocidad: %dkm/h~n~Combustible:", GetPlayerSpeed(playerid, true));
-	PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string);
- 	format(string, sizeof(string), "%d%%", VehicleInfo[vehicleID][VehFuel]);
- 	PlayerTextDrawSetString(playerid, PTD_Speedo2[playerid], string);
+	new vehicleID = GetPlayerVehicleID(playerid), string[60];
+
  	if(VehicleInfo[vehicleID][VehFuel] > 30)
- 	    PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], 16711935); // Verde
+ 	    format(string, sizeof(string), "Velocidad: %dkm/h~n~Combustible: ~g~%d%%", GetPlayerSpeed(playerid, true), VehicleInfo[vehicleID][VehFuel]); // verde
 	else if(VehicleInfo[vehicleID][VehFuel] > 15)
-		PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -65281); // Amarillo
+		format(string, sizeof(string), "Velocidad: %dkm/h~n~Combustible: ~y~%d%%", GetPlayerSpeed(playerid, true), VehicleInfo[vehicleID][VehFuel]); // amarillo
 	else
-	   	PlayerTextDrawColor(playerid, PTD_Speedo2[playerid], -16776961); // Rojo
-	   	
-	if(HudEnabled[playerid])
-    	PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
+		format(string, sizeof(string), "Velocidad: %dkm/h~n~Combustible: ~r~%d%%", GetPlayerSpeed(playerid, true), VehicleInfo[vehicleID][VehFuel]); // rojo
+
+    PlayerTextDrawSetString(playerid, PTD_Speedo[playerid], string);
 	return 1;
 }
 
 HidePlayerSpeedo(playerid)
 {
 	PlayerTextDrawHide(playerid, PTD_Speedo[playerid]);
-	PlayerTextDrawHide(playerid, PTD_Speedo2[playerid]);
 }
 
 ShowPlayerSpeedo(playerid)
@@ -6259,7 +6242,6 @@ ShowPlayerSpeedo(playerid)
 	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 	{
 		PlayerTextDrawShow(playerid, PTD_Speedo[playerid]);
-		PlayerTextDrawShow(playerid, PTD_Speedo2[playerid]);
 	}
 }
 
@@ -7265,6 +7247,20 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 			return 1;
         }
+        case DLG_BIZ_ACCESS:
+        {
+            if(response)
+            	OnPlayerBuyAccessDialog(playerid, listitem);
+            TogglePlayerControllable(playerid, true);
+            return 1;
+		}
+        case DLG_BIZ_HARD:
+        {
+            if(response)
+            	OnPlayerBuyHardDialog(playerid, listitem);
+            TogglePlayerControllable(playerid, true);
+            return 1;
+		}
 	    case DLG_GUIDE: {
 	        if(response) {
 			     switch(listitem) {
@@ -9037,7 +9033,7 @@ CMD:comprar(playerid, params[])
 			}
 			case BIZ_ACCESS:
 			{
-			    OnPlayerBuyAccess(business, playerid, params);
+			    OnPlayerBuyAccess(playerid, business);
 			    return 1;
 			}
 			case BIZ_AMMU:
@@ -9052,7 +9048,7 @@ CMD:comprar(playerid, params[])
     		}
 			case BIZ_HARD:
 			{
-		        OnPlayerBuyHard(business, playerid, params);
+		        OnPlayerBuyHard(playerid, business);
 		        return 1;
 			}
 			case BIZ_PHON:
@@ -10732,7 +10728,7 @@ public UpdatePlayerAdiction()
 
 CreatePlayerBasicNeeds(playerid)
 {
-	PTD_BasicNeeds[playerid] = CreatePlayerTextDraw(playerid, 525.000000, 99.000000, "Hambre:~n~Sed:");
+	PTD_BasicNeeds[playerid] = CreatePlayerTextDraw(playerid, 525.000000, 99.000000, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_BasicNeeds[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_BasicNeeds[playerid], 1);
 	PlayerTextDrawLetterSize(playerid, PTD_BasicNeeds[playerid], 0.300000, 1.200000);
@@ -10741,66 +10737,52 @@ CreatePlayerBasicNeeds(playerid)
 	PlayerTextDrawSetProportional(playerid, PTD_BasicNeeds[playerid], 1);
 	PlayerTextDrawShow(playerid, PTD_BasicNeeds[playerid]);
 
-	PTD_Hunger[playerid] = CreatePlayerTextDraw(playerid, 571.000000, 99.000000, " ");
-	PlayerTextDrawBackgroundColor(playerid, PTD_Hunger[playerid], 255);
-	PlayerTextDrawFont(playerid, PTD_Hunger[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, PTD_Hunger[playerid], 0.300000, 1.200000);
-	PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, PTD_Hunger[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, PTD_Hunger[playerid], 1);
-
-	PTD_Thirst[playerid] = CreatePlayerTextDraw(playerid, 552.000000, 110.000000, " ");
-	PlayerTextDrawBackgroundColor(playerid, PTD_Thirst[playerid], 255);
-	PlayerTextDrawFont(playerid, PTD_Thirst[playerid], 1);
-	PlayerTextDrawLetterSize(playerid, PTD_Thirst[playerid], 0.300000, 1.200000);
-	PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -1);
-	PlayerTextDrawSetOutline(playerid, PTD_Thirst[playerid], 1);
-	PlayerTextDrawSetProportional(playerid, PTD_Thirst[playerid], 1);
-	
 	UpdatePlayerBasicNeedsTextdraws(playerid);
 }
 
 ShowPlayerBasicNeeds(playerid)
 {
     PlayerTextDrawShow(playerid, PTD_BasicNeeds[playerid]);
-    PlayerTextDrawShow(playerid, PTD_Hunger[playerid]);
-    PlayerTextDrawShow(playerid, PTD_Thirst[playerid]);
 }
 
 HidePlayerBasicNeeds(playerid)
 {
 	PlayerTextDrawHide(playerid, PTD_BasicNeeds[playerid]);
-	PlayerTextDrawHide(playerid, PTD_Hunger[playerid]);
-	PlayerTextDrawHide(playerid, PTD_Thirst[playerid]);
 }
 
 UpdatePlayerBasicNeedsTextdraws(playerid)
 {
-	new string[12];
-	
-	format(string, sizeof(string), "%.1f%%", PlayerInfo[playerid][pHunger]);
-	PlayerTextDrawSetString(playerid, PTD_Hunger[playerid], string);
-	format(string, sizeof(string), "%.1f%%", PlayerInfo[playerid][pThirst]);
-	PlayerTextDrawSetString(playerid, PTD_Thirst[playerid], string);
+	new string[40];
 
-	if(PlayerInfo[playerid][pHunger] > 30.0)
-	    PlayerTextDrawColor(playerid, PTD_Hunger[playerid], 16711935); // Verde
-	else if(PlayerInfo[playerid][pHunger] > 15.0)
-	    PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -65281); // Amarillo
-	else
-        PlayerTextDrawColor(playerid, PTD_Hunger[playerid], -16776961); // Rojo
-
-	if(PlayerInfo[playerid][pThirst] > 30.0)
-	    PlayerTextDrawColor(playerid, PTD_Thirst[playerid], 16711935); // Verde
-	else if(PlayerInfo[playerid][pThirst] > 15.0)
-	    PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -65281); // Amarillo
-	else
-        PlayerTextDrawColor(playerid, PTD_Thirst[playerid], -16776961); // Rojo
-	if(HudEnabled[playerid])
+	if(PlayerInfo[playerid][pHunger] > 30.0) // hambre verde
 	{
-	    PlayerTextDrawShow(playerid, PTD_Hunger[playerid]);
-	    PlayerTextDrawShow(playerid, PTD_Thirst[playerid]);
+		if(PlayerInfo[playerid][pThirst] > 30.0)
+		    format(string, sizeof(string), "Hambre: ~g~%.1f~n~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15.0)
+		    format(string, sizeof(string), "Hambre: ~g~%.1f~n~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		else
+	        format(string, sizeof(string), "Hambre: ~g~%.1f~n~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
 	}
+	else if(PlayerInfo[playerid][pHunger] > 15.0) // hambre amarillo
+ 	{
+		if(PlayerInfo[playerid][pThirst] > 30.0)
+		    format(string, sizeof(string), "Hambre: ~y~%.1f~n~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15.0)
+		    format(string, sizeof(string), "Hambre: ~y~%.1f~n~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		else
+	        format(string, sizeof(string), "Hambre: ~y~%.1f~n~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	}
+	else // hambre rojo
+	{
+		if(PlayerInfo[playerid][pThirst] > 30.0)
+		    format(string, sizeof(string), "Hambre: ~r~%.1f~n~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15.0)
+		    format(string, sizeof(string), "Hambre: ~r~%.1f~n~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		else
+	        format(string, sizeof(string), "Hambre: ~r~%.1f~n~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+    }
+
+    PlayerTextDrawSetString(playerid, PTD_BasicNeeds[playerid], string);
 }
 
 RefillPlayerBasicNeeds(playerid)

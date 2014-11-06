@@ -10,6 +10,9 @@
 #define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
 #define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios"
 
+#define DLG_BIZ_HARD            10026
+#define DLG_BIZ_ACCESS          10027
+
 // Negocios.
 #define BIZ_REST          		1
 #define BIZ_PHON                2
@@ -173,10 +176,12 @@ forward ResetBusinessOffer(playerid);
 forward bool:EnterBusiness(playerid);
 forward bool:LeaveBusiness(playerid);
 
-forward OnPlayerBuyHard(biz, playerid, params[]);
+forward OnPlayerBuyHard(playerid, biz);
+forward OnPlayerBuyHardDialog(playerid, listitem);
 forward OnPlayerBuyClot(biz, playerid);
 forward OnPlayerBuyAmmu(biz, playerid, params[]);
-forward OnPlayerBuyAccess(biz, playerid, params[]);
+forward OnPlayerBuyAccess(playerid, biz);
+forward OnPlayerBuyAccessDialog(playerid, listitem);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
@@ -1093,29 +1098,42 @@ CMD:comer(playerid, params[])
 
 //===========================NEGOCIO FERRETERIA/HARD============================
 
-ShowHardCatalog(playerid)
+public OnPlayerBuyHard(playerid, biz)
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
- 	for(new i = 0; i < sizeof(HardItems); i++)
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
+	if(Business[biz][bProducts] < 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+
+    TogglePlayerControllable(playerid, false);
+	ShowPlayerHardBizDialog(playerid, biz);
 	return 1;
 }
 
-public OnPlayerBuyHard(biz, playerid, params[])
+ShowPlayerHardBizDialog(playerid, biz)
 {
-	new option, itemid, itemprice, str[128];
+	new title[64], content[600] = "";
 
-	if(Business[biz][bProducts] < 1)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
-	if(sscanf(params, "i", option))
-		return ShowHardCatalog(playerid);
-	if(option < 0 || option >= sizeof(HardItems))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
-        
-	itemid = HardItems[option];
+	format(title, sizeof(title), "%s", Business[biz][bName]);
+	for(new i = 0; i < sizeof(HardItems); i++)
+	{
+		format(content, sizeof(content), "content{FFEFD5}%s {556B2F}$%d/n", GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
+	}
+
+	ShowPlayerDialog(playerid, DLG_BIZ_HARD, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+	return 1;
+}
+
+public OnPlayerBuyHardDialog(playerid, listitem)
+{
+	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128];
+
+ 	if(biz == 0)
+    	return 1;
+
+	itemid = HardItems[listitem];
 	itemprice = GetItemPrice(itemid);
+
 	if(GetPlayerCash(playerid) < itemprice)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
 
 	switch(GetItemType(itemid))
 	{
@@ -1139,29 +1157,42 @@ public OnPlayerBuyHard(biz, playerid, params[])
 
 //===========================NEGOCIO DE ACCESORIOS==============================
 
-ShowAccessCatalog(playerid)
+public OnPlayerBuyAccess(playerid, biz)
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
- 	for(new i = 0; i < sizeof(AccessItems); i++)
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
+	if(Business[biz][bProducts] < 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+
+    TogglePlayerControllable(playerid, false);
+	ShowPlayerAccessBizDialog(playerid, biz);
 	return 1;
 }
 
-public OnPlayerBuyAccess(biz, playerid, params[])
+ShowPlayerAccessBizDialog(playerid, biz)
 {
-	new option, itemid, itemprice, str[128];
+	new title[64], content[600] = "";
 
-	if(Business[biz][bProducts] < 1)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
-	if(sscanf(params, "i", option))
-		return ShowAccessCatalog(playerid);
-	if(option < 0 || option >= sizeof(AccessItems))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+	format(title, sizeof(title), "%s", Business[biz][bName]);
+	for(new i = 0; i < sizeof(AccessItems); i++)
+	{
+		format(content, sizeof(content), "content{FFEFD5}%s {556B2F}$%d/n", GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
+	}
 
-	itemid = AccessItems[option];
+	ShowPlayerDialog(playerid, DLG_BIZ_ACCESS, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+	return 1;
+}
+
+public OnPlayerBuyAccessDialog(playerid, listitem)
+{
+	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128];
+
+ 	if(biz == 0)
+    	return 1;
+
+	itemid = AccessItems[listitem];
 	itemprice = GetItemPrice(itemid);
+
 	if(GetPlayerCash(playerid) < itemprice)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero en efectivo suficiente.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
 	if(GetHandItem(playerid) != 0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes agarrar otro item con tus manos!");
 
