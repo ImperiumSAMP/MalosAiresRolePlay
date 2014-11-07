@@ -539,7 +539,6 @@ public OnGameModeInit() {
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
 	timersID[15] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
-	timersID[16] = SetTimer("DrunkPlayer", 15000,true); // 15 seg
 
 	//====[MENUS]===============================================================
 
@@ -589,7 +588,6 @@ public OnGameModeExit() {
 	KillTimer(timersID[13]);
 	KillTimer(timersID[14]);
 	KillTimer(timersID[15]);
-	KillTimer(timersID[16]);
 
 	foreach(new i : Player) {
 		KillTimer(pSpeedoTimer[i]);
@@ -604,19 +602,6 @@ public OnGameModeExit() {
 	DestroyAllDynamicObjects();
 	DestroyGangZones();
 	//mysql_close();
-	return 1;
-}
-
-public DrunkPlayer(playerid)
-{
-    if (DrinksTaken[playerid] >= 100)
-	{
-        SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
-	    SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
-		DrinksTaken[playerid] = 0;
-	}
-	if (GetPlayerDrunkLevel(playerid) > 1999)
-	    ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 	return 1;
 }
 
@@ -11896,6 +11881,14 @@ CMD:beber(playerid, params[])
 		            	       	Business[i][bTill] += 35;
 		               		    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 20;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 		               		    PlayerActionMessage(playerid, 15.0, "se ha comprado una cerveza y la bebe.");
 		               		    PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11909,6 +11902,14 @@ CMD:beber(playerid, params[])
 		             	       	Business[i][bTill] += 40;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 50;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un shot de vodka y lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
           						saveBusiness(i);
@@ -11946,6 +11947,14 @@ CMD:beber(playerid, params[])
 		             		   	Business[i][bTill] += 40;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 25;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de whisky.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -11959,6 +11968,14 @@ CMD:beber(playerid, params[])
 		             		   	Business[i][bTill] += 35;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 20;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 								PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de brandy y lo bebe.");
 								PlayerDrink(playerid, 50.0);
 								saveBusiness(i);
@@ -12003,6 +12020,14 @@ CMD:beber(playerid, params[])
 		            	       	Business[i][bTill] += 50;
 		               		    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 25;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 					  			PlayerActionMessage(playerid, 15.0, "ha comprado un vaso de Fernet con Coca y se lo bebe.");
 					  			PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -12016,6 +12041,14 @@ CMD:beber(playerid, params[])
 		             	       	Business[i][bTill] += 60;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 50;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Destornillador y se lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -12029,6 +12062,14 @@ CMD:beber(playerid, params[])
 		             	       	Business[i][bTill] += 60;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 20;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 					  			PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Gin Tonic y se lo bebe.");
 					  			PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -12042,6 +12083,14 @@ CMD:beber(playerid, params[])
 		             		   	Business[i][bTill] += 70;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 25;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Cuba Libre y se lo bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -12055,6 +12104,14 @@ CMD:beber(playerid, params[])
 		             		   	Business[i][bTill] += 80;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 20;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Caipirinha y se la bebe.");
 							  	PlayerDrink(playerid, 50.0);
 							  	saveBusiness(i);
@@ -12068,6 +12125,14 @@ CMD:beber(playerid, params[])
 		             		   	Business[i][bTill] += 80;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 25;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 								PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Martini y se lo bebe.");
 								PlayerDrink(playerid, 50.0);
 								saveBusiness(i);
@@ -12081,6 +12146,14 @@ CMD:beber(playerid, params[])
 		             	       	Business[i][bTill] += 150;
 		                	    Business[i][bProducts]--;
 								DrinksTaken[playerid] += 25;
+								if (DrinksTaken[playerid] >= 100)
+	                            {
+                                    SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+	                                SendClientMessage(playerid, -1,"Has tomado demasiado y entras en estado de ebriedad");
+		                            DrinksTaken[playerid] = 0;
+	                            }
+	                            if (GetPlayerDrunkLevel(playerid) > 1999)
+	                                ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 						  		PlayerActionMessage(playerid, 15.0, "ha comprado una botella de Champagne, la descorcha, y se toma una copa.");
                                 PlayerDrink(playerid, 70.0);
 								saveBusiness(i);
