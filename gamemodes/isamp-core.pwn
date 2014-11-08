@@ -794,8 +794,8 @@ public ResetStats(playerid)
 	isBetingFortune[playerid] = false;
 	
 	/* Sistema de hambre y sed */
-    PlayerInfo[playerid][pThirst] = 100.0;
-	PlayerInfo[playerid][pHunger] = 100.0;
+    PlayerInfo[playerid][pThirst] = 100;
+	PlayerInfo[playerid][pHunger] = 100;
 	
 	/* Sistema de Adiccion y Drogas */
 	RehabOffer[playerid] = 999;
@@ -1908,35 +1908,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Nivel 20]: /ppvehiculos");
 			return 1;
 		}
-	 	if(strcmp(cmd, "/donar", true) == 0)
-		{
-		    if(IsPlayerConnected(playerid))
-		    {
-				tmp = strtok(cmdtext, idx);
-				if(!strlen(tmp))
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /donar [cantidad]");
-					return 1;
-				}
-				new moneys;
-				moneys = strval(tmp);
-				if(moneys < 0)
-				{
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} cantidad inválida.");
-					return 1;
-				}
-				if(GetPlayerCash(playerid) < moneys)
-				{
-				    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ¡no tienes esa cantidad!");
-					return 1;
-				}
-				GivePlayerCash(playerid, -moneys);
-				format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha donado $%d.", GetPlayerNameEx(playerid), moneys);
-				AdministratorMessage(COLOR_LIGHTYELLOW2, string, 1);
-				log(playerid, LOG_MONEY, string);
-			}
-			return 1;
-		}
 	 	if(strcmp(cmd, "/up", true) == 0)
 		{
 		    if(IsPlayerConnected(playerid))
@@ -2237,8 +2208,8 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "CashMoney", result); 		PlayerInfo[playerid][pCash] 			= strval(result);
 		cache_get_field_content(0, "BankMoney", result); 		PlayerInfo[playerid][pBank] 			= strval(result);
 		cache_get_field_content(0, "Skin", result); 			PlayerInfo[playerid][pSkin] 			= strval(result);
-  		cache_get_field_content(0, "pThirst", result); 			PlayerInfo[playerid][pThirst] 			= float(strval(result));
-		cache_get_field_content(0, "pHunger", result); 			PlayerInfo[playerid][pHunger]			= float(strval(result));
+  		cache_get_field_content(0, "pThirst", result); 			PlayerInfo[playerid][pThirst] 			= strval(result);
+		cache_get_field_content(0, "pHunger", result); 			PlayerInfo[playerid][pHunger]			= strval(result);
 		cache_get_field_content(0, "Job", result); 				PlayerInfo[playerid][pJob] 				= strval(result);
 		cache_get_field_content(0, "JobTime", result); 			PlayerInfo[playerid][pJobTime] 			= strval(result);
 		cache_get_field_content(0, "pJobAllowed", result); 		PlayerInfo[playerid][pJobAllowed] 		= strval(result);
@@ -2834,7 +2805,7 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pBank],
 			PlayerInfo[playerid][pSkin],
 			PlayerInfo[playerid][pMask],
-			floatround(PlayerInfo[playerid][pHunger]),
+			PlayerInfo[playerid][pHunger],
 			PlayerInfo[playerid][pJob],
 			PlayerInfo[playerid][pJobAllowed],
 			PlayerInfo[playerid][pJobTime],
@@ -2873,7 +2844,7 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pListNumber],
 			PlayerInfo[playerid][pJailed],
 			PlayerInfo[playerid][pJailTime],
-			floatround(PlayerInfo[playerid][pThirst]),
+			PlayerInfo[playerid][pThirst],
 			PlayerInfo[playerid][pInterior],
 			PlayerInfo[playerid][pVirtualWorld],
 			PlayerInfo[playerid][pHospitalized],
@@ -3327,6 +3298,7 @@ public antiCheatTimer()
 		  		if(hack >= 5000) {
 				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
 				    AdministratorMessage(COLOR_WHITE, string, 1);
+				    format(string, sizeof(string), "Intentó editarse $%d.", hack);
 				    log(playerid, LOG_MONEY, string);
 		  		}
 		 		ResetMoneyBar(playerid);
@@ -4445,6 +4417,7 @@ stock LoadPickups() {
 
     P_MATS_SHOP = CreateDynamicPickup(1239, 1, 2349.8408, -1216.3939, 22.5000, -1);
     P_PRODS_SHOP = CreateDynamicPickup(1239, 1, 2183.9963, -2260.7658, 13.4098, -1);
+    
 	return 1;
 }
 
@@ -4478,19 +4451,19 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	if(pickupid == P_BANK) {
 		GameTextForPlayer(playerid, "~w~/ayudabanco", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_FIGHT_STYLE) {
 		GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
 		return 1;
-		
+
     } else if(pickupid == P_AUTO_REPARACION) {
 		GameTextForPlayer(playerid, "~w~Escribe /repararauto para reparar tu vehiculo.", 2000, 4);
-		return 1;		
-		
+		return 1;
+
 	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		GameTextForPlayer(playerid, "~w~/pservicio", 2000, 4);
 		return 1;
@@ -4498,15 +4471,15 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
 		GameTextForPlayer(playerid, "~w~/mservicio", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_SIDE_DUTY && PlayerInfo[playerid][pFaction] == FAC_SIDE) {
 		GameTextForPlayer(playerid, "~w~/servicio", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_LICENSE_CENTER) {
 		GameTextForPlayer(playerid, "~w~/licencias para ver las licencias disponibles. ~n~/manuales para ver los manuales.", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_JOB_CENTER) {
 		GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
 		return 1;
@@ -4514,7 +4487,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_POLICE_CAMERAS) {
 		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_HOSP_HEAL) {
 		new string[128];
 		format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
@@ -4525,23 +4498,23 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
 			GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_CARPART_SHOP) {
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
 			GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
 		return 1;
-				
+
 	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
 		GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
 		return 1;
-		
+
 	} else if(pickupid == P_MATS_SHOP) {
 		if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
-			new string[128];
+ 			new string[128];
 			format(string, sizeof(string), "~w~/comprar para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
 		    GameTextForPlayer(playerid, string, 2000, 4);
 		}
-		
+
 	} else if(pickupid == P_DRUGFARM_MATS) {
 	    if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
 	    	new string[128];
@@ -4551,8 +4524,8 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	    	new string[128];
 			format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
 		    GameTextForPlayer(playerid, string, 2000, 4);
-	    }
-	    
+ 	    }
+
 	} else if(pickupid == P_PRODS_SHOP) {
 		new string[128];
 		format(string, sizeof(string), "~w~/comprar para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
@@ -4834,6 +4807,7 @@ strtok(string[],&idx,seperator = ' ')
 	return ret;
 }
 //=====================================================[SERVERSIDE CASH FUNCTIONS=============================================
+
 stock GivePlayerCash(playerid, money) {
 	PlayerInfo[playerid][pCash] += money;
 	ResetMoneyBar(playerid);//Resets the money in the original moneybar, Do not remove!
@@ -4865,10 +4839,12 @@ stock ResetPlayerCash(playerid) {
 stock GetPlayerCash(playerid) {
 	return PlayerInfo[playerid][pCash];
 }
+
 //=====================================================================================================================================
-stock log(playerid, logType, text[]) {
-	new
-	    year, month, day,
+
+stock log(playerid, logType, text[])
+{
+	new year, month, day,
 	    hour, minute, second,
 	    name[32],
 		query[512];
@@ -4876,7 +4852,7 @@ stock log(playerid, logType, text[]) {
 	getdate(year, month, day);
 	gettime(hour, minute, second);
 	GetPlayerName(playerid, name, 24);
-	mysql_real_escape_string(name, name,1,sizeof(name));
+	mysql_real_escape_string(name, name, 1, sizeof(name));
 	
 	if(logType == LOG_ADMIN) {
 		format(query, sizeof(query), "INSERT INTO `log_admin` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
@@ -4892,7 +4868,7 @@ stock log(playerid, logType, text[]) {
 			text
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
-	} else 	if(logType == LOG_MONEY) {
+	} else if(logType == LOG_MONEY) {
 		format(query, sizeof(query), "INSERT INTO `log_money` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
 			PlayerInfo[playerid][pID],
 			name,
@@ -5454,7 +5430,7 @@ public ShowStats(playerid, targetid, bool:admin) {
 			if(admin) {
 			    SendClientMessage(playerid, COLOR_LIGHTYELLOW, "==============================[DEBUG]==============================");
 				SendFMessage(playerid, COLOR_WHITE,	"Negocio actual: %d | Skin: %d | Mundo: %d | Interior: %d | Ultveh: %d | pCantWork: %d | pJobAllowed: %d | pID %d", GetPlayerBusiness(targetid), PlayerInfo[targetid][pSkin], GetPlayerVirtualWorld(targetid), GetPlayerInterior(targetid), LastVeh[targetid], PlayerInfo[targetid][pCantWork], PlayerInfo[targetid][pJobAllowed], PlayerInfo[targetid][pID]);
-                SendFMessage(playerid, COLOR_WHITE, "Adicción: %.1f %% | Abstinencia en: %d min | Hambre: %.1f %% | Sed: %.1f %%", PlayerInfo[targetid][pAdictionPercent], PlayerInfo[targetid][pAdictionAbstinence] / 60, PlayerInfo[targetid][pHunger], PlayerInfo[targetid][pThirst]);
+                SendFMessage(playerid, COLOR_WHITE, "Adicción: %.1f %% | Abstinencia en: %d min | Hambre: %d | Sed: %d", PlayerInfo[targetid][pAdictionPercent], PlayerInfo[targetid][pAdictionAbstinence] / 60, PlayerInfo[targetid][pHunger], PlayerInfo[targetid][pThirst]);
 			}
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW, "===================================================================");
 		}
@@ -6155,11 +6131,13 @@ public OOCLog(string[]) {
 	fclose(hFile);
 }
 //============================================================================================================================
-stock AdministratorMessage(color,const string[],level) {
-	foreach(new i : Player) {
-		if(PlayerInfo[i][pAdmin] >= level) {
+
+stock AdministratorMessage(color, const string[], level)
+{
+	foreach(new i : Player)
+	{
+		if(PlayerInfo[i][pAdmin] >= level)
 			SendClientMessage(i, color, string);
-		}
 	}
 	print(string);
 	return 1;
@@ -10729,32 +10707,32 @@ UpdatePlayerBasicNeedsTextdraws(playerid)
 {
 	new string[40];
 
-	if(PlayerInfo[playerid][pHunger] > 30.0) // hambre verde
+	if(PlayerInfo[playerid][pHunger] > 30) // hambre verde
 	{
-		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
-		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		if(PlayerInfo[playerid][pThirst] > 30)
+		    format(string, sizeof(string), "~w~Hambre: ~g~%d~n~~w~Sed: ~g~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15)
+		    format(string, sizeof(string), "~w~Hambre: ~g~%d~n~~w~Sed: ~y~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~g~%d~n~~w~Sed: ~r~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
 	}
-	else if(PlayerInfo[playerid][pHunger] > 15.0) // hambre amarillo
+	else if(PlayerInfo[playerid][pHunger] > 15) // hambre amarillo
  	{
-		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
-		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		if(PlayerInfo[playerid][pThirst] > 30)
+		    format(string, sizeof(string), "~w~Hambre: ~y~%d~n~~w~Sed: ~g~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15)
+		    format(string, sizeof(string), "~w~Hambre: ~y~%d~n~~w~Sed: ~y~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~y~%d~n~~w~Sed: ~r~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
 	}
 	else // hambre rojo
 	{
-		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
-		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		if(PlayerInfo[playerid][pThirst] > 30)
+		    format(string, sizeof(string), "~w~Hambre: ~r~%d~n~~w~Sed: ~g~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		else if(PlayerInfo[playerid][pThirst] > 15)
+		    format(string, sizeof(string), "~w~Hambre: ~r~%d~n~~w~Sed: ~y~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~r~%d~n~~w~Sed: ~r~%d", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
     }
 
     PlayerTextDrawSetString(playerid, PTD_BasicNeeds[playerid], string);
@@ -10762,14 +10740,14 @@ UpdatePlayerBasicNeedsTextdraws(playerid)
 
 RefillPlayerBasicNeeds(playerid)
 {
-	if(PlayerInfo[playerid][pThirst] <= 0.0) // Si murio por falta de agua
+	if(PlayerInfo[playerid][pThirst] <= 0) // Si murio por falta de agua
 	{
-	    PlayerInfo[playerid][pThirst] = 30.0;
+	    PlayerInfo[playerid][pThirst] = 30;
         UpdatePlayerBasicNeedsTextdraws(playerid);
 	}
-	if(PlayerInfo[playerid][pHunger] <= 0.0) // Si murio por falta de comida
+	if(PlayerInfo[playerid][pHunger] <= 0) // Si murio por falta de comida
 	{
-	    PlayerInfo[playerid][pHunger] = 30.0;
+	    PlayerInfo[playerid][pHunger] = 30;
         UpdatePlayerBasicNeedsTextdraws(playerid);
 	}
 }
@@ -10777,39 +10755,39 @@ RefillPlayerBasicNeeds(playerid)
 forward UpdatePlayerBasicNeeds();
 public UpdatePlayerBasicNeeds()
 {
-	new Float:percentLoss = 100 / (BASIC_NEEDS_MAX_TIME / BASIC_NEEDS_UPDATE_TIME);
+	new percentLoss = 100 / (BASIC_NEEDS_MAX_TIME / BASIC_NEEDS_UPDATE_TIME);
 
     foreach(new playerid : Player)
     {
         if(cAFK[playerid] == 0 && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
 		{
-			if(PlayerInfo[playerid][pThirst] > 0.0)
+			if(PlayerInfo[playerid][pThirst] > 0)
 			{
-				if(PlayerInfo[playerid][pThirst] - percentLoss <= 0.0)
-					PlayerInfo[playerid][pThirst] = 0.0;
+				if(PlayerInfo[playerid][pThirst] - percentLoss <= 0)
+					PlayerInfo[playerid][pThirst] = 0;
 				else
 					PlayerInfo[playerid][pThirst] -= percentLoss;
 			  	UpdatePlayerBasicNeedsTextdraws(playerid);
 			} else
 			    {
-				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0.0)
-				        PlayerInfo[playerid][pHealth] = 0.0;
+				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0)
+				        PlayerInfo[playerid][pHealth] = 0;
 					else
 			 			PlayerInfo[playerid][pHealth] -= BASIC_NEEDS_HP_LOSS;
 			    	SendClientMessage(playerid, COLOR_RED, "Estas deshidratandote, bebe algo urgente o morirás de sed.");
 			    }
 
-			if(PlayerInfo[playerid][pHunger] > 0.0)
+			if(PlayerInfo[playerid][pHunger] > 0)
 			{
-				if(PlayerInfo[playerid][pHunger] - percentLoss <= 0.0)
-					PlayerInfo[playerid][pHunger] = 0.0;
+				if(PlayerInfo[playerid][pHunger] - percentLoss <= 0)
+					PlayerInfo[playerid][pHunger] = 0;
 				else
 					PlayerInfo[playerid][pHunger] -= percentLoss;
 				UpdatePlayerBasicNeedsTextdraws(playerid);
 			} else
 				{
-				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0.0)
-				        PlayerInfo[playerid][pHealth] = 0.0;
+				    if(PlayerInfo[playerid][pHealth] - BASIC_NEEDS_HP_LOSS <= 0)
+				        PlayerInfo[playerid][pHealth] = 0;
 					else
 			 			PlayerInfo[playerid][pHealth] -= BASIC_NEEDS_HP_LOSS;
 			    	SendClientMessage(playerid, COLOR_RED, "No has comido en mucho tiempo, come algo urgente o morirás de hambre.");
@@ -10821,9 +10799,9 @@ public UpdatePlayerBasicNeeds()
 
 PlayerDrink(playerid, Float:value)
 {
-	if(PlayerInfo[playerid][pThirst] + value >= 100.0)
+	if(PlayerInfo[playerid][pThirst] + value >= 100)
 	{
-    	PlayerInfo[playerid][pThirst] = 100.0;
+    	PlayerInfo[playerid][pThirst] = 100;
     	SendClientMessage(playerid, COLOR_YELLOW2, "Has saciado tu sed.");
 	}
 	else
@@ -10833,9 +10811,9 @@ PlayerDrink(playerid, Float:value)
 
 PlayerEat(playerid, Float:value)
 {
-	if(PlayerInfo[playerid][pHunger] + value >= 100.0)
+	if(PlayerInfo[playerid][pHunger] + value >= 100)
 	{
-    	PlayerInfo[playerid][pHunger] = 100.0;
+    	PlayerInfo[playerid][pHunger] = 100;
     	SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras satisfecho.");
 	}
 	else
@@ -11041,7 +11019,7 @@ CMD:pagar(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡Deben estar cerca!");
         
     GetPlayerName(targetID, name, 32);
-	format(string, sizeof(string), "[PAGO] $%d a %s (DBID: %d)", amount, name, PlayerInfo[playerid][pID]);
+	format(string, sizeof(string), "[PAGO] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
   	log(playerid, LOG_MONEY, string);
 	GivePlayerCash(playerid, -amount);
 	GivePlayerCash(targetID, amount);
@@ -11111,7 +11089,7 @@ CMD:retirar(playerid,params[])
     return 1;
 }
 
-CMD:transferir(playerid,params[])
+CMD:transferir(playerid, params[])
 {
 	new targetID, name[32], string[128], amount;
 
@@ -11121,11 +11099,11 @@ CMD:transferir(playerid,params[])
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /transferir [ID/Jugador] [cantidad]");
     if(PlayerInfo[playerid][pBank] < amount || amount < 1)
   		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-	if(targetID == INVALID_PLAYER_ID || targetID == playerid)
+	if(!IsPlayerConnected(targetID) || targetID == playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 
 	GetPlayerName(targetID, name, 32);
-	format(string, sizeof(string), "[TRANSFERENCIA] $%d a %s (DBID: %d)", amount, name, PlayerInfo[playerid][pID]);
+	format(string, sizeof(string), "[TRANSFER] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
 	log(playerid, LOG_MONEY, string);
 	PlayerInfo[playerid][pBank] -= amount;
 	PlayerInfo[targetID][pBank] += amount;
@@ -11143,6 +11121,25 @@ CMD:verbalance(playerid,params[])
 	SendFMessage(playerid, COLOR_WHITE, "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
     return 1;
+}
+
+CMD:donar(playerid, params[])
+{
+	new money, str[128];
+	
+	if(sscanf(params, "i", money))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /donar [cantidad]");
+	if(money < 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} cantidad inválida.");
+	if(GetPlayerCash(playerid) < money)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} no tienes esa cantidad.");
+	    
+	GivePlayerCash(playerid, -money);
+	format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} %s ha donado $%d.", GetPlayerNameEx(playerid), money);
+	AdministratorMessage(COLOR_LIGHTYELLOW2, str, 1);
+	format(str, sizeof(str), "[DONACION] $%d", money);
+	log(playerid, LOG_MONEY, str);
+	return 1;
 }
 
 //==========================MANEJO DE DINERO DE FACCION=========================
@@ -11178,7 +11175,7 @@ CMD:fdepositar(playerid,params[])
 	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += amount;
 	format(string, sizeof(string), "Has depositado $%d en la cuenta compartida, nuevo balance: $%d.", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
 	SendClientMessage(playerid, COLOR_WHITE, string);
-	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha depositado en la cuenta de faccion (%s) $%d.", GetPlayerNameEx(playerid), FactionInfo[PlayerInfo[playerid][pFaction]][fName], amount);
+	format(string, sizeof(string), "[DEPOSITO FAC] $%d a %s", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fName]);
 	log(playerid, LOG_MONEY, string);
  	PlayerActionMessage(playerid, 15.0, "toma una suma de dinero y la deposita en su cuenta.");
     return 1;

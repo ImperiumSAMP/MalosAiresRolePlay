@@ -67,8 +67,8 @@ enum pInfo {
 	pMask,
 	pRadio,
 	
-	Float:pThirst,
-	Float:pHunger,
+	pThirst,
+	pHunger,
 	
 	Float:pAdictionPercent,
 	pAdictionAbstinence,
