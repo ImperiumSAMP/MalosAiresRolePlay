@@ -10742,29 +10742,29 @@ UpdatePlayerBasicNeedsTextdraws(playerid)
 	if(PlayerInfo[playerid][pHunger] > 30.0) // hambre verde
 	{
 		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "Hambre: ~g~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		    format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
 		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "Hambre: ~g~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		    format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "Hambre: ~g~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~g~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
 	}
 	else if(PlayerInfo[playerid][pHunger] > 15.0) // hambre amarillo
  	{
 		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "Hambre: ~y~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		    format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
 		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "Hambre: ~y~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		    format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "Hambre: ~y~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~y~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
 	}
 	else // hambre rojo
 	{
 		if(PlayerInfo[playerid][pThirst] > 30.0)
-		    format(string, sizeof(string), "Hambre: ~r~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
+		    format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~g~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed verde
 		else if(PlayerInfo[playerid][pThirst] > 15.0)
-		    format(string, sizeof(string), "Hambre: ~r~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
+		    format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~y~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed amarillo
 		else
-	        format(string, sizeof(string), "Hambre: ~r~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
+	        format(string, sizeof(string), "~w~Hambre: ~r~%.1f~n~~w~Sed: ~r~%.1f", PlayerInfo[playerid][pHunger], PlayerInfo[playerid][pThirst]); // sed rojo
     }
 
     PlayerTextDrawSetString(playerid, PTD_BasicNeeds[playerid], string);
@@ -11858,10 +11858,54 @@ PlayerDrinkAlcohol(playerid, alcohol)
   		ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1); //Animación de borracho
 }
 
+enum DrinksInfo {
+	drName[32],
+	drPrice,
+	Float:drAmount,
+ 	drAlcohol
+};
+
+static const DrinksMenuBar[][DrinksInfo] = {
+	{"cerveza", 35, 50.0, 20},
+	{"vodka", 40, 50.0, 50},
+	{"coca cola", 25, 50.0, 0},
+    {"agua", 20, 50.0, 0},
+    {"whisky", 40, 50.0, 30},
+    {"brandy", 35, 50.0, 25},
+    {"café cortado", 25, 50.0, 0},
+    {"café irlandés", 35, 50.0, 10}
+};
+
+static const DrinksMenuDisco[][DrinksInfo] = {
+	{"fernet cola", 50, 50.0, 25},
+	{"destornillador", 60, 50.0, 40},
+	{"gin tonic", 60, 50.0, 20},
+	{"cuba libre", 70, 50.0, 30},
+	{"caipirinha", 80, 50.0, 30},
+	{"martini", 80, 50.0, 30},
+	{"botella de champagne", 150, 70.0, 35}
+};
+
+ShowDrinksMenuBar(playerid)
+{
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [nro de item]");
+	for(new i = 0; i < sizeof(DrinksMenuBar); i++)
+		SendFMessage(playerid, COLOR_WHITE, "i) %s - $%d", DrinksMenuBar[i][drName], DrinksMenuBar[i][drPrice]);
+	return 1;
+}
+
+ShowDrinksMenuDisco(playerid)
+{
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [nro de item]");
+	for(new i = 0; i < sizeof(DrinksMenuDisco); i++)
+		SendFMessage(playerid, COLOR_WHITE, "i) %s - $%d", DrinksMenuDisco[i][drName], DrinksMenuDisco[i][drPrice]);
+	return 1;
+}
+
 CMD:beber(playerid, params[])
 {
-	new command[64];
-	
+	new drink, str[128];
+
 	if(GetPVarInt(playerid, "disabled") == DISABLE_DYING || GetPVarInt(playerid, "disabled") == DISABLE_DEATHBED)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 
@@ -11875,218 +11919,43 @@ CMD:beber(playerid, params[])
 				{
 	    			if(Business[i][bProducts] <= 0)
                     	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de bebidas. Intenta volviendo mas tarde");
-					if(sscanf(params, "s[64]", command))
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
-						SendClientMessage(playerid, COLOR_WHITE, "Cerveza - Precio: $35.");
-						SendClientMessage(playerid, COLOR_WHITE, "Vodka - Precio: $40.");
-						SendClientMessage(playerid, COLOR_WHITE, "CocaCola - Precio: $25.");
-						SendClientMessage(playerid, COLOR_WHITE, "Agua - Precio: $20.");
-						SendClientMessage(playerid, COLOR_WHITE, "Whisky - Precio: $40.");
-						SendClientMessage(playerid, COLOR_WHITE, "Brandy - Precio: $35.");
-						SendClientMessage(playerid, COLOR_WHITE, "Cafe - Precio: $25.");
-						return 1;
-					} else {
-						if(strcmp(command, "cerveza", true) == 0) {
-							if(GetPlayerCash(playerid) >= 35)
-							{
-		       					GivePlayerCash(playerid, -35);
-		            	       	Business[i][bTill] += 35;
-		               		    Business[i][bProducts]--;
-		             		    PlayerActionMessage(playerid, 15.0, "se ha comprado una cerveza y la bebe.");
-		               		    PlayerDrink(playerid, 50.0);
-		               		    PlayerDrinkAlcohol(playerid, 20);
-							  	saveBusiness(i);
-							} else {
-								SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "vodka", true) == 0) {
-							if(GetPlayerCash(playerid) >= 40)
-							{
-		       					GivePlayerCash(playerid, -40);
-		             	       	Business[i][bTill] += 40;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un shot de vodka y lo bebe.");
-							  	PlayerDrinkAlcohol(playerid, 50);
-							  	PlayerDrink(playerid, 50.0);
-          						saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "cocacola", true) == 0) {
-							if(GetPlayerCash(playerid) >= 25)
-							{
-		       					GivePlayerCash(playerid, -25);
-		             	       	Business[i][bTill] += 25;
-		                	    Business[i][bProducts]--;
-					  			PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de Coca Cola y lo bebe.");
-					  			PlayerDrink(playerid, 50.0);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "agua", true) == 0) {
-							if(GetPlayerCash(playerid) >= 20)
-							{
-		       					GivePlayerCash(playerid, -20);
-		             		   	Business[i][bTill] += 20;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de agua y lo bebe.");
-							  	PlayerDrink(playerid, 50.0);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "whisky", true) == 0) {
-							if(GetPlayerCash(playerid) >= 40)
-							{
-		       					GivePlayerCash(playerid, -40);
-		             		   	Business[i][bTill] += 40;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de whisky.");
-							  	PlayerDrinkAlcohol(playerid, 30);
-							  	PlayerDrink(playerid, 50.0);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "brandy", true) == 0) {
-							if(GetPlayerCash(playerid) >= 35)
-							{
-		       					GivePlayerCash(playerid, -35);
-		             		   	Business[i][bTill] += 35;
-		                	    Business[i][bProducts]--;
-								PlayerActionMessage(playerid, 15.0, "se ha comprado un vaso de brandy y lo bebe.");
-								PlayerDrink(playerid, 50.0);
-								PlayerDrinkAlcohol(playerid, 25);
-								saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "cafe", true) == 0) {
-							if(GetPlayerCash(playerid) >= 25)
-							{
-		       					GivePlayerCash(playerid, -25);
-		             	       	Business[i][bTill] += 25;
-		                	    Business[i][bProducts]--;
-						  		PlayerActionMessage(playerid, 15.0, "se pide una taza de café y lo bebe.");
-						  		PlayerDrink(playerid, 50.0);
-						  		saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						}
-					}
+					if(sscanf(params, "i", drink))
+						return ShowDrinksMenuBar(playerid);
+					if(drink < 0 || drink >= sizeof(DrinksMenuBar))
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
+					if(GetPlayerCash(playerid) < DrinksMenuBar[drink][drPrice])
+					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+
+					GivePlayerCash(playerid, -DrinksMenuBar[drink][drPrice]);
+		            Business[i][bTill] += DrinksMenuBar[drink][drPrice];
+		            Business[i][bProducts]--;
+		            format(str, sizeof(str), "le pide un/a %s al empleado del negocio.", DrinksMenuBar[drink][drName]);
+					PlayerActionMessage(playerid, 15.0, str);
+	    			PlayerDrink(playerid, DrinksMenuBar[drink][drAmount]);
+		            PlayerDrinkAlcohol(playerid, DrinksMenuBar[drink][drAlcohol]);
+					saveBusiness(i);
+					return 1;
 				}
-				if(Business[i][bType] == BIZ_CLUB2)
+				else if(Business[i][bType] == BIZ_CLUB2)
 				{
 	    			if(Business[i][bProducts] <= 0)
                     	return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de bebidas. Intenta volviendo mas tarde");
-					if(sscanf(params, "s[64]", command))
-					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [item]");
-						SendClientMessage(playerid, COLOR_WHITE, "FernetCola - Precio: $50.");
-						SendClientMessage(playerid, COLOR_WHITE, "Destornillador - Precio: $60.");
-						SendClientMessage(playerid, COLOR_WHITE, "GinTonic - Precio: $60.");
-						SendClientMessage(playerid, COLOR_WHITE, "CubaLibre - Precio: $70.");
-						SendClientMessage(playerid, COLOR_WHITE, "Caipirinha - Precio: $80.");
-						SendClientMessage(playerid, COLOR_WHITE, "Martini - Precio: $80.");
-						SendClientMessage(playerid, COLOR_WHITE, "Champagne - Precio: $150.");
-						return 1;
-					} else {
-						if(strcmp(command, "fernetcola", true) == 0) {
-							if(GetPlayerCash(playerid) >= 50)
-							{
-		       					GivePlayerCash(playerid, -50);
-		            	       	Business[i][bTill] += 50;
-		               		    Business[i][bProducts]--;
-					  			PlayerActionMessage(playerid, 15.0, "ha comprado un vaso de Fernet con Coca y se lo bebe.");
-					  			PlayerDrink(playerid, 50.0);
-					  			PlayerDrinkAlcohol(playerid, 25);
-							  	saveBusiness(i);
-							} else {
-			    				SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "destornillador", true) == 0) {
-							if(GetPlayerCash(playerid) >= 60)
-							{
-		       					GivePlayerCash(playerid, -60);
-		             	       	Business[i][bTill] += 60;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Destornillador y se lo bebe.");
-							  	PlayerDrink(playerid, 50.0);
-							  	PlayerDrinkAlcohol(playerid, 50);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "gintonic", true) == 0) {
-							if(GetPlayerCash(playerid) >= 60)
-							{
-		       					GivePlayerCash(playerid, -60);
-		             	       	Business[i][bTill] += 60;
-		                	    Business[i][bProducts]--;
-					  			PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Gin Tonic y se lo bebe.");
-					  			PlayerDrink(playerid, 50.0);
-					  			PlayerDrinkAlcohol(playerid, 20);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "cubalibre", true) == 0) {
-							if(GetPlayerCash(playerid) >= 70)
-							{
-		       					GivePlayerCash(playerid, -70);
-		             		   	Business[i][bTill] += 70;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Cuba Libre y se lo bebe.");
-							  	PlayerDrink(playerid, 50.0);
-							  	PlayerDrinkAlcohol(playerid, 30);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "caipirinha", true) == 0) {
-							if(GetPlayerCash(playerid) >= 80)
-							{
-		       					GivePlayerCash(playerid, -80);
-		             		   	Business[i][bTill] += 80;
-		                	    Business[i][bProducts]--;
-							  	PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Caipirinha y se la bebe.");
-							  	PlayerDrink(playerid, 50.0);
-							  	PlayerDrinkAlcohol(playerid, 30);
-							  	saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "martini", true) == 0) {
-							if(GetPlayerCash(playerid) >= 80)
-							{
-		       					GivePlayerCash(playerid, -80);
-		             		   	Business[i][bTill] += 80;
-		                	    Business[i][bProducts]--;
-								PlayerActionMessage(playerid, 15.0, "ha comprado una copa de Martini y se lo bebe.");
-								PlayerDrink(playerid, 50.0);
-								PlayerDrinkAlcohol(playerid, 30);
-								saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						} else if(strcmp(command, "champagne", true) == 0) {
-							if(GetPlayerCash(playerid) >= 150)
-							{
-		       					GivePlayerCash(playerid, -150);
-		             	       	Business[i][bTill] += 150;
-		                	    Business[i][bProducts]--;
-						  		PlayerActionMessage(playerid, 15.0, "ha comprado una botella de Champagne, la descorcha, y se toma una copa.");
-                                PlayerDrink(playerid, 70.0);
-                                PlayerDrinkAlcohol(playerid, 30);
-								saveBusiness(i);
-							} else {
-							    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
-							}
-						}
-					}
+					if(sscanf(params, "i", drink))
+						return ShowDrinksMenuDisco(playerid);
+					if(drink < 0 || drink >= sizeof(DrinksMenuDisco))
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
+					if(GetPlayerCash(playerid) < DrinksMenuDisco[drink][drPrice])
+					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+
+					GivePlayerCash(playerid, -DrinksMenuDisco[drink][drPrice]);
+		            Business[i][bTill] += DrinksMenuDisco[drink][drPrice];
+		            Business[i][bProducts]--;
+		            format(str, sizeof(str), "le pide un/a %s al empleado del negocio.", DrinksMenuDisco[drink][drName]);
+					PlayerActionMessage(playerid, 15.0, str);
+	    			PlayerDrink(playerid, DrinksMenuDisco[drink][drAmount]);
+		            PlayerDrinkAlcohol(playerid, DrinksMenuDisco[drink][drAlcohol]);
+					saveBusiness(i);
+					return 1;
 				}
 			}
 		}
