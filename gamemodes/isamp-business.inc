@@ -1115,7 +1115,7 @@ ShowPlayerHardBizDialog(playerid, biz)
 	format(title, sizeof(title), "%s", Business[biz][bName]);
 	for(new i = 0; i < sizeof(HardItems); i++)
 	{
-		format(content, sizeof(content), "content{FFEFD5}%s {556B2F}$%d/n", GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
+		format(content, sizeof(content), "%s{FFEFD5}%s {556B2F}$%d/n", content, GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
 	}
 
 	ShowPlayerDialog(playerid, DLG_BIZ_HARD, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
@@ -1174,7 +1174,7 @@ ShowPlayerAccessBizDialog(playerid, biz)
 	format(title, sizeof(title), "%s", Business[biz][bName]);
 	for(new i = 0; i < sizeof(AccessItems); i++)
 	{
-		format(content, sizeof(content), "content{FFEFD5}%s {556B2F}$%d/n", GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
+		format(content, sizeof(content), "%s{FFEFD5}%s {556B2F}$%d/n", content, GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
 	}
 
 	ShowPlayerDialog(playerid, DLG_BIZ_ACCESS, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");

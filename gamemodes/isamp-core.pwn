@@ -9900,7 +9900,7 @@ CMD:soplarpipeta(playerid,params[])
 		
 	BlowingPipette[playerid] = 0;
 	PlayerActionMessage(playerid, 15.0, "Toma la pipeta ofrecida por el oficial y comienza a soplarla");
-    SetTimerEx("SoplandoPipeta",6000, false, "i", playerid);
+    SetTimerEx("SoplandoPipeta", 6000, false, "i", playerid);
 	TogglePlayerControllable(playerid, false);
     SetTimerEx("Unfreeze", 6000, false, "i", playerid);
     return 1;
@@ -9909,20 +9909,10 @@ CMD:soplarpipeta(playerid,params[])
 	
 public SoplandoPipeta(playerid)
 {
-    new
-	    str[280],
-		str2[280];
-	PlayerDoMessage(playerid, 15.0, "Luego de unos segundos la pipeta arroja el resultado");
-	if (GetPlayerDrunkLevel(playerid) > 1999)
-	{
-	    format(str, sizeof(str), "La pipeta indica que %s ha superado el limite permitido de alcohol en sangre.", GetPlayerNameEx(playerid));
-		PlayerDoMessage(playerid, 15.0, str);
-	}
+	if(GetPlayerDrunkLevel(playerid) > 0)
+		PlayerDoMessage(playerid, 15.0, "La pipeta marca que se superó el limite permitido de alcohol en la sangre.");
 	else
-	{
-	    format(str2, sizeof(str2), "La pipeta indica que %s no ha sobrepasado el limite permitido de alcohol en sangre.", GetPlayerNameEx(playerid));
-		PlayerDoMessage(playerid, 15.0, str2);
-	}
+		PlayerDoMessage(playerid, 15.0, "La pipeta indica que no hay alcohol en la sangre.");
 	return 1;
 }
 
@@ -11850,7 +11840,7 @@ PlayerDrinkAlcohol(playerid, alcohol)
     DrinksTaken[playerid] += alcohol;
 	if(DrinksTaken[playerid] >= 100)
  	{
-    	SetPlayerDrunkLevel(playerid, 8200); //cinco minutos en estado de ebriedad
+    	SetPlayerDrunkLevel(playerid, 15000);
 		SendClientMessage(playerid, COLOR_WHITE, "Has tomado demasiado y entras en estado de ebriedad");
   		DrinksTaken[playerid] = 0;
   	}
@@ -11890,7 +11880,7 @@ ShowDrinksMenuBar(playerid)
 {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [nro de item]");
 	for(new i = 0; i < sizeof(DrinksMenuBar); i++)
-		SendFMessage(playerid, COLOR_WHITE, "i) %s - $%d", DrinksMenuBar[i][drName], DrinksMenuBar[i][drPrice]);
+		SendFMessage(playerid, COLOR_WHITE, "%d) %s - $%d", i, DrinksMenuBar[i][drName], DrinksMenuBar[i][drPrice]);
 	return 1;
 }
 
@@ -11898,7 +11888,7 @@ ShowDrinksMenuDisco(playerid)
 {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /beber [nro de item]");
 	for(new i = 0; i < sizeof(DrinksMenuDisco); i++)
-		SendFMessage(playerid, COLOR_WHITE, "i) %s - $%d", DrinksMenuDisco[i][drName], DrinksMenuDisco[i][drPrice]);
+		SendFMessage(playerid, COLOR_WHITE, "%d) %s - $%d", i, DrinksMenuDisco[i][drName], DrinksMenuDisco[i][drPrice]);
 	return 1;
 }
 
