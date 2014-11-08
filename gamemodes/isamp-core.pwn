@@ -11856,24 +11856,24 @@ enum DrinksInfo {
 };
 
 static const DrinksMenuBar[][DrinksInfo] = {
-	{"cerveza", 35, 50.0, 20},
-	{"vodka", 40, 50.0, 50},
-	{"coca cola", 25, 50.0, 0},
-    {"agua", 20, 50.0, 0},
-    {"whisky", 40, 50.0, 30},
-    {"brandy", 35, 50.0, 25},
-    {"café cortado", 25, 50.0, 0},
-    {"café irlandés", 35, 50.0, 10}
+	{"Cerveza", 35, 50.0, 20},
+	{"Vodka", 40, 50.0, 50},
+	{"Coca cola", 25, 50.0, 0},
+    {"Agua", 20, 50.0, 0},
+    {"Whisky", 40, 50.0, 30},
+    {"Brandy", 35, 50.0, 25},
+    {"Café cortado", 25, 50.0, 0},
+    {"Café irlandés", 35, 50.0, 10}
 };
 
 static const DrinksMenuDisco[][DrinksInfo] = {
-	{"fernet cola", 50, 50.0, 25},
-	{"destornillador", 60, 50.0, 40},
-	{"gin tonic", 60, 50.0, 20},
-	{"cuba libre", 70, 50.0, 30},
-	{"caipirinha", 80, 50.0, 30},
-	{"martini", 80, 50.0, 30},
-	{"botella de champagne", 150, 70.0, 35}
+	{"Fernet cola", 50, 50.0, 25},
+	{"Destornillador", 60, 50.0, 40},
+	{"Gin tonic", 60, 50.0, 20},
+	{"Cuba libre", 70, 50.0, 30},
+	{"Caipirinha", 80, 50.0, 30},
+	{"Martini", 80, 50.0, 30},
+	{"Botella de champagne", 150, 70.0, 35}
 };
 
 ShowDrinksMenuBar(playerid)
