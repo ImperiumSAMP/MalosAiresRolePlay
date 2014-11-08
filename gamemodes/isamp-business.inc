@@ -1169,7 +1169,7 @@ public OnPlayerBuyAccess(playerid, biz)
 
 ShowPlayerAccessBizDialog(playerid, biz)
 {
-	new title[64], content[1200] = "";
+	new title[64], content[1500] = "";
 
 	format(title, sizeof(title), "%s", Business[biz][bName]);
 	for(new i = 0; i < sizeof(AccessItems); i++)
