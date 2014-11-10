@@ -5,6 +5,8 @@
 
 //=================================DEFINES======================================
 
+#define MAX_SPRINTRACE_POS      27
+
 //==================================NEWS========================================
 
 new /* Sistema de picadas */
@@ -12,11 +14,10 @@ new /* Sistema de picadas */
 	SprintRaceOpponent[MAX_PLAYERS],
 	SprintRaceBet[MAX_PLAYERS],
 	SprintRaceCountdownSecs[MAX_PLAYERS],
-	SprintRaceTimer[MAX_PLAYERS],
-	SprintRaceCancelOfferTimer[MAX_PLAYERS];
+	SprintRaceTimer[MAX_PLAYERS];
 
 /* Sistema de picadas - Posiciones de llegada */
-new Float:SPRINT_RACE_POS[27][3] = {
+static const Float:SPRINT_RACE_POS[MAX_SPRINTRACE_POS][3] = {
     {1846.5231,-1366.7672,12.9625},
 	{1820.0952,-1828.6703,12.9792},
 	{1682.6759,-2163.8623,17.0619},
@@ -59,17 +60,15 @@ resetSprintRace(playerid)
 
 deleteAbandonedSprintRace(playerid)
 {
-	/* Sistema de picadas */
 	new winnerid = SprintRaceOpponent[playerid];
+	
 	if(winnerid != 999)
 	{
 	    if(SprintRaceOpponent[winnerid] == playerid)
 	    {
-	        new finishRaceMessage[128];
 			SendClientMessage(winnerid, COLOR_YELLOW2, "Tu contricante ha abandonado ((Desconectado)) la carrera, ganas la carrera.");
-			GivePlayerCash(winnerid, SprintRaceBet[winnerid]*2);
-			format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[winnerid]*2);
-		    SendClientMessage(playerid, COLOR_WHITE, finishRaceMessage);
+			GivePlayerCash(winnerid, SprintRaceBet[winnerid] * 2);
+		    SendFMessage(playerid, COLOR_WHITE, "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[winnerid] * 2);
 		    SprintRaceOpponent[playerid] = 999;
 		    SprintRaceOpponent[winnerid] = 999;
 		    SprintRaceBet[winnerid] = 0;
@@ -77,13 +76,12 @@ deleteAbandonedSprintRace(playerid)
 		    DisablePlayerRaceCheckpoint(winnerid);
 		}
 	}
-	/* Fin sistema de picadas */
 }
 
 deleteFinishedSprintRace(playerid)
 {
-    /* Sistema de picadas */
 	new racerid = SprintRaceOpponent[playerid];
+	
     if(racerid != 999)
 	{
 	    if(SprintRaceOpponent[racerid] == playerid)
@@ -92,17 +90,13 @@ deleteFinishedSprintRace(playerid)
 		    {
 		        if(SprintRaceBet[racerid] == SprintRaceBet[playerid])
 		        {
-		            new finishRaceMessage[128];
-		            new ganadorid = playerid;
-		            GameTextForPlayer(ganadorid, "Has ganado la carrera!", 1000, 3);
+		            GameTextForPlayer(playerid, "Has ganado la carrera!", 1000, 3);
 		            GameTextForPlayer(racerid, "Has perdido la carrera!", 1000, 3);
 		            DisablePlayerRaceCheckpoint(playerid);
 		            DisablePlayerRaceCheckpoint(racerid);
-		    		GivePlayerCash(playerid, SprintRaceBet[racerid]*2);
-			    	format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[racerid]*2);
-				    SendClientMessage(playerid, COLOR_WHITE, finishRaceMessage);
-				    format(finishRaceMessage, sizeof(finishRaceMessage), "El organizador se queda con tus $%d de la carrera y se lo reparte al ganador!", SprintRaceBet[racerid]);
-				    SendClientMessage(racerid, COLOR_WHITE, finishRaceMessage);
+		    		GivePlayerCash(playerid, SprintRaceBet[racerid] * 2);
+				    SendFMessage(playerid, COLOR_WHITE, "El organizador te entrega tus $%d de la carrera!", SprintRaceBet[racerid] * 2);
+				    SendFMessage(racerid, COLOR_WHITE, "El organizador se queda con tus $%d de la carrera y se lo reparte al ganador!", SprintRaceBet[racerid]);
 				    SprintRaceOpponent[playerid] = 999;
 		 			SprintRaceOpponent[racerid] = 999;
 				    SprintRaceBet[playerid] = 0;
@@ -111,99 +105,64 @@ deleteFinishedSprintRace(playerid)
 			}
 		}
 	}
-	/* Fin sistema de picadas */
 }
 
 //==============================SISTEMA DE PICADAS==============================
 
 startSprintRaceChallenge(playerid)
 {
-	new challengerid = SprintRaceOffer[playerid];
-    if(SprintRaceOpponent[playerid] == 999)
-    {
-   		if(challengerid != 999 && challengerid != INVALID_PLAYER_ID)
-   		{
-     		if(IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
-    		{
-     			if(SprintRaceOpponent[playerid] == 999 && SprintRaceOpponent[challengerid] == 999)
-			 	{
-			 	    if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER && GetPlayerState(challengerid) == PLAYER_STATE_DRIVER)
-			 	    {
-			 	        new moneyBet = SprintRaceBet[playerid];
-						if(GetPlayerCash(playerid) > moneyBet && GetPlayerCash(challengerid) > moneyBet)
-						{
-     						if(ProxDetectorS(10.0, playerid, challengerid))
-     						{
-     							KillTimer(SprintRaceCancelOfferTimer[playerid]);
-								new content[128];
-							   	format(content, sizeof(content), "ha aceptado el desafio de %s a una carrera sprint por $%d.", GetPlayerNameEx(challengerid), moneyBet);
-								PlayerActionMessage(playerid, 15.0, content);
-								SprintRaceOpponent[playerid] = challengerid;
-								SprintRaceOpponent[challengerid] = playerid;
-								SprintRaceOffer[playerid] = 999;
-								SprintRaceBet[challengerid] = moneyBet;
-								TogglePlayerControllable(playerid, false);
-								TogglePlayerControllable(challengerid, false);
-								SendClientMessage(playerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
-								SendClientMessage(challengerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
-								GivePlayerCash(playerid, -moneyBet);
-								GivePlayerCash(challengerid, -moneyBet);
-								new randomPos = random (27);
-								SetPlayerRaceCheckpoint(playerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
-							    SetPlayerRaceCheckpoint(challengerid, 1, SPRINT_RACE_POS[randomPos][0],SPRINT_RACE_POS[randomPos][1],SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
-								SendClientMessage(playerid, COLOR_YELLOW2, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
-								SendClientMessage(challengerid, COLOR_YELLOW2, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
-								SprintRaceTimer[challengerid] = SetTimerEx("SprintRaceCountdown", 1000, 1, "ii", challengerid, playerid);
-     						} else
-     						    {
-     						    	SprintRaceCancel(playerid);
-	   								SendClientMessage(playerid, COLOR_WHITE, "Debes estar cerca del otro corredor.");
-								}
-						} else
-						    {
-						    	SprintRaceCancel(playerid);
-	    						SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos no tiene esa cantidad de efectivo para apostar!");
-							}
-			 	    } else
-			 	        {
-			 	            SprintRaceCancel(playerid);
-	   						SendClientMessage(playerid, COLOR_WHITE, "Ambos deben estar de conductor en el auto con el cual correrán!");
-						}
-				} else
-				    {
-						SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos está en una carrera!");
-					}
-	   		} else
-		    	{
-		    	    SprintRaceCancel(playerid);
-	    			SendClientMessage(playerid, COLOR_WHITE, "Para aceptar un desafio, debes estar en el punto de reunion de corredores conocido como 'El Sótano'");
-				}
-	    } else
-	    	{
-	    	    SprintRaceCancel(playerid);
-				SendClientMessage(playerid, COLOR_WHITE, "Nadie te ha desafiado a una carrera de sprint / Jugador inválido.");
-			}
-    } else
-        {
-    		SendClientMessage(playerid, COLOR_WHITE, "Ya estás en una carrera!");
-		}
+	new challengerid = SprintRaceOffer[playerid],
+	    moneyBet = SprintRaceBet[playerid];
+	
+    if(SprintRaceOpponent[playerid] != 999)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ya estás en una carrera!");
+	if(challengerid == 999 || challengerid == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha desafiado a una carrera de sprint / Jugador inválido.");
+	if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Para aceptar un desafio, debes estar en el punto de reunion de corredores conocido como 'El Sótano'");
+ 	if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent[challengerid] != 999)
+ 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Alguno de los dos está en una carrera!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(challengerid) != PLAYER_STATE_DRIVER)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ambos deben estar de conductor en el auto con el cual correrán!");
+	if(GetPlayerCash(playerid) < moneyBet || GetPlayerCash(challengerid) < moneyBet)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Alguno de los dos no tiene esa cantidad de efectivo para apostar!");
+	if(!ProxDetectorS(10.0, playerid, challengerid))
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca del otro corredor.");
+
+	new content[128],
+	    randomPos = random(MAX_SPRINTRACE_POS);
+	    
+	format(content, sizeof(content), "ha aceptado el desafio de %s a una carrera sprint por $%d.", GetPlayerNameEx(challengerid), moneyBet);
+	PlayerActionMessage(playerid, 15.0, content);
+	SprintRaceOpponent[playerid] = challengerid;
+	SprintRaceOpponent[challengerid] = playerid;
+	SprintRaceOffer[playerid] = 999;
+	SprintRaceBet[challengerid] = moneyBet;
+	TogglePlayerControllable(playerid, false);
+	TogglePlayerControllable(challengerid, false);
+	SendClientMessage(playerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
+	SendClientMessage(challengerid, COLOR_WHITE, "Le entregas al organizador la suma acordada");
+	GivePlayerCash(playerid, -moneyBet);
+	GivePlayerCash(challengerid, -moneyBet);
+	SetPlayerRaceCheckpoint(playerid, 1, SPRINT_RACE_POS[randomPos][0], SPRINT_RACE_POS[randomPos][1], SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
+	SetPlayerRaceCheckpoint(challengerid, 1, SPRINT_RACE_POS[randomPos][0], SPRINT_RACE_POS[randomPos][1], SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
+	SendClientMessage(challengerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
+	SprintRaceTimer[challengerid] = SetTimerEx("SprintRaceCountdown", 1000, 1, "ii", challengerid, playerid);
+	return 1;
 }
 
 //---------------------------SISTEMA DE PICADAS---------------------------------
 //---------------------------SISTEMA DE PICADAS---------------------------------
-
-stock SprintRaceCancel(playerid)
-{
-    SprintRaceOffer[playerid] = 999;
-	SprintRaceBet[playerid] = 0;
-	KillTimer(SprintRaceCancelOfferTimer[playerid]);
-}
 
 forward SprintRaceCancelOffer(playerid);
 public SprintRaceCancelOffer(playerid)
 {
-    SprintRaceOffer[playerid] = 999;
-	SprintRaceBet[playerid] = 0;
+	if(SprintRaceOffer[playerid] != 999)
+	{
+	    SprintRaceOffer[playerid] = 999;
+		SprintRaceBet[playerid] = 0;
+	}
 	return 1;
 }
 
@@ -240,41 +199,29 @@ CMD:desafiarpicada(playerid, params[])
 
 	if(sscanf(params, "ii", racerid, moneyBet))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desafiarpicada [ID-Jugador] [dinero]");
-
     if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
     	return SendClientMessage(playerid, COLOR_WHITE, "Para desafiar a alguien, debes ir al punto de encuentro de corredores conocido como 'El Sotano'.");
-
  	if(racerid == INVALID_PLAYER_ID || racerid == playerid)
  	    return SendClientMessage(playerid, COLOR_WHITE, "Jugador invalido.");
-
 	if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent [racerid] != 999)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos está en una carrera!");
-
 	if(SprintRaceOffer[playerid] != 999)
  	    return SendClientMessage(playerid, COLOR_WHITE, "Ya tienes un desafio pendiente!");
-
 	if(SprintRaceOffer[racerid] != 999)
  	    return SendClientMessage(playerid, COLOR_WHITE, "El sujeto esta con otro desafio en este instante, aguarda.");
-
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(racerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Ambos deben estar de conductor en el auto con el cual correrán!");
-
 	if(moneyBet < 500)
  		return SendClientMessage(playerid, COLOR_WHITE, "La apuesta mínima es de $500.");
-
 	if(GetPlayerCash(playerid) < moneyBet)
  		return SendClientMessage(playerid, COLOR_WHITE, "No tienes esa cantidad de dinero para apostar!");
-
 	if(!ProxDetectorS(10.0, playerid, racerid))
   	    return SendClientMessage(playerid, COLOR_WHITE, "El jugador que desafiaste no está cerca tuyo.");
 
-	new content[128];
-   	format(content, sizeof(content), "%s te ha desafiado a una carrera por $%d. La oferta termina en 15 segundos. Usa /aceptar picada si lo deseas.", GetPlayerNameEx(playerid), moneyBet);
-	SendClientMessage(racerid, COLOR_LIGHTBLUE, content);
-	format(content, sizeof(content), "Has desafiado a %s a una carrera por $%d. La oferta termina en 15 segundos. Espera su respuesta.", GetPlayerNameEx(racerid), moneyBet);
-	SendClientMessage(playerid, COLOR_LIGHTBLUE, content);
+	SendFMessage(racerid, COLOR_LIGHTBLUE, "%s te ha desafiado a una carrera por $%d. La oferta termina en 10 segundos. Usa /aceptar picada si lo deseas.", GetPlayerNameEx(playerid), moneyBet);
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has desafiado a %s a una carrera por $%d. La oferta termina en 10 segundos. Espera su respuesta.", GetPlayerNameEx(racerid), moneyBet);
 	SprintRaceOffer[racerid] = playerid;
 	SprintRaceBet[racerid] = moneyBet;
-	SprintRaceCancelOfferTimer[racerid] = SetTimerEx("SprintRaceCancelOffer", 15000, false, "i", racerid);
+	SetTimerEx("SprintRaceCancelOffer", 10000, false, "i", racerid);
 	return 1;
 }

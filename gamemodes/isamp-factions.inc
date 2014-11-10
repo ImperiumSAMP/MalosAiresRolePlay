@@ -3,8 +3,6 @@
 #endif
 #define _isamp_factions_included
 
-#include "isamp-vehicles.inc"
-
 //Defines
 #define MAX_FACTIONS            20
 
@@ -37,18 +35,7 @@ enum Factions {
 	fRank8[35],
 	fRank9[35],
 	fRank10[35],
-	fSkin1,
-	fSkin2,
-	fSkin3,
-	fSkin4,
-	fSkin5,
-	fSkin6,
-	fSkin7,
-	fSkin8,
-	fSkin9,
-	fSkin10,
 	fJoinRank,
-	fUseSkins,
 	fType,//For Government factions etc
 	fRankAmount,
 	fAllowJob,
@@ -65,21 +52,43 @@ new MedDuty[MAX_PLAYERS],
 
 //General functions
 
-stock isPlayerCopOnDuty(playerid){
-	return PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1;
+stock isPlayerCopOnDuty(playerid)
+{
+	if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid])
+	    return true;
+	else
+	    return false;
 }
 
-stock isPlayerSideOnDuty(playerid){
-	return PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid] == 1;
+stock isPlayerSideOnDuty(playerid)
+{
+	if(PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid])
+	    return true;
+	else
+		return false;
+}
+
+forward CountCopsOnDuty();
+public CountCopsOnDuty()
+{
+	new aux = 0;
+ 	foreach(new i : Player)
+ 	{
+        if(isPlayerCopOnDuty(i))
+    	    aux ++;
+ 	}
+ 	return aux;
 }
 
 //=======================COMANDOS DE ADMIN PARA FACCIONES=======================
 
-CMD:afacciones(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
+CMD:afacciones(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afusaskins /afrangos /afrangoingreso /afdinero /afmats /afskin /afrango /afvehmision");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afrangos /afrangoingreso /afdinero /afmats /afrango /afvehmision");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos /afallowjob /afinfo");
 	return 1;
 }
@@ -95,9 +104,9 @@ CMD:afinfo(playerid, params[])
 	if(id < 0 || id >= MAX_FACTIONS)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
 
-	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Use Skins: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],FactionInfo[id][fBank],FactionInfo[id][fJoinRank],FactionInfo[id][fUseSkins],FactionInfo[id][fType]);
+	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],FactionInfo[id][fBank],FactionInfo[id][fJoinRank],FactionInfo[id][fType]);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
-	format(string, sizeof(string), "[ID:%d] Skins: %d|%d|%d|%d|%d|%d|%d|%d|%d|%d - Rank Amount: %d - Permite Empleo: %d", id,FactionInfo[id][fSkin1],FactionInfo[id][fSkin2],FactionInfo[id][fSkin3],FactionInfo[id][fSkin4],FactionInfo[id][fSkin5],FactionInfo[id][fSkin6],FactionInfo[id][fSkin7],FactionInfo[id][fSkin8],FactionInfo[id][fSkin9],FactionInfo[id][fSkin10],FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
+	format(string, sizeof(string), "[ID:%d] Rank Amount: %d - Permite Empleo: %d", id,FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
 	return 1;
 }
@@ -119,11 +128,9 @@ CMD:afallowjob(playerid, params[])
 	return 1;
 }
 
-CMD:aftipo(playerid, params[]) {
-	new
-	    string[128],
-	    factionID,
-		type;
+CMD:aftipo(playerid, params[])
+{
+	new string[128], factionID, type;
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
@@ -188,37 +195,6 @@ CMD:afrango(playerid, params[]) {
 			case 10: strmid(FactionInfo[factionID][fRank10], (rankName), 0, strlen((rankName)), 32);
 	    }
 		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el nombre del rango %d perteneciente a la facción %d ha sido cambiado a %s.", rankID, factionID, rankName);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		SaveFactions();
-	}
-	return 1;
-}
-
-CMD:afskin(playerid, params[]) {
-	new
-	    string[128],
-	    factionID,
-		rankID,
-		skin;
-
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "ddd", factionID, rankID, skin)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afskin [idfacción] [rango 1-10] [id skin]");
-	else if(factionID >= 0 && factionID < MAX_FACTIONS && rankID >= 1 && rankID <= 10) {
-	    switch(rankID) {
-	        case 1: FactionInfo[factionID][fSkin1] = skin;
-	        case 2: FactionInfo[factionID][fSkin2] = skin;
-	        case 3: FactionInfo[factionID][fSkin3] = skin;
-	        case 4: FactionInfo[factionID][fSkin4] = skin;
-	        case 5: FactionInfo[factionID][fSkin5] = skin;
-	        case 6: FactionInfo[factionID][fSkin6] = skin;
-	        case 7: FactionInfo[factionID][fSkin7] = skin;
-	        case 8: FactionInfo[factionID][fSkin8] = skin;
-	        case 9: FactionInfo[factionID][fSkin9] = skin;
-			case 10: FactionInfo[factionID][fSkin10] = skin;
-	    }
-		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el skin de la facción %d perteneciente al rango %d ha sido cambiado a %d.", factionID, rankID, skin);
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);
 		SaveFactions();
 	}
@@ -326,36 +302,6 @@ CMD:afrangos(playerid, params[]) {
 	    SaveFactions();
 	} else {
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta o la cantidad de rangos es mayor a 10 o menor a 2.");
-	}
-	return 1;
-}
-
-CMD:afusaskins(playerid, params[]) {
-	new
-	    string[128],
-	    factionID;
-
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	if(sscanf(params, "d", factionID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afusaskins [idfacción]");
-	else if(factionID >= 0 && factionID < MAX_FACTIONS) {
-		if(FactionInfo[factionID][fUseSkins]) {
-			FactionInfo[factionID][fUseSkins] = 0;
-			format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la facción %d ya no utiliza skins propios.", factionID);
-			SaveFactions();
-
-		} else {
-			FactionInfo[factionID][fUseSkins] = 1;
-			format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la facción %d ahora utiliza skins propios.", factionID);
-			foreach(new i : Player)	{
-				if(PlayerInfo[i][pFaction] == factionID) {
-					SetPlayerToFactionSkin(i);
-				}
-	       	}
-		}
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-		SaveFactions();
 	}
 	return 1;
 }

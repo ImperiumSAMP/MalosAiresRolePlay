@@ -3,7 +3,6 @@
 #endif
 #define _isamp_database_included
 
-
 new 	
 // No bajarle el tamaño o no funca.
  	MYSQL_HOST[256],

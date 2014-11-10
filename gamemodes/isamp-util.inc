@@ -113,7 +113,6 @@
 #define DISABLE_DEATHBED        5
 #define DISABLE_HEALING         6
 
-
 new validWeatherIDs[2] = {
 	1,2/*,-3,4,5,6,7,9,10,11,12,13,14,15,17,18,20-*/
 };
@@ -170,4 +169,6 @@ enum sInfo {
 };
 new ServerInfo[sInfo];
 
-new Choice[MAX_PLAYERS];
+new Choice[MAX_PLAYERS],
+	Mobile[MAX_PLAYERS],
+	AdminDuty[MAX_PLAYERS];

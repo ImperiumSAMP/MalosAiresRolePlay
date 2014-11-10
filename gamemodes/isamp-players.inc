@@ -58,8 +58,7 @@ enum pInfo {
 	pCantWork,
 	pAccusedOf[64],
 	pAccusedBy[24],
-	
-	pMuteB,
+ 	pMuteB,
 	pRentCarID,
 	pRentCarRID,
 	pCigarettes,
@@ -68,8 +67,8 @@ enum pInfo {
 	pMask,
 	pRadio,
 	
-	Float:pThirst,
-	Float:pHunger,
+	pThirst,
+	pHunger,
 	
 	Float:pAdictionPercent,
 	pAdictionAbstinence,
@@ -79,13 +78,6 @@ enum pInfo {
 	pCocaine
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
-
-enum Inv {
-	inv0[16],
-	inv1[16],
-};
-
-new InvInfo[MAX_PLAYERS][Inv];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];
