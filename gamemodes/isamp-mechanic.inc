@@ -758,15 +758,15 @@ CMD:repararauto(playerid, params[])
 	new vehicleid = GetPlayerVehicleID(playerid),
 		repuestos,
 		price,
-		isAtPayNSpray = GetPlayerPayNSpray(playerid);
+		paynsprayid = GetPlayerPayNSpray(playerid);
 	
-	if(!isAtPayNSpray)
+	if(paynsprayid == 0)
 	    return 1;
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
     if(CountMecasDuty() >= 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
-	if(PayNSprayOccupied[isAtPayNSpray - 1])
+	if(PayNSprayOccupied[paynsprayid - 1])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Hay otro vehículo en reparación en el taller, espera a que salga.");
  	repuestos = GetRepairMaterialCost(vehicleid);
 	price = repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO) + 600; // Precio depende del estado del auto (que nos informa GetRepairMaterialCost) + un fijo de 600.
@@ -775,7 +775,7 @@ CMD:repararauto(playerid, params[])
 		SendFMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($%d)", price);
 		return 1;
 	}
-	switch(isAtPayNSpray)
+	switch(paynsprayid)
 	{
 	    case PAYNSPRAY_BEACH:
 	    {
@@ -785,6 +785,7 @@ CMD:repararauto(playerid, params[])
 	    case PAYNSPRAY_NORTH:
 	    {
 	        SetVehiclePos(vehicleid, 1024.7690, -1023.3354, 32.5920);
+	        SetVehicleZAngle(vehicleid, 0.0);
 		}
 		case PAYNSPRAY_WILLOWFIELD:
 		{
@@ -792,11 +793,11 @@ CMD:repararauto(playerid, params[])
 		    SetVehicleZAngle(vehicleid, 90.0000);
 		}
 	}
-	PayNSprayOccupied[isAtPayNSpray - 1] = true;
+	PayNSprayOccupied[paynsprayid - 1] = true;
 	GivePlayerCash(playerid, -price);
 	GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
-	SendFMessage(playerid, COLOR_WHITE, "Su vehículo estará listo en %d segundos.", 30 + 30 * repuestos);
-	SetTimerEx("AutoReparacion", 30 * 1000 + repuestos * 30 * 1000, false, "ii", playerid, isAtPayNSpray); // 30 segs reparación basica y si se necesitan, 30 segs por repuesto requerido.
+	SendFMessage(playerid, COLOR_WHITE, "Su vehículo estará listo en %d segundos por $%d pesos.", 30 + 30 * repuestos, price);
+	SetTimerEx("AutoReparacion", 30 * 1000 + repuestos * 30 * 1000, false, "ii", playerid, paynsprayid); // 30 segs reparación basica y si se necesitan, 30 segs por repuesto requerido.
 	return 1;
 }
 
