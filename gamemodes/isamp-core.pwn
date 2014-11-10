@@ -396,8 +396,7 @@ new
 	P_CAR_DEMOLITION,
 	P_BLACK_MARKET[3],
 	P_CARPART_SHOP,
-	P_POLICE_CAMERAS,
-	P_AUTO_REPARACION;
+	P_POLICE_CAMERAS;
 
 //====[ENUMS]===================================================================
 
@@ -4349,8 +4348,6 @@ stock LoadPickups() {
 	P_POLICE_CAMERAS = CreateDynamicPickup(1239, 1, 219.36, 188.31, 1003.00, -1);
 	CreateDynamic3DTextLabel("Cámaras de Seguridad de la Ciudad", COLOR_WHITE, 219.36, 188.31, 1003.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
 
-	P_AUTO_REPARACION = CreateDynamicPickup(1239, 1, 1637.3402,-1908.3518,13.1225, -1);
-
 	/* Gimnasio */
 	P_FIGHT_STYLE = CreateDynamicPickup(1239, 1, 766.3723, 13.8237, 1000.7015, -1);
 
@@ -4371,6 +4368,13 @@ stock LoadPickups() {
 	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
 	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo.", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 
+	// Auto reparacion
+	for(new i = 0; i < 3; i++)
+	{
+		CreateDynamicPickup(1239, 1, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2], -1);
+		CreateDynamic3DTextLabel("/repararauto. El costo varía segun el estado de tu vehículo. (Min $600)", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+	}
+	
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
 
@@ -4454,10 +4458,6 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 	} else if(pickupid == P_FIGHT_STYLE) {
 		GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
-		return 1;
-
-    } else if(pickupid == P_AUTO_REPARACION) {
-		GameTextForPlayer(playerid, "~w~Escribe /repararauto para reparar tu vehiculo.", 2000, 4);
 		return 1;
 
 	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {

@@ -7,27 +7,27 @@
 
 //================================CONSTANTES====================================
 
-#define DLG_TUNING              10020
-#define PRICE_REPARACION_AUTO   650
+#define DLG_TUNING              	10020
+#define PRICE_REPARACION_AUTO   	650
 
-#define JOB_MECH_MAXPRICE       1500 	// Máximo que pueden cobrar los mecánicos.
+#define JOB_MECH_MAXPRICE       	1500 	// Máximo que pueden cobrar los mecánicos.
 
-#define MEC_OFFICE_X			1584.54
-#define MEC_OFFICE_Y        	-1819.68
-#define MEC_OFFICE_Z        	13.34
+#define MEC_OFFICE_X				1584.54
+#define MEC_OFFICE_Y        		-1819.68
+#define MEC_OFFICE_Z        		13.34
 
-#define MEC_TUNING_PLACE_X      1595.92
-#define MEC_TUNING_PLACE_Y      -1840.69
-#define MEC_TUNING_PLACE_Z      13.48
+#define MEC_TUNING_PLACE_X      	1595.92
+#define MEC_TUNING_PLACE_Y      	-1840.69
+#define MEC_TUNING_PLACE_Z      	13.48
 
-#define MEC_CARPART_SHOP_X      976.1300
-#define MEC_CARPART_SHOP_Y   	-1254.8500
-#define MEC_CARPART_SHOP_Z      16.9400
+#define MEC_CARPART_SHOP_X      	976.1300
+#define MEC_CARPART_SHOP_Y   		-1254.8500
+#define MEC_CARPART_SHOP_Z      	16.9400
 
-#define MEC_OFFER_REPARACION    1
-#define MEC_OFFER_CERRADURA     2
-#define MEC_OFFER_TUNING        3
-#define MEC_OFFER_DESTUNING     4
+#define MEC_OFFER_REPARACION    	1
+#define MEC_OFFER_CERRADURA     	2
+#define MEC_OFFER_TUNING        	3
+#define MEC_OFFER_DESTUNING     	4
 
 //==============================DATA STORAGE====================================
 
@@ -46,7 +46,7 @@ forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
 
 forward Cerrajeria(playerid);
-forward AutoReparacion(playerid, price);
+forward AutoReparacion(playerid, paynsprayid);
 forward Reparacion(playerid);
 forward Destuning(playerid);
 
@@ -229,24 +229,6 @@ public CountMecasDuty()
  	return aux;
 }
 
-public AutoReparacion(playerid, price)
-{
-    new	vehicleid = GetPlayerVehicleID(playerid);
-    
-	TogglePlayerControllable(playerid, true);
-	SetPVarInt(playerid, "disabled", DISABLE_NONE);
-	
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el asiento de conductor del vehículo.");
-	if(GetPlayerCash(playerid) < price)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-	    
-	RepairVehicle(vehicleid);
-    VehicleInfo[vehicleid][VehHP] = 100;
-	GivePlayerCash(playerid, -price);
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente.");
-    return 1;
-}
 //================================COMANDOS======================================
 
 CMD:ayudamec(playerid, params[])
@@ -713,31 +695,108 @@ CMD:mectaller(playerid, params[])
 	return 1;
 }
 
+//============================AUTO REPARACION===================================
+
+#define PAYNSPRAY_BEACH             1
+#define PAYNSPRAY_NORTH             2
+#define PAYNSPRAY_WILLOWFIELD       3
+
+new Float:PayNSprayPos[3][3] = {
+	{488.6190, -1731.6849, 11.1661}, // Santa Marina Beach
+	{1024.9825, -1032.6246, 31.9083}, // Norte
+	{2074.8698, -1831.4533, 13.4793} // Unity
+};
+
+new bool:PayNSprayOccupied[3];
+
+stock GetPlayerPayNSpray(playerid)
+{
+	if(IsPlayerInRangeOfPoint(playerid, 2.0, PayNSprayPos[0][0], PayNSprayPos[0][1], PayNSprayPos[0][2]))
+		return PAYNSPRAY_BEACH;
+	else if(IsPlayerInRangeOfPoint(playerid, 2.0, PayNSprayPos[1][0], PayNSprayPos[1][1], PayNSprayPos[1][2]))
+	    return PAYNSPRAY_NORTH;
+	else if(IsPlayerInRangeOfPoint(playerid, 2.0, PayNSprayPos[2][0], PayNSprayPos[2][1], PayNSprayPos[2][2]))
+	    return PAYNSPRAY_WILLOWFIELD;
+	return 0;
+}
+
+
+public AutoReparacion(playerid, paynsprayid)
+{
+    new	vehicleid = GetPlayerVehicleID(playerid);
+
+	if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	{
+		RepairVehicle(vehicleid);
+	    VehicleInfo[vehicleid][VehHP] = 100;
+	    ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente.");
+		if(paynsprayid == PAYNSPRAY_BEACH)
+		{
+		 	SetVehiclePos(vehicleid, PayNSprayPos[0][0], PayNSprayPos[0][1], PayNSprayPos[0][2]);
+			SetVehicleZAngle(vehicleid, -7.4);
+		}
+		else if(paynsprayid == PAYNSPRAY_NORTH)
+		{
+			SetVehiclePos(vehicleid, PayNSprayPos[1][0], PayNSprayPos[1][1], PayNSprayPos[1][2]);
+			SetVehicleZAngle(vehicleid, 180.0);
+		}
+		else if(paynsprayid == PAYNSPRAY_WILLOWFIELD)
+		{
+			SetVehiclePos(vehicleid, PayNSprayPos[2][0], PayNSprayPos[2][1], PayNSprayPos[2][2]);
+			SetVehicleZAngle(vehicleid, -90.0);
+		}
+	} else
+		SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el asiento de conductor del vehículo.");
+		
+	PayNSprayOccupied[paynsprayid - 1] = false;
+    return 1;
+}
+
 CMD:repararauto(playerid, params[])
 {
 	new vehicleid = GetPlayerVehicleID(playerid),
 		repuestos,
-		price;
+		price,
+		isAtPayNSpray = GetPlayerPayNSpray(playerid);
 	
-    if(!IsPlayerInRangeOfPoint(playerid, 3.0, 1637.3402, -1908.3518, 13.1225))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca del punto de reparación.");
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
-	if(CountMecasDuty() >= 1)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
-
-	repuestos = GetRepairMaterialCost(vehicleid);
+	if(!isAtPayNSpray)
+	    return 1;
+    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
+    if(CountMecasDuty() >= 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
+	if(PayNSprayOccupied[isAtPayNSpray - 1])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Hay otro vehículo en reparación en el taller, espera a que salga.");
+ 	repuestos = GetRepairMaterialCost(vehicleid);
 	price = repuestos * GetItemPrice(ITEM_ID_REPUESTOAUTO) + 600; // Precio depende del estado del auto (que nos informa GetRepairMaterialCost) + un fijo de 600.
 	if(GetPlayerCash(playerid) < price)
 	{
 		SendFMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para reparar el vehículo. ($%d)", price);
 		return 1;
 	}
-	PlayerDoMessage(playerid, 15.0, "Unos mecanicos salen del taller, examinan el vehiculo y comienzan a repararlo.");
+	switch(isAtPayNSpray)
+	{
+	    case PAYNSPRAY_BEACH:
+	    {
+	        SetVehiclePos(vehicleid, 487.4321, -1741.4934, 11.6462);
+	        SetVehicleZAngle(vehicleid, 172.5599);
+		}
+	    case PAYNSPRAY_NORTH:
+	    {
+	        SetVehiclePos(vehicleid, 1024.7690, -1023.3354, 32.5920);
+		}
+		case PAYNSPRAY_WILLOWFIELD:
+		{
+		    SetVehiclePos(vehicleid, 2063.2903, -1831.4307, 13.9557);
+		    SetVehicleZAngle(vehicleid, 90.0000);
+		}
+	}
+	PayNSprayOccupied[isAtPayNSpray - 1] = true;
+	GivePlayerCash(playerid, -price);
 	GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
-	SendFMessage(playerid, COLOR_WHITE, "Su vehículo estará listo en %d segundos.", 60 + 60 * repuestos);
-	TogglePlayerControllable(playerid, false);
-	SetPVarInt(playerid, "disabled", DISABLE_FREEZE);
-	SetTimerEx("AutoReparacion", 60 * 1000 + repuestos * 60 * 1000, false, "ii", playerid, price); // 1 minuto reparación basica y si se necesitan, 1 min por repuesto requerido.
+	SendFMessage(playerid, COLOR_WHITE, "Su vehículo estará listo en %d segundos.", 30 + 30 * repuestos);
+	SetTimerEx("AutoReparacion", 30 * 1000 + repuestos * 30 * 1000, false, "ii", playerid, isAtPayNSpray); // 30 segs reparación basica y si se necesitan, 30 segs por repuesto requerido.
 	return 1;
 }
+
