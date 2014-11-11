@@ -148,21 +148,21 @@ CMD:mano(playerid, params[])
 
 			if(GetHandItem(playerid) == ITEM_ID_SANDWICH) {
 	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sandwich de jamon y queso.");
-	            PlayerEat(playerid, 40.0);
+	            PlayerEat(playerid, 40);
 	            if(GetHandParam(playerid) - 1 > 0)
 	            	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
 				else
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico
 	        } else if(GetHandItem(playerid) == ITEM_ID_ALFAJOR) {
          		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
-		        PlayerEat(playerid, 15.0);
+		        PlayerEat(playerid, 15);
 		        if(GetHandParam(playerid) - 1 > 0)
 		          	SetHandItemAndParam(playerid, ITEM_ID_ALFAJOR, GetHandParam(playerid) - 1);
 				else
 					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico
 			} else if(GetHandItem(playerid) == ITEM_ID_AGUAMINERAL) {
 				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
-			    PlayerDrink(playerid, 50.0);
+			    PlayerDrink(playerid, 50);
 			    if(GetHandParam(playerid) - 1 > 0)
 			      	SetHandItemAndParam(playerid, ITEM_ID_SANDWICH, GetHandParam(playerid) - 1);
 				else
