@@ -845,6 +845,10 @@ CMD:acvender(playerid, params[])
 	}
 	House[houseid][Locked] = 1;
 	House[houseid][Owned] = 0;
+	House[houseid][Marijuana] = 0;
+	House[houseid][LSD] = 0;
+	House[houseid][Ecstasy] = 0;
+	House[houseid][Cocaine] = 0;
 	strmid(House[houseid][Owner], "Ninguno", 0, strlen("Ninguno"), 255);
 	ResetLocker(houseid);
 	saveHouse(houseid);

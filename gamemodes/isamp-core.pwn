@@ -5213,7 +5213,7 @@ stock saveBuilding(id) {
 	} else if(Building[id][blInsert]) {
 		Building[id][blInsideWorld] = id + 16000;
 		format(query, sizeof(query), "INSERT INTO `buildings` (blID, blText, blText2, blOutsideX, blOutsideY, blOutsideZ, blEntranceFee, blOutsideInt, blOutsideAngle, blLocked, blPickupModel, blInsideWorld)");
-		format(query, sizeof(query), "%s VALUES (%d, '%s', '%s', %f, %f, %f, %d, %d, %f, %d, %d, %d, %d, %d)",
+		format(query, sizeof(query), "%s VALUES (%d, '%s', '%s', %f, %f, %f, %d, %d, %f, %d, %d, %d)",
 			query,
 			id,
 			Building[id][blText],
@@ -10797,7 +10797,7 @@ public UpdatePlayerBasicNeeds()
 	return 1;
 }
 
-PlayerDrink(playerid, Float:value)
+PlayerDrink(playerid, value)
 {
 	if(PlayerInfo[playerid][pThirst] + value >= 100)
 	{
@@ -10809,7 +10809,7 @@ PlayerDrink(playerid, Float:value)
 	UpdatePlayerBasicNeedsTextdraws(playerid);
 }
 
-PlayerEat(playerid, Float:value)
+PlayerEat(playerid, value)
 {
 	if(PlayerInfo[playerid][pHunger] + value >= 100)
 	{
@@ -11848,29 +11848,29 @@ PlayerDrinkAlcohol(playerid, alcohol)
 enum DrinksInfo {
 	drName[32],
 	drPrice,
-	Float:drAmount,
+	drAmount,
  	drAlcohol
 };
 
 static const DrinksMenuBar[][DrinksInfo] = {
-	{"Cerveza", 35, 50.0, 20},
-	{"Vodka", 40, 50.0, 50},
-	{"Coca cola", 25, 50.0, 0},
-    {"Agua", 20, 50.0, 0},
-    {"Whisky", 40, 50.0, 30},
-    {"Brandy", 35, 50.0, 25},
-    {"Café cortado", 25, 50.0, 0},
-    {"Café irlandés", 35, 50.0, 10}
+	{"Cerveza", 35, 50, 20},
+	{"Vodka", 40, 50, 50},
+	{"Coca cola", 25, 50, 0},
+    {"Agua", 20, 50, 0},
+    {"Whisky", 40, 50, 30},
+    {"Brandy", 35, 50, 25},
+    {"Café cortado", 25, 50, 0},
+    {"Café irlandés", 35, 50, 10}
 };
 
 static const DrinksMenuDisco[][DrinksInfo] = {
-	{"Fernet cola", 50, 50.0, 25},
-	{"Destornillador", 60, 50.0, 40},
-	{"Gin tonic", 60, 50.0, 20},
-	{"Cuba libre", 70, 50.0, 30},
-	{"Caipirinha", 80, 50.0, 30},
-	{"Martini", 80, 50.0, 30},
-	{"Botella de champagne", 150, 70.0, 35}
+	{"Fernet cola", 50, 50, 25},
+	{"Destornillador", 60, 50, 40},
+	{"Gin tonic", 60, 50, 20},
+	{"Cuba libre", 70, 50, 30},
+	{"Caipirinha", 80, 50, 30},
+	{"Martini", 80, 50, 30},
+	{"Botella de champagne", 150, 70, 35}
 };
 
 ShowDrinksMenuBar(playerid)

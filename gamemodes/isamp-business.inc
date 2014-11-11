@@ -34,63 +34,63 @@
 enum RES_PRICELIST {
 		bplItemName[64],
 		bplPrice,
-		Float:bplEatAmount,
-		Float:bplDrinkAmount
+		bplEatAmount,
+		bplDrinkAmount
 };
 
 static const RestMenu[][RES_PRICELIST] = {
 	//Restaurant
-	{"Milanesa con papas", 80, 70.0, 0.0},
-	{"Pollo al horno con verduras", 90, 70.0, 0.0},
-	{"Ravioles de espinaca con salsa parisiene", 90, 70.0, 0.0},
-	{"Ensalada Cáesar", 70, 60.0, 0.0},
-	{"Bife de cerdo a la plancha", 90, 70.0, 0.0},
-	{"Pastel de papa casero", 75, 70.0, 0.0},
-	{"Asado completo con bebida", 120, 100.0, 70.0}
+	{"Milanesa con papas", 80, 70, 0},
+	{"Pollo al horno con verduras", 90, 70, 0},
+	{"Ravioles de espinaca con salsa parisiene", 90, 70, 0},
+	{"Ensalada Cáesar", 70, 60, 0},
+	{"Bife de cerdo a la plancha", 90, 70, 0},
+	{"Pastel de papa casero", 75, 70, 0},
+	{"Asado completo con bebida", 120, 100, 70}
 };
 
 static const PizzaMenu[][RES_PRICELIST] = {
 	 //Pizza
-	{"Pizza de Muzzarella", 65, 65.0, 0.0},
-	{"Pizza de Fugazzeta", 70, 70.0, 0.0},
-	{"Pizza de Calabresa", 80, 80.0, 0.0},
-	{"Pizza Especial con bebida", 100, 70.0, 50.0},
-	{"Pizza Estilo Primavera", 90, 85.0, 0.0},
-	{"Pizza De Jamón, Roquefort y Morrones con bebida", 105, 85.0, 60.0},
-	{"Pizza de 4 Quesos Artesanal con bebida", 115, 95.0, 65.0}
+	{"Pizza de Muzzarella", 65, 65, 0},
+	{"Pizza de Fugazzeta", 70, 70, 0},
+	{"Pizza de Calabresa", 80, 80, 0},
+	{"Pizza Especial con bebida", 100, 70, 50},
+	{"Pizza Estilo Primavera", 90, 85, 0},
+	{"Pizza De Jamón, Roquefort y Morrones con bebida", 105, 85, 60},
+	{"Pizza de 4 Quesos Artesanal con bebida", 115, 95, 65}
 };
 
 static const McMenu[][RES_PRICELIST] = {
 	 //McDonals
-	{"Angus Beacon con gaseosa grande y papas grandes", 110, 75.0, 40.0},
-	{"Doble Cuarto de libra con papas medianas y gaseosa mediana", 95, 60.0, 30.0},
-	{"Triple Mac", 60, 50.0, 0.0},
-	{"Big Mac con gaseosa mediana", 70, 50.0, 35.0},
-	{"McNifica", 50, 40.0, 0.0},
-	{"MacFiesta con huevo y gaseosa grande", 55, 45.0, 30.0},
-	{"Jugo de naranja McDonals", 25, 0.0, 45.0}
+	{"Angus Beacon con gaseosa grande y papas grandes", 110, 75, 40},
+	{"Doble Cuarto de libra con papas medianas y gaseosa mediana", 95, 60, 30},
+	{"Triple Mac", 60, 50, 0},
+	{"Big Mac con gaseosa mediana", 70, 50, 35},
+	{"McNifica", 50, 40, 0},
+	{"MacFiesta con huevo y gaseosa grande", 55, 45, 30},
+	{"Jugo de naranja McDonals", 25, 0, 45}
 };
 
 static const BurgerMenu[][RES_PRICELIST] = {
 	 //Burger King
-	{"Whopper con queso y papas medianas", 70, 60.0, 0.0},
-	{"SteakHouse Burger XT con papas Noisette", 80, 70.0, 0.0},
-	{"Hamburguesa con queso", 35, 30.0, 0.0},
-	{"BK Stacker Cuádruple con vaso grande y papas medianas", 105, 80.0, 45.0},
-	{"King de pollo Francés con papas pequeñas", 70, 60.0, 0.0},
-	{"Tendergrill Max con vaso mediano y papas grandes", 90, 60.0, 35.0},
-	{"Churrasquito Pampeano con vaso grande", 100, 70.0, 40.0}
+	{"Whopper con queso y papas medianas", 70, 60, 0},
+	{"SteakHouse Burger XT con papas Noisette", 80, 70, 0},
+	{"Hamburguesa con queso", 35, 30, 0},
+	{"BK Stacker Cuádruple con vaso grande y papas medianas", 105, 80, 45},
+	{"King de pollo Francés con papas pequeñas", 70, 60, 0},
+	{"Tendergrill Max con vaso mediano y papas grandes", 90, 60, 35},
+	{"Churrasquito Pampeano con vaso grande", 100, 70, 40}
 };
 
 static const BellMenu[][RES_PRICELIST] = {
 	 //Chuckin Bell
-	{"Pechuga de pollo", 65, 65.0, 0.0},
-	{"Albóndigas", 50, 40.0, 0.0},
-	{"Café con tostado de jamón y queso", 55, 40.0, 40.0},
-	{"Churrasco con papas fritas y bebida", 80, 55.0, 40.0},
-	{"Sandwich de Lomo Grille con bebida", 70, 50.0, 40.0},
-	{"Rabas a la provenzal con bebida", 85, 65.0, 40.0},
-	{"Ensalada del bosque con Villa del Sur", 50, 35.0, 65.0}
+	{"Pechuga de pollo", 65, 65, 0},
+	{"Albóndigas", 50, 40, 0},
+	{"Café con tostado de jamón y queso", 55, 40, 40},
+	{"Churrasco con papas fritas y bebida", 80, 55, 40},
+	{"Sandwich de Lomo Grille con bebida", 70, 50, 40},
+	{"Rabas a la provenzal con bebida", 85, 65, 40},
+	{"Ensalada del bosque con Villa del Sur", 50, 35, 65}
 };
 
 static const HardItems[] = {
