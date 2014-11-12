@@ -12390,6 +12390,7 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
     {
    		RemovePlayerAttachedObject(playerid, index);
    		SetPlayerAttachedObject(playerid, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
+   		OnPlayerEditToy(playerid, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
 	}
 	return 1;
 }

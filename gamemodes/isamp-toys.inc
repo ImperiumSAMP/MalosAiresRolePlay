@@ -74,8 +74,8 @@ SetToyItemAndParam(playerid, index, itemid, param)
 	  		{
 			   	ToysInfo[playerid][index][Item] = itemid;
 			   	ToysInfo[playerid][index][Amount] = param;
-			   	LoadToyItem(playerid, index);
 		    	SaveToyInfo(playerid, index, TOY_CREATE);
+		    	LoadToyItem(playerid, index);
 			}
 	}
 }
@@ -216,7 +216,7 @@ public OnToysInfoDataLoad(playerid)
 
 public SaveToyInfo(playerid, index, option)
 {
-	new query[256];
+	new query[400];
 	
 	if(dontsave)
 	    return 1;
