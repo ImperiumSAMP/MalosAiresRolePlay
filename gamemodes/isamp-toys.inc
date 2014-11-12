@@ -216,7 +216,7 @@ public OnToysInfoDataLoad(playerid)
 
 public SaveToyInfo(playerid, index, option)
 {
-	new query[500];
+	new query[600];
 	
 	if(dontsave)
 	    return 1;
@@ -225,7 +225,9 @@ public SaveToyInfo(playerid, index, option)
 	{
 		if(ToysInfo[playerid][index][Item] > 0)
 		{
-			format(query, sizeof(query), "INSERT INTO `toys_info` (pId, Index, Item, Amount, PosX, PosY, PosZ, RotX, RotY, RotZ) VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f)",
+			format(query, sizeof(query), "INSERT INTO `toys_info` (`pId`, `Index`, `Item`, `Amount`, `PosX`, `PosY`, `PosZ`, `RotX`, `RotY`, `RotZ`)");
+			format(query, sizeof(query), "%s VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f)",
+			    query,
 				PlayerInfo[playerid][pID],
 				index,
 				ToysInfo[playerid][index][Item],
