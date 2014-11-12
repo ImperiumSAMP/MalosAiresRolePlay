@@ -216,7 +216,7 @@ public OnToysInfoDataLoad(playerid)
 
 public SaveToyInfo(playerid, index, option)
 {
-	new query[600];
+	new query[256];
 	
 	if(dontsave)
 	    return 1;
