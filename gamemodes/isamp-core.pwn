@@ -2361,21 +2361,18 @@ public OnPlayerDataLoad(playerid) {
 }
 
 forward OnBanDataLoad(playerid);
-public OnBanDataLoad(playerid) {
-   	new
-		issuerName[MAX_PLAYER_NAME],
+public OnBanDataLoad(playerid)
+{
+   	new issuerName[MAX_PLAYER_NAME],
    	    banReason[128],
-		result[128],
 		rows,
 		fields;
 
 	cache_get_data(rows, fields);
 
-	if(rows) {
-		if(strval(result) >= 1) {
-	    	KickPlayer(playerid,"el sistema","cuenta baneada");
-		}
-		cache_get_field_content(0, "issuerName", result);
+	if(rows)
+	{
+		cache_get_field_content(0, "banIssuerName", issuerName);
 	    cache_get_field_content(0, "banReason", banReason);
 	    ClearScreen(playerid);
 	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
@@ -4397,7 +4394,7 @@ stock LoadPickups() {
 	P_POLICE_ARREST = CreateDynamicPickup(1239, 1, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z, -1);
 
 	/* Armarios de la S.I.D.E */
-	P_SIDE_DUTY = CreateDynamicPickup(1239, 1, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z, -1);
+	P_SIDE_DUTY = CreateDynamicPickup(1242, 1, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z, -1);
 
 	/* Centro de Licencias de Malos Aires */
 	P_LICENSE_CENTER = CreateDynamicPickup(1239, 1, -2033.2118, -117.4678, 1035.1719, -1);
@@ -4424,9 +4421,9 @@ stock LoadPickups() {
 	P_CARPART_SHOP = CreateDynamicPickup(1239, 1, MEC_CARPART_SHOP_X, MEC_CARPART_SHOP_Y, MEC_CARPART_SHOP_Z, -1);
 
 	// Black Markets
-	P_BLACK_MARKET[0] = CreateDynamicPickup(1239, 1, POS_BM1_X, POS_BM1_Y, POS_BM1_Z, -1);
-	P_BLACK_MARKET[1] = CreateDynamicPickup(1239, 1, POS_BM2_X, POS_BM2_Y, POS_BM2_Z, -1);
-	P_BLACK_MARKET[2] = CreateDynamicPickup(1239, 1, POS_BM3_X, POS_BM3_Y, POS_BM3_Z, -1);
+	P_BLACK_MARKET[0] = CreateDynamicPickup(1210, 1, POS_BM1_X, POS_BM1_Y, POS_BM1_Z, -1);
+	P_BLACK_MARKET[1] = CreateDynamicPickup(1210, 1, POS_BM2_X, POS_BM2_Y, POS_BM2_Z, -1);
+	P_BLACK_MARKET[2] = CreateDynamicPickup(1210, 1, POS_BM3_X, POS_BM3_Y, POS_BM3_Z, -1);
 
 	// Renta de autos
 	P_CAR_RENT1 = CreateDynamicPickup(1239, 1, 1569.8145, -2243.8796, 13.5184, -1);

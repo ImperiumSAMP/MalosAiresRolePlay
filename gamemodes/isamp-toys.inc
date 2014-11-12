@@ -7,17 +7,36 @@
 
 //================================CONSTANTES====================================
 
-#define MAX_PLAYER_INDEX    	8 // El limite es 10 y es nativo de samp. Se pone 8 (va de 0 a 7) para guardar un index para la mano y otro a la mascara, temporalmente.
-#define SLOT_TYPE_TOY      		5
+#define MAX_PLAYER_INDEX    	7 // El limite es 10 y es nativo de samp. Se pone 7 (va de 0 a 6) para guardar dos index para la mano izq - derecha y otro a la mascara, temporalmente.
+
+#define TOY_CREATE             	1
+#define TOY_UPDATE             	2
+#define TOY_DESTROY            	3
 
 //===============================DATA STORAGE===================================
 
-new ToysInfo[MAX_PLAYERS][MAX_PLAYER_INDEX][SlotInfo];
+enum toyInfo {
+	Item,
+	Amount,
+	Float:PosX,
+	Float:PosY,
+	Float:PosZ,
+	Float:RotX,
+	Float:RotY,
+	Float:RotZ
+}
+
+new ToysInfo[MAX_PLAYERS][MAX_PLAYER_INDEX][toyInfo];
 
 //======================CABECERA DE FUNCIONES PUBLICAS==========================
 
 forward LoadToysInfo(playerid);
 forward LoadToysItems(playerid);
+
+forward OnToysInfoDataLoad(playerid);
+forward SaveToyInfo(playerid, index, option);
+
+forward OnPlayerEditToy(playerid, index, Float:posX, Float:posY, Float:posZ, Float:rotX, Float:rotY, Float:rotZ);
 
 //================================FUNCIONES=====================================
 
@@ -35,18 +54,29 @@ SetToyItemAndParam(playerid, index, itemid, param)
 {
 	if(index >= 0 && index < MAX_PLAYER_INDEX)
 	{
-	    if(GetToyItem(playerid, index) > 0)
+	    if(GetToyItem(playerid, index) > 0) // Ya tiene un item
 	    {
 	        DeleteToyItem(playerid, index);
-    	    ToysInfo[playerid][index][Item] = 0;
-	    	ToysInfo[playerid][index][Amount] = 0;
-	    	SaveSlotInfo(SLOT_TYPE_TOY, playerid, index);
-		}
-	    ToysInfo[playerid][index][Item] = itemid;
-	    ToysInfo[playerid][index][Amount] = param;
-	    SaveSlotInfo(SLOT_TYPE_TOY, playerid, index);
-	    if(itemid != 0)
-	    	LoadToyItem(playerid, index);
+	        if(itemid == 0) // Si quiere borrarlo
+	        {
+	        	ResetToy(playerid, index);
+		    	SaveToyInfo(playerid, index, TOY_DESTROY);
+			}
+			else // Si quiere sobre-escribirlo
+			{
+		    	ToysInfo[playerid][index][Item] = itemid;
+		    	ToysInfo[playerid][index][Amount] = param;
+			    SaveToyInfo(playerid, index, TOY_UPDATE);
+			    LoadToyItem(playerid, index);
+			}
+		} else
+			if(itemid != 0) // Si no tiene un item y ademas quiere setear un item nuevo (crear uno)
+	  		{
+			   	ToysInfo[playerid][index][Item] = itemid;
+			   	ToysInfo[playerid][index][Amount] = param;
+			   	LoadToyItem(playerid, index);
+		    	SaveToyInfo(playerid, index, TOY_CREATE);
+			}
 	}
 }
 
@@ -77,7 +107,7 @@ LoadToyItem(playerid, index)
 	
 	if(GetItemObjectModel(itemid) != 0)
 	{
-		SetPlayerAttachedObject(playerid, index, GetItemObjectModel(itemid), GetItemAttachBone(itemid));
+		SetPlayerAttachedObject(playerid, index, GetItemObjectModel(itemid), GetItemAttachBone(itemid), ToysInfo[playerid][index][PosX], ToysInfo[playerid][index][PosY], ToysInfo[playerid][index][PosZ], ToysInfo[playerid][index][RotX], ToysInfo[playerid][index][RotY], ToysInfo[playerid][index][RotZ]);
 		EditAttachedObject(playerid, index);
 	}
 }
@@ -90,16 +120,27 @@ LoadToysItems(playerid)
 	{
 	    itemid = ToysInfo[playerid][i][Item];
 		if(GetItemObjectModel(itemid) != 0)
-			SetPlayerAttachedObject(playerid, i, GetItemObjectModel(itemid), GetItemAttachBone(itemid));
+            SetPlayerAttachedObject(playerid, i, GetItemObjectModel(itemid), GetItemAttachBone(itemid), ToysInfo[playerid][i][PosX], ToysInfo[playerid][i][PosY], ToysInfo[playerid][i][PosZ], ToysInfo[playerid][i][RotX], ToysInfo[playerid][i][RotY], ToysInfo[playerid][i][RotZ]);
 	}
+}
+
+ResetToy(playerid, index)
+{
+	ToysInfo[playerid][index][Item] = 0;
+	ToysInfo[playerid][index][Amount] = 0;
+	ToysInfo[playerid][index][PosX] = 0.0;
+	ToysInfo[playerid][index][PosY] = 0.0;
+	ToysInfo[playerid][index][PosZ] = 0.0;
+	ToysInfo[playerid][index][RotX] = 0.0;
+	ToysInfo[playerid][index][RotY] = 0.0;
+	ToysInfo[playerid][index][RotZ] = 0.0;
 }
 
 ResetToys(playerid)
 {
 	for(new i = 0; i < MAX_PLAYER_INDEX; i++)
 	{
-	    ToysInfo[playerid][i][Item] = 0;
-	    ToysInfo[playerid][i][Amount] = 0;
+	    ResetToy(playerid, i);
 	}
 }
 
@@ -111,7 +152,7 @@ EditToy(playerid, index)
 
 PrintToysForPlayer(playerid, targetid)
 {
-	SendClientMessage(targetid, COLOR_WHITE, "======================[Toys]=====================");
+	SendClientMessage(targetid, COLOR_WHITE, "======================[Toys]========================");
 	for(new i = 0; i < MAX_PLAYER_INDEX; i++)
 	{
 	    if(GetToyItem(playerid, i) > 0)
@@ -120,13 +161,111 @@ PrintToysForPlayer(playerid, targetid)
 	SendClientMessage(targetid, COLOR_WHITE, "==================================================");
 }
 
+public OnPlayerEditToy(playerid, index, Float:posX, Float:posY, Float:posZ, Float:rotX, Float:rotY, Float:rotZ)
+{
+	if(index >= 0 && index < MAX_PLAYER_INDEX) // Automaticamente limita la edicion a los index reservados para toys.
+	{
+	    ToysInfo[playerid][index][PosX] = posX;
+	    ToysInfo[playerid][index][PosY] = posY;
+	    ToysInfo[playerid][index][PosZ] = posZ;
+	    ToysInfo[playerid][index][RotX] = rotX;
+	    ToysInfo[playerid][index][RotY] = rotY;
+	    ToysInfo[playerid][index][RotZ] = rotZ;
+	    SaveToyInfo(playerid, index, TOY_UPDATE);
+	}
+}
+
 LoadToysInfo(playerid)
 {
 	new query[128];
 
 	ResetToys(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
-	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_TOY, PlayerInfo[playerid][pID]);
-	mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_TOY, playerid);
+	format(query, sizeof(query), "SELECT * FROM `toys_info` WHERE `pId`= %d", PlayerInfo[playerid][pID]);
+	mysql_function_query(dbHandle, query, true, "OnToysInfoDataLoad", "i", playerid);
+	return 1;
+}
+
+public OnToysInfoDataLoad(playerid)
+{
+   	new result[128],
+	   	rows,
+	   	fields,
+	   	aux = 0, // Desde el primer registro obtenido que se almacena en posicion cero dentro de los resultados
+	   	index;
+
+	cache_get_data(rows, fields);
+	
+	if(rows)
+	{
+	    while(aux < rows)
+	    {
+			cache_get_field_content(aux, "Index", result); 		index = strval(result);
+			cache_get_field_content(aux, "Item", result); 		ToysInfo[playerid][index][Item] = strval(result);
+			cache_get_field_content(aux, "Amount", result); 	ToysInfo[playerid][index][Amount] = strval(result);
+			cache_get_field_content(aux, "PosX", result); 		ToysInfo[playerid][index][PosX] = floatstr(result);
+			cache_get_field_content(aux, "PosY", result);		ToysInfo[playerid][index][PosY] = floatstr(result);
+			cache_get_field_content(aux, "PosZ", result); 		ToysInfo[playerid][index][PosZ] = floatstr(result);
+			cache_get_field_content(aux, "RotX", result); 		ToysInfo[playerid][index][RotX] = floatstr(result);
+			cache_get_field_content(aux, "RotY", result); 		ToysInfo[playerid][index][RotY] = floatstr(result);
+			cache_get_field_content(aux, "RotZ", result); 		ToysInfo[playerid][index][RotZ] = floatstr(result);
+			aux ++;
+		}
+	}
+	return 1;
+}
+
+public SaveToyInfo(playerid, index, option)
+{
+	new query[256];
+	
+	if(dontsave)
+	    return 1;
+
+	if(option == TOY_CREATE)
+	{
+		if(ToysInfo[playerid][index][Item] > 0)
+		{
+			format(query, sizeof(query), "INSERT INTO `toys_info` (pId, Index, Item, Amount, PosX, PosY, PosZ, RotX, RotY, RotZ) VALUES (%d, %d, %d, %d, %f, %f, %f, %f, %f, %f)",
+				PlayerInfo[playerid][pID],
+				index,
+				ToysInfo[playerid][index][Item],
+				ToysInfo[playerid][index][Amount],
+				ToysInfo[playerid][index][PosX],
+				ToysInfo[playerid][index][PosY],
+				ToysInfo[playerid][index][PosZ],
+				ToysInfo[playerid][index][RotX],
+				ToysInfo[playerid][index][RotY],
+				ToysInfo[playerid][index][RotZ]
+			);
+		}
+	}
+	else if(option == TOY_UPDATE)
+	{
+		if(ToysInfo[playerid][index][Item] > 0)
+		{
+			format(query, sizeof(query), "UPDATE `toys_info` SET `Item`=%d, `Amount`=%d, `PosX`=%f, `PosY`=%f, `PosZ`=%f, `RotX`=%f, `RotY`=%f, `RotZ`=%f WHERE `pId`=%d AND `Index`=%d",
+	            ToysInfo[playerid][index][Item],
+	            ToysInfo[playerid][index][Amount],
+				ToysInfo[playerid][index][PosX],
+				ToysInfo[playerid][index][PosY],
+				ToysInfo[playerid][index][PosZ],
+				ToysInfo[playerid][index][RotX],
+				ToysInfo[playerid][index][RotY],
+				ToysInfo[playerid][index][RotZ],
+				PlayerInfo[playerid][pID],
+				index
+			);
+		}
+	}
+	else if(option == TOY_DESTROY)
+	{
+		format(query, sizeof(query), "DELETE FROM `toys_info` WHERE `pId`=%d AND `Index`=%d",
+			PlayerInfo[playerid][pID],
+			index
+		);
+	}
+	
+	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
 }
 	
