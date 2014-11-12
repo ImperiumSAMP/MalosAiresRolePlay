@@ -180,7 +180,7 @@ LoadToysInfo(playerid)
 	new query[128];
 
 	ResetToys(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
-	format(query, sizeof(query), "SELECT * FROM `toys_info` WHERE `pId`= %d", PlayerInfo[playerid][pID]);
+	format(query, sizeof(query), "SELECT * FROM `toys_info` WHERE `pId`=%d", PlayerInfo[playerid][pID]);
 	mysql_function_query(dbHandle, query, true, "OnToysInfoDataLoad", "i", playerid);
 	return 1;
 }
@@ -216,7 +216,7 @@ public OnToysInfoDataLoad(playerid)
 
 public SaveToyInfo(playerid, index, option)
 {
-	new query[400];
+	new query[500];
 	
 	if(dontsave)
 	    return 1;
