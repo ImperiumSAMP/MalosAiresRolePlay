@@ -311,6 +311,9 @@ new
 	MechanicCall = 999,
 	MechanicCallTime[MAX_PLAYERS],
 	
+	//Headshot
+	PlayerHeadshoted[MAX_PLAYERS] = 0,
+	
 	// Taxi/Bus.
 	TaxiCall = 999,
 	TaxiCallTime[MAX_PLAYERS],
@@ -475,6 +478,7 @@ forward TimeReplenishYo(playerid);
 forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
+forward RespawnDead(playerid);
 
 //==============================================================================
 
@@ -762,6 +766,9 @@ public ResetStats(playerid)
 
 	/* Revision de usuarios */
 	ReviseOffer[playerid] = 999;
+	
+	/*     Headshot       */
+    PlayerHeadshoted[playerid] = 0;
 	
 	/* Sistema de misiones automaticas */
 	ResetMissionEventVariables(playerid);
@@ -1377,6 +1384,11 @@ public OnPlayerDeath(playerid, killerid, reason) {
     }
     LastDeath[playerid] = time;
     PlayerInfo[playerid][pArmour] = 0;
+	
+	if(PlayerHeadshoted[playerid] == 1){
+        PlayerInfo[playerid][pHospitalized] = 0;	
+		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
+    }
 
     if(PlayerInfo[playerid][pJailed] == 1) {
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
@@ -1416,7 +1428,7 @@ public OnPlayerDeath(playerid, killerid, reason) {
 	    }
  	}
  	
-	if(PlayerInfo[playerid][pJailed] == 0) {
+	if(PlayerInfo[playerid][pJailed] == 0 && PlayerHeadshoted[playerid] == 0) {
 		PlayerInfo[playerid][pHospitalized] = 1;
 	}
 	
@@ -3199,6 +3211,16 @@ stock isWeaponForHeadshot(weaponid) {
 	return 1;
 }
 
+public RespawnDead(playerid)
+{
+    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
+	SendClientMessage(playerid,-1, "Has recibido un disparo en la cabeza y entras en estado de agonia inmediatamente");
+	PlayerInfo[playerid][pHospitalized] = 0;
+	PlayerHeadshoted[playerid] = 0;
+	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+	return 1;
+}
+
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
 	new Float:armour;
     GetPlayerArmour(playerid, armour);
@@ -3213,8 +3235,9 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
-		    SetPlayerHealthEx(playerid, 20);
-			SendClientMessage(playerid,-1, "Has recibido un disparo en la cabeza y entras en estado de agonia inmediatamente");
+		    SetPlayerHealthEx(playerid, 0);
+			SetTimerEx("RespawnDead",5000, false, "i", playerid);
+			PlayerHeadshoted[playerid] = 1;
 			return 1;
 		}
 		
@@ -3494,7 +3517,7 @@ public globalUpdate() {
 					SendClientMessage(playerid, COLOR_LIGHTBLUE, "Estás en tu lecho de muerte por lo que ya no podran salvarte, puedes utilizar {FFFFFF}/morir{87CEFA} o continuar roleando.");
                     SetPVarInt(playerid, "disabled", DISABLE_DEATHBED);
           		}
-		    } else if(PlayerInfo[playerid][pHospitalized] >= 2) {
+		    } else if(PlayerInfo[playerid][pHospitalized] >= 2 && PlayerHeadshoted[playerid] == 0) {
 		        PlayerInfo[playerid][pHospitalized]++;
 		        
 		        SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] + HP_GAIN);
@@ -4663,6 +4686,12 @@ public SetPlayerSpawn(playerid) {
 	}
 
     SetNormalPlayerGunSkills(playerid);
+	
+	if(PlayerHeadshoted[playerid] == 1){
+	   SetPlayerHealthEx(playerid,24);
+	   PlayerHeadshoted[playerid] = 0;
+	}
+
 
 	if(!GetPlayerInterior(playerid)) {
 		SetPlayerWeather(playerid, weatherVariables[0]);
@@ -4911,29 +4940,35 @@ stock log(playerid, logType, text[])
 	return 1;
 }
 
-stock initiateHospital(playerid) {
-	TogglePlayerControllable(playerid, false);
-	SetPlayerVirtualWorld(playerid, 0);
-	SetPlayerInterior(playerid, 0);
+stock initiateHospital(playerid) 
+{
+	if(PlayerInfo[playerid][pHospitalized] > 0 && PlayerHeadshoted[playerid] == 0) 
+    {
+	    TogglePlayerControllable(playerid, false);
+	    SetPlayerVirtualWorld(playerid, 0);
+	    SetPlayerInterior(playerid, 0);
 
-	if(random(2) == 0) {
-		SetPlayerPos(playerid, 1188.4574,-1309.2242,10.5625);
-		SetPlayerCameraPos(playerid,1188.4574,-1309.2242,13.5625+6.0);
-		SetPlayerCameraLookAt(playerid,1175.5581,-1324.7922,18.1610);
+	    if(random(2) == 0) 
+		{
+		    SetPlayerPos(playerid, 1188.4574,-1309.2242,10.5625);
+		    SetPlayerCameraPos(playerid,1188.4574,-1309.2242,13.5625+6.0);
+		    SetPlayerCameraLookAt(playerid,1175.5581,-1324.7922,18.1610);
 
-		SetPVarInt(playerid, "hosp", 1);
-	} else {
-		SetPlayerPos(playerid, 1999.5308,-1449.3281,10.5594);
-		SetPlayerCameraPos(playerid,1999.5308,-1449.3281,13.5594+6.0);
-		SetPlayerCameraLookAt(playerid,2036.2179,-1410.3223,17.1641);
+		    SetPVarInt(playerid, "hosp", 1);
+	    } else {
+		    SetPlayerPos(playerid, 1999.5308,-1449.3281,10.5594);
+		    SetPlayerCameraPos(playerid,1999.5308,-1449.3281,13.5594+6.0);
+            SetPlayerCameraLookAt(playerid,2036.2179,-1410.3223,17.1641);
 
-	    SetPVarInt(playerid, "hosp", 2);
-	}
+            SetPVarInt(playerid, "hosp", 2); 
+	    }
 
-	SendClientMessage(playerid, COLOR_YELLOW2, "Debes reposar un tiempo en el hospital hasta recuperarte.");
-	SendClientMessage(playerid, COLOR_YELLOW2, "Antes de ser dado de alta el personal del hospital te quitará las armas y te cobrará una suma por el tratamiento recibido.");
-	PlayerInfo[playerid][pHospitalized] = 2;
-	SetPlayerHealthEx(playerid, 10);
+	
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Debes reposar un tiempo en el hospital hasta recuperarte.");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Antes de ser dado de alta el personal del hospital te quitará las armas y te cobrará una suma por el tratamiento recibido.");
+	    PlayerInfo[playerid][pHospitalized] = 2;
+	    SetPlayerHealthEx(playerid, 10);
+    }
 	return 1;
 }
 
