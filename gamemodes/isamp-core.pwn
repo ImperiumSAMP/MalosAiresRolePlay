@@ -3191,14 +3191,14 @@ stock chargeTaxis()
 		}
 	}
 }
-/*
+
 stock isWeaponForHeadshot(weaponid) {
 	if(weaponid == 22 || weaponid == 23 || weaponid == 24 || weaponid == 25 ||weaponid == 28 || weaponid == 29 ||weaponid == 30 || weaponid == 31 || weaponid == 32 || weaponid == 33 || weaponid == 34 ){
 	    return 0;
 	}
 	return 1;
 }
-*/
+
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
 	new Float:armour;
     GetPlayerArmour(playerid, armour);
@@ -3210,14 +3210,14 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 	
 		if(checkTazer(playerid,issuerid,amount,weaponid))
 		    return 1;
-		/*
+		
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
 		    SetPlayerHealthEx(playerid, 20);
 			SendClientMessage(playerid,-1, "Has recibido un disparo en la cabeza y entras en estado de agonia inmediatamente");
 			return 1;
 		}
-		*/
+		
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
