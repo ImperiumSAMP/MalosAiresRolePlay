@@ -36,7 +36,8 @@ new
 	RepairOffer[MAX_PLAYERS],
 	RepairProducts[MAX_PLAYERS],
 	RepairPrice[MAX_PLAYERS],
-	RepairType[MAX_PLAYERS];
+	RepairType[MAX_PLAYERS],
+	RepairOfferTimer[MAX_PLAYERS];
 
 new TMTuneTimers[5];
 
@@ -145,14 +146,13 @@ public Cerrajeria(playerid)
 	    SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 	}
 	TogglePlayerControllable(playerid, true);
-	ResetRepairOffer(playerid);
+	EndRepairOffer(playerid);
 	return 1;
 }
 
 public Reparacion(playerid)
 {
-    new
-		vehicleid = GetPlayerVehicleID(playerid),
+    new vehicleid = GetPlayerVehicleID(playerid),
 		mechanic = RepairOffer[playerid];
 
 	if(GetPlayerCash(playerid) >= RepairPrice[playerid])
@@ -190,8 +190,7 @@ public Reparacion(playerid)
 
 public Destuning(playerid)
 {
-    new
-		vehicleid = GetPlayerVehicleID(playerid),
+    new vehicleid = GetPlayerVehicleID(playerid),
 		part;
 
 	for(new i = 0; i < 14; i++)
@@ -206,7 +205,7 @@ public Destuning(playerid)
 	SendFMessage(playerid, COLOR_WHITE, "Las partes tuning de su vehículo han sido removidas por %s.", GetPlayerNameEx(RepairOffer[playerid]));
 	SendFMessage(RepairOffer[playerid], COLOR_WHITE, "Has removido las partes tuning del vehículo de %s.", GetPlayerNameEx(playerid));
 	TogglePlayerControllable(playerid, true);
-	ResetRepairOffer(playerid);
+	EndRepairOffer(playerid);
 	return 1;
 }
 
@@ -425,7 +424,7 @@ CMD:mecreparar(playerid,params[])
 	RepairClient[playerid] = target;
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s reparar su auto por $%d. La propuesta vence en 10 segundos.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido reparar su vehículo por $%d. Usa /mecaceptar para aceptar. La propuesta vence en 10 segundos.", GetPlayerNameEx(playerid), price);
-	SetTimerEx("EndRepairOffer", 10000, false, "i", target);
+	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
 }
 
@@ -461,7 +460,7 @@ CMD:meccerradura(playerid, params[])
 	RepairClient[playerid] = target;
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura del vehículo por $%d. La propuesta vence en 10 segundos.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "El mecánico %s le ha ofrecido cambiar la cerradura del vehículo por $%d. Usa /mecaceptar para aceptar. La propuesta vence en 10 segundos.", GetPlayerNameEx(playerid), price);
-	SetTimerEx("EndRepairOffer", 10000, false, "i", target);
+	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
 }
 
@@ -499,7 +498,7 @@ CMD:mecdestunear(playerid, params[])
     RepairClient[playerid] = target;
     SendClientMessage(target, COLOR_LIGHTBLUE, "Te han ofrecido destunear tu auto, usa /mecaceptar si asi lo deseas. Tienes 10 segundos para responder.");
     SendClientMessage(playerid, COLOR_LIGHTBLUE, "Le has propuesto al cliente destunear su auto, espera a su respuesta. La propuesta termina en 10 segundos.");
-	SetTimerEx("EndRepairOffer", 10000, false, "i", target);
+	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
 }
 
@@ -522,6 +521,7 @@ CMD:mecaceptar(playerid, params[])
 	    {
 			GameTextForPlayer(playerid, "Su vehiculo esta siendo reparado...", 6000, 1);
 			GameTextForPlayer(RepairOffer[playerid], "Reparando vehiculo...", 6000, 1);
+			KillTimer(RepairOfferTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("Reparacion", 6000, false, "i", playerid);
 		}
@@ -529,6 +529,7 @@ CMD:mecaceptar(playerid, params[])
 		{
 			GameTextForPlayer(playerid, "El mecánico está cambiando la cerradura...", 6000, 1);
 			GameTextForPlayer(RepairOffer[playerid], "Cambiando cerradura...", 6000, 1);
+			KillTimer(RepairOfferTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("Cerrajeria", 6000, false, "i", playerid);
 		}
@@ -542,6 +543,7 @@ CMD:mecaceptar(playerid, params[])
 				
 			GameTextForPlayer(playerid, "El mecánico está removiendo las partes tuneadas del vehículo...", 6000, 1);
 			GameTextForPlayer(RepairOffer[playerid], "Removiendo partes tuneadas...", 6000, 1);
+			KillTimer(RepairOfferTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("Destuning", 6000, false, "i", playerid);
 		}
