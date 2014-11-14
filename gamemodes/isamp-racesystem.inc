@@ -7,7 +7,7 @@
 
 #define MAX_SERVER_RACES        3
 #define MAX_RACE_CHECKPOINTS	20
-#define MAX_RACE_DRIVERS        8
+#define MAX_RACE_DRIVERS        9
 
 //================================VARIABLES=====================================
 
@@ -20,7 +20,7 @@ enum rRaceInfo {
  	bool:rStarted
 };
 
-new Float:TrackInfo[MAX_SERVER_RACES][MAX_RACE_CHECKPOINTS][3];
+new Float:TrackInfo[MAX_SERVER_RACES][MAX_RACE_CHECKPOINTS+1][3];
 new RaceInfo[MAX_SERVER_RACES][rRaceInfo];
 
 enum pPlayerRaceInfo {
@@ -84,7 +84,6 @@ stock RaceMessage(raceid, color, const string[])
 {
 	if(raceid >= 0 && raceid < MAX_SERVER_RACES)
 	{
- 		SendClientMessage(RaceInfo[raceid][rCreatorID], color, string);
 		for(new i = 0; i < MAX_RACE_DRIVERS; i++)
 			SendClientMessage(RaceInfo[raceid][rDriversID][i], color, string);
 	}
@@ -254,7 +253,8 @@ stock AddNewRaceCheckpoint(playerid, raceid)
 		 	TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][1] = ypos;
 		    TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][2] = zpos;
 		   	RaceInfo[raceid][rCheckpointsCount]++;
-		   	SendClientMessage(playerid, COLOR_WHITE, "Checkpoint agregado. Puedes quitar el último checkpoint puesto usando /carreraborrarcp.");
+		   	SendFMessage(playerid, COLOR_WHITE, "Checkpoint nro %d agregado. Puedes quitar el último checkpoint puesto usando /carreraborrarcp.", RaceInfo[raceid][rCheckpointsCount]);
+		   	SendFMessage(playerid, COLOR_WHITE, "Recuerda que solo puedes agregar hasta %d checkpoints, así que calcula bien donde ponerlos.", MAX_RACE_CHECKPOINTS);
 		}
 	}
 }
@@ -283,11 +283,11 @@ stock DeleteLastRaceCheckpoint(playerid, raceid)
 	{
 		if(RaceInfo[raceid][rCheckpointsCount] > 0)
 		{
-		    RaceInfo[raceid][rCheckpointsCount]--;
+			RaceInfo[raceid][rCheckpointsCount]--;
 			TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][0] = 0.0;
 		 	TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][1] = 0.0;
 		    TrackInfo[raceid][RaceInfo[raceid][rCheckpointsCount]][2] = 0.0;
-			SendClientMessage(playerid, COLOR_WHITE, "El último checkpoint que habías agregado ha sido borrado.");
+			SendFMessage(playerid, COLOR_WHITE, "El último checkpoint nro %d que habías agregado ha sido borrado. Ahora hay %d.", RaceInfo[raceid][rCheckpointsCount]+1, RaceInfo[raceid][rCheckpointsCount]);
 		}
 	}
 }
@@ -446,6 +446,7 @@ stock PrintRaceInfo(playerid, raceid)
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "================[CARRERA]================");
 	    SendFMessage(playerid, COLOR_WHITE, " - Organizador: %s", GetPlayerNameEx(RaceInfo[raceid][rCreatorID]));
 	    SendFMessage(playerid, COLOR_WHITE, " - Vueltas: %d", RaceInfo[raceid][rLaps]);
+	    SendFMessage(playerid, COLOR_WHITE, " - Checkpoints por vuelta: %d", RaceInfo[raceid][rCheckpointsCount]);
 	    if(RaceInfo[raceid][rWinner] != INVALID_PLAYER_ID)
 	    	SendFMessage(playerid, COLOR_WHITE, " - Ganador: %s", GetPlayerNameEx(RaceInfo[raceid][rWinner]));
 		if(RaceInfo[raceid][rStarted])
@@ -579,6 +580,6 @@ stock OnDriverRaceCheckpoint(driverid)
 				}
 		}
 		else // checkpoint comun, con checkpoint entremedio de meta y largada
-		    SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][0], 10.0);
+		    SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][1], TrackInfo[raceid][pcp+1][2], 10.0);
 	}
 }
