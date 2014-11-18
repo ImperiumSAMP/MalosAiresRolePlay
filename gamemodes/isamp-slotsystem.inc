@@ -130,9 +130,10 @@ stock SaveSlotInfo(type, id, slot)
 				);
 			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
 			    {
-		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d",
+		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
 				    	type,
-				    	PlayerInfo[id][pID]
+				    	PlayerInfo[id][pID],
+						slot
 					);
 				}
 		}

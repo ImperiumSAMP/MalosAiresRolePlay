@@ -984,6 +984,70 @@ public OnVehicleSpawn(vehicleid) {
 
 //=============================[VEHICLE COMMANDS]===============================
 
+stock TakeItemFromTrunk(playerid, playerhand, vehicleid, trunkslot)
+{
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+ 	if(PlayerInfo[playerid][pHealth] < 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+		
+	new	itemid = GetTrunkItem(vehicleid, trunkslot),
+		itemparam = GetTrunkParam(vehicleid, trunkslot),
+		str[128];
+		
+	if(itemid <= 0)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+	if(GetHandItem(playerid, playerhand) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
+
+	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creación lógica y grafica en la mano.
+	SetTrunkItemAndParam(vehicleid, trunkslot, 0, 0);
+	format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+
+stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
+{
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+    if(PlayerInfo[playerid][pHealth] < 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+	if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
+	if(GetPVarInt(playerid, "cantSaveItems") == 1)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+
+	new itemid = GetHandItem(playerid, playerhand),
+		validslot,
+		str[128];
+
+	if(itemid == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+
+	if(trunkslot == -1) // Si no eligió donde guardarlo
+	{
+		validslot = SearchTrunkFreeSlot(vehicleid);
+		if(validslot == -1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
+ 	} else // Si nos dijo donde guardarlo
+	 	{
+	 	    validslot = trunkslot;
+			if(validslot < 0 || validslot >= GetVehicleMaxTrunkSlots(vehicleid))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
+	   		if(GetTrunkItem(vehicleid, validslot) != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
+		}
+		
+	SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid, playerhand));
+	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico.
+	format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+  	SetPVarInt(playerid, "cantSaveItems", 1);
+	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	return 1;
+}
+
 CMD:mal(playerid, params[]) {
  	cmd_maletero(playerid, params);
 	return 1;
@@ -991,9 +1055,11 @@ CMD:mal(playerid, params[]) {
         
 CMD:maletero(playerid, params[])
 {
-	new vehicleid, returnstr[32], returnid2, text[128];
+	new vehicleid = GetClosestVehicle(playerid, 5.0),
+		returnstr[32],
+		returnid2,
+		cmd[32];
 
-    vehicleid = GetClosestVehicle(playerid, 5.0);
     if(IsPlayerInAnyVehicle(playerid))
        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes salir del vehículo primero!");
     if(vehicleid == INVALID_VEHICLE_ID)
@@ -1003,10 +1069,10 @@ CMD:maletero(playerid, params[])
 	if(VehicleInfo[vehicleid][VehBoot] != 1 && !AdminDuty[playerid])
 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero está cerrado!");
         
-    if(sscanf(params, "s[128]S(-1)[32]I(-1)", text, returnstr, returnid2)) {
+    if(sscanf(params, "s[32]S(-1)[32]I(-1)", cmd, returnstr, returnid2)) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar [slot de item] - guardar [slot, opcional] - guardardroga [tipo] [cantidad] - tomardroga [tipo] [cantidad]");
-     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8}guardardinero [cantidad] - tomardinero [slot de item]");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot de item] - guardar/guardari [slot (opcional)] - guardardroga [tipo] [cant]");
+     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomardroga [tipo] [cant] - guardardinero [cant] - tomardinero [slot de item]");
 		PrintTrunkForPlayer(vehicleid, playerid);
 		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
@@ -1023,7 +1089,7 @@ CMD:maletero(playerid, params[])
        	SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
        	
 	} else {
-		if(strcmp(text, "guardardroga", true) == 0) {
+		if(strcmp(cmd, "guardardroga", true) == 0) {
             if(strcmp(returnstr, "marihuana", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
@@ -1065,7 +1131,7 @@ CMD:maletero(playerid, params[])
            		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
             }
             
-	    } else if(strcmp(text, "tomardroga", true) == 0) {
+	    } else if(strcmp(cmd, "tomardroga", true) == 0) {
 	       	if(strcmp(returnstr, "marihuana", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
@@ -1107,7 +1173,7 @@ CMD:maletero(playerid, params[])
            		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
             }
             
-		} else if(strcmp(text, "guardardinero", true) == 0) {
+		} else if(strcmp(cmd, "guardardinero", true) == 0) {
 		
     		if(PlayerInfo[playerid][pHealth] < 25)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
@@ -1126,7 +1192,7 @@ CMD:maletero(playerid, params[])
    			SetTrunkItemAndParam(vehicleid, validslot, 51, amount);
 			GivePlayerCash(playerid, -amount);
 
-		} else if(strcmp(text, "tomardinero", true) == 0) {
+		} else if(strcmp(cmd, "tomardinero", true) == 0) {
 
 			new slot = strval(returnstr);
 	        if(GetTrunkItem(vehicleid, slot) != 51)
@@ -1134,72 +1200,22 @@ CMD:maletero(playerid, params[])
 				
     		GivePlayerCash(playerid, GetTrunkParam(vehicleid, slot));
     		SetTrunkItemAndParam(vehicleid, slot, 0, 0);
-    		
-	    } else if(strcmp(text, "tomar", true) == 0) {
+
+	    } else if(strcmp(cmd, "tomar", true) == 0) {
 	    
-			new itemslot = strval(returnstr),
-				itemid = GetTrunkItem(vehicleid, itemslot),
-				itemparam = GetTrunkParam(vehicleid, itemslot),
-				str[128];
+			TakeItemFromTrunk(playerid, HAND_RIGHT, vehicleid, strval(returnstr));
 
-			if(itemid <= 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-			    
-			if(GetHandItem(playerid, HAND_RIGHT) == 0)
-			{
-                SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
-                format(str, sizeof(str), "toma un/a %s del maletero con la mano derecha.", GetItemName(itemid));
-			}
-			else if(GetHandItem(playerid, HAND_LEFT) == 0)
-			{
-			    SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
-			    format(str, sizeof(str), "toma un/a %s del maletero con la mano izquierda.", GetItemName(itemid));
-			}
-			else
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes ambas manos ocupadas.");
+	    } else if(strcmp(cmd, "tomari", true) == 0) {
 
-			PlayerActionMessage(playerid, 15.0, str);
-			SetTrunkItemAndParam(vehicleid, itemslot, 0, 0);
-	        
-	    } else if(strcmp(text, "guardar", true) == 0) {
+			TakeItemFromTrunk(playerid, HAND_LEFT, vehicleid, strval(returnstr));
+	
+	    } else if(strcmp(cmd, "guardar", true) == 0) {
 
-            if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-    		if(PlayerInfo[playerid][pHealth] < 25)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-	        if(PlayerInfo[playerid][pLevel] < 3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-			if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
-			if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+			SaveItemOnTrunk(playerid, HAND_RIGHT, vehicleid, strval(returnstr));
 
-			new validslot = strval(returnstr),
-				itemid = GetHandItem(playerid, HAND_RIGHT),
-				str[128];
+	    } else if(strcmp(cmd, "guardari", true) == 0) {
 
-			if(itemid == 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus mano derecha para guardar!");
-
-			if(validslot == -1)
-			{
-				validslot = SearchTrunkFreeSlot(vehicleid);
-				if(validslot == -1)
-					return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
- 			} else
-			 	{
-	 	 			if(validslot < 0 || validslot >= GetVehicleMaxTrunkSlots(vehicleid))
-	 	 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-	   	    		if(GetTrunkItem(vehicleid, validslot) != 0)
-						return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
-				}
-
-			SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid, HAND_RIGHT));
-			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
-			format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
-  			SetPVarInt(playerid, "cantSaveItems", 1);
-			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+			SaveItemOnTrunk(playerid, HAND_LEFT, vehicleid, strval(returnstr));
 	    }
 	}
 	return 1;

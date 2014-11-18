@@ -31,8 +31,7 @@
 
 //==============================DATA STORAGE====================================
 
-new
-	RepairClient[MAX_PLAYERS],
+new RepairClient[MAX_PLAYERS],
 	RepairOffer[MAX_PLAYERS],
 	RepairProducts[MAX_PLAYERS],
 	RepairPrice[MAX_PLAYERS],
@@ -412,8 +411,7 @@ CMD:mecreparar(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
 	vehicleid = GetPlayerVehicleID(target);
     repuestos = GetRepairMaterialCost(vehicleid);
-    if(repuestos > 0 && (GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid, HAND_RIGHT) < repuestos)
-		&& (GetHandItem(playerid, HAND_LEFT) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid, HAND_LEFT) < repuestos))
+    if(repuestos > 0 && (GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid, HAND_RIGHT) < repuestos))
     {
         SendFMessage(playerid, COLOR_YELLOW2, "El vehículo está muy dañado: para repararlo necesitas %d repuesto/s nuevos en la mano.", repuestos);
 		return 1;

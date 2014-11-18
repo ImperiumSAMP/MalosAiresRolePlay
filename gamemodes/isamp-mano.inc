@@ -21,10 +21,10 @@ new HandInfo[MAX_PLAYERS][2][SlotInfo];
 forward GetHandItem(playerid, hand);
 forward GetHandParam(playerid, hand);
 forward SetHandItemAndParam(playerid, hand, itemid, param);
-forward ResetHand(playerid, hand);
-forward ResetAndSaveHand(playerid, hand);
+forward ResetHands(playerid);
+forward ResetAndSaveHands(playerid);
 forward PrintHandForPlayer(playerid, hand, targetid);
-forward LoadHandInfo(playerid, hand);
+forward LoadHandsInfo(playerid);
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -43,11 +43,11 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	if(GetHandItem(playerid, hand) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
 	{
 	    DeleteHandItem(playerid, hand);
+		if(GetItemType(HandInfo[playerid][hand][Item]) == ITEM_WEAPON && hand == HAND_RIGHT)
+ 			RemovePlayerWeapon(playerid, HandInfo[playerid][hand][Item]);
 		HandInfo[playerid][hand][Item] = 0;
 		HandInfo[playerid][hand][Amount] = 0;
 		SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand); // Borramos el anterior
-		if(GetItemType(itemid) == ITEM_WEAPON && hand == HAND_RIGHT)
- 			RemovePlayerWeapon(playerid, itemid);
 	}
 	HandInfo[playerid][hand][Item] = itemid;
 	HandInfo[playerid][hand][Amount] = param;
@@ -61,20 +61,28 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	return 1;
 }
 
-stock ResetHand(playerid, hand)
+stock ResetHands(playerid)
 {
-	HandInfo[playerid][hand][Item] = 0;
-	HandInfo[playerid][hand][Amount] = 0;
+	HandInfo[playerid][HAND_LEFT][Item] = 0;
+	HandInfo[playerid][HAND_LEFT][Amount] = 0;
+	HandInfo[playerid][HAND_RIGHT][Item] = 0;
+	HandInfo[playerid][HAND_RIGHT][Amount] = 0;
 	return 1;
 }
 
-stock ResetAndSaveHand(playerid, hand)
+stock ResetAndSaveHands(playerid)
 {
-	if(HandInfo[playerid[hand][Item] > 0)
+	if(HandInfo[playerid][HAND_LEFT][Item] > 0)
 	{
-		HandInfo[playerid][hand][Item] = 0;
-		HandInfo[playerid][hand][Amount] = 0;
-        SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
+		HandInfo[playerid][HAND_LEFT][Item] = 0;
+		HandInfo[playerid][HAND_LEFT][Amount] = 0;
+        SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_LEFT);
+	}
+	if(HandInfo[playerid][HAND_RIGHT][Item] > 0)
+	{
+		HandInfo[playerid][HAND_RIGHT][Item] = 0;
+		HandInfo[playerid][HAND_RIGHT][Amount] = 0;
+        SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_RIGHT);
 	}
 	return 1;
 }
@@ -86,23 +94,23 @@ stock PrintHandsForPlayer(playerid, targetid)
 
 	SendClientMessage(targetid, COLOR_WHITE, "======================[En la mano]=====================");
  	if(rightitem > 0)
-		SendFMessage(targetid, COLOR_WHITE, " [Mano derecha] - Item: %s - %s: %d", GetItemName(rightitem), GetItemParamName(rightitem), GetHandParam(playerid, HAND_RIGHT));
+		SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", GetItemName(rightitem), GetItemParamName(rightitem), GetHandParam(playerid, HAND_RIGHT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano derecha] - Nada");
  	if(leftitem > 0)
-		SendFMessage(targetid, COLOR_WHITE, " [Mano izquierda] - Item: %s - %s: %d", GetItemName(leftitem), GetItemParamName(leftitem), GetHandParam(playerid, HAND_LEFT));
+		SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", GetItemName(leftitem), GetItemParamName(leftitem), GetHandParam(playerid, HAND_LEFT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Nada");
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
 	return 1;
 }
 
-stock LoadHandInfo(playerid, hand)
+stock LoadHandsInfo(playerid)
 {
 	new query[128];
 		
-	ResetHand(playerid, hand); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
-	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d", SLOT_TYPE_HAND, PlayerInfo[playerid][pID], hand);
+	ResetHands(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
+	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_HAND, PlayerInfo[playerid][pID]);
 	mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_HAND, playerid);
 	return 1;
 }
@@ -114,35 +122,13 @@ CMD:mano(playerid, params[])
 	new command[128],
 		targetid;
 	    
-	if(sscanf(params, "s[128]I(-1)", command, targetid))
+	if(sscanf(params, "s[128]", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - dar [ID/Jugador] - tirar - agarrar - cambiar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
-        if(strcmp(command, "dar", true) == 0) {
-        
-            new rightitem = GetHandItem(playerid, HAND_RIGHT),
-            	rightparam = GetHandParam(playerid, HAND_RIGHT),
-                str[128];
-            
-			if(PlayerInfo[playerid][pLevel] < 3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-			if(rightitem == 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tus mano derecha.");
-	  		if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
-			if(PlayerInfo[targetid][pLevel] < 3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario debe ser al menos nivel 3 para recibir un item.");
-			if(GetHandItem(targetid, HAND_RIGHT) != 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario tiene otro item en las mano derecha.");
-			    
-			format(str, sizeof(str), "le entrega un/a %s a", GetItemName(rightitem));
-            PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
-			SetHandItemAndParam(targetid, HAND_RIGHT, rightitem, rightparam); // Creación lógica y grafica.
-			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
-
-		} else if(strcmp(command, "cambiar", true) == 0) {
+		if(strcmp(command, "cambiar", true) == 0) {
 		
 		    new rightitem = GetHandItem(playerid, HAND_RIGHT),
 		        rightparam = GetHandParam(playerid, HAND_RIGHT),
@@ -156,26 +142,20 @@ CMD:mano(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los items que estabas sosteniendo.");
 			
 		} else if(strcmp(command, "tirar", true) == 0) {
-			    
-			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
-			if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano derecha.");
 
-			DropObject(playerid);
+			DropObject(playerid, HAND_RIGHT);
+
+		} else if(strcmp(command, "tirari", true) == 0) {
+		
+			DropObject(playerid, HAND_LEFT);
 
 		} else if(strcmp(command, "agarrar", true) == 0) {
 
-			if(PlayerInfo[playerid][pHealth] < 25.0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
-		    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
-			if(GetHandItem(playerid, HAND_RIGHT) != 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el objeto ya que tienes algo en tus mano derecha.");
+			TakeObject(playerid, HAND_RIGHT);
 
-			TakeObject(playerid);
+		} else if(strcmp(command, "agarrari", true) == 0) {
+
+			TakeObject(playerid, HAND_LEFT);
 			
 		} else if(strcmp(command, "usar", true) == 0) {
 

@@ -139,8 +139,7 @@ CMD:arm(playerid, params[])
 
 CMD:armario(playerid, params[])
 {
-	new
-		text[128],
+	new cmd[32],
 		param1,
 		param2[32],
 		houseid = GetPlayerHouse(playerid);
@@ -148,11 +147,11 @@ CMD:armario(playerid, params[])
 	if(houseid == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar dentro de una casa!");
 
-	if(sscanf(params, "s[128]I(-1)S(-1)[32]", text, param1, param2))
+	if(sscanf(params, "s[32]I(-1)S(-1)[32]", cmd, param1, param2))
 	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/arm)ario [comando]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar (para abrirlo o cerrarlo) - tomar [slot de item] - guardar [slot, opcional] - tomardinero [cantidad]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} guardardinero [cantidad] - tomardroga [cantidad] [tipo de droga] - guardardroga [cantidad] [tipo de droga]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar (para abrirlo o cerrarlo) - tomar/tomari [slot de item] - guardar/guardari [slot (opcional)]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomardinero [cant] - guardardinero [cant] - tomardroga [cant] [tipo] - guardardroga [cant] [tipo]");
 
 		if(LockerStatus[houseid] == 0)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
@@ -177,7 +176,7 @@ CMD:armario(playerid, params[])
 		return 1;
 
 	}
-	if(strcmp(text, "usar", true) == 0) {
+	if(strcmp(cmd, "usar", true) == 0) {
 
 	    if(houseid != PlayerInfo[playerid][pHouseKey] && !AdminDuty[playerid])
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este armario!");
@@ -192,7 +191,7 @@ CMD:armario(playerid, params[])
 		    	LockerStatus[houseid] = 0;
 			}
 
-	} else if(strcmp(text, "tomardinero", true) == 0) {
+	} else if(strcmp(cmd, "tomardinero", true) == 0) {
 
  		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
@@ -206,7 +205,7 @@ CMD:armario(playerid, params[])
         saveHouse(houseid);
 		PlayerActionMessage(playerid, 15.0, "toma algo de dinero del armario.");
 
-	} else if(strcmp(text, "guardardinero", true) == 0) {
+	} else if(strcmp(cmd, "guardardinero", true) == 0) {
 
  		if(LockerStatus[houseid] == 0)
       		return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
@@ -226,81 +225,23 @@ CMD:armario(playerid, params[])
         saveHouse(houseid);
         PlayerActionMessage(playerid, 15.0, "guarda algo de dinero en el armario.");
 
-	} else if(strcmp(text, "tomar", true) == 0) {
+	} else if(strcmp(cmd, "tomar", true) == 0) {
 
- 		if(LockerStatus[houseid] == 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
-        if(PlayerInfo[playerid][pLevel] < 3)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-			
-		new itemslot = param1,
-			itemid = GetLockerItem(houseid, itemslot),
-			itemparam = GetLockerParam(houseid, itemslot),
-			str[128];
+        TakeItemFromLocker(playerid, HAND_RIGHT, houseid, param1);
 
-		if(itemid <= 0)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+	} else if(strcmp(cmd, "tomari", true) == 0) {
 
-		if(GetHandItem(playerid, HAND_RIGHT) == 0)
-		{
-            SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
-            format(str, sizeof(str), "toma un/a %s del armario con la mano derecha.", GetItemName(itemid));
-		}
-		else if(GetHandItem(playerid, HAND_LEFT) == 0)
-		{
-		    SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
-		    format(str, sizeof(str), "toma un/a %s del armario con la mano izquierda.", GetItemName(itemid));
-		}
-		else
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes ambas manos ocupadas.");
+		TakeItemFromLocker(playerid, HAND_LEFT, houseid, param1);
 
-		SetLockerItemAndParam(houseid, itemslot, 0 ,0);
-		PlayerActionMessage(playerid, 15.0, str);
+	} else if(strcmp(cmd, "guardar", true) == 0) {
 
-	} else if(strcmp(text, "guardar", true) == 0) {
+		SaveItemOnLocker(playerid, HAND_RIGHT, houseid, param1);
 
-		if(LockerStatus[houseid] == 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
-		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-  			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
- 		if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-        if(PlayerInfo[playerid][pLevel] < 3)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
-		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
-		if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	} else if(strcmp(cmd, "guardari", true) == 0) {
 
-		new itemid = GetHandItem(playerid, HAND_RIGHT),
-			validslot,
-			str[128];
-			
-		if(itemid == 0)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus mano derecha para guardar!");
+		SaveItemOnLocker(playerid, HAND_LEFT, houseid, param1);
 
-		if(param1 == -1) // Si no eligió donde guardarlo
-		{
-			validslot = SearchLockerFreeSlot(houseid);
-			if(validslot == -1)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡El armario se encuentra lleno!");
-		} else // Si nos dijo donde guardarlo
-			{
-			    validslot = param1;
-			    if(validslot < 0 || validslot >= GetHouseMaxLockerSlots(houseid))
-			        return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-				if(GetLockerItem(houseid, validslot) != 0)
-				    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
-			}
-
-		SetLockerItemAndParam(houseid, validslot, itemid, GetHandParam(playerid, HAND_RIGHT));
-		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
-		format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
-		PlayerActionMessage(playerid, 15.0, str);
-  		SetPVarInt(playerid, "cantSaveItems", 1);
-		SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
-
-	} else if(strcmp(text, "tomardroga", true) == 0) {
+	} else if(strcmp(cmd, "tomardroga", true) == 0) {
 
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
@@ -348,7 +289,7 @@ CMD:armario(playerid, params[])
         } else
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingrese un típo de droga válido.");
 
-	} else if(strcmp(text, "guardardroga", true) == 0) {
+	} else if(strcmp(cmd, "guardardroga", true) == 0) {
 
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
@@ -413,3 +354,70 @@ CMD:armario(playerid, params[])
 	return 1;
 }
 
+stock TakeItemFromLocker(playerid, playerhand, houseid, lockerslot)
+{
+	if(LockerStatus[houseid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+ 	if(PlayerInfo[playerid][pHealth] < 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+
+	new itemid = GetLockerItem(houseid, lockerslot),
+		itemparam = GetLockerParam(houseid, lockerslot),
+		str[128];
+
+	if(itemid <= 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+	if(GetHandItem(playerid, playerhand) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
+	    
+	SetHandItemAndParam(playerid, playerhand, itemid, itemparam);
+	SetLockerItemAndParam(houseid, lockerslot, 0 ,0);
+   	format(str, sizeof(str), "toma un/a %s del armario.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+
+stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
+{
+	if(LockerStatus[houseid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+ 	if(PlayerInfo[playerid][pHealth] < 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+	if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
+	if(GetPVarInt(playerid, "cantSaveItems") == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+
+	new itemid = GetHandItem(playerid, playerhand),
+		validslot,
+		str[128];
+
+	if(itemid == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+		
+	if(lockerslot == -1) // Si no eligió donde guardarlo
+	{
+		validslot = SearchLockerFreeSlot(houseid);
+		if(validslot == -1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡El armario se encuentra lleno!");
+	} else // Si nos dijo donde guardarlo
+		{
+		    validslot = lockerslot;
+		    if(validslot < 0 || validslot >= GetHouseMaxLockerSlots(houseid))
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
+			if(GetLockerItem(houseid, validslot) != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
+		}
+
+	SetLockerItemAndParam(houseid, validslot, itemid, GetHandParam(playerid, playerhand));
+	SetHandItemAndParam(playerid, playerhand, 0, 0);
+	format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	SetPVarInt(playerid, "cantSaveItems", 1);
+	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	return 1;
+}

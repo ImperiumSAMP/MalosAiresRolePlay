@@ -26,8 +26,8 @@ new ServerObject[MAX_SERVER_OBJECTS][ObjectsInfo];
 
 //==============================FUNCIONES=======================================
 
-forward DropObject(playerid); //Deposita un objeto en el suelo y devuelve 1. Si el jugador no esta de pie retorna 0, en caso de error retorna -1
-forward TakeObject(playerid); //Toma un objecto del suelo y devuelve 1. Si el jugador no pudo tomarlo retorna 0.
+forward DropObject(playerid, playerhand); //Deposita un objeto en el suelo y devuelve 1. Si el jugador no esta de pie retorna 0, en caso de error retorna -1
+forward TakeObject(playerid, playerhand); //Toma un objecto del suelo y devuelve 1. Si el jugador no pudo tomarlo retorna 0.
 forward ResetObject(pos); //Resetea los valores del índice que se le indica.
 forward ServerObjectsCleaningTimer(); // Limpia los objetos con mucho tiempo de vida
 forward LookObject(playerid); // Permite al jugador examinar un objeto sin agarrarlo.
@@ -50,12 +50,12 @@ public ServerObjectsCleaningTimer()
 	return 1;
 }
 
-stock DropObject(playerid)
+stock DropObject(playerid, playerhand)
 {
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-	    return 1;
-	if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	    return 1;
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+	if(GetHandItem(playerid, playerhand) == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No ningún item para tirar en esa mano.");
 	    
  	new j = -1;
 	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
@@ -69,12 +69,12 @@ stock DropObject(playerid)
 	if(j == -1)
 	    return SendClientMessage(playerid, COLOR_RED, "[ERROR] Se ha alcanzado el máximo de objetos permitidos, reportar a un administrador.");
 
-	ServerObject[j][sItemID] = GetHandItem(playerid, HAND_RIGHT);
-	ServerObject[j][sAmount] = GetHandParam(playerid, HAND_RIGHT);
+	ServerObject[j][sItemID] = GetHandItem(playerid, playerhand);
+	ServerObject[j][sAmount] = GetHandParam(playerid, playerhand);
 	GetPlayerName(playerid, ServerObject[j][sLastPlayerName], MAX_PLAYER_NAME);
 	GetPlayerPos(playerid, ServerObject[j][sX], ServerObject[j][sY], ServerObject[j][sZ]);
 	ServerObject[j][sZ] -= 0.7;
-	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	SetHandItemAndParam(playerid, playerhand, 0, 0);
 	ServerObject[j][sRealObject] = CreateDynamicObject(GetItemObjectModel(ServerObject[j][sItemID]), ServerObject[j][sX], ServerObject[j][sY], ServerObject[j][sZ], 0.0, 0.0, 0.0, GetPlayerVirtualWorld(playerid), GetPlayerInterior(playerid));
     ServerObject[j][sTimeLeft] = SERVER_OBJECT_LIFETIME;
 	SendFMessage(playerid, COLOR_WHITE, "Has depositado un/a %s en el suelo.", GetItemName(ServerObject[j][sItemID]) );
@@ -104,18 +104,22 @@ stock LookObject(playerid)
 	return 1;
 }
 
-stock TakeObject(playerid)
+stock TakeObject(playerid, playerhand)
 {
+	if(PlayerInfo[playerid][pHealth] < 25.0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-	    return 1;
-	if(GetHandItem(playerid, HAND_RIGHT) != 0)
-		return 1;
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+	if(GetHandItem(playerid, playerhand) != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar nada ya que tienes un item en esa mano.");
 
 	new object = GetClosestObject(playerid);
 	if(object == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
 
-	SetHandItemAndParam(playerid, HAND_RIGHT, ServerObject[object][sItemID], ServerObject[object][sAmount]);
+	SetHandItemAndParam(playerid, playerhand, ServerObject[object][sItemID], ServerObject[object][sAmount]);
 	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[object][sItemID]));
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	ResetObject(object);

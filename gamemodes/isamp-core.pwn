@@ -1428,7 +1428,8 @@ public OnPlayerDeath(playerid, killerid, reason) {
 		StopAudioStreamForPlayer(playerid);
 		
 	OnPlayerLeaveRobberyGroup(playerid, 2);
-		
+
+	ResetAndSaveHands(playerid);
 	return 1;
 }
 
@@ -2267,8 +2268,7 @@ public OnPlayerDataLoad(playerid) {
         loadThiefJobData(playerid,PlayerInfo[playerid][pID]); // Info del job de ladrón
 		loadPlayerCarKeys(playerid); // Llavero del usuario
 		LoadInvInfo(playerid); // Info de su inventario
-		LoadHandInfo(playerid, HAND_RIGHT); // Info de lo que tiene en mano
-		LoadHandInfo(playerid, HAND_LEFT);
+		LoadHandsInfo(playerid); // Info de lo que tiene en las manos
 		LoadToysInfo(playerid); // Toys
 		
        	CreatePlayerBasicNeeds(playerid);
@@ -8697,7 +8697,7 @@ CMD:ayuda(playerid,params[]) {
 
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /comprar /clasificado /pagar /id /admins /toy");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /comprar /clasificado /pagar /id /admins /toy");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
@@ -11652,19 +11652,14 @@ CMD:intentar(playerid, params[])
 
 stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 {
- 	new itemid = GetHandItem(playerid, playerhand), str[128], targethand;
+ 	new itemid = GetHandItem(playerid, playerhand),
+	 	str[128],
+		targethand;
  
-	if(PlayerInfo[playerid][pLevel] < 3)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
+	if(itemid == 0)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en tu mano.");
     if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
-	if(itemid == 0)
-	{
-	    if(playerhand == HAND_RIGHT)
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano derecha.");
-		else
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano izquierda.");
-	}
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 	if(GetItemType(itemid) == ITEM_WEAPON)
@@ -11689,17 +11684,6 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
 	return 1;
 }
-	
-CMD:dari(playerid, params[])
-{
-	new targetid;
-	
-	if(sscanf(params, "u", targetid))
-		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dari [ID/Jugador]");
-
-	GiveItemFromPlayerToPlayer(playerid, HAND_LEFT, targetid);
-	return 1;
-}
 
 CMD:dar(playerid, params[])
 {
@@ -11709,6 +11693,17 @@ CMD:dar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dar [ID/Jugador]");
 
 	GiveItemFromPlayerToPlayer(playerid, HAND_RIGHT, targetid);
+	return 1;
+}
+
+CMD:dari(playerid, params[])
+{
+	new targetid;
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dari [ID/Jugador]");
+
+	GiveItemFromPlayerToPlayer(playerid, HAND_LEFT, targetid);
 	return 1;
 }
 

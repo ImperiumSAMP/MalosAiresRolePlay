@@ -16,18 +16,13 @@ CMD:maletin(playerid, params[])
 	new command[40], amount, hand, briefCaseMoney;
 
 	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_MALETIN)
-	{
 		hand = HAND_RIGHT;
-		briefCaseMoney = GetHandParam(playerid, HAND_RIGHT);
-	}
 	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_MALETIN)
-	{
 	    hand = HAND_LEFT;
-	    briefCaseMoney = GetHandParam(playerid, HAND_LEFT);
-	}
 	else
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes un maletin en alguna de tus manos.");
-		
+
+ 	briefCaseMoney = GetHandParam(playerid, hand);
 	if(sscanf(params, "s[40]i", command, amount))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /maletin [comando]");
