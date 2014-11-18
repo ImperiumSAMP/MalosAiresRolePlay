@@ -157,18 +157,18 @@ public Reparacion(playerid)
 
 	if(GetPlayerCash(playerid) >= RepairPrice[playerid])
 	{
-		if(RepairProducts[playerid] > 0 && (GetHandItem(mechanic) != ITEM_ID_REPUESTOAUTO || GetHandParam(mechanic) < RepairProducts[playerid]))
+		if(RepairProducts[playerid] > 0 && (GetHandItem(mechanic, HAND_RIGHT) != ITEM_ID_REPUESTOAUTO || GetHandParam(mechanic, HAND_RIGHT) < RepairProducts[playerid]))
 	    {
-	        SendFMessage(mechanic, COLOR_YELLOW2, "El vehículo está muy dañado: para repararlo necesitas %d repuesto/s nuevos en la mano.", RepairProducts[playerid]);
+	        SendFMessage(mechanic, COLOR_YELLOW2, "El vehículo está muy dañado: para repararlo necesitas %d repuesto/s nuevos en la mano derecha.", RepairProducts[playerid]);
 			SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no tiene a mano los repuestos necesarios para reparar tu vehículo.");
 		} else
 		    {
 				if(RepairProducts[playerid] > 0)
 	   			{
-					if(GetHandParam(mechanic) == RepairProducts[playerid])
-					    SetHandItemAndParam(mechanic, 0, 0);
+					if(GetHandParam(mechanic, HAND_RIGHT) == RepairProducts[playerid])
+					    SetHandItemAndParam(mechanic, HAND_RIGHT, 0, 0);
 					else
-					  	 SetHandItemAndParam(mechanic, ITEM_ID_REPUESTOAUTO, GetHandParam(mechanic) - RepairProducts[playerid]);
+					  	 SetHandItemAndParam(mechanic, HAND_RIGHT, ITEM_ID_REPUESTOAUTO, GetHandParam(mechanic, HAND_RIGHT) - RepairProducts[playerid]);
 					FactionInfo[FAC_MECH][fBank] += RepairProducts[playerid] * GetItemPrice(ITEM_ID_REPUESTOAUTO);
 				}
 				RepairVehicle(vehicleid);
@@ -277,7 +277,7 @@ CMD:mecequipo(playerid, params[])
 
 CMD:meccomprar(playerid, params[])
 {
-	new cant;
+	new cant, hand;
 	
  	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
@@ -285,8 +285,12 @@ CMD:meccomprar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /meccomprar [Cantidad de repuestos]");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, MEC_CARPART_SHOP_X, MEC_CARPART_SHOP_Y, MEC_CARPART_SHOP_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar repuestos en cualquier lado.");
-	if(GetHandItem(playerid) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
+	if(GetHandItem(playerid, HAND_RIGHT) == 0)
+	    hand = HAND_RIGHT;
+	else if(GetHandItem(playerid, HAND_LEFT) == 0)
+	    hand = HAND_LEFT;
+	else
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(cant < 1 || cant > 15)
@@ -297,7 +301,7 @@ CMD:meccomprar(playerid, params[])
 		return 1;
 	}
 
-	SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, cant);
+	SetHandItemAndParam(playerid, hand, ITEM_ID_REPUESTOAUTO, cant);
 	GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant);
 	SendFMessage(playerid, COLOR_WHITE, "Has comprado %d repuestos a un precio de $%d.", cant, GetItemPrice(ITEM_ID_REPUESTOAUTO) * cant);
 	return 1;
@@ -305,29 +309,31 @@ CMD:meccomprar(playerid, params[])
 
 CMD:mecguardar(playerid, params[])
 {
-	new string[128];
+	new string[128], hand;
 	
  	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
-	if(GetHandItem(playerid) != ITEM_ID_REPUESTOAUTO)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún repuesto en la mano para guardar en el deposito del taller.");
+	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_REPUESTOAUTO)
+		hand = HAND_RIGHT;
+	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_REPUESTOAUTO)
+		hand = HAND_LEFT;
+	else
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún repuesto en alguna de tus manos para guardar en el deposito del taller.");
 	if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de repuestos y tuning.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 
-	format(string, sizeof(string), "[Taller Mecánico]: %s ha guardado %d repuestos en el depósito del taller.", GetPlayerNameEx(playerid), GetHandParam(playerid));
+	format(string, sizeof(string), "[Taller Mecánico]: %s ha guardado %d repuestos en el depósito del taller.", GetPlayerNameEx(playerid), GetHandParam(playerid, hand));
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
-	FactionInfo[FAC_MECH][fMaterials] += GetHandParam(playerid);
-	SetHandItemAndParam(playerid, 0, 0);
+	FactionInfo[FAC_MECH][fMaterials] += GetHandParam(playerid, hand);
+	SetHandItemAndParam(playerid, hand, 0, 0);
 	return 1;
 }
 
 CMD:mecretirar(playerid, params[])
 {
-	new
-		cant,
-		string[128];
+	new cant, string[128], hand;
 
  	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
@@ -335,7 +341,11 @@ CMD:mecretirar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mecretirar [Cantidad de repuestos]");
 	if(cant < 1 || cant > 10)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes retirar hasta 10 repuestos del deposito.");
-	if(GetHandItem(playerid) != 0)
+	if(GetHandItem(playerid, HAND_RIGHT) == 0)
+	    hand = HAND_RIGHT;
+	else if(GetHandItem(playerid, HAND_LEFT) == 0)
+	    hand = HAND_LEFT;
+	else
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
 	if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de repuestos y tuning.");
@@ -349,7 +359,7 @@ CMD:mecretirar(playerid, params[])
 	format(string, sizeof(string), "[Taller Mecánico]: %s ha retirado %d repuestos del depósito del taller.", GetPlayerNameEx(playerid), cant);
 	SendFactionMessage(FAC_MECH, COLOR_WHITE, string);
 	FactionInfo[FAC_MECH][fMaterials] -= cant;
-	SetHandItemAndParam(playerid, ITEM_ID_REPUESTOAUTO, cant);
+	SetHandItemAndParam(playerid, hand, ITEM_ID_REPUESTOAUTO, cant);
 	return 1;
 }
 
@@ -384,11 +394,7 @@ CMD:mecremolcar(playerid, params[])
 
 CMD:mecreparar(playerid,params[])
 {
-	new
-		target,
-		vehicleid,
-		repuestos,
-		price;
+	new target, vehicleid, repuestos, price;
 
     if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
@@ -406,7 +412,8 @@ CMD:mecreparar(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
 	vehicleid = GetPlayerVehicleID(target);
     repuestos = GetRepairMaterialCost(vehicleid);
-    if(repuestos > 0 && (GetHandItem(playerid) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid) < repuestos))
+    if(repuestos > 0 && (GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid, HAND_RIGHT) < repuestos)
+		&& (GetHandItem(playerid, HAND_LEFT) != ITEM_ID_REPUESTOAUTO || GetHandParam(playerid, HAND_LEFT) < repuestos))
     {
         SendFMessage(playerid, COLOR_YELLOW2, "El vehículo está muy dañado: para repararlo necesitas %d repuesto/s nuevos en la mano.", repuestos);
 		return 1;

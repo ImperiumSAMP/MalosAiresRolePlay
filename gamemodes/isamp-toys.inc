@@ -285,12 +285,12 @@ CMD:toy(playerid, params[])
     } else {
         if(strcmp(cmd, "equipar", true) == 0) {
         
-			new itemid = GetHandItem(playerid);
+			new itemid = GetHandItem(playerid, HAND_RIGHT);
 			
 			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 			if(itemid == 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano para equiparte.");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano derecha para equiparte.");
 			if(GetItemType(itemid) != ITEM_TOY)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes equiparte ese item (No es del tipo TOY).");
 			index = SearchToyFreeIndex(playerid);
@@ -300,8 +300,8 @@ CMD:toy(playerid, params[])
 			new str[128];
 			format(str, sizeof(str), "se equipa un/a %s.", GetItemName(itemid));
 			PlayerActionMessage(playerid, 15.0, str);
-			SetToyItemAndParam(playerid, index, itemid, GetHandParam(playerid));
-			SetHandItemAndParam(playerid, 0, 0);
+			SetToyItemAndParam(playerid, index, itemid, GetHandParam(playerid, HAND_RIGHT));
+			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 			
 		} else if(strcmp(cmd, "desequipar", true) == 0) {
 		
@@ -309,13 +309,13 @@ CMD:toy(playerid, params[])
 		    
 			if(itemid == 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Index inválido.");
-   			if(GetHandItem(playerid) != 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo ya que tienes otro item en tu mano.");
+   			if(GetHandItem(playerid, HAND_RIGHT) != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo ya que tienes otro item en tu mano derecha.");
 
 			new str[128];
 			format(str, sizeof(str), "se saca su/s %s.", GetItemName(itemid));
 			PlayerActionMessage(playerid, 15.0, str);
-			SetHandItemAndParam(playerid, itemid, GetToyParam(playerid, index));
+			SetHandItemAndParam(playerid, HAND_RIGHT, itemid, GetToyParam(playerid, index));
 			SetToyItemAndParam(playerid, index, 0, 0);
 
 		} else if(strcmp(cmd, "editar", true) == 0) {

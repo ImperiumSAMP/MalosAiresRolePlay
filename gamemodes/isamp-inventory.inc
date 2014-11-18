@@ -155,45 +155,40 @@ CMD:inventario(playerid, params[])
     } else {
 		if(strcmp(text, "tomar", true) == 0) {
 		
-			new
-                itemslot = returnid,
+			new itemslot = returnid,
 				itemid = GetInvItem(playerid, itemslot),
-				itemparam = GetInvParam(playerid, itemslot);
+				itemparam = GetInvParam(playerid, itemslot),
+				str[128];
 
-			switch(GetItemType(itemid))
+			if(itemid <= 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+
+			if(GetHandItem(playerid, HAND_RIGHT) == 0)
 			{
-			    case ITEM_WEAPON:
-				{
-		            GivePlayerWeapon(playerid, itemid, itemparam);
-		            SetInvItemAndParam(playerid, itemslot, 0, 0);
-				}
-	            case ITEM_OTHER, ITEM_TOY:
-	            {
-					if(GetHandItem(playerid) != 0)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");
-					if(!HasItemInvPermission(itemid)) // Si el item en inventario es un item que no se puede guardar manualmente en el inventario (como el casco, pero que el sistema lo guarda allí)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-
-					new str[128];
-					format(str, sizeof(str), "toma un/a %s de su inventario con su mano.", GetItemName(itemid));
-					PlayerActionMessage(playerid, 15.0, str);
-					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica y grafica en la mano.
-     				SetInvItemAndParam(playerid, itemslot, 0, 0); // Borrado lógico del item del inventario.
-				}
-				default:
-					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+                SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+                format(str, sizeof(str), "toma un/a %s de su inventario con la mano derecha.", GetItemName(itemid));
 			}
+			else if(GetHandItem(playerid, HAND_LEFT) == 0)
+			{
+			    SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
+			    format(str, sizeof(str), "toma un/a %s de su inventario con la mano izquierda.", GetItemName(itemid));
+			}
+			else
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes ambas manos ocupadas.");
+
+			PlayerActionMessage(playerid, 15.0, str);
+			SetInvItemAndParam(playerid, itemslot, 0, 0); // Borrado lógico del item del inventario.
 
 	    } else if(strcmp(text, "desechar", true) == 0) {
 
-			new
-				itemid = GetInvItem(playerid, returnid),
+			new itemid = GetInvItem(playerid, returnid),
 				string[128];
 			
 	        if(PlayerInfo[playerid][pHealth] < 25.0)
 	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
 	        if(itemid == 0 || itemid == -1)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+	            
       		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
             PlayerActionMessage(playerid, 8.0, string);
 			SetInvItemAndParam(playerid, returnid, 0, 0);
@@ -207,16 +202,12 @@ CMD:inventario(playerid, params[])
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 			if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
     			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
-    			
-			// Primero nos fijamos si tiene un arma (falta asignar logicamente las armas a las manos, ya que por ahora están fuera de ese modelo)
-			new
-				itemid = GetPlayerWeapon(playerid),
-				validslot;
-			// Ahora, si no tiene un arma, nos fijamos si tiene algun item en la mano que quiera guardar
-			if(GetItemType(itemid) != ITEM_WEAPON)
-			    itemid = GetHandItem(playerid);
-   			if(itemid == 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus manos!");
+
+			new validslot,
+				itemid = GetHandItem(playerid, HAND_RIGHT);
+			
+			if(itemid == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus mano derecha para guardar!");
  			if(!HasItemInvPermission(itemid))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
 
@@ -233,17 +224,10 @@ CMD:inventario(playerid, params[])
 			       	if(GetInvItem(playerid, validslot) != 0)
 			       	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 				}
-			// Nueva comprobación para ver en cual caso era en el que entramos (ya que al no estar integrado todavia las armas a sistema de mano, es necesario)
-            if(GetItemType(itemid) == ITEM_WEAPON)
-            {
-				SetInvItemAndParam(playerid, validslot, itemid, GetPlayerAmmo(playerid));
-				RemovePlayerWeapon(playerid, itemid);
-			} else
-			    {
-					SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid));
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico de la mano.
-					SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
-				}
+
+   			SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid, HAND_RIGHT));
+			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico de la mano.
+			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
   			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
 		}

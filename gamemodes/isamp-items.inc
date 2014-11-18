@@ -70,8 +70,12 @@
 #define BONE_ID_LEFTHAND        5
 #define BONE_ID_RIGHTHAND       6
 
-#define INDEX_ID_HAND      		9 // Por ahora se elige este index arbitrario para manejar la mano. Del 0 al 8 es utilizado por el sistema de toys.
-#define INDEX_ID_MASK        	8 // Temporal definicion arbitraria para la mascara hasta encontrar un traspaso adecuado al sistema de toys o items
+#define INDEX_ID_HAND_LEFT      9 // Por ahora se elige este index arbitrario para manejar la mano. Del 0 al 7 es utilizado por el sistema de toys.
+#define INDEX_ID_HAND_RIGHT     8
+#define INDEX_ID_MASK        	7 // Temporal definicion arbitraria para la mascara hasta encontrar un traspaso adecuado al sistema de toys o items
+
+#define HAND_LEFT             	0
+#define HAND_RIGHT              1
 
 //==============================DATA STORAGE====================================
 
@@ -205,9 +209,6 @@ forward GetItemParamName(itemid); // Devuelve un string con el nombre del parame
 forward GetItemPrice(itemid); // Devuelve el precio base unitario del item.
 forward GetItemAttachBone(itemid);
 
-forward LoadVisibleItemsForPlayer(playerid); // Crea los objetos visibles y que estén en el inventario/equipados (no en mano).
-forward DeleteItemForPlayer(playerid, itemid); // Borra el item visible que no está en la mano del jugador seleccionado.
-
 forward Float:GetItemXPos(itemid); //Devuelve la posición X del objeto en BONE_ID_LEFTHAND.
 forward Float:GetItemYPos(itemid); //Devuelve la posición Y del objeto en BONE_ID_LEFTHAND.
 forward Float:GetItemZPos(itemid); //Devuelve la posición Z del objeto en BONE_ID_LEFTHAND.
@@ -215,8 +216,8 @@ forward Float:GetItemRxPos(itemid); //Devuelve la posición RX del objeto en BONE
 forward Float:GetItemRyPos(itemid); //Devuelve la posición RY del objeto en BONE_ID_LEFTHAND.
 forward Float:GetItemRzPos(itemid); //Devuelve la posición RZ del objeto en BONE_ID_LEFTHAND.
 
-forward LoadHandItem(playerid); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
-forward DeleteHandItem(playerid); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
+forward LoadHandItem(playerid, hand); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
+forward DeleteHandItem(playerid, hand); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -289,20 +290,26 @@ stock GetItemPrice(itemid)
 	return ServerItems[itemid][BasePrice];
 }
 
-stock LoadHandItem(playerid)
+stock LoadHandItem(playerid, hand)
 {
-	new itemid = GetHandItem(playerid);
+	new itemid = GetHandItem(playerid, hand);
 
 	if(GetItemType(itemid) != ITEM_WEAPON && GetItemObjectModel(itemid) != 0) // Las armas no porque SAMP las attachea al setear una. Y si posee un objeto visible asociado.
 	{
-		SetPlayerAttachedObject(playerid, INDEX_ID_HAND, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
+	    if(hand == HAND_LEFT)
+			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
+		else
+		    SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
 	}
 	return 1;
 }
 
-stock DeleteHandItem(playerid)
+stock DeleteHandItem(playerid, hand)
 {
-	RemovePlayerAttachedObject(playerid, INDEX_ID_HAND);
+	if(hand == HAND_LEFT)
+		RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
+	else
+	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
 	return 1;
 }
 

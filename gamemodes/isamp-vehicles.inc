@@ -989,12 +989,9 @@ CMD:mal(playerid, params[]) {
 	return 1;
 }
         
-CMD:maletero(playerid, params[]) {
-	new
-	    vehicleid,
-	    returnstr[32],
-	    returnid2,
-	    text[128];
+CMD:maletero(playerid, params[])
+{
+	new vehicleid, returnstr[32], returnid2, text[128];
 
     vehicleid = GetClosestVehicle(playerid, 5.0);
     if(IsPlayerInAnyVehicle(playerid))
@@ -1140,35 +1137,34 @@ CMD:maletero(playerid, params[]) {
     		
 	    } else if(strcmp(text, "tomar", true) == 0) {
 	    
-			new
-			    itemslot = strval(returnstr),
+			new itemslot = strval(returnstr),
 				itemid = GetTrunkItem(vehicleid, itemslot),
-				itemparam = GetTrunkParam(vehicleid, itemslot);
+				itemparam = GetTrunkParam(vehicleid, itemslot),
+				str[128];
 
-			switch(GetItemType(itemid))
+			if(itemid <= 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+			    
+			if(GetHandItem(playerid, HAND_RIGHT) == 0)
 			{
-			    case ITEM_WEAPON:
-				{
-			           GivePlayerWeapon(playerid, itemid, itemparam);
-			           SetTrunkItemAndParam(vehicleid, itemslot, 0 ,0);
-				}
-		        case ITEM_OTHER, ITEM_TOY:
-		        {
-					if(GetHandItem(playerid) != 0)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo en tus manos!");
-
-					new str[128];
-					format(str, sizeof(str), "toma un/a %s del maletero con su mano.", GetItemName(itemid));
-					PlayerActionMessage(playerid, 15.0, str);
-					SetHandItemAndParam(playerid, itemid, itemparam); // Creación lógica y grafica.
-	   				SetTrunkItemAndParam(vehicleid, itemslot, 0, 0); // Borrado lógico del item del maletero.
-				}
-				default:
-					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+                SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+                format(str, sizeof(str), "toma un/a %s del maletero con la mano derecha.", GetItemName(itemid));
 			}
+			else if(GetHandItem(playerid, HAND_LEFT) == 0)
+			{
+			    SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
+			    format(str, sizeof(str), "toma un/a %s del maletero con la mano izquierda.", GetItemName(itemid));
+			}
+			else
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes ambas manos ocupadas.");
+
+			PlayerActionMessage(playerid, 15.0, str);
+			SetTrunkItemAndParam(vehicleid, itemslot, 0, 0);
 	        
 	    } else if(strcmp(text, "guardar", true) == 0) {
-	    
+
+            if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
     		if(PlayerInfo[playerid][pHealth] < 25)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
 	        if(PlayerInfo[playerid][pLevel] < 3)
@@ -1178,18 +1174,12 @@ CMD:maletero(playerid, params[]) {
 			if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
-			new
-				itemid = GetPlayerWeapon(playerid),
-				validslot = strval(returnstr);
+			new validslot = strval(returnstr),
+				itemid = GetHandItem(playerid, HAND_RIGHT),
+				str[128];
 
-			if(GetItemType(itemid) == ITEM_WEAPON)
-			{
-				if(itemid < 1 || (itemid > 34 && itemid != 43))
-			    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-			} else 	// Ahora, si no tiene un arma, nos fijamos si tiene algun item en la mano que quiera guardar
-			    itemid = GetHandItem(playerid);
-	   		if(itemid == 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus manos!");
+			if(itemid == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes nada en tus mano derecha para guardar!");
 
 			if(validslot == -1)
 			{
@@ -1203,59 +1193,57 @@ CMD:maletero(playerid, params[]) {
 	   	    		if(GetTrunkItem(vehicleid, validslot) != 0)
 						return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 				}
-				
-			// Nueva comprobación para ver en cual caso era en el que entramos (ya que al no estar integrado todavia las armas a sistema de mano, es necesario)
-	  		if(GetItemType(itemid) == ITEM_WEAPON)
-	        {
-				SetTrunkItemAndParam(vehicleid, validslot, itemid, GetPlayerAmmo(playerid));
-				RemovePlayerWeapon(playerid, itemid);
-			} else
-			    {
-					SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid));
-					SetHandItemAndParam(playerid, 0, 0); // Borrado lógico y grafico.
-					new str[128];
-					format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
-					PlayerActionMessage(playerid, 15.0, str);
-				}
-	  		SetPVarInt(playerid, "cantSaveItems", 1);
+
+			SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid, HAND_RIGHT));
+			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
+			format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
+  			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
 	    }
 	}
 	return 1;
 }
 
-CMD:usarbidon(playerid, params[]) {
-	new
-	    gasAmount,
+CMD:usarbidon(playerid, params[])
+{
+	new gasAmount,
 		refillAmount,
-		vehicleid;
+		vehicleid = GetClosestVehicle(playerid, 4.0),
+		hand;
 
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar fuera del vehículo.");
-	gasAmount = GetHandParam(playerid);
-	if(GetHandItem(playerid) != ITEM_ID_BIDON || gasAmount <= 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un bidón con algo de combustible para utilizar este comando.");
-		
-	vehicleid = GetClosestVehicle(playerid, 4.0);
-	if(vehicleid != INVALID_VEHICLE_ID) {
-		TogglePlayerControllable(playerid, false);
-        refillAmount = 100 - VehicleInfo[vehicleid][VehFuel];
-        if(refillAmount >= gasAmount) {
-            SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, VehicleInfo[vehicleid][VehFuel] + gasAmount));
-            GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
-			SetHandItemAndParam(playerid, ITEM_ID_BIDON, 0);
-			PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía todo el contenido del bidón dentro.");
-            SendFMessage(playerid, COLOR_WHITE, "Has vaciado el bidón, tu vehículo ahora tiene un %d por ciento de combustible.", VehicleInfo[vehicleid][VehFuel]);
-        } else {
-            SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, 100));
-            GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
-            SetHandItemAndParam(playerid, ITEM_ID_BIDON, gasAmount - refillAmount);
-            PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía parte del bidón dentro.");
-            SendFMessage(playerid, COLOR_WHITE, "Has llenado el tanque de tu vehículo tu bidón ahora tiene un %d por ciento de combustible.", GetHandParam(playerid));
-        }
-	} else {
-	    SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
+	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BIDON && GetHandParam(playerid, HAND_RIGHT) > 0)
+	{
+	    hand = HAND_RIGHT;
+	    gasAmount = GetHandParam(playerid, HAND_RIGHT);
 	}
+	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_BIDON && GetHandParam(playerid, HAND_LEFT) > 0)
+	{
+	    hand = HAND_LEFT;
+	    gasAmount = GetHandParam(playerid, HAND_LEFT);
+	}
+	else
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un bidón con algo de combustible en alguna de tus manos para utilizar este comando.");
+	if(vehicleid == INVALID_VEHICLE_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
+		
+	TogglePlayerControllable(playerid, false);
+    refillAmount = 100 - VehicleInfo[vehicleid][VehFuel];
+    if(refillAmount >= gasAmount) {
+        SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, VehicleInfo[vehicleid][VehFuel] + gasAmount));
+        GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
+		SetHandItemAndParam(playerid, hand, ITEM_ID_BIDON, 0);
+		PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía todo el contenido del bidón dentro.");
+        SendFMessage(playerid, COLOR_WHITE, "Has vaciado el bidón, tu vehículo ahora tiene un %d%% de combustible.", VehicleInfo[vehicleid][VehFuel]);
+	} else {
+        SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, 100));
+        GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
+        SetHandItemAndParam(playerid, hand, ITEM_ID_BIDON, gasAmount - refillAmount);
+        PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía parte del bidón dentro.");
+        SendFMessage(playerid, COLOR_WHITE, "Has llenado el tanque de tu vehículo. Tu bidón ahora tiene un %d%% de combustible.", GetHandParam(playerid, hand));
+    }
 	return 1;
 }
 
