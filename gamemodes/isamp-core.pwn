@@ -3313,20 +3313,22 @@ public antiCheatTimer()
 		    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
 		    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					}
+					else
+					{
+						if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
+					    {
+					        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
+		    				AdministratorMessage(COLOR_WHITE, string, 1);
+		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+					    }
+					    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
+			    			SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
+					}
 				}
 				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
 				{
 				    if(weapon != GetHandItem(playerid, HAND_RIGHT))
 				    	SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
-
-				    if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
-				    {
-				        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
-	    				AdministratorMessage(COLOR_WHITE, string, 1);
-	    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
-				    }
-				    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
-		    			SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
 				}
 			}
 
