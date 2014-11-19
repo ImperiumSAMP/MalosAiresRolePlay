@@ -95,13 +95,13 @@ stock ResetHands(playerid)
 
 stock ResetAndSaveHands(playerid)
 {
-	if(HandInfo[playerid][HAND_LEFT][Item] > 0)
+	if(HandInfo[playerid][HAND_LEFT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_WEAPON)
 	{
 		HandInfo[playerid][HAND_LEFT][Item] = 0;
 		HandInfo[playerid][HAND_LEFT][Amount] = 0;
         SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_LEFT);
 	}
-	if(HandInfo[playerid][HAND_RIGHT][Item] > 0)
+	if(HandInfo[playerid][HAND_RIGHT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_WEAPON)
 	{
 		HandInfo[playerid][HAND_RIGHT][Item] = 0;
 		HandInfo[playerid][HAND_RIGHT][Amount] = 0;
@@ -158,6 +158,8 @@ stock SynchronizeWeaponAmmo(playerid, ammo)
 	    cantSaveSync[playerid] = true;
 		SetTimerEx("CantSaveSyncTimer", 2000, false, "i", playerid);
 	}
+	if(ammo <= 0) // Se le terminó el arma
+	    SetInvItemAndParam(playerid, HAND_RIGHT, 0, 0);
 }
 
 //==================================COMANDOS====================================
