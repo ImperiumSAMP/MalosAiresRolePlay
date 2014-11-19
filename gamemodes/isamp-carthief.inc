@@ -35,11 +35,8 @@ public UsarBarreta(playerid, vehicleid)
     TogglePlayerControllable(playerid, true);
     SetPVarInt(playerid, "disabled", DISABLE_NONE);
 
-	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BARRETA)
-	    hand = HAND_RIGHT;
- 	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_BARRETA)
- 	    hand = HAND_LEFT;
-    else
+    hand = SearchHandsForItem(playerid, ITEM_ID_BARRETA);
+    if(hand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus alguna de tus manos.");
 
 	if(random(10) > 4)
@@ -107,7 +104,7 @@ CMD:barreta(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en este momento!");
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
-	if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_BARRETA && GetHandItem(playerid, HAND_LEFT) != ITEM_ID_BARRETA)
+	if(SearchHandsForItem(playerid, ITEM_ID_BARRETA) == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus alguna de tus manos.");
 	if(vehicleid == INVALID_VEHICLE_ID)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningun vehiculo.");
@@ -171,7 +168,7 @@ CMD:desarmar(playerid, params[])
 {
 	new vehicleid = GetPlayerVehicleID(playerid),
 		Float:vehiclehp,
-		hand,
+		freehand,
 		repuestos;
 
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
@@ -193,16 +190,13 @@ CMD:desarmar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_WHITE, "Comprador: Olvídalo, ese vehículo no me interesa. (OOC: Solo puedes desarmar vehículos personales)");
 	if(playerHasCarKey(playerid, vehicleid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desarmar un auto del cual tienes las llaves.");
-	if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	    hand = HAND_RIGHT;
- 	else if(GetHandItem(playerid, HAND_LEFT) == 0)
- 	    hand = HAND_LEFT;
-    else
+	freehand = SearchFreeHand(playerid);
+	if(freehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tus manos ocupadas y no puedes agarrar los repuestos.");
 
  	GetVehicleHealth(vehicleid, vehiclehp);
     repuestos = floatround(vehiclehp) / GetItemPrice(ITEM_ID_REPUESTOAUTO) * 3; // Entrega una cantidad de repuestos proporcional al buen estado (hp) del auto
-    SetHandItemAndParam(playerid, hand, ITEM_ID_REPUESTOAUTO, repuestos);
+    SetHandItemAndParam(playerid, freehand, ITEM_ID_REPUESTOAUTO, repuestos);
     HideStolenCar(vehicleid);
     PlayerActionMessage(playerid, 15.0, "le entrega el vehículo al empleado del compactador de basura para que lo desarme y demuela.");
     SendFMessage(playerid, COLOR_WHITE, "Comprador: Bien, aquí tienes %d piezas de repuesto que pude sacarle al auto.", repuestos);

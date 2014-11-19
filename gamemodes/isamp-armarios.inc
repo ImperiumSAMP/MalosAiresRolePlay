@@ -418,6 +418,6 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 	format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
 	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
 }

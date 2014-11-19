@@ -15,11 +15,8 @@ CMD:maletin(playerid, params[])
 {
 	new command[40], amount, hand, briefCaseMoney;
 
-	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_MALETIN)
-		hand = HAND_RIGHT;
-	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_MALETIN)
-	    hand = HAND_LEFT;
-	else
+	hand = SearchHandsForItem(playerid, ITEM_ID_MALETIN);
+	if(hand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes un maletin en alguna de tus manos.");
 
  	briefCaseMoney = GetHandParam(playerid, hand);

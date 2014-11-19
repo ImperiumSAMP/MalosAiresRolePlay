@@ -1126,7 +1126,7 @@ ShowPlayerHardBizDialog(playerid, biz)
 
 public OnPlayerBuyHardDialog(playerid, listitem)
 {
-	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128];
+	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
 
  	if(biz == 0)
     	return 1;
@@ -1136,19 +1136,12 @@ public OnPlayerBuyHardDialog(playerid, listitem)
 
 	if(GetPlayerCash(playerid) < itemprice)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
-	if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	{
-        SetHandItemAndParam(playerid, HAND_RIGHT, itemid, 1); // Creación lógica y grafica en la mano.
-    	format(str, sizeof(str), "compra un/a %s y lo agarra con la mano derecha.", GetItemName(itemid));
-	}
-	else if(GetHandItem(playerid, HAND_LEFT) == 0)
-	{
-	    SetHandItemAndParam(playerid, HAND_LEFT, itemid, 1); // Creación lógica y grafica en la mano.
-	    format(str, sizeof(str), "compra un/a %s y lo agarra con la mano izquierda.", GetItemName(itemid));
-	}
-	else
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
+	freehand = SearchFreeHand(playerid);
+	if(freehand == -1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
+	SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
+	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice;
     Business[biz][bProducts] --;
@@ -1185,7 +1178,7 @@ ShowPlayerAccessBizDialog(playerid, biz)
 
 public OnPlayerBuyAccessDialog(playerid, listitem)
 {
-	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128];
+	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
 
  	if(biz == 0)
     	return 1;
@@ -1195,19 +1188,12 @@ public OnPlayerBuyAccessDialog(playerid, listitem)
 
 	if(GetPlayerCash(playerid) < itemprice)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
-	if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	{
-        SetHandItemAndParam(playerid, HAND_RIGHT, itemid, 1); // Creación lógica y grafica en la mano.
-    	format(str, sizeof(str), "compra un/a %s y lo agarra con la mano derecha.", GetItemName(itemid));
-	}
-	else if(GetHandItem(playerid, HAND_LEFT) == 0)
-	{
-	    SetHandItemAndParam(playerid, HAND_LEFT, itemid, 1); // Creación lógica y grafica en la mano.
-	    format(str, sizeof(str), "compra un/a %s y lo agarra con la mano izquierda.", GetItemName(itemid));
-	}
-	else
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
+	freehand = SearchFreeHand(playerid);
+	if(freehand == -1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
+	SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
+	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice;
     Business[biz][bProducts] --;
@@ -1264,7 +1250,7 @@ ShowAmmuCatalog(playerid)
 
 public OnPlayerBuyAmmu(biz, playerid, params[])
 {
-	new option, param, itemid, itemprice, str[128];
+	new option, param, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
@@ -1285,19 +1271,12 @@ public OnPlayerBuyAmmu(biz, playerid, params[])
 		SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", itemprice);
 		return 1;
 	}
-	if(GetHandItem(playerid, HAND_RIGHT) == 0)
-	{
-        SetHandItemAndParam(playerid, HAND_RIGHT, itemid, param); // Creación lógica y grafica en la mano.
-    	format(str, sizeof(str), "compra un/a %s y lo agarra con la mano derecha.", GetItemName(itemid));
-	}
-	else if(GetHandItem(playerid, HAND_LEFT) == 0)
-	{
-	    SetHandItemAndParam(playerid, HAND_LEFT, itemid, param); // Creación lógica y grafica en la mano.
-	    format(str, sizeof(str), "compra un/a %s y lo agarra con la mano izquierda.", GetItemName(itemid));
-	}
-	else
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
+	freehand = SearchFreeHand(playerid);
+	if(freehand == -1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
+	SetHandItemAndParam(playerid, freehand, itemid, param); // Creación lógica y grafica en la mano.
+	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice / 2;
     Business[biz][bProducts] --;

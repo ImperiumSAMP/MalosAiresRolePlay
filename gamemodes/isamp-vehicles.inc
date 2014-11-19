@@ -1044,7 +1044,7 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 	format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
   	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
 }
 

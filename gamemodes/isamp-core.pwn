@@ -3323,7 +3323,7 @@ public antiCheatTimer()
     				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 			    }
 			    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
-			        SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), GetPlayerAmmo(playerid));
+			    	SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
@@ -4843,7 +4843,7 @@ strtok(string[],&idx,seperator = ' ')
 	return ret;
 }
 
-//=====================================================[SERVERSIDE WEAPON FUNCTIONS===========================================
+//=====================================================[SERVERSIDE WEAPON FUNCTIONS]===========================================
 
 stock bool:GivePlayerGun(playerid, weapon, ammo)
 {
@@ -4867,7 +4867,7 @@ stock bool:RemovePlayerGun(playerid, weapon)
 	return true; // Se sacó el arma, en orden mano derecha - mano izquierda
 }
 
-//=====================================================[SERVERSIDE CASH FUNCTIONS=============================================
+//=====================================================[SERVERSIDE CASH FUNCTIONS]=============================================
 
 stock GivePlayerCash(playerid, money) {
 	PlayerInfo[playerid][pCash] += money;
@@ -7185,15 +7185,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_BIDON))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new hand;
-						if(GetHandItem(playerid, HAND_RIGHT) == 0)
-						    hand = HAND_RIGHT;
-						else if(GetHandItem(playerid, HAND_LEFT) == 0)
-						    hand = HAND_LEFT;
-						else
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes ambas manos ocupadas.");
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, hand, ITEM_ID_BIDON, 0);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_BIDON, 0);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_BIDON));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bidón de combustible.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un bidón por $%d, utiliza '/bidon' para más información.", GetItemPrice(ITEM_ID_BIDON));
@@ -7203,13 +7199,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        }
 			     	case 5:
 					 {
-				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAMARA)*35)
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAMARA) * 35)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CAMARA)*35);
+						if(!GivePlayerGun(playerid, ITEM_ID_CAMARA, 35))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+							
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CAMARA) * 35);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cámara fotográfica.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado una cámara fotográfica por $%d.", GetItemPrice(ITEM_ID_CAMARA)*35);
-						GivePlayerGun(playerid, ITEM_ID_CAMARA, 35);
- 						Business[business][bTill] += GetItemPrice(ITEM_ID_CAMARA)*35;
+ 						Business[business][bTill] += GetItemPrice(ITEM_ID_CAMARA) * 35;
         				Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
@@ -7217,15 +7215,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_SANDWICH))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new hand;
-						if(GetHandItem(playerid, HAND_RIGHT) == 0)
-						    hand = HAND_RIGHT;
-						else if(GetHandItem(playerid, HAND_LEFT) == 0)
-						    hand = HAND_LEFT;
-						else
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes ambas manos ocupadas.");
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, hand, ITEM_ID_SANDWICH, 1);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_SANDWICH, 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
 						PlayerActionMessage(playerid, 15.0, "agarra un sandwich de jamon y queso y le paga al empleado su precio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
@@ -7237,15 +7231,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_AGUAMINERAL))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new hand;
-						if(GetHandItem(playerid, HAND_RIGHT) == 0)
-						    hand = HAND_RIGHT;
-						else if(GetHandItem(playerid, HAND_LEFT) == 0)
-						    hand = HAND_LEFT;
-						else
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes ambas manos ocupadas.");
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, hand, ITEM_ID_AGUAMINERAL, 1);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_AGUAMINERAL, 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_AGUAMINERAL));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_AGUAMINERAL));
@@ -7257,15 +7247,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MALETIN))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
- 						new hand;
-						if(GetHandItem(playerid, HAND_RIGHT) == 0)
-						    hand = HAND_RIGHT;
-						else if(GetHandItem(playerid, HAND_LEFT) == 0)
-						    hand = HAND_LEFT;
-						else
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes con qué agarrar el item ya que tienes ambas manos ocupadas.");
+ 						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, hand, ITEM_ID_MALETIN, 0);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_MALETIN, 0);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletin y lo agarra con su mano.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletin por $%d! Lo tienes en la mano. Usa /maletin para más información.", GetItemPrice(ITEM_ID_MALETIN));
@@ -9236,7 +9222,7 @@ CMD:comprar(playerid, params[])
 		// Mercado Negro
 		} else if(IsAtBlackMarket(playerid)) {
 
-			new item, option, cant, hand;
+			new item, option, cant, freehand;
 
 			if(sscanf(params, "ii", option, cant))
 			{
@@ -9244,12 +9230,9 @@ CMD:comprar(playerid, params[])
 				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d", GetItemPrice(ITEM_ID_BARRETA));
 				return 1;
 			}
-			if(GetHandItem(playerid, HAND_RIGHT) == 0)
-			    hand = HAND_RIGHT;
-			else if(GetHandItem(playerid, HAND_LEFT) == 0)
-			    hand = HAND_LEFT;
-   			else
-		   		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas.");
+			freehand = SearchFreeHand(playerid);
+			if(freehand == -1)
+		   		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar el item.");
 			if(cant < 1 || cant > 5)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 o mas de 5.");
    			switch(option)
@@ -9260,7 +9243,7 @@ CMD:comprar(playerid, params[])
 			if(GetPlayerCash(playerid) < GetItemPrice(item) * cant)
 			    return SendClientMessage(playerid, COLOR_WHITE, "Vendedor: Tomatela de acá y volvé cuando tengas el dinero.");
 
-			SetHandItemAndParam(playerid, hand, item, cant);
+			SetHandItemAndParam(playerid, freehand, item, cant);
 			GivePlayerCash(playerid, -GetItemPrice(item) * cant);
 			return 1;
 		
@@ -11676,7 +11659,7 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 {
  	new itemid = GetHandItem(playerid, playerhand),
 	 	str[128],
-		targethand;
+		targetfreehand;
  
 	if(itemid == 0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en tu mano.");
@@ -11691,14 +11674,11 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
 	}
-	if(GetHandItem(targetid, HAND_RIGHT) == 0)
-	    targethand = HAND_RIGHT;
-	else if(GetHandItem(targetid, HAND_LEFT) == 0)
-	    targethand = HAND_LEFT;
-	else
+	targetfreehand = SearchFreeHand(targetid);
+	if(targetfreehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
 
-	SetHandItemAndParam(targetid, targethand, itemid, GetHandParam(playerid, playerhand));
+	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0);
 	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
  	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
@@ -12204,7 +12184,8 @@ CMD:ensamblar(playerid, params[])
         SendFMessage(playerid, COLOR_YELLOW2, "Tu facción no cuenta con los materiales suficientes, necesitas %d piezas como mínimo y tienes %d.", mats, FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
 	else
 	{
-		GivePlayerWeapon(playerid, weapon, 50);
+		if(!GivePlayerGun(playerid, weapon, 50))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el arma ya que tienes ambas manos ocupadas.");
 		FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] -= mats;
 		SendFMessage(playerid, COLOR_WHITE, "Has ensamblado un/a %s con 50 municiones por %d piezas.", GetItemName(weapon), mats);
 	}
@@ -12679,8 +12660,8 @@ CMD:givegun(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La munición debe ser 1-999.");
 	if(weapon < 1 || weapon > 46)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
-
-    GivePlayerWeapon(targetid, weapon, ammo);
+    if(!GivePlayerGun(targetid, weapon, ammo))
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El usuario no tiene ninguna mano libre para agarrar el arma.");
 	return 1;
 }
 

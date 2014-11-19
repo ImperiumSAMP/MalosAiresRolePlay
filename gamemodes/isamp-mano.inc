@@ -12,6 +12,10 @@
 // #define HAND_LEFT             	0
 // #define HAND_RIGHT              1
 
+#define SAVE_UPDATE             1
+#define SAVE_CREATE             2
+#define SAVE_DESTROY            3
+
 //============================VARIABLES INTERNAS================================
 
 new HandInfo[MAX_PLAYERS][2][SlotInfo];
@@ -25,6 +29,9 @@ forward ResetHands(playerid);
 forward ResetAndSaveHands(playerid);
 forward PrintHandForPlayer(playerid, hand, targetid);
 forward LoadHandsInfo(playerid);
+forward SearchHandsForItem(playerid, itemid);
+forward SearchFreeHand(playerid);
+forward SynchronizeWeaponAmmo(playerid, ammo);
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -43,8 +50,6 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	if(GetHandItem(playerid, hand) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
 	{
 	    DeleteHandItem(playerid, hand);
-		if(GetItemType(HandInfo[playerid][hand][Item]) == ITEM_WEAPON && hand == HAND_RIGHT)
- 			RemovePlayerWeapon(playerid, HandInfo[playerid][hand][Item]);
 		HandInfo[playerid][hand][Item] = 0;
 		HandInfo[playerid][hand][Amount] = 0;
 		SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand); // Borramos el anterior
@@ -57,6 +62,26 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	else
 	    DeleteHandItem(playerid, hand);
 	return 1;
+}
+
+stock SearchHandsForItem(playerid, itemid)
+{
+	if(HandInfo[playerid][HAND_RIGHT][Item] == itemid)
+	    return HAND_RIGHT;
+	else if(HandInfo[playerid][HAND_LEFT][Item] == itemid)
+	    return HAND_LEFT;
+	else
+	    return -1;
+}
+
+stock SearchFreeHand(playerid)
+{
+	if(HandInfo[playerid][HAND_RIGHT][Item] == 0)
+	    return HAND_RIGHT;
+	else if(HandInfo[playerid][HAND_LEFT][Item] == 0)
+	    return HAND_LEFT;
+	else
+	    return -1;
 }
 
 stock ResetHands(playerid)
@@ -111,6 +136,28 @@ stock LoadHandsInfo(playerid)
 	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_HAND, PlayerInfo[playerid][pID]);
 	mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_HAND, playerid);
 	return 1;
+}
+
+//==========[Sincronizacion del arma en mano con las balas gastadas]============
+
+new bool:cantSaveSync[MAX_PLAYERS];
+
+forward CantSaveSyncTimer(playerid);
+public CantSaveSyncTimer(playerid)
+{
+    cantSaveSync[playerid] = false;
+	return 1;
+}
+
+stock SynchronizeWeaponAmmo(playerid, ammo)
+{
+	HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
+	if(cantSaveSync[playerid] == false)
+	{
+	    SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_RIGHT, SAVE_UPDATE);
+	    cantSaveSync[playerid] = true;
+		SetTimerEx("CantSaveSyncTimer", 2000, false, "i", playerid);
+	}
 }
 
 //==================================COMANDOS====================================

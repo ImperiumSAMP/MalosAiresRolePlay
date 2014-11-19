@@ -311,10 +311,15 @@ stock LoadHandItem(playerid, hand)
 
 stock DeleteHandItem(playerid, hand)
 {
-	if(hand == HAND_LEFT)
-		RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
+	if(hand == HAND_RIGHT)
+	{
+	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
+			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+		else
+		    RemovePlayerWeapon(playerid, GetHandItem(playerid, hand));
+	}
 	else
-	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	return 1;
 }
 

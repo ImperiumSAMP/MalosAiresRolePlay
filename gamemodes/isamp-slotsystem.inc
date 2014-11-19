@@ -88,7 +88,7 @@ public OnSlotsInfoDataLoad(type, id) {
 	return 1;
 }
 
-stock SaveSlotInfo(type, id, slot)
+stock SaveSlotInfo(type, id, slot, option = 0)
 {
     new query[256];
 
@@ -119,6 +119,19 @@ stock SaveSlotInfo(type, id, slot)
 		}
 	    case SLOT_TYPE_HAND:
 	    {
+	        if(option == SAVE_UPDATE)
+	        {
+	 			if(HandInfo[id][slot][Item] > 0)
+			 	{
+					format(query, sizeof(query), "UPDATE `slots_info` SET `Item`=%d, `Amount`=%d WHERE `Type`=%d AND `Id`=%d AND `Slot`=%d",
+						HandInfo[id][slot][Item],
+						HandInfo[id][slot][Amount],
+  						type,
+						PlayerInfo[id][pID],
+						slot
+					);
+				}
+			} else
 			if(HandInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
 		 	{
 				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",

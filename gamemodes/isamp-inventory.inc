@@ -199,7 +199,7 @@ stock SaveItemOnInv(playerid, playerhand, invslot)
 	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico de la mano.
 	SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
   	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
 }
 
