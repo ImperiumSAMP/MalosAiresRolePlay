@@ -159,7 +159,7 @@ stock SynchronizeWeaponAmmo(playerid, ammo)
 		SetTimerEx("CantSaveSyncTimer", 2000, false, "i", playerid);
 	}
 	if(ammo <= 0) // Se le terminó el arma
-	    SetInvItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 }
 
 //==================================COMANDOS====================================
