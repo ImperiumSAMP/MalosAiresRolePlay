@@ -3283,41 +3283,42 @@ public antiCheatTimer()
 
 	foreach(new playerid : Player)
 	{
-	    weapon = GetPlayerWeapon(playerid);
-	    
-		if(gPlayerLogged[playerid] == 1) {
-		    if(PlayerInfo[playerid][pAdmin] < 1) {
-				if(!isWeaponAllowed(weapon)) {
+		if(gPlayerLogged[playerid] == 1)
+		{
+		    weapon = GetPlayerWeapon(playerid);
+		    
+		    if(PlayerInfo[playerid][pAdmin] < 1)
+			{
+				if(!isWeaponAllowed(weapon))
+				{
 				    format(string, sizeof(string), "arma %d [%s] ", weapon, GetItemName(weapon));
 					KickPlayer(playerid, "el sistema", string);
 				}
+				
+				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
+					BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
 			}
 
-			if(GetPVarInt(playerid, "died") != 1) {
-				SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
-			}
-
-			if(PlayerInfo[playerid][pPlayingHours] <= 2) {
-			   if(!isWeaponlevelone(weapon)){
-			       ResetPlayerWeapons(playerid);
-			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
-				   AdministratorMessage(COLOR_WHITE, string, 1);
-
-				}
-			}
-			
-			if(GetItemType(weapon) == ITEM_WEAPON)
+			if(GetPVarInt(playerid, "died") != 1)
 			{
-			    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
-			    {
-					format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-	    			AdministratorMessage(COLOR_WHITE, string, 1);
-	    			ResetPlayerWeapons(playerid);
-	    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-	    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+			    SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
+			    
+				if(GetItemType(weapon) == ITEM_WEAPON)
+				{
+				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
+				    {
+						format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+		    			AdministratorMessage(COLOR_WHITE, string, 1);
+		    			ResetPlayerWeapons(playerid);
+		    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+		    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+					}
 				}
 				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
 				{
+				    if(weapon != GetHandItem(playerid, HAND_RIGHT))
+				    	SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
+
 				    if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
 				    {
 				        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
@@ -3328,11 +3329,23 @@ public antiCheatTimer()
 		    			SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
 				}
 			}
+
+			if(PlayerInfo[playerid][pPlayingHours] <= 2)
+			{
+			   if(!isWeaponlevelone(weapon))
+			   {
+			       ResetPlayerWeapons(playerid);
+			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
+				   AdministratorMessage(COLOR_WHITE, string, 1);
+
+				}
+			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 			{
  				new hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
-		  		if(hack >= 5000) {
+		  		if(hack >= 5000)
+			  	{
 				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
 				    AdministratorMessage(COLOR_WHITE, string, 1);
 				    format(string, sizeof(string), "Intentó editarse $%d.", hack);
@@ -3341,10 +3354,6 @@ public antiCheatTimer()
 		 		ResetMoneyBar(playerid);
 				UpdateMoneyBar(playerid,PlayerInfo[playerid][pCash]);
 			}
-
-		    if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK && PlayerInfo[playerid][pAdmin] < 1) {
-		        BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
-		    }
 		}
 	}
 }
