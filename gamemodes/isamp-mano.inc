@@ -52,8 +52,6 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	HandInfo[playerid][hand][Item] = itemid;
 	HandInfo[playerid][hand][Amount] = param;
 	SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
-	if(GetItemType(itemid) == ITEM_WEAPON && hand == HAND_RIGHT)
-		GivePlayerWeapon(playerid, itemid, param);
 	if(itemid != 0)
 	    LoadHandItem(playerid, hand);
 	else

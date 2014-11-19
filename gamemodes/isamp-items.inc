@@ -296,10 +296,15 @@ stock LoadHandItem(playerid, hand)
 
 	if(GetItemObjectModel(itemid) != 0)
 	{
-	    if(hand == HAND_RIGHT && GetItemType(itemid) != ITEM_WEAPON) // Si es arma samp lo attachea solo.
-			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
-		else if(hand == HAND_LEFT) // Samp no attachea armas a la mano izquierda. El arma está, pero no es funcional.
-		    SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
+	    if(hand == HAND_RIGHT)
+		{
+			if(GetItemType(itemid) != ITEM_WEAPON)
+				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
+			else
+			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+		}
+		else
+ 			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemXPos(itemid), GetItemYPos(itemid), GetItemZPos(itemid), GetItemRxPos(itemid), GetItemRyPos(itemid), GetItemRzPos(itemid), 1.0, 1.0, 1.0);
 	}
 	return 1;
 }
