@@ -66,13 +66,15 @@
 #define ITEM_ID_GORRA_SIMPLE_AZUL       97
 #define ITEM_ID_GORRA_SIMPLE_VERDE      98
 
+#define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
 #define BONE_ID_RIGHTHAND       6
 
-#define INDEX_ID_HAND_LEFT      9 // Por ahora se elige este index arbitrario para manejar la mano. Del 0 al 7 es utilizado por el sistema de toys.
+#define INDEX_ID_HAND_LEFT      9
 #define INDEX_ID_HAND_RIGHT     8
-#define INDEX_ID_MASK        	7 // Temporal definicion arbitraria para la mascara hasta encontrar un traspaso adecuado al sistema de toys o items
+#define INDEX_ID_BACK           7
+#define INDEX_ID_MASK        	6 
 
 #define HAND_LEFT             	0
 #define HAND_RIGHT              1

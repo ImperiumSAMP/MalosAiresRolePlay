@@ -7,7 +7,7 @@
 
 //================================CONSTANTES====================================
 
-#define MAX_PLAYER_INDEX    	7 // El limite es 10 y es nativo de samp. Se pone 7 (va de 0 a 6) para guardar dos index para la mano izq - derecha y otro a la mascara, temporalmente.
+#define MAX_PLAYER_INDEX    	6 // Indexs para attachs de 0 a 5.
 
 #define TOY_CREATE             	1
 #define TOY_UPDATE             	2
