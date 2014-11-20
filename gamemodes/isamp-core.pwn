@@ -9960,7 +9960,7 @@ CMD:soplarpipeta(playerid,params[])
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te esta ofreciendo una pipeta para soplar.");
 		
 	BlowingPipette[playerid] = 0;
-	PlayerActionMessage(playerid, 15.0, "Toma la pipeta ofrecida por el oficial y comienza a soplarla");
+	PlayerActionMessage(playerid, 15.0, "toma la pipeta ofrecida por el oficial y comienza a soplarla");
     SetTimerEx("SoplandoPipeta", 6000, false, "i", playerid);
 	TogglePlayerControllable(playerid, false);
     SetTimerEx("Unfreeze", 6000, false, "i", playerid);
