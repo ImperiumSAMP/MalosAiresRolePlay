@@ -53,6 +53,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 #include "isamp-racesystem.inc"         //Sistema de carreras
+#include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -1360,6 +1361,7 @@ public OnPlayerSpawn(playerid) {
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
+	AttachBackItem(playerid);
     LoadToysItems(playerid);
 
 	return 1;
@@ -1433,6 +1435,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 	ResetPlayerWeapons(playerid);
 	ResetAndSaveHands(playerid);
+	ResetAndSaveBack(playerid);
 	
 	return 1;
 }
@@ -2274,6 +2277,7 @@ public OnPlayerDataLoad(playerid) {
 		LoadInvInfo(playerid); // Info de su inventario
 		LoadHandsInfo(playerid); // Info de lo que tiene en las manos
 		LoadToysInfo(playerid); // Toys
+		LoadBackInfo(playerid); // Info de espalda
 		
        	CreatePlayerBasicNeeds(playerid);
        	

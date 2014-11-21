@@ -15,6 +15,7 @@ new BackInfo[MAX_PLAYERS][SlotInfo];
 
 //===============================FUNCIONES======================================
 
+forward OnBackDataLoad(playerid);
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -93,7 +94,9 @@ stock DetachBackItem(playerid)
 
 stock ResetAndSaveBack(playerid)
 {
-	if(BackInfo[playerid][Item] > 0)
+	new query[128];
+	
+	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
 	{
 	    DetachBackItem(playerid);
 		ResetBackInfo(playerid);
