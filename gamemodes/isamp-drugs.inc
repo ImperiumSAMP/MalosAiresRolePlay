@@ -191,7 +191,7 @@ CMD:consumir(playerid, params[]) {
 		PlayerInfo[playerid][pMarijuana] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
-		PlayerCmeMessage(playerid, 15.0, "fuma algo de marihuana.");
+		PlayerCmeMessage(playerid, 15.0, 8000, "fuma algo de marihuana.");
 		AddPlayerAdiction(playerid, ADICTION_MARIJUANA);
 		if(DrugEffectMarijuana[playerid] == false)
 		{
@@ -206,7 +206,7 @@ CMD:consumir(playerid, params[]) {
 		PlayerInfo[playerid][pLSD] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
-		PlayerCmeMessage(playerid, 15.0, "toma una dosis de LSD.");
+		PlayerCmeMessage(playerid, 15.0, 8000, "toma una dosis de LSD.");
 		AddPlayerAdiction(playerid, ADICTION_LSD);
         if(DrugEffectLSD[playerid] == false)
         {
@@ -226,7 +226,7 @@ CMD:consumir(playerid, params[]) {
 		PlayerInfo[playerid][pEcstasy] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
-		PlayerCmeMessage(playerid, 15.0, "toma una pastilla de éxtasis.");
+		PlayerCmeMessage(playerid, 15.0, 8000, "toma una pastilla de éxtasis.");
 		AddPlayerAdiction(playerid, ADICTION_ECSTASY);
 		if(DrugEffectEcstasy[playerid] == false)
 		{
@@ -241,7 +241,7 @@ CMD:consumir(playerid, params[]) {
 		PlayerInfo[playerid][pCocaine] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
-		PlayerCmeMessage(playerid, 15.0, "aspira algo de cocaína mediante un tubo de papel.");
+		PlayerCmeMessage(playerid, 15.0, 8000, "aspira algo de cocaína mediante un tubo de papel.");
 		AddPlayerAdiction(playerid, ADICTION_COCAINE);
 		if(DrugEffectCocaine[playerid] == false)
 		{

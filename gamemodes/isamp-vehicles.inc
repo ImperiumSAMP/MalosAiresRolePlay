@@ -1013,8 +1013,11 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
     if(PlayerInfo[playerid][pHealth] < 25)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-	if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
+	if(GetItemType(GetHandItem(playerid, playerhand)) == ITEM_WEAPON)
+	{
+		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes guardar un arma estando en servicio!");
+	}
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 

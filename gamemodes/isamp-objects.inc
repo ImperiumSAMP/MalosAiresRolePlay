@@ -56,7 +56,11 @@ stock DropObject(playerid, playerhand)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	if(GetHandItem(playerid, playerhand) == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No ningún item para tirar en esa mano.");
-	    
+	if(GetItemType(GetHandItem(playerid, playerhand)) == ITEM_WEAPON)
+	{
+		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tirar un arma estando en servicio!");
+	}
  	new j = -1;
 	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
 	{

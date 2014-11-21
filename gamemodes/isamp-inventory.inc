@@ -80,7 +80,7 @@ stock ResetAndSaveInv(playerid)
 {
 	for(new i = 0; i < INV_MAX_SLOTS; i++)
 	{
-	    if(InvInfo[playerid][i][Item] > 0)
+	    if(InvInfo[playerid][i][Item] > 0 && GetItemType(InvInfo[playerid][i][Item]) == ITEM_WEAPON)
 	    {
 			InvInfo[playerid][i][Item] = 0;
 			InvInfo[playerid][i][Amount] = 0;
@@ -170,8 +170,6 @@ stock SaveItemOnInv(playerid, playerhand, invslot)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-	if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacer esto en servicio!");
 
 	new validslot,
 		itemid = GetHandItem(playerid, playerhand);
