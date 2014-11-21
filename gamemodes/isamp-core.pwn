@@ -4719,9 +4719,6 @@ public SetPlayerSpawn(playerid) {
 	
 	SetPlayerFightingStyle(playerid, PlayerInfo[playerid][pFightStyle]);
 
-	if(PlayerInfo[playerid][pFaction] == FAC_PMA)
-		resetTazer(playerid);
-
     usingMask[playerid] = false; // Al spawnear, deja de estar con la mascara puesta
 
     HidePlayerSpeedo(playerid);
@@ -10162,6 +10159,7 @@ stock EndPlayerDuty(playerid)
 		ResetAndSaveHands(playerid); // Borramos cualquier arma de las manos.
 		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
+		resetTazer(playerid);
 		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario y de tus manos.");
 	}
 }
@@ -10242,8 +10240,7 @@ CMD:sequipo(playerid, params[])
 		}
 	}
 	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
-	TTAZER[playerid] = 1;
-	resetTazerWeapons(playerid);
+	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
 
@@ -10421,8 +10418,7 @@ CMD:pequipo(playerid, params[])
 	}
 	SetPlayerArmour(playerid, 100);
 	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
-	TTAZER[playerid] = 1;
-	resetTazerWeapons(playerid);
+	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
 
@@ -11688,7 +11684,7 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
  	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
 	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 4000, false, "i", playerid);
+	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
 }
 
