@@ -10161,6 +10161,7 @@ stock EndPlayerDuty(playerid)
 		SIDEDuty[playerid] = 0;
 		ResetAndSaveInv(playerid); // Borramos cualquier arma del inventario.
 		ResetAndSaveHands(playerid); // Borramos cualquier arma de las manos.
+		ResetAndSaveBack(playerid); // Borramos el arma larga que tenga en la espalda.
 		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
 		resetTazer(playerid);
