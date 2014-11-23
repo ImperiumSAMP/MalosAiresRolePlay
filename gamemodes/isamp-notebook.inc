@@ -179,15 +179,18 @@ CMD:agenda(playerid, params[])
 
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un telefono con agenda de contactos!");
-	if(sscanf(params, "s[20]", cmd))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [ver - agregar - borrar]");
-
+	if(sscanf(params, "s[20]I(-1)S(-1)[30]", cmd, param1, param2))
+	{
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [comando]");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - agregar [numero] [nombre] - borrar [slot]");
+	    return 1;
+	}
 	if(!strcmp("agregar", cmd, true))
 	{
-  		if(sscanf(params, "s[20]is[30]", cmd, param1, param2))
-			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre] (hasta 29 caracteres)");
-		if(param1 == 0 || sizeof(param2) >= 30)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser 0 (cero) / Solo puedes usar una descripción de hasta 29 caracteres.");
+	    if(strval(param2) == -1)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
+		if(param1 < 0 || sizeof(param2) >= 30)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 29 caracteres.");
 		if(AddNotebookContact(playerid, param1, param2))
 		    return SendClientMessage(playerid, COLOR_WHITE, "Contacto agregado. Utiliza '/agenda ver' para ver con mas detalle tu agenda.");
 		else
@@ -195,11 +198,8 @@ CMD:agenda(playerid, params[])
 	}
 	else if(!strcmp("borrar", cmd, true))
 	{
-		if(sscanf(params, "s[20]i", cmd, param1))
-		    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda borrar [slot]");
 		if(param1 < 0 || param1 >= MAX_NOTEBOOK_CONTACTS)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
-
 		if(DeleteNotebookContact(playerid, param1))
 			return SendClientMessage(playerid, COLOR_WHITE, "Has borrado el contacto del slot indicado.");
 		else
