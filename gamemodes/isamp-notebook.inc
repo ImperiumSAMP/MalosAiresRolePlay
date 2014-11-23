@@ -189,7 +189,7 @@ CMD:agenda(playerid, params[])
 	{
 	    if(strval(param2) == -1)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
-		if(param1 < 0 || sizeof(param2) >= 30)
+		if(param1 < 0 || strlen(param2) >= 30)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 29 caracteres.");
 		if(AddNotebookContact(playerid, param1, param2))
 		    return SendClientMessage(playerid, COLOR_WHITE, "Contacto agregado. Utiliza '/agenda ver' para ver con mas detalle tu agenda.");
