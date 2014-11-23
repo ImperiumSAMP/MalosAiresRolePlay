@@ -69,6 +69,7 @@ stock SetBackItemAndParam(playerid, itemid, param)
 			BackInfo[playerid][Item] = itemid;
 			BackInfo[playerid][Amount] = param;
 			format(query, sizeof(query), "UPDATE `slots_info` SET `Item`=%d, `Amount`=%d WHERE `Type`=%d AND `Id`=%d", itemid, param, SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
+            mysql_function_query(dbHandle, query, false, "", "");
 			AttachBackItem(playerid);
 		}
 	}
@@ -77,6 +78,7 @@ stock SetBackItemAndParam(playerid, itemid, param)
 		BackInfo[playerid][Item] = itemid;
 		BackInfo[playerid][Amount] = param;
 		format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, param);
+        mysql_function_query(dbHandle, query, false, "", "");
 		AttachBackItem(playerid);
 	}
 }

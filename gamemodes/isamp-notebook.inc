@@ -10,14 +10,22 @@
 #define MAX_NOTEBOOK_CONTACTS       15
 #define DLG_NOTEBOOK				10025
 
+#define CONTACT_CREATE              1
+#define CONTACT_DELETE              2
+
 //===============================DATA STORAGE===================================
 
 enum contactInfo {
 	cNumber,
-	cNote[30]
+	cName[30]
 };
 
 new playerNotebook[MAX_PLAYERS][MAX_NOTEBOOK_CONTACTS][contactInfo];
+
+//==================================FUNCIONES===================================
+
+forward OnNotebookDataLoad(playerid);
+forward SaveNotebookContact(playerid, contactslot, option);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
@@ -29,9 +37,12 @@ bool:AddNotebookContact(playerid, number, const contact[])
 		{
 		    if(playerNotebook[playerid][i][cNumber] == 0)
 		    {
+		        new str[30];
+		        strmid(str, contact, 0, strlen(contact));
+		        mysql_real_escape_string(str, str);
 		        playerNotebook[playerid][i][cNumber] = number;
-		        strmid(playerNotebook[playerid][i][cNote], contact, 0, strlen(contact));
-				//SaveNotebookSlot(playerid, i);
+		        strmid(playerNotebook[playerid][i][cName], str, 0, strlen(str));
+				SaveNotebookContact(playerid, i, CONTACT_CREATE);
 				return true;
 			}
 		}
@@ -46,8 +57,8 @@ bool:DeleteNotebookContact(playerid, slot)
  		if(playerNotebook[playerid][slot][cNumber] != 0)
    		{
      		playerNotebook[playerid][slot][cNumber] = 0;
-     		strmid(playerNotebook[playerid][slot][cNote], " ", 0, strlen(" "));
-			//SaveNotebookSlot(playerid, slot);
+     		strmid(playerNotebook[playerid][slot][cName], " ", 0, strlen(" "));
+			SaveNotebookContact(playerid, slot, CONTACT_DELETE);
 			return true;
 		}
 	}
@@ -63,12 +74,80 @@ ShowNotebook(playerid)
 	    for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 	    {
 	        if(playerNotebook[playerid][i][cNumber] != 0)
-				format(str, sizeof(str), "%s[%d] %s - %d/n", str, i, playerNotebook[playerid][i][cNote], playerNotebook[playerid][i][cNumber]);
+				format(str, sizeof(str), "%s[%d] %s - %d\n", str, i, playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cNumber]);
 		}
 		if(!strcmp("", str, true))
 		    format(str, sizeof(str), "No hay contactos agregados.");
 		ShowPlayerDialog(playerid, DLG_NOTEBOOK, DIALOG_STYLE_LIST, "Contactos", str, "Cerrar", "");
 	}
+}
+
+ResetNotebookContacts(playerid)
+{
+	for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
+	{
+	    playerNotebook[playerid][i][cNumber] = 0;
+	    strmid(playerNotebook[playerid][i][cName], " ", 0, strlen(" "));
+	}
+}
+
+LoadNotebookContacts(playerid)
+{
+	new query[128];
+	
+	ResetNotebookContacts(playerid);
+	format(query, sizeof(query), "SELECT * FROM `contacts_info` WHERE `pId`=%d", PlayerInfo[playerid][pID]);
+	mysql_function_query(dbHandle, query, true, "OnNotebookDataLoad", "i", playerid);
+	return 1;
+}
+
+public OnNotebookDataLoad(playerid)
+{
+	new result[128],
+	   	rows,
+	   	fields,
+	   	aux = 0,
+	   	slot;
+
+	cache_get_data(rows, fields);
+
+	if(rows)
+	{
+	    while(aux < rows)
+	    {
+			cache_get_field_content(aux, "Slot", result); 		slot = strval(result);
+			cache_get_field_content(aux, "Name",                playerNotebook[playerid][slot][cName], 1, 30);
+			cache_get_field_content(aux, "Number", result); 	playerNotebook[playerid][slot][cNumber] = strval(result);
+			aux ++;
+		}
+	}
+	return 1;
+}
+
+public SaveNotebookContact(playerid, contactslot, option)
+{
+	new query[256];
+
+	if(option == CONTACT_CREATE)
+	{
+		format(query, sizeof(query), "INSERT INTO `contacts_info` (`pId`, `Slot`, `Number`, `Name`) VALUES (%d, %d, %d, %s)",
+			PlayerInfo[playerid][pID],
+			contactslot,
+			playerNotebook[playerid][contactslot][cNumber],
+			playerNotebook[playerid][contactslot][cName]
+		);
+	}
+	else if(option == CONTACT_DELETE)
+	{
+		format(query, sizeof(query), "DELETE FROM `contacts_info` WHERE `pId`=%d AND `Slot`=%d",
+			PlayerInfo[playerid][pID],
+			contactslot
+		);
+	}
+	
+	
+    mysql_function_query(dbHandle, query, false, "", "");
+    return 1;
 }
 
 //============================DEBUG DE VARIABLES================================
@@ -87,7 +166,7 @@ CMD:notebookdebug(playerid, params[])
 	for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 	{
 	    SendFMessage(playerid, COLOR_YELLOW, "[%d][%d] cNumber = %d", id, i, playerNotebook[id][i][cNumber]);
-	    SendFMessage(playerid, COLOR_YELLOW, "[%d][%d] cNote = %s", id, i, playerNotebook[id][i][cNote]);
+	    SendFMessage(playerid, COLOR_YELLOW, "[%d][%d] cName = %s", id, i, playerNotebook[id][i][cName]);
 	}
 	return 1;
 }
@@ -106,7 +185,7 @@ CMD:agenda(playerid, params[])
 	if(!strcmp("agregar", cmd, true))
 	{
   		if(sscanf(params, "s[20]is[30]", cmd, param1, param2))
-			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [descripción] (hasta 29 caracteres)");
+			return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre] (hasta 29 caracteres)");
 		if(param1 == 0 || sizeof(param2) >= 30)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser 0 (cero) / Solo puedes usar una descripción de hasta 29 caracteres.");
 		if(AddNotebookContact(playerid, param1, param2))
@@ -114,7 +193,7 @@ CMD:agenda(playerid, params[])
 		else
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio en tu agenda y no se pudo agregar el contacto.");
 	}
-	else if(strcmp("borrar", cmd, false) != 0)
+	else if(!strcmp("borrar", cmd, true))
 	{
 		if(sscanf(params, "s[20]i", cmd, param1))
 		    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda borrar [slot]");
@@ -124,9 +203,9 @@ CMD:agenda(playerid, params[])
 		if(DeleteNotebookContact(playerid, param1))
 			return SendClientMessage(playerid, COLOR_WHITE, "Has borrado el contacto del slot indicado.");
 		else
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Ese slot está vacio.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
 	}
-	else if(strcmp("ver", cmd, false) != 0)
+	else if(!strcmp("ver", cmd, true))
 	{
 	    ShowNotebook(playerid);
 	}

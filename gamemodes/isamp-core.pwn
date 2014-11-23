@@ -54,6 +54,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 #include "isamp-racesystem.inc"         //Sistema de carreras
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
+#include "isamp-notebook.inc"           //Sistema de agenda
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -2278,6 +2279,7 @@ public OnPlayerDataLoad(playerid) {
 		LoadHandsInfo(playerid); // Info de lo que tiene en las manos
 		LoadToysInfo(playerid); // Toys
 		LoadBackInfo(playerid); // Info de espalda
+		LoadNotebookContacts(playerid); // Carga la agenda del jugador
 		
        	CreatePlayerBasicNeeds(playerid);
        	
