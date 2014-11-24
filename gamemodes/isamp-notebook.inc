@@ -29,40 +29,6 @@ forward SaveNotebookContact(playerid, contactslot, option);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
-bool:AddNotebookContact(playerid, number, contact[])
-{
-	if(IsPlayerConnected(playerid))
-	{
-		for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
-		{
-		    if(playerNotebook[playerid][i][cNumber] == 0)
-		    {
-		        strmid(playerNotebook[playerid][i][cName], contact, 0, strlen(contact));
-		        mysql_real_escape_string(playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cName], 1);
-		        playerNotebook[playerid][i][cNumber] = number;
-				SaveNotebookContact(playerid, i, CONTACT_CREATE);
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool:DeleteNotebookContact(playerid, slot)
-{
-	if(IsPlayerConnected(playerid) && slot >= 0 && slot < MAX_NOTEBOOK_CONTACTS)
-	{
- 		if(playerNotebook[playerid][slot][cNumber] != 0)
-   		{
-     		playerNotebook[playerid][slot][cNumber] = 0;
-     		strmid(playerNotebook[playerid][slot][cName], " ", 0, strlen(" "));
-			SaveNotebookContact(playerid, slot, CONTACT_DELETE);
-			return true;
-		}
-	}
-	return false;
-}
-
 ShowNotebook(playerid)
 {
 	if(IsPlayerConnected(playerid))
@@ -184,31 +150,49 @@ CMD:agenda(playerid, params[])
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - agregar [numero] [nombre] - borrar [slot]");
 	    return 1;
 	}
+	
 	if(!strcmp("agregar", cmd, true))
 	{
 	    if(strval(param2) == -1)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
 		if(param1 < 0 || strlen(param2) >= 30)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 29 caracteres.");
-		if(AddNotebookContact(playerid, param1, param2))
-		    return SendClientMessage(playerid, COLOR_WHITE, "Contacto agregado. Utiliza '/agenda ver' para ver con mas detalle tu agenda.");
-		else
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio en tu agenda y no se pudo agregar el contacto.");
+		for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
+		{
+		    if(playerNotebook[playerid][i][cNumber] == 0)
+		    {
+		        strmid(playerNotebook[playerid][i][cName], param2, 0, strlen(param2));
+		        mysql_real_escape_string(playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cName], 1);
+		        playerNotebook[playerid][i][cNumber] = param1;
+				SaveNotebookContact(playerid, i, CONTACT_CREATE);
+				SendClientMessage(playerid, COLOR_WHITE, "Contacto agregado. Utiliza '/agenda ver' para ver con mas detalle tu agenda.");
+				return 1;
+			}
+		}
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio en tu agenda y no se pudo agregar el contacto.");
 	}
+	
 	else if(!strcmp("borrar", cmd, true))
 	{
 		if(param1 < 0 || param1 >= MAX_NOTEBOOK_CONTACTS)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
-		if(DeleteNotebookContact(playerid, param1))
-			return SendClientMessage(playerid, COLOR_WHITE, "Has borrado el contacto del slot indicado.");
-		else
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
+ 		if(playerNotebook[playerid][param1][cNumber] == 0)
+ 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
+
+ 		playerNotebook[playerid][param1][cNumber] = 0;
+ 		strmid(playerNotebook[playerid][param1][cName], " ", 0, strlen(" "));
+		SaveNotebookContact(playerid, param1, CONTACT_DELETE);
+		SendClientMessage(playerid, COLOR_WHITE, "Has borrado el contacto del slot indicado.");
+		return 1;
 	}
+	
 	else if(!strcmp("ver", cmd, true))
 	{
 	    ShowNotebook(playerid);
 	}
+	
 	else
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [ver - agregar - borrar]");
+
 	return 1;
 }

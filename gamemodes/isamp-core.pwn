@@ -759,6 +759,10 @@ public ResetStats(playerid)
 	/* Sistema de Mecanicos y Tuning */
 	ResetRepairOffer(playerid);
 	
+	/* Saludo */
+	saluteOffer[playerid] = INVALID_PLAYER_ID;
+	saluteStyle[playerid] = 0;
+	
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
 
