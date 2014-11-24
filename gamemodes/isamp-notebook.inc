@@ -130,7 +130,7 @@ public SaveNotebookContact(playerid, contactslot, option)
 
 	if(option == CONTACT_CREATE)
 	{
-		format(query, sizeof(query), "INSERT INTO `contacts_info` (`pId`, `Slot`, `Number`, `Name`) VALUES (%d, %d, %d, %s)",
+		format(query, sizeof(query), "INSERT INTO `contacts_info` (`pId`, `Slot`, `Number`, `Name`) VALUES (%d, %d, %d, '%s')",
 			PlayerInfo[playerid][pID],
 			contactslot,
 			playerNotebook[playerid][contactslot][cNumber],
@@ -144,8 +144,6 @@ public SaveNotebookContact(playerid, contactslot, option)
 			contactslot
 		);
 	}
-	
-	
     mysql_function_query(dbHandle, query, false, "", "");
     return 1;
 }
