@@ -29,7 +29,7 @@ forward SaveNotebookContact(playerid, contactslot, option);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
-bool:AddNotebookContact(playerid, number, const contact[])
+bool:AddNotebookContact(playerid, number, contact[])
 {
 	if(IsPlayerConnected(playerid))
 	{
@@ -37,11 +37,9 @@ bool:AddNotebookContact(playerid, number, const contact[])
 		{
 		    if(playerNotebook[playerid][i][cNumber] == 0)
 		    {
-		        new str[30];
-		        strmid(str, contact, 0, strlen(contact));
-		        mysql_real_escape_string(str, str);
+		        strmid(playerNotebook[playerid][i][cName], contact, 0, strlen(contact));
+		        mysql_real_escape_string(playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cName], 1);
 		        playerNotebook[playerid][i][cNumber] = number;
-		        strmid(playerNotebook[playerid][i][cName], str, 0, strlen(str));
 				SaveNotebookContact(playerid, i, CONTACT_CREATE);
 				return true;
 			}
@@ -69,14 +67,17 @@ ShowNotebook(playerid)
 {
 	if(IsPlayerConnected(playerid))
 	{
-	    new str[1000] = "";
+	    new aux, str[1000] = "";
 	    
 	    for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 	    {
 	        if(playerNotebook[playerid][i][cNumber] != 0)
+	        {
 				format(str, sizeof(str), "%s[%d] %s - %d\n", str, i, playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cNumber]);
+				aux = 1;
+			}
 		}
-		if(!strcmp("", str, true))
+		if(aux != 1)
 		    format(str, sizeof(str), "No hay contactos agregados.");
 		ShowPlayerDialog(playerid, DLG_NOTEBOOK, DIALOG_STYLE_LIST, "Contactos", str, "Cerrar", "");
 	}
