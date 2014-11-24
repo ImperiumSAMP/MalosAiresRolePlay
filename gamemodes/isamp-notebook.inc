@@ -17,7 +17,7 @@
 
 enum contactInfo {
 	cNumber,
-	cName[30]
+	cName[32]
 };
 
 new playerNotebook[MAX_PLAYERS][MAX_NOTEBOOK_CONTACTS][contactInfo];
@@ -83,7 +83,7 @@ public OnNotebookDataLoad(playerid)
 	    while(aux < rows)
 	    {
 			cache_get_field_content(aux, "Slot", result); 		slot = strval(result);
-			cache_get_field_content(aux, "Name",                playerNotebook[playerid][slot][cName], 1, 30);
+			cache_get_field_content(aux, "Name",                playerNotebook[playerid][slot][cName], 1, 32);
 			cache_get_field_content(aux, "Number", result); 	playerNotebook[playerid][slot][cNumber] = strval(result);
 			aux ++;
 		}
@@ -140,11 +140,11 @@ CMD:notebookdebug(playerid, params[])
 
 CMD:agenda(playerid, params[])
 {
-	new cmd[20], param1, param2[30];
+	new cmd[32], param1, param2[32];
 
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un telefono con agenda de contactos!");
-	if(sscanf(params, "s[20]I(-1)S(-1)[30]", cmd, param1, param2))
+	if(sscanf(params, "s[32]I(-1)S(-1)[32]", cmd, param1, param2))
 	{
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [comando]");
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - agregar [numero] [nombre] - borrar [slot]");
@@ -155,14 +155,14 @@ CMD:agenda(playerid, params[])
 	{
 	    if(strval(param2) == -1)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
-		if(param1 < 0 || strlen(param2) >= 30)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 29 caracteres.");
+		if(param1 < 0 || strlen(param2) >= 32)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 30 caracteres.");
 		for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 		{
 		    if(playerNotebook[playerid][i][cNumber] == 0)
 		    {
-		        strmid(playerNotebook[playerid][i][cName], param2, 0, strlen(param2));
-		        mysql_real_escape_string(playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cName], 1);
+		        mysql_real_escape_string(param2, param2);
+		        strmid(playerNotebook[playerid][i][cName], param2, 0, strlen(param2), 32);
 		        playerNotebook[playerid][i][cNumber] = param1;
 				SaveNotebookContact(playerid, i, CONTACT_CREATE);
 				SendClientMessage(playerid, COLOR_WHITE, "Contacto agregado. Utiliza '/agenda ver' para ver con mas detalle tu agenda.");
