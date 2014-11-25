@@ -4442,7 +4442,7 @@ stock LoadPickups() {
 	for(new i = 0; i < 3; i++)
 	{
 		CreateDynamicPickup(1239, 1, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2], -1);
-		CreateDynamic3DTextLabel("/repararauto (Min $600)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+		CreateDynamic3DTextLabel("/repararvehiculo (Min $600)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 	}
 	
 	/* Banco de Malos Aires */
