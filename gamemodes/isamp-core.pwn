@@ -55,6 +55,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-racesystem.inc"         //Sistema de carreras
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
 #include "isamp-notebook.inc"           //Sistema de agenda
+#include "isamp-gimsistem.inc"  
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -477,6 +478,7 @@ forward TimeReplenishYo(playerid);
 forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
+forward PesasReload(playerid);
 
 //==============================================================================
 
@@ -3415,6 +3417,11 @@ public globalUpdate() {
 
 	chargeTaxis();
 	UpdateBankRobberyCooldown();
+	
+	foreach(new playerid : Player) {
+	if(CountRepePesas[playerid] >= 35)
+	    return SendClientMessage(playerid, COLOR_LIGHTBLUE, "Ya haz entrenado lo suficiente por el dia de hoy. Pon /terminarentrenamiento.");
+	}
 	
 	foreach(new playerid : Player) {
 	    playerCount++;
@@ -6846,6 +6853,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 	
+	if(PRESSED(KEY_SPRINT)) 
+	{
+	    if(DoPesas[playerid]== 1)
+		{
+		    if(ReloadPesas[playerid] == 1)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un momento para volver a realizar una repetición.");
+		    ApplyAnimation(playerid, "Freeweights", "gym_barbell", 4.1, 0, 1, 1, 1, 1, 1);
+			CountRepePesas[playerid] += 1;
+			ReloadPesas[playerid] = 1;
+			SetTimerEx("PesasReload", 2500, false, "i", playerid);
+			
+		}
+	}
 	if(newkeys == KEY_SECONDARY_ATTACK && oldkeys != KEY_SECONDARY_ATTACK) {
 		
 		
@@ -6883,7 +6903,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				}
 		    }
 	    }
-	    
+		
 	    if(GetPVarInt(playerid, "disabled") == DISABLE_NONE) {
 
 			/*  Entrada a casas. */
@@ -6915,6 +6935,11 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 	return 1;
+}
+
+public PesasReload(playerid) 
+{
+    ReloadPesas[playerid] = 0;
 }
 
 public Unfreeze(playerid) {
