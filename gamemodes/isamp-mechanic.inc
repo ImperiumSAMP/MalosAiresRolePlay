@@ -734,7 +734,7 @@ public AutoReparacion(playerid, paynsprayid)
 		RepairVehicle(vehicleid);
 	    VehicleInfo[vehicleid][VehHP] = 100;
 	    ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Su vehiculo ha sido reparado exitosamente.");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Su vehículo ha sido reparado exitosamente.");
 		if(paynsprayid == PAYNSPRAY_BEACH)
 		{
 		 	SetVehiclePos(vehicleid, PayNSprayPos[0][0], PayNSprayPos[0][1], PayNSprayPos[0][2]);
@@ -757,7 +757,7 @@ public AutoReparacion(playerid, paynsprayid)
     return 1;
 }
 
-CMD:repararauto(playerid, params[])
+CMD:repararvehiculo(playerid, params[])
 {
 	new vehicleid = GetPlayerVehicleID(playerid),
 		repuestos,
@@ -769,7 +769,7 @@ CMD:repararauto(playerid, params[])
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
     if(CountMecasDuty() >= 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehiculo.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehículo.");
 	if(PayNSprayOccupied[paynsprayid - 1])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Hay otro vehículo en reparación en el taller, espera a que salga.");
  	repuestos = GetRepairMaterialCost(vehicleid);
