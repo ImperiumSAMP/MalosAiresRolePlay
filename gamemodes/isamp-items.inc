@@ -318,7 +318,7 @@ stock DeleteHandItem(playerid, hand)
 	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
 			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
 		else
-		    RemovePlayerWeapon(playerid, GetHandItem(playerid, hand));
+		    ResetPlayerWeapons(playerid);
 	}
 	else
 	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);

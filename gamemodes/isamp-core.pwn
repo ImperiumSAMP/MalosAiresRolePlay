@@ -4286,27 +4286,6 @@ public OnPlayerObjectMoved(playerid, objectid)
 	return 1;
 }
 
-stock RemovePlayerWeapon(playerid, weaponid)
-{
-	new
-		plyWeapons[12],
-		plyAmmo[12];
-
-	for(new slot = 0; slot != 12; slot++) {
-		new wep, ammo;
-		GetPlayerWeaponData(playerid, slot, wep, ammo);
-		if(wep != weaponid)	{
-			GetPlayerWeaponData(playerid, slot, plyWeapons[slot], plyAmmo[slot]);
-		}
-	}
-	ResetPlayerWeapons(playerid);
-	for(new slot = 0; slot != 12; slot++) {
-	    if(plyWeapons[slot] > 0)
-			GivePlayerWeapon(playerid, plyWeapons[slot], plyAmmo[slot]);
-	}
-	return 1;
-}
-
 public OnPlayerClickTextDraw(playerid, Text:clickedid) {
    	if(GetPVarInt(playerid, "skinc_active") == 0) return 0;
 	if(clickedid == Text:INVALID_TEXT_DRAW) {
@@ -8643,9 +8622,11 @@ CMD:checkinv(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
 
 	SendFMessage(playerid, COLOR_WHITE, "Usuario: %s (%d) - DBID: %d", GetPlayerNameEx(targetID), targetID, PlayerInfo[targetID][pID]);
-	ShowInv(playerid, targetID);
+	PrintHandsForPlayer(targetID, playerid);
+	PrintInvForPlayer(targetID, playerid);
 	ShowPocket(playerid, targetID);
 	PrintToysForPlayer(targetID, playerid);
+	PrintBackForPlayer(targetID, playerid);
 	return 1;
 }
 
@@ -9687,14 +9668,15 @@ CMD:revisar(playerid, params[])
 	if(!ProxDetectorS(2.0, playerid, targetID))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El objetivo se encuentra demasiado lejos!");
 
-	if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid]) ||
-		(PlayerInfo[playerid][pFaction] == FAC_SIDE && SIDEDuty[playerid]) ||
+	if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid) ||
 		GetPVarInt(targetID, "disabled") == DISABLE_DYING ||
 		GetPVarInt(targetID, "disabled") == DISABLE_DEATHBED )
 	{
-		ShowInv(playerid, targetID);
+		PrintHandsForPlayer(targetID, playerid);
+		PrintInvForPlayer(targetID, playerid);
 	  	ShowPocket(playerid, targetID);
 	  	PrintToysForPlayer(targetID, playerid);
+	  	PrintBackForPlayer(targetID, playerid);
 		PlayerPlayerActionMessage(playerid, targetID, 15.0, "ha revisado en busca de objetos a");
 	} else
 	    {
@@ -10438,7 +10420,7 @@ CMD:pequipo(playerid, params[])
             ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
 			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 75);
-			GivePlayerWeapon(playerid, WEAPON_RIFLE, 40);
+			SetBackItemAndParam(playerid, WEAPON_RIFLE, 40);
         }
         case 6:
 		{
@@ -10586,24 +10568,6 @@ CMD:bolsillo(playerid, params[])
 {
 	ShowPocket(playerid, playerid);
 	return 1;
-}
-
-stock ShowInv(playerid, targetid)
-{
-	new pWeapons[13],
-		pAmmo[13],
-		weaponName[64];
-
-	SendFMessage(playerid, COLOR_LIGHTGREEN, "==================[%s] (%d)=================", GetPlayerNameEx(targetid), targetid);
-	for(new i = 1; i <= 12; i++) {
-		GetPlayerWeaponData(targetid, i, pWeapons[i], pAmmo[i]);
-		if(pWeapons[i] != 0) {
-			GetWeaponName(pWeapons[i], weaponName, 255);
-			SendFMessage(playerid, COLOR_WHITE, "- Arma encontrada: %s.", weaponName);
-		}
-	}
-	PrintHandsForPlayer(targetid, playerid);
-	PrintInvForPlayer(targetid, playerid);
 }
 
 stock ShowPocket(playerid, targetid)
@@ -11599,10 +11563,12 @@ CMD:aceptar(playerid,params[]) {
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto se ha desconectado.");
 		if(!ProxDetectorS(2.0, idToShow, playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
-
-		ShowInv(idToShow, playerid);
+			
+		PrintHandsForPlayer(playerid, idToShow);
+		PrintInvForPlayer(playerid, idToShow);
   		ShowPocket(idToShow, playerid);
   		PrintToysForPlayer(playerid, idToShow);
+  		PrintBackForPlayer(playerid, idToShow);
 		PlayerPlayerActionMessage(idToShow, playerid, 15.0, "ha revisado en busca de objetos a");
 		ReviseOffer[playerid] = 999;
 		return 1;
@@ -13558,9 +13524,9 @@ CMD:llenar(playerid, params[])
 	return 1;
 }
 
-stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[]) {   // 
-    new 
-        string[100]; 
+stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
+{
+    new  string[100];
 
     format(string, sizeof(string), "%s", str); 
     SetPlayerChatBubble(playerid, string, COLOR_ACT1, drawdistance, timeexpire); 

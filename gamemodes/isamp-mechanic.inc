@@ -248,7 +248,7 @@ CMD:ayudamec(playerid, params[])
 
 CMD:mecequipo(playerid, params[])
 {
-	new option;
+	new option, hand;
 
 	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
 	    return 1;
@@ -259,15 +259,16 @@ CMD:mecequipo(playerid, params[])
     if(!PlayerToPoint(3.0, playerid, MEC_OFFICE_X, MEC_OFFICE_Y, MEC_OFFICE_Z))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la oficina del taller, al lado de los estantes donde se guardan las vestimentas de trabajo.");
    	if(!jobDuty[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio");
-
-	RemovePlayerWeapon(playerid, 41); // Evitamos acumulacion de sprays
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
 	if(option == 5)
 	{
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
         PlayerActionMessage(playerid, 15.0, "devuelve su ropa de trabajo al estante y se viste con sus vestimentas personales.");
 	} else
 	    {
+    		hand = SearchFreeHand(playerid);
+			if(hand == -1)
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener alguna mano libre para agarrar el aerosol de pintura.");
 			switch(option)
 			{
 			    case 1: SetPlayerSkin(playerid, 8);
@@ -275,7 +276,7 @@ CMD:mecequipo(playerid, params[])
 			    case 3: SetPlayerSkin(playerid, 42);
 			    case 4: SetPlayerSkin(playerid, 268);
 			}
-			GivePlayerWeapon(playerid, 41, 500);
+			SetHandItemAndParam(playerid, hand, WEAPON_SPRAYCAN, 750);
 			PlayerActionMessage(playerid, 15.0, "toma unas vestimentas del estante y se las pone. Luego agarra un aerosol de pintura.");
 		}
 	return 1;
