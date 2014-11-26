@@ -718,9 +718,13 @@ CMD:hurtar(playerid, params[])
 	return 1;
 }
 
-CMD:verexp(playerid, params[]) {
-	SendClientMessage(playerid, COLOR_WHITE, "Experiencia:");
-	SendFMessage(playerid, COLOR_WHITE, "* Delincuente - nivel: %d exp: %d/%d", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp], GetJobExpNeeded(playerid, JOB_FELON));
+CMD:verexp(playerid, params[])
+{
+	if(ThiefJobInfo[playerid][pFelonLevel] > 0)
+	{
+	    SendClientMessage(playerid, COLOR_WHITE, "Experiencia:");
+		SendFMessage(playerid, COLOR_WHITE, "* Delincuente - nivel: %d exp: %d/%d", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp], GetJobExpNeeded(playerid, JOB_FELON));
+	}
 	return 1;
 }
 

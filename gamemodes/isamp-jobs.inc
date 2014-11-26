@@ -511,7 +511,7 @@ CMD:setjob(playerid, params[])
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
     PlayerInfo[targetid][pJob] = job;
 	if(job == JOB_FELON)
-		createThiefJob(playerid);
+		createThiefJob(targetid);
 	return 1;
 }
 

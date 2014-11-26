@@ -7222,11 +7222,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 						if(GetPlayerCash(playerid) < PRICE_PHONE)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-       					new phoneNumber = 40000 + random(999999);
 						GivePlayerCash(playerid, -PRICE_PHONE);
 						PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
-						PlayerInfo[playerid][pPhoneNumber] = phoneNumber;
+						PlayerInfo[playerid][pPhoneNumber] = 1500000000 + random(99999999);
 						PlayerInfo[playerid][pPhoneC] = 0;
 						PlayerInfo[playerid][pListNumber] = 1;
 						Business[business][bTill] += PRICE_PHONE;
