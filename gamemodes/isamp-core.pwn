@@ -2390,8 +2390,8 @@ public OnBanDataLoad(playerid)
 
 	if(rows)
 	{
-		cache_get_field_content(0, "banIssuerName", issuerName);
-	    cache_get_field_content(0, "banReason", banReason);
+		cache_get_field_content(0, "banIssuerName", issuerName, 1, MAX_PLAYER_NAME);
+	    cache_get_field_content(0, "banReason", banReason, 1, 128);
 	    ClearScreen(playerid);
 	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
 	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
@@ -2536,7 +2536,6 @@ public OnHouseDataLoad(id) {
 		cache_get_field_content(0, "Cocaine", result); 				House[id][Cocaine]				= strval(result);
 		cache_get_field_content(0, "Ecstasy", result); 				House[id][Ecstasy]				= strval(result);
 
-		cache_get_field_content(0, "Description", 					House[id][Description],1,128);
 		cache_get_field_content(0, "Owner", 						House[id][Owner],1,MAX_PLAYER_NAME);
 
 		cache_get_field_content(0, "EntranceX", result); 			House[id][EntranceX] 			= floatstr(result);
@@ -8738,7 +8737,7 @@ CMD:ayuda(playerid,params[]) {
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /comprar /clasificado /pagar /id /admins /toy");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo /aceptar /llenar /changepass");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");

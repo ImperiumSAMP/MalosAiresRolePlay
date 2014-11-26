@@ -12,7 +12,6 @@
 //============================VARIABLES INTERNAS================================
 
 enum HouseSystem {
-	Description[128],
 	Owner[MAX_PLAYER_NAME],
 	Float:EntranceX,
 	Float:EntranceY,
@@ -361,7 +360,7 @@ CMD:acasas(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
 
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /acdisp - /acentrada - /acsalida - /acdesc - /actele - /acprecio - /acvender - /acinterior");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /acdisp - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} para agregar una casa consulta con el comando '/acdisp' qué casa está disponible para ser añadida.");
     SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
 	return 1;
@@ -905,30 +904,6 @@ CMD:acsalida(playerid, params[])
  	return 1;
 }
 
-CMD:acdesc(playerid, params[])
-{
-	new
-		houseid,
-		string[128],
-		desc[128];
-
-	if(PlayerInfo[playerid][pAdmin] != 20)
-	    return 1;
-    if(sscanf(params, "is[128]", houseid, desc))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acsalida [ID casa] [Descripción]");
-	if(houseid < 1 || houseid >= MAX_HOUSES)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
-	if(strfind(desc, "|", true ) != -1)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} el símbolo | no está permitido.");
-
-	mysql_real_escape_string(desc, desc);
-	strmid(House[houseid][Description], desc, 0, strlen(desc), 128);
-	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la descripción de la casa %d ha sido cambiada a %s.", houseid, desc);
-	SendClientMessage(playerid, COLOR_ADMINCMD, string);
-	saveHouse(houseid);
-	return 1;
-}
-
 CMD:acinfo(playerid, params[])
 {
 	new id;
@@ -940,7 +915,7 @@ CMD:acinfo(playerid, params[])
 	if(id < 1 || id >= MAX_HOUSES)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
 
-	SendFMessage(playerid, COLOR_WHITE, "=======================[Casa %d '%s']=======================", id, House[id][Description]);
+	SendFMessage(playerid, COLOR_WHITE, "=======================[Casa %d]=======================", id);
 	SendFMessage(playerid, COLOR_WHITE, "- Tiene dueño: %d", House[id][Owned]);
 	SendFMessage(playerid, COLOR_WHITE, "- Dueño: %s", House[id][Owner]);
 	SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", House[id][HousePrice]);
