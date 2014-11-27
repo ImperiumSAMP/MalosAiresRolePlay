@@ -83,9 +83,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BANK_I              1
 #define POS_BANK_W              1000
 
-#define POS_POLICE_DUTY_X 		221.3295
-#define POS_POLICE_DUTY_Y       185.9018
-#define POS_POLICE_DUTY_Z       1002.7682
+#define POS_POLICE_DUTY_X 		223.3068
+#define POS_POLICE_DUTY_Y       186.2766
+#define POS_POLICE_DUTY_Z       1003.0000
 
 #define POS_SIDE_DUTY_X         261.8023
 #define POS_SIDE_DUTY_Y			109.7926
@@ -3283,13 +3283,6 @@ stock isWeaponAllowed(weapon) {
 	}
 	return 1;
 }
-stock isWeaponlevelone(weapon) {
-	if(weapon == 1 || weapon == 2 || weapon == 3 || weapon == 4 || weapon == 5 || weapon == 6 || weapon == 7 || weapon == 8 || weapon == 9 || weapon == 10 || weapon == 11 || weapon == 12 || weapon == 13 || weapon == 14 || weapon == 15 || weapon == 16 || weapon == 17 || weapon == 18 || weapon == 22 || weapon == 23 || weapon == 24 || weapon == 25 || weapon == 26 || weapon == 27 || weapon == 28 || weapon == 29 ||
-	   weapon == 30 || weapon == 31 || weapon == 32 || weapon == 33 || weapon == 34 || weapon == 41 || weapon == 42 || weapon == 43 || weapon == 45 || weapon == 46){
-	    return 0;
-	}
-	return 1;
-}
 
 public antiCheatTimer()
 {
@@ -3345,18 +3338,6 @@ public antiCheatTimer()
 				    	SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
 				}
 			}
-
-			if(PlayerInfo[playerid][pPlayingHours] <= 2)
-			{
-			   if(!isWeaponlevelone(weapon))
-			   {
-			       ResetPlayerWeapons(playerid);
-			       format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó tener un arma teniendo menos de dos horas de juego.",GetPlayerNameEx(playerid), playerid);
-				   AdministratorMessage(COLOR_WHITE, string, 1);
-
-				}
-			}
-			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 			{
  				new hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
@@ -10176,7 +10157,7 @@ stock EndPlayerDuty(playerid)
 		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
 		resetTazer(playerid);
-		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario y de tus manos.");
+		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario, espalda y manos.");
 	}
 }
 
@@ -11700,15 +11681,13 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 		targetfreehand;
  
 	if(itemid == 0)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en tu mano.");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en esa mano.");
     if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 	if(GetItemType(itemid) == ITEM_WEAPON)
 	{
-		if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes dar un arma estando arriba de un vehículo.");
 		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dar un arma estando en servicio!");
 	}

@@ -54,13 +54,13 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 		HandInfo[playerid][hand][Amount] = 0;
 		SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand); // Borramos el anterior
 	}
-	HandInfo[playerid][hand][Item] = itemid;
-	HandInfo[playerid][hand][Amount] = param;
-	SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
 	if(itemid != 0)
+	{
 	    LoadHandItem(playerid, hand);
-	else
-	    DeleteHandItem(playerid, hand);
+	    HandInfo[playerid][hand][Item] = itemid;
+		HandInfo[playerid][hand][Amount] = param;
+        SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
+	}
 	return 1;
 }
 
@@ -96,17 +96,9 @@ stock ResetHands(playerid)
 stock ResetAndSaveHands(playerid)
 {
 	if(HandInfo[playerid][HAND_LEFT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_WEAPON)
-	{
-		HandInfo[playerid][HAND_LEFT][Item] = 0;
-		HandInfo[playerid][HAND_LEFT][Amount] = 0;
-        SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_LEFT);
-	}
+	    SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
 	if(HandInfo[playerid][HAND_RIGHT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_WEAPON)
-	{
-		HandInfo[playerid][HAND_RIGHT][Item] = 0;
-		HandInfo[playerid][HAND_RIGHT][Amount] = 0;
-        SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_RIGHT);
-	}
+		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	return 1;
 }
 
@@ -172,7 +164,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[128]", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
@@ -182,12 +174,29 @@ CMD:mano(playerid, params[])
 		        leftitem = GetHandItem(playerid, HAND_LEFT),
 		        leftparam = GetHandParam(playerid, HAND_LEFT);
 		        
-          	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
-          	SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico.
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los items que estabas sosteniendo.");
-			
+
+		} else if(strcmp(command, "combinar", true) == 0) {
+
+		    new rightitem = GetHandItem(playerid, HAND_RIGHT),
+		        rightparam = GetHandParam(playerid, HAND_RIGHT),
+		        leftitem = GetHandItem(playerid, HAND_LEFT),
+		        leftparam = GetHandParam(playerid, HAND_LEFT);
+
+			if(rightitem == 0 || leftitem == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(GetItemType(rightitem) != ITEM_WEAPON || GetItemType(leftitem) != ITEM_WEAPON)
+            	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(rightitem != leftitem)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(rightparam + leftparam > 400)
+            	return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad conjunta de balas no puede superar las 400.");
+
+			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+			SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam + leftparam);
+
 		} else if(strcmp(command, "tirar", true) == 0) {
 
 			DropObject(playerid, HAND_RIGHT);

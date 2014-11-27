@@ -98,6 +98,8 @@ CMD:tomartazer(playerid, params[])
    		SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_SILENCED, 10);
 	if(tazerStatus[playerid] == TAZER_USED)
 	    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_SILENCED, tazerAmmo[playerid]);
+	    
+    SendClientMessage(playerid, COLOR_WHITE, "Has tomado tu tazer. Para guardarlo usa /guardartazer.");
 	return 1;
 }
 
@@ -110,22 +112,30 @@ CMD:guardartazer(playerid, params[])
 	if(!tazerInUse[playerid])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el tazer en la mano!");
 
-	new weapon, ammo;
- 	GetPlayerWeaponData(playerid, 2, weapon, ammo); // Silenced se guarda en slot 2 de weapondatas
-	if(weapon == WEAPON_SILENCED)
-	{
-		if(tazerStatus[playerid] != TAZER_EMPTY)
-		{
-		    tazerAmmo[playerid] = ammo;
-		    if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED)
-		    	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-		    tazerStatus[playerid] = TAZER_USED;
-		}
-		if(tazerAmmo[playerid] == 0)
-			tazerStatus[playerid] = TAZER_EMPTY;
+    if(GetHandItem(playerid, HAND_RIGHT) != WEAPON_SILENCED) // Si se le acabó el tazer y por quedarse sin balas se borró de la mano
+    {
+        tazerAmmo[playerid] = 0;
+        tazerStatus[playerid] = TAZER_EMPTY;
 	}
-
+	else
+	{
+		new weapon, ammo;
+	 	GetPlayerWeaponData(playerid, 2, weapon, ammo); // Silenced se guarda en slot 2 de weapondatas
+		if(weapon == WEAPON_SILENCED)
+		{
+			if(tazerStatus[playerid] != TAZER_EMPTY)
+			{
+			    tazerAmmo[playerid] = ammo;
+			    if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED)
+			    	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+			    tazerStatus[playerid] = TAZER_USED;
+			}
+			if(tazerAmmo[playerid] == 0)
+				tazerStatus[playerid] = TAZER_EMPTY;
+		}
+	}
     tazerInUse[playerid] = 0;
+    SendClientMessage(playerid, COLOR_WHITE, "Has guardado tu tazer. Para usarlo nuevamente usa /tomartazer o vé a recargarlo si se te ha acabado.");
 	return 1;
 }
 

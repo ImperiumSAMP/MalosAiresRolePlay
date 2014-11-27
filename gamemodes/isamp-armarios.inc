@@ -54,9 +54,12 @@ stock SetLockerItemAndParam(lockerid, lockerslot, itemid, param)
 			LockerInfo[lockerid][lockerslot][Amount] = 0;
 			SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, lockerslot); // Borramos el anterior
 		}
-		LockerInfo[lockerid][lockerslot][Item] = itemid;
-		LockerInfo[lockerid][lockerslot][Amount] = param;
-		SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, lockerslot);
+		if(itemid != 0)
+		{
+			LockerInfo[lockerid][lockerslot][Item] = itemid;
+			LockerInfo[lockerid][lockerslot][Amount] = param;
+			SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, lockerslot);
+		}
 	}
 	return 1;
 }

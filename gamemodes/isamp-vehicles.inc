@@ -152,9 +152,12 @@ stock SetTrunkItemAndParam(trunkid, trunkslot, itemid, param)
 			TrunkInfo[trunkid][trunkslot][Amount] = 0;
 			SaveSlotInfo(SLOT_TYPE_TRUNK, trunkid, trunkslot); // Borramos el anterior
 		}
-		TrunkInfo[trunkid][trunkslot][Item] = itemid;
-		TrunkInfo[trunkid][trunkslot][Amount] = param;
-		SaveSlotInfo(SLOT_TYPE_TRUNK, trunkid, trunkslot);
+		if(itemid != 0)
+		{
+			TrunkInfo[trunkid][trunkslot][Item] = itemid;
+			TrunkInfo[trunkid][trunkslot][Amount] = param;
+			SaveSlotInfo(SLOT_TYPE_TRUNK, trunkid, trunkslot);
+		}
 	}
 	return 1;
 }

@@ -59,9 +59,12 @@ stock SetInvItemAndParam(playerid, invslot, itemid, param)
 			InvInfo[playerid][invslot][Amount] = 0;
 			SaveSlotInfo(SLOT_TYPE_INV, playerid, invslot); // Borramos el anterior
 		}
-		InvInfo[playerid][invslot][Item] = itemid;
-		InvInfo[playerid][invslot][Amount] = param;
-		SaveSlotInfo(SLOT_TYPE_INV, playerid, invslot);
+		if(itemid != 0)
+		{
+			InvInfo[playerid][invslot][Item] = itemid;
+			InvInfo[playerid][invslot][Amount] = param;
+			SaveSlotInfo(SLOT_TYPE_INV, playerid, invslot);
+		}
 	}
 	return 1;
 }
