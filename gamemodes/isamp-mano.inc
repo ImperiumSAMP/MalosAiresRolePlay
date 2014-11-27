@@ -56,9 +56,9 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	}
 	if(itemid != 0)
 	{
-	    LoadHandItem(playerid, hand);
 	    HandInfo[playerid][hand][Item] = itemid;
 		HandInfo[playerid][hand][Amount] = param;
+		LoadHandItem(playerid, hand);
         SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
 	}
 	return 1;
