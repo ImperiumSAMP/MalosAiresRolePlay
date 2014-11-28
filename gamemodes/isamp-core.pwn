@@ -3794,7 +3794,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
         if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
 			format(string, sizeof(string), "~w~%s", GetVehicleName(vehicleid));
 			GameTextForPlayer(playerid, string, 4000, 1);
-			SendClientMessage(playerid,-1, "Has ingresado a un vehiculo, presiona la tecla ALT para encenderlo o apagarlo.");
+			SendClientMessage(playerid,-1, "Has ingresado a un vehiculo, presiona la tecla Y para encenderlo o apagarlo.");
 			
 			if(!AdminDuty[playerid]) {
 	            if(GetVehicleType(vehicleid) == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID]) {
@@ -3832,7 +3832,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				PlayerTextDrawShow(playerid, PTD_Timer[playerid]);
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "------------------------");
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡La prueba ha comenzado!");
-				SendClientMessage(playerid, COLOR_WHITE, "Enciende el motor (presiona tecla ALT) y conduce sobre los puntos del mapa respetando las leyes de tránsito.");
+				SendClientMessage(playerid, COLOR_WHITE, "Enciende el motor (presiona tecla Y) y conduce sobre los puntos del mapa respetando las leyes de tránsito.");
 				if(playerLicense[playerid][lDStep] == 0) {
 			 		SetPlayerCheckpoint(playerid, 1109.8116, -1743.4208, 13.1255, 5.0);
 					playerLicense[playerid][lDStep] = 1;
@@ -6818,7 +6818,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
             Choice[playerid] = CHOICE_NONE;
 		}
 	}
-	if(PRESSED(KEY_FIRE)) 
+	if(PRESSED(KEY_YES)) 
 	{
 	    new vehicleid = GetPlayerVehicleID(playerid);
 
@@ -8782,7 +8782,7 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8}ALT(prender motor) (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8}Y(prender motor) (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
 
     if(PlayerInfo[playerid][pFaction] != 0)
@@ -9482,7 +9482,7 @@ CMD:rentar(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
 	GivePlayerCash(playerid, -(price * time));
-	SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado este vehículo! Utiliza la tecla ALT para encenderlo. El vehículo será devuelto al acabarse el tiempo.");
+	SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado este vehículo! Utiliza la tecla Y para encenderlo. El vehículo será devuelto al acabarse el tiempo.");
     SendClientMessage(playerid, COLOR_WHITE, "(( Si el vehículo respawnea, lo encontrarás en la agencia donde lo rentaste en primer lugar. ))");
 	RentCarInfo[rentcarid][rRented] = 1;
 	RentCarInfo[rentcarid][rOwnerSQLID] = PlayerInfo[playerid][pID];
