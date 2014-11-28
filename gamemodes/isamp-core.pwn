@@ -8782,7 +8782,7 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8}Y(prender motor) (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8}(/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
 
     if(PlayerInfo[playerid][pFaction] != 0)
