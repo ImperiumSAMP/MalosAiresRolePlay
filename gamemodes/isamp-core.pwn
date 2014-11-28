@@ -474,7 +474,6 @@ forward AFKc(playerid);
 forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
-forward TimeReplenishYo(playerid);
 forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
@@ -790,6 +789,9 @@ public ResetStats(playerid)
 	/* Sistema de carreras */
 	ResetPlayerRaceVariables(playerid);
 	
+	/* Descripciones de 3Dtexts */
+	ResetDescVariables(playerid);
+	
 	/* Sistema de stream de radios */
 	hearingRadioStream[playerid] = false;
 	
@@ -955,9 +957,8 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	new string[64];
 
-    GCounter[playerid] = 0;
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
-	Delete3DTextLabel(DescLabel[playerid]);
+	ResetDescLabel(playerid);
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
@@ -6029,6 +6030,19 @@ PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 	ProxDetector(radius, playerid, string, COLOR_ACT1,COLOR_ACT2,COLOR_ACT3,COLOR_ACT4,COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;
+}
+
+PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
+{
+	new string[128];
+	
+	if(HasPlayerDesc(playerid))
+		HidePlayerDesc(playerid, timeexpire + 2000); // La descripcion es escondida 2 segundos más que la duracion del cme.
+
+    SetPlayerChatBubble(playerid, str, COLOR_ACT1, drawdistance, timeexpire);
+	format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), str);
+	SendClientMessage(playerid, COLOR_ACT1, string);
+    return 1;
 }
 //==============================================================================
 
@@ -12869,6 +12883,18 @@ CMD:me(playerid, params[])
 	return 1;
 }
 
+CMD:cme(playerid, params[])
+{
+    new str[100], text[100];
+
+    if(sscanf(params, "s[100]", text))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cme [texto]. Recuerda que el /cme se usa para indicar acciones.");
+
+    format(str, sizeof(str), "%s", text);
+	PlayerCmeMessage(playerid, 15.0, 5000, str);
+    return 1;
+}
+
 CMD:local(playerid, params[])
 {
 	new text[128], string[128];
@@ -13519,53 +13545,6 @@ CMD:llenar(playerid, params[])
 	fillingFuel[playerid] = true;
 	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
 	return 1;
-}
-
-stock PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
-{
-    new  string[100];
-
-    format(string, sizeof(string), "%s", str); 
-    SetPlayerChatBubble(playerid, string, COLOR_ACT1, drawdistance, timeexpire); 
-	if(GCounter[playerid] != 0)
-		Delete3DTextLabel(DescLabel[playerid]);
-
-    return 1; 
-} 
-
-CMD:cme(playerid, params[]) { 
-    new 
-        str[100], 
-		string[100],
-        text[100];
-		
-    if(!sscanf(params, "s", text)) { 
-        format(str, sizeof(str), "%s", text); 
-        PlayerCmeMessage(playerid, 15.0, 8000, str); // Dura 10 segundos y se ve en un rango de 15.0
-		format(string, sizeof(string), "=> %s %s", GetPlayerNameEx(playerid), text);
-		SendClientMessage(playerid, COLOR_ACT1, string); 
-		if(GCounter[playerid] != 0)
-        SetTimerEx("TimeReplenishYo", 12000, false, "i", playerid);
-    } else { 
-        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cme [texto]"); 
-        SendClientMessage(playerid, COLOR_GREY, "No olvides que el /cme es para indicar acciones, no una descripción (/yo)");   
-    } 
-    return 1; 
-}  
-	
-public TimeReplenishYo(playerid)
-{
-    new
-	    str[100],
-	    Float:X,
-	    Float:Y,
-	    Float:Z;
-	    
-    GetPlayerPos(playerid, X, Y, Z);
-	format(str, sizeof(str), "%s", textodescripcion[playerid]);
-	DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid], COLOR_RED, X, Y, Z, 10, -1);
-	Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
-    return 1;
 }
 
 CMD:animhablar(playerid, params[])
