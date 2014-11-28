@@ -727,7 +727,8 @@ new vlocked,
 	VehicleOfferPrice[MAX_PLAYERS],
 	VehicleOffer[MAX_PLAYERS],
 	VehicleOfferID[MAX_PLAYERS],
-	CarWindowStatus[MAX_VEH];
+	CarWindowStatus[MAX_VEH],
+	bool:startingEngine[MAX_PLAYERS];
 
 //=============[VEHICLE DAO FUNCTIONS | DYNAMIC CAR SYSTEM]=====================
 
@@ -1303,6 +1304,62 @@ CMD:lojack(playerid, params[])
 public FindGps(playerid)
 {
 	DisablePlayerCheckpoint(playerid);
+	return 1;
+}
+
+forward StartEngineTimer(playerid, vehicleid);
+public StartEngineTimer(playerid, vehicleid)
+{
+    new vehid = GetPlayerVehicleID(playerid);
+    if(vehid == vehicleid && VehicleInfo[vehicleid][VehEngine] != 1)
+    {
+	    SendClientMessage(playerid, COLOR_WHITE, "Has encendido el motor del vehículo.");
+		SetEngine(vehicleid, 1);
+	}
+	startingEngine[playerid] = false;
+}
+
+CMD:motor(playerid, params[])
+{
+    new vehicleid = GetPlayerVehicleID(playerid);
+
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo para utilizar este comando.");
+	GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+	if(startingEngine[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Te encuentras encendiendo el motor, espera...");
+	if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
+	    return 1;
+	if(VehicleInfo[vehicleid][VehFuel] < 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene combustible.");
+	if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && !playerHasCarKey(playerid, vehicleid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+	if(VehicleInfo[vehicleid][VehType] == VEH_FACTION && VehicleInfo[vehicleid][VehFaction] != PlayerInfo[playerid][pFaction])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+	if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+	if(jobRequiresVehicle(VehicleInfo[vehicleid][VehJob]))
+	    return SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
+	if(VehicleInfo[vehicleid][VehJob] != 0 && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+	if(VehicleInfo[vehicleid][VehHP] < 500)
+ 	{
+	    PlayerActionMessage(playerid, 15.0, "intenta encender el motor del vehículo pero se encuentra dañado.");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo se encuentra averiado.");
+	    return 1;
+	}
+	
+	if(VehicleInfo[vehicleid][VehEngine] != 1)
+	{
+		startingEngine[playerid] = true;
+		SetTimerEx("StartEngineTimer", 2000, false, "ii", playerid, vehicleid);
+		PlayerActionMessage(playerid, 15.0, "gira la llave y le da arranque al vehículo.");
+		GameTextForPlayer(playerid, "~r~Encendiendo motor", 2000, 4);
+	} else
+	{
+		PlayerActionMessage(playerid, 15.0, "apaga el motor del vehículo.");
+		SetEngine(vehicleid, 0);
+	}
 	return 1;
 }
 

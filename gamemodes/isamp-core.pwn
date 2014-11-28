@@ -343,8 +343,6 @@ new
 	
 	//Cinturón de seguridad
 	bool:SeatBelt[MAX_PLAYERS],
-	
-	TimeMotor[MAX_PLAYERS],
 
 	lastPoliceCallNumber = 0,
 	lastMedicCallNumber = 0,
@@ -481,7 +479,6 @@ forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
 forward PesasReload(playerid);
-forward TimerMotor(playerid);
 
 //==============================================================================
 
@@ -733,11 +730,13 @@ public OnPlayerConnectEx(playerid) {
 public ResetStats(playerid)
 {
     MedDuty[playerid] = 0;
+    
+	/* Vehiculos */
     OfferingVehicle[playerid] = false;
     VehicleOfferPrice[playerid] = -1;
     VehicleOffer[playerid] = INVALID_PLAYER_ID;
     VehicleOfferID[playerid] = -1;
-	TimeMotor[playerid] = 0;
+	startingEngine[playerid] = false;
     
     /* Venta de casas */
 	ResetHouseOffer(playerid);
@@ -3791,19 +3790,23 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
 	//==========================================================================
 
-        if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
+        if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
+		{
 			format(string, sizeof(string), "~w~%s", GetVehicleName(vehicleid));
 			GameTextForPlayer(playerid, string, 4000, 1);
-			SendClientMessage(playerid,-1, "Has ingresado a un vehiculo, presiona la tecla Y para encenderlo o apagarlo.");
-			
-			if(!AdminDuty[playerid]) {
-	            if(GetVehicleType(vehicleid) == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID]) {
+			new vehicleType = GetVehicleType(vehicleid);
+						
+			if(!AdminDuty[playerid])
+			{
+	            if(vehicleType == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID])
+				{
 					SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta bicicleta no te pertenece!");
 					RemovePlayerFromVehicle(playerid);
-				} else if(VehicleInfo[vehicleid][VehLocked] == 1 && GetVehicleType(vehicleid) != VTYPE_BMX) {
-				    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
+				}
+				else if(VehicleInfo[vehicleid][VehLocked] == 1)
+				{
+				    if(vehicleType == VTYPE_BMX || vehicleType == VTYPE_BIKE || vehicleType == VTYPE_QUAD)
 		    			return 1;
-					}
 		    			
 					SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 					RemovePlayerFromVehicle(playerid);
@@ -3832,7 +3835,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				PlayerTextDrawShow(playerid, PTD_Timer[playerid]);
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "------------------------");
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡La prueba ha comenzado!");
-				SendClientMessage(playerid, COLOR_WHITE, "Enciende el motor (presiona tecla Y) y conduce sobre los puntos del mapa respetando las leyes de tránsito.");
+				SendClientMessage(playerid, COLOR_WHITE, "Enciende el motor con '/motor' o la tecla 'Y', y conduce sobre los puntos del mapa respetando las leyes de tránsito.");
 				if(playerLicense[playerid][lDStep] == 0) {
 			 		SetPlayerCheckpoint(playerid, 1109.8116, -1743.4208, 13.1255, 5.0);
 					playerLicense[playerid][lDStep] = 1;
@@ -6547,7 +6550,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		string[128];
 
 	// Si está esposado, cae al piso al intentar saltar.
-	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED) ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
+	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
+		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
 
 	if(PRESSED(KEY_WALK)) {
 		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 1) {
@@ -6820,47 +6824,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	}
 	if(PRESSED(KEY_YES)) 
 	{
-	    new vehicleid = GetPlayerVehicleID(playerid);
-
-	    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	        return 1;
-		if(TimeMotor[playerid] != 0)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un momento para volver a prender/apagar el motor.");
-	    GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-	    if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
-	        return 1;
-	    if(VehicleInfo[vehicleid][VehFuel] < 1)
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene combustible.");
-	    if(VehicleInfo[vehicleid][VehHP] < 500)
- 	    {
-		    PlayerActionMessage(playerid, 15.0, "intenta encender el motor del vehículo pero se encuentra dañado.");
-		    SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo se encuentra averiado.");
-		    return 1;
-	    }
-	    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && !playerHasCarKey(playerid, vehicleid))
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-	    if(VehicleInfo[vehicleid][VehType] == VEH_FACTION && VehicleInfo[vehicleid][VehFaction] != PlayerInfo[playerid][pFaction])
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-	    if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-	    if(jobRequiresVehicle(VehicleInfo[vehicleid][VehJob]))
-	        return SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
-	    if(VehicleInfo[vehicleid][VehJob] != 0 && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob])
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-	    
-	    if(VehicleInfo[vehicleid][VehEngine] != 1)
-	    {
-		    PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-		    SetEngine(vehicleid, 1);
-			TimeMotor[playerid] = 1;
-			SetTimerEx("TimerMotor", 3000, false, "i", playerid);
-	    } else
-	    {
-		    PlayerActionMessage(playerid, 15.0, "ha apagado el motor del vehículo.");
-		    SetEngine(vehicleid, 0);
-			TimeMotor[playerid] = 1;
-			SetTimerEx("TimerMotor", 3000, false, "i", playerid);
-	    }
+	    if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	        cmd_motor(playerid, "");
 	    return 1;
     }
 	
@@ -6946,11 +6911,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 		}
 	}
-	return 1;
-}
-public TimerMotor(playerid)
-{
-    TimeMotor[playerid] = 0;
 	return 1;
 }
 
@@ -8782,7 +8742,7 @@ CMD:ayuda(playerid,params[]) {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8}(/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
 
     if(PlayerInfo[playerid][pFaction] != 0)
@@ -9482,7 +9442,7 @@ CMD:rentar(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
 	GivePlayerCash(playerid, -(price * time));
-	SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado este vehículo! Utiliza la tecla Y para encenderlo. El vehículo será devuelto al acabarse el tiempo.");
+	SendClientMessage(playerid, COLOR_WHITE, "¡Has rentado el vehículo! Utiliza '/motor' o la tecla Y para encenderlo. El vehículo será devuelto al acabarse el tiempo.");
     SendClientMessage(playerid, COLOR_WHITE, "(( Si el vehículo respawnea, lo encontrarás en la agencia donde lo rentaste en primer lugar. ))");
 	RentCarInfo[rentcarid][rRented] = 1;
 	RentCarInfo[rentcarid][rOwnerSQLID] = PlayerInfo[playerid][pID];
