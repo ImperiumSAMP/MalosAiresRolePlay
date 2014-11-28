@@ -881,6 +881,7 @@ public ResetStats(playerid)
 
 	resetThiefVariables(playerid);
 
+	PlayerInfo[playerid][pID] = 0;
 	PlayerInfo[playerid][pCantWork] = 0;
 	PlayerInfo[playerid][pWantedLevel] = 0;
 	PlayerInfo[playerid][pBizKey] = 0;
@@ -9064,7 +9065,7 @@ CMD:comprar(playerid, params[])
 					PRICE_LIGHTER,
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON),
-					GetItemPrice(ITEM_ID_CAMARA),
+					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
 					GetItemPrice(ITEM_ID_MALETIN),
