@@ -10,8 +10,8 @@
 #define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
 #define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios"
 
-#define DLG_BIZ_HARD            10026
-#define DLG_BIZ_ACCESS          10027
+#define DLG_BIZ_HARD            10028
+#define DLG_BIZ_ACCESS          10029
 
 // Negocios.
 #define BIZ_REST          		1

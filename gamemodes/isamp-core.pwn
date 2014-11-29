@@ -138,8 +138,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_TUNING_COLOR2       10022
 #define DLG_TUNING_LLANTAS      10023
 #define DLG_CAMARAS_POLICIA     10024
-// #define DLG_BIZ_HARD            10026
-// #define DLG_BIZ_ACCESS          10027
+// #define DLG_NOTEBOOK         10025
+// #define DLG_NOTEBOOK_2       10026
+// #define DLG_NOTEBOOK_3       10027
+// #define DLG_BIZ_HARD         10028
+// #define DLG_BIZ_ACCESS       10029
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -7334,6 +7337,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
             	OnPlayerBuyHardDialog(playerid, listitem);
             TogglePlayerControllable(playerid, true);
             return 1;
+		}
+		case DLG_NOTEBOOK:
+		{
+		    OnNotebookDialogResponse(playerid, response, listitem);
+		    return 1;
+		}
+		case DLG_NOTEBOOK_2:
+		{
+		    OnNotebook2DialogResponse(playerid, response, listitem);
+		    return 1;
+		}
+		case DLG_NOTEBOOK_3:
+		{
+		    OnNotebook3DialogResponse(playerid, response, inputtext);
+		    return 1;
 		}
 	    case DLG_GUIDE: {
 	        if(response) {
