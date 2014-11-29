@@ -174,6 +174,9 @@ CMD:mano(playerid, params[])
 		        leftitem = GetHandItem(playerid, HAND_LEFT),
 		        leftparam = GetHandParam(playerid, HAND_LEFT);
 		        
+            if(rightitem == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
+	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los items que estabas sosteniendo.");
@@ -185,6 +188,8 @@ CMD:mano(playerid, params[])
 		        leftitem = GetHandItem(playerid, HAND_LEFT),
 		        leftparam = GetHandParam(playerid, HAND_LEFT);
 
+			if(rightitem == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
 			if(rightitem == 0 || leftitem == 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
 			if(GetItemType(rightitem) != ITEM_WEAPON || GetItemType(leftitem) != ITEM_WEAPON)

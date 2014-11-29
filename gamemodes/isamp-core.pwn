@@ -5710,14 +5710,17 @@ public banTimer(playerid) {
 	return Ban(playerid);
 }
 
-public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[]) {
-	new
-		string[128];
+public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
+{
+	new string[128];
 		
-	foreach(new i : Player) {
-	    if(i == playerid) {
+	foreach(new i : Player)
+	{
+	    if(i == playerid)
+		{
 	        SendFMessage(i, COLOR_ADMINCMD, "Has sido expulsado/a por %s, razón: %s", kickedby, reason);
-	    } else if(PlayerInfo[i][pAdmin] > 0) {
+	    } else if(PlayerInfo[i][pAdmin] > 0)
+		{
 	        SendFMessage(i, COLOR_ADMINCMD, "%s ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
 	    }
 	}
