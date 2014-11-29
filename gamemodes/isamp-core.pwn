@@ -5813,15 +5813,16 @@ stock ShowServerPassword() {
 }
 
 //====================================================[Chat Functions]=============================================================
-public SendFactionMessage(faction, color, string[]) {
-	foreach(new i : Player) {
-		if(PlayerInfo[i][pFaction] != 0) {
-		 	if(PlayerInfo[i][pFaction] == faction) {
-				SendClientMessage(i, color, string);
-			}
-		}
+
+public SendFactionMessage(faction, color, string[])
+{
+	foreach(new i : Player)
+	{
+		if(PlayerInfo[i][pFaction] == faction)
+			SendClientMessage(i, color, string);
 	}
 }
+
 //==================================================================================================================================
 
 public fuelTimer()
@@ -8889,7 +8890,7 @@ CMD:sms(playerid, params[])
 
 CMD:msg(playerid, params[])
 {
-	new phonenumber, string[128], text[128];
+	new phonenumber, string[128], text[128], contact;
 
 	if(sscanf(params, "ds[128]", phonenumber, text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
@@ -8899,30 +8900,40 @@ CMD:msg(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(GetPlayerCash(playerid) < PRICE_TEXT)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El mensaje no ha podido ser enviado (puede que no tengas dinero o que el jugador no se encuentre conectado).");
+	if(phonenumber == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Número inválido.");
 
-	PlayerActionMessage(playerid,15.0,"toma su teléfono celular y comienza a escribir un mensaje.");
+	PlayerActionMessage(playerid, 15.0, "toma su teléfono celular y comienza a escribir un mensaje.");
 	
 	if(phonenumber == 3900)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: gracias por comunicarte con CTR-MAN, tu mensaje será recibido.");
-		foreach(new i : Player)
-		{
-			if(PlayerInfo[i][pFaction] == FAC_MAN)
-				SendFMessage(i, COLOR_WHITE, "[Mensaje a CTR-MAN del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
-    	}
+		format(string, sizeof(string), "[SMS a la radio del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+		SendFactionMessage(FAC_MAN, COLOR_WHITE, string);
 		return 1;
 	}
 	
 	foreach(new i : Player)
 	{
-		if(PlayerInfo[i][pPhoneNumber] == phonenumber && phonenumber != 0)
+		if(PlayerInfo[i][pPhoneNumber] == phonenumber)
 		{
   			if(!PhoneEnabled[i])
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "El teléfono al que quieres contactar no se encuentra en servicio.");
 
 			SendClientMessage(playerid, COLOR_YELLOW2, "Mensaje de texto enviado.");
-			SendFMessage(i,COLOR_LIGHTGREEN, "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
-			SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %d: %s", PlayerInfo[i][pPhoneNumber], text);
+			
+		   	contact = IsNumberInNotebook(playerid, phonenumber);
+			if(contact != -1)
+				SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %s: %s", GetNotebookContactName(playerid, contact), text);
+            else
+				SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %d: %s", PlayerInfo[i][pPhoneNumber], text);
+
+			contact = IsNumberInNotebook(i, PlayerInfo[playerid][pPhoneNumber]);
+			if(contact != -1)
+				SendFMessage(i, COLOR_LIGHTGREEN, "SMS de %s: %s", GetNotebookContactName(i, contact), text);
+			else
+			    SendFMessage(i, COLOR_LIGHTGREEN, "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
+			    
 			PhoneAnimation(playerid);
 			SMSLog(string);
 			GivePlayerCash(playerid, -PRICE_TEXT);
@@ -8977,7 +8988,7 @@ CMD:colgar(playerid, params[])
 
 CMD:llamar(playerid, params[])
 {
-	new workers, number;
+	new workers, number, contact;
 
     if(sscanf(params, "i", number))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
@@ -8989,7 +9000,9 @@ CMD:llamar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
 	if(number == PlayerInfo[playerid][pPhoneNumber])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
-	    
+	if(number == 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} número inválido.");
+	
 	PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
 	
 	if(number == 911)
@@ -9034,7 +9047,7 @@ CMD:llamar(playerid, params[])
 	
 	foreach(new i : Player)
 	{
-		if(PlayerInfo[i][pPhoneNumber] == number && number != 0)
+		if(PlayerInfo[i][pPhoneNumber] == number)
 		{
     		if(!PhoneEnabled[i] || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
 		    	return SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
@@ -9043,7 +9056,12 @@ CMD:llamar(playerid, params[])
 
 			Mobile[playerid] = i;
 			PlayerDoMessage(i, 15.0, "Un teléfono ha comenzado a sonar.");
-			SendFMessage(i, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
+
+			contact = IsNumberInNotebook(i, PlayerInfo[playerid][pPhoneNumber]);
+			if(contact != -1)
+				SendFMessage(i, COLOR_WHITE, "Tienes una llamada de %s, utiliza /atender o /colgar.", GetNotebookContactName(i, contact));
+			else
+				SendFMessage(i, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
             StartedCall[playerid] = 1;
             StartedCall[i] = 0;
             if(!IsPlayerInAnyVehicle(playerid))

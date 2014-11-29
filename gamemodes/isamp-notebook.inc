@@ -37,6 +37,24 @@ forward OnNotebook3DialogResponse(playerid, response, inputtext[]);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
+stock GetNotebookContactName(playerid, contact)
+{
+	new str[40] = "";
+	if(contact >= 0 && contact < MAX_NOTEBOOK_CONTACTS)
+		format(str, sizeof(str), "%s", playerNotebook[playerid][contact][cName]);
+	return str;
+}
+
+stock IsNumberInNotebook(playerid, number)
+{
+	for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
+ 	{
+		if(playerNotebook[playerid][i][cNumber] == number)
+		    return i;
+	}
+	return -1;
+}
+
 ShowNotebook(playerid)
 {
 	if(IsPlayerConnected(playerid))
@@ -216,6 +234,7 @@ CMD:notebookdebug(playerid, params[])
 	if(id < 0 || id >= MAX_PLAYERS)
         return SendClientMessage(playerid, COLOR_YELLOW2, "ID invalida.");
 
+	SendFMessage(playerid, COLOR_YELLOW, "[%d] playerContactSelected = %d", id, playerContactSelected[playerid]);
 	for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 	{
 	    SendFMessage(playerid, COLOR_YELLOW, "[%d][%d] cNumber = %d", id, i, playerNotebook[id][i][cNumber]);
