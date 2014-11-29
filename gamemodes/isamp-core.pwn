@@ -3302,18 +3302,6 @@ public antiCheatTimer()
 		if(gPlayerLogged[playerid] == 1)
 		{
 		    weapon = GetPlayerWeapon(playerid);
-		    
-		    if(PlayerInfo[playerid][pAdmin] < 1)
-			{
-				if(!isWeaponAllowed(weapon))
-				{
-				    format(string, sizeof(string), "arma %d [%s] ", weapon, GetItemName(weapon));
-					KickPlayer(playerid, "el sistema", string);
-				}
-				
-				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
-					BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
-			}
 
 			if(GetPVarInt(playerid, "died") != 1)
 			{
@@ -3347,6 +3335,22 @@ public antiCheatTimer()
 				    	SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
 				}
 			}
+			
+			if(PlayerInfo[playerid][pAdmin] < 1)
+			{
+				if(!isWeaponAllowed(GetHandItem(playerid, HAND_RIGHT)))
+				{
+				    format(string, sizeof(string), "arma %d [%s] ", GetHandItem(playerid, HAND_RIGHT), GetItemName(GetHandItem(playerid, HAND_RIGHT)));
+					KickPlayer(playerid, "el sistema", string);
+				} else if(!isWeaponAllowed(GetHandItem(playerid, HAND_LEFT)))
+				{
+					format(string, sizeof(string), "arma %d [%s] ", GetHandItem(playerid, HAND_LEFT), GetItemName(GetHandItem(playerid, HAND_LEFT)));
+					KickPlayer(playerid, "el sistema", string);
+				}
+				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
+					BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
+			}
+			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 			{
  				new hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
