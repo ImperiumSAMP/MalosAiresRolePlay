@@ -25,6 +25,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-inventory.inc" 			//Sistema de inventario y maletero
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
+#include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-factions.inc" 			//Sistema de facciones
@@ -35,7 +36,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
-#include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
 #include "isamp-thiefjob.inc" 			//Sistema del job de ladron
 #include "isamp-tazer.inc" 				//Sistema del tazer
 #include "isamp-animations.inc" 		//Sistema de animaciones

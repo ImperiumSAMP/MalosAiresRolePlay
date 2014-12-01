@@ -430,6 +430,8 @@ CMD:asaltar(playerid, params[])
 	  		format(string, sizeof(string), "le ha robado algo de dinero a %s tomando provecho de su incapacidad.", GetPlayerNameEx(target));
 	 		PlayerActionMessage(playerid, 15.0, string);
 	        printf("%s asalto agonizando a %s", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+	        if(randomAmount > 50000)
+	            randomAmount = 50000;
 			GivePlayerCash(playerid, randomAmount);
 			GivePlayerCash(target, -randomAmount);
 			if(GetPVarInt(target, "disabled") != DISABLE_DYING && GetPVarInt(target, "disabled") != DISABLE_DEATHBED && ThiefJobInfo[playerid][pFelonLevel] == 3) {
@@ -480,6 +482,8 @@ CMD:mentir(playerid, params[])
 	        PlayerActionMessage(playerid, 15.0, "ha sido descubierto intentando engañar al ladrón.");
             format(string, sizeof(string), "le ha robado algo de dinero a %s.", GetPlayerNameEx(playerid));
         	PlayerActionMessage(felon[playerid], 15.0, string);
+        	if(targetMoney > 50000)
+        	    targetMoney = 50000;
 			GivePlayerCash(felon[playerid], targetMoney);
 			GivePlayerCash(playerid, -targetMoney);
 	   		if(ThiefJobInfo[felon[playerid]][pFelonLevel] == 3) {
@@ -509,6 +513,8 @@ CMD:cooperar(playerid, params[])
 			format(string, sizeof(string), "le ha robado algo de dinero a %s.", GetPlayerNameEx(playerid));
 			PlayerActionMessage(felon[playerid], 15.0, string);
 			SendClientMessage(playerid, COLOR_YELLOW2, "Has cooperado y el ladrón te ha robado algo de dinero.");
+			if(randomAmount > 50000)
+			    randomAmount = 50000;
 			GivePlayerCash(felon[playerid], randomAmount);
 			GivePlayerCash(playerid, -randomAmount);
 			if(ThiefJobInfo[felon[playerid]][pFelonLevel] == 3)
