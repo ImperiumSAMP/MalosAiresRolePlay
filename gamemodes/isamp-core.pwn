@@ -1690,7 +1690,10 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
 				    NicksEnabled[playerid] = true;
 				    foreach(new i : Player)
-				    	ShowPlayerNameTagForPlayer(playerid, i, true);
+				    {
+				        if(usingMask[i] == false)
+				    		ShowPlayerNameTagForPlayer(playerid, i, true);
+					}
 				}
 			}
 	  		else if(strcmp(x_info,"noticias",true) == 0)
@@ -12574,10 +12577,10 @@ public OnPlayerStreamIn(playerid, forplayerid)
 	if(usingMask[playerid])
 	{
 	    if(PlayerInfo[forplayerid][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-	    	ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
+	    	ShowPlayerNameTagForPlayer(forplayerid, playerid, false);
 	}
-	if(!NicksEnabled[playerid])
-	    ShowPlayerNameTagForPlayer(forplayerid, playerid, 0);
+	if(!NicksEnabled[forplayerid])
+	    ShowPlayerNameTagForPlayer(forplayerid, playerid, false);
 	return 1;
 }
 

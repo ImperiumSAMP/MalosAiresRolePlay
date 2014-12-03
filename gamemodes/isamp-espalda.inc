@@ -159,6 +159,8 @@ stock SaveItemOnBack(playerid, playerhand)
 
 	new itemid = GetHandItem(playerid, playerhand);
 
+	if(GetBackItem(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes algo colgado en tu hombro.");
 	if(itemid == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 	if(!HasBackPermission(itemid))
