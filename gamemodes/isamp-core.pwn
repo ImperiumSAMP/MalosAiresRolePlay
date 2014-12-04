@@ -481,6 +481,7 @@ forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
 forward PesasReload(playerid);
+forward YaPuedoSeguirTiroteando(playerid);
 
 //==============================================================================
 
@@ -3231,6 +3232,7 @@ stock isWeaponForHeadshot(weaponid) {
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
 	new Float:armour;
     GetPlayerArmour(playerid, armour);
+    new option = random(100);
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
@@ -3239,7 +3241,52 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 	
 		if(checkTazer(playerid,issuerid,amount,weaponid))
 		    return 1;
-		/*
+
+		if(weaponid == 22 || weaponid == 23) // 9mm c/s silenced
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 29)
+                {
+                    TeDieronPiola(playerid);
+                    return 1;
+				}
+				else
+				{
+					new msg[64];
+					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
+					return SendClientMessage(playerid, -1, msg);
+				}
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 14)
+                {
+                    TeDieronPiola(playerid);
+                    return 1;
+				}
+				else
+				{
+					new msg[64];
+					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
+					return SendClientMessage(playerid, -1, msg);
+				}
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 24)
+                {
+                    TeDieronPiola(playerid);
+                    return 1;
+				}
+				else
+				{
+					new msg[64];
+					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
+					return SendClientMessage(playerid, -1, msg);
+				}
+			}
+		}/*
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
 		    SetPlayerHealthEx(playerid, 20);
@@ -3277,6 +3324,22 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
     return 1;
+}
+
+stock TeDieronPiola(playerid)
+{
+	SetPlayerDrunkLevel (playerid, 10500);
+	GameTextForPlayer(playerid, "Te dieron un disparo certero y has caido al suelo", 5000, 6);
+	SetPlayerWeather(playerid, 111);
+	SetTimerEx("YaPuedoSeguirTiroteando", 5000, false, "i", playerid);
+	return 1;
+}
+
+public YaPuedoSeguirTiroteando(playerid)
+{
+	syncPlayerTime(playerid);
+	SetPlayerDrunkLevel (playerid, 0);
+	return 1;
 }
 
 stock SetPlayerHealthEx(playerid, Float:health) {
