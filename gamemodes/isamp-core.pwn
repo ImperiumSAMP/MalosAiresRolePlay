@@ -3247,44 +3247,17 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             if(bodypart == 3 || bodypart == 4) //torso o abdomen
             {
                 if(option <= 29)
-                {
-                    TeDieronPiola(playerid);
-                    return 1;
-				}
-				else
-				{
-					new msg[64];
-					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
-					return SendClientMessage(playerid, -1, msg);
-				}
+                	TeDieronPiola(playerid);
 			}
 			if(bodypart == 5 || bodypart == 6) //brazos
 			{
                 if(option <= 14)
-                {
                     TeDieronPiola(playerid);
-                    return 1;
-				}
-				else
-				{
-					new msg[64];
-					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
-					return SendClientMessage(playerid, -1, msg);
-				}
 			}
 			if(bodypart == 7 || bodypart == 8) //piernas
 			{
                 if(option <= 24)
-                {
                     TeDieronPiola(playerid);
-                    return 1;
-				}
-				else
-				{
-					new msg[64];
-					format(msg, 128, "No te dieron piola porque salió el %d en el random", option);
-					return SendClientMessage(playerid, -1, msg);
-				}
 			}
 		}/*
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
