@@ -3396,7 +3396,7 @@ stock TeDieronPiola(playerid)
 	GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 6);
 	SetPlayerWeather(playerid, 111);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-        ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 2000);
+		ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 2000, 1);
 	SetTimerEx("YaPuedoSeguirTiroteando", 5000, false, "i", playerid);
 	return 1;
 }
