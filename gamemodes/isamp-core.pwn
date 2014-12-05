@@ -3259,7 +3259,98 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
                 if(option <= 24)
                     TeDieronPiola(playerid);
 			}
-		}/*
+		}
+        if(weaponid == 24 || weaponid == 30 || weaponid == 31) // Deagle o AK47 o M4
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 39)
+                	TeDieronPiola(playerid);
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 24)
+                    TeDieronPiola(playerid);
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 34)
+                    TeDieronPiola(playerid);
+			}
+		}
+		if(weaponid == 25 || weaponid == 33) // Shotgun o Rifle de caza
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 44)
+                	TeDieronPiola(playerid);
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 29)
+                    TeDieronPiola(playerid);
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 39)
+                    TeDieronPiola(playerid);
+			}
+		}
+		if(weaponid == 28 || weaponid == 32) // Uzi o Mac
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 34)
+                	TeDieronPiola(playerid);
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 19)
+                    TeDieronPiola(playerid);
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 29)
+                    TeDieronPiola(playerid);
+			}
+		}
+		if(weaponid == 29) //mp5
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 37)
+                	TeDieronPiola(playerid);
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 22)
+                    TeDieronPiola(playerid);
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 32)
+                    TeDieronPiola(playerid);
+			}
+		}
+		if(weaponid == 34) // Sniper
+        {
+            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            {
+                if(option <= 49)
+                	TeDieronPiola(playerid);
+			}
+			if(bodypart == 5 || bodypart == 6) //brazos
+			{
+                if(option <= 34)
+                    TeDieronPiola(playerid);
+			}
+			if(bodypart == 7 || bodypart == 8) //piernas
+			{
+                if(option <= 44)
+                    TeDieronPiola(playerid);
+			}
+		}
+		/*
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
 		    SetPlayerHealthEx(playerid, 20);
@@ -3302,8 +3393,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 stock TeDieronPiola(playerid)
 {
 	SetPlayerDrunkLevel (playerid, 10500);
-	GameTextForPlayer(playerid, "Te dieron un disparo certero y has caido al suelo", 5000, 6);
+	GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 6);
 	SetPlayerWeather(playerid, 111);
+	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+        ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 2000);
 	SetTimerEx("YaPuedoSeguirTiroteando", 5000, false, "i", playerid);
 	return 1;
 }
