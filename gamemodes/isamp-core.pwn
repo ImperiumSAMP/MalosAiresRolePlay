@@ -9619,8 +9619,8 @@ CMD:comprar(playerid, params[])
 			new vehicleid = GetPlayerVehicleID(playerid);
        		if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
        			return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
-       		if(amount < 1 || amount > 50)
-     			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 50.");
+       		if(amount < 1 || amount > 250)
+     			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 250.");
        		if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_INSUMOS))
 			{
    				SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_INSUMOS));
@@ -10511,6 +10511,7 @@ stock EndPlayerDuty(playerid)
 	}
 }
 
+forward bool:CheckFreeSpaceForDuty(playerid);
 stock bool:CheckFreeSpaceForDuty(playerid)
 {
 	if(GetHandItem(playerid, HAND_RIGHT) != 0 || GetHandItem(playerid, HAND_LEFT) != 0 || GetBackItem(playerid) != 0 || SearchInvFreeSlot(playerid) == -1)
@@ -10519,6 +10520,7 @@ stock bool:CheckFreeSpaceForDuty(playerid)
 		return true;
 }
 
+forward bool:CheckTakeInputs(playerid);
 stock bool:CheckTakeInputs(playerid)
 {
 	if(PlayerInfo[playerid][pTakeInputs] == 2 ||PlayerInfo[playerid][pTakeInputs] == 4)

@@ -121,7 +121,7 @@ stock printLogPma(playerid,targetname[]) {
 
 CMD:sequipo(playerid, params[])
 {
-	new equipo;
+	new equipo, string[128];
 
 	if(!isPlayerSideOnDuty(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
