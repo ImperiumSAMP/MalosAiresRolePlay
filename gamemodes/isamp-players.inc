@@ -75,7 +75,9 @@ enum pInfo {
 	pMarijuana,
 	pLSD,
 	pEcstasy,
-	pCocaine
+	pCocaine,
+	
+	pTakeInputs
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
