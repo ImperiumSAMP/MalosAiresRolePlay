@@ -416,7 +416,6 @@ forward matsTimer(playerid);
 forward buyMatsTimer(playerid, amount);
 forward buyDrugsTimer(playerid, amount);
 forward buyProductsTimer(playerid, amount);
-forward buyInputsTimer(playerid, amount);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -761,6 +760,9 @@ public ResetStats(playerid)
 	
 	/* Sistema de Mecanicos y Tuning */
 	ResetRepairOffer(playerid);
+	
+	/* Sistema de equipos PMA y SIDE */
+	ResetPlayerInputs(playerid);
 	
 	/* Saludo */
 	saluteOffer[playerid] = INVALID_PLAYER_ID;
@@ -3119,12 +3121,10 @@ public PayDay(playerid) {
 		if(PlayerInfo[playerid][pJobTime] > 0)	{
 			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
 		}
-		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE)	{
-			PlayerInfo[playerid][pTakeInputs] = 0; // Si es de la faccion POLICIA o SIDE le seteamos a 0 la toma de insumos (/pequipo o /sequipo)
-		}
+		
+		ResetPlayerInputs(playerid);
 
-		new
-			expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
+		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
 
 		if(PlayerInfo[playerid][pExp] < expamount) {
 			SendFMessage(playerid, COLOR_WHITE, "(( Tienes %d/%d puntos de respeto. ))", PlayerInfo[playerid][pExp], expamount);
@@ -4173,33 +4173,6 @@ public buyProductsTimer(playerid, amount) {
 	return 1;
 }
 
-// COMPRA DE INSUMOS.
-
-public buyInputsTimer(playerid, amount) {
-	new
-	    vehicleid = GetPlayerVehicleID(playerid),
-		bool:charged = false;
-
-    TogglePlayerControllable(playerid, true);
-
-	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
-	    	SetTrunkItemAndParam(vehicleid, i, 99, amount);
-			charged = true;
-			break;
-	    }
-	}
-	if(!charged) {
-        SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
-        GivePlayerCash(playerid, amount * GetItemPrice(ITEM_ID_PRODUCTOS));
-	} else
-	    {
-			SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los insumos dentro escribiendo /descargar en la entrada!");
-			PlayerActionMessage(playerid, 15.0, "compra algunos insumos y los carga en el vehículo.");
-		}
-	return 1;
-}
-
 //=============================DESCARGA DE ITEMS================================
 
 CMD:descargar(playerid, params[]) {
@@ -4265,39 +4238,6 @@ CMD:descargar(playerid, params[]) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la van de la facción.");
 		}
     }
-    
-    if(PlayerToPoint(6.0, playerid, 1568.69, -1689.97, 6.21875) || PlayerToPoint(6.0, playerid, 1216.94, -1676.9, 13.4521))
-		{
- 			if(!IsPlayerInAnyVehicle(playerid))
-		    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo!");
-		    if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
-		    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo con dueño o de facción.");
-			new totalAmount = 0;
-       		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
-			{
-			    if(GetTrunkItem(vehicleid, i) == 99)
-				{
-			        amount = GetTrunkParam(vehicleid, i);
-					if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 50000) // Si supera el maximo de productos permitido por negocio
-					{
-						SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas insumos al deposito ya que el mismo está lleno.");
-						break;
-					}
-					totalAmount += GetTrunkParam(vehicleid, i);
-					SetTrunkItemAndParam(vehicleid, i, 0, 0);
-					FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
-			    }
-			}
-			if (totalAmount > 0)
-			{
-			    format(string, sizeof(string), "Descargando %d insumos...", totalAmount);
-				GameTextForPlayer(playerid, string, 4000, 4);
-				PlayerActionMessage(playerid, 15.0, "comienza a descargar insumos en el depósito.");
-				TogglePlayerControllable(playerid, false);
-    			SetTimerEx("Unfreeze", 6000, false, "i", playerid);
-			}
-			return 1;
-	}
 	return 1;
 }
 
@@ -4806,14 +4746,12 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		new string[128];
 		format(string, sizeof(string), "~w~/comprar para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
 		GameTextForPlayer(playerid, string, 2000, 4);
-	} else if(pickupid == P_INPUTS_SHOP_N) {
-		new string[128];
-		format(string, sizeof(string), "~w~/comprar para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_INSUMOS));
-		GameTextForPlayer(playerid, string, 2000, 4);
-	} else if(pickupid == P_INPUTS_SHOP_S) {
-		new string[128];
-		format(string, sizeof(string), "~w~/comprar para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_INSUMOS));
-		GameTextForPlayer(playerid, string, 2000, 4);
+	} else if(pickupid == P_INPUTS_SHOP_N || pickupid == P_INPUTS_SHOP_S) {
+		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE) {
+			new string[128];
+			format(string, sizeof(string), "~w~/comprarinsumos - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
+			GameTextForPlayer(playerid, string, 2000, 4);
+		}
 	}
 	return 1;
 }
@@ -9607,29 +9545,6 @@ CMD:comprar(playerid, params[])
 		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
 			} else
 				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
-		} else if(IsAtArmoryInputs(playerid)) {
-  			new amount;
-		    if(sscanf(params, "i", amount))
-		    {
-	            SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d cada insumo.", GetItemPrice(ITEM_ID_INSUMOS));
-				return 1;
-			}
-			if(!IsPlayerInAnyVehicle(playerid))
-		    	return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
-			new vehicleid = GetPlayerVehicleID(playerid);
-       		if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
-       			return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
-       		if(amount < 1 || amount > 250)
-     			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 250.");
-       		if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_INSUMOS))
-			{
-   				SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_INSUMOS));
-   				return 1;
-   			}
-   			GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_INSUMOS));
-			SetTimerEx("buyInputsTimer", 4000, false, "ii", playerid, amount);
-			TogglePlayerControllable(playerid, false);
-			GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
 		}
 	}
 	return 1;
@@ -10508,28 +10423,6 @@ stock EndPlayerDuty(playerid)
 		SetPlayerArmour(playerid, 0);
 		resetTazer(playerid);
 		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario, espalda y manos.");
-	}
-}
-
-forward bool:CheckFreeSpaceForDuty(playerid);
-stock bool:CheckFreeSpaceForDuty(playerid)
-{
-	if(GetHandItem(playerid, HAND_RIGHT) != 0 || GetHandItem(playerid, HAND_LEFT) != 0 || GetBackItem(playerid) != 0 || SearchInvFreeSlot(playerid) == -1)
-	    return false;
-	else
-		return true;
-}
-
-forward bool:CheckTakeInputs(playerid);
-stock bool:CheckTakeInputs(playerid)
-{
-	if(PlayerInfo[playerid][pTakeInputs] == 2 ||PlayerInfo[playerid][pTakeInputs] == 4)
-	{
-	    SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: No te dejo tomar mas insumos.");
-	    return false;
-	} else {
-	    SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Te dejo tomar mas insumos.");
-		return true;
 	}
 }
 

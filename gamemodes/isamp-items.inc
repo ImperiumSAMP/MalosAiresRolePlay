@@ -65,7 +65,6 @@
 #define ITEM_ID_GORRA_SIMPLE_NEGRA      96
 #define ITEM_ID_GORRA_SIMPLE_AZUL       97
 #define ITEM_ID_GORRA_SIMPLE_VERDE      98
-#define ITEM_ID_INSUMOS					99
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -198,8 +197,7 @@ static const ServerItems[][ItemInfo] = {
 /*95*/  {"Anteojos Rayban verdes", "Cantidad", ITEM_TOY, 1200, false, 19029, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*96*/  {"Gorra simple negra", "Cantidad", ITEM_TOY, 250, false, 18941, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*97*/  {"Gorra simple azul", "Cantidad", ITEM_TOY, 250, false, 18942, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
-/*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 250, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
-/*99*/	{"Insumos", "Cantidad", ITEM_OTHER, 250, false, 2694, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0}
+/*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 250, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}
 
 };
 
