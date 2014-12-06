@@ -56,6 +56,15 @@
 #define POS_INPUTS_SUR_Y                    -2008.6335
 #define POS_INPUTS_SUR_Z                    13.5537
 
+// DEFINES UNLOAD INPUTS
+#define PMA_WAREHOUSE_X             1568.69
+#define PMA_WAREHOUSE_Y             -1689.97
+#define PMA_WAREHOUSE_Z             6.21875
+
+#define SIDE_WAREHOUSE_X            1216.94
+#define SIDE_WAREHOUSE_Y            -1676.9
+#define SIDE_WAREHOUSE_Z            13.4521
+
 
 new GEOF = 0,
  	STARS = 0
@@ -201,9 +210,9 @@ CMD:pequipo(playerid, params[])
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							6: Macana - Tazer - Granada de humo - Deagle - Escopeta (GEOF 1)");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)                   7: Macana - Tazer - Granada de humo - Deagle - MP5 (GEOF. 2)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Macana - Tazer - 9mm - Escopeta (Cabo)	        8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Macana - Tazer - Deagle - Escopeta (Sargento)	9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Macana - Tazer - Deagle - Rifle (Sargento Mayor)	10: Macana - Tazer - Deagle - MP5 (D.I.)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Cabo)	        8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Sargento)	9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 5: Macana - Tazer - Deagle - Rifle (Sargento Mayor)	10: Macana - Tazer - Deagle - MP5 (D.I.)");
 		return 1;
 	}
 	if(!CheckTakeInputs(playerid))
@@ -359,7 +368,7 @@ CMD:inputsdebug(playerid, params[])
 	if(targetid < 0 || targetid >= MAX_PLAYERS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	    
-	SendFMessage(playerid, COLOR_YELLOW, "pTakeInputs [%d] = %d.", targetid, PlayerInfo[targetid][pTakeInputs]);
+	SendFMessage(playerid, COLOR_YELLOW, "pTakeInputs [%d] = %d", targetid, PlayerInfo[targetid][pTakeInputs]);
 	return 1;
 }
 
@@ -367,9 +376,8 @@ PlayerTakeInput(playerid, faction, input, text[])
 {
 	FactionInfo[faction][fMaterials] -= input;
 	log(playerid, LOG_INPUTS, text);
-	SendFMessage(playerid, COLOR_GREEN, "[DEBUG]: Quedan %d insumos.", FactionInfo[faction][fMaterials]);
-	if(PlayerInfo[playerid][pRank] > 3)
-		PlayerInfo[playerid][pTakeInputs] += 1;
+	if(PlayerInfo[playerid][pRank] > 2)
+		PlayerInfo[playerid][pTakeInputs] ++;
 }
 
 ResetPlayerInputs(playerid)
@@ -402,7 +410,7 @@ CMD:pautorizar(playerid, params[])
 			format(string, sizeof(string), "%s dice por radio: Armero, autorizo a %s a retirar más armas y municiones.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 		else
 		    format(string, sizeof(string), "Enmascarado dice por radio: Armero, autorizo a %s a retirar mas armas y municiones.", GetPlayerNameEx(targetid));
-  		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+  		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 1);
 	}
     return 1;
 }
@@ -432,7 +440,7 @@ CMD:sautorizar(playerid, params[])
 			format(string, sizeof(string), "%s dice por radio: Armero, autorizo a %s a retirar más armas y municiones.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 		else
 		    format(string, sizeof(string), "Enmascarado dice por radio: Armero, autorizo a %s a retirar mas armas y municiones.", GetPlayerNameEx(targetid));
-  		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+  		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 1);
 	}
     return 1;
 }
@@ -480,7 +488,7 @@ CMD:verregistros(playerid, params[])
 	new targetname[MAX_PLAYER_NAME],
 	    query[128];
 
-    if(PlayerInfo[playerid][pRank] > 3)
+    if(PlayerInfo[playerid][pRank] > 4)
         return 1;
     if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
         return 1;
@@ -511,8 +519,8 @@ CMD:comprarinsumos(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar a pie.");
 	if(freehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar la caja de insumos.");
-	if(amount < 1 || amount > 800)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de insumos no debe ser menor a 1 o mayor a 250.");
+	if(amount < 1 || amount > 1300)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de insumos no debe ser menor a 1 o mayor a 1300.");
 	if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_MATERIALES))
 	{
 		SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_MATERIALES));
@@ -522,7 +530,7 @@ CMD:comprarinsumos(playerid, params[])
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
     SetHandItemAndParam(playerid, freehand, ITEM_ID_MATERIALES, amount);
 	GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
-	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los insumos con /descargarinsumos. Utiliza /noinsumo para sacar la animación de carga.");
+	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los insumos con /guardarinsumos. Utiliza /noinsumo para sacar la animación de carga.");
 	PlayerActionMessage(playerid, 15.0, "compra una caja de insumos.");
 	return 1;
 }
@@ -534,7 +542,6 @@ CMD:noinsumo(playerid, params[])
 	return 1;
 }
 
-
 CMD:guardarinsumos(playerid, params[])
 {
 	new hand = SearchHandsForItem(playerid, ITEM_ID_MATERIALES),
@@ -542,14 +549,14 @@ CMD:guardarinsumos(playerid, params[])
 
     if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
     	return 1;
-	if(!PlayerToPoint(5.0, playerid, 1568.69, -1689.97, 6.21875) && !PlayerToPoint(5.0, playerid, 1216.94, -1676.9, 13.4521))
+	if(!PlayerToPoint(4.0, playerid, PMA_WAREHOUSE_X, PMA_WAREHOUSE_Y, PMA_WAREHOUSE_Z) && !PlayerToPoint(4.0, playerid, SIDE_WAREHOUSE_X, SIDE_WAREHOUSE_Y, SIDE_WAREHOUSE_Z))
 		return 1;
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar a pie.");
 	if(hand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de insumos en tus manos para descargar.");
 	amount = GetHandParam(playerid, hand);
-	if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 50000)
+	if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas insumos al deposito ya que el mismo está lleno.");
 	
 	FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
