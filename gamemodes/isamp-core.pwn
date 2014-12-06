@@ -56,6 +56,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
 #include "isamp-notebook.inc"           //Sistema de agenda
 #include "isamp-gimsistem.inc"  
+#include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -82,14 +83,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BANK_Z              1015.4130
 #define POS_BANK_I              1
 #define POS_BANK_W              1000
-
-#define POS_POLICE_DUTY_X 		223.3068
-#define POS_POLICE_DUTY_Y       186.2766
-#define POS_POLICE_DUTY_Z       1003.0000
-
-#define POS_SIDE_DUTY_X         261.8023
-#define POS_SIDE_DUTY_Y			109.7926
-#define POS_SIDE_DUTY_Z			1004.6172
 
 #define POS_MEDIC_DUTY_X      	1131.0615
 #define POS_MEDIC_DUTY_Y      	-1321.6823
@@ -254,8 +247,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 //==============================================================================
 
 new
- 	GEOF = 0,
- 	STARS = 0,
     iGMXTick,
     SIDEGateTimer,
 	timersID[24],
@@ -402,7 +393,9 @@ new
 	P_CAR_DEMOLITION,
 	P_BLACK_MARKET[3],
 	P_CARPART_SHOP,
-	P_POLICE_CAMERAS;
+	P_POLICE_CAMERAS,
+	P_INPUTS_SHOP_N,
+	P_INPUTS_SHOP_S;
 
 //====[ENUMS]===================================================================
 
@@ -423,6 +416,7 @@ forward matsTimer(playerid);
 forward buyMatsTimer(playerid, amount);
 forward buyDrugsTimer(playerid, amount);
 forward buyProductsTimer(playerid, amount);
+forward buyInputsTimer(playerid, amount);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -2289,6 +2283,8 @@ public OnPlayerDataLoad(playerid) {
 		cache_get_field_content(0, "pHealth", result); 			PlayerInfo[playerid][pHealth] 			= floatstr(result);
 		cache_get_field_content(0, "pArmour", result); 			PlayerInfo[playerid][pArmour] 			= floatstr(result);
  		cache_get_field_content(0, "pAdictionPercent", result); 	PlayerInfo[playerid][pAdictionPercent] 			= floatstr(result);
+ 		
+ 		cache_get_field_content(0, "pTakeInputs", result); 			PlayerInfo[playerid][pTakeInputs] 			= strval(result);
 
         gPlayerLogged[playerid] = 1;
 
@@ -2817,7 +2813,7 @@ public SaveAccount(playerid) {
 		);
 
 		// Integer.
-		format(query,sizeof(query),"%s,Level=%d,AdminLevel=%d,AccountBlocked=%d,pRegStep=%d,Tutorial=%d,Sex=%d,Age=%d,Exp=%d,CashMoney=%d,BankMoney=%d,Skin=%d,pMask=%d,pHunger=%d,Job=%d,pJobAllowed=%d,JobTime=%d,PlayingHours=%d,PayCheck=%d,pPayTime=%d,Faction=%d,Rank=%d,HouseKey=%d,BizKey=%d,Warnings=%d",
+		format(query,sizeof(query),"%s,Level=%d,AdminLevel=%d,AccountBlocked=%d,pRegStep=%d,Tutorial=%d,Sex=%d,Age=%d,Exp=%d,CashMoney=%d,BankMoney=%d,Skin=%d,pMask=%d,pHunger=%d,Job=%d,pJobAllowed=%d,JobTime=%d,PlayingHours=%d,PayCheck=%d,pPayTime=%d,Faction=%d,Rank=%d,HouseKey=%d,BizKey=%d,Warnings=%d,pTakeInputs=%d",
 			query,
 			PlayerInfo[playerid][pLevel],
 			PlayerInfo[playerid][pAdmin],
@@ -2842,7 +2838,8 @@ public SaveAccount(playerid) {
 			PlayerInfo[playerid][pRank],
 			PlayerInfo[playerid][pHouseKey],
 			PlayerInfo[playerid][pBizKey],
-			PlayerInfo[playerid][pWarnings]
+			PlayerInfo[playerid][pWarnings],
+			PlayerInfo[playerid][pTakeInputs]
 		);
 
 		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pCigarettes=%d,pLighter=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d",
@@ -3121,6 +3118,9 @@ public PayDay(playerid) {
 		PlayerInfo[playerid][pPlayingHours] += 1;
 		if(PlayerInfo[playerid][pJobTime] > 0)	{
 			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
+		}
+		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE)	{
+			PlayerInfo[playerid][pTakeInputs] = 0; // Si es de la faccion POLICIA o SIDE le seteamos a 0 la toma de insumos (/pequipo o /sequipo)
 		}
 
 		new
@@ -4173,6 +4173,33 @@ public buyProductsTimer(playerid, amount) {
 	return 1;
 }
 
+// COMPRA DE INSUMOS.
+
+public buyInputsTimer(playerid, amount) {
+	new
+	    vehicleid = GetPlayerVehicleID(playerid),
+		bool:charged = false;
+
+    TogglePlayerControllable(playerid, true);
+
+	for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
+	    if(GetItemType(GetTrunkItem(vehicleid, i)) == ITEM_NONE) {
+	    	SetTrunkItemAndParam(vehicleid, i, 99, amount);
+			charged = true;
+			break;
+	    }
+	}
+	if(!charged) {
+        SendClientMessage(playerid, COLOR_YELLOW2, "El maletero se encuentra lleno, toma algo de él y vuelve a intentarlo.");
+        GivePlayerCash(playerid, amount * GetItemPrice(ITEM_ID_PRODUCTOS));
+	} else
+	    {
+			SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los insumos dentro escribiendo /descargar en la entrada!");
+			PlayerActionMessage(playerid, 15.0, "compra algunos insumos y los carga en el vehículo.");
+		}
+	return 1;
+}
+
 //=============================DESCARGA DE ITEMS================================
 
 CMD:descargar(playerid, params[]) {
@@ -4238,6 +4265,39 @@ CMD:descargar(playerid, params[]) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la van de la facción.");
 		}
     }
+    
+    if(PlayerToPoint(6.0, playerid, 1568.69, -1689.97, 6.21875) || PlayerToPoint(6.0, playerid, 1216.94, -1676.9, 13.4521))
+		{
+ 			if(!IsPlayerInAnyVehicle(playerid))
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo!");
+		    if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo con dueño o de facción.");
+			new totalAmount = 0;
+       		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
+			{
+			    if(GetTrunkItem(vehicleid, i) == 99)
+				{
+			        amount = GetTrunkParam(vehicleid, i);
+					if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 50000) // Si supera el maximo de productos permitido por negocio
+					{
+						SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas insumos al deposito ya que el mismo está lleno.");
+						break;
+					}
+					totalAmount += GetTrunkParam(vehicleid, i);
+					SetTrunkItemAndParam(vehicleid, i, 0, 0);
+					FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
+			    }
+			}
+			if (totalAmount > 0)
+			{
+			    format(string, sizeof(string), "Descargando %d insumos...", totalAmount);
+				GameTextForPlayer(playerid, string, 4000, 4);
+				PlayerActionMessage(playerid, 15.0, "comienza a descargar insumos en el depósito.");
+				TogglePlayerControllable(playerid, false);
+    			SetTimerEx("Unfreeze", 6000, false, "i", playerid);
+			}
+			return 1;
+	}
 	return 1;
 }
 
@@ -4634,6 +4694,10 @@ stock LoadPickups() {
     P_MATS_SHOP = CreateDynamicPickup(1239, 1, 2349.8408, -1216.3939, 22.5000, -1);
     P_PRODS_SHOP = CreateDynamicPickup(1239, 1, 2183.9963, -2260.7658, 13.4098, -1);
     
+    // Compra de insumos
+	P_INPUTS_SHOP_N = CreateDynamicPickup(1239, 1, POS_INPUTS_NORTE_X, POS_INPUTS_NORTE_Y, POS_INPUTS_NORTE_Z, -1);
+	P_INPUTS_SHOP_S = CreateDynamicPickup(1239, 1, POS_INPUTS_SUR_X, POS_INPUTS_SUR_Y, POS_INPUTS_SUR_Z, -1);
+    
 	return 1;
 }
 
@@ -4741,6 +4805,14 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_PRODS_SHOP) {
 		new string[128];
 		format(string, sizeof(string), "~w~/comprar para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+		GameTextForPlayer(playerid, string, 2000, 4);
+	} else if(pickupid == P_INPUTS_SHOP_N) {
+		new string[128];
+		format(string, sizeof(string), "~w~/comprar para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_INSUMOS));
+		GameTextForPlayer(playerid, string, 2000, 4);
+	} else if(pickupid == P_INPUTS_SHOP_S) {
+		new string[128];
+		format(string, sizeof(string), "~w~/comprar para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_INSUMOS));
 		GameTextForPlayer(playerid, string, 2000, 4);
 	}
 	return 1;
@@ -5104,6 +5176,20 @@ stock log(playerid, logType, text[])
 		mysql_function_query(dbHandle, query, false, "", "");
 	} else if(logType == LOG_MONEY) {
 		format(query, sizeof(query), "INSERT INTO `log_money` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
+			PlayerInfo[playerid][pID],
+			name,
+			PlayerInfo[playerid][pIP],
+			year,
+			month,
+			day,
+			hour,
+			minute,
+			second,
+			text
+		);
+		mysql_function_query(dbHandle, query, false, "", "");
+	} else if(logType == LOG_INPUTS) {
+		format(query, sizeof(query), "INSERT INTO `log_inputs` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
@@ -9521,6 +9607,29 @@ CMD:comprar(playerid, params[])
 		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
 			} else
 				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
+		} else if(IsAtArmoryInputs(playerid)) {
+  			new amount;
+		    if(sscanf(params, "i", amount))
+		    {
+	            SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d cada insumo.", GetItemPrice(ITEM_ID_INSUMOS));
+				return 1;
+			}
+			if(!IsPlayerInAnyVehicle(playerid))
+		    	return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
+			new vehicleid = GetPlayerVehicleID(playerid);
+       		if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
+       			return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
+       		if(amount < 1 || amount > 50)
+     			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 50.");
+       		if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_INSUMOS))
+			{
+   				SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_INSUMOS));
+   				return 1;
+   			}
+   			GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_INSUMOS));
+			SetTimerEx("buyInputsTimer", 4000, false, "ii", playerid, amount);
+			TogglePlayerControllable(playerid, false);
+			GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
 		}
 	}
 	return 1;
@@ -10410,80 +10519,16 @@ stock bool:CheckFreeSpaceForDuty(playerid)
 		return true;
 }
 
-CMD:sequipo(playerid, params[])
+stock bool:CheckTakeInputs(playerid)
 {
-	new equipo;
-	
-	if(!isPlayerSideOnDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando en cualquier lado.");
-	if(sscanf(params, "i", equipo))
+	if(PlayerInfo[playerid][pTakeInputs] == 2 ||PlayerInfo[playerid][pTakeInputs] == 4)
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
-		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros SIDE _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Externo");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Agente");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Alpha (S.T.A.R.S.)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Bravo (S.T.A.R.S.)");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Staff Profesional");
-		return 1;
+	    SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: No te dejo tomar mas insumos.");
+	    return false;
+	} else {
+	    SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Te dejo tomar mas insumos.");
+		return true;
 	}
-	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un slot del inventario, la espalda, y ambas manos libres para guardar el equipo.");
-	switch(equipo)
-	{
-		case 1:
-		{
-        	if(PlayerInfo[playerid][pRank] > 8)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-		    ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_SILENCED, 100);
-		}
-		case 2:
-		{
-  			if(PlayerInfo[playerid][pRank] > 7)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-			ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
-		}
-		case 3:
-		{
-        	if(PlayerInfo[playerid][pRank] > 4 || STARS != 1)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-         	ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
-            SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
-			SetPlayerSkin(playerid, 285); // Geof
-		}
-		case 4:
-		{
-        	if(PlayerInfo[playerid][pRank] > 4 || STARS != 1)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-         	ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
-            SetBackItemAndParam(playerid, WEAPON_M4, 250);
-			SetPlayerSkin(playerid, 285); // Geof
-		}
-		case 5:
-		{
-  			if(PlayerInfo[playerid][pRank] > 3)
-     			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-  			ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
-		}
-	}
-	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
-	tazerStatus[playerid] = TAZER_EQUIPPED;
-	return 1;
 }
 
 CMD:propero(playerid, params[])
@@ -10575,125 +10620,6 @@ CMD:propero(playerid, params[])
             return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de vestimenta válida.");
 	}
 	PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
-	return 1;
-}
-
-CMD:pequipo(playerid, params[])
-{
-	new equipo;
-	
-	if(!isPlayerCopOnDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
-	if(sscanf(params, "i", equipo))
-	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
-		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							6: Macana - Tazer - Granada de humo - Deagle - Escopeta (GEOF 1)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)                   7: Macana - Tazer - Granada de humo - Deagle - MP5 (GEOF. 2)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Macana - Tazer - 9mm - Escopeta (Cabo)	        8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Macana - Tazer - Deagle - Escopeta (Sargento)	9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Macana - Tazer - Deagle - Rifle (Sargento Mayor)	10: Macana - Tazer - Gas pimienta - Deagle - MP5 (D.I.)");
-		return 1;
-	}
-	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un slot del inventario, la espalda, y ambas manos libres para guardar el equipo.");
-	switch(equipo)
-	{
-		case 1:
-		{
-  			if(PlayerInfo[playerid][pRank] > 8)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-    		ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-      	}
-       	case 2:
-		{
-    		if(PlayerInfo[playerid][pRank] > 7)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-    		ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_COLT45, 100);
-		}
-  		case 3:
-  		{
-    		if(PlayerInfo[playerid][pRank] > 6)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-    		ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_COLT45, 100);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 25);
-      	}
-       	case 4:
-	   	{
-	   		if(PlayerInfo[playerid][pRank] > 5)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 75);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 40);
-   		}
-        case 5:
-		{
-            if(PlayerInfo[playerid][pRank] > 4)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 75);
-			SetBackItemAndParam(playerid, WEAPON_RIFLE, 40);
-        }
-        case 6:
-		{
-        	if(PlayerInfo[playerid][pRank] > 6 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 60);
-        }
-        case 7:
-		{
-			if(PlayerInfo[playerid][pRank] > 5 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
-        }
-        case 8:
-		{
-			if(PlayerInfo[playerid][pRank] > 4 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_M4, 200);
-        }
-        case 9:
-		{
-			if(PlayerInfo[playerid][pRank] > 4 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
-        }
-        case 10:
-		{
-			if(PlayerInfo[playerid][pRank] > 4)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 35);
-			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
-        }
-        default:
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de equipo válida.");
-	}
-	SetPlayerArmour(playerid, 100);
-	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
-	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
 
