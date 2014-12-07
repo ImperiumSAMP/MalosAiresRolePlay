@@ -61,6 +61,8 @@ stock DropObject(playerid, playerhand)
 		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tirar un arma estando en servicio!");
 	}
+	if(GetHandItem(playerid, playerhand) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
  	new j = -1;
 	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
 	{

@@ -6485,7 +6485,8 @@ ShowPlayerSpeedo(playerid)
 
 public vehicleTimer()
 {
-	new vehicleid;
+	new vehicleid, Float:Z_angle, Float:vHealth;
+	
 	foreach(new i : Player)
 	{
 		if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
@@ -6502,13 +6503,11 @@ public vehicleTimer()
 	}
 	for(new v = 0; v < MAX_VEH; v++)
 	{
-		new Float:Z_angle;
-	    new Float:vHealth;
 		GetVehicleParamsEx(v, VehicleInfo[v][VehEngine], VehicleInfo[v][VehLights], VehicleInfo[v][VehAlarm], vlocked, VehicleInfo[v][VehBonnet], VehicleInfo[v][VehBoot], VehicleInfo[v][VehObjective]);
 	    GetVehicleHealth(v, vHealth);
 	    if(vHealth < 400)
 	    {
-	         SetVehicleHealth (v, 400);
+	         SetVehicleHealth(v, 400);
 			 GetVehicleZAngle(v, Z_angle);
 	         SetVehicleZAngle(v, Z_angle + 0.1); //con esto el vehiculo si esta dado vuelta, vuelve a ponerse como debe.
 	    }
@@ -11733,58 +11732,6 @@ CMD:intentar(playerid, params[])
 			format(string, sizeof(string), "[Intentar] %s intentó %s y falló.", GetPlayerNameEx(playerid), string);
 			ProxDetector(15.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 		}
-	return 1;
-}
-
-stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
-{
- 	new itemid = GetHandItem(playerid, playerhand),
-	 	str[128],
-		targetfreehand;
- 
-	if(itemid == 0)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en esa mano.");
-    if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
-	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-	if(GetItemType(itemid) == ITEM_WEAPON)
-	{
-		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dar un arma estando en servicio!");
-	}
-	targetfreehand = SearchFreeHand(targetid);
-	if(targetfreehand == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
-
-	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
-	SetHandItemAndParam(playerid, playerhand, 0, 0);
-	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
- 	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
-	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-	return 1;
-}
-
-CMD:dar(playerid, params[])
-{
-	new targetid;
-
-	if(sscanf(params, "u", targetid))
-		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dar [ID/Jugador]");
-
-	GiveItemFromPlayerToPlayer(playerid, HAND_RIGHT, targetid);
-	return 1;
-}
-
-CMD:dari(playerid, params[])
-{
-	new targetid;
-
-	if(sscanf(params, "u", targetid))
-		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dari [ID/Jugador]");
-
-	GiveItemFromPlayerToPlayer(playerid, HAND_LEFT, targetid);
 	return 1;
 }
 

@@ -156,6 +156,60 @@ stock SynchronizeWeaponAmmo(playerid, ammo)
 
 //==================================COMANDOS====================================
 
+stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
+{
+ 	new itemid = GetHandItem(playerid, playerhand),
+	 	str[128],
+		targetfreehand;
+
+	if(itemid == 0)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún item en esa mano.");
+    if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
+	if(GetPVarInt(playerid, "cantSaveItems") == 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	if(GetItemType(itemid) == ITEM_WEAPON)
+	{
+		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dar un arma estando en servicio!");
+	}
+	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+	targetfreehand = SearchFreeHand(targetid);
+	if(targetfreehand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
+
+	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
+	SetHandItemAndParam(playerid, playerhand, 0, 0);
+	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
+ 	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
+	SetPVarInt(playerid, "cantSaveItems", 1);
+	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+	return 1;
+}
+
+CMD:dar(playerid, params[])
+{
+	new targetid;
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dar [ID/Jugador]");
+
+	GiveItemFromPlayerToPlayer(playerid, HAND_RIGHT, targetid);
+	return 1;
+}
+
+CMD:dari(playerid, params[])
+{
+	new targetid;
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dari [ID/Jugador]");
+
+	GiveItemFromPlayerToPlayer(playerid, HAND_LEFT, targetid);
+	return 1;
+}
+
 CMD:mano(playerid, params[])
 {
 	new command[128],
