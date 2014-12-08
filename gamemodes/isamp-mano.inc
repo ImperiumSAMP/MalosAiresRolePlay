@@ -168,11 +168,6 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-	if(GetItemType(itemid) == ITEM_WEAPON)
-	{
-		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes dar un arma estando en servicio!");
-	}
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	targetfreehand = SearchFreeHand(targetid);

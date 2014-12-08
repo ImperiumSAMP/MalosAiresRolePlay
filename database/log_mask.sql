@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-12-2014 a las 01:20:30
+-- Tiempo de generación: 08-12-2014 a las 19:34:44
 -- Versión del servidor: 5.6.21
 -- Versión de PHP: 5.6.3
 
@@ -23,16 +23,16 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `log_inputs`
+-- Estructura de tabla para la tabla `log_mask`
 --
 
-CREATE TABLE IF NOT EXISTS `log_inputs` (
+CREATE TABLE IF NOT EXISTS `log_mask` (
 `logid` int(11) NOT NULL,
   `pID` int(11) NOT NULL,
   `pName` text NOT NULL,
   `pIP` text NOT NULL,
   `date` datetime NOT NULL,
-  `text` text NOT NULL
+  `randommaskid` int(11) NOT NULL
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `log_inputs` (
 --
 
 --
--- Indices de la tabla `log_inputs`
+-- Indices de la tabla `log_mask`
 --
-ALTER TABLE `log_inputs`
+ALTER TABLE `log_mask`
  ADD PRIMARY KEY (`logid`);
 
 --
@@ -50,9 +50,9 @@ ALTER TABLE `log_inputs`
 --
 
 --
--- AUTO_INCREMENT de la tabla `log_inputs`
+-- AUTO_INCREMENT de la tabla `log_mask`
 --
-ALTER TABLE `log_inputs`
+ALTER TABLE `log_mask`
 MODIFY `logid` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
