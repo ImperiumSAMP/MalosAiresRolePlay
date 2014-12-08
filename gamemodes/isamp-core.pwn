@@ -57,6 +57,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-notebook.inc"           //Sistema de agenda
 #include "isamp-gimsistem.inc"  
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
+#include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
