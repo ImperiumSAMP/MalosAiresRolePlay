@@ -58,6 +58,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-gimsistem.inc"  
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
 #include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
+#include "isamp-mask.inc"       		//Sistema de mascaras con id
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
@@ -792,6 +793,9 @@ public ResetStats(playerid)
 	
 	/* Descripciones de 3Dtexts */
 	ResetDescVariables(playerid);
+	
+	/* Mascara 3Dtexts */
+	ResetMaskVariables(playerid);
 	
 	/* Sistema de stream de radios */
 	hearingRadioStream[playerid] = false;
@@ -12436,62 +12440,6 @@ CMD:entrevistarse(playerid, params[])
 	return 1;
 }
 
-//============================SISTEMA DE MASCARA================================
-
-CMD:mascara(playerid, params[])
-{
-	if(PlayerInfo[playerid][pMask] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una mascara en tu bolsillo.");
-	if(!usingMask[playerid])
-	{
- 		if(IsPlayerAttachedObjectSlotUsed(playerid, INDEX_ID_MASK))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una mascara puesta.");
-		SetPlayerAttachedObject(playerid, INDEX_ID_MASK, PlayerInfo[playerid][pMask], BONE_ID_HEAD, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
-		usingMask[playerid] = true;
-  		EditAttachedObject(playerid, INDEX_ID_MASK);
-		foreach(new i : Player)
-		{
-			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-				ShowPlayerNameTagForPlayer(i, playerid, 0);
-		}
-	} else
-		{
-		    if(GetPVarInt(playerid, "disabled") == DISABLE_STEALING)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-			RemovePlayerAttachedObject(playerid, INDEX_ID_MASK);
-			PlayerActionMessage(playerid, 15.0, "quita el pañuelo que ocultaba su rostro y lo guarda en su bolsillo.");
-			usingMask[playerid] = false;
-		    foreach(new i : Player)
-		        ShowPlayerNameTagForPlayer(i, playerid, 1);
-		}
-	return 1;
-}
-
-CMD:comprarmascara(playerid, params[])
-{
-    new idmask;
-    new maskModels[9] = {18912, 18913, 18914, 18915, 18916, 18917, 18918, 18919, 18920};
-    new business = GetPlayerBusiness(playerid);
-    if(sscanf(params, "i", idmask))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $300.");
-    if(business == 0 || (Business[business][bType] != BIZ_CLOT &&  Business[business][bType] != BIZ_CLOT2))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algun negocio de ropa que los venda.");
-	if(idmask < 0 || idmask > 8)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $300.");
-	if(GetPlayerCash(playerid) < 300)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $300. ¡Vuelve cuando los tengas!");
-	if(Business[business][bProducts] < 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "La tienda no tiene productos!");
- 	GivePlayerCash(playerid, -300);
- 	PlayerInfo[playerid][pMask] = maskModels[idmask];
- 	PlayerActionMessage(playerid, 15.0, "le paga al empleado $300 y compra un pañuelo, que luego guarda en su bolsillo.");
- 	SendClientMessage(playerid, COLOR_WHITE, "Has comprado un pañuelo en la tienda. Para cubrirte/descubrirte el rostro con este usa /mascara.");
-	Business[business][bTill] += 300;
-	Business[business][bProducts]--;
-	saveBusiness(business);
-	return 1;
-}
-
 public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Float:fOffsetX, Float:fOffsetY, Float:fOffsetZ, Float:fRotX, Float:fRotY, Float:fRotZ, Float:fScaleX, Float:fScaleY, Float:fScaleZ)
 {
     if(response)
@@ -13368,6 +13316,7 @@ CMD:exp10de(playerid, params[]) {
 	}
 	return 1;
 }
+
 //===============================SISTEMA DE AFK=================================
 
 public AFKc(playerid)
