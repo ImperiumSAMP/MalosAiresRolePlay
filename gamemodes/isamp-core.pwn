@@ -13368,68 +13368,6 @@ CMD:exp10de(playerid, params[]) {
 	}
 	return 1;
 }
-
-//=======================SISTEMA DE BARRERAS PARA LOS ADMIN=====================
-
-#define MAX_ADMIN_OBJECTS       450
-new adminServerObjectsCant = 0;
-new adminServerObjects[MAX_ADMIN_OBJECTS];
-
-CMD:abarreracrear(playerid, params[])
-{
-	new orientation, Float:x, Float:y, Float:z, Float:facingAngle;
-
-	if(PlayerInfo[playerid][pAdmin] < 2)
-        return 1;
-	if(sscanf(params, "i", orientation))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /abarreracrear [1-2] (1:derecha, 2:izquierda)");
-	if(orientation != 1 && orientation != 2)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /abarreracrear [1-2] (1:derecha, 2:izquierda)");
-
-	if(adminServerObjectsCant >= MAX_ADMIN_OBJECTS)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas espacio para objetos.");
-	GetPlayerPos(playerid, x, y, z);
-	GetPlayerFacingAngle(playerid, facingAngle);
-	adminServerObjectsCant ++;
-	switch(orientation)
-	{
-	    case 1: adminServerObjects[adminServerObjectsCant-1] = CreateDynamicObject(978, x, y, z-0.7, 0.0, 0.0, facingAngle + 180.0);
-	    case 2: adminServerObjects[adminServerObjectsCant-1] = CreateDynamicObject(979, x, y, z-0.7, 0.0, 0.0, facingAngle + 180.0);
-	}
-	SetPlayerPosFindZ(playerid, x, y-0.7, z);
-    return 1;
-}
-
-CMD:abarreraquitar(playerid, params[])
-{
-	if(PlayerInfo[playerid][pAdmin] < 2)
-        return 1;
-
-	if(adminServerObjectsCant > 0)
-	{
-		DestroyDynamicObject(adminServerObjects[adminServerObjectsCant-1]);
-		adminServerObjectsCant --;
-        SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Has borrado la ultima barrera puesta por un administrador.");
-	}
-	return 1;
-}
-
-CMD:abarreraquitartodo(playerid, params[])
-{
-	if(PlayerInfo[playerid][pAdmin] < 2)
-        return 1;
-
-	if(adminServerObjectsCant > 0)
-	{
-	    for(new i = 0; i < adminServerObjectsCant; i++) {
-			DestroyDynamicObject(adminServerObjects[i]);
-		}
-		adminServerObjectsCant = 0;
-		SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Has borrado todas las barreras del servidor puestas por los administradores.");
-	}
-	return 1;
-}
-
 //===============================SISTEMA DE AFK=================================
 
 public AFKc(playerid)
