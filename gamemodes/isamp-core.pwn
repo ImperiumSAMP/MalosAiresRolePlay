@@ -7999,6 +7999,7 @@ CMD:admincmds(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acinfo /aninfo /aeinfo /actele /antele /aetele /ban /check /checkinv /fly /sethp");
