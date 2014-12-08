@@ -79,7 +79,11 @@ enum pInfo {
 	
 	pTakeInputs
 };
+
 new PlayerInfo[MAX_PLAYERS][pInfo];
+
+// Inmunidad al anticheat
+new antiCheatImmunity[MAX_PLAYERS];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];

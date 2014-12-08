@@ -143,5 +143,3 @@ CMD:guardartazer(playerid, params[])
     SendClientMessage(playerid, COLOR_WHITE, "Has guardado tu tazer. Para usarlo nuevamente usa /tomartazer o vé a recargarlo si se te ha acabado.");
 	return 1;
 }
-// inmunidad al anticheat en comandos que te sacan el arma de la mano . Idem si ammo es 0 y esta arriba de un coche
-// chekear intentos de edit, si son eventos solitarios ignorar al admin, si se repiten seguidos, avisar, o si son con armas duras

@@ -390,11 +390,6 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
  	if(PlayerInfo[playerid][pHealth] < 25)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-	if(GetItemType(GetHandItem(playerid, playerhand)) == ITEM_WEAPON)
-	{
-		if(isPlayerCopOnDuty(playerid) || isPlayerSideOnDuty(playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes guardar un arma estando en servicio!");
-	}
 	if(GetHandItem(playerid, playerhand) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)

@@ -421,7 +421,8 @@ forward buyProductsTimer(playerid, amount);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
-forward antiCheatTimer();
+forward AntiCheatTimer();
+forward AntiCheatImmunityTimer(playerid);
 forward globalUpdate();
 forward accountTimer();
 forward restartTimer(type);
@@ -535,7 +536,7 @@ public OnGameModeInit() {
 	timersID[2] = SetTimer("globalUpdate", 1000, true);							// 1 seg.   - Actualiza el score y la hora/fecha.
 	timersID[5] = SetTimer("JailTimer", 1000, true);                            // 1 seg.   - Actualiza el jail de los jugadores.
 	timersID[6] = SetTimer("vehicleTimer", 1000, true);                    		// 1 seg.	- Actualiza motores dañados y evita explosiones.
-	timersID[8] = SetTimer("antiCheatTimer", 500, true);
+	timersID[8] = SetTimer("AntiCheatTimer", 500, true);
 	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, true);               // Respawn de vehículos de renta.
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
@@ -3463,7 +3464,13 @@ stock isWeaponAllowed(weapon) {
 	return 1;
 }
 
-public antiCheatTimer()
+public AntiCheatImmunityTimer(playerid)
+{
+	antiCheatImmunity[playerid] = 0;
+	return 1;
+}
+
+public AntiCheatTimer()
 {
 	new string[128], weapon;
 
@@ -3481,11 +3488,17 @@ public antiCheatTimer()
 				{
 				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
 				    {
-						format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-		    			AdministratorMessage(COLOR_WHITE, string, 1);
-		    			ResetPlayerWeapons(playerid);
-		    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-		    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+				        if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+				        {
+					        if(antiCheatImmunity[playerid] == 0)
+					        {
+								format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+				    			AdministratorMessage(COLOR_WHITE, string, 1);
+							}
+			    			ResetPlayerWeapons(playerid);
+			    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+			    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+						}
 					}
 					else
 					{

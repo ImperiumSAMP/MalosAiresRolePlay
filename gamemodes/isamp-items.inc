@@ -318,7 +318,14 @@ stock DeleteHandItem(playerid, hand)
 	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
 			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
 		else
+		{
+		    //======================[Inmunidad anticheat]=======================
+		    if(antiCheatImmunity[playerid] != 0)
+		        KillTimer(antiCheatImmunity[playerid]);
+      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
+      		//==================================================================
 		    ResetPlayerWeapons(playerid);
+		}
 	}
 	else
 	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
