@@ -175,7 +175,6 @@ PlayerTakeMaskID(playerid, randommaskid)
 	format(str, sizeof(str), "%d", randommaskid);
 	maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_WHITE, 0.0, 0.0, 0.5, 15.0, playerid);
 	maskActive[playerid] = true;
-	SendFMessage(playerid, COLOR_WHITE, "[DEBUG]: Mascara id %d", randommaskid);
 	strmid(maskText[playerid], str, 0, strlen(str));
 	logmask(playerid, LOG_MASK, randommaskid);
 }
