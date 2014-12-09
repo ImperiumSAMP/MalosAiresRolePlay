@@ -138,6 +138,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_NOTEBOOK_3       10027
 // #define DLG_BIZ_HARD         10028
 // #define DLG_BIZ_ACCESS       10029
+#define DLG_DYING		    	10030
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -3504,8 +3505,11 @@ public AntiCheatTimer()
 					{
 						if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
 					    {
-					        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
-		    				AdministratorMessage(COLOR_WHITE, string, 1);
+	        				if(antiCheatImmunity[playerid] == 0)
+					        {
+						        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
+			    				AdministratorMessage(COLOR_WHITE, string, 1);
+							}
 		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					    }
 					    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
@@ -3670,12 +3674,15 @@ public globalUpdate() {
 			
 			if(PlayerInfo[playerid][pHospitalized] == 0 && PlayerInfo[playerid][pJailed] != 2) {
                 // Camara normal si se curó o si esta arriba de un auto
-				if( ( PlayerInfo[playerid][pHealth] > 25 || IsPlayerInAnyVehicle(playerid) ) && dyingCamera[playerid] == true)
+				if(dyingCamera[playerid] == true)
 				{
-					dyingCamera[playerid] = false;
-					SetCameraBehindPlayer(playerid);
+				    if(PlayerInfo[playerid][pHealth] > 25 || IsPlayerInAnyVehicle(playerid))
+				    {
+						dyingCamera[playerid] = false;
+						SetCameraBehindPlayer(playerid);
+					}
 				}
-				// -----------------------------
+				//==============================================================
 				
 		        if(PlayerInfo[playerid][pHealth] > 0 && PlayerInfo[playerid][pHealth] < 25 && GetPVarInt(playerid, "disabled") != DISABLE_DYING && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED) {
 		         	TogglePlayerControllable(playerid, false);
@@ -3695,33 +3702,23 @@ public globalUpdate() {
 			            SetPlayerCameraPos(playerid, dyingX - 5.0, dyingY - 5.0, dyingZ + 6.0);
 			            SetPlayerCameraLookAt(playerid, dyingX, dyingY, dyingZ, CAMERA_MOVE);
 			            dyingCamera[playerid] = true;
-			            // -----------------------------
-						if(random(10) < 8)
-						{
-	                        new Float:playerMedicPos[3];
-							GetPlayerPos(playerid, playerMedicPos[0], playerMedicPos[1], playerMedicPos[2]);
-							foreach(new play : Player)
-							{
-				               	if(PlayerInfo[play][pFaction] == FAC_HOSP || (PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play]) )
-								{
-	                                if(PlayerInfo[play][pFaction] == FAC_PMA)
-				               			SendClientMessage(play, COLOR_PMA, "[Llamado al 911]: ¡Atención! Un ciudadano ha reportado a un herido de gravedad. Lo marcamos en su GPS.");
-									else
-									    SendClientMessage(play, COLOR_WHITE, "[Hospital]: ¡Atención! Hemos marcado en su GPS la ubicación de una llamada de emergencia que requiere asistencia.");
-									SetPlayerCheckpoint(play, playerMedicPos[0], playerMedicPos[1], playerMedicPos[2], 4.0);
-								}
-		     				}
-		     				SendClientMessage(playerid, COLOR_YELLOW2, "¡Un ciudadano notó tu agonía y ha reportado tu situacion al 911!");
-						} else {
-	                        SendClientMessage(playerid, COLOR_YELLOW2, "Desafortunadamente nadie ha notado tu agonía.");
-						}
+			            // =============================
+			            ShowPlayerDialog(playerid, DLG_DYING, DIALOG_STYLE_MSGBOX, "Estas desangrandote", "Teniendo en cuenta el entorno en el que te encuentras, decide si es posible que alguien te haya visto y llame a emergencias.", "Avisar", "Cancelar");
 					}
-		        } else if(PlayerInfo[playerid][pHealth] > 25 && GetPVarInt(playerid, "disabled") == DISABLE_DYING) {
+				//==============================================================
+
+				} else if(PlayerInfo[playerid][pHealth] > 25 && GetPVarInt(playerid, "disabled") == DISABLE_DYING) {
 		            SendClientMessage(playerid, COLOR_WHITE, "¡Has sido curado!, ten más cuidado la próxima vez.");
 		            TogglePlayerControllable(playerid, true);
                     SetPVarInt(playerid, "disabled", DISABLE_NONE);
-                } else if(PlayerInfo[playerid][pHealth] > 1.0 && GetPVarInt(playerid, "disabled") == DISABLE_DYING) {
+                    
+                //==============================================================
+
+				} else if(PlayerInfo[playerid][pHealth] > 1.0 && GetPVarInt(playerid, "disabled") == DISABLE_DYING) {
 					PlayerInfo[playerid][pHealth] -= HP_LOSS;
+
+				//==============================================================
+
 				} else if(PlayerInfo[playerid][pHealth] <= 1.0 && PlayerInfo[playerid][pHealth] > 0.0 && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED) {
 					TogglePlayerControllable(playerid, false);
 					ApplyAnimation(playerid, "CRACK", "crckdeth2", 2.0, 1, 0, 0, 0, 0);
@@ -7551,6 +7548,30 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
             	OnPlayerBuyHardDialog(playerid, listitem);
             TogglePlayerControllable(playerid, true);
             return 1;
+		}
+		case DLG_DYING:
+		{
+			if(response)
+			{
+			    new Float:playerPos[3];
+				GetPlayerPos(playerid, playerPos[0], playerPos[1], playerPos[2]);
+				foreach(new i : Player)
+				{
+			       	if(PlayerInfo[i][pFaction] == FAC_HOSP)
+					{
+					    SendClientMessage(i, COLOR_WHITE, "[Hospital]: ¡Atención! Hemos marcado en su GPS la ubicación de una llamada de emergencia que requiere asistencia.");
+			            SetPlayerCheckpoint(i, playerPos[0], playerPos[1], playerPos[2], 3.0);
+					}
+					else if(isPlayerCopOnDuty(i))
+					{
+			       		SendClientMessage(i, COLOR_PMA, "[Llamado al 911]: ¡Atención! Un ciudadano ha reportado a un herido de gravedad. Lo marcamos en su GPS.");
+						SetPlayerCheckpoint(i, playerPos[0], playerPos[1], playerPos[2], 3.0);
+					}
+				}
+				SendClientMessage(playerid, COLOR_YELLOW2, "¡Un ciudadano notó tu agonía y ha reportado tu situacion al 911!");
+			} else
+			    SendClientMessage(playerid, COLOR_YELLOW2, "Desafortunadamente nadie ha notado tu agonía.");
+			return 1;
 		}
 		case DLG_NOTEBOOK:
 		{
