@@ -1479,7 +1479,7 @@ public OnPlayerText(playerid, text[])
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes hablar, has sido silenciado.");
 		return 0;
 	}
-	
+
 	if(usingCamera[playerid]) {
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
 		return 0;
@@ -1494,27 +1494,27 @@ public OnPlayerText(playerid, text[])
    		}
 	}
 
-	new name[24]; // Para ver si mandar mensajes desde la mascara
-	if(usingMask[playerid])
-	    name = "Enmascarado";
-	else
-	    name = GetPlayerNameEx(playerid);
-
 	if(CheckMissionEvent(playerid, 2, text))
 	    return 0;
 	if(CheckMissionEvent(playerid, 3, text))
 	    return 0;
-    
+
 	if(Mobile[playerid] == 911) {
 		if((strcmp("policia", text, true, strlen(text)) == 0) && (strlen(text) == strlen("policia"))) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: policía metropolitana, por favor de un breve informe de lo ocurrido.");
 			Mobile[playerid] = 912;
-			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+			if(!usingMask[playerid])
+				format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		} else if((strcmp("paramedico", text, true, strlen(text)) == 0) && (strlen(text) == strlen("paramedico"))) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: departamento de emergencias, por favor de un breve informe de lo ocurrido.");
 			Mobile[playerid] = 913;
-			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+			if(!usingMask[playerid])
+				format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		} else {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: no le entiendo solo diga, policia o paramedico.");
@@ -1524,7 +1524,10 @@ public OnPlayerText(playerid, text[])
 		if(!strlen(text)) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
 		} else {
-			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+		    if(!usingMask[playerid])
+				format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades en el área, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
@@ -1538,7 +1541,10 @@ public OnPlayerText(playerid, text[])
 		if(!strlen(text)) {
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
 		} else {
-			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+			if(!usingMask[playerid])
+				format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
@@ -1557,7 +1563,10 @@ public OnPlayerText(playerid, text[])
 	    }
 		MechanicCall = playerid;
 		Mobile[playerid] = 255;
-		format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+		if(!usingMask[playerid])
+			format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+		else
+			format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 	    SendClientMessage(playerid,COLOR_WHITE,"Telefonista: un mecánico debería llegar a su posición en un momento, adiós.");
 		return 0;
@@ -1575,7 +1584,10 @@ public OnPlayerText(playerid, text[])
 	    }
 		return 0;
 	} else if(Mobile[playerid] != 255) {
-		format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+		if(!usingMask[playerid])
+			format(string, sizeof(string), "%s dice por teléfono: %s", GetPlayerNameEx(playerid), text);
+		else
+			format(string, sizeof(string), "Enmascarado %s dice por teléfono: %s", maskText[playerid], text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		if(IsPlayerConnected(Mobile[playerid]))
 		{
@@ -1590,16 +1602,25 @@ public OnPlayerText(playerid, text[])
 		return 0;
 	}
     if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR){
-		format(string, sizeof(string), "%s dice: %s", name, text);
+        if(!usingMask[playerid])
+			format(string, sizeof(string), "%s dice: %s", GetPlayerNameEx(playerid), text);
+		else
+			format(string, sizeof(string), "Enmascarado %s dice: %s", maskText[playerid], text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
 	} else {
 	    if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 1) {
-			format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", name, text);
+	        if(!usingMask[playerid])
+				format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "[Ventanillas cerradas] Enmascarado %s dice: %s", maskText[playerid], text);
 			ProxDetector(5.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		} else {
-			format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
+		    if(!usingMask[playerid])
+				format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", GetPlayerNameEx(playerid), text);
+			else
+				format(string, sizeof(string), "[Ventanillas abiertas] Enmascarado %s dice: %s", maskText[playerid], text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		}
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
@@ -6211,7 +6232,7 @@ PlayerActionMessage(playerid,Float:radius,message[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), message);
 	else
-	    format(string, sizeof(string), "* Enmascarado %s", message);
+	    format(string, sizeof(string), "* Enmascarado %s %s", maskText[playerid], message);
 	ProxDetector(radius, playerid, string, COLOR_ACT1,COLOR_ACT2,COLOR_ACT3,COLOR_ACT4,COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;
@@ -6223,7 +6244,7 @@ PlayerDoMessage(playerid,Float:radius,message[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s (( %s ))", message, GetPlayerNameEx(playerid));
 	else
-	    format(string, sizeof(string), "* %s (( Enmascarado ))", message);
+	    format(string, sizeof(string), "* %s (( Enmascarado %s ))", message, maskText[playerid]);
 	ProxDetector(radius, playerid, string, COLOR_DO1,COLOR_DO2,COLOR_DO3,COLOR_DO4,COLOR_DO5);
 	PlayerActionLog(string);
 	return 1;
@@ -6232,16 +6253,10 @@ PlayerDoMessage(playerid,Float:radius,message[])
 PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 {
 	new string[128];
-	new name1[24];
-	name1 = GetPlayerNameEx(playerid);
-	new name2[24];
-	name2 = GetPlayerNameEx(targetid);
-	if(usingMask[playerid])
-		name1 = "Enmascarado";
-	if(usingMask[targetid])
-	    name2 = "Enmascarado";
-	
-	format(string, sizeof(string), "* %s %s %s.", name1, message, name2);
+	if(!usingMask[playerid])
+		format(string, sizeof(string), "* %s %s %s.", GetPlayerNameEx(playerid), message, GetPlayerNameEx(targetid));
+	else
+	    format(string, sizeof(string), "* Enmascarado %s %s Enmascarado %s.", maskText[playerid], message, maskText[targetid]);
 	ProxDetector(radius, playerid, string, COLOR_ACT1,COLOR_ACT2,COLOR_ACT3,COLOR_ACT4,COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;
@@ -6250,12 +6265,15 @@ PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
 {
 	new string[128];
-	
+
 	if(HasPlayerDesc(playerid))
 		HidePlayerDesc(playerid, timeexpire + 2000); // La descripcion es escondida 2 segundos más que la duracion del cme.
 
     SetPlayerChatBubble(playerid, str, COLOR_ACT1, drawdistance, timeexpire);
-	format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), str);
+	if(!usingMask[playerid])
+		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), str);
+	else
+	    format(string, sizeof(string), "* Enmascarado %s %s", maskText[playerid], str);
 	SendClientMessage(playerid, COLOR_ACT1, string);
     return 1;
 }
@@ -8440,7 +8458,7 @@ CMD:departamento(playerid, params[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
- 		format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
+ 		format(string, sizeof(string), "Enmascarado %s dice por radio: %s", maskText[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player) {
@@ -8691,7 +8709,7 @@ CMD:radio(playerid, params[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
-	    format(string, sizeof(string), "Enmascarado dice por radio: %s", text);
+	    format(string, sizeof(string), "Enmascarado %s dice por radio: %s", maskText[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
@@ -8827,7 +8845,7 @@ CMD:gritar(playerid, params[]) {
 		if(!usingMask[playerid])
 			format(string, sizeof(string), "%s grita: ¡¡%s!!", GetPlayerNameEx(playerid), text);
 		else
-		    format(string, sizeof(string), "Enmascarado grita: ¡¡%s!!", text);
+		    format(string, sizeof(string), "Enmascarado %s grita: ¡¡%s!!", maskText[playerid], text);
 		ProxDetector(35.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 	}
 	return 1;
@@ -12163,9 +12181,15 @@ CMD:italiano(playerid, params[])
 		    if(ProxDetectorS(15.0, playerid, i))
  			{
 		    	if(PlayerInfo[i][pFaction] == FAC_BERT || AdminDuty[i])
-		        	SendFMessage(i, COLOR_WHITE, "%s dice en italiano: %s", name, text);
+		    	    if(!usingMask[playerid])
+						SendFMessage(i, COLOR_WHITE, "%s dice en italiano: %s", GetPlayerNameEx(playerid), text);
+					else
+					    SendFMessage(i, COLOR_WHITE, "Enmascarado %s dice en italiano: %s", maskText[playerid], text);
 				else
-				    SendFMessage(i, COLOR_ACT1, "%s habla unas palabras en un idioma desconocido.", name);
+					if(!usingMask[playerid])
+		    			SendFMessage(i, COLOR_ACT1, "%s habla unas palabras en un idioma desconocido.", GetPlayerNameEx(playerid));
+					else
+					    SendFMessage(i, COLOR_ACT1, "Enmascarado %s habla unas palabras en un idioma desconocido.", maskText[playerid]);
 			}
 		}
 	}
@@ -12824,7 +12848,7 @@ CMD:susurrar(playerid, params[])
  	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s susurra: %s", GetPlayerNameEx(playerid), text);
 	else
-	    format(string, sizeof(string), "Enmascarado susurra: %s", text);
+	    format(string, sizeof(string), "Enmascarado %s susurra: %s", maskText[playerid], text);
 	SendClientMessage(targetid, COLOR_YELLOW, string);
 	SendClientMessage(playerid, COLOR_YELLOW, string);
 	PlayerPlayerActionMessage(playerid, targetid, 5.0, "ha susurrado algo al oído de");
@@ -12865,7 +12889,7 @@ CMD:local(playerid, params[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice: %s", GetPlayerNameEx(playerid), text);
 	else
-	    format(string, sizeof(string), "Enmascarado dice: %s", text);
+	    format(string, sizeof(string), "Enmascarado %s dice: %s", maskText[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 	return 1;
 }
@@ -12880,7 +12904,7 @@ CMD:vb(playerid, params[])
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "[Voz baja] %s dice: %s", GetPlayerNameEx(playerid), text);
 	else
-		format(string, sizeof(string), "[Voz baja] Enmascarado dice: %s", text);
+		format(string, sizeof(string), "[Voz baja] Enmascarado %s dice: %s", maskText[playerid], text);
 	ProxDetector(3.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 	return 1;
 }
