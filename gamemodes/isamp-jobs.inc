@@ -255,10 +255,16 @@ CMD:comenzar(playerid,params[])
 CMD:trabajar(playerid,params[])
 {
 	new job = PlayerInfo[playerid][pJob];
-	    
+
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
-		jobDuty[playerid] = true;
+	    if(!jobDuty[playerid])
+		{
+			SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
+			jobDuty[playerid] = true;
+		} else {
+			SendClientMessage(playerid, COLOR_YELLOW2, "¡Has dejado el servicio como mecánico!");
+			jobDuty[playerid] = false;
+		}
 	} else
 	    {
 			if(job == 0)
@@ -336,7 +342,7 @@ CMD:trabajar(playerid,params[])
 			    	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
 
 					new gbCP = 0, route = random(2);
-						    
+
           			SetPVarInt(playerid, "jobVehicle", GetPlayerVehicleID(playerid));
              		jobDuty[playerid] = true;
              		if(route == 0) {
