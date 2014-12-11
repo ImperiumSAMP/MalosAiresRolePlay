@@ -108,7 +108,7 @@ public ReplenishMask(playerid)
     {
         new str[12];
         valstr(str, maskNumber[playerid]);
-        maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid);
+        maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
         maskActive[playerid] = true;
 	}
 	return 1;
@@ -175,7 +175,7 @@ PlayerTakeMaskID(playerid, maskid)
 {
 	new str[12];
  	valstr(str, maskid);
-	maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_WHITE, 0.0, 0.0, 0.5, 15.0, playerid);
+	maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_WHITE, 0.0, 0.0, 0.5, 15.0, playerid, INVALID_VEHICLE_ID, 1);
 	maskNumber[playerid] = maskid;
 	maskActive[playerid] = true;
 	logmask(playerid, LOG_MASK, maskNumber[playerid]);

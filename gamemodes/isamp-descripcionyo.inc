@@ -29,7 +29,7 @@ public ReplenishDesc(playerid)
 {
     if(!descActive[playerid])
     {
-        descLabel[playerid] = CreateDynamic3DTextLabel(descText[playerid], COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid);
+        descLabel[playerid] = CreateDynamic3DTextLabel(descText[playerid], COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
         descActive[playerid] = true;
 	}
 	return 1;
@@ -54,7 +54,7 @@ CMD:yo(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "La descripción es demasiada larga, ingresa una más corta. (MAX 65 CARACTERES)");
 
 	format(str, sizeof(str), "%s", desc);
-	descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid);
+	descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
 	SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s. Usa /yob para eliminarla.", str);
 	strmid(descText[playerid], str, 0, strlen(str));
 	descActive[playerid] = true;
