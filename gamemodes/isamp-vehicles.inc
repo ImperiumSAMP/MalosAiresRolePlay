@@ -1480,10 +1480,10 @@ CMD:avehiculo(playerid, params[])
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuel - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente - /avestacionar");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avestacionar - /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfaccion [idfaccion] - /avempleo [IDempleo] /avnitro /avcrear /avcrearperma /avhp");
 		SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/avtipo 0', si éste estaba asociado a un personaje el...");
 	 	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}...vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
@@ -1837,7 +1837,7 @@ CMD:avestacionar(playerid, params[])
 {
 	new vehicleid, Float:cx, Float:cy, Float:cz, Float:angle;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
+	if(PlayerInfo[playerid][pAdmin] < 3)
 		return 1;
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
