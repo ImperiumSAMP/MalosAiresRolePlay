@@ -188,7 +188,9 @@ stock SearchTrunkForItem(trunkid, itemid)
 
 stock SearchTrunkFreeSlot(trunkid)
 {
-	for(new i = 0; i < GetVehicleMaxTrunkSlots(trunkid); i++)
+	new trunkslots = GetVehicleMaxTrunkSlots(trunkid);
+	
+	for(new i = 0; i < trunkslots; i++)
 	{
 		if(TrunkInfo[trunkid][i][Item] == 0)
 		    return i;
@@ -198,10 +200,10 @@ stock SearchTrunkFreeSlot(trunkid)
 
 stock PrintTrunkForPlayer(trunkid, targetid)
 {
-	new itemid;
+	new itemid, trunkslots = GetVehicleMaxTrunkSlots(trunkid);
 
  	SendClientMessage(targetid, COLOR_WHITE, "=======================[Maletero]======================");
-	for(new i = 0; i < GetVehicleMaxTrunkSlots(trunkid); i++)
+	for(new i = 0; i < trunkslots; i++)
 	{
 		itemid = GetTrunkItem(trunkid, i);
 	    if(itemid > 0)
@@ -214,14 +216,270 @@ stock PrintTrunkForPlayer(trunkid, targetid)
 
 //==========================VEHICLE MISC FUNCTIONS==============================
 
-stock getVehicleJob(vehid) {
-	return VehicleInfo[vehid][VehJob];
+enum CarModelInfo {
+	mName[32],
+	mType,
+	mPrice,
+ 	mTrunkSlots
+};
+
+static const CarModels[][CarModelInfo] = {
+
+/*400*/	{"Landstalker", VTYPE_CAR, 70000, 4},
+/*401*/	{"Bravura", VTYPE_CAR, 31000, 2},
+/*402*/	{"Buffalo", VTYPE_CAR, 500000, 2},
+/*403*/	{"Linerunner", VTYPE_CAR, 455800, 4},
+/*404*/	{"Perenniel", VTYPE_CAR, 28900, 4},
+/*405*/	{"Sentinel", VTYPE_CAR, 68300, 4},
+/*406*/	{"Dumper", VTYPE_MONSTER, 853700, 0},
+/*407*/	{"Firetruck", VTYPE_HEAVY, 311800, 0},
+/*408*/	{"Trashmaster", VTYPE_HEAVY, 280000, 0},
+/*409*/	{"Stretch", VTYPE_CAR, 550000, 4},
+/*410*/	{"Manana", VTYPE_CAR, 26300, 2},
+/*411*/	{"Infernus", VTYPE_CAR, 990500, 2},
+/*412*/	{"Voodoo", VTYPE_CAR, 69100, 4},
+/*413*/	{"Pony", VTYPE_CAR, 105100, 6},
+/*414*/	{"Mule", VTYPE_HEAVY, 98200, 8},
+/*415*/	{"Cheetah", VTYPE_CAR, 750400, 2},
+/*416*/	{"Ambulance", VTYPE_CAR, 550100, 4},
+/*417*/	{"Leviathan", VTYPE_HELI, 910000, 6},
+/*418*/	{"Moonbeam", VTYPE_CAR, 80400, 4},
+/*419*/	{"Esperanto", VTYPE_CAR, 58000, 2},
+/*420*/	{"Taxi", VTYPE_CAR, 86000, 4},
+/*421*/	{"Washington", VTYPE_CAR, 75100, 4},
+/*422*/	{"Bobcat", VTYPE_CAR, 35800, 6},
+/*423*/	{"Mr Whoopee", VTYPE_CAR, 98800, 0},
+/*424*/	{"BF Injection", VTYPE_CAR, 65100, 0},
+/*425*/	{"Hunter", VTYPE_HELI, 10000000, 0},
+/*426*/	{"Premier", VTYPE_CAR, 80500, 4},
+/*427*/	{"Enforcer", VTYPE_CAR, 400000, 8},
+/*428*/	{"Securicar", VTYPE_CAR, 400000, 8},
+/*429*/	{"Banshee", VTYPE_CAR, 595000, 2},
+/*430*/	{"Predator", VTYPE_SEA, 1000000, 2},
+/*431*/	{"Bus", VTYPE_CAR, 592000, 0},
+/*432*/	{"Rhino", VTYPE_HEAVY, 10000000, 0},
+/*433*/	{"Barracks", VTYPE_HEAVY, 400000, 8},
+/*434*/	{"Hotknife", VTYPE_CAR, 384000, 0},
+/*435*/	{"Article Trailer", VTYPE_TRAILER, 150000, 10},
+/*436*/	{"Previon", VTYPE_CAR, 39000, 2},
+/*437*/	{"Coach", VTYPE_HEAVY, 599000, 0},
+/*438*/	{"Cabbie", VTYPE_CAR, 79000, 4},
+/*439*/	{"Stallion", VTYPE_CAR, 65000, 2},
+/*440*/ {"Rumpo", VTYPE_CAR, 95000, 6},
+/*441*/	{"RC Bandit", VTYPE_CAR, 500000, 0},
+/*442*/	{"Romero", VTYPE_CAR, 105000, 4},
+/*443*/	{"Packer", VTYPE_HEAVY, 428000, 0},
+/*444*/	{"Monster", VTYPE_MONSTER, 675000, 0},
+/*445*/	{"Admiral", VTYPE_CAR, 61000, 4},
+/*446*/	{"Squallo", VTYPE_SEA, 775000, 2},
+/*447*/	{"Seasparrow", VTYPE_HELI, 2000000, 0},
+/*448*/	{"Pizzaboy", VTYPE_BIKE, 25000, 0},
+/*449*/	{"Tram", VTYPE_TRAIN, 500000, 0},
+/*450*/	{"Article Trailer 2", VTYPE_TRAILER, 150000, 10},
+/*451*/	{"Turismo", VTYPE_CAR, 1050000, 2},
+/*452*/	{"Speeder", VTYPE_SEA, 755000, 2},
+/*453*/	{"Reefer", VTYPE_SEA, 480000, 8},
+/*454*/	{"Tropic", VTYPE_SEA, 830000, 6},
+/*455*/	{"Flatbed", VTYPE_CAR, 180000, 8},
+/*456*/	{"Yankee", VTYPE_CAR, 155000, 8},
+/*457*/	{"Caddy", VTYPE_CAR, 85000, 0},
+/*458*/	{"Solair", VTYPE_CAR, 80000, 4},
+/*459*/	{"Berkley's RC Van", VTYPE_CAR, 90000, 6},
+/*460*/	{"Skimmer", VTYPE_PLANE, 405000, 0},
+/*461*/	{"PCJ-600", VTYPE_BIKE, 75000, 0},
+/*462*/	{"Faggio", VTYPE_BIKE, 9000, 0},
+/*463*/	{"Freeway", VTYPE_BIKE, 70000, 0},
+/*464*/	{"RC Baron", VTYPE_PLANE, 500000, 0},
+/*465*/	{"RC Raider", VTYPE_HELI, 500000, 0},
+/*466*/	{"Glendale", VTYPE_CAR, 45000, 4},
+/*467*/	{"Oceanic", VTYPE_CAR, 41000, 4},
+/*468*/	{"Sanchez", VTYPE_BIKE, 55000, 0},
+/*469*/	{"Sparrow", VTYPE_HELI, 415000, 0},
+/*470*/	{"Patriot", VTYPE_CAR, 315000, 4},
+/*471*/	{"Quad", VTYPE_QUAD, 30000, 0},
+/*472*/	{"Coastguard", VTYPE_SEA, 150000, 2},
+/*473*/	{"Dinghy", VTYPE_SEA, 55000, 0},
+/*474*/	{"Hermes", VTYPE_CAR, 61000, 2},
+/*475*/	{"Sabre", VTYPE_CAR, 90000, 2},
+/*476*/	{"Rustler", VTYPE_PLANE, 1500000, 0},
+/*477*/	{"ZR-350", VTYPE_CAR, 625000, 2},
+/*478*/	{"Walton", VTYPE_CAR, 25000, 4},
+/*479*/	{"Regina", VTYPE_CAR, 65000, 4},
+/*480*/	{"Comet", VTYPE_CAR, 400000, 2},
+/*481*/	{"BMX", VTYPE_BMX, 7000, 0},
+/*482*/	{"Burrito", VTYPE_CAR, 95000, 6},
+/*483*/	{"Camper", VTYPE_CAR, 50000, 4},
+/*484*/	{"Marquis", VTYPE_SEA, 485000, 4},
+/*485*/	{"Baggage", VTYPE_CAR, 40000, 0},
+/*486*/	{"Dozer", VTYPE_CAR, 500000, 0},
+/*487*/	{"Maverick", VTYPE_HELI, 1200000, 4},
+/*488*/	{"SAN News Maverick", VTYPE_HELI, 1200000, 2},
+/*489*/	{"Rancher", VTYPE_CAR, 105000, 4},
+/*490*/	{"FBI Rancher", VTYPE_CAR, 150000, 4},
+/*491*/	{"Virgo", VTYPE_CAR, 55000, 2},
+/*492*/	{"Greenwood", VTYPE_CAR, 60000, 4},
+/*493*/	{"Jetmax", VTYPE_SEA, 770000, 2},
+/*494*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
+/*495*/	{"Sandking", VTYPE_CAR, 1000000, 4},
+/*496*/	{"Blista Compact", VTYPE_CAR, 100500, 2},
+/*497*/	{"Police Maverick", VTYPE_HELI, 1500000, 4},
+/*498*/	{"Boxville", VTYPE_CAR, 80000, 8},
+/*499*/	{"Benson", VTYPE_CAR, 70000, 8},
+/*500*/	{"Mesa", VTYPE_CAR, 60000, 2},
+/*501*/	{"RC Goblin", VTYPE_HELI, 500000, 0},
+/*502*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
+/*503*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
+/*504*/	{"Bloodring Banger", VTYPE_CAR, 200000, 0},
+/*505*/	{"Rancher", VTYPE_CAR, 105000, 4},
+/*506*/	{"Super GT", VTYPE_CAR, 700000, 2},
+/*507*/	{"Elegant", VTYPE_CAR, 80000, 4},
+/*508*/	{"Journey", VTYPE_CAR, 180000, 6},
+/*509*/ {"Bike", VTYPE_BMX, 2500, 0},
+/*510*/	{"Mountain Bike", VTYPE_BMX, 10000, 0},
+/*511*/	{"Beagle", VTYPE_PLANE, 415000, 4},
+/*512*/	{"Cropduster", VTYPE_PLANE, 400000, 0},
+/*513*/	{"Stuntplane", VTYPE_PLANE, 420000, 0},
+/*514*/	{"Tanker", VTYPE_CAR, 440000, 4},
+/*515*/	{"Roadtrain", VTYPE_CAR, 485000, 4},
+/*516*/	{"Nebula", VTYPE_CAR, 47500, 4},
+/*517*/	{"Majestic", VTYPE_CAR, 60000, 2},
+/*518*/	{"Buccaneer", VTYPE_CAR, 45000, 2},
+/*519*/	{"Shamal", VTYPE_PLANE, 1500000, 6},
+/*520*/	{"Hydra", VTYPE_PLANE, 10000000, 0},
+/*521*/	{"FCR-900", VTYPE_BIKE, 80000, 0},
+/*522*/	{"NRG-500", VTYPE_BIKE, 575000, 0},
+/*523*/	{"HPV1000", VTYPE_BIKE, 100000, 0},
+/*524*/	{"Cement Truck", VTYPE_CAR, 130000, 0},
+/*525*/	{"Towtruck", VTYPE_HEAVY, 90000, 0},
+/*526*/	{"Fortune", VTYPE_CAR, 55000, 2},
+/*527*/	{"Cadrona", VTYPE_CAR, 41000, 2},
+/*528*/	{"FBI Truck", VTYPE_CAR, 250000, 2},
+/*529*/	{"Willard", VTYPE_CAR, 50000, 4},
+/*530*/	{"Forklift", VTYPE_CAR, 90000, 0},
+/*531*/	{"Tractor", VTYPE_HEAVY, 40000, 0},
+/*532*/	{"Combine Harvester", VTYPE_HEAVY, 600000, 0},
+/*533*/	{"Feltzer", VTYPE_CAR, 110000, 2},
+/*534*/	{"Remington", VTYPE_CAR, 86000, 4},
+/*535*/	{"Slamvan", VTYPE_CAR, 90000, 4},
+/*536*/	{"Blade", VTYPE_CAR, 95000, 2},
+/*537*/	{"Freight", VTYPE_TRAIN, 2000000, 0},
+/*538*/	{"Brownstreak", VTYPE_TRAIN, 2000000, 0},
+/*539*/	{"Vortex", VTYPE_SEA, 1550000, 0},
+/*540*/	{"Vincent", VTYPE_CAR, 60000, 4},
+/*541*/	{"Bullet", VTYPE_CAR, 850000, 2},
+/*542*/	{"Clover", VTYPE_CAR, 40000, 2},
+/*543*/	{"Sadler", VTYPE_CAR, 30000, 6},
+/*544*/	{"Firetruck LA", VTYPE_CAR, 400000, 0},
+/*545*/	{"Hustler", VTYPE_CAR, 325000, 2},
+/*546*/	{"Intruder", VTYPE_CAR, 65000, 4},
+/*547*/	{"Primo", VTYPE_CAR, 50000, 4},
+/*548*/	{"Cargobob", VTYPE_HELI, 1600000, 6},
+/*549*/	{"Tampa", VTYPE_CAR, 50000, 4},
+/*550*/	{"Sunrise", VTYPE_CAR, 85000, 4},
+/*551*/	{"Merit", VTYPE_CAR, 110000, 4},
+/*552*/	{"Utility Van", VTYPE_CAR, 230000, 4},
+/*553*/	{"Nevada", VTYPE_PLANE, 1250000, 6},
+/*554*/	{"Yosemite", VTYPE_CAR, 90000, 6},
+/*555*/	{"Windsor", VTYPE_CAR, 150000, 2},
+/*556*/	{"Monster A", VTYPE_MONSTER, 700000, 0},
+/*557*/	{"Monster B", VTYPE_MONSTER, 700000, 0},
+/*558*/	{"Uranus", VTYPE_CAR, 350000, 2},
+/*559*/	{"Jester", VTYPE_CAR, 500000, 2},
+/*560*/	{"Sultan", VTYPE_CAR, 575000, 4},
+/*561*/	{"Stratum", VTYPE_CAR, 200000, 4},
+/*562*/	{"Elegy", VTYPE_CAR, 495000, 2},
+/*563*/	{"Raindance", VTYPE_HELI, 1350000, 4},
+/*564*/	{"RC Tiger", VTYPE_CAR, 500000, 0},
+/*565*/	{"Flash", VTYPE_CAR, 375000, 2},
+/*566*/	{"Tahoma", VTYPE_CAR, 90000, 4},
+/*567*/	{"Savanna", VTYPE_CAR, 85000, 4},
+/*568*/	{"Bandito", VTYPE_CAR, 40000, 0},
+/*569*/	{"Freight Flat Trailer", VTYPE_TRAIN, 500000, 0},
+/*570*/	{"Streak Trailer", VTYPE_TRAIN, 1000000, 0},
+/*571*/	{"Kart", VTYPE_CAR, 25000, 0},
+/*572*/	{"Mower", VTYPE_CAR, 15000, 0},
+/*573*/	{"Dune", VTYPE_MONSTER, 1000000, 6},
+/*574*/	{"Sweeper", VTYPE_CAR, 50000, 0},
+/*575*/	{"Broadway", VTYPE_CAR, 85000, 2},
+/*576*/	{"Tornado", VTYPE_CAR, 68000, 2},
+/*577*/	{"AT400", VTYPE_PLANE, 3500000, 6},
+/*578*/	{"DFT-30", VTYPE_CAR, 190000, 2},
+/*579*/	{"Huntley", VTYPE_CAR, 135000, 4},
+/*580*/	{"Stafford", VTYPE_CAR, 95000, 4},
+/*581*/	{"BF-400", VTYPE_BIKE, 60000, 0},
+/*582*/	{"Newsvan", VTYPE_CAR, 125000, 4},
+/*583*/	{"Tug", VTYPE_CAR, 25000, 0},
+/*584*/	{"Petrol Trailer", VTYPE_TRAILER, 300000, 0},
+/*585*/	{"Emperor", VTYPE_CAR, 45000, 4},
+/*586*/	{"Wayfarer", VTYPE_BIKE, 50000, 0},
+/*587*/	{"Euros", VTYPE_CAR, 400000, 2},
+/*588*/	{"Hotdog", VTYPE_HEAVY, 90000, 0},
+/*589*/	{"Club", VTYPE_CAR, 150000, 2},
+/*590*/	{"Freight Box Trailer", VTYPE_TRAIN, 350000, 0},
+/*591*/	{"Article Trailer 3", VTYPE_TRAILER, 200000, 10},
+/*592*/	{"Andromada", VTYPE_PLANE, 3500000, 10},
+/*593*/	{"Dodo", VTYPE_PLANE, 525000, 2},
+/*594*/	{"RC Cam", VTYPE_CAR, 500000, 0},
+/*595*/	{"Launch", VTYPE_SEA, 725000, 2},
+/*596*/	{"Police Car (LSPD)", VTYPE_CAR, 100000, 4},
+/*597*/	{"Police Car (SFPD)", VTYPE_CAR, 100000, 4},
+/*598*/	{"Police Car (LVPD)", VTYPE_CAR, 100000, 4},
+/*599*/	{"Police Ranger", VTYPE_CAR, 135000, 4},
+/*600*/	{"Picador", VTYPE_CAR, 40000, 4},
+/*601*/	{"S.W.A.T.", VTYPE_CAR, 450000, 0},
+/*602*/	{"Alpha", VTYPE_CAR, 350000, 2},
+/*603*/	{"Phoenix", VTYPE_CAR, 500000, 2},
+/*604*/	{"Glendale Shit", VTYPE_CAR, 22000, 4},
+/*605*/	{"Sadler Shit", VTYPE_CAR, 19000, 4},
+/*606*/	{"Baggage Trailer A", VTYPE_TRAILER, 50000, 0},
+/*607*/	{"Baggage Trailer B", VTYPE_TRAILER, 50000, 0},
+/*608*/	{"Tug Stairs Trailer", VTYPE_TRAILER, 50000, 0},
+/*609*/	{"Boxville", VTYPE_CAR, 85000, 8},
+/*610*/	{"Farm Trailer", VTYPE_TRAILER, 75000, 0},
+/*611*/	{"Utility Trailer", VTYPE_TRAILER, 75000, 0}
+
+};
+
+GetVehicleMaxTrunkSlots(vehicleid)
+{
+	new modelid = GetVehicleModel(vehicleid);
+
+	if(modelid == 0)
+		return 0;
+
+	return CarModels[modelid-400][mTrunkSlots];
 }
 
-stock getVehicleType(vehid) {
-	return VehicleInfo[vehid][VehType];
+GetVehicleName(vehicleid)
+{
+	new name[32] = "", modelid = GetVehicleModel(vehicleid);
+
+	if(modelid == 0)
+		return name;
+
+	format(name, 32, "%s", CarModels[modelid-400][mName]);
+	return name;
 }
 
+GetVehiclePrice(vehicleid, priceperc)
+{
+	new modelid = GetVehicleModel(vehicleid);
+
+	if(modelid == 0)
+		return 0;
+
+	return (CarModels[modelid-400][mPrice] / 100 * priceperc);
+}
+
+GetVehicleType(vehicleid)
+{
+	new modelid = GetVehicleModel(vehicleid);
+
+	if(modelid == 0)
+		return 0;
+
+	return CarModels[modelid-400][mType];
+}
 
 VehTypeName(type) {
     new name[32];
@@ -239,479 +497,18 @@ VehTypeName(type) {
     return name;
 }
 
-GetVehicleMaxTrunkSlots(vehicleid) {
-	new trunkslots = 0;
-	new modelid = GetVehicleModel(vehicleid);
-	switch(modelid)
-	{
-		case 401, 402, 410, 411, 415, 419, 429, 430, 436, 439, 446, 451, 452,
-		    472, 474, 475, 477, 480, 488, 491, 493, 496, 500, 506, 517, 518, 526,
-		    527, 528, 533, 536, 541, 542, 545, 549, 555, 558, 559, 562, 565,
-			575, 576, 578, 587, 589, 593, 595, 602, 603:
-			trunkslots = 2;
-
-		case 400, 403, 404, 405, 409, 412, 416, 418, 420, 421, 426,
-			438, 442, 445, 458, 466, 467, 470, 478, 479, 483, 484,
-			487, 489, 490, 492, 495, 497, 505, 507, 511, 514, 515, 516, 529,
-			534, 535, 540, 546, 547, 550, 551, 552, 560, 561, 563, 566,
-			567, 579, 580, 582, 585, 596, 597, 598, 599, 600, 604, 605:
-			trunkslots = 4;
-
-		case 413, 417, 422, 440, 454, 459, 482, 508, 519, 543, 548, 553, 554, 573, 577:
-			trunkslots = 6;
-
-		case 414, 427, 428, 433, 453, 455, 456, 498, 499, 609:
-		    trunkslots = 8;
-
-		case 435, 450, 591, 592:
-		    trunkslots = 10;
-
-		default:
-		    trunkslots = 0;
-	}
-	return trunkslots;
+stock getVehicleJob(vehid) {
+	return VehicleInfo[vehid][VehJob];
 }
 
-GetVehicleName(vehicleid) {
-	new name[32];
-	switch(GetVehicleModel(vehicleid)) {
-	   case 400: format(name,32,"Landstalker");
-	   case 401: format(name,32,"Bravura");
-	   case 402: format(name,32,"Buffalo");
-	   case 403: format(name,32,"Linerunner");
-	   case 404: format(name,32,"Perenniel");
-	   case 405: format(name,32,"Sentinel");
-	   case 406: format(name,32,"Dumper");
-	   case 407: format(name,32,"Firetruck");
-	   case 408: format(name,32,"Trashmaster");
-	   case 409: format(name,32,"Stretch");
-	   case 410: format(name,32,"Manana");
-	   case 411: format(name,32,"Infernus");
-	   case 412: format(name,32,"Voodoo");
-	   case 413: format(name,32,"Pony");
-	   case 414: format(name,32,"Mule");
-	   case 415: format(name,32,"Cheetah");
-	   case 416: format(name,32,"Ambulance");
-	   case 417: format(name,32,"Leviathan");
-	   case 418: format(name,32,"Moonbeam");
-	   case 419: format(name,32,"Esperanto");
-	   case 420: format(name,32,"Taxi");
-	   case 421: format(name,32,"Washington");
-	   case 422: format(name,32,"Bobcat");
-	   case 423: format(name,32,"Mr Whoopee");
-	   case 424: format(name,32,"BF Injection");
-	   case 425: format(name,32,"Hunter");
-	   case 426: format(name,32,"Premier");
-	   case 427: format(name,32,"Enforcer");
-	   case 428: format(name,32,"Securicar");
-	   case 429: format(name,32,"Banshee");
-	   case 430: format(name,32,"Predator");
-	   case 431: format(name,32,"Bus");
-	   case 432: format(name,32,"Rhino");
-	   case 433: format(name,32,"Barracks");
-	   case 434: format(name,32,"Hotknife");
-	   case 435: format(name,32,"Article Trailer");
-	   case 436: format(name,32,"Previon");
-	   case 437: format(name,32,"Coach");
-	   case 438: format(name,32,"Cabbie");
-	   case 439: format(name,32,"Stallion");
-	   case 440: format(name,32,"Rumpo");
-	   case 441: format(name,32,"RC Bandit");
-	   case 442: format(name,32,"Romero");
-	   case 443: format(name,32,"Packer");
-	   case 444: format(name,32,"Monster");
-	   case 445: format(name,32,"Admiral");
-	   case 446: format(name,32,"Squallo");
-	   case 447: format(name,32,"Seasparrow");
-	   case 448: format(name,32,"Pizzaboy");
-	   case 449: format(name,32,"Tram");
-	   case 450: format(name,32,"Article Trailer 2");
-	   case 451: format(name,32,"Turismo");
-	   case 452: format(name,32,"Speeder");
-	   case 453: format(name,32,"Reefer");
-	   case 454: format(name,32,"Tropic");
-	   case 455: format(name,32,"Flatbed");
-	   case 456: format(name,32,"Yankee");
-	   case 457: format(name,32,"Caddy");
-	   case 458: format(name,32,"Solair");
-	   case 459: format(name,32,"Berkley's RC Van");
-	   case 460: format(name,32,"Skimmer");
-	   case 461: format(name,32,"PCJ-600");
-	   case 462: format(name,32,"Faggio");
-	   case 463: format(name,32,"Freeway");
-	   case 464: format(name,32,"RC Baron");
-	   case 465: format(name,32,"RC Raider");
-	   case 466: format(name,32,"Glendale");
-	   case 467: format(name,32,"Oceanic");
-	   case 468: format(name,32,"Sanchez");
-	   case 469: format(name,32,"Sparrow");
-	   case 470: format(name,32,"Patriot");
-	   case 471: format(name,32,"Quad");
-	   case 472: format(name,32,"Coastguard");
-	   case 473: format(name,32,"Dinghy");
-	   case 474: format(name,32,"Hermes");
-	   case 475: format(name,32,"Sabre");
-	   case 476: format(name,32,"Rustler");
-	   case 477: format(name,32,"ZR-350");
-	   case 478: format(name,32,"Walton");
-	   case 479: format(name,32,"Regina");
-	   case 480: format(name,32,"Comet");
-	   case 481: format(name,32,"BMX");
-	   case 482: format(name,32,"Burrito");
-	   case 483: format(name,32,"Camper");
-	   case 484: format(name,32,"Marquis");
-	   case 485: format(name,32,"Baggage");
-	   case 486: format(name,32,"Dozer");
-	   case 487: format(name,32,"Maverick");
-	   case 488: format(name,32,"SAN News Maverick");
-	   case 489: format(name,32,"Rancher");
-	   case 490: format(name,32,"FBI Rancher");
-	   case 491: format(name,32,"Virgo");
-	   case 492: format(name,32,"Greenwood");
-	   case 493: format(name,32,"Jetmax");
-	   case 494: format(name,32,"Hotring Racer");
-	   case 495: format(name,32,"Sandking");
-	   case 496: format(name,32,"Blista Compact");
-	   case 497: format(name,32,"Police Maverick");
-	   case 498: format(name,32,"Boxville");
-	   case 499: format(name,32,"Benson");
-	   case 500: format(name,32,"Mesa");
-	   case 501: format(name,32,"RC Goblin");
-	   case 502: format(name,32,"Hotring Racer");
-	   case 503: format(name,32,"Hotring Racer");
-	   case 504: format(name,32,"Bloodring Banger");
-	   case 505: format(name,32,"Rancher");
-	   case 506: format(name,32,"Super GT");
-	   case 507: format(name,32,"Elegant");
-	   case 508: format(name,32,"Journey");
-	   case 509: format(name,32,"Bike");
-	   case 510: format(name,32,"Mountain Bike");
-	   case 511: format(name,32,"Beagle");
-	   case 512: format(name,32,"Cropduster");
-	   case 513: format(name,32,"Stuntplane");
-	   case 514: format(name,32,"Tanker");
-	   case 515: format(name,32,"Roadtrain");
-	   case 516: format(name,32,"Nebula");
-	   case 517: format(name,32,"Majestic");
-	   case 518: format(name,32,"Buccaneer");
-	   case 519: format(name,32,"Shamal");
-	   case 520: format(name,32,"Hydra");
-	   case 521: format(name,32,"FCR-900");
-	   case 522: format(name,32,"NRG-500");
-	   case 523: format(name,32,"HPV1000");
-	   case 524: format(name,32,"Cement Truck");
-	   case 525: format(name,32,"Towtruck");
-	   case 526: format(name,32,"Fortune");
-	   case 527: format(name,32,"Cadrona");
-	   case 528: format(name,32,"FBI Truck");
-	   case 529: format(name,32,"Willard");
-	   case 530: format(name,32,"Forklift");
-	   case 531: format(name,32,"Tractor");
-	   case 532: format(name,32,"Combine Harvester");
-	   case 533: format(name,32,"Feltzer");
-	   case 534: format(name,32,"Remington");
-	   case 535: format(name,32,"Slamvan");
-	   case 536: format(name,32,"Blade");
-	   case 537: format(name,32,"Freight");
-	   case 538: format(name,32,"Brownstreak");
-	   case 539: format(name,32,"Vortex");
-	   case 540: format(name,32,"Vincent");
-	   case 541: format(name,32,"Bullet");
-	   case 542: format(name,32,"Clover");
-	   case 543: format(name,32,"Sadler");
-	   case 544: format(name,32,"Firetruck LA");
-	   case 545: format(name,32,"Hustler");
-	   case 546: format(name,32,"Intruder");
-	   case 547: format(name,32,"Primo");
-	   case 548: format(name,32,"Cargobob");
-	   case 549: format(name,32,"Tampa");
-	   case 550: format(name,32,"Sunrise");
-	   case 551: format(name,32,"Merit");
-	   case 552: format(name,32,"Utility Van");
-	   case 553: format(name,32,"Nevada");
-	   case 554: format(name,32,"Yosemite");
-	   case 555: format(name,32,"Windsor");
-	   case 556: format(name,32,"Monster A");
-	   case 557: format(name,32,"Monster B");
-	   case 558: format(name,32,"Uranus");
-	   case 559: format(name,32,"Jester");
-	   case 560: format(name,32,"Sultan");
-	   case 561: format(name,32,"Stratum");
-	   case 562: format(name,32,"Elegy");
-	   case 563: format(name,32,"Raindance");
-	   case 564: format(name,32,"RC Tiger");
-	   case 565: format(name,32,"Flash");
-	   case 566: format(name,32,"Tahoma");
-	   case 567: format(name,32,"Savanna");
-	   case 568: format(name,32,"Bandito");
-	   case 569: format(name,32,"Freight Flat Trailer");
-	   case 570: format(name,32,"Streak Trailer");
-	   case 571: format(name,32,"Kart");
-	   case 572: format(name,32,"Mower");
-	   case 573: format(name,32,"Dune");
-	   case 574: format(name,32,"Sweeper");
-	   case 575: format(name,32,"Broadway");
-	   case 576: format(name,32,"Tornado");
-	   case 577: format(name,32,"AT400");
-	   case 578: format(name,32,"DFT-30");
-	   case 579: format(name,32,"Huntley");
-	   case 580: format(name,32,"Stafford");
-	   case 581: format(name,32,"BF-400");
-	   case 582: format(name,32,"Newsvan");
-	   case 583: format(name,32,"Tug");
-	   case 584: format(name,32,"Petrol Trailer");
-	   case 585: format(name,32,"Emperor");
-	   case 586: format(name,32,"Wayfarer");
-	   case 587: format(name,32,"Euros");
-	   case 588: format(name,32,"Hotdog");
-	   case 589: format(name,32,"Club");
-	   case 590: format(name,32,"Freight Box Trailer");
-	   case 591: format(name,32,"Article Trailer 3");
-	   case 592: format(name,32,"Andromada");
-	   case 593: format(name,32,"Dodo");
-	   case 594: format(name,32,"RC Cam");
-	   case 595: format(name,32,"Launch");
-	   case 596: format(name,32,"Police Car (LSPD)");
-	   case 597: format(name,32,"Police Car (SFPD)");
-	   case 598: format(name,32,"Police Car (LVPD)");
-	   case 599: format(name,32,"Police Ranger");
-	   case 600: format(name,32,"Picador");
-	   case 601: format(name,32,"S.W.A.T.");
-	   case 602: format(name,32,"Alpha");
-	   case 603: format(name,32,"Phoenix");
-	   case 604: format(name,32,"Glendale Shit");
-	   case 605: format(name,32,"Sadler Shit");
-	   case 606: format(name,32,"Baggage Trailer A");
-	   case 607: format(name,32,"Baggage Trailer B");
-	   case 608: format(name,32,"Tug Stairs Trailer");
-	   case 609: format(name,32,"Boxville");
-	   case 610: format(name,32,"Farm Trailer");
-	   case 611: format(name,32,"Utility Trailer");
-	}
-	return name;
+stock getVehicleType(vehid) {
+	return VehicleInfo[vehid][VehType];
 }
 
 stock getVehicleDescription(vehicleid){
 	new vehdesc[64];
-	format(vehdesc,64,	"%s de %s",GetVehicleName(vehicleid),VehicleInfo[vehicleid][VehOwnerName]);
-	
+	format(vehdesc,64, "%s de %s",GetVehicleName(vehicleid),VehicleInfo[vehicleid][VehOwnerName]);
 	return vehdesc;
-}
-
-GetVehiclePrice(vehicleid, priceperc) {
-	new price;
-	new model = GetVehicleModel(vehicleid);
-	switch(model)
-	{
-		case 400: price = 70000;
-		case 401: price = 31000;
-		case 402: price = 500000;
-		case 403: price = 455800;
-		case 404: price = 28900;
-		case 405: price = 68300;
-		case 406: price = 853700;
-		case 407: price = 311800;
-		case 408: price = 280000;
-		case 409: price = 550000;
-		case 410: price = 26300;
-		case 411: price = 990500;
-		case 412: price = 69100;
-		case 413: price = 105100;
-		case 414: price = 98200;
-		case 415: price = 750400;
-		case 416: price = 550100;
-		case 417: price = 910000;
-		case 418: price = 80400;
-		case 419: price = 58000;
-		case 420: price = 86000;
-		case 421: price = 75100;
-		case 422: price = 35800;
-		case 423: price = 98800;
-		case 424: price = 65100;
-		case 426: price = 80500;
-		case 428: price = 400000;
-		case 429: price = 595000;
-		case 431: price = 592000;
-		case 434: price = 384000;
-		case 436: price = 39000;
-		case 437: price = 599000;
-		case 438: price = 79000;
-		case 439: price = 65000;
-		case 440: price = 95000;
-		case 442: price = 105000;
-		case 443: price = 428000;
-		case 444: price = 675000;
-		case 445: price = 61000;
-		case 446: price = 775000;
-		case 448: price = 25000;
-		case 451: price = 1050000;
-		case 452: price = 755000;
-		case 453: price = 480000;
-		case 454: price = 830000;
-		case 455: price = 180000;
-		case 456: price = 155000;
-		case 457: price = 85000;
-		case 458: price = 80000;
-		case 459: price = 90000;
-		case 460: price = 405000;
-		case 461: price = 75000;
-		case 462: price = 9000;
-		case 463: price = 70000;
-		case 466: price = 45000;
-		case 467: price = 41000;
-		case 468: price = 55000;
-		case 469: price = 415000;
-		case 470: price = 315000;
-		case 471: price = 30000;
-		case 473: price = 55000;
-		case 474: price = 61000;
-		case 475: price = 90000;
-		case 477: price = 625000;
-		case 478: price = 25000;
-		case 479: price = 65000;
-		case 480: price = 400000;
-		case 481: price = 7000;
-		case 482: price = 95000;
-		case 483: price = 50000;
-		case 484: price = 485000;
-		case 485: price = 40000;
-		case 486: price = 500000;
-		case 487: price = 1200000;
-		case 489: price = 105000;
-		case 491: price = 55000;
-		case 492: price = 60000;
-		case 493: price = 770000;
-		case 494: price = 1000000;
-		case 495: price = 1000000;
-		case 496: price = 100500;
-		case 498: price = 80000;
-		case 499: price = 70000;
-		case 500: price = 60000;
-		case 502: price = 1000000;
-		case 503: price = 1000000;
-		case 504: price = 200000;
-		case 505: price = 105000;
-		case 506: price = 700000;
-		case 507: price = 80000;
-		case 508: price = 180000;
-		case 509: price = 2500;
-		case 510: price = 10000;
-		case 511: price = 415000;
-		case 512: price = 400000;
-		case 513: price = 420000;
-		case 514: price = 440000;
-		case 515: price = 485000;
-		case 516: price = 47500;
-		case 517: price = 60000;
-		case 518: price = 45000;
-		case 519: price = 1500000;
-		case 521: price = 80000;
-		case 522: price = 575000;
-		case 524: price = 130000;
-		case 525: price = 90000;
-		case 526: price = 55000;
-		case 527: price = 41000;
-		case 529: price = 50000;
-		case 530: price = 90000;
-		case 531: price = 40000;
-		case 532: price = 600000;
-		case 533: price = 110000;
-		case 534: price = 86000;
-		case 535: price = 90000;
-		case 536: price = 95000;
-		case 539: price = 1550000;
-		case 540: price = 60000;
-		case 541: price = 850000;
-		case 542: price = 40000;
-		case 543: price = 30000;
-		case 545: price = 325000;
-		case 546: price = 65000;
-		case 547: price = 50000;
-		case 549: price = 50000;
-		case 550: price = 85000;
-		case 551: price = 110000;
-		case 552: price = 230000;
-		case 553: price = 1250000;
-		case 554: price = 90000;
-		case 555: price = 150000;
-		case 556: price = 700000;
-		case 557: price = 680000;
-		case 558: price = 350000;
-		case 559: price = 500000;
-		case 560: price = 575000;
-		case 561: price = 200000;
-		case 562: price = 495000;
-		case 563: price = 1350000;
-		case 565: price = 375000;
-		case 566: price = 90000;
-		case 567: price = 85000;
-		case 568: price = 40000;
-		case 571: price = 25000;
-		case 572: price = 15000;
-		case 573: price = 1000000;
-		case 575: price = 85000;
-		case 576: price = 68000;
-		case 577: price = 3500000;
-		case 578: price = 190000;
-		case 579: price = 135000;
-		case 580: price = 95000;
-		case 581: price = 60000;
-		case 583: price = 25000;
-		case 585: price = 45000;
-		case 586: price = 50000;
-		case 587: price = 400000;
-		case 588: price = 90000;
-		case 589: price = 150000;
-		case 592: price = 3500000;
-		case 593: price = 525000;
-		case 595: price = 725000;
-		case 600: price = 40000;
-	    case 602: price = 350000;
-		case 603: price = 500000;
-		case 604: price = 22000;
-		case 605: price = 19000;
-		case 609: price = 85000;
-		default: price = 0;
-	}
-	price = price / 100 * priceperc;
-	return price;
-}
-
-stock GetVehicleType(vehicleid) {
-	new
-		type = 0;
-
-	switch(GetVehicleModel(vehicleid)) {
-		case 416,602,485,568,429,499,424,536,496,504,422,609,498,401,575,518,402,
-		541,482,431,438,457,527,483,524,415,542,5689,480,596,599,597,598,578,486,
-		507,562,585,427,419,587,490,528,533,544,407,565,455,530,526,466,604,492,
-		474,434,502,503,494,579,545,411,546,559,508,571,400,403,517,410,551,500,
-		418,572,423,516,582,467,404,514,603,445,600,413,426,436,547,489,441,594,564,
-		515,479,534,505,442,440,475,543,605,495,567,428,405,535,458,580,439,561,
-		409,560,550,506,601,574,566,549,420,459,576,583,451,558,552,540,491,412,
-		478,421,529,555,456,554,477,589,470: type = VTYPE_CAR;
-
-		case 581,523,462,521,463,522,461,448,468,586: type = VTYPE_BIKE;
-
-		case 509,481,510: type = VTYPE_BMX;
-
-		case 471: type = VTYPE_QUAD;
-
-		case 472,473,493,595,484,430,453,452,446,454: type = VTYPE_SEA;
-		
-		case 548,425,417,487,497,563,501,465,447,469,488: type = VTYPE_HELI;
-
-		case 592,577,511,512,593,520,553,464,476,519,460,513,539: type = VTYPE_PLANE;
-
-		case 588,437,532,433,414,443,432,525,531,408: type = VTYPE_HEAVY;
-
-		case 406,573,444,556,557: type = VTYPE_MONSTER;
-
-		case 435,450,591,606,607,610,584,608,611: type = VTYPE_TRAILER;
-
-		case 590,569,537,538,570,449: type = VTYPE_TRAIN;
-	}
-	return type;
 }
 
 public respawnVeh(vehicleid) {

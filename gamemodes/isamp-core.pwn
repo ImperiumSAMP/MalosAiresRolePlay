@@ -1517,9 +1517,9 @@ public OnPlayerText(playerid, text[])
 		}
 		else if((strcmp("paramedico", text, true, strlen(text)) == 0) && (strlen(text) == strlen("paramedico")))
 		{
+		    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: departamento de emergencias, por favor de un breve informe de lo ocurrido.");
 			Mobile[playerid] = 913;
-			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		}
 		else
@@ -1616,16 +1616,22 @@ public OnPlayerText(playerid, text[])
 	}
 	//==========================================================================
 	
-    if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR){
+    if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR)
+	{
         format(string, sizeof(string), "%s dice: %s", name, text);
 		ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
-	} else {
-	    if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 1) {
+	}
+	else
+	{
+	    if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 1)
+		{
 	        format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", name, text);
 			ProxDetector(5.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
-		} else {
+		}
+		else
+		{
 		    format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
 			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
 		}
