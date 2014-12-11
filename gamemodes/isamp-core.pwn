@@ -966,7 +966,6 @@ public OnPlayerDisconnect(playerid, reason)
 
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	ResetDescLabel(playerid);
-	ResetMaskLabel(playerid);
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
@@ -1384,6 +1383,8 @@ public OnPlayerSpawn(playerid) {
 	LoadHandItem(playerid, HAND_LEFT);
 	AttachBackItem(playerid);
     LoadToysItems(playerid);
+    
+    ResetMaskLabel(playerid);
 
 	return 1;
 }
