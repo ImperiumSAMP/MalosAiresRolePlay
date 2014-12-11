@@ -966,7 +966,7 @@ public OnPlayerDisconnect(playerid, reason)
 
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	ResetDescLabel(playerid);
-	ResetMaskLabel(playerid);
+ 	ResetMaskLabel(playerid);
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
@@ -1454,6 +1454,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		
 	OnPlayerLeaveRobberyGroup(playerid, 2);
 
+    ResetMaskLabel(playerid);
 	ResetPlayerWeapons(playerid);
 	ResetAndSaveHands(playerid);
 	ResetAndSaveBack(playerid);
@@ -6316,10 +6317,21 @@ PlayerDoMessage(playerid,Float:radius,message[])
 PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 {
 	new string[128];
+
 	if(!usingMask[playerid])
-		format(string, sizeof(string), "* %s %s %s.", GetPlayerNameEx(playerid), message, GetPlayerNameEx(targetid));
+	{
+	    if(!usingMask[targetid])
+	        format(string, sizeof(string), "* %s %s %s.", GetPlayerNameEx(playerid), message, GetPlayerNameEx(targetid));
+		else
+		    format(string, sizeof(string), "* %s %s Enmascarado %d.", GetPlayerNameEx(playerid), message, maskNumber[targetid]);
+	}
 	else
-	    format(string, sizeof(string), "* Enmascarado %d %s Enmascarado %d.", maskNumber[playerid], message, maskNumber[targetid]);
+	{
+		if(!usingMask[targetid])
+	        format(string, sizeof(string), "* Enmascarado %d %s %s.", maskNumber[playerid], message, GetPlayerNameEx(targetid));
+		else
+		    format(string, sizeof(string), "* Enmascarado %d %s Enmascarado %d.", maskNumber[playerid], message, maskNumber[targetid]);
+	}
 	ProxDetector(radius, playerid, string, COLOR_ACT1,COLOR_ACT2,COLOR_ACT3,COLOR_ACT4,COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;

@@ -15,15 +15,14 @@
 +----------------------------------------------------------------------------+
 */
 
-// LOG DEFINE
 #define LOG_MASK                            5
 
 new Text3D:maskLabel[MAX_PLAYERS],
 	maskNumber[MAX_PLAYERS],
 	bool:maskActive[MAX_PLAYERS];
 
-
 //===================================PUBLIC'S===================================
+
 forward OnLogMasksLoad(playerid, targetname[]);
 public OnLogMasksLoad(playerid, targetname[])
 {
@@ -115,7 +114,8 @@ public ReplenishMask(playerid)
 	return 1;
 }
 
-//===================================STOCK'S===================================
+//===================================STOCK'S====================================
+
 stock ResetMaskVariables(playerid)
 {
     maskNumber[playerid] = 0;
@@ -252,7 +252,7 @@ CMD:vermascaras(playerid, params[])
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascaras [Nombre del jugador] (Con el '_')");
 
 	mysql_real_escape_string(targetname, targetname);
-	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE pName='%s' ORDER BY date DESC LIMIT 30", targetname);
+	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE `pName` = '%s' ORDER BY date DESC LIMIT 30", targetname);
 	mysql_function_query(dbHandle, query, true, "OnLogMasksLoad", "is", playerid, targetname);
 	return 1;
 }
@@ -267,7 +267,7 @@ CMD:vermascara(playerid, params[])
     if(sscanf(params, "i", maskid))
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascara [ID de la máscara]");
 
-	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE randommaskid = %d", maskid);
+	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE `randommaskid` = %d", maskid);
 	mysql_function_query(dbHandle, query, true, "OnLogMaskLoad", "i", playerid);
 	return 1;
 }
