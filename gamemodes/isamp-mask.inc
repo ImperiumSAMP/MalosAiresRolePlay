@@ -19,7 +19,7 @@
 #define LOG_MASK                            5
 
 new Text3D:maskLabel[MAX_PLAYERS],
-	maskText[MAX_PLAYERS][8],
+	maskNumber[MAX_PLAYERS],
 	bool:maskActive[MAX_PLAYERS];
 
 
@@ -62,8 +62,8 @@ public OnLogMasksLoad(playerid, targetname[])
 	return 1;
 }
 
-forward OnLogMaskLoad(playerid, randommaskid);
-public OnLogMaskLoad(playerid, randommaskid)
+forward OnLogMaskLoad(playerid);
+public OnLogMaskLoad(playerid)
 {
 	new result[128],
 		result2[128],
@@ -107,7 +107,9 @@ public ReplenishMask(playerid)
 {
     if(!maskActive[playerid])
     {
-        maskLabel[playerid] = CreateDynamic3DTextLabel(maskText[playerid], COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid);
+        new str[12];
+        valstr(str, maskNumber[playerid]);
+        maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid);
         maskActive[playerid] = true;
 	}
 	return 1;
@@ -116,7 +118,7 @@ public ReplenishMask(playerid)
 //===================================STOCK'S===================================
 stock ResetMaskVariables(playerid)
 {
-    maskText[playerid] = "BUG";
+    maskNumber[playerid] = 0;
     maskActive[playerid] = false;
 }
 
@@ -138,7 +140,7 @@ stock HidePlayerMask(playerid, time)
     SetTimerEx("ReplenishMask", time, false, "i", playerid);
 }
 
-stock logmask(playerid, logType, randommaskid)
+stock logmask(playerid, logType, maskid)
 {
 	new year, month, day,
 	    hour, minute, second,
@@ -151,7 +153,7 @@ stock logmask(playerid, logType, randommaskid)
 	mysql_real_escape_string(name, name, 1, sizeof(name));
 
 	if(logType == LOG_MASK) {
-		format(query, sizeof(query), "INSERT INTO `log_mask` (pID, pName, pIP, date, randommaskid) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%d')",
+		format(query, sizeof(query), "INSERT INTO `log_mask` (pID, pName, pIP, date, randommaskid) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', %d)",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
@@ -161,7 +163,7 @@ stock logmask(playerid, logType, randommaskid)
 			hour,
 			minute,
 			second,
-   			randommaskid
+   			maskid
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
 	}
@@ -169,14 +171,14 @@ stock logmask(playerid, logType, randommaskid)
 }
 
 //===================================XXX===================================
-PlayerTakeMaskID(playerid, randommaskid)
+PlayerTakeMaskID(playerid, maskid)
 {
-	new str[11];
-	format(str, sizeof(str), "%d", randommaskid);
+	new str[12];
+ 	valstr(str, maskid);
 	maskLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_WHITE, 0.0, 0.0, 0.5, 15.0, playerid);
+	maskNumber[playerid] = maskid;
 	maskActive[playerid] = true;
-	strmid(maskText[playerid], str, 0, strlen(str));
-	logmask(playerid, LOG_MASK, randommaskid);
+	logmask(playerid, LOG_MASK, maskNumber[playerid]);
 }
 
 //===================================COMANDOS===================================
@@ -190,11 +192,10 @@ CMD:mascara(playerid, params[])
 	{
  		if(IsPlayerAttachedObjectSlotUsed(playerid, INDEX_ID_MASK))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una mascara puesta.");
-		new randommaskid = random(99999999);
 		SetPlayerAttachedObject(playerid, INDEX_ID_MASK, PlayerInfo[playerid][pMask], BONE_ID_HEAD, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
 		usingMask[playerid] = true;
   		EditAttachedObject(playerid, INDEX_ID_MASK);
-  		PlayerTakeMaskID(playerid, randommaskid);
+  		PlayerTakeMaskID(playerid, random(99999999));
 		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
@@ -245,7 +246,8 @@ CMD:vermascaras(playerid, params[])
 	new targetname[MAX_PLAYER_NAME],
 	    query[128];
 
-    if(PlayerInfo[playerid][pAdmin] < 1) return 1;
+    if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
     if(sscanf(params, "s[24]", targetname))
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascaras [Nombre del jugador] (Con el '_')");
 
@@ -257,15 +259,16 @@ CMD:vermascaras(playerid, params[])
 
 CMD:vermascara(playerid, params[])
 {
-	new randommaskid[11],
+	new maskid,
 	    query[128];
 
-    if(PlayerInfo[playerid][pAdmin] < 1) return 1;
-    if(sscanf(params, "d[11]", randommaskid))
+    if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+    if(sscanf(params, "i", maskid))
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascara [ID de la máscara]");
 
-	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE randommaskid='%d'", randommaskid);
-	mysql_function_query(dbHandle, query, true, "OnLogMaskLoad", "is", playerid, randommaskid);
+	format(query, sizeof(query), "SELECT * FROM `log_mask` WHERE randommaskid = %d", maskid);
+	mysql_function_query(dbHandle, query, true, "OnLogMaskLoad", "i", playerid);
 	return 1;
 }
 

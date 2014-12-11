@@ -90,7 +90,9 @@ stock SearchLockerForItem(lockerid, itemid)
 
 stock SearchLockerFreeSlot(lockerid)
 {
-    for(new i = 0; i < GetHouseMaxLockerSlots(lockerid); i++)
+	new houseslots = GetHouseMaxLockerSlots(lockerid);
+	
+    for(new i = 0; i < houseslots; i++)
     {
         if(LockerInfo[lockerid][i][Item] == 0)
             return i;
@@ -100,10 +102,10 @@ stock SearchLockerFreeSlot(lockerid)
 
 stock PrintLockerForPlayer(lockerid, targetid)
 {
-	new itemid;
+	new itemid, houseslots = GetHouseMaxLockerSlots(lockerid);
 
  	SendClientMessage(targetid, COLOR_WHITE, "=======================[Armario]=======================");
-	for(new i = 0; i < GetHouseMaxLockerSlots(lockerid); i++)
+	for(new i = 0; i < houseslots; i++)
 	{
 		itemid = GetLockerItem(lockerid, i);
 	    if(itemid > 0)
