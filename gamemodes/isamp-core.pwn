@@ -3859,16 +3859,20 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
     return 1;
 }
 
-public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
+{
 
 	if(AdminDuty[playerid]) {
 	    return 1;
 	}
 
-	if(VehicleInfo[vehicleid][VehLocked] == 1) {
-		if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD) {
+	if(VehicleInfo[vehicleid][VehLocked] == 1)
+	{
+	    new vehModelType = GetVehicleType(vehicleid);
+	    
+		if(vehModelType == VTYPE_BMX || vehModelType == VTYPE_BIKE || vehModelType == VTYPE_QUAD)
 		    return 1;
-		}
+
 		new Float:pos[3];
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 		SetPlayerPos(playerid, pos[0], pos[1], pos[2]);
@@ -3885,16 +3889,21 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
-	new	string[128];
+	new	string[128],
+		vehicleid,
+	 	vehicleModelType;
 	
  	if(newstate == PLAYER_STATE_PASSENGER || newstate == PLAYER_STATE_DRIVER)
+ 	{
 		LastVeh[playerid] = GetPlayerVehicleID(playerid);
-		
-	new vehicleid = LastVeh[playerid];
-		
-	if(playerid == INVALID_PLAYER_ID) {
-	    return 1;
+		vehicleModelType = GetVehicleType(LastVeh[playerid]);
 	}
+		
+	vehicleid = LastVeh[playerid];
+		
+	if(playerid == INVALID_PLAYER_ID)
+	    return 1;
+	
 	if(newstate == PLAYER_STATE_ONFOOT)
 	{
 	    if(SeatBelt[playerid])
@@ -3904,17 +3913,22 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
  	}
 	        
-	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_PASSENGER) {
-	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI) {
-			if(TransportCost[TransportDriver[playerid]] > 0 && TransportDriver[playerid] < 999) {
-				if(IsPlayerConnected(TransportDriver[playerid])) {
+	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_PASSENGER)
+	{
+	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI)
+		{
+			if(TransportCost[TransportDriver[playerid]] > 0 && TransportDriver[playerid] < 999)
+			{
+				if(IsPlayerConnected(TransportDriver[playerid]))
+				{
 					format(string, sizeof(string), "~w~El viaje costo ~r~$%d", TransportCost[TransportDriver[playerid]]);
 					GameTextForPlayer(playerid, string, 5000, 1);
 					format(string, sizeof(string), "~w~El pasajero dejo el taxi~n~~g~Has ganado $%d", TransportCost[TransportDriver[playerid]]);
 					GameTextForPlayer(TransportDriver[playerid], string, 5000, 1);
 					GivePlayerCash(playerid, -TransportCost[TransportDriver[playerid]]);
 					GivePlayerCash(TransportDriver[playerid], TransportCost[TransportDriver[playerid]]);
-					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") < JOB_TAXI_MAXPASSENGERS) {
+					if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") < JOB_TAXI_MAXPASSENGERS)
+					{
 					    SetPVarInt(TransportDriver[playerid], "pJobLimitCounter", GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") + 1);
 						PlayerInfo[TransportDriver[playerid]][pPayCheck] += PRICE_TAXI_PERPASSENGER;
 					}
@@ -3930,28 +3944,38 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			StopAudioStreamForPlayer(playerid);
 			hearingRadioStream[playerid] = false;
 		}
-	} else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER) {
-	    // Ocultar velocímetro.
+	}
+	else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER)
+	{
+	    //=======Ocultar velocímetro=======
 	    HidePlayerSpeedo(playerid);
 	    KillTimer(pSpeedoTimer[playerid]);
-	    //
+	    //=================================
 
-		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM) {
+		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
+		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
             SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
-	    } else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN) {
+	    }
+		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
+		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
             SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
-	    } else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
+	    }
+		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
+		{
 	    	SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
             SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
 	    }
 
-	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI) {
-		    if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI) {
+	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI)
+		{
+		    if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI)
+			{
 				jobDuty[playerid] = false;
 				SendClientMessage(playerid, COLOR_YELLOW2, "Has dejado el vehículo, por lo tanto ya no te encuentras en servicio.");
-				if(TransportPassenger[playerid] < 999) {
+				if(TransportPassenger[playerid] < 999)
+				{
 					SendClientMessage(playerid, COLOR_YELLOW2, "Como el pasajero aún no ha dejado el vehículo no le cobras ninguna tarifa.");
 					SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el vehículo, por lo tanto no te cobrará ninguna tarifa.");
 					TransportCost[playerid] = 0;
@@ -3966,12 +3990,16 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			StopAudioStreamForPlayer(playerid);
 			hearingRadioStream[playerid] = false;
 		}
-		
 	}
-	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT) {
-		if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && TransportDriver[playerid] == 999) {
-	        foreach(new i : Player) {
-				if(vehicleid == GetPlayerVehicleID(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER && jobDuty[i] && PlayerInfo[i][pJob] == JOB_TAXI) {
+	
+	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT)
+	{
+		if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && TransportDriver[playerid] == 999)
+		{
+	        foreach(new i : Player)
+			{
+				if(vehicleid == GetPlayerVehicleID(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER && jobDuty[i] && PlayerInfo[i][pJob] == JOB_TAXI)
+				{
 					format(string, sizeof(string), "¡Un pasajero ha ingresado a tu vehículo!, le cobras $%d por segundo.", PRICE_TAXI);
 					SendClientMessage(i, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "Has ingresado al taxi como pasajero, el precio es de $%d por segundo.", PRICE_TAXI);
@@ -3980,91 +4008,107 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					TransportPassenger[i] = playerid;
 				}
 		 	}
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD) {
+		}
+		else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
+		{
 			RemovePlayerFromVehicle(playerid);
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && VehicleInfo[vehicleid][VehLocked] == 1 && AdminDuty[playerid] != 1) {
-		    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD)
+		}
+		else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && VehicleInfo[vehicleid][VehLocked] == 1 && AdminDuty[playerid] != 1)
+		{
+		    if(vehicleModelType == VTYPE_BMX || vehicleModelType == VTYPE_BIKE || vehicleModelType == VTYPE_QUAD)
 		    	return 1;
 		    	
 			SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 			RemovePlayerFromVehicle(playerid);
 		}
+		
 	//===============================RADIO EN AUTO==============================
+	
  		if(VehicleInfo[vehicleid][VehRadio] > 0)
 	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
+	    	
 	//==========================================================================
 	}
-	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT) {
-
-		if(GetVehicleType(vehicleid) != VTYPE_BMX) {
-		    // Si no es una bicicleta mostramos el velocímetro.
+	
+	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT)
+	{
+		if(vehicleModelType != VTYPE_BMX)
+		{
 			KillTimer(pSpeedoTimer[playerid]); // Como las id de timer nunca se repiten, por si las dudas, borramos cualquier timer anterior (si existiese y reemplazamos la id, queda andando para siempre)
             pSpeedoTimer[playerid] = SetTimerEx("speedoTimer", 1250, true, "d", playerid);
 			if(HudEnabled[playerid])
 				ShowPlayerSpeedo(playerid);
 		}
 		
-		vehicleid = GetPlayerVehicleID(playerid);
+		//===============================RADIO EN AUTO==========================
 		
-	//===============================RADIO EN AUTO==============================
 		if(VehicleInfo[vehicleid][VehRadio] > 0)
 	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
-	//==========================================================================
+	    	
+		//======================================================================
 
         if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
 		{
 			format(string, sizeof(string), "~w~%s", GetVehicleName(vehicleid));
 			GameTextForPlayer(playerid, string, 4000, 1);
-			new vehicleType = GetVehicleType(vehicleid);
-						
 			if(!AdminDuty[playerid])
 			{
-	            if(vehicleType == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID])
+	            if(vehicleModelType == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID])
 				{
 					SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta bicicleta no te pertenece!");
 					RemovePlayerFromVehicle(playerid);
 				}
 				else if(VehicleInfo[vehicleid][VehLocked] == 1)
 				{
-				    if(vehicleType == VTYPE_BMX || vehicleType == VTYPE_BIKE || vehicleType == VTYPE_QUAD)
+				    if(vehicleModelType == VTYPE_BMX || vehicleModelType == VTYPE_BIKE || vehicleModelType == VTYPE_QUAD)
 		    			return 1;
 		    			
 					SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo está cerrado.");
 					RemovePlayerFromVehicle(playerid);
 				}
-			} else {
-				SendFMessage(playerid, COLOR_WHITE, "Vehículo ID: %d | Nombre de dueño: %s | ID en la DB: %d.", vehicleid, VehicleInfo[vehicleid][VehOwnerName], VehicleInfo[vehicleid][VehOwnerSQLID]);
 			}
+			else
+				SendFMessage(playerid, COLOR_WHITE, "Vehículo ID: %d | Nombre de dueño: %s | ID en la DB: %d.", vehicleid, VehicleInfo[vehicleid][VehOwnerName], VehicleInfo[vehicleid][VehOwnerSQLID]);
 			
-		} else if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM) {
+		}
+		else if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
+		{
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	        
-	    } else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN) {
+	    }
+		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
+		{
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	        
-	    } else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB) {
+	    }
+		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
+		{
 	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
 	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	        
-	    } else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1) {
-			if(playerLicense[playerid][lDTaking] != 1) {
+	    }
+		else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1)
+		{
+			if(playerLicense[playerid][lDTaking] != 1)
+			{
 				RemovePlayerFromVehicle(playerid);
 				SendClientMessage(playerid, COLOR_YELLOW2, "No puedes ingresar a este vehículo.");
-			} else {
+			}
+			else
+			{
 				PlayerTextDrawShow(playerid, PTD_Timer[playerid]);
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "------------------------");
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡La prueba ha comenzado!");
 				SendClientMessage(playerid, COLOR_WHITE, "Enciende el motor con '/motor' o la tecla 'Y', y conduce sobre los puntos del mapa respetando las leyes de tránsito.");
-				if(playerLicense[playerid][lDStep] == 0) {
+				if(playerLicense[playerid][lDStep] == 0)
+				{
 			 		SetPlayerCheckpoint(playerid, 1109.8116, -1743.4208, 13.1255, 5.0);
 					playerLicense[playerid][lDStep] = 1;
 					timersID[10] = SetTimerEx("licenseTimer", 1000, false, "dd", playerid, 1);
 				}
 			}
-
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_RENT) {
+		}
+		else if(VehicleInfo[vehicleid][VehType] == VEH_RENT)
+		{
 			for(new i = 1; i < MAX_RENTCAR; i++)
 			{
 		 		if(RentCarInfo[i][rVehicleID] == vehicleid && RentCarInfo[i][rRented] == 0)
@@ -4083,8 +4127,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COLOR_WHITE, "=============================================================");
 				}
 			}
-			
-		} else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD) {
+		}
+		else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
+		{
 		    SendClientMessage(playerid,COLOR_WHITE,"=======================[Vehículo en Venta]=======================");
 			SendFMessage(playerid, COLOR_WHITE, "Modelo: %s.", GetVehicleName(vehicleid));
 			SendFMessage(playerid, COLOR_WHITE, "Costo real: $%d.", GetVehiclePrice(vehicleid,100));
@@ -4096,10 +4141,12 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"(( Para comprar éste vehículo utiliza '/vehcomprar [color1] [color2]'. ))");
 			SendClientMessage(playerid,COLOR_WHITE,"=============================================================");
 		}
-
-		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid)) {
-	  		if(PlayerInfo[playerid][pFlyLic] == 0) {
-				if(AdminDuty[playerid] == 0) {
+		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid))
+		{
+	  		if(PlayerInfo[playerid][pFlyLic] == 0)
+			  {
+				if(AdminDuty[playerid] == 0)
+				{
 				    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes licencia de vuelo!");
 	   				RemovePlayerFromVehicle(playerid);
 				}
@@ -4107,13 +4154,14 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	   	}
 	}
 
-	foreach(Player, x) {
-		if(PlayerInfo[x][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[x][pSpectating] == playerid) {
-			if(newstate == 2 && oldstate == 1 || newstate == 3 && oldstate == 1) {
+	foreach(Player, x)
+	{
+		if(PlayerInfo[x][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[x][pSpectating] == playerid)
+		{
+			if(newstate == 2 && oldstate == 1 || newstate == 3 && oldstate == 1)
 				PlayerSpectateVehicle(x, GetPlayerVehicleID(playerid));
-			} else {
+			else
 				PlayerSpectatePlayer(x, playerid);
-			}
 		}
 	}
 	return 1;
@@ -6072,7 +6120,8 @@ public SendFactionMessage(faction, color, string[])
 public fuelTimer()
 {
  	// Los que estan arriba (se podría borrar y dejar solo lo otro salvo por el mensaje de que te quedaste sin combustible)
-	new vehicle;
+	new vehicle, vehModelType;
+	
 	foreach(new i : Player)
 	{
    	    if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
@@ -6095,13 +6144,14 @@ public fuelTimer()
 	    GetVehicleParamsEx(c, VehicleInfo[c][VehEngine], VehicleInfo[c][VehLights], VehicleInfo[c][VehAlarm], vlocked, VehicleInfo[c][VehBonnet], VehicleInfo[c][VehBoot], VehicleInfo[c][VehObjective]);
         if(VehicleInfo[c][VehEngine] == 1)
 		{
-		    if( (VehicleInfo[c][VehType] == VEH_OWNED ||
+		    vehModelType = GetVehicleType(c);
+		    if((VehicleInfo[c][VehType] == VEH_OWNED ||
 	 			VehicleInfo[c][VehType] == VEH_FACTION ||
 				VehicleInfo[c][VehType] == VEH_RENT) &&
-				(GetVehicleType(c) != VTYPE_HELI &&
-				GetVehicleType(c) != VTYPE_BMX &&
-				GetVehicleType(c) != VTYPE_PLANE &&
-				GetVehicleType(c) != VTYPE_SEA) )
+				(vehModelType != VTYPE_HELI &&
+				vehModelType != VTYPE_BMX &&
+				vehModelType != VTYPE_PLANE &&
+				vehModelType != VTYPE_SEA) )
 			{
 				if(VehicleInfo[c][VehFuel] >= 1)
 					VehicleInfo[c][VehFuel]--;
