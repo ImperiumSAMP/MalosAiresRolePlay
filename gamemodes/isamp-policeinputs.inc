@@ -496,7 +496,7 @@ CMD:verregistros(playerid, params[])
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /verregistros [Nombre del jugador] (Con el '_')");
 
 	mysql_real_escape_string(targetname, targetname);
-	format(query, sizeof(query), "SELECT * FROM `log_inputs` WHERE pName='%s' ORDER BY date DESC LIMIT 30", targetname);
+	format(query, sizeof(query), "SELECT * FROM `log_inputs` WHERE `pName` = '%s' ORDER BY date DESC LIMIT 30", targetname);
 	mysql_function_query(dbHandle, query, true, "OnLogPmaLoad", "is", playerid, targetname);
 	return 1;
 }

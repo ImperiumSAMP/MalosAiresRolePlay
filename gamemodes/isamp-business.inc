@@ -1336,15 +1336,17 @@ CMD:guardarproductos(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de insumos en tus manos para descargar.");
 	amount = GetHandParam(playerid, hand);
 
-    for(new biz = 0; biz < MAX_BUSINESS; biz++)
+    for(new biz = 1; biz < MAX_BUSINESS; biz++)
 	{
-		if(PlayerToPoint(6.0, playerid, Business[biz][bOutsideX], Business[biz][bOutsideY], Business[biz][bOutsideZ]))
+		if(PlayerToPoint(2.0, playerid, Business[biz][bOutsideX], Business[biz][bOutsideY], Business[biz][bOutsideZ]))
 		{
 		    if(Business[biz][bProducts] + amount > 500)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas productos al deposito ya que el mismo está lleno.");
+
 			Business[biz][bProducts] += amount;
 			SetHandItemAndParam(playerid, hand, 0, 0);
 			PlayerActionMessage(playerid, 15.0, "descarga una caja de productos en el depósito del negocio.");
+			return 1;
 		}
 	}
  	return 1;

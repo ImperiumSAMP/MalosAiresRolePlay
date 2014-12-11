@@ -352,8 +352,6 @@ CMD:afexpulsar(playerid, params[]) {
 	return 1;
 }
 
-//
-
 CMD:comprarmateriales(playerid, params[])
 {
 	new amount,
@@ -413,13 +411,17 @@ CMD:guardarmateriales(playerid, params[])
 		if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas materiales al deposito ya que el mismo está lleno.");
 
-	    for(new i = 1; i < MAX_BUILDINGS; i++) {
-			if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]) || PlayerToPoint(1.0, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ])) {
-				if(Building[i][blFaction] != 0 && PlayerInfo[playerid][pFaction] == Building[i][blFaction]) {
+	    for(new i = 1; i < MAX_BUILDINGS; i++)
+		{
+			if(PlayerToPoint(2.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]) || PlayerToPoint(2.0, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]))
+			{
+				if(Building[i][blFaction] != 0 && PlayerInfo[playerid][pFaction] == Building[i][blFaction])
+				{
 	                FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
 					SetHandItemAndParam(playerid, hand, 0, 0);
 					PlayerActionMessage(playerid, 15.0, "descarga una caja de insumos en el depósito.");
 				}
+				return 1;
 			}
 		}
 	}
