@@ -19,6 +19,11 @@
 #define FAC_BOCA               	9
 #define FAC_SIDE                10
 
+#define FAC_TYPE_ILLEGAL        0
+#define FAC_TYPE_GOV            1
+#define FAC_TYPE_LEGAL          2
+#define FAC_TYPE_GANG	        3
+
 
 //Enums
 enum Factions {
@@ -345,4 +350,78 @@ CMD:afexpulsar(playerid, params[]) {
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} usuario inválido.");
 	}
 	return 1;
+}
+
+//
+
+CMD:comprarmateriales(playerid, params[])
+{
+	new amount,
+		freehand = SearchFreeHand(playerid);
+
+	if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL)
+    {	
+		if(!PlayerToPoint(4.0, playerid, 2349.8408, -1216.3939, 22.5000))
+	        return SendClientMessage(playerid, COLOR_YELLOW, "No puedes usar este comando en cualquier lado.");
+	    if(sscanf(params, "i", amount))
+	    {
+	        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmateriales [cantidad] | $%d cada material.", GetItemPrice(ITEM_ID_MATERIALES));
+			return 1;
+		}
+		if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+		if(freehand == -1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar la caja de insumos.");
+		if(amount < 1 || amount > 1300)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de materiales no debe ser menor a 1 o mayor a 1300.");
+		if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_MATERIALES))
+		{
+			SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_MATERIALES));
+			return 1;
+		}
+
+		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+	    SetHandItemAndParam(playerid, freehand, ITEM_ID_MATERIALES, amount);
+		GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
+		SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los materiales con /guardarmateriales. Utiliza /nomateriales para sacar la animación de carga.");
+		PlayerActionMessage(playerid, 15.0, "compra una caja de materiales");
+	} else {
+	    SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
+	}
+	return 1;
+}
+
+CMD:nomateriales(playerid, params[])
+{
+	if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+	    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+	return 1;
+}
+
+CMD:guardarmateriales(playerid, params[])
+{
+	new hand = SearchHandsForItem(playerid, ITEM_ID_MATERIALES),
+	    amount;
+
+    if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL)
+	{
+		if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+		if(hand == -1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de materiales en tus manos para descargar.");
+		amount = GetHandParam(playerid, hand);
+		if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas materiales al deposito ya que el mismo está lleno.");
+
+	    for(new i = 1; i < MAX_BUILDINGS; i++) {
+			if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]) || PlayerToPoint(1.0, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ])) {
+				if(Building[i][blFaction] != 0 && PlayerInfo[playerid][pFaction] == Building[i][blFaction]) {
+	                FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
+					SetHandItemAndParam(playerid, hand, 0, 0);
+					PlayerActionMessage(playerid, 15.0, "descarga una caja de insumos en el depósito.");
+				}
+			}
+		}
+	}
+ 	return 1;
 }

@@ -17,11 +17,6 @@
 #define JOB_DRUGF          		7
 #define JOB_DRUGD          		8
 
-#define FAC_TYPE_ILLEGAL        0
-#define FAC_TYPE_GOV            1
-#define FAC_TYPE_LEGAL          2
-#define FAC_TYPE_GANG	        3
-
 #define JOB_TAXI_MAXPASSENGERS  10
 
 #define JOB_FARM_MAXPRODS       20

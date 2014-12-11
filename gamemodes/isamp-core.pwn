@@ -28,11 +28,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
-#include "isamp-factions.inc" 			//Sistema de facciones
-#include "isamp-jobs.inc" 				//Definiciones y funciones para los JOBS
 #include "isamp-business.inc" 			//Sistema de negocios
 #include "isamp-houses.inc" 			//Sistema de casas
 #include "isamp-buildings.inc"          //Sistema de edificios
+#include "isamp-factions.inc" 			//Sistema de facciones
+#include "isamp-jobs.inc" 				//Definiciones y funciones para los JOBS
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
@@ -4271,73 +4271,6 @@ public buyProductsTimer(playerid, amount) {
 	return 1;
 }
 
-//=============================DESCARGA DE ITEMS================================
-
-CMD:descargar(playerid, params[]) {
-	new
-	    amount,
-	    string[128],
-		factionid = PlayerInfo[playerid][pFaction],
-		vehicleid = GetPlayerVehicleID(playerid);
-
-	for(new biz = 0; biz < MAX_BUSINESS; biz++)
-	{
-		if(PlayerToPoint(6.0, playerid, Business[biz][bOutsideX], Business[biz][bOutsideY], Business[biz][bOutsideZ]))
-		{
- 			if(!IsPlayerInAnyVehicle(playerid))
-		    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo!");
-		    if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
-		    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo con dueño o de facción.");
-			new totalAmount = 0;
-       		for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++)
-			{
-			    if(GetTrunkItem(vehicleid, i) == 50)
-				{
-			        amount = GetTrunkParam(vehicleid, i);
-					if(Business[biz][bProducts] + amount > 500) // Si supera el maximo de productos permitido por negocio
-					{
-						SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas mercaderia al negocio. El depósito está lleno.");
-						break;
-					}
-					totalAmount += GetTrunkParam(vehicleid, i);
-					SetTrunkItemAndParam(vehicleid, i, 0, 0);
-					Business[biz][bProducts] += amount;
-			    }
-			}
-			if (totalAmount > 0)
-			{
-			    format(string, sizeof(string), "Descargando %d productos...", totalAmount);
-				GameTextForPlayer(playerid, string, 4000, 4);
-				PlayerActionMessage(playerid, 15.0, "comienza a descargar mercadería en el depósito del negocio.");
-				TogglePlayerControllable(playerid, false);
-    			SetTimerEx("Unfreeze", 6000, false, "i", playerid);
-			}
-			return 1;
-		}
-	}
-
-    if(factionid != FAC_NONE && FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL) {
-        if(IsPlayerInAnyVehicle(playerid) && vehicleid == FactionInfo[factionid][fMissionVeh]) {
-            if(PlayerToPoint(4.0, playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ])) {
-                for(new i = 0; i < GetVehicleMaxTrunkSlots(vehicleid); i++) {
-				    if(GetTrunkItem(vehicleid, i) == ITEM_ID_MATERIALES) {
-				        amount += GetTrunkParam(vehicleid, i);
-				        SetTrunkItemAndParam(vehicleid, i, 0, 0);
-				    }
-				}
-				FactionInfo[factionid][fMaterials] += amount;
-				format(string, sizeof(string), "%d piezas descargadas...", amount);
-				GameTextForPlayer(playerid, string, 4000, 4);
-	        } else {
-	            SetPlayerCheckpoint(playerid, VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], 5.4);
-				SendClientMessage(playerid, COLOR_WHITE, "Vé a la siguiente localización para descargar la van.");
-	        }
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la van de la facción.");
-		}
-    }
-	return 1;
-}
 
 stock hasFireGun(playerid) {
 	new wep = GetPlayerWeapon(playerid);
@@ -4825,7 +4758,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 	} else if(pickupid == P_MATS_SHOP) {
 		if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
  			new string[128];
-			format(string, sizeof(string), "~w~/comprar para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
+			format(string, sizeof(string), "~w~/comprarmateriales para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
 		    GameTextForPlayer(playerid, string, 2000, 4);
 		}
 
@@ -4842,12 +4775,12 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 
 	} else if(pickupid == P_PRODS_SHOP) {
 		new string[128];
-		format(string, sizeof(string), "~w~/comprar para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+		format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
 		GameTextForPlayer(playerid, string, 2000, 4);
 	} else if(pickupid == P_INPUTS_SHOP_N || pickupid == P_INPUTS_SHOP_S) {
 		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE) {
 			new string[128];
-			format(string, sizeof(string), "~w~/comprarinsumos - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
+			format(string, sizeof(string), "~w~/comprarinsumos para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
 			GameTextForPlayer(playerid, string, 2000, 4);
 		}
 	}
@@ -9115,6 +9048,8 @@ CMD:ayuda(playerid,params[]) {
 		} else if(PlayerInfo[playerid][pFaction] == FAC_SIDE) {
  	   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /sservicio /schaleco /sequipo /sropero /esposar /quitaresposas /revisar /tomartazer /quitar");
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /guardartazer /arrastrar (/ref)uerzos /vercargos /buscados (/r)adio (/d)epartamento /porton");
+            if(PlayerInfo[playerid][pRank] <= 3)
+        		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos");
 			if(PlayerInfo[playerid][pRank] == 1) {
 		    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /stars");
 			}
@@ -9135,9 +9070,9 @@ CMD:ayuda(playerid,params[]) {
 
 		} else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
 		    if(PlayerInfo[playerid][pRank] == 1) {
-		        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Líder]:{C8C8C8} /comprar (en el shop de materiales) /descargar /ensamblar (dentro del HQ) /ch /it /ru");
+		        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Líder]:{C8C8C8} /comprarmateriales (en el shop de materiales) /guardarmateriales /ensamblar (dentro del HQ) /ch /it /ru");
 		    } else {
-		        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Miembro]:{C8C8C8} /comprar (en el shop de materiales) /descargar /ch /it /ru");
+		        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Miembro]:{C8C8C8} /comprarmateriales (en el shop de materiales) /descargarmateriales /ch /it /ru");
 		    }
 		}
 	}
@@ -9603,32 +9538,7 @@ CMD:comprar(playerid, params[])
 					GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
 			    }
 		    }
-
-		} else if(PlayerToPoint(4.0, playerid, 2183.9963, -2260.7658, 13.4098)) {
-  			new amount;
-		    if(sscanf(params, "i", amount))
-		    {
-	            SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d el producto.", GetItemPrice(ITEM_ID_PRODUCTOS));
-				return 1;
-			}
-			if(!IsPlayerInAnyVehicle(playerid))
-		    	return SendClientMessage(playerid, COLOR_YELLOW, "¡Debes estar en un vehículo!");
-			new vehicleid = GetPlayerVehicleID(playerid);
-       		if(VehicleInfo[vehicleid][VehType] != VEH_OWNED && VehicleInfo[vehicleid][VehType] != VEH_FACTION)
-       			return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar en un vehículo con dueño o de facción.");
-       		if(amount < 1 || amount > 50)
-     			return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 50.");
-       		if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_PRODUCTOS))
-			{
-   				SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_PRODUCTOS));
-   				return 1;
-   			}
-   			GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_PRODUCTOS));
-			SetTimerEx("buyProductsTimer", 4000, false, "ii", playerid, amount);
-			TogglePlayerControllable(playerid, false);
-			GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
-			
-		// Mercado Negro
+       	// Mercado Negro
 		} else if(IsAtBlackMarket(playerid)) {
 
 			new item, option, cant, freehand;
@@ -9656,27 +9566,6 @@ CMD:comprar(playerid, params[])
 			GivePlayerCash(playerid, -GetItemPrice(item) * cant);
 			return 1;
 		
-		} else if(PlayerToPoint(4.0, playerid, 2349.8408, -1216.3939, 22.5000)) {
-			if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
-				new amount;
-				if(sscanf(params, "d", amount)) {
-	                SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d la unidad.", GetItemPrice(ITEM_ID_MATERIALES));
-			    } else if(amount > 0 && amount < 5000) {
-					if(IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleID(playerid) == FactionInfo[PlayerInfo[playerid][pFaction]][fMissionVeh]) {
-				        if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_MATERIALES)) {
-					   		SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_MATERIALES));
-					   		return 1;
-					   	}
-                        GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
-						SetPVarInt(playerid, "buyMatsTimer", SetTimerEx("buyMatsTimer", 4000, false, "ii", playerid, amount));
-					    TogglePlayerControllable(playerid, false);
-						GameTextForPlayer(playerid, "Cargando vehiculo...", 4000, 4);
-					} else
-	    				SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de la VAN de la facción.");
-			    } else
-		    		SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor que 0 ni mayor de 5000.");
-			} else
-				SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
 		}
 	}
 	return 1;
@@ -9885,6 +9774,8 @@ CMD:ayudap(playerid, params[])
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
  	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta");
+    if(PlayerInfo[playerid][pRank] <= 3)
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos");
 	if(PlayerInfo[playerid][pRank] <= 4)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
 	return 1;

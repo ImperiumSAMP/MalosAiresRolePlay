@@ -1480,7 +1480,7 @@ CMD:avehiculo(playerid, params[])
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuel - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente - /avestacionar");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente - /avestacionar");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");

@@ -305,8 +305,8 @@ CMD:ayudanegocio(playerid, params[])
 
 CMD:ayudaproductos(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, y estaciona en la puerta del depósito.");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprar, y cuando llegues con la mercaderia a la entrada de tu negocio usa /descargar.");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, y estaciona en la puerta del depósito y bajá a comprar.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprarproductos, y cuando llegues con la mercaderia a la entrada de tu negocio usa /guardarproductos.");
 	return 1;
 }
 
@@ -1284,3 +1284,69 @@ public OnPlayerBuyAmmu(biz, playerid, params[])
 	PlayerActionMessage(playerid, 15.0, str);
 	return 1;
 }
+
+CMD:comprarproductos(playerid, params[])
+{
+	new amount,
+		freehand = SearchFreeHand(playerid);
+
+	if(!PlayerToPoint(4.0, playerid, 2183.9963, -2260.7658, 13.4098))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando en cualquier lado.");
+    if(sscanf(params, "i", amount))
+    {
+        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarproductos [cantidad] | $%d el producto.", GetItemPrice(ITEM_ID_PRODUCTOS));
+		return 1;
+	}
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+	if(freehand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar la caja de productos.");
+	if(amount < 1 || amount > 50)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de productos no debe ser menor a 1 o mayor a 50.");
+	if(GetPlayerCash(playerid) < amount * GetItemPrice(ITEM_ID_PRODUCTOS))
+	{
+		SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", amount * GetItemPrice(ITEM_ID_PRODUCTOS));
+		return 1;
+	}
+
+	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
+    SetHandItemAndParam(playerid, freehand, ITEM_ID_PRODUCTOS, amount);
+	GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_PRODUCTOS));
+	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito de tu negocio y descarga los productos con /guardarproductos. Utiliza /noproductos para sacar la animación de carga.");
+	PlayerActionMessage(playerid, 15.0, "compra una caja de productos.");
+	return 1;
+}
+
+CMD:noproductos(playerid, params[])
+{
+	if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+	    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+	return 1;
+}
+
+CMD:guardarproductos(playerid, params[])
+{
+	new hand = SearchHandsForItem(playerid, ITEM_ID_PRODUCTOS),
+	    amount;
+
+
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+	if(hand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de insumos en tus manos para descargar.");
+	amount = GetHandParam(playerid, hand);
+
+    for(new biz = 0; biz < MAX_BUSINESS; biz++)
+	{
+		if(PlayerToPoint(6.0, playerid, Business[biz][bOutsideX], Business[biz][bOutsideY], Business[biz][bOutsideZ]))
+		{
+		    if(Business[biz][bProducts] + amount > 500)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas productos al deposito ya que el mismo está lleno.");
+			Business[biz][bProducts] += amount;
+			SetHandItemAndParam(playerid, hand, 0, 0);
+			PlayerActionMessage(playerid, 15.0, "descarga una caja de productos en el depósito del negocio.");
+		}
+	}
+ 	return 1;
+}
+

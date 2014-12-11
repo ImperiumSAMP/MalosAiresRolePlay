@@ -509,14 +509,14 @@ CMD:comprarinsumos(playerid, params[])
 	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
     	return 1;
 	if(!IsAtArmoryInputs(playerid))
-        return SendClientMessage(playerid, COLOR_YELLOW, "No puedes usar este comando en cualquier lado.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando en cualquier lado.");
     if(sscanf(params, "i", amount))
     {
         SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [cantidad] | $%d cada insumo.", GetItemPrice(ITEM_ID_MATERIALES));
 		return 1;
 	}
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar a pie.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(freehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar la caja de insumos.");
 	if(amount < 1 || amount > 1300)
@@ -552,7 +552,7 @@ CMD:guardarinsumos(playerid, params[])
 	if(!PlayerToPoint(4.0, playerid, PMA_WAREHOUSE_X, PMA_WAREHOUSE_Y, PMA_WAREHOUSE_Z) && !PlayerToPoint(4.0, playerid, SIDE_WAREHOUSE_X, SIDE_WAREHOUSE_Y, SIDE_WAREHOUSE_Z))
 		return 1;
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW, "Debes estar a pie.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(hand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de insumos en tus manos para descargar.");
 	amount = GetHandParam(playerid, hand);
