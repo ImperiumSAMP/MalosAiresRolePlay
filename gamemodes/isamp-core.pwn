@@ -3856,7 +3856,9 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
   		return 1;
 
     if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
+        new vID = GetPlayerVehicleID(playerid);
 		VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
+		SaveVehicle(vID);
     }
     return 1;
 }
@@ -7841,10 +7843,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					if(GetPlayerCash(playerid) < 4000)
 					    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4000).");
 
+                    new vID = GetPlayerVehicleID(playerid);
 				    VehicleInfo[GetPlayerVehicleID(playerid)][VehCompSlot][9] = 1087;
 				    AddVehicleComponent(GetPlayerVehicleID(playerid), 1087);
 					GivePlayerCash(playerid, -4000);
 				    PlayerActionMessage(playerid, 15.0, "comienza a instalar la suspension hidraulica en el vehiculo.");
+				    SaveVehicle(vID);
 				}
 				case 4:
 				{
@@ -7855,10 +7859,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					if(GetPlayerCash(playerid) < 10000)
 					    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($10000).");
 
+                    new vID = GetPlayerVehicleID(playerid);
 				    VehicleInfo[GetPlayerVehicleID(playerid)][VehCompSlot][5] = 1010;
 				    AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
 					GivePlayerCash(playerid, -10000);
 				    PlayerActionMessage(playerid, 15.0, "comienza a instalar el oxido nitroso en el vehiculo.");
+				    SaveVehicle(vID);
 				}
 			}
 		}
@@ -7880,6 +7886,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
             GivePlayerCash(playerid, -1500);
 	        VehicleInfo[vID][VehColor1] = integerColorValue;
 	        ChangeVehicleColor(vID, VehicleInfo[vID][VehColor1], VehicleInfo[vID][VehColor2]);
+	        SaveVehicle(vID);
 		}
 		case DLG_TUNING_COLOR2:
 		{
@@ -7899,6 +7906,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
             GivePlayerCash(playerid, -1500);
 	        VehicleInfo[vID][VehColor2] = integerColorValue;
 	        ChangeVehicleColor(vID, VehicleInfo[vID][VehColor1], VehicleInfo[vID][VehColor2]);
+	        SaveVehicle(vID);
   		}
   		case DLG_TUNING_LLANTAS:
   		{
@@ -7936,6 +7944,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
    			AddVehicleComponent(vID, wheel);
 			VehicleInfo[vID][VehCompSlot][7] = wheel;
+			SaveVehicle(vID);
   		}
   		
 //======================FIN SISTEMA DE TUNING DE MECANICOS======================
