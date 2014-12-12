@@ -20,14 +20,14 @@
 #define JOB_TAXI_MAXPASSENGERS  10
 
 #define JOB_FARM_MAXPRODS       20
-#define JOB_FARM_PRODVALUE      200  
+#define JOB_FARM_PRODVALUE      90
 #define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     160
+#define JOB_DRUGF_PRODVALUE     80
 
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
-#define JOB_TRAN_PRODVALUE      500    	// VALOR POR PAQUETE
+#define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
 
-#define JOB_GARB_MONEY       	4000 	// MONEY + random(MONEY / 2)
+#define JOB_GARB_MONEY       	1800 	// MONEY + random(MONEY / 2)
 
 #define JOB_EXP_MULTIPLIER      3
 //

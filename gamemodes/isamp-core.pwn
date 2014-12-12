@@ -157,7 +157,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_RADIO             600
 
 // Combustible.
-#define PRICE_FULLTANK          600
+#define PRICE_FULLTANK          300
 // 24-7
 #define PRICE_CIGARETTES        40
 #define PRICE_LIGHTER        	20
@@ -3017,39 +3017,39 @@ public PayDay(playerid) {
         switch(PlayerInfo[playerid][pFaction]) {
             case FAC_PMA: {
                 switch(PlayerInfo[playerid][pRank]) {
-	                case 1: PlayerInfo[playerid][pPayCheck] += 10000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 9500;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 9500;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 8500;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 7500;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 5000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 4300;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 3500;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 5000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 6500;
+	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
+	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
+	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
+	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
+	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
+	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
             case FAC_HOSP: {
                 switch(PlayerInfo[playerid][pRank]) {
-	                case 1: PlayerInfo[playerid][pPayCheck] += 10000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 8000;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 7000;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 6500;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 6000;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 5500;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 4500;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 3500;
+	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
+	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
+	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
+	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
 	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
             case FAC_MECH: {
                 switch(PlayerInfo[playerid][pRank]) {
-	                case 1: PlayerInfo[playerid][pPayCheck] += 7000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 6000;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 5000;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 4500;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 3000;
+	                case 1: PlayerInfo[playerid][pPayCheck] += 2000;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 1800;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 1600;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 1400;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 1200;
 	                case 6: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
@@ -3059,11 +3059,11 @@ public PayDay(playerid) {
             }
             case FAC_MAN: {
                 switch(PlayerInfo[playerid][pRank]) {
-	                case 1: PlayerInfo[playerid][pPayCheck] += 7000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 6000;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 5000;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 4500;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 3000;
+	                case 1: PlayerInfo[playerid][pPayCheck] += 2600;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 2300;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 2000;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 1700;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 1400;
 	                case 6: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
@@ -3073,25 +3073,26 @@ public PayDay(playerid) {
             }
             case FAC_SIDE: {
                 switch(PlayerInfo[playerid][pRank]) {
-	                case 1: PlayerInfo[playerid][pPayCheck] += 12000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 7000;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 6000;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 5500;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 4000;
+	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
 	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 2000;
+	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
+	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
+	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
+	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
             default: {
             	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
 					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
 					PlayerInfo[playerid][pJob] == JOB_DRUGF  || // Si para el estado el sujeto no tiene empleo (job ilegal)
-					PlayerInfo[playerid][pJob] == JOB_TAXI || //Mínimo por si no hay pasajeros disponibles
 					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
-            		PlayerInfo[playerid][pPayCheck] += 800 + random(400); // ASIGNACION A LOS DESEMPLEADOS
+            		PlayerInfo[playerid][pPayCheck] += 600; // ASIGNACION A LOS DESEMPLEADOS
+                if(PlayerInfo[playerid][pJob] == JOB_TAXI)//Mínimo por si no hay pasajeros disponibles
+            		PlayerInfo[playerid][pPayCheck] += 1200; // ASIGNACION A LOS DESEMPLEADOS
 			}
         }
         
