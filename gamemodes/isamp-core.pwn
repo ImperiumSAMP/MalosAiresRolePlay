@@ -152,26 +152,26 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define PRICE_TAXI_INTERVAL		3   // Intervalo de tiempo de la bajada de taximetro (en segundos)
 #define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
 #define PRICE_UNLISTEDPHONE     4500
-#define PRICE_TREATMENT         2000
-#define PRICE_HOSP_HEAL        	300
+#define PRICE_TREATMENT         500
+#define PRICE_HOSP_HEAL        	100
 #define PRICE_RADIO             600
 
 // Combustible.
 #define PRICE_FULLTANK          300
 // 24-7
-#define PRICE_CIGARETTES        40
-#define PRICE_LIGHTER        	20
+#define PRICE_CIGARETTES        20
+#define PRICE_LIGHTER         	5
 #define PRICE_PHONE             500
-#define PRICE_ASPIRIN           35
+#define PRICE_ASPIRIN           15
 
 #define HEALTH_ASPIRIN          10
 
 #define PRICE_LIC_GUN       	30000
-#define PRICE_LIC_DRIVING       3400
-#define PRICE_LIC_SAILING       8400
-#define PRICE_LIC_FLYING        25400
-#define PRICE_CLOTHES1          250
-#define PRICE_CLOTHES2          3500
+#define PRICE_LIC_DRIVING       400
+#define PRICE_LIC_SAILING       4400
+#define PRICE_LIC_FLYING        15400
+#define PRICE_CLOTHES1          100
+#define PRICE_CLOTHES2          1750
 
 // Materiales por unidad.
 #define MATS_KNUCKLES           1
@@ -7433,8 +7433,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                				return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes demasiados cigarrillos.");
 						GivePlayerCash(playerid, -PRICE_CIGARETTES);
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos y se lo guarda en el bolsillo.");
-						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (5 unidades) por $%d, puedes utilizar /fumar.", PRICE_CIGARETTES);
-						PlayerInfo[playerid][pCigarettes] += 5;
+						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (20 unidades) por $%d, puedes utilizar /fumar.", PRICE_CIGARETTES);
+						PlayerInfo[playerid][pCigarettes] += 20;
 						Business[business][bTill] += PRICE_CIGARETTES;
 				        Business[business][bProducts]--;
 				        saveBusiness(business);
@@ -9400,7 +9400,7 @@ CMD:comprar(playerid, params[])
 			    if(Business[business][bProducts] <= 0)
 		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 5u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 20u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletin {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
 		            PRICE_ASPIRIN,
 					PRICE_CIGARETTES,
 					PRICE_LIGHTER,
