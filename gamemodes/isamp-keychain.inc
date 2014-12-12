@@ -42,7 +42,7 @@ stock calculateVehiclesTaxes(playerid)
 	for(new i = 0; i < playerKeyCount[playerid]; i++)
 	{
 		if(playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid)) // Dueño
-			tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 4;
+			tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 7; //0.15 porciendo del precio aprox.
    	}
 	return tax;
 }

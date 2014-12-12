@@ -161,8 +161,7 @@ public theftTimer(playerid, type, biz)
 	 		GameTextForPlayer(playerid, string, 1000, 4);
 	        theftTime[playerid]--;
 		} else if(theftTime[playerid] == 0) {
-			new
-				takeMoney = (80 * felonLevel) + random(310 * felonLevel);
+			new takeMoney = 50 + random(200);
 		    theftTime[playerid] = -1;
 			SendFMessage(playerid, COLOR_WHITE, "Has tomado la mercancía por un valor de $%d, ¡retírate de la tienda!", takeMoney);
 			TogglePlayerControllable(playerid, true);
@@ -188,9 +187,8 @@ public theftTimer(playerid, type, biz)
 	 		GameTextForPlayer(playerid, string, 1000, 4);
 	        theftTime[playerid]--;
         } else if(theftTime[playerid] == 0) {
-			new takeMoney;
+			new takeMoney = 400 + random(400);
             theftTime[playerid] = -1;
-            takeMoney = (260 * felonLevel) + random(860 * felonLevel);
 			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d de la caja, ¡escapa antes de que venga la policía!", takeMoney);
 			TogglePlayerControllable(playerid, true);
 			GivePlayerCash(playerid, takeMoney);
@@ -216,7 +214,7 @@ public theftTimer(playerid, type, biz)
 	 		GameTextForPlayer(playerid, string, 1000, 4);
 	        theftTime[playerid]--;
         } else if(theftTime[playerid] == 0) {
-			new takeMoney = (200 * felonLevel) + random(600 * felonLevel);
+			new takeMoney = 800 + random(400);
             theftTime[playerid] = -1;
 			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d objetos de valor, ¡escapa antes de que venga la policía!", takeMoney);
 			TogglePlayerControllable(playerid, true);
@@ -243,7 +241,7 @@ public theftTimer(playerid, type, biz)
 	 		GameTextForPlayer(playerid, string, 1000, 4);
 	        theftTime[playerid]--;
         } else if(theftTime[playerid] == 0) {
-			new takeMoney = (250 * felonLevel) + random(650 * felonLevel);
+			new takeMoney = 1200 + random(600);
             theftTime[playerid] = -1;
 			SendFMessage(playerid, COLOR_WHITE, "Has robado $%d pesos, ¡escapa antes de que venga la policía!", takeMoney);
 			TogglePlayerControllable(playerid, true);
@@ -662,7 +660,7 @@ CMD:correr(playerid, params[])
 
 CMD:hurtar(playerid, params[])
 {
-	new rnd, string[128], target, felonLevel = ThiefJobInfo[playerid][pFelonLevel], targetMoney, takeMoney;
+	new rnd, string[128], target, targetMoney, takeMoney;
 
 	if(PlayerInfo[playerid][pJob] != JOB_FELON)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
@@ -707,7 +705,7 @@ CMD:hurtar(playerid, params[])
         SendClientMessage(playerid, COLOR_WHITE, "¡Has fallado y el sujeto lo ha notado, mejor comienza a correr!");
 	} else
 	    {
-			takeMoney = random(110 * felonLevel + 1) + 60;
+			takeMoney = 30 + random(20);
 			if(takeMoney > targetMoney)
    				takeMoney = targetMoney;
 		    SendFMessage(playerid, COLOR_WHITE, "Has tomado $%d del sujeto sin que éste se percate de lo sucedido, actúa como si nada hubiera pasado.", takeMoney);

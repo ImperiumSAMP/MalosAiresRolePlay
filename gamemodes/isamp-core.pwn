@@ -3101,7 +3101,7 @@ public PayDay(playerid) {
 		new tax = 0;
 		tax+=calculateVehiclesTaxes(playerid);
 		if(PlayerInfo[playerid][pHouseKey] != 0)
-		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 4;
+		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
 		    
 		//============================NEGOCIOS==================================
 		
@@ -3140,15 +3140,14 @@ public PayDay(playerid) {
         
         //============================INGRESOS==================================
 
-		new randextra = 20 + random(180);
-	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax + randextra;
+	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax;
 
 		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0) {
 		    PlayerInfo[playerid][pCantWork] = 0;
 		}
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
-	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d + $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], randextra, tax, banktax);
+	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
 	    SendFMessage(playerid, COLOR_WHITE, "- Balance anterior: $%d - Nuevo balance: $%d", PlayerInfo[playerid][pBank], newbank);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
 		if(bizID != 0) {
