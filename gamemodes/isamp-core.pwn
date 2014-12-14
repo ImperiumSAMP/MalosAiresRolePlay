@@ -144,12 +144,12 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DM_JAILTIME 			300 	// 5 minutos
 
 // Precios.
-#define PRICE_ADVERTISE         280
-#define PRICE_FIGHTSTYLE        10000
-#define PRICE_TEXT              2
+#define PRICE_ADVERTISE         80
+#define PRICE_FIGHTSTYLE        3000
+#define PRICE_TEXT              1
 #define PRICE_CALL              20  // Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
-#define PRICE_TAXI              5
-#define PRICE_TAXI_INTERVAL		3   // Intervalo de tiempo de la bajada de taximetro (en segundos)
+#define PRICE_TAXI              1
+#define PRICE_TAXI_INTERVAL		15   // Intervalo de tiempo de la bajada de taximetro (en segundos)
 #define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_TREATMENT         500
@@ -166,7 +166,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 #define HEALTH_ASPIRIN          10
 
-#define PRICE_LIC_GUN       	30000
+#define PRICE_LIC_GUN           2000
 #define PRICE_LIC_DRIVING       400
 #define PRICE_LIC_SAILING       4400
 #define PRICE_LIC_FLYING        15400
@@ -4119,9 +4119,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		 		{
 					SendClientMessage(playerid, COLOR_WHITE, "======================[Vehículo en Alquiler]======================");
 					SendFMessage(playerid, COLOR_WHITE, "Modelo: %s.", GetVehicleName(vehicleid));
-					new price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 100;
-					if(price < 200)
-						price = 200; // Seteamos un mínimo de precio
+					new price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 200;
+					if(price < 100)
+						price = 100; // Seteamos un mínimo de precio
 					SendFMessage(playerid, COLOR_WHITE, "Costo de renta por hora: $%d.", price);
 					if(GetVehicleMaxTrunkSlots(vehicleid) > 0)
 						SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
@@ -9652,7 +9652,7 @@ CMD:clasificado(playerid,params[])
 	if(gPlayerLogged[playerid] != 1)
 		return 1;
     if(sscanf(params, "s[128]", text))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/cla)sificado [texto - 64 carácteres] $280");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/cla)sificado [texto - 64 carácteres] $80");
     if(PlayerInfo[playerid][pLevel] < 2)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"Debes ser al menos nivel 2 para enviar un anuncio.");
     if(AllowAdv[playerid] != 1)
@@ -9711,9 +9711,9 @@ CMD:rentar(playerid, params[])
 	}
 	if(time < 1 || time > 3)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes alquilar por un mínimo de una hora, o un máximo de tres.");
-	price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 100;
-	if(price < 300)
-		price = 300; // Seteamos un mínimo de precio
+	price = (GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent])) / 200;
+	if(price < 100)
+		price = 100; // Seteamos un mínimo de precio
 	if(GetPlayerCash(playerid) < price * time)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
