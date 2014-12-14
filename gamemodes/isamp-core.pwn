@@ -330,6 +330,8 @@ new
 	bool:TalkAnimEnabled[MAX_PLAYERS],
     bool:HudEnabled[MAX_PLAYERS],
 	
+	PhoneHand[MAX_PLAYERS],
+	
 	//Alcoholemia
 	DrinksTaken[MAX_PLAYERS],
 	BlowingPipette[MAX_PLAYERS],
@@ -963,6 +965,12 @@ public ResetStats(playerid)
 public OnPlayerDisconnect(playerid, reason)
 {
 	new string[64];
+	
+	if(PhoneHand[playerid] == 1)
+	{
+	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+		PhoneHand[playerid] = 0;
+	}
 
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	ResetDescLabel(playerid);
@@ -9136,11 +9144,36 @@ CMD:servicios(playerid, params[]) {
     return 1;
 }
 
+CMD:tomartelefono(playerid,params[])
+{
+    if(PlayerInfo[playerid][pPhoneNumber] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+	if(GetHandItem(playerid, HAND_RIGHT) != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
+	PlayerActionMessage(playerid, 15.0, "toma su telefono celular del bolsillo");
+	PhoneHand[playerid] = 1;	
+	SetHandItemAndParam(playerid, HAND_RIGHT, 18868, 1);
+	return 1;
+}
+
+CMD:guardartelefono(playerid,params[])
+{
+    if(PlayerInfo[playerid][pPhoneNumber] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+	if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
+	PlayerActionMessage(playerid, 15.0, "guarda su telefono celular en el bolsillo");
+	PhoneHand[playerid] = 0;
+	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+    return 1;
+}
+
 CMD:atender(playerid, params[])
 {
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
-	
+	if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 	if(CheckMissionEvent(playerid, 1))
 	    return 1;
 
@@ -9168,6 +9201,8 @@ CMD:msg(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+	if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(GetPlayerCash(playerid) < PRICE_TEXT)
@@ -9220,6 +9255,8 @@ CMD:colgar(playerid, params[])
 {
 	new caller = Mobile[playerid];
 
+	if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 	if(PlayerCancelMissionEvent(playerid))
 	    return 1;
 	    
@@ -9266,6 +9303,8 @@ CMD:llamar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /llamar [número de teléfono]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
+	if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(Mobile[playerid] != 255)

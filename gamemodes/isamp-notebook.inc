@@ -57,6 +57,8 @@ stock IsNumberInNotebook(playerid, number)
 
 ShowNotebook(playerid)
 {
+    if(PhoneHand[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 	if(IsPlayerConnected(playerid))
 	{
 	    new aux, str[1000] = "";
@@ -262,6 +264,8 @@ CMD:agenda(playerid, params[])
 	{
 	    if(strval(param2) == -1)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
+		if(PhoneHand[playerid] == 0)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 		if(param1 < 0 || strlen(param2) >= 32)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 30 caracteres.");
 		for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
@@ -281,6 +285,8 @@ CMD:agenda(playerid, params[])
 	
 	else if(!strcmp("borrar", cmd, true))
 	{
+	    if(PhoneHand[playerid] == 0)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 		if(param1 < 0 || param1 >= MAX_NOTEBOOK_CONTACTS)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido. Mas info en '/agenda ver'.");
  		if(playerNotebook[playerid][param1][cNumber] == 0)
