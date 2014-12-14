@@ -330,7 +330,7 @@ new
 	bool:TalkAnimEnabled[MAX_PLAYERS],
     bool:HudEnabled[MAX_PLAYERS],
 	
-	PhoneHand[MAX_PLAYERS],
+	
 	
 	//Alcoholemia
 	DrinksTaken[MAX_PLAYERS],

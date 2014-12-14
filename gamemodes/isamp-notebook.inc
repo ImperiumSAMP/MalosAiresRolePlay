@@ -25,6 +25,7 @@ enum contactInfo {
 new playerNotebook[MAX_PLAYERS][MAX_NOTEBOOK_CONTACTS][contactInfo];
 
 new playerContactSelected[MAX_PLAYERS];
+new PhoneHand[MAX_PLAYERS];
 
 //==================================FUNCIONES===================================
 
