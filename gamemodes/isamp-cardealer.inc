@@ -12,6 +12,8 @@
 
 #define MAX_DEALER_CARS         20
 
+#define DLG_CARDEALER	    	10031
+
 //=================================VARIABLES====================================
 
 enum DealerModelInfo {
@@ -100,32 +102,49 @@ CMD:borrarmodelo(playerid, params[])
 	return 1;
 }
 
+LoadCarDealerPickups()
+{
+    CreateDynamicPickup(1239, 1, 542.3592, -1292.8329, 17.1696);
+    CreateDynamic3DTextLabel("/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 542.3592, -1292.8329, 17.1696 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+    CreateDynamicPickup(1239, 1, 2131.7793, -1150.9172, 24.0211);
+    CreateDynamic3DTextLabel("/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 2131.7793, -1150.9172, 24.0211 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+}
+
 GetPlayerCarDealer(playerid)
 {
-	// Range of point
-	return playerid;
+	if(PlayerToPoint(3.0, playerid, 542.3592, -1292.8329, 17.1696))
+	    return CAR_DEALER_GROTTI;
+	else if (PlayerToPoint(3.0, playerid, 2131.7793, -1150.9172, 24.0211))
+	    return CAR_DEALER_JEFFERSON;
+	    
+	return -1;
 }
 
 CMD:vercatalogo(playerid, params[])
 {
-	new // string[800] = "Modelo - Tiempo de entrega - Precio - Maletero",
-	    dealer = GetPlayerCarDealer(playerid);
-	
+	new string[800] = "Modelo - Tiempo de entrega - Precio - Maletero",
+	    dealer = GetPlayerCarDealer(playerid),
+	    model;
+
+	if(dealer == -1)
+     	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una consecionaria.");
+     	
 	for(new i = 0; i < MAX_DEALER_CARS; i++)
 	{
-	    if(CarDealerInfo[dealer][i][dModel] != 0)
+	    model = CarDealerInfo[dealer][i][dModel];
+	    if(model != 0)
 	    {
 	        if(CarDealerInfo[dealer][i][dStock] > 0)
 	        {
-	        //	format(string, sizeof(string), "%s\n%s - En stock: entrega inmediata - %d - Slots: %d", string, GetVehicleModelName(CarDealerInfo[dealer][i][dModel]), GetVehicleModelPrice(CarDealerInfo[dealer][i][dModel]), GetVehicleModelTrunkSlots(CarDealerInfo[dealer][i][dModel]));
+	        	format(string, sizeof(string), "%s\n%s - En stock: entrega inmediata - %d - Slots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
 			}
-			else if(CarDealerInfo[dealer][i][dStock] > 0 && CarDealerInfo[dealer][i][dAllowImport])
+			else if(CarDealerInfo[dealer][i][dStock] == 0 && CarDealerInfo[dealer][i][dAllowImport])
 			{
-   			//	format(string, sizeof(string), "%s\n%s - Entrega en 5 paydays - %d - Slots: %d", string, GetVehicleModelName(CarDealerInfo[dealer][i][dModel]), GetVehicleModelPrice(CarDealerInfo[dealer][i][dModel]), GetVehicleModelTrunkSlots(CarDealerInfo[dealer][i][dModel]));
+   				format(string, sizeof(string), "%s\n%s - Entrega en 5 paydays - %d - Slots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
 			}
 		}
 	}
-	// ShowPlayerDialog(playerid, DIALOG_CARDEALER, DIALOG_STYLE_LIST, "Catálogo de vehículos en venta", string, "Seleccionar", "Cerrar");
+	ShowPlayerDialog(playerid, DLG_CARDEALER, DIALOG_STYLE_LIST, "Catálogo de vehículos en venta", string, "Seleccionar", "Cerrar");
 	return 1;
 }
 

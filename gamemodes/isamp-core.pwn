@@ -140,6 +140,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_BIZ_HARD         10028
 // #define DLG_BIZ_ACCESS       10029
 #define DLG_DYING		    	10030
+// #define DLG_CARDEALER	    10031
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -4680,7 +4681,10 @@ stock LoadPickups() {
     // Compra de insumos
 	P_INPUTS_SHOP_N = CreateDynamicPickup(1239, 1, POS_INPUTS_NORTE_X, POS_INPUTS_NORTE_Y, POS_INPUTS_NORTE_Z, -1);
 	P_INPUTS_SHOP_S = CreateDynamicPickup(1239, 1, POS_INPUTS_SUR_X, POS_INPUTS_SUR_Y, POS_INPUTS_SUR_Z, -1);
-    
+
+	// Consecionarias
+	LoadCarDealerPickups();
+	
 	return 1;
 }
 

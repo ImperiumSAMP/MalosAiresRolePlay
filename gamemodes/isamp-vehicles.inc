@@ -450,6 +450,14 @@ GetVehicleMaxTrunkSlots(vehicleid)
 	return CarModels[modelid-400][mTrunkSlots];
 }
 
+GetVehicleModelTrunkSlots(modelid)
+{
+	if(modelid < 400 || modelid > 611)
+		return 0;
+
+	return CarModels[modelid-400][mTrunkSlots];
+}
+
 GetVehicleName(vehicleid)
 {
 	new name[32] = "", modelid = GetVehicleModel(vehicleid);
@@ -461,11 +469,30 @@ GetVehicleName(vehicleid)
 	return name;
 }
 
+GetVehicleModelName(modelid)
+{
+	new name[32] = "";
+
+	if(modelid < 400 || modelid > 611)
+		return name;
+
+	format(name, 32, "%s", CarModels[modelid-400][mName]);
+	return name;
+}
+
 GetVehiclePrice(vehicleid, priceperc)
 {
 	new modelid = GetVehicleModel(vehicleid);
 
 	if(modelid == 0)
+		return 0;
+
+	return (CarModels[modelid-400][mPrice] / 100 * priceperc);
+}
+
+GetVehicleModelPrice(modelid, priceperc)
+{
+	if(modelid < 400 || modelid > 611)
 		return 0;
 
 	return (CarModels[modelid-400][mPrice] / 100 * priceperc);
