@@ -301,6 +301,9 @@ new
 	InterviewOffer[MAX_PLAYERS],
 	bool:InterviewActive[MAX_PLAYERS],
 	
+	/* Licencia de armas */
+	wepLicOffer[MAX_PLAYERS],
+	
 	// Revision de usuarios
 	ReviseOffer[MAX_PLAYERS],
 
@@ -743,7 +746,6 @@ public ResetStats(playerid)
     /* Venta de casas */
 	ResetHouseOffer(playerid);
 
-	
 	/* Venta de negocios */
 	ResetBusinessOffer(playerid);
 	
@@ -777,6 +779,9 @@ public ResetStats(playerid)
 	/*Sistema de robo al banco*/
 	ResetRobberyGroupVariables(playerid);
 
+	/* Licencia de armas */
+	wepLicOffer[playerid] = INVALID_PLAYER_ID;
+	
 	/* Revision de usuarios */
 	ReviseOffer[playerid] = 999;
 	
@@ -4612,10 +4617,6 @@ stock LoadPickups() {
 
 	// Robo de autos
 	P_CAR_DEMOLITION = CreateDynamicPickup(1239, 1, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z, -1);
-
-	// Licencia de armas
-	CreateDynamicPickup(1239, 1, 222.96, 145.17, 1003, -1);
-	CreateDynamic3DTextLabel("Licencia de armas: $30000 \n/comprarlic", COLOR_WHITE, 222.96, 145.17, 1003 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 16002, 3, -1, 100.0);
 
 	// Departamentos Bracone y Mercier
 	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
@@ -11772,21 +11773,62 @@ CMD:cancelar(playerid,params[])
 	return 1;
 }
 
-CMD:comprarlic(playerid,params[])
+CMD:darlicencia(playerid, params[])
 {
-	if(!PlayerToPoint(1.0, playerid, 222.96, 145.17, 1003) || GetPlayerVirtualWorld(playerid) != 16002)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el lugar correcto de la comisaría!");
-  	if(PlayerInfo[playerid][pWepLic] != 0)
-  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes esta licencia!");
-	if(GetPlayerCash(playerid) < PRICE_LIC_GUN)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+	new targetid;
+	
+	if(PlayerInfo[playerid][pFaction] != FAC_PMA || PlayerInfo[playerid][pRank] != 1)
+	    return 1;
+	if(sscanf(params, "d", targetid))
+  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darlicencia [ID/Jugador]");
+	if(GetPlayerBuilding(playerid) != BLD_PMA)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la comisaría.");
+	if(!ProxDetectorS(4.0, playerid, targetid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
+	if(PlayerInfo[targetid][pLevel] < 7)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no posee el tiempo de residencia en el pais necesario ((NIVEL 7)).");
+  	if(PlayerInfo[targetid][pWepLic] != 0)
+  	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya cuenta con una licencia de armas.");
+	if(GetPlayerCash(targetid) < PRICE_LIC_GUN)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "El sujeto no cuenta con el dinero suficiente ($%d).", PRICE_LIC_GUN);
+	    return 1;
+	}
 
-	GivePlayerCash(playerid, -PRICE_LIC_GUN);
-	SendClientMessage(playerid, COLOR_WHITE,"¡Felicidades! has conseguido una licencia para armas cortas y de caza.");
-	PlayerInfo[playerid][pWepLic] = 1;
+	wepLicOffer[targetid] = playerid;
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido una licencia de armas a %s, espera su respuesta.", GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ha ofrecido una licencia de armas por %d. Usa /aceptarlicencia si la quieres.", GetPlayerNameEx(playerid), PRICE_LIC_GUN);
 	return 1;
 }
 
+CMD:aceptarlicencia(playerid, params[])
+{
+	new offer = wepLicOffer[playerid];
+	
+	if(offer == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido una licencia de armas.");
+	if(!IsPlayerConnected(offer))
+	{
+	    wepLicOffer[playerid] = INVALID_PLAYER_ID;
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se ha desconectado.");
+	}
+	if(!ProxDetectorS(4.0, playerid, offer))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
+	if(GetPlayerCash(playerid) < PRICE_LIC_GUN)
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "No cuentas con el dinero suficiente ($%d).", PRICE_LIC_GUN);
+	    return 1;
+	}
+
+    GivePlayerCash(playerid, -PRICE_LIC_GUN);
+    PlayerInfo[playerid][pWepLic] = 1;
+    FactionInfo[FAC_PMA][fBank] += PRICE_LIC_GUN;
+    wepLicOffer[playerid] = INVALID_PLAYER_ID;
+    SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades! has conseguido una licencia de armas. Ahora puedes comprar un arma en cualquier armería.");
+    SendFMessage(offer, COLOR_WHITE, "Le has dado una licencia de armas a %s por %d. El dinero se recaudará para el fondo de facción.", GetPlayerNameEx(playerid), PRICE_LIC_GUN);
+    return 1;
+}
+    
 CMD:intentar(playerid, params[])
 {
 	new succeed = random(2),

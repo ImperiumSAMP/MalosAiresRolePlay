@@ -70,10 +70,9 @@ ShowNotebook(playerid)
 	        {
 				format(str, sizeof(str), "%s[%d] %s - %d\n", str, i, playerNotebook[playerid][i][cName], playerNotebook[playerid][i][cNumber]);
 				aux = 1;
-			} else
-			{
-			    format(str, sizeof(str), "%s[%d] Vacio\n", str, i);
 			}
+			else
+			    format(str, sizeof(str), "%s[%d] Vacio\n", str, i);
 		}
 		if(aux != 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu agenda no tiene ningún contacto agregado.");
