@@ -59,6 +59,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
 #include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
+#include "isamp-cardealer.inc"          //Consecionarias
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP" 										
