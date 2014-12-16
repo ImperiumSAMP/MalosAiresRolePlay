@@ -62,10 +62,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cardealer.inc"          //Consecionarias
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP" 										
+#define GAMEMODE				"MA:RP v1.0.0"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Imperium Malos Aires RP BETA [0.3z] [ESPAÑOL]"
+#define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
 #define WEBSITE					"isamp.com.ar"
 #define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
