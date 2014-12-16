@@ -10,7 +10,7 @@
 #define CAR_DEALER_GROTTI       0
 #define CAR_DEALER_JEFFERSON    1
 
-#define MAX_DEALER_CARS         20
+#define MAX_DEALER_CARS         25
 
 #define DLG_CARDEALER1	    	10031
 #define DLG_CARDEALER2	    	10032
@@ -32,6 +32,19 @@ new carModelSelection[MAX_PLAYERS],
 	carColor2Selection[MAX_PLAYERS];
 
 //============================FUNCIONES PUBLICAS================================
+
+SearchCarDealerForModel(dealer, model)
+{
+	if(dealer >= 0 && dealer < MAX_DEALERS)
+	{
+		for(new i = 0; i < MAX_DEALER_CARS; i++)
+		{
+		    if(CarDealerInfo[dealer][i][dModel] == model)
+		        return i;
+		}
+	}
+	return -1;
+}
 
 CMD:cardealerdebug(playerid, params[])
 {
@@ -221,7 +234,7 @@ OnCarDealerDialogResponse(playerid, response, listitem)
                     break;
 				}
 			}
-			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el número de color {00FF00}primario {a9c4e4}que desea.\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
+			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el número de color {00FF00}primario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
   		}
 	}
  	return 1;
@@ -235,12 +248,12 @@ OnCarDealer2DialogResponse(playerid, response, inputtext[])
 		
 		if(color1 < 0 || color1 > 255)
 		{
-			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el numero de color {00FF00}primario {a9c4e4}que desea.\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
+			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el numero de color {00FF00}primario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de color válido (0-255).");
 		}
 		
 		carColor1Selection[playerid] = color1;
-		ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el número de color {00FF00}secundario {a9c4e4}que desea.\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
+		ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el número de color {00FF00}secundario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
 	}
 	else
 	    cmd_vercatalogo(playerid, "");
@@ -251,21 +264,26 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 {
 	if(response)
 	{
-		new color2 = strval(inputtext);
+		new color2 = strval(inputtext),
+		    dealer = GetPlayerCarDealer(playerid);
 
+		if(dealer == -1)
+     		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una consecionaria.");
 		if(color2 < 0 || color2 > 255)
 		{
-			ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el numero de color {00FF00}secundario {a9c4e4}que desea.\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
+			ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el numero de color {00FF00}secundario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de color válido (0-255).");
 		}
 
-		carColor2Selection[playerid] = color2;
-  		new str[128];
-  		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
+		new dealerSlot = SearchCarDealerForModel(dealer, carModelSelection[playerid]),
+  			str[128];
+
+        carColor2Selection[playerid] = color2;
+  		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d\n\t Stock: %d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100), CarDealerInfo[dealer][dealerSlot][dStock]);
 		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}
 	else
-	    ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el numero de color {00FF00}primario {a9c4e4}que desea.\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
+	    ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el numero de color {00FF00}primario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\t'http://wiki.sa-mp.com/wiki/Vehicle_Color_IDs'", "Continuar", "Volver");
  	return 1;
 }
 
@@ -282,55 +300,66 @@ OnCarDealer4DialogResponse(playerid, response)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una consecionaria.");
 		if(getPlayerFreeKeySlots(playerid) < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehiculos.");
-		if(GetPlayerCash(playerid) < price)
-        	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
 
-		for(new vid = 1; vid < MAX_VEH; vid++)
+		new dealerSlot = SearchCarDealerForModel(dealer, carModelSelection[playerid]);
+
+		if(CarDealerInfo[dealer][dealerSlot][dStock] > 0)
 		{
-			if(VehicleInfo[vid][VehType] == VEH_NONE)
+			if(GetPlayerCash(playerid) < price)
+	        	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
+
+			for(new vid = 1; vid < MAX_VEH; vid++)
 			{
-			    newveh = vid;
-			    break;
+				if(VehicleInfo[vid][VehType] == VEH_NONE)
+				{
+				    newveh = vid;
+				    break;
+				}
+		    }
+		    if(newveh == -1) // Si no encontró ningun auto de tipo VEH_NONE es pq ya no hay mas lugar dentro de los MAX_VEH
+				return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay mas espacio para autos en el servidor. REPORTAR A UN ADMIN.");
+
+	        CarDealerInfo[dealer][dealerSlot][dStock] --;
+	        if(CarDealerInfo[dealer][dealerSlot][dStock] == 0 && CarDealerInfo[dealer][dealerSlot][dAllowImport] == 0)
+		        CarDealerInfo[dealer][dealerSlot][dModel] = 0;
+
+			GivePlayerCash(playerid, -price);
+		 	GetPlayerName(playerid, playerName, sizeof(playerName));
+			VehicleInfo[newveh][VehType] = VEH_OWNED;
+			VehicleInfo[newveh][VehOwnerSQLID] = PlayerInfo[playerid][pID];
+			VehicleInfo[newveh][VehOwnerName] = playerName;
+			VehicleInfo[newveh][VehColor1] = carColor1Selection[playerid];
+			VehicleInfo[newveh][VehColor2] = carColor2Selection[playerid];
+			VehicleInfo[newveh][VehModel] = carModelSelection[playerid];
+			format(VehicleInfo[newveh][VehPlate], 32, "%c%c%c-%d%d%d",65+random(26),65+random(26),65+random(26),random(10),random(10),random(10));
+
+			if(dealer == CAR_DEALER_JEFFERSON)
+			{
+				VehicleInfo[newveh][VehPosX] = 2128.3428;
+				VehicleInfo[newveh][VehPosY] = -1135.8184;
+				VehicleInfo[newveh][VehPosZ] = 25.1607;
+				VehicleInfo[newveh][VehAngle] = 355.3852;
 			}
-	    }
-	    if(newveh == -1) // Si no encontró ningun auto de tipo VEH_NONE es pq ya no hay mas lugar dentro de los MAX_VEH
-			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay mas espacio para autos en el servidor. REPORTAR A UN ADMIN.");
+			else if(dealer == CAR_DEALER_GROTTI)
+			{
+				VehicleInfo[newveh][VehPosX] = 546.8687;
+				VehicleInfo[newveh][VehPosY] = -1266.7017;
+				VehicleInfo[newveh][VehPosZ] = 16.8674;
+				VehicleInfo[newveh][VehAngle] = 302.5064;
+			}
 
-		GivePlayerCash(playerid, -price);
-	 	GetPlayerName(playerid, playerName, sizeof(playerName));
-		VehicleInfo[newveh][VehType] = VEH_OWNED;
-		VehicleInfo[newveh][VehOwnerSQLID] = PlayerInfo[playerid][pID];
-		VehicleInfo[newveh][VehOwnerName] = playerName;
-		VehicleInfo[newveh][VehColor1] = carColor1Selection[playerid];
-		VehicleInfo[newveh][VehColor2] = carColor2Selection[playerid];
-		VehicleInfo[newveh][VehModel] = carModelSelection[playerid];
-		format(VehicleInfo[newveh][VehPlate], 32, "%c%c%c-%d%d%d",65+random(26),65+random(26),65+random(26),random(10),random(10),random(10));
+			VehicleInfo[newveh][VehFuel] = 100;
+			SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado un %s! El vehículo se encuentra en el estacionamiento de la consecionaria.", GetVehicleModelName(carModelSelection[playerid]));
+			SendClientMessage(playerid, COLOR_WHITE, "Recuerda estacionarlo fuera de la consecionaria con '/vehestacionar'. De no hacerlo podrá ser incautado.");
 
-		if(dealer == CAR_DEALER_JEFFERSON)
-		{
-			VehicleInfo[newveh][VehPosX] = 2127.6501;
-			VehicleInfo[newveh][VehPosY] = -1117.1167;
-			VehicleInfo[newveh][VehPosZ] = 24.9961;
-			VehicleInfo[newveh][VehAngle] = 251.4242;
+		 	DestroyVehicle(newveh);
+			newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
+
+			addKeyToPlayer(playerid, newveh, playerid);
+			SaveVehicle(newveh);
 		}
-		else if(dealer == CAR_DEALER_GROTTI)
-		{
-			VehicleInfo[newveh][VehPosX] = 553.4331;
-			VehicleInfo[newveh][VehPosY] = -1250.9829;
-			VehicleInfo[newveh][VehPosZ] = 16.5953;
-			VehicleInfo[newveh][VehAngle] = 300.7206;
-		}
-		
-		VehicleInfo[newveh][VehFuel] = 100;
-		SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado un %s! El vehículo se encuentra en la entrada de la consecionaria.", GetVehicleModelName(carModelSelection[playerid]));
-		SendClientMessage(playerid, COLOR_WHITE, "Estacionalo con '/vehestacionar' fuera de la consecionaria. De no hacerlo podrá ser incautado.");
-
-	 	DestroyVehicle(newveh);
-		newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
-
-		addKeyToPlayer(playerid, newveh, playerid);
-		PutPlayerInVehicle(playerid, newveh, 0);
-		SaveVehicle(newveh);
+		else
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No hay stock de ese modelo. IMPLEMENTAR ENTREGA POR TIEMPO.");
 	}
  	return 1;
 }
