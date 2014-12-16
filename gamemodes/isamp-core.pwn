@@ -1745,7 +1745,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				    NicksEnabled[playerid] = true;
 				    foreach(new i : Player)
 				    {
-				        if(usingMask[i] == false)
+				        if(usingMask[i] == false || PlayerInfo[playerid][pAdmin])
 				    		ShowPlayerNameTagForPlayer(playerid, i, true);
 					}
 				}
@@ -3539,17 +3539,14 @@ public AntiCheatTimer()
 				{
 				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
 				    {
-				        if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+				        if(antiCheatImmunity[playerid] == 0)
 				        {
-					        if(antiCheatImmunity[playerid] == 0)
-					        {
-								format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				    			AdministratorMessage(COLOR_WHITE, string, 1);
-							}
-			    			ResetPlayerWeapons(playerid);
-			    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-			    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+							format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+			    			AdministratorMessage(COLOR_WHITE, string, 1);
 						}
+		    			ResetPlayerWeapons(playerid);
+		    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+		    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					}
 					else
 					{
