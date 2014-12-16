@@ -140,7 +140,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_BIZ_HARD         10028
 // #define DLG_BIZ_ACCESS       10029
 #define DLG_DYING		    	10030
-// #define DLG_CARDEALER	    10031
+// #define DLG_CARDEALER1	    10031
+// #define DLG_CARDEALER2	    10032
+// #define DLG_CARDEALER3	    10033
+// #define DLG_CARDEALER4	    10034
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -7625,6 +7628,26 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		case DLG_NOTEBOOK_3:
 		{
 		    OnNotebook3DialogResponse(playerid, response, inputtext);
+		    return 1;
+		}
+		case DLG_CARDEALER1:
+		{
+		    OnCarDealerDialogResponse(playerid, response, listitem);
+		    return 1;
+		}
+		case DLG_CARDEALER2:
+		{
+		    OnCarDealer2DialogResponse(playerid, response, inputtext);
+		    return 1;
+		}
+		case DLG_CARDEALER3:
+		{
+      		OnCarDealer3DialogResponse(playerid, response, inputtext);
+		    return 1;
+		}
+		case DLG_CARDEALER4:
+		{
+		    OnCarDealer4DialogResponse(playerid, response);
 		    return 1;
 		}
 	    case DLG_GUIDE: {
