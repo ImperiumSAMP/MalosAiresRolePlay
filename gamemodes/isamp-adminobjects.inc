@@ -104,7 +104,7 @@ CMD:aobjeto(playerid,params[])
 	if(adminServerObjectsCant >= MAX_ADMIN_OBJECTS)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas espacio para objetos.");
     if(sscanf(params, "d", object))
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /aobject [ID-OBJETO] (/ainfoobjetos)");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /aobjeto [ID-OBJETO] (/ainfoobjetos)");
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, facingAngle);
 	adminServerObjectsCant ++;
@@ -125,7 +125,7 @@ CMD:ainfoobjetos(playerid, params[])
 {
     if(PlayerInfo[playerid][pAdmin] < 2)
 		return 1;
-    SendClientMessage(playerid, COLOR_RED, "[ID objetos útiles]:");
+    SendClientMessage(playerid, COLOR_RED, "[ID objetos �tiles]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "1280: banco para sentarse - 1223: poste de luz chico - 1840: parlante - 1839: equipo de música - 16151: barra de tragos ");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "1551: botella de bebida - 1455 :vaso - 3027: porro - 2632: colchoneta de playa - 2290: sillones triples marrones - 2896,19339: ataud");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "18077: sillas para una barra- 1432: juego de 3 sillas con mesa - 1212:fajos de dinero - 3860: puestos de feria - 14673: motosierra consolador");

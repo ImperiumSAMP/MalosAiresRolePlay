@@ -8117,7 +8117,7 @@ CMD:admincmds(playerid, params[]) {
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acasas /aedificios /afacciones /anegocios /ppvehiculos /gmx /exit /tod /unknowngametext /money /givemoney");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates /abarreracrear /abarreraquitar /abarreraquitartodo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates /aobjeto /aeditobjeto /ainfoobjetos /aobjetosquitartodo /aobjetoquitar");
 	}
 	return 1;
 }
@@ -9407,24 +9407,6 @@ CMD:llamar(playerid, params[])
 			return 1;
 		}
 	}
-	return 1;
-}
-
-CMD:numero(playerid, params[])
-{
-	new targetID;
-
-    if(sscanf(params, "u", targetID))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /numero [ID/Jugador]");
-	if(PlayerInfo[playerid][pPhoneNumber] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un teléfono para buscar el numero con la guía online.");
-	if(!IsPlayerConnected(targetID) || !gPlayerLogged[targetID])
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta o no ha iniciado sesión.");
-
-	PlayerActionMessage(playerid, 15.0, "saca su celular del bolsillo y comienza a apretar algunas teclas.");
-	if(PlayerInfo[targetID][pListNumber] == 0 || PlayerInfo[targetID][pPhoneNumber] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El número buscado no se encuentra en la guía.");
-	SendFMessage(playerid, COLOR_WHITE, "Nombre: %s, número de teléfono: %d.", GetPlayerNameEx(targetID), PlayerInfo[targetID][pPhoneNumber]);
 	return 1;
 }
 

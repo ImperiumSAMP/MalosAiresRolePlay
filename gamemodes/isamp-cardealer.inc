@@ -403,7 +403,12 @@ OnCarDealer4DialogResponse(playerid, response)
 
 	        CarDealerInfo[dealer][dealerSlot][dStock] --;
 	        if(CarDealerInfo[dealer][dealerSlot][dStock] == 0 && CarDealerInfo[dealer][dealerSlot][dAllowImport] == 0)
+	        {
+	            SaveDealershipModel(dealer, dealerSlot, MODEL_DELETE);
 		        CarDealerInfo[dealer][dealerSlot][dModel] = 0;
+			}
+			else
+			    SaveDealershipModel(dealer, dealerSlot, MODEL_UPDATE);
 
 			GivePlayerCash(playerid, -price);
 		 	GetPlayerName(playerid, playerName, sizeof(playerName));
