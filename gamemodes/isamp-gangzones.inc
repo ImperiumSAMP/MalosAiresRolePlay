@@ -286,7 +286,7 @@ stock GetGangZoneLiderIncome(playerid)
 	{
 		if(GangZone[i][gzFaction] == PlayerInfo[playerid][pFaction])
 		{
-			income += 1000;
+			income += 500;
 		}
 	}
 	return income;

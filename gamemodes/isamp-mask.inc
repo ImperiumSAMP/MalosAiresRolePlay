@@ -222,20 +222,20 @@ CMD:comprarmascara(playerid, params[])
     new maskModels[9] = {18912, 18913, 18914, 18915, 18916, 18917, 18918, 18919, 18920};
     new business = GetPlayerBusiness(playerid);
     if(sscanf(params, "i", idmask))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $300.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
     if(business == 0 || (Business[business][bType] != BIZ_CLOT &&  Business[business][bType] != BIZ_CLOT2))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algun negocio de ropa que los venda.");
 	if(idmask < 0 || idmask > 8)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $300.");
-	if(GetPlayerCash(playerid) < 300)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $300. ¡Vuelve cuando los tengas!");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
+	if(GetPlayerCash(playerid) < 50)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $50. ¡Vuelve cuando los tengas!");
 	if(Business[business][bProducts] < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "La tienda no tiene productos!");
- 	GivePlayerCash(playerid, -300);
+ 	GivePlayerCash(playerid, -50);
  	PlayerInfo[playerid][pMask] = maskModels[idmask];
- 	PlayerActionMessage(playerid, 15.0, "le paga al empleado $300 y compra un pañuelo, que luego guarda en su bolsillo.");
+ 	PlayerActionMessage(playerid, 15.0, "le paga al empleado $50 y compra un pañuelo, que luego guarda en su bolsillo.");
  	SendClientMessage(playerid, COLOR_WHITE, "Has comprado un pañuelo en la tienda. Para cubrirte/descubrirte el rostro con este usa /mascara.");
-	Business[business][bTill] += 300;
+	Business[business][bTill] += 50;
 	Business[business][bProducts]--;
 	saveBusiness(business);
 	return 1;

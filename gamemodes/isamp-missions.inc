@@ -20,10 +20,10 @@
 #define MAX_MISSION_DRUG_POS    4
 #define MAX_MISSION_CAR_POS     3
 
-#define MISSION_MATS_REWARD     1000 // Recompensa en dinero por la misión.
-#define MISSION_MATS_EXTRA      500 //  Recompensa en dinero por cada miembro acompañante.
-#define MISSION_MATS_BOX        125	 // Materiales por caja.
-#define MISSION_MATS_BOX_EXTRA  90   // Extra * cantidad de gente en el vehículo.
+#define MISSION_MATS_REWARD     500 // Recompensa en dinero por la misión.
+#define MISSION_MATS_EXTRA      2500 //  Recompensa en dinero por cada miembro acompañante.
+#define MISSION_MATS_BOX        75	 // Materiales por caja.
+#define MISSION_MATS_BOX_EXTRA  45   // Extra * cantidad de gente en el vehículo.
 
 //=================================VARIABLES====================================
 
@@ -245,9 +245,9 @@ stock bool:MissionCar(playerid, step, text[])
       			    GetVehicleHealth(vehicleid, vhp);
       			    if(vhp > 500.0 && VehicleInfo[vehicleid][VehEngine] == 1)
       			    {
-      			        new price = GetVehiclePrice(vehicleid, 100) / 180;
-      			        if(price < 3000)
-						  	price = 3000;
+      			        new price = GetVehiclePrice(vehicleid, 100) / 360;
+      			        if(price < 1000)
+						  	price = 1000;
       			        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aqui tienes $%d por el coche. Nunca nos vimos.", price);
 						GivePlayerCash(playerid, price);
 						HideStolenCar(vehicleid);
@@ -354,7 +354,7 @@ stock bool:MissionDrugs(playerid, step, text[])
     			{
 			        if(PlayerInfo[playerid][pMarijuana] >= pMissionEventParam[playerid])
 			        {
-			         	SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 50);
+			         	SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 25);
 						GivePlayerCash(playerid, pMissionEventParam[playerid] * 50);
 						PlayerInfo[playerid][pMarijuana] -= pMissionEventParam[playerid];
 						PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
@@ -365,7 +365,7 @@ stock bool:MissionDrugs(playerid, step, text[])
 			    {
 			    	if(PlayerInfo[playerid][pLSD] >= pMissionEventParam[playerid])
 			        {
-			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 60);
+			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 30);
 						GivePlayerCash(playerid, pMissionEventParam[playerid] * 60);
 						PlayerInfo[playerid][pLSD] -= pMissionEventParam[playerid];
 						PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
@@ -376,7 +376,7 @@ stock bool:MissionDrugs(playerid, step, text[])
 			    {
 			    	if(PlayerInfo[playerid][pEcstasy] >= pMissionEventParam[playerid])
 			        {
-			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 70);
+			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 35);
 						GivePlayerCash(playerid, pMissionEventParam[playerid] * 70);
 						PlayerInfo[playerid][pEcstasy] -= pMissionEventParam[playerid];
 						PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");
@@ -387,7 +387,7 @@ stock bool:MissionDrugs(playerid, step, text[])
 			    {
 			    	if(PlayerInfo[playerid][pCocaine] >= pMissionEventParam[playerid])
 			        {
-			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 80);
+			            SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, veo que me has traido lo que te pedí. Aqui tienes $%d por la mercancía.", pMissionEventParam[playerid] * 40);
 						GivePlayerCash(playerid, pMissionEventParam[playerid] * 80);
 						PlayerInfo[playerid][pCocaine] -= pMissionEventParam[playerid];
 						PlayerActionMessage(playerid, 8.0, "le entrega un paquete a un sujeto desconocido y éste se aleja rapidamente.");

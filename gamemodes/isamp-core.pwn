@@ -3856,9 +3856,9 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
         BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat [T]");
 	}
 	
-	if(GetPlayerCash(playerid) >= 4500) {
-	    GivePlayerCash(playerid, -4500);
-		FactionInfo[FAC_MECH][fBank] += 4500 / 10;
+	if(GetPlayerCash(playerid) >= 2000) {
+	    GivePlayerCash(playerid, -2000);
+		FactionInfo[FAC_MECH][fBank] += 2000 / 10;
 	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspension hidraulica).");
 	} else {
 	    SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4500), las modificaciones no serán almacenadas.");
