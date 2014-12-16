@@ -10,7 +10,7 @@
 #define CAR_DEALER_GROTTI       0
 #define CAR_DEALER_JEFFERSON    1
 
-#define MAX_DEALER_CARS         25
+#define MAX_DEALER_CARS         32
 
 #define DLG_CARDEALER1	    	10031
 #define DLG_CARDEALER2	    	10032
@@ -18,7 +18,7 @@
 #define DLG_CARDEALER4	    	10034
 
 #define MODEL_CREATE            1
-#define MODEL_UPDATE            1
+#define MODEL_UPDATE            2
 #define MODEL_DELETE            3
 
 //=================================VARIABLES====================================
@@ -266,7 +266,7 @@ GetPlayerCarDealer(playerid)
 
 CMD:vercatalogo(playerid, params[])
 {
-	new string[800] = "Modelo - Tiempo de entrega - Precio - Maletero",
+	new string[2000] = "Modelo - Tiempo de entrega - Precio - Maletero",
 	    dealer = GetPlayerCarDealer(playerid),
 	    model;
 
@@ -280,7 +280,7 @@ CMD:vercatalogo(playerid, params[])
 	    {
 	        if(CarDealerInfo[dealer][i][dStock] > 0)
 	        {
-	        	format(string, sizeof(string), "%s\n%s - En stock: entrega inmediata - $%d - Slots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
+	        	format(string, sizeof(string), "%s\n%s - Entrega inmediata - $%d - Slots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
 			}
 			else if(CarDealerInfo[dealer][i][dStock] == 0 && CarDealerInfo[dealer][i][dAllowImport])
 			{
@@ -361,7 +361,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
   			str[128];
 
         carColor2Selection[playerid] = color2;
-  		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d\n\tStock: %d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100), CarDealerInfo[dealer][dealerSlot][dStock]);
+  		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}
 	else
