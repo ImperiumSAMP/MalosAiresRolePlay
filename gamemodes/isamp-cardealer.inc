@@ -17,6 +17,10 @@
 #define DLG_CARDEALER3	    	10033
 #define DLG_CARDEALER4	    	10034
 
+#define MODEL_CREATE            1
+#define MODEL_UPDATE            1
+#define MODEL_DELETE            3
+
 //=================================VARIABLES====================================
 
 enum DealerModelInfo {
@@ -31,7 +35,82 @@ new carModelSelection[MAX_PLAYERS],
 	carColor1Selection[MAX_PLAYERS],
 	carColor2Selection[MAX_PLAYERS];
 
+forward OnDealershipDataLoad(dealer);
+forward SaveDealershipModel(dealer, dealerslot, option);
+
 //============================FUNCIONES PUBLICAS================================
+
+LoadCarDealerships()
+{
+	new query[128];
+	
+	for(new i = 0; i < MAX_DEALERS; i++)
+	{
+		format(query, sizeof(query), "SELECT * FROM `dealerships_info` WHERE `Id`=%d LIMIT %d", i, MAX_DEALER_CARS);
+		mysql_function_query(dbHandle, query, true, "OnDealershipDataLoad", "i", i);
+	}
+	return 1;
+}
+
+public OnDealershipDataLoad(dealer)
+{
+   	new result[128],
+	   	rows,
+	   	fields,
+	   	aux = 0; // Desde el primer registro obtenido que se almacena en posicion cero dentro de los resultados
+
+	cache_get_data(rows, fields);
+
+	if(rows)
+	{
+		while(aux < rows)
+	    {
+			cache_get_field_content(aux, "Model", result); 			CarDealerInfo[dealer][aux][dModel] = strval(result);
+			cache_get_field_content(aux, "Stock", result); 			CarDealerInfo[dealer][aux][dStock] = strval(result);
+			cache_get_field_content(aux, "AllowImport", result); 	CarDealerInfo[dealer][aux][dAllowImport] = strval(result);
+			aux ++;
+		}
+	}
+	return 1;
+}
+
+public SaveDealershipModel(dealer, dealerslot, option)
+{
+	new query[256];
+
+	if(dontsave)
+	    return 1;
+
+	if(option == MODEL_CREATE)
+	{
+		format(query, sizeof(query), "INSERT INTO `dealerships_info` (`Id`, `Model`, `Stock`, `AllowImport`) VALUES (%d, %d, %d, %d)",
+		    dealer,
+		    CarDealerInfo[dealer][dealerslot][dModel],
+		    CarDealerInfo[dealer][dealerslot][dStock],
+		    CarDealerInfo[dealer][dealerslot][dAllowImport]
+		);
+	}
+	else if(option == MODEL_UPDATE)
+	{
+		format(query, sizeof(query), "UPDATE `dealerships_info` SET `Stock`=%d, `AllowImport`=%d WHERE `Id`=%d AND `Model`=%d",
+		    CarDealerInfo[dealer][dealerslot][dStock],
+		    CarDealerInfo[dealer][dealerslot][dAllowImport],
+  		    dealer,
+		    CarDealerInfo[dealer][dealerslot][dModel]
+		);
+	}
+	else if(option == MODEL_DELETE)
+	{
+		format(query, sizeof(query), "DELETE FROM `dealerships_info` WHERE `Id`=%d AND `Model`=%d",
+  		    dealer,
+		    CarDealerInfo[dealer][dealerslot][dModel]
+		);
+	}
+	
+	mysql_function_query(dbHandle, query, false, "", "");
+	return 1;
+}
+
 
 SearchCarDealerForModel(dealer, model)
 {

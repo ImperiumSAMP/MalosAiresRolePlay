@@ -536,6 +536,7 @@ public OnGameModeInit() {
 	loadBuildings();
 	LoadLockersSlotsInfo();
 	LoadTrunksSlotsInfo();
+	LoadCarDealerships();
 
     weatherVariables[0] = validWeatherIDs[random(sizeof(validWeatherIDs))];
 	//SetWeather(weatherVariables[0]);
