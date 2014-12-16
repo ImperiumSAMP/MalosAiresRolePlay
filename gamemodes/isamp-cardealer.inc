@@ -191,6 +191,7 @@ CMD:agregarmodelo(playerid, params[])
             SendFMessage(playerid, COLOR_WHITE, "Ahora el stock de ese modelo ha sido seteado en %d con un permiso de importación en %d.", carstock, allowimport);
             CarDealerInfo[dealer][i][dStock] = carstock;
             CarDealerInfo[dealer][i][dAllowImport] = allowimport;
+            SaveDealershipModel(dealer, i, MODEL_UPDATE);
             return 1;
 		}
 	}
@@ -203,6 +204,7 @@ CMD:agregarmodelo(playerid, params[])
 	        CarDealerInfo[dealer][x][dStock] = carstock;
 	        CarDealerInfo[dealer][x][dAllowImport] = allowimport;
 	    	SendFMessage(playerid, COLOR_WHITE, "Has agregado el modelo %d con un stock de %d y permiso de importación en %d a la consecionaria ID %d.", model, carstock, allowimport, dealer);
+            SaveDealershipModel(dealer, x, MODEL_CREATE);
 			return 1;
 		}
 	}
@@ -235,7 +237,8 @@ CMD:borrarmodelo(playerid, params[])
 			CarDealerInfo[dealer][i][dStock] = 0;
 			CarDealerInfo[dealer][i][dAllowImport] = 0;
 	        SendFMessage(playerid, COLOR_WHITE, "El modelo %d ha sido quitado de venta en la consecionaria ID %d.", model, dealer);
-            return 1;
+            SaveDealershipModel(dealer, i, MODEL_DELETE);
+		    return 1;
 		}
 	}
 
