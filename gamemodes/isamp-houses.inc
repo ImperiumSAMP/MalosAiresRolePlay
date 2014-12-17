@@ -24,6 +24,9 @@ enum HouseSystem {
 	ExitInterior,
 	Float:ExitAngle,
 	Owned,
+	Tenant[MAX_PLAYER_NAME],
+	Income,
+	IncomePrice,
 	InsideWorld,
 	HousePrice,
 	Money,
@@ -349,6 +352,38 @@ CMD:puerta(playerid, params[])
 			House[house][Locked] = 1;
 	        PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
 		}
+	return 1;
+}
+
+//PRUEBA
+CMD:casarentar(playerid, params[])
+{
+    new name[MAX_PLAYER_NAME];
+
+	GetPlayerName(playerid, name, sizeof(name));
+
+    for(new h = 0; h < sizeof(House); h++)
+	{
+		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 0)
+		{
+		    if(House[h][IncomePrice] <= 0)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está a la renta.");
+			if(GetPlayerCash(playerid) < House[h][IncomePrice])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+
+			PlayerInfo[playerid][pHouseKeyIncome] = h;
+			House[h][Income] = 1;
+			strmid(House[h][Tenant], name, 0, strlen(name), 255);
+			GivePlayerCash(playerid, -House[h][IncomePrice]);
+			SetPlayerInterior(playerid, House[h][ExitInterior]);
+			SetPlayerVirtualWorld(playerid, h + 15000);
+			SetPlayerPos(playerid, House[h][ExitX], House[h][ExitY], House[h][ExitZ]);
+			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has rentado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
+		   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y este le entrega un par de llaves.");
+			saveHouse(h);
+			return 1;
+		}
+    }
 	return 1;
 }
 
@@ -921,6 +956,9 @@ CMD:acinfo(playerid, params[])
 	SendFMessage(playerid, COLOR_WHITE, "- Costo de compra: $%d", House[id][HousePrice]);
 	SendFMessage(playerid, COLOR_WHITE, "- Dinero: %d", House[id][Money]);
  	SendFMessage(playerid, COLOR_WHITE, "- Cerrada: %d", House[id][Locked]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Inquilino: %s", House[id][Tenant]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Casa rentada: %d", House[id][Income]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Costo de renta: $%d", House[id][IncomePrice]);
 	return 1;
 }
 
@@ -937,5 +975,30 @@ CMD:actele(playerid, params[])
 
 	SetPlayerPos(playerid, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ]);
 	SetPlayerInterior(playerid, House[houseid][EntranceInterior]);
+	return 1;
+}
+
+//PRUEBA
+CMD:acrenta(playerid, params[])
+{
+	new
+		houseid,
+		price,
+		string[128];
+
+	if(PlayerInfo[playerid][pAdmin] != 20)
+	    return 1;
+    if(sscanf(params, "i", houseid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acrenta [ID casa]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+
+	price = House[houseid][HousePrice] / 100;
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de renta de la casa %d ha sido ajustado a $%d.", houseid, price);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	
+	House[houseid][IncomePrice] = price;
+	
+	saveHouse(houseid);
 	return 1;
 }

@@ -77,7 +77,9 @@ enum pInfo {
 	pEcstasy,
 	pCocaine,
 	
-	pTakeInputs
+	pTakeInputs,
+	
+	pHouseKeyIncome,
 };
 
 new PlayerInfo[MAX_PLAYERS][pInfo];
