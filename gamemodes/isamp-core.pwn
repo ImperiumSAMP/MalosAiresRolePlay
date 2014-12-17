@@ -3315,13 +3315,13 @@ public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart
 }
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
-	/*new Float:armour;
+	new Float:armour;
     GetPlayerArmour(playerid, armour);
-    new option = random(100);
+    /*new option = random(100);*/
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
- 		if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
+ 		/*if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
             return 1;
 	
 		if(checkTazer(playerid,issuerid,amount,weaponid))
@@ -3467,7 +3467,6 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		{
 		    SetPlayerHealthEx(playerid, 24);
             TakeHeadShot[playerid] = 1;
-			return 1;
 		}
 		if(weaponid == 0)
 		{
