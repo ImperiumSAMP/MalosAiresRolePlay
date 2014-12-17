@@ -384,6 +384,8 @@ new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
 	
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
+new TakeHeadShot[MAX_PLAYERS] = 0;
+
 // Pickups
 new
 	P_BANK,
@@ -741,6 +743,8 @@ public OnPlayerConnectEx(playerid) {
 public ResetStats(playerid)
 {
     MedDuty[playerid] = 0;
+    
+    TakeHeadShot[playerid] = 0;
     
 	/* Vehiculos */
     OfferingVehicle[playerid] = false;
@@ -1389,15 +1393,19 @@ public OnPlayerSpawn(playerid) {
     KillTimer(cAFKTimer[playerid]); //sistema de afk
 	cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
 
-	if(gPlayerLogged[playerid]) {
+	if(gPlayerLogged[playerid])
+	{
 	    SetPlayerSpawn(playerid);
 	    TextDrawShowForPlayer(playerid, textdrawVariables[1]);
 
 	    SetPVarInt(playerid, "died", 0);
-		if(PlayerInfo[playerid][pHospitalized] >= 1) {
+		if(PlayerInfo[playerid][pHospitalized] >= 1)
+		{
 		    initiateHospital(playerid);
 		}
 	}
+	
+	TakeHeadShot[playerid] = 0;
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
@@ -3282,16 +3290,32 @@ stock chargeTaxis()
 		}
 	}
 }
-/*
+
 stock isWeaponForHeadshot(weaponid) {
 	if(weaponid == 22 || weaponid == 23 || weaponid == 24 || weaponid == 25 ||weaponid == 28 || weaponid == 29 ||weaponid == 30 || weaponid == 31 || weaponid == 32 || weaponid == 33 || weaponid == 34 ){
 	    return 0;
 	}
 	return 1;
 }
-*/
+
+public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart)
+{
+    if(damagedid != INVALID_PLAYER_ID)
+    {
+        new string[128];
+        
+        if(!isWeaponForHeadshot(weaponid) && bodypart == 9 && TakeHeadShot[damagedid] == 0)
+		{
+		    format(string, 128, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(playerid));
+        	SendClientMessage(damagedid, 0xFFFFFFFF, string);
+			return 1;
+		}
+    }
+    return 1;
+}
+
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
-	new Float:armour;
+	/*new Float:armour;
     GetPlayerArmour(playerid, armour);
     new option = random(100);
 
@@ -3438,15 +3462,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
                 if(option <= 44)
                     TeDieronPiola(playerid);
 			}
-		}
-		/*
+		}*/
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
-		    SetPlayerHealthEx(playerid, 20);
-			SendClientMessage(playerid,-1, "Has recibido un disparo en la cabeza y entras en estado de agonia inmediatamente");
+		    SetPlayerHealthEx(playerid, 24);
+            TakeHeadShot[playerid] = 1;
 			return 1;
 		}
-		*/
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
@@ -3479,7 +3501,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     return 1;
 }
 
-stock TeDieronPiola(playerid)
+/*stock TeDieronPiola(playerid)
 {
 	new Float:armour;
     GetPlayerArmour(playerid, armour);
@@ -3500,7 +3522,7 @@ public YaPuedoSeguirTiroteando(playerid)
 	syncPlayerTime(playerid);
 	SetPlayerDrunkLevel (playerid, 0);
 	return 1;
-}
+}*/
 
 stock SetPlayerHealthEx(playerid, Float:health) {
 	PlayerInfo[playerid][pHealth] = health;
@@ -3738,8 +3760,13 @@ public globalUpdate() {
 		        if(PlayerInfo[playerid][pHealth] > 0 && PlayerInfo[playerid][pHealth] < 25 && GetPVarInt(playerid, "disabled") != DISABLE_DYING && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED) {
 		         	TogglePlayerControllable(playerid, false);
 		            if(!IsPlayerInAnyVehicle(playerid)) {
-						ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
-                        SetPlayerHealthEx(playerid, 25);
+		                if(TakeHeadShot[playerid] == 1)
+		                {
+		                	ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
+		                } else {
+							ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+	                        SetPlayerHealthEx(playerid, 25);
+                        }
 					}
 
 		            SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡Te encuentras herido e incapaz de moverte!, con cada segundo que pase perderás algo de sangre.");
@@ -10884,9 +10911,9 @@ public UpdatePlayerAdiction()
 					} else
 		   				{
 							SendClientMessage(playerid, COLOR_RED, "Entras en un estado crítico causado por tu abstinencia. Unos paramédicos te socorren y te llevan al hospital.");
-							SendClientMessage(playerid, COLOR_RED, "Luego de un tiempo logran salvarte, cobrándote $20.000. Si no lo tienes se descontará de tu cuenta bancaria.");
+							SendClientMessage(playerid, COLOR_RED, "Luego de un tiempo logran salvarte, cobrándote $7.500. Si no lo tienes se descontará de tu cuenta bancaria.");
 	   						if(GetPlayerCash(playerid) > ADICTION_REHAB_PRICE)
-								GivePlayerCash(playerid, -ADICTION_REHAB_PRICE); // se cobra 18 mil por el tratamiento + 2 mil normales por morir
+								GivePlayerCash(playerid, -ADICTION_REHAB_PRICE); // se cobra 7 mil por el tratamiento + 500 normales por morir
 							else
 								if(GetPlayerCash(playerid) > 0)
 								{

@@ -392,7 +392,7 @@ CMD:terminar(playerid,params[])
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
 
 			PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    PlayerInfo[playerid][pCantWork] = 1;
 		    LastCP[playerid] = -1;
 		    ServerInfo[sDrugRawMats] += 5;
