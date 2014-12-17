@@ -8138,13 +8138,14 @@ CMD:admincmds(playerid, params[]) {
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /cambiarnombre /afinfo /jetx /setarmour /setjob /setcoord");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aobjeto /aeditobjeto /ainfoobjetos /aobjetosquitartodo /aobjetoquitar");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/givegun /advertir /clima /darlider /desbanear /saltartuto /tutorial /anproductos /annombre /gametext /sinfo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acasas /aedificios /afacciones /anegocios /ppvehiculos /gmx /exit /tod /unknowngametext /money /givemoney");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates /aobjeto /aeditobjeto /ainfoobjetos /aobjetosquitartodo /aobjetoquitar");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates");
 	}
 	return 1;
 }
