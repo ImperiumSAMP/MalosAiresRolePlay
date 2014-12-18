@@ -335,23 +335,39 @@ CMD:puerta(playerid, params[])
 {
     new
 	    house = PlayerInfo[playerid][pHouseKey],
+	    houseincome = PlayerInfo[playerid][pHouseKeyIncome],
 	    name[MAX_PLAYER_NAME];
 
 	GetPlayerName(playerid, name, sizeof(name));
-	if(house == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una casa!");
-	if(!PlayerToPoint(1.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]) && (!PlayerToPoint(2.0, playerid, House[house][ExitX], House[house][ExitY], House[house][ExitZ]) || GetPlayerVirtualWorld(playerid) != house + 15000))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar junto a la puerta de tu casa.");
-
-	if(House[house][Locked] == 1)
+	if(house != 0 || houseincome != 0)
 	{
-		House[house][Locked] = 0;
-	    PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y abre la puerta.");
-	} else
+		if(PlayerToPoint(1.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]) || (PlayerToPoint(2.0, playerid, House[house][ExitX], House[house][ExitY], House[house][ExitZ]) && GetPlayerVirtualWorld(playerid) == house + 15000))
 		{
-			House[house][Locked] = 1;
-	        PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
+		    if(House[house][Locked] == 1)
+			{
+				House[house][Locked] = 0;
+			    PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y abre la puerta.");
+			} else {
+				House[house][Locked] = 1;
+		        PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
+			}
+			return 1;
 		}
+		if(PlayerToPoint(1.0, playerid, House[houseincome][EntranceX], House[houseincome][EntranceY], House[houseincome][EntranceZ]) || (PlayerToPoint(2.0, playerid, House[houseincome][ExitX], House[houseincome][ExitY], House[houseincome][ExitZ]) && GetPlayerVirtualWorld(playerid) == houseincome + 15000))
+		{
+	        if(House[houseincome][Locked] == 1)
+			{
+				House[houseincome][Locked] = 0;
+			    PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y abre la puerta.");
+			} else {
+				House[houseincome][Locked] = 1;
+		        PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
+			}
+			return 1;
+		}
+	} else {
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una casa ni rentas una!");
+	}
 	return 1;
 }
 
@@ -364,7 +380,9 @@ CMD:casarentar(playerid, params[])
 
     for(new h = 0; h < sizeof(House); h++)
 	{
-		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 0)
+	    if(House[h][Owner] == PlayerInfo[playerid][pName])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rentar tu propia casa!");
+		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Income] == 0)
 		{
 		    if(House[h][IncomePrice] <= 0)
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está a la renta.");
@@ -384,6 +402,32 @@ CMD:casarentar(playerid, params[])
 			return 1;
 		}
     }
+	return 1;
+}
+
+CMD:casadesrentar(playerid, params[])
+{
+    new
+	    house = PlayerInfo[playerid][pHouseKeyIncome],
+	    name[MAX_PLAYER_NAME];
+
+	GetPlayerName(playerid, name, sizeof(name));
+
+	if(house == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes rentar una casa para utilizar este comando!");
+	if(!PlayerToPoint(1.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]))
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en la entrada de la casa que rentas para desrentarla!");
+	if(strcmp(House[house][Tenant], name, true) != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Error, la casa no está a tu nombre (Consulta a un administrador).");
+
+	House[house][Locked] = 1;
+	House[house][Income] = 0;
+	strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+	SendClientMessage(playerid, COLOR_WHITE, "¡Has desrentado tu casa!");
+	PlayerInfo[playerid][pHouseKeyIncome] = 0;
+	PlayerActionMessage(playerid, 15.0 , "toma las llaves de su casa y se las entrega al agente inmobiliario.");
+	saveHouse(house);
 	return 1;
 }
 
