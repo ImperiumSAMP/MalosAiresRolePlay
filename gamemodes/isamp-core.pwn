@@ -3379,7 +3379,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
         {
             if(option <= GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) )
             {
-               if((armour > 0) && (bodypart == 3 || bodypart || 4) )
+               if((armour > 0) && (bodypart == 3 || bodypart == 4) )
                    CrossArmour(playerid);
                else
 				   AccurateShot(playerid);
@@ -3477,7 +3477,10 @@ stock GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent)
 	body[8] = 24;
 
 	if( (weapons[weaponid] == -1) || (body[bodypart] == -1) )
-		return -1;
+    {
+        damagepercent = -1;
+        return damagepercent;
+    }
 	if( (bodypart == 3 || bodypart == 4) & (armour > 0) )
 			damagepercent = weapons[weaponid];
 	else
