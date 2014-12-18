@@ -3386,11 +3386,11 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             }
         }
 
-		if( (armour > 0) && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8 )
-            {
-                SetPlayerArmour(playerid, armour);
-                SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-            }
+		if(armour > 0 && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8))
+  		{
+            SetPlayerArmour(playerid, armour);
+        	SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+        }
 				
 		if(weaponid == 0)
 		{
@@ -10549,7 +10549,7 @@ stock EndPlayerDuty(playerid)
 	}
 }
 
-CCMD:propero(playerid, params[])
+CMD:propero(playerid, params[])
 {
 	new ropa;
 
