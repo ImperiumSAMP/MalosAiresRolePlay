@@ -763,7 +763,7 @@ public OnPlayerNameCheck(playerid)
         SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
         SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
     	SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-		Kick(playerid);
+		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
 	{
@@ -8215,7 +8215,7 @@ CMD:admincmds(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras /crearcuenta");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acinfo /aninfo /aeinfo /actele /antele /aetele /ban /check /checkinv /fly /sethp");
@@ -12750,27 +12750,45 @@ CMD:kick(playerid, params[])
     return 1;
 }
 
-CMD:crearcuenta(playerid, params[])
+forward CheckNameAvailable(playerid, accountName[]);
+public CheckNameAvailable(playerid, accountName[])
 {
-	new accountName[24],
-	    accountAge,
+    new rows,
+		fields,
 	    query[128],
 	    password[32],
 	    string[128];
+
+	cache_get_data(rows, fields);
+	
+	if(rows)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: Ya existe otra cuenta con ese nombre.");
+
+	valstr(password, 1000000 + random(9000000));
+ 	mysql_real_escape_string(password, password, 1, sizeof(password));
+	format(query, sizeof(query), "INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", accountName, password);
+	mysql_function_query(dbHandle, query, false, "", "");
+	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
+	format(string, sizeof(string), "Creó la cuenta '%s'", accountName);
+ 	log(playerid, LOG_ADMIN, string);
+	return 1;
+}
+
+CMD:crearcuenta(playerid, params[])
+{
+	new accountName[24],
+	    query[128];
 	
 	if(!PlayerInfo[playerid][pAdmin])
 		return 1;
-	if(sscanf(params, "s[24]i", accountName, accountAge))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /crearcuenta [Nombre_Apellido] [Edad]");
+	if(sscanf(params, "s[24]", accountName))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /crearcuenta [Nombre_Apellido]");
 
 	mysql_real_escape_string(accountName, accountName, 1, sizeof(accountName));
- 	valstr(password, 1000000 + random(9000000));
- 	mysql_real_escape_string(password, password, 1, sizeof(password));
-	format(query, sizeof(query), "INSERT INTO `accounts` (`Name`, `Password`, `Age`) VALUES ('%s', MD5('%s'), %d)", accountName, password, accountAge);
-	mysql_function_query(dbHandle, query, false, "", "");
-	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
-	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
-	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	format(query, sizeof(query), "SELECT * FROM `accounts` WHERE `Name` = '%s'", accountName);
+	mysql_function_query(dbHandle, query, true, "CheckNameAvailable", "is", playerid, accountName);
 	return 1;
 }
 
