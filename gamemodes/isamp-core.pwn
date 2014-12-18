@@ -60,6 +60,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
 #include "isamp-cardealer.inc"          //Consecionarias
+#include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.0.0"
@@ -210,8 +211,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
 #define UpdateMoneyBar 			GivePlayerMoney
-
-#define cAFKTime 				600000
 
 /* Sistema de hambre y sed */
 #define BASIC_NEEDS_MAX_TIME   	7000 // En segundos. Tiempo que tarda en bajar de 100 a 0
@@ -376,12 +375,6 @@ new Float:GUIDE_POS[][3] = {
 	{1675.1625,-2245.8516,13.5655},
     {1495.5433,-1749.1760,15.4453}
 };
-
-new Float:cAFKPos[MAX_PLAYERS][9],  //Sistema de AFK
-	cAFKTimer[MAX_PLAYERS],
-	cAFK[MAX_PLAYERS],
-	TAFKT[MAX_PLAYERS],
-	cTomarVW[MAX_PLAYERS];
 	
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
@@ -483,8 +476,6 @@ forward SetPlayerWantedLevelEx(playerid, level);
 forward GetPlayerWantedLevelEx(playerid);
 forward ResetPlayerWantedLevelEx(playerid);
 forward OnPlayerConnectEx(playerid);
-forward AFKc(playerid);
-forward AFKText(playerid);
 forward CopTraceAvailable(playerid);
 forward TimeMps(playerid);
 forward EndAnim(playerid);
@@ -988,7 +979,7 @@ public ResetStats(playerid)
 
 	resetAuxiliarItemsPMA(playerid);
 
-	cAFK[playerid] = 0; //Sistema de AFK
+	ResetAfkVariables(playerid);
 
 	playerLicense[playerid][lDStep] = 0;
 	playerLicense[playerid][lDTaking] = 0;
@@ -1102,15 +1093,11 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(GetPVarInt(playerid, "theftTimer"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
-	KillTimer(cAFKTimer[playerid]);
+	DestroyAfkTimer(playerid);
 	KillMissionEventTimer(playerid);
 	
 	if(GetPlayerSpecialAction(Mobile[playerid] == SPECIAL_ACTION_USECELLPHONE && !IsPlayerInAnyVehicle(Mobile[playerid]))) {
 		SetPlayerSpecialAction(Mobile[playerid], SPECIAL_ACTION_STOPUSECELLPHONE);
-	}
-    
-    if(cAFK[playerid] == 1) {
-		SetPlayerVirtualWorld(playerid, (cTomarVW[playerid]));
 	}
     
    	if(DrugEffectLSD[playerid] == true)// Para que no se guarde con la vida extra del LSD
@@ -1487,8 +1474,7 @@ public OnPlayerSpawn(playerid) {
 	ApplyAnimation(playerid, "WUZI", "null", 0.0, 0, 0, 0, 0, 0);
 	//--------------FIN PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES-----------
 
-    KillTimer(cAFKTimer[playerid]); //sistema de afk
-	cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
+	StartAfkTimer(playerid);
 
 	if(gPlayerLogged[playerid])
 	{
@@ -3677,7 +3663,7 @@ public globalUpdate() {
 				}
 			}
 			
-			if(cAFK[playerid] == 0 && PlayerInfo[playerid][pJailed] != 2) // Si no está AFK ni en Jail OOC
+			if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2) // Si no está AFK ni en Jail OOC
 			{
 				SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") + 1);
 				if(GetPVarInt(playerid, "pPayTime") >= 3600) {
@@ -3694,18 +3680,7 @@ public globalUpdate() {
 				
 			}
 			
-			GetPlayerCameraPos(playerid, cAFKPos[playerid][6], cAFKPos[playerid][7], cAFKPos[playerid][8]);
-			if(cAFKPos[playerid][6] != cAFKPos[playerid][3] && cAFKPos[playerid][7] != cAFKPos[playerid][4] && cAFKPos[playerid][8] != cAFKPos[playerid][5])
-			{
-				if(cAFK[playerid] == 1)
-				{
-					SetPlayerVirtualWorld(playerid, (cTomarVW[playerid]));
-					cAFK[playerid] = 0;
-					KillTimer(cAFKTimer[playerid]);
-					KillTimer(TAFKT[playerid]);
-					cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
-				}
-			}
+			UpdateAfkSystem(playerid);
 			
 			if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID) {
 				if(GetPlayerInterior(playerid) != GetPlayerInterior(PlayerInfo[playerid][pSpectating])){
@@ -6579,20 +6554,29 @@ public vehicleTimer()
 	}
 }
 
-public JailTimer() {
+public JailTimer()
+{
 	new string[128];
-	foreach(new i : Player)	{
-	    if(PlayerInfo[i][pJailed] >= 0) {
-	    	if(PlayerInfo[i][pJailTime] != 0) {
-				if(cAFK[i] == 0) {
+	
+	foreach(new i : Player)
+	{
+	    if(PlayerInfo[i][pJailed] >= 0)
+		{
+	    	if(PlayerInfo[i][pJailTime] != 0)
+			{
+				if(!IsPlayerAfk(i))
+				{
 					PlayerInfo[i][pJailTime]--;
 					format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
 					GameTextForPlayer(i, string, 999, 3);
 				}
 			}
-			if(PlayerInfo[i][pJailTime] == 0) {
-			    switch (PlayerInfo[i][pJailed]) {
-			        case 1: {
+			if(PlayerInfo[i][pJailTime] == 0)
+			{
+			    switch (PlayerInfo[i][pJailed])
+				{
+			        case 1:
+					{
 			            PlayerInfo[i][pJailed] = 0;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, Building[2][blInsideWorld]);
@@ -6601,7 +6585,8 @@ public JailTimer() {
 						SetPlayerFacingAngle(i, 270.0000);
 						TogglePlayerControllable(i, true);
 		  			}
-			        case 2: {
+			        case 2:
+					{
 			            SetPlayerVirtualWorld(i, 0);
 			            PlayerInfo[i][pJailed] = 0;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Castigo OOC]:{C8C8C8} has finalizado tu castigo, puedes irte ahora.");
@@ -10911,7 +10896,7 @@ public UpdatePlayerAdiction()
 {
     foreach(new playerid : Player)
     {
-    	if(cAFK[playerid] == 0 && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
+    	if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
 		{
 			if(PlayerInfo[playerid][pAdictionPercent] > 0.0)
 			{
@@ -11030,7 +11015,7 @@ public UpdatePlayerBasicNeeds()
 
     foreach(new playerid : Player)
     {
-        if(cAFK[playerid] == 0 && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
+        if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
 		{
 			if(PlayerInfo[playerid][pThirst] > 0)
 			{
@@ -13522,54 +13507,6 @@ CMD:exp10de(playerid, params[]) {
 		GetPlayerPos(target, boom[0], boom[1], boom[2]);
 		CreateExplosion(boom[0], boom[1] , boom[2], 7, 10);
 		printf("[Comando] %s ha usado /exp10de para explotar a %s", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-	}
-	return 1;
-}
-
-//===============================SISTEMA DE AFK=================================
-
-public AFKc(playerid)
-{
-    GetPlayerCameraPos(playerid, cAFKPos[playerid][0], cAFKPos[playerid][1], cAFKPos[playerid][2]);
-	if(cAFKPos[playerid][0] == cAFKPos[playerid][3] && cAFKPos[playerid][1] == cAFKPos[playerid][4] && cAFKPos[playerid][2] == cAFKPos[playerid][5])
-    {
-        if(cAFK[playerid] == 0)
-        {
-	    	cTomarVW[playerid] = GetPlayerVirtualWorld(playerid);
-			SetPlayerVirtualWorld(playerid, 100);
-	    	cAFK[playerid] = 1;
-	    	TAFKT[playerid] = SetTimerEx("AFKText", 3000, 1, "i", playerid);
-	        return 1;
-		}
-		else
-		{
-		    cAFKPos[playerid][3] = cAFKPos[playerid][0];
-			cAFKPos[playerid][4] = cAFKPos[playerid][1];
-			cAFKPos[playerid][5] = cAFKPos[playerid][2];
-		    KillTimer(cAFKTimer[playerid]);
-		    cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
-	    	return 1;
-		}
-	}
-	else
-	{
-	    cAFKPos[playerid][3] = cAFKPos[playerid][0];
-		cAFKPos[playerid][4] = cAFKPos[playerid][1];
-		cAFKPos[playerid][5] = cAFKPos[playerid][2];
-	    KillTimer(cAFKTimer[playerid]);
-	    cAFKTimer[playerid] = SetTimerEx("AFKc", cAFKTime, 1, "i", playerid);
-	    return 1;
-	}
-}
-
-public AFKText(playerid)
-{
-	if(cAFK[playerid] == 1)
-	{
-		new string[15];
-	    format(string, sizeof(string), "MODO AUSENTE");
-	    GameTextForPlayer(playerid, string, 3000, 3);
-		return 1;
 	}
 	return 1;
 }
