@@ -3369,6 +3369,12 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		if(checkTazer(playerid,issuerid,amount,weaponid))
 		    return 1;
 
+		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
+		{
+		    SetPlayerHealthEx(playerid, 24);
+            TakeHeadShot[playerid] = 1;
+            return 1;
+		}
         if(GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) != -1)
         {
             if(option <= GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) )
@@ -3379,13 +3385,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 				   AccurateShot(playerid);
             }
         }
-			
-		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
-		{
-		    SetPlayerHealthEx(playerid, 24);
-            TakeHeadShot[playerid] = 1;
-            return 1;
-		}
+
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
