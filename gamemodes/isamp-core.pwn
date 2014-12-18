@@ -3381,15 +3381,17 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             {
                if((armour > 0) && (bodypart == 3 || bodypart == 4) )
                    CrossArmour(playerid);
-               else if( (armour > 0) && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8 )
-                {
-                       SetPlayerArmour(playerid, armour);
-                       SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-                }
-                AccurateShot(playerid);
+               else 
+                   AccurateShot(playerid);
             }
         }
 
+		if( (armour > 0) && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8 )
+            {
+                SetPlayerArmour(playerid, armour);
+                SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+            }
+				
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
