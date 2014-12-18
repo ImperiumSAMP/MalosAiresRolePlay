@@ -3381,8 +3381,12 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             {
                if((armour > 0) && (bodypart == 3 || bodypart == 4) )
                    CrossArmour(playerid);
-               else
-				   AccurateShot(playerid);
+               else if( (armour > 0) && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8 )
+                {
+                       SetPlayerArmour(playerid, armour);
+                       SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+                }
+                AccurateShot(playerid);
             }
         }
 
@@ -3421,7 +3425,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 stock AccurateShot(playerid)
 {
     SetPlayerDrunkLevel (playerid, 10500);
-    GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 6);
+    GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 1);
     SetPlayerWeather(playerid, 111);
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
         ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
@@ -3432,7 +3436,7 @@ stock AccurateShot(playerid)
 stock CrossArmour(playerid)
 {
 	SetPlayerDrunkLevel (playerid, 10500);
-	GameTextForPlayer(playerid, "Un disparo te ha atravesado el chaleco", 5000, 6);
+	GameTextForPlayer(playerid, "Un disparo te ha atravesado el chaleco", 5000, 1);
 	SetPlayerWeather(playerid, 111);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 			ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
