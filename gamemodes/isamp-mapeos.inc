@@ -683,8 +683,7 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 936, 2551.1016, -1286.3125, 1043.6016, 0.25); 
 	RemoveBuildingForPlayer(playerid, 2229, 2551.0156, -1280.1250, 1060.0156, 0.25); 
 	RemoveBuildingForPlayer(playerid, 1703, 2551.2813, -1283.6875, 1059.9766, 0.25); 
-	RemoveBuildingForPlayer(playerid, 1704, 2551.5000, -1280.3984, 1059.9766, 0.25); 
-	RemoveBuildingForPlayer(playerid, 14413, 2555.4844, -1287.1563, 1036.4609, 0.25); 
+	RemoveBuildingForPlayer(playerid, 1704, 2551.5000, -1280.3984, 1059.9766, 0.25);  
 	RemoveBuildingForPlayer(playerid, 14436, 2557.5000, -1285.8984, 1041.9609, 0.25); 
 	RemoveBuildingForPlayer(playerid, 936, 2559.1250, -1286.3125, 1043.6016, 0.25); 
 	RemoveBuildingForPlayer(playerid, 937, 2559.1094, -1284.7500, 1043.6016, 0.25); 
