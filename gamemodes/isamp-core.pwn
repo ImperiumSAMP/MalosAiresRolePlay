@@ -12771,7 +12771,7 @@ public CheckNameAvailable(playerid, accountName[])
 	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
-	format(string, sizeof(string), "Creó la cuenta '%s'", accountName);
+	format(string, sizeof(string), "Creó la cuenta %s", accountName);
  	log(playerid, LOG_ADMIN, string);
 	return 1;
 }
