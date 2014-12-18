@@ -144,6 +144,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_CARDEALER2	    10032
 // #define DLG_CARDEALER3	    10033
 // #define DLG_CARDEALER4	    10034
+#define DLG_FIRST_LOGIN 		10035
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -634,7 +635,8 @@ public OnPlayerRequestSpawn(playerid) {
 	}
 }
 
-public OnPlayerConnect(playerid) {
+public OnPlayerConnect(playerid)
+{
 	ResetStats(playerid);
 	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
 	SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
@@ -644,9 +646,9 @@ public OnPlayerConnect(playerid) {
 	return 1;
 }
 
-public OnPlayerConnectEx(playerid) {
-	new
-		name[MAX_PLAYER_NAME],
+public OnPlayerConnectEx(playerid)
+{
+	new name[MAX_PLAYER_NAME],
 		query[128];
 
 	name = PlayerName(playerid);
@@ -654,7 +656,7 @@ public OnPlayerConnectEx(playerid) {
     ClearScreen(playerid);
 
 	// Comprobamos si está registrado.
-	format(query, sizeof(query), "SELECT `Id` FROM `accounts` WHERE `Name` = '%s'", name);
+	format(query, sizeof(query), "SELECT * FROM `accounts` WHERE `Name` = '%s'", name);
  	mysql_function_query(dbHandle, query, true, "OnPlayerNameCheck", "i", playerid);
 
  	syncPlayerTime(playerid);
@@ -737,6 +739,100 @@ public OnPlayerConnectEx(playerid) {
 	PlayerTextDrawColor(playerid, RegTDArrow[playerid], -1);
 	PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
+	return 1;
+}
+
+forward OnPlayerNameCheck(playerid);
+public OnPlayerNameCheck(playerid)
+{
+    new rows,
+		fields,
+        string[128],
+        result[128],
+        name[MAX_PLAYER_NAME],
+		PlayerIP[20];
+
+	cache_get_data(rows, fields);
+
+    GetPlayerName(playerid, name, sizeof(name));
+	GetPlayerIp(playerid, PlayerIP, 20);
+
+	if(rows == 0)
+	{
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
+    	SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
+		Kick(playerid);
+	}
+	else
+	{
+		if(RPName(playerid))
+		{
+			cache_get_field_content(0, "FirstLogin", result);
+
+			if(strval(result) == 1)
+			{
+ 				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
+ 				AdministratorMessage(COLOR_GREY, string, 1);
+				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Imperium Malos Aires RP!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
+			}
+			else
+			{
+  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
+ 				AdministratorMessage(COLOR_GREY, string, 1);
+				ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido de nuevo!", "Ingresa tu contraseña a continuación:", "Ingresar", "");
+			}
+		}
+	}
+	return 1;
+}
+
+forward OnPlayerFirstLogin(playerid);
+public OnPlayerFirstLogin(playerid)
+{
+   	new rows,
+		fields;
+
+	cache_get_data(rows, fields);
+
+	if(rows)
+		ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
+	else
+ 		KickPlayer(playerid, "el sistema", "contraseña de registro incorrecta");
+	return 1;
+}
+
+OnPlayerRegister(playerid, password[])
+{
+    if(IsPlayerConnected(playerid))
+	{
+		new query[128],
+			name[MAX_PLAYER_NAME];
+
+		GetPlayerName(playerid, name, sizeof(name));
+		mysql_real_escape_string(name, name, 1, sizeof(name));
+		mysql_real_escape_string(password, password, 1, sizeof(password[]));
+		format(query, sizeof(query), "UPDATE `accounts` SET `Password` = MD5('%s'), `FirstLogin` = 0 WHERE `Name` = '%s'", password, name);
+  		mysql_function_query(dbHandle, query, false, "", "");
+		strmid(PlayerInfo[playerid][pKey], password, 0, strlen(password), 128);
+		SendClientMessage(playerid, COLOR_YELLOW2, "¡El registro ha finalizado exitosamente! Ya puedes jugar normalmente con la contraseña que has elegido.");
+		OnPlayerLogin(playerid, password);
+		return 1;
+	}
+	return 0;
+}
+
+OnPlayerLogin(playerid, password[])
+{
+	new name[24],
+		query[256];
+
+	GetPlayerName(playerid, name, 24);
+    mysql_real_escape_string(password, password, 1, sizeof(password[]));
+
+    format(query, sizeof(query), "SELECT * FROM `accounts` WHERE UCASE(`Name`) = UCASE('%s') AND `Password` = MD5('%s')", name, password);
+	mysql_function_query(dbHandle, query, true, "OnPlayerDataLoad", "i", playerid);
 	return 1;
 }
 
@@ -2263,19 +2359,6 @@ public tutorial(playerid, step) {
 	return 1;
 }
 
-OnPlayerLogin(playerid, password[]) {
-	new
-		name[24],
-		query[256];
-
-	GetPlayerName(playerid, name, 24);
-    mysql_real_escape_string(password, password,1,sizeof(password[]));
-
-    format(query, sizeof(query), "SELECT * FROM `accounts` WHERE UCASE(`Name`) = UCASE('%s') AND `Password` = MD5('%s')", name, password);
-	mysql_function_query(dbHandle, query, true, "OnPlayerDataLoad", "i", playerid);
-	return 1;
-}
-
 forward OnPlayerDataLoad(playerid);
 public OnPlayerDataLoad(playerid) {
    	new
@@ -2520,38 +2603,6 @@ AntiDeAMX() {
     new b;
     #emit load.pri b
     #emit stor.pri b
-}
-
-forward OnPlayerNameCheck(playerid);
-public OnPlayerNameCheck(playerid) {
-    new
-        rows,
-		fields,
-        string[128],
-        name[MAX_PLAYER_NAME],
-		PlayerIP[20];
-
-	cache_get_data(rows, fields);
-
-    GetPlayerName(playerid, name, sizeof(name));
-	GetPlayerIp(playerid, PlayerIP, 20);
-
-	if(rows == 0) {
-		format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: no. **", name, playerid, PlayerIP);
-		AdministratorMessage(COLOR_GREY, string, 1);
-		// Checkeamos si el nombre cumple con los requisitos.
-		if(RPName(playerid)) {
-			ShowPlayerDialog(playerid,DLG_REGISTER,DIALOG_STYLE_PASSWORD,"¡Bienvenido! - nombre no registrado.","Para registrar esta cuenta, ingresa una contraseña a continuación: \r\n- Debe tener un mínimo de 6 caracteres y no mas de 16.","Registar","");
-		}
-	} else {
-	    format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
-		AdministratorMessage(COLOR_GREY, string, 1);
-		// Checkeamos si el nombre cumple con los requisitos.
-		if(RPName(playerid)) {
-			ShowPlayerDialog(playerid,DLG_LOGIN,DIALOG_STYLE_PASSWORD,"¡Bienvenido de nuevo!","Ingresa tu contraseña a continuación:","Ingresar","");
-		}
-	}
-	return 1;
 }
 
 forward OnBusinessDataLoad(id);
@@ -2831,24 +2882,6 @@ public OnVehicleDataLoad(id) {
 		SetVehicleToRespawn(id);
     }
 	return 1;
-}
-
-OnPlayerRegister(playerid, password[]) {
-    if(IsPlayerConnected(playerid))	{
-		new query[128],
-			name[MAX_PLAYER_NAME];
-
-		GetPlayerName(playerid, name, sizeof(name));
-		mysql_real_escape_string(name, name,1,sizeof(name));
-		mysql_real_escape_string(password, password,1,sizeof(password[]));
-		format(query,sizeof(query),"INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", name, password);
-  		mysql_function_query(dbHandle, query, false, "", "");
-		strmid(PlayerInfo[playerid][pKey], password, 0, strlen(password), 128);
-		
-		OnPlayerLogin(playerid, password);
-		return 1;
-	}
-	return 0;
 }
 
 public SaveAccount(playerid) {
@@ -7780,6 +7813,38 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 			return 1;
 		}
+		case DLG_FIRST_LOGIN:
+		{
+	        if(response)
+			{
+			    if(gPlayerLogged[playerid] == 0)
+			    {
+			    	if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
+			    	{
+					    KickPlayer(playerid, "el sistema", "contraseña de registro muy corta o muy larga");
+					    return 0;
+					}
+					
+			        new query[256],
+			            name[MAX_PLAYER_NAME],
+			            password[32];
+
+					GetPlayerName(playerid, name, MAX_PLAYER_NAME);
+					
+					strmid(password, inputtext, 0, strlen(inputtext), 32);
+				    mysql_real_escape_string(password, password, 1, sizeof(password));
+
+				    format(query, sizeof(query), "SELECT * FROM `accounts` WHERE UCASE(`Name`) = UCASE('%s') AND `Password` = MD5('%s')", name, password);
+					mysql_function_query(dbHandle, query, true, "OnPlayerFirstLogin", "i", playerid);
+			    }
+			}
+			else
+			{
+			    KickPlayer(playerid, "el sistema", "evadir inicio de sesión");
+			    return 0;
+			}
+	        return 1;
+	    }
 		case DLG_LOGIN: {
 	        if(!response) {
 			    KickPlayer(playerid, "el sistema", "evadir inicio de sesión");
@@ -7789,16 +7854,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 	        return 1;
 	    }
-	    case DLG_REGISTER: {
-		    if(!response) {
+	    case DLG_REGISTER:
+		{
+		    if(!response)
+			{
 			    KickPlayer(playerid, "el sistema", "evadir registro");
 			    return 0;
-			} else if(gPlayerLogged[playerid] == 0)	{
-			    if(strlen(inputtext) < 6 || strlen(inputtext) > 16) {
-			    	ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Bienvenido! - nombre no registrado.", "Para registrar esta cuenta, ingresa una contraseña a continuación: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.","Registar","");
-				} else {
+			}
+			else if(gPlayerLogged[playerid] == 0)
+			{
+			    if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
+			    	ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
+				else
 					OnPlayerRegister(playerid, inputtext);
-				}
 			}
 	        return 1;
 		}
@@ -12682,7 +12750,32 @@ CMD:kick(playerid, params[])
     return 1;
 }
 
-CMD:ban(playerid, params[]) {
+CMD:crearcuenta(playerid, params[])
+{
+	new accountName[24],
+	    accountAge,
+	    query[128],
+	    password[32],
+	    string[128];
+	
+	if(!PlayerInfo[playerid][pAdmin])
+		return 1;
+	if(sscanf(params, "s[24]i", accountName, accountAge))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /crearcuenta [Nombre_Apellido] [Edad]");
+
+	mysql_real_escape_string(accountName, accountName, 1, sizeof(accountName));
+ 	valstr(password, 1000000 + random(9000000));
+ 	mysql_real_escape_string(password, password, 1, sizeof(password));
+	format(query, sizeof(query), "INSERT INTO `accounts` (`Name`, `Password`, `Age`) VALUES ('%s', MD5('%s'), %d)", accountName, password, accountAge);
+	mysql_function_query(dbHandle, query, false, "", "");
+	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
+	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	return 1;
+}
+
+CMD:ban(playerid, params[])
+{
 	return cmd_banear(playerid, params);
 }
 
@@ -12690,9 +12783,9 @@ CMD:banear(playerid, params[])
 {
 	new targetid, reason[128];
 	
-	if (PlayerInfo[playerid][pAdmin] < 2)
+	if(PlayerInfo[playerid][pAdmin] < 2)
 		return 1;
-	if (sscanf(params, "us[128]", targetid, reason))
+	if(sscanf(params, "us[128]", targetid, reason))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ban)ear [ID/Jugador] [razón]");
    	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
