@@ -9222,7 +9222,7 @@ CMD:tomartelefono(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
 	PlayerActionMessage(playerid, 15.0, "toma su telefono celular del bolsillo");
 	PhoneHand[playerid] = 1;	
-	SetHandItemAndParam(playerid, HAND_RIGHT, 18868, 1);
+	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
 	return 1;
 }
 

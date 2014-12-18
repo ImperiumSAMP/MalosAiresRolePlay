@@ -65,6 +65,7 @@
 #define ITEM_ID_GORRA_SIMPLE_NEGRA      96
 #define ITEM_ID_GORRA_SIMPLE_AZUL       97
 #define ITEM_ID_GORRA_SIMPLE_VERDE      98
+#define ITEM_ID_TELEFONO_CELULAR        99
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -115,11 +116,11 @@ static const ServerItems[][ItemInfo] = {
 /*7*/	{"Palo de pool", "Cantidad", ITEM_WEAPON, 60, false, 338, 0.04, 0.0, -0.182, 152.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
 /*8*/	{"Katana", "Cantidad", ITEM_WEAPON, 6000, false, 339, 0.022, 0.018, -0.123, 162.7, -1.6, -8.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
 /*9*/	{"Motosierra", "Cantidad", ITEM_WEAPON, 15000, false, 341, 0.0, 0.07, 0.0, 161.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
-/*10*/	{"Consolador doble punta", "Cantidad", ITEM_WEAPON, 65, true, 321, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
-/*11*/	{"Consolador", "Cantidad", ITEM_WEAPON, 50, true, 322, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
-/*12*/	{"Vibrador", "Cantidad", ITEM_WEAPON, 70, true, 323, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
-/*13*/	{"Vibrador plateado", "Cantidad", ITEM_WEAPON, 85, true, 324, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
-/*14*/	{"Flores", "Cantidad", ITEM_WEAPON, 50, true, 325, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
+/*10*/	{"Consolador doble punta", "Cantidad", ITEM_WEAPON, 65, true, 321, 0.0150, 0.080, 0.0, 155.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
+/*11*/	{"Consolador", "Cantidad", ITEM_WEAPON, 50, true, 322, 0.014, 0.067, -0.034, 156.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
+/*12*/	{"Vibrador", "Cantidad", ITEM_WEAPON, 70, true, 323, 0.019, 0.07, 0.0, 161.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
+/*13*/	{"Vibrador plateado", "Cantidad", ITEM_WEAPON, 85, true, 324, 0.008, 0.070, -0.036, 161.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
+/*14*/	{"Flores", "Cantidad", ITEM_WEAPON, 50, true, 325, 0.0, 0.061, 0.0, 153.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
 /*15*/	{"Baston", "Cantidad", ITEM_WEAPON, 30, true, 326, 0.027, 0.023, -0.112, 166.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
 /*16*/	{"Granada", "Cantidad", ITEM_WEAPON, 1000, true, 342, 0.046, 0.09, -0.017, 155.1, 2.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
 /*17*/	{"Granada de gas", "Cantidad", ITEM_WEAPON, 200, true, 343, 0.024, 0.084, -0.029, 161.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0},
@@ -203,7 +204,8 @@ static const ServerItems[][ItemInfo] = {
 /*95*/  {"Anteojos Rayban verdes", "Cantidad", ITEM_TOY, 150, false, 19029, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*96*/  {"Gorra simple negra", "Cantidad", ITEM_TOY, 150, false, 18941, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
 /*97*/  {"Gorra simple azul", "Cantidad", ITEM_TOY, 150, false, 18942, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
-/*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 150, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2}
+/*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 150, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2},
+/*99*/  {"Telefono celular", "Cantidad", ITEM_OTHER, 1, false, 18868, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.097,0.031,-0.017,87.8,-177.3,-3.5, 0}
 
 };
 
