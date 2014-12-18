@@ -10549,7 +10549,7 @@ stock EndPlayerDuty(playerid)
 	}
 }
 
-CMD:propero(playerid, params[])
+CCMD:propero(playerid, params[])
 {
 	new ropa;
 
@@ -10561,12 +10561,12 @@ CMD:propero(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete      	        7: Sub Comisario");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial         	    8: Comisario");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Cabo                	9: Operaciones Especiales (GEOF)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Sargento            	10: D.I.");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Sargento Mayor  		11: Civil");
-		SendClientMessage(playerid, COLOR_GRAD4, "| 6: Teniente");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete      	        7: Comisionado Mayor");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial         	    8: Comisionado General");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Oficial Mayor        9: Operaciones Especiales (GEOF)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Subinspector         10: D.I.");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Inspector  		    11: Civil");
+		SendClientMessage(playerid, COLOR_GRAD4, "| 6: Comisionado");
 		return 1;
 	}
 
