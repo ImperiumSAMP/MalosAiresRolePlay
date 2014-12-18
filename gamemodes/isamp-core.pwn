@@ -491,7 +491,7 @@ forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
 forward PesasReload(playerid);
-forward YaPuedoSeguirTiroteando(playerid);
+forward RecoverLastShot(playerid);
 
 //==============================================================================
 
@@ -3358,152 +3358,28 @@ public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
 	new Float:armour;
     GetPlayerArmour(playerid, armour);
-    /*new option = random(100);*/
+    new option = random(100);
+    new damagepercent;
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
- 		/*if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
+ 		if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
             return 1;
 	
 		if(checkTazer(playerid,issuerid,amount,weaponid))
 		    return 1;
 
-		if(weaponid == 22 || weaponid == 23 && amount >= 4.5) // 9mm c/s silenced
+        if(GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) != -1)
         {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
+            if(option <= GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) )
             {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                }
-                else if(option <= 29)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 14)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 24)
-                    TeDieronPiola(playerid);
-			}
-		}
-        if(weaponid == 24 || weaponid == 30 || weaponid == 31 && amount >= 4.5) // Deagle o AK47 o M4
-        {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
-            {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                    if(option <= 9)
-						TeDieronPiola(playerid);
-                }
-                else if(option <= 39)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 24)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 34)
-                    TeDieronPiola(playerid);
-			}
-		}
-		if(weaponid == 25 || weaponid == 33 && amount >= 4.5) // Shotgun o Rifle de caza
-        {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
-            {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                    if(option <= 14)
-						TeDieronPiola(playerid);
-                }
-                else if(option <= 44)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 29)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 39)
-                    TeDieronPiola(playerid);
-			}
-		}
-		if(weaponid == 28 || weaponid == 32 && amount >= 4.5) // Uzi o Mac
-        {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
-            {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                    if(option <= 4)
-						TeDieronPiola(playerid);
-                }
-                else if(option <= 34)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 19)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 29)
-                    TeDieronPiola(playerid);
-			}
-		}
-		if(weaponid == 29 && amount >= 4.5) //mp5
-        {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
-            {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                    if(option <= 7)
-						TeDieronPiola(playerid);
-                }
-                else if(option <= 37)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 22)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 32)
-                    TeDieronPiola(playerid);
-			}
-		}
-		if(weaponid == 34 && amount >= 4.5) // Sniper
-        {
-            if(bodypart == 3 || bodypart == 4) //torso o abdomen
-            {
-                if(GetPlayerArmour(playerid, armour) > 0)
-                {
-                    if(option <= 19)
-						TeDieronPiola(playerid);
-                }
-                else if(option <= 49)
-                	TeDieronPiola(playerid);
-			}
-			if(bodypart == 5 || bodypart == 6) //brazos
-			{
-                if(option <= 34)
-                    TeDieronPiola(playerid);
-			}
-			if(bodypart == 7 || bodypart == 8) //piernas
-			{
-                if(option <= 44)
-                    TeDieronPiola(playerid);
-			}
-		}*/
+               if((armour > 0) && (bodypart == 3 || bodypart || 4) )
+                   CrossArmour(playerid);
+               else
+				   AccurateShot(playerid);
+            }
+        }
+			
 		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
 		{
 		    SetPlayerHealthEx(playerid, 24);
@@ -3542,28 +3418,73 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
     return 1;
 }
 
-/*stock TeDieronPiola(playerid)
+stock AccurateShot(playerid)
 {
-	new Float:armour;
-    GetPlayerArmour(playerid, armour);
+    SetPlayerDrunkLevel (playerid, 10500);
+    GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 6);
+    SetPlayerWeather(playerid, 111);
+    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+        ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
+    SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
+    return 1;
+}
+
+stock CrossArmour(playerid)
+{
 	SetPlayerDrunkLevel (playerid, 10500);
-	if(armour < 0)
-		GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 6);
-	else
-		GameTextForPlayer(playerid, "El disparo atraveso el chaleco", 5000, 6);
+	GameTextForPlayer(playerid, "Un disparo te ha atravesado el chaleco", 5000, 6);
 	SetPlayerWeather(playerid, 111);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-		ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
-	SetTimerEx("YaPuedoSeguirTiroteando", 5000, false, "i", playerid);
+			ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
+	SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
 	return 1;
 }
 
-public YaPuedoSeguirTiroteando(playerid)
+public RecoverLastShot(playerid)
 {
 	syncPlayerTime(playerid);
 	SetPlayerDrunkLevel (playerid, 0);
 	return 1;
-}*/
+}
+
+stock GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent)
+{
+	new weapons[42];
+	for(new i = 0; i < 42; i++)
+	{
+			weapons[i] = -1;
+	}
+	weapons[24] = 10; //deagle
+	weapons[25] = 15;  //shotgun
+	weapons[28] = 5;  //uzi
+	weapons[29] = 8;   //mp5
+	weapons[30] = 10; //ak
+	weapons[31] = 10; //m4
+	weapons[32] = 8;  //tec
+	weapons[33] = 15; //rifle
+	weapons[34] = 20;  //sniper
+
+	new body[9];
+	for(new i = 0; i < 9; i++)
+	{
+		body[i] = -1;
+	}
+	body[3] = 29;
+	body[4] = 29;
+	body[5] = 14;
+	body[6] = 14;
+	body[7] = 24;
+	body[8] = 24;
+
+	if( (weapons[weaponid] == -1) || (body[bodypart] == -1) )
+		return -1;
+	if( (bodypart == 3 || bodypart == 4) & (armour > 0) )
+			damagepercent = weapons[weaponid];
+	else
+			damagepercent = weapons[weaponid] + body[bodypart];
+	return damagepercent;
+}
+
 
 stock SetPlayerHealthEx(playerid, Float:health) {
 	PlayerInfo[playerid][pHealth] = health;
