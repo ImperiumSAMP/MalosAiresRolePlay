@@ -227,6 +227,8 @@ CMD:mano(playerid, params[])
 		        
             if(rightitem == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
+			if(rightitem == ITEM_ID_TELEFONO_CELULAR)
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono celular.");
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
