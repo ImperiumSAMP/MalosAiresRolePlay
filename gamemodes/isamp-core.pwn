@@ -311,6 +311,8 @@ new
 	
 	// Revision de usuarios
 	ReviseOffer[MAX_PLAYERS],
+	
+	InEnforcer[MAX_PLAYERS],
 
 	//Sistema camaras policia
 	bool:usingCamera[MAX_PLAYERS],
@@ -1074,6 +1076,15 @@ public OnPlayerDisconnect(playerid, reason)
 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 		PhoneHand[playerid] = 0;
 	}
+	
+	if(InEnforcer[playerid] == 1)
+	{
+		new Float:X, Float:Y, Float:Z;
+		GetVehiclePos(InEnforcer[playerid], X, Y, Z);
+		SetPlayerPos(playerid, X+4, Y, Z);
+		SetPlayerInterior(playerid, 0);
+		InEnforcer[playerid] = 0;
+	}
 
     TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	ResetDescLabel(playerid);
@@ -1563,6 +1574,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 		StopAudioStreamForPlayer(playerid);
 		
 	OnPlayerLeaveRobberyGroup(playerid, 2);
+	
+	InEnforcer[playerid] = 0;
 
     ResetMaskLabel(playerid);
 	ResetPlayerWeapons(playerid);
@@ -3934,6 +3947,14 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	        SeatBelt[playerid] = false;
 		}
  	}
+	
+	if(newstate == PLAYER_STATE_PASSENGER && GetVehicleModel(GetPlayerVehicleID(playerid)) == 427)
+	{
+     	SetPlayerPos(playerid, 2407.186279, -1526.410522, 985.309814);
+     	SetPlayerFacingAngle(playerid, 0);
+        SetCameraBehindPlayer(playerid);
+		InEnforcer[playerid] = GetPlayerVehicleID(playerid);
+	}
 	        
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_PASSENGER)
 	{
@@ -6852,6 +6873,15 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
+		
+	if(newkeys == 16 && InEnforcer[playerid])
+	{
+		new Float:X, Float:Y, Float:Z;
+		GetVehiclePos(InEnforcer[playerid], X, Y, Z);
+		SetPlayerPos(playerid, X+4, Y, Z);
+		SetPlayerInterior(playerid, 0);
+		InEnforcer[playerid] = 0;
+	}
 
 	if(PRESSED(KEY_WALK)) {
 		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 1) {
