@@ -25,8 +25,10 @@ enum HouseSystem {
 	Float:ExitAngle,
 	Owned,
 	Tenant[MAX_PLAYER_NAME],
+	IncomeAccept,
 	Income,
 	IncomePrice,
+	IncomePriceAdd,
 	InsideWorld,
 	HousePrice,
 	Money,
@@ -128,7 +130,7 @@ stock bool:LeaveHouse(playerid)
 
 CMD:ayudacasa(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaradio - /puerta - /armario");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaenalquiler - /casaradio - /puerta - /armario");
 	return 1;
 }
 
@@ -162,6 +164,9 @@ CMD:casacomprar(playerid, params[])
 		
     for(new h = 0; h < sizeof(House); h++)
 	{
+	   	if(House[h][Tenant] == PlayerInfo[playerid][pName])
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes compar la casa que alquilas!");
+			
 		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 0)
 		{
 		    if(House[h][HousePrice] <= 0)
@@ -366,13 +371,13 @@ CMD:puerta(playerid, params[])
 			return 1;
 		}
 	} else {
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una casa ni rentas una!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una casa ni alquilas una!");
 	}
 	return 1;
 }
 
 //PRUEBA
-CMD:casarentar(playerid, params[])
+CMD:casaalquilar(playerid, params[])
 {
     new name[MAX_PLAYER_NAME];
 
@@ -380,12 +385,12 @@ CMD:casarentar(playerid, params[])
 
     for(new h = 0; h < sizeof(House); h++)
 	{
-	    if(House[h][Owner] == PlayerInfo[playerid][pName])
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rentar tu propia casa!");
 		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Income] == 0)
 		{
+		    if(House[h][Owner] == PlayerInfo[playerid][pName])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes alquilar tu propia casa!");
 		    if(House[h][IncomePrice] <= 0)
-		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está a la renta.");
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está en alquiler.");
 			if(GetPlayerCash(playerid) < House[h][IncomePrice])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
 
@@ -396,7 +401,7 @@ CMD:casarentar(playerid, params[])
 			SetPlayerInterior(playerid, House[h][ExitInterior]);
 			SetPlayerVirtualWorld(playerid, h + 15000);
 			SetPlayerPos(playerid, House[h][ExitX], House[h][ExitY], House[h][ExitZ]);
-			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has rentado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
+			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has alquilado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
 		   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y este le entrega un par de llaves.");
 			saveHouse(h);
 			return 1;
@@ -405,7 +410,7 @@ CMD:casarentar(playerid, params[])
 	return 1;
 }
 
-CMD:casadesrentar(playerid, params[])
+CMD:casadesalquilar(playerid, params[])
 {
     new
 	    house = PlayerInfo[playerid][pHouseKeyIncome],
@@ -414,9 +419,9 @@ CMD:casadesrentar(playerid, params[])
 	GetPlayerName(playerid, name, sizeof(name));
 
 	if(house == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes rentar una casa para utilizar este comando!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes alquilar una casa para utilizar este comando!");
 	if(!PlayerToPoint(1.0, playerid, House[house][EntranceX], House[house][EntranceY], House[house][EntranceZ]))
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en la entrada de la casa que rentas para desrentarla!");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en la entrada de la casa que alquilas para desalquilar la misma!");
 	if(strcmp(House[house][Tenant], name, true) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Error, la casa no está a tu nombre (Consulta a un administrador).");
 
@@ -424,13 +429,46 @@ CMD:casadesrentar(playerid, params[])
 	House[house][Income] = 0;
 	strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-	SendClientMessage(playerid, COLOR_WHITE, "¡Has desrentado tu casa!");
+	SendClientMessage(playerid, COLOR_WHITE, "¡Has dejado de alquilar la casa!");
 	PlayerInfo[playerid][pHouseKeyIncome] = 0;
 	PlayerActionMessage(playerid, 15.0 , "toma las llaves de su casa y se las entrega al agente inmobiliario.");
 	saveHouse(house);
 	return 1;
 }
 
+CMD:casaenalquiler(playerid, params[])
+{
+	new
+		houseid,
+		price,
+		string[128];
+
+    if(sscanf(params, "ii", houseid, price))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaenalquiler [ID casa] [Precio]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Income] == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
+    if(House[houseid][Owner] != PlayerInfo[playerid][pName])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes alquilar una casa que no es de tu propiedad!");
+	if(price > House[houseid][HousePrice] / 100)
+	{
+		format(string, sizeof(string), "[INFO]: El máximo permitido de alquiler es de %d.", House[houseid][HousePrice] / 100);
+		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		return 1;
+	}
+	    
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} Colocaste tu casa en alquiler por $%d, si alguien la alquila no podras utilizar el '/armario'.", price);
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8} El pago del alquiler se realiza por cada payday del inquilino y lo recibirás al cobrar tu payday.");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+
+	House[houseid][IncomePrice] = price;
+	House[houseid][IncomeAccept] = 1;
+	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+
+	saveHouse(houseid);
+	return 1;
+}
 
 //=========================COMANDOS DE ADMIN DE CASAS===========================
 
@@ -440,8 +478,10 @@ CMD:acasas(playerid, params[])
 		return 1;
 
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /acdisp - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acalquilar - /acnoalquilar");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} para agregar una casa consulta con el comando '/acdisp' qué casa está disponible para ser añadida.");
     SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}No utilizar '/acalquilarall' si ya fue utilizado.");
 	return 1;
 }
 
@@ -1001,8 +1041,10 @@ CMD:acinfo(playerid, params[])
 	SendFMessage(playerid, COLOR_WHITE, "- Dinero: %d", House[id][Money]);
  	SendFMessage(playerid, COLOR_WHITE, "- Cerrada: %d", House[id][Locked]);
  	SendFMessage(playerid, COLOR_WHITE, "- Inquilino: %s", House[id][Tenant]);
- 	SendFMessage(playerid, COLOR_WHITE, "- Casa rentada: %d", House[id][Income]);
- 	SendFMessage(playerid, COLOR_WHITE, "- Costo de renta: $%d", House[id][IncomePrice]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Casa alquilada: %d", House[id][Income]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Casa en alquiler: %d", House[id][IncomeAccept]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Costo de alquiler: $%d", House[id][IncomePrice]);
+ 	SendFMessage(playerid, COLOR_WHITE, "- Ganancias: $%d", House[id][IncomePriceAdd]);
 	return 1;
 }
 
@@ -1023,7 +1065,7 @@ CMD:actele(playerid, params[])
 }
 
 //PRUEBA
-CMD:acrenta(playerid, params[])
+CMD:acalquilar(playerid, params[])
 {
 	new
 		houseid,
@@ -1033,16 +1075,47 @@ CMD:acrenta(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] != 20)
 	    return 1;
     if(sscanf(params, "i", houseid))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acrenta [ID casa]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acalquilar [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Income] == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
 
 	price = House[houseid][HousePrice] / 100;
-	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de renta de la casa %d ha sido ajustado a $%d.", houseid, price);
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de alquiler de la casa %d ha sido ajustado a $%d.", houseid, price);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
 	
 	House[houseid][IncomePrice] = price;
+	House[houseid][IncomeAccept] = 1;
+	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	
+	saveHouse(houseid);
+	return 1;
+}
+
+CMD:acnoalquilar(playerid, params[])
+{
+	new
+		houseid,
+		price,
+		string[128];
+
+	if(PlayerInfo[playerid][pAdmin] != 20)
+	    return 1;
+    if(sscanf(params, "i", houseid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acnoalquilar [ID casa]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Income] == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
+		
+	price = 0;
+    House[houseid][IncomePrice] = price;
+	House[houseid][IncomeAccept] = 0;
+	House[houseid][Income] = 0;
+	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de alquiler de la casa %d ha sido ajustado a $%d.", houseid, price);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
 	saveHouse(houseid);
 	return 1;
 }

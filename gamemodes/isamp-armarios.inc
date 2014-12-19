@@ -183,19 +183,31 @@ CMD:armario(playerid, params[])
 	}
 	if(strcmp(cmd, "usar", true) == 0) {
 
-	    if(houseid != PlayerInfo[playerid][pHouseKey] && !AdminDuty[playerid])
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este armario!");
-
-		if(LockerStatus[houseid] != 1)
+		if((House[houseid][Income] == 1 && House[houseid][Tenant] == PlayerInfo[playerid][pName]) || AdminDuty[playerid])
 		{
-		    PlayerActionMessage(playerid, 15.0, "abre con su llave las puertas del armario.");
-		    LockerStatus[houseid] = 1;
-		} else
+		    if(LockerStatus[houseid] != 1)
 			{
-		    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario con su llave.");
-		    	LockerStatus[houseid] = 0;
-			}
-
+			    PlayerActionMessage(playerid, 15.0, "abre con su llave las puertas del armario.");
+			    LockerStatus[houseid] = 1;
+			} else
+				{
+			    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario con su llave.");
+			    	LockerStatus[houseid] = 0;
+				}
+		} else if((House[houseid][Income] == 0 && House[houseid][Owner] == PlayerInfo[playerid][pName]) || AdminDuty[playerid])
+		{
+		    if(LockerStatus[houseid] != 1)
+			{
+			    PlayerActionMessage(playerid, 15.0, "abre con su llave las puertas del armario.");
+			    LockerStatus[houseid] = 1;
+			} else
+				{
+			    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario con su llave.");
+			    	LockerStatus[houseid] = 0;
+				}
+		} else
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este armario!");
+			
 	} else if(strcmp(cmd, "tomardinero", true) == 0) {
 
  		if(LockerStatus[houseid] == 0)

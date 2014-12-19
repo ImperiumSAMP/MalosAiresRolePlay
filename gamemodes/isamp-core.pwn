@@ -375,7 +375,7 @@ new Float:GUIDE_POS[][3] = {
 	{1675.1625,-2245.8516,13.5655},
     {1495.5433,-1749.1760,15.4453}
 };
-	
+
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 new TakeHeadShot[MAX_PLAYERS] = 0;
@@ -1474,7 +1474,7 @@ public OnPlayerSpawn(playerid) {
 	ApplyAnimation(playerid, "WUZI", "null", 0.0, 0, 0, 0, 0, 0);
 	//--------------FIN PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES-----------
 
-	StartAfkTimer(playerid);
+    StartAfkTimer(playerid);
 
 	if(gPlayerLogged[playerid])
 	{
@@ -2668,8 +2668,10 @@ public OnHouseDataLoad(id) {
 		cache_get_field_content(0, "ExitAngle", result); 			House[id][ExitAngle] 			= floatstr(result);
 		
 		cache_get_field_content(0, "Tenant", 						House[id][Tenant],1,MAX_PLAYER_NAME);
+		cache_get_field_content(0, "IncomeAccept", result); 		House[id][IncomeAccept] 		= strval(result);
 		cache_get_field_content(0, "Income", result); 				House[id][Income] 				= strval(result);
 		cache_get_field_content(0, "IncomePrice", result); 			House[id][IncomePrice] 			= strval(result);
+		cache_get_field_content(0, "IncomePriceAdd", result); 		House[id][IncomePriceAdd] 		= strval(result);
 	}
 	ReloadHouseIcon(id);
 	return 1;
@@ -3191,10 +3193,30 @@ public PayDay(playerid) {
 		banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
 		if(banktax < 50)
 		    banktax = 50; // Mínimo de 50 pesos por tener la cuenta abierta
+		    
+		//ALQUILER
+		
+		new pago = House[PlayerInfo[playerid][pHouseKeyIncome]][IncomePrice];
+		new pago2 = House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd];
+		new alquiler = 0;
+		new alquileradd = 0;
+		
+		if(PlayerInfo[playerid][pHouseKeyIncome] != 0){
+			alquiler = pago;
+			new h = PlayerInfo[playerid][pHouseKeyIncome];
+	        House[h][IncomePriceAdd] += pago;
+	        saveHouse(h);
+		}
+		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0){
+			alquileradd = pago2;
+			new h = PlayerInfo[playerid][pHouseKey];
+	        House[h][IncomePriceAdd] -= pago2;
+	        saveHouse(h);
+		}
         
         //============================INGRESOS==================================
 
-	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax;
+	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd;
 
 		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0) {
 		    PlayerInfo[playerid][pCantWork] = 0;
@@ -3210,13 +3232,20 @@ public PayDay(playerid) {
 		}
 		if(gangProfits > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-	    PlayerInfo[playerid][pBank] = newbank;
+		if(alquiler > 0 || alquileradd > 0) {
+		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d a la cuenta bancaria de %s.", pago2, pago, House[PlayerInfo[playerid][pHouseKeyIncome]][Owner]);
+		}
+		
+		
+		PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
 		PlayerInfo[playerid][pExp]++;
 		PlayerInfo[playerid][pPlayingHours] += 1;
 		if(PlayerInfo[playerid][pJobTime] > 0)	{
 			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
 		}
+		
+		PlayerInfo[House[PlayerInfo[playerid][pHouseKeyIncome]][Owner]][pBank] += pago;
 		
 		ResetPlayerInputs(playerid);
 
@@ -5389,17 +5418,23 @@ stock ReloadHouseIcon(houseid) {
 
 	GetCoords2DZone(House[houseid][EntranceX], House[houseid][EntranceY], houseLoc, MAX_ZONE_NAME);
 
-	if(House[houseid][Owned] == 0 && House[houseid][Income] == 0) {
-		format(string, sizeof(string), "{21A325}Casa a la venta {FFFFFF}\nUtiliza /casacomprar\nDirección: %d %s\nPrecio: $%d\n{21A325}Casa en renta {FFFFFF}\nUtiliza /casarentar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][HousePrice], houseid, houseLoc, House[houseid][IncomePrice]);
+	if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 0 && House[houseid][Income] == 0) {
+		format(string, sizeof(string), "{21A325}Casa a la venta {FFFFFF}\nUtiliza /casacomprar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][HousePrice]);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][Income] == 0) {
-	    format(string, sizeof(string), "\n{21A325}Casa en renta {FFFFFF}\nUtiliza /casarentar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
+	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {
+		format(string, sizeof(string), "{21A325}Casa en alquiler {FFFFFF}\nUtiliza /casaalquilar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
+		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
+	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 1) {
+	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][Income] == 1) {
+	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 1) {
+	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
+		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
+	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {
+	    format(string, sizeof(string), "{21A325}Casa en alquiler {FFFFFF}\nUtiliza /casaalquilar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
+		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
+	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 0 && House[houseid][Income] == 0) {
 	    format(string, sizeof(string), "{49AFE6}Casa con dueño {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 0 && House[houseid][Income] == 1) {
-	    format(string, sizeof(string), "{21A325}Casa a la venta {FFFFFF}\nUtiliza /casacomprar\nDirección: %d %s\nPrecio: $%d\n{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc, House[houseid][HousePrice], houseid, houseLoc);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
 	}
 
@@ -5440,7 +5475,7 @@ stock saveHouse(id) {
     if(dontsave)
 		return 1;
 
-    format(query,sizeof(query),"UPDATE `houses` SET `Owner`='%s', `EntranceX`=%f, `EntranceY`=%f, `EntranceZ`=%f, `EntranceAngle`=%f, `ExitX`=%f, `ExitY`=%f, `ExitZ`=%f, `ExitAngle`=%f, `EntranceInterior`=%d, `ExitInterior`=%d, `Owned`=%d, `Tenant`='%s', `Income`=%d, `IncomePrice`=%d, `HousePrice`=%d, `Money`=%d, `Locked`=%d, `Marijuana`=%d, `LSD`=%d, `Cocaine`=%d, `Ecstasy`=%d WHERE `id`=%d",
+    format(query,sizeof(query),"UPDATE `houses` SET `Owner`='%s', `EntranceX`=%f, `EntranceY`=%f, `EntranceZ`=%f, `EntranceAngle`=%f, `ExitX`=%f, `ExitY`=%f, `ExitZ`=%f, `ExitAngle`=%f, `EntranceInterior`=%d, `ExitInterior`=%d, `Owned`=%d, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d, `HousePrice`=%d, `Money`=%d, `Locked`=%d, `Marijuana`=%d, `LSD`=%d, `Cocaine`=%d, `Ecstasy`=%d WHERE `id`=%d",
     House[id][Owner],
     House[id][EntranceX],
     House[id][EntranceY],
@@ -5454,8 +5489,10 @@ stock saveHouse(id) {
 	House[id][ExitInterior],
 	House[id][Owned],
 	House[id][Tenant],
+	House[id][IncomeAccept],
 	House[id][Income],
 	House[id][IncomePrice],
+	House[id][IncomePriceAdd],
 	House[id][HousePrice],
 	House[id][Money],
 	House[id][Locked],
@@ -6557,7 +6594,7 @@ public vehicleTimer()
 public JailTimer()
 {
 	new string[128];
-	
+
 	foreach(new i : Player)
 	{
 	    if(PlayerInfo[i][pJailed] >= 0)
