@@ -2527,7 +2527,19 @@ public OnPlayerDataLoad(playerid) {
 				    	SendClientMessage(playerid, COLOR_WHITE, "Se ha acabado el tiempo de renta de tu vehículo alquilado.");
 					}
 			}
-			
+			if(PlayerInfo[playerid][pHouseKeyIncome] != 0 && House[PlayerInfo[playerid][pHouseKeyIncome]][Income] >= 3)
+			{
+			    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
+			    {
+			        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
+			    {
+                    SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
+			    {
+                    SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	   			}
+			}
 			SendClientMessage(playerid, COLOR_YELLOW2, " ");
 			SpawnPlayer(playerid);
 		}
@@ -3169,8 +3181,15 @@ public PayDay(playerid) {
 
 		new tax = 0;
 		tax+=calculateVehiclesTaxes(playerid);
-		if(PlayerInfo[playerid][pHouseKey] != 0)
-		    tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
+		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] != 0)
+		{
+			    tax += ( House[PlayerInfo[playerid][pHouseKeyIncome]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
+			    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "PAGASTE EL ALQUILER DE LA CASA ALQUILADA");
+		}
+		if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income] == 0) {
+		        tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
+		        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "PAGASTE EL ALQUILER DE TU CASA");
+  		}
 		    
 		//============================NEGOCIOS==================================
 		
@@ -3258,9 +3277,8 @@ public PayDay(playerid) {
 			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
 		}
 		
-		PlayerInfo[House[PlayerInfo[playerid][pHouseKeyIncome]][Owner]][pBank] += pago;
-		
 		ResetPlayerInputs(playerid);
+		RentalExpiration(playerid);
 
 		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
 
@@ -5445,10 +5463,10 @@ stock ReloadHouseIcon(houseid) {
 	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {
 		format(string, sizeof(string), "{21A325}Casa en alquiler {FFFFFF}\nUtiliza /casaalquilar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 1) {
+	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] != 0) {
 	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 1) {
+	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] != 0) {
 	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
 		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
 	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {

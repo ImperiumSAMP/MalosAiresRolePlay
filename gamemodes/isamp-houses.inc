@@ -126,6 +126,36 @@ stock bool:LeaveHouse(playerid)
 	return false;
 }
 
+RentalExpiration(playerid)
+{
+    if(PlayerInfo[playerid][pHouseKeyIncome] != 0 && House[PlayerInfo[playerid][pHouseKeyIncome]][Income] >= 2)
+	{
+        if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 2)
+	    {
+	        SendClientMessage(playerid, COLOR_WHITE, "Te han desalojado de tu vivienda como se te informo que pasaria, todo lo que hayas dejado dentro dalo por perdido.");
+        	House[PlayerInfo[playerid][pHouseKeyIncome]][Locked] = 1;
+			House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 0;
+			House[PlayerInfo[playerid][pHouseKeyIncome]][IncomeAccept] = 0;
+			strmid(House[PlayerInfo[playerid][pHouseKeyIncome]][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+			saveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
+			PlayerInfo[playerid][pHouseKeyIncome] = 0;
+		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
+	    {
+	        SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	        House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 2;
+		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
+	    {
+            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+            House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 3;
+		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
+	    {
+            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+            House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 4;
+		}
+	}
+	
+}
+
 //=============================COMANDOS DE CASA=================================
 
 CMD:ayudacasa(playerid, params[])
@@ -164,11 +194,10 @@ CMD:casacomprar(playerid, params[])
 		
     for(new h = 0; h < sizeof(House); h++)
 	{
-	   	if(House[h][Tenant] == PlayerInfo[playerid][pName])
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes compar la casa que alquilas!");
-			
 		if(PlayerToPoint(2.0, playerid, House[h][EntranceX], House[h][EntranceY], House[h][EntranceZ]) && House[h][Owned] == 0)
 		{
+		    if(House[h][Tenant] == PlayerInfo[playerid][pName])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar la casa que alquilas!");
 		    if(House[h][HousePrice] <= 0)
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está a la venta.");
 			if(GetPlayerCash(playerid) < House[h][HousePrice])
@@ -459,13 +488,35 @@ CMD:casaenalquiler(playerid, params[])
 	}
 	    
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} Colocaste tu casa en alquiler por $%d, si alguien la alquila no podras utilizar el '/armario'.", price);
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8} El pago del alquiler se realiza por cada payday del inquilino y lo recibirás al cobrar tu payday.");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} El pago del alquiler se realiza por cada payday del inquilino y lo recibirás al cobrar tu payday.");
 
 	House[houseid][IncomePrice] = price;
 	House[houseid][IncomeAccept] = 1;
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 
+	saveHouse(houseid);
+	return 1;
+}
+
+CMD:casacontrato(playerid, params[])
+{
+	new
+		houseid;
+
+    if(sscanf(params, "i", houseid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casacontrato [ID casa]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Owner] != PlayerInfo[playerid][pName])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes rescindir el contrato de una casa que no es de tu propiedad!");
+	if(House[houseid][Income] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa no tiene un inquilino.");
+
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} El inquilino ya ha sido informado de que haz rescindido el contrato de alquiler...");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} ...dentro de 3 paydays será desalojada la vivienda.");
+    
+	House[houseid][Income] = 5;
 	saveHouse(houseid);
 	return 1;
 }
