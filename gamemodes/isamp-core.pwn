@@ -3184,11 +3184,9 @@ public PayDay(playerid) {
 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] != 0)
 		{
 			    tax += ( House[PlayerInfo[playerid][pHouseKeyIncome]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
-			    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "PAGASTE EL ALQUILER DE LA CASA ALQUILADA");
 		}
 		if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income] == 0) {
 		        tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
-		        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "PAGASTE EL ALQUILER DE TU CASA");
   		}
 		    
 		//============================NEGOCIOS==================================
@@ -3265,7 +3263,7 @@ public PayDay(playerid) {
 		if(gangProfits > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
 		if(alquiler > 0 || alquileradd > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d a la cuenta bancaria de %s.", pago2, pago, House[PlayerInfo[playerid][pHouseKeyIncome]][Owner]);
+		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
 		}
 		
 		
@@ -3278,7 +3276,6 @@ public PayDay(playerid) {
 		}
 		
 		ResetPlayerInputs(playerid);
-		RentalExpiration(playerid);
 
 		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
 
@@ -3291,6 +3288,7 @@ public PayDay(playerid) {
 		    SendFMessage(playerid, COLOR_WHITE, "(( ¡Su cuenta es ahora nivel %d! ¡Acumula %d puntos de experiencia para el proximo nivel! ))", PlayerInfo[playerid][pLevel],expamount);
 		}
 		SendClientMessage(playerid, COLOR_YELLOW, "===================================================================");
+		RentalExpiration(playerid);
 	}
 }
 
@@ -10853,7 +10851,15 @@ CMD:mostrardoc(playerid, params[])
  		new houselocation[MAX_ZONE_NAME];
 		GetCoords2DZone(House[PlayerInfo[playerid][pHouseKey]][EntranceX],House[PlayerInfo[playerid][pHouseKey]][EntranceY], houselocation, MAX_ZONE_NAME);
 		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKey], houselocation);
-	} else
+	} else if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0)
+	{
+	    SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
+	} else if(PlayerInfo[playerid][pHouseKey] == 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
+	{
+	    new houselocation[MAX_ZONE_NAME];
+	    GetCoords2DZone(House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceX],House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceY], houselocation, MAX_ZONE_NAME);
+		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKeyIncome], houselocation);
+	}else
 		SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
 	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su documento del bolsillo y se lo muestra a");

@@ -149,7 +149,8 @@ RentalExpiration(playerid)
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 3;
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 	    {
-            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	        SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmoviliaria: Señor, le queremos informar que el dueño de la vivienda la cual usted alquila ha decidido...");
+    		SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmoviliaria: ...rescindirle el contrato, tiene 3 dias (paydays) para retirar sus pertenencias.");
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 4;
 		}
 	}
@@ -161,6 +162,8 @@ RentalExpiration(playerid)
 CMD:ayudacasa(playerid, params[])
 {
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaenalquiler - /casaradio - /puerta - /armario");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casaenalquiler - /casacontrato");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} Si alguien alquila tu casa y quieres rescindirle el contrato utiliza '/casacontrato'");
 	return 1;
 }
 
@@ -178,7 +181,7 @@ CMD:casaradio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
 
     House[houseid][hRadio] = radio;
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio de tu casa a %d.", House[houseid][hRadio]);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]:{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][hRadio]);
 	PlayRadioStreamForPlayer(playerid, House[houseid][hRadio]);
 	return 1;
 }
@@ -405,7 +408,7 @@ CMD:puerta(playerid, params[])
 	return 1;
 }
 
-//PRUEBA
+//========================COMANDOS DE ALQUILER DE CASAS=========================
 CMD:casaalquilar(playerid, params[])
 {
     new name[MAX_PLAYER_NAME];
@@ -513,9 +516,9 @@ CMD:casacontrato(playerid, params[])
 	if(House[houseid][Income] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa no tiene un inquilino.");
 
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} El inquilino ya ha sido informado de que haz rescindido el contrato de alquiler...");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} El inquilino en breve será informado de que haz rescindido el contrato de alquiler...");
     SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} ...dentro de 3 paydays será desalojada la vivienda.");
-    
+
 	House[houseid][Income] = 5;
 	saveHouse(houseid);
 	return 1;
@@ -1115,7 +1118,7 @@ CMD:actele(playerid, params[])
 	return 1;
 }
 
-//PRUEBA
+//====================COMANDOS DE ADMIN DE ALQUILER DE CASAS====================
 CMD:acalquilar(playerid, params[])
 {
 	new
