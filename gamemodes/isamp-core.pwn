@@ -3233,9 +3233,11 @@ public PayDay(playerid) {
 		
 		if(PlayerInfo[playerid][pHouseKeyIncome] != 0){
 			alquiler = pago;
-			new h = PlayerInfo[playerid][pHouseKeyIncome];
-	        House[h][IncomePriceAdd] += pago;
-	        saveHouse(h);
+	 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Owned] != 0){
+				new h = PlayerInfo[playerid][pHouseKeyIncome];
+		        House[h][IncomePriceAdd] += pago;
+		        saveHouse(h);
+			}
 		}
 		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0){
 			alquileradd = pago2;
