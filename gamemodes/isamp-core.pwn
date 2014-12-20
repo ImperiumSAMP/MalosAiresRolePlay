@@ -2531,10 +2531,10 @@ public OnPlayerDataLoad(playerid) {
 			{
 			    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 			    {
-			        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+			        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
 	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
 			    {
-                    SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+                    SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
 	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
 			    {
                     SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
@@ -3224,7 +3224,7 @@ public PayDay(playerid) {
 		if(banktax < 50)
 		    banktax = 50; // Mínimo de 50 pesos por tener la cuenta abierta
 		    
-		//ALQUILER
+		//========================ALQUILER DE VIVIENDAS=========================
 		
 		new pago = House[PlayerInfo[playerid][pHouseKeyIncome]][IncomePrice];
 		new pago2 = House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd];
