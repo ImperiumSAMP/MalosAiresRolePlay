@@ -161,8 +161,8 @@ RentalExpiration(playerid)
 
 CMD:ayudacasa(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaenalquiler - /casaradio - /puerta - /armario");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casaenalquiler - /casacontrato");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaradio - /puerta - /armario");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casaenalquiler - /casasinalquiler - /casacontrato");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} Si alguien alquila tu casa y quieres rescindirle el contrato utiliza '/casacontrato'");
 	return 1;
 }
@@ -479,10 +479,10 @@ CMD:casaenalquiler(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaenalquiler [ID casa] [Precio]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
-	if(House[houseid][Income] == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
     if(House[houseid][Owner] != PlayerInfo[playerid][pName])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes alquilar una casa que no es de tu propiedad!");
+	if(House[houseid][Income] == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
 	if(price > House[houseid][HousePrice] / 100)
 	{
 		format(string, sizeof(string), "[INFO]: El máximo permitido de alquiler es de %d.", House[houseid][HousePrice] / 100);
@@ -496,6 +496,32 @@ CMD:casaenalquiler(playerid, params[])
 
 	House[houseid][IncomePrice] = price;
 	House[houseid][IncomeAccept] = 1;
+	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+
+	saveHouse(houseid);
+	return 1;
+}
+
+CMD:casasinalquiler(playerid, params[])
+{
+	new
+		houseid,
+		price,
+		string[128];
+
+    if(sscanf(params, "ii", houseid, price))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casasinalquiler [ID casa] [Precio]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Owner] != PlayerInfo[playerid][pName])
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes alquilar una casa que no es de tu propiedad!");
+	if(House[houseid][Income] == 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
+		
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} Ya has sacado tu casa de alquiler.");
+
+	House[houseid][IncomePrice] = 0;
+	House[houseid][IncomeAccept] = 0;
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 
 	saveHouse(houseid);
