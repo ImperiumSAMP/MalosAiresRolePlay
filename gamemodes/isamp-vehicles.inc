@@ -845,7 +845,9 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-
+	if(GetHandItem(playerid, playerhand) == ITEM_ID_TELEFONO_CELULAR)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono.");
+		
 	new itemid = GetHandItem(playerid, playerhand),
 		validslot,
 		str[128];

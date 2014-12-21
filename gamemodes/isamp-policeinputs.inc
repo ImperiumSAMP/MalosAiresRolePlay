@@ -28,24 +28,24 @@
 #define POS_SIDE_DUTY_Z			1004.6172
 
 // SIDE DEFINES
-#define INPUTS_SIDE_CASE1					233
-#define INPUTS_SIDE_CASE2                 	266
-#define INPUTS_SIDE_CASE3                 	750
-#define INPUTS_SIDE_CASE4					1205
-#define INPUTS_SIDE_CASE5					266
+#define INPUTS_SIDE_CASE1					178
+#define INPUTS_SIDE_CASE2                 	211
+#define INPUTS_SIDE_CASE3                 	695
+#define INPUTS_SIDE_CASE4					1150
+#define INPUTS_SIDE_CASE5					211
 
 
 // POLICE DEFINES
-#define INPUTS_POLICE_CASE1					61
-#define INPUTS_POLICE_CASE2                 138
-#define INPUTS_POLICE_CASE3                 188
-#define INPUTS_POLICE_CASE4                 350
-#define INPUTS_POLICE_CASE5                 361
-#define INPUTS_POLICE_CASE6                 400
-#define INPUTS_POLICE_CASE7                 650
-#define INPUTS_POLICE_CASE8                 1066
-#define INPUTS_POLICE_CASE9                 922
-#define INPUTS_POLICE_CASE10                650
+#define INPUTS_POLICE_CASE1					6
+#define INPUTS_POLICE_CASE2                 83
+#define INPUTS_POLICE_CASE3                 133
+#define INPUTS_POLICE_CASE4                 295
+#define INPUTS_POLICE_CASE5                 306
+#define INPUTS_POLICE_CASE6                 256
+#define INPUTS_POLICE_CASE7                 506
+#define INPUTS_POLICE_CASE8                 922
+#define INPUTS_POLICE_CASE9                 778
+#define INPUTS_POLICE_CASE10                595
 
 // DEFINES BUY INPUTS
 #define POS_INPUTS_NORTE_X                  1417.3534

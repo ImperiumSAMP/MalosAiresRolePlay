@@ -3498,9 +3498,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 stock AccurateShot(playerid)
 {
+	new weathers[4] = {234, 22, 401, -234};
+	SetPlayerWeather(playerid, weathers[random(4)]);
     SetPlayerDrunkLevel (playerid, 10500);
     GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 1);
-    SetPlayerWeather(playerid, 111);
     if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
         ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
     SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
@@ -3509,9 +3510,10 @@ stock AccurateShot(playerid)
 
 stock CrossArmour(playerid)
 {
+	new weathers[4] = {234, 22, 401, -234};
+	SetPlayerWeather(playerid, weathers[random(4)]);
 	SetPlayerDrunkLevel (playerid, 10500);
 	GameTextForPlayer(playerid, "Un disparo te ha atravesado el chaleco", 5000, 1);
-	SetPlayerWeather(playerid, 111);
 	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 			ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
 	SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
