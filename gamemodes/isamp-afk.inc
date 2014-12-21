@@ -71,7 +71,8 @@ public AFKc(playerid)
 	    	cTomarVW[playerid] = GetPlayerVirtualWorld(playerid);
 			SetPlayerVirtualWorld(playerid, 100);
 	    	cAFK[playerid] = 1;
-			SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") - (AFK_MAX_TIME * 60));
+	    	if(GetPVarInt(playerid, "pPayTime") - (AFK_MAX_TIME * 60) > 0)
+				SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") - (AFK_MAX_TIME * 60));
 	    	TAFKT[playerid] = SetTimerEx("AFKText", 3000, 1, "i", playerid);
 	        return 1;
 		}
