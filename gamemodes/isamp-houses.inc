@@ -504,10 +504,8 @@ CMD:casaenalquiler(playerid, params[])
 
 CMD:casasinalquiler(playerid, params[])
 {
-	new
-		houseid,
-		price,
-		string[128];
+	new houseid,
+		price;
 
     if(sscanf(params, "ii", houseid, price))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casasinalquiler [ID casa] [Precio]");

@@ -208,11 +208,11 @@ CMD:pequipo(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /pequipo [equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							6: Macana - Tazer - Granada de humo - Deagle - Escopeta (GEOF 1)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)                   7: Macana - Tazer - Granada de humo - Deagle - MP5 (GEOF. 2)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Cabo)	        8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Sargento)	9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 5: Macana - Tazer - Deagle - Rifle (Sargento Mayor)	10: Macana - Tazer - Deagle - MP5 (D.I.)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							 6: Macana - Tazer - Granada de humo - Deagle - Escopeta (GEOF 1)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)                    7: Macana - Tazer - Granada de humo - Deagle - MP5 (GEOF. 2)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Oficial Mayor)	 8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Subinspector) 9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 5: Macana - Tazer - Deagle - Rifle (Inspector)		 10: Macana - Tazer - Deagle - MP5 (D.I.)");
 		return 1;
 	}
 	if(!CheckTakeInputs(playerid))

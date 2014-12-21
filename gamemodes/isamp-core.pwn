@@ -55,7 +55,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-racesystem.inc"         //Sistema de carreras
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
 #include "isamp-notebook.inc"           //Sistema de agenda
-#include "isamp-gimsistem.inc"  
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
 #include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
@@ -202,6 +201,15 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MATS_TEC9            	45
 #define MATS_CRIFLE            	45
 #define MATS_SRIFLE            	75
+
+// Bodyparts
+#define BODY_PART_TORSO         3
+#define BODY_PART_GROIN         4
+#define BODY_PART_LEFT_ARM      5
+#define BODY_PART_RIGHT_ARM     6
+#define BODY_PART_LEFT_LEG      7
+#define BODY_PART_RIGHT_LEG     8
+#define BODY_PART_HEAD          9
 
 //====[TIPOS DE LOGS]===========================================================
 #define LOG_ADMIN            	1
@@ -483,7 +491,6 @@ forward TimeMps(playerid);
 forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
-forward PesasReload(playerid);
 forward RecoverLastShot(playerid);
 
 //==============================================================================
@@ -1357,16 +1364,21 @@ ShowPlayerModelPreviews(playerid, skintype) {
 	}
 }
 
-UpdatePageTextDraw(playerid, skintype) {
+UpdatePageTextDraw(playerid, skintype)
+{
 	new PageText[64+1];
+	
 	format(PageText, 64, "%d/%d", GetPVarInt(playerid,"skinc_page") + 1, GetNumberOfPages(skintype));
 	PlayerTextDrawSetString(playerid, gCurrentPageTextDrawId[playerid], PageText);
 }
 
-CreateSelectionMenu(playerid, skintype) {
+CreateSelectionMenu(playerid, skintype)
+{
 	new string[128];
+	
     gBackgroundTextDrawId[playerid] = CreatePlayerBackgroundTextDraw(playerid, DIALOG_BASE_X, DIALOG_BASE_Y + 20.0, DIALOG_WIDTH, DIALOG_HEIGHT);
-    switch(skintype) {
+    switch(skintype)
+	{
 		case 1, 3: format(string, sizeof(string), "Ropa urbana $%d", PRICE_CLOTHES1);
 		case 2, 4: format(string, sizeof(string), "Ropa fina $%d", PRICE_CLOTHES2);
 	}
@@ -1379,7 +1391,8 @@ CreateSelectionMenu(playerid, skintype) {
     UpdatePageTextDraw(playerid, skintype);
 }
 
-DestroySelectionMenu(playerid) {
+DestroySelectionMenu(playerid)
+{
     TogglePlayerControllable(playerid, true);
     
 	DestroyPlayerModelPreviews(playerid);
@@ -1397,7 +1410,8 @@ DestroySelectionMenu(playerid) {
     gPrevButtonTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
 }
 
-HandlePlayerItemSelection(playerid, selecteditem, skintype) {
+HandlePlayerItemSelection(playerid, selecteditem, skintype)
+{
 	// In this case we change the player's skin
   	if(gSelectionItemsTag[playerid][selecteditem] >= 0 && gSelectionItemsTag[playerid][selecteditem] < 300)
 	{
@@ -1445,9 +1459,10 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype) {
 }
 //
 
-public OnPlayerSpawn(playerid) {
-
-    //---------------PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES--------------
+public OnPlayerSpawn(playerid)
+{
+    //============PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES=================
+    
 	ApplyAnimation(playerid, "ATTRACTORS", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BLOWJOBZ", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BOMBER", "null", 0.0, 0, 0, 0, 0, 0);
@@ -1483,7 +1498,8 @@ public OnPlayerSpawn(playerid) {
 	ApplyAnimation(playerid, "SWAT", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "SWEET", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "WUZI", "null", 0.0, 0, 0, 0, 0, 0);
-	//--------------FIN PRE CARGA DE LAS LIBRERIAS DE LAS ANIMACIONES-----------
+	
+	//==========================================================================
 
     StartAfkTimer(playerid);
 
@@ -1493,6 +1509,7 @@ public OnPlayerSpawn(playerid) {
 	    TextDrawShowForPlayer(playerid, textdrawVariables[1]);
 
 	    SetPVarInt(playerid, "died", 0);
+	    
 		if(PlayerInfo[playerid][pHospitalized] >= 1)
 		{
 		    initiateHospital(playerid);
@@ -1511,40 +1528,48 @@ public OnPlayerSpawn(playerid) {
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
-	new string[128], time = gettime();
+	new string[128],
+		time = gettime();
+		
 	SetPVarInt(playerid, "died", 1);
 	SetPVarInt(playerid, "disabled", DISABLE_NONE);
- 	switch(time - LastDeath[playerid]) {
-        case 0 .. 3: {
+	
+ 	switch(time - LastDeath[playerid])
+	 {
+        case 0 .. 3:
+		{
             DeathSpam{playerid}++;
-            if(DeathSpam{playerid} == 3) {
+            if(DeathSpam{playerid} == 3)
 				return BanPlayer(playerid, INVALID_PLAYER_ID, "fake kills cheat");
-			}
         }
         default: DeathSpam{playerid} = 0;
     }
+    
     LastDeath[playerid] = time;
     PlayerInfo[playerid][pArmour] = 0;
 
-    if(PlayerInfo[playerid][pJailed] == 1) {
+    if(PlayerInfo[playerid][pJailed] == 1)
+	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
     }
     
-	if(AdminDuty[playerid] == 1) {
+	if(AdminDuty[playerid] == 1)
+	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 		return 1;
 	}
-	if(IsPlayerConnected(killerid) && killerid != INVALID_PLAYER_ID)	{
-	    if(PlayerInfo[killerid][pJailed] == 2) {
+	if(IsPlayerConnected(killerid) && killerid != INVALID_PLAYER_ID)
+	{
+	    if(PlayerInfo[killerid][pJailed] == 2)
+		{
 	        format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} tu condena ha sido aumentada en %d segundos, razón: DM.", DM_JAILTIME);
 		    SendClientMessage(killerid,COLOR_LIGHTYELLOW2, string);
 	        PlayerInfo[killerid][pJailTime] += DM_JAILTIME;
-	    } else if(killerid != playerid) {
-	    	//SetPlayerWantedLevelEx(killerid, GetPlayerWantedLevelEx(playerid)+1);
-
-            //SetPlayerPos(playerid, 1181.2686, -1323.3832, 13.5842,271.5834);
-
-            if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid)) {
+	    }
+		else if(killerid != playerid)
+		{
+            if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
+			{
 				SendFMessage(killerid, COLOR_WHITE, "Has reducido a %s y ha sido arrestado por miembros del departamento de policía.", GetPlayerNameEx(playerid));
 				PlayerInfo[playerid][pJailTime] = PlayerInfo[playerid][pWantedLevel] * 3 * 60;
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has sido reducido y arrestado por miembros de la policía perdiendo todas las armas y drogas en el inventario.");
@@ -1564,9 +1589,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 	    }
  	}
  	
-	if(PlayerInfo[playerid][pJailed] == 0) {
+	if(PlayerInfo[playerid][pJailed] == 0)
 		PlayerInfo[playerid][pHospitalized] = 1;
-	}
 	
 	EndPlayerDuty(playerid);
 	
@@ -2472,17 +2496,21 @@ public OnPlayerDataLoad(playerid) {
         SetPlayerWantedLevelEx(playerid, PlayerInfo[playerid][pWantedLevel]);
         
 		// Cuenta bloqueada.
-		if(PlayerInfo[playerid][pAccountBlocked] == 1) {
+		if(PlayerInfo[playerid][pAccountBlocked] == 1)
+		{
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} personaje bloqueado, los administradores están analizando tu cuenta.");
 			Kick(playerid);
 		}
 
-		if(!PlayerInfo[playerid][pTutorial]) {
+		if(!PlayerInfo[playerid][pTutorial])
+		{
 			TogglePlayerSpectating(playerid, true);
       		SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 200, false, "ii", playerid, 1));
 		    SetPlayerHealthEx(playerid, 100.00);
 		    PlayerInfo[playerid][pArmour] = 0.0;
-		} else if(PlayerInfo[playerid][pRegStep] > 0) {
+		}
+		else if(PlayerInfo[playerid][pRegStep] > 0)
+		{
 			TextDrawShowForPlayer(playerid, RegTDBorder1);
 			TextDrawShowForPlayer(playerid, RegTDBorder2);
 			TextDrawShowForPlayer(playerid, RegTDTitle);
@@ -2508,34 +2536,37 @@ public OnPlayerDataLoad(playerid) {
 		SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 		
 		SetSpawnInfo(playerid, 0, PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ], PlayerInfo[playerid][pA], 0, 0, 0, 0, 0, 0);
-		if(PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0) {
+		if(PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
+		{
 
-			if(PlayerInfo[playerid][pAdmin] > 0) {
+			if(PlayerInfo[playerid][pAdmin] > 0)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
-			} else {
+			else
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
-			}
 			
 			if(PlayerInfo[playerid][pRentCarID] > 0)
 			{
 			    if(RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rRented] == 1 && RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rOwnerSQLID] == PlayerInfo[playerid][pID])
 			        SendFMessage(playerid, COLOR_WHITE, "Te quedan %d minutos de renta del vehículo que alquilaste.", RentCarInfo[PlayerInfo[playerid][pRentCarRID]][rTime]);
 				else
-				    {
-				    	PlayerInfo[playerid][pRentCarRID] = 0;
-				    	PlayerInfo[playerid][pRentCarID] = 0;
-				    	SendClientMessage(playerid, COLOR_WHITE, "Se ha acabado el tiempo de renta de tu vehículo alquilado.");
-					}
+			    {
+			    	PlayerInfo[playerid][pRentCarRID] = 0;
+			    	PlayerInfo[playerid][pRentCarID] = 0;
+			    	SendClientMessage(playerid, COLOR_WHITE, "Se ha acabado el tiempo de renta de tu vehículo alquilado.");
+				}
 			}
+			
 			if(PlayerInfo[playerid][pHouseKeyIncome] != 0 && House[PlayerInfo[playerid][pHouseKeyIncome]][Income] >= 3)
 			{
 			    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 			    {
 			        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
-	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
+	   			}
+   				else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
 			    {
                     SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
-	   			} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
+	   			}
+   				else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
 			    {
                     SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
 	   			}
@@ -2543,14 +2574,17 @@ public OnPlayerDataLoad(playerid) {
 			SendClientMessage(playerid, COLOR_YELLOW2, " ");
 			SpawnPlayer(playerid);
 		}
-	} else {
+	}
+	else
+	{
 	    SetPVarInt(playerid, "LoginAttempts", GetPVarInt(playerid, "LoginAttempts") + 1);
-	    if(GetPVarInt(playerid, "LoginAttempts") > MAX_LOGIN_ATTEMPTS) {
+	    if(GetPVarInt(playerid, "LoginAttempts") > MAX_LOGIN_ATTEMPTS)
+		{
 	        KickPlayer(playerid,"el sistema","demasiados intentos de iniciar sesión");
 	        return 1;
-	    } else {
+	    }
+		else
 			ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Contraseña incorrecta!","Ingresa tu contraseña a continuación:","Ingresar","");
-		}
 	}
 	return 1;
 }
@@ -2897,10 +2931,13 @@ public OnVehicleDataLoad(id) {
 	return 1;
 }
 
-public SaveAccount(playerid) {
-	if(dontsave) return 1;
+public SaveAccount(playerid)
+{
+	if(dontsave)
+		return 1;
 
-	if(gPlayerLogged[playerid] && !cheater[playerid]) {
+	if(gPlayerLogged[playerid] && !cheater[playerid])
+	{
 		new name[MAX_PLAYER_NAME],
 			query[1536],
 			day,
@@ -2916,14 +2953,20 @@ public SaveAccount(playerid) {
 		GetPlayerName(playerid, name, 24);
 		mysql_real_escape_string(name, name,1,sizeof(name));
 		
-        if(AdminDuty[playerid]) {
+        if(AdminDuty[playerid])
+		{
 			PlayerInfo[playerid][pHealth] = GetPVarFloat(playerid, "tempHealth");
-		} else if(CopDuty[playerid] || SIDEDuty[playerid]) {
-		} else {
+		}
+		else if(CopDuty[playerid] || SIDEDuty[playerid])
+		{
+		}
+		else
+		{
 		    GetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 		}
 
-		if(PlayerInfo[playerid][pSpectating] == INVALID_PLAYER_ID) {
+		if(PlayerInfo[playerid][pSpectating] == INVALID_PLAYER_ID)
+		{
 			GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 			GetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
 			PlayerInfo[playerid][pInterior] = GetPlayerInterior(playerid);
@@ -3378,66 +3421,51 @@ stock chargeTaxis()
 	}
 }
 
-stock isWeaponForHeadshot(weaponid) {
-	if(weaponid == 22 || weaponid == 23 || weaponid == 24 || weaponid == 25 ||weaponid == 28 || weaponid == 29 ||weaponid == 30 || weaponid == 31 || weaponid == 32 || weaponid == 33 || weaponid == 34 ){
-	    return 0;
-	}
-	return 1;
-}
-
-public OnPlayerGiveDamage(playerid, damagedid, Float: amount, weaponid, bodypart)
+stock isWeaponForHeadshot(weaponid)
 {
-    if(damagedid != INVALID_PLAYER_ID)
-    {
-        new string[128];
-        
-        if(!isWeaponForHeadshot(weaponid) && bodypart == 9 && TakeHeadShot[damagedid] == 0)
-		{
-		    format(string, 128, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(playerid));
-        	SendClientMessage(damagedid, 0xFFFFFFFF, string);
-			return 1;
-		}
-    }
-    return 1;
+	if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_SILENCED || weaponid == WEAPON_DEAGLE ||
+		weaponid == WEAPON_SHOTGUN ||weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 ||
+		weaponid == WEAPON_AK47 || weaponid == WEAPON_M4 || weaponid == WEAPON_TEC9 ||
+		weaponid == WEAPON_RIFLE || weaponid == WEAPON_SNIPER )
+	    return 1;
+
+	return 0;
 }
 
-public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart) {
+public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
+{
 	new Float:armour;
+    	
     GetPlayerArmour(playerid, armour);
-    new option = random(100);
-    new damagepercent;
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
- 		if(weaponid == 41) // hacemos que el spray solo te inutilize para evitar abusos
+		//==========================SPRAY NO SACA VIDA==========================
+		
+ 		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
 	
-		if(checkTazer(playerid,issuerid,amount,weaponid))
+	    //===============================TAZER==================================
+	    
+		if(checkTazer(playerid, issuerid, amount, weaponid))
 		    return 1;
 
-		if(!isWeaponForHeadshot(weaponid) && bodypart == 9)
+		//==============================HEADSHOT================================
+		
+		if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
 		{
+			SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 		    SetPlayerHealthEx(playerid, 24);
             TakeHeadShot[playerid] = 1;
             return 1;
 		}
-        if(GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) != -1)
-        {
-            if(option <= GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent) )
-            {
-               if((armour > 0) && (bodypart == 3 || bodypart == 4) )
-                   CrossArmour(playerid);
-               else 
-                   AccurateShot(playerid);
-            }
-        }
+		
+		//==========================HERIDAS DE BALA=============================
+		
+		CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
 
-		if(armour > 0 && (bodypart == 5 || bodypart == 6 || bodypart == 7 || bodypart == 8))
-  		{
-            SetPlayerArmour(playerid, armour);
-        	SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-        }
-				
+		//========================EFECTOS DE LA DROGA===========================
+		
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
@@ -3463,10 +3491,17 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 			}
 		}
 	}
-	if(armour > 0)
-		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
+	
+	if(armour > 0.0)
+	{
+	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
+            SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+		else
+			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
+	}
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+ 		
     return 1;
 }
 
@@ -3499,62 +3534,68 @@ public RecoverLastShot(playerid)
 	return 1;
 }
 
-stock GetDamagePercent(weaponid, bodypart, Float: armour, damagepercent)
+stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 {
-	new weapons[42];
-	for(new i = 0; i < 42; i++)
-	{
-			weapons[i] = -1;
-	}
-	weapons[24] = 10; //deagle
-	weapons[25] = 15;  //shotgun
-	weapons[28] = 5;  //uzi
-	weapons[29] = 8;   //mp5
-	weapons[30] = 10; //ak
-	weapons[31] = 10; //m4
-	weapons[32] = 8;  //tec
-	weapons[33] = 15; //rifle
-	weapons[34] = 20;  //sniper
+	new wepProbability = 0,
+	    bodyProbability = 0,
+	    option = random(100);
 
-	new body[9];
-	for(new i = 0; i < 9; i++)
+	switch(weaponid)
 	{
-		body[i] = -1;
+	    case WEAPON_DEAGLE: wepProbability = 10;
+	    case WEAPON_SHOTGUN: wepProbability = 15;
+	    case WEAPON_UZI: wepProbability = 5;
+ 	    case WEAPON_MP5: wepProbability = 8;
+	    case WEAPON_AK47: wepProbability = 10;
+	    case WEAPON_M4: wepProbability = 10;
+	    case WEAPON_TEC9: wepProbability = 8;
+	    case WEAPON_RIFLE: wepProbability = 15;
+	    case WEAPON_SNIPER: wepProbability = 20;
+	    default: return 0;
 	}
-	body[3] = 29;
-	body[4] = 29;
-	body[5] = 14;
-	body[6] = 14;
-	body[7] = 24;
-	body[8] = 24;
 
-	if( (weapons[weaponid] == -1) || (body[bodypart] == -1) )
-    {
-        damagepercent = -1;
-        return damagepercent;
-    }
-	if( (bodypart == 3 || bodypart == 4) & (armour > 0) )
-			damagepercent = weapons[weaponid];
+	switch(bodypart)
+	{
+	    case BODY_PART_TORSO: bodyProbability = 29;
+	    case BODY_PART_GROIN: bodyProbability = 29;
+	    case BODY_PART_LEFT_ARM: bodyProbability = 14;
+	    case BODY_PART_RIGHT_ARM: bodyProbability = 14;
+	    case BODY_PART_LEFT_LEG: bodyProbability = 24;
+	    case BODY_PART_RIGHT_LEG: bodyProbability = 24;
+	    default: return 0;
+	}
+
+	if((bodypart == BODY_PART_TORSO || bodypart == BODY_PART_GROIN) && armour > 0.0)
+	{
+	    if(option <= wepProbability)
+	        CrossArmour(playerid);
+	}
 	else
-			damagepercent = weapons[weaponid] + body[bodypart];
-	return damagepercent;
+	{
+	    if(option <= wepProbability + bodyProbability)
+	        AccurateShot(playerid);
+	}
+	return 1;
 }
 
 
-stock SetPlayerHealthEx(playerid, Float:health) {
+stock SetPlayerHealthEx(playerid, Float:health)
+{
 	PlayerInfo[playerid][pHealth] = health;
 	return 1;
 }
 
-stock GetPlayerHealthEx(playerid, &Float:health) {
+stock GetPlayerHealthEx(playerid, &Float:health)
+{
 	health = PlayerInfo[playerid][pHealth];
 	return 1;
 }
 
-stock isWeaponAllowed(weapon) {
-	if(weapon == 44 || weapon == 35 || weapon == 36 || weapon == 37 || weapon == 38 || weapon == 39 || weapon == 40) {
+stock isWeaponAllowed(weapon)
+{
+	if(weapon == 35 || weapon == 36 || weapon == 37 || weapon == 38 || weapon == 39 || weapon == 40 || weapon == 44 || weapon == 45)
 	    return 0;
-	}
+	    
 	return 1;
 }
 
@@ -3671,12 +3712,13 @@ public fuelCarWithCan(playerid, vehicleid, totalfuel)
 	return 1;
 }
 
-public globalUpdate() {
-	new
-	    playerCount = 0,
+public globalUpdate()
+{
+	new playerCount = 0,
 		string[128];
 
-	/* --------------------- HORA - CLIMA --------------------- */
+	//===============================HORA/CLIMA=================================
+	
 	gettime(gTime[0], gTime[1], gTime[2]);
 
 	if(gTime[1] >= 59 && gTime[2] >= 59)
@@ -3684,26 +3726,26 @@ public globalUpdate() {
 		weatherVariables[1] += random(3) + 1; // Weather changes aren't regular.
 		SetWorldTime(gTime[0]); // Set the world time to keep the worldtime variable updated (and ensure it syncs instantly for connecting players).
 	}
-
+	
+    //==========================================================================
+    
 	chargeTaxis();
+	
 	UpdateBankRobberyCooldown();
 	
-	foreach(new playerid : Player) {
-	if(CountRepePesas[playerid] >= 35)
-	    return SendClientMessage(playerid, COLOR_LIGHTBLUE, "Ya haz entrenado lo suficiente por el dia de hoy. Pon /terminarentrenamiento.");
-	}
-	
-	foreach(new playerid : Player) {
+	foreach(new playerid : Player)
+	{
 	    playerCount++;
 	    
-	    if(GetPVarInt(playerid, "drugEffect") > 0) {
+	    if(GetPVarInt(playerid, "drugEffect") > 0)
+		{
 	        SetPVarInt(playerid, "drugEffect", GetPVarInt(playerid, "drugEffect") - 1);
-	        if(GetPVarInt(playerid, "drugEffect") == 0) {
+	        if(GetPVarInt(playerid, "drugEffect") == 0)
 	            syncPlayerTime(playerid);
-	        }
 	    }
 	    
-	    if(playerCount > ServerInfo[sPlayersRecord]) {
+	    if(playerCount > ServerInfo[sPlayersRecord])
+		{
 	        ServerInfo[sPlayersRecord] = playerCount;
 	       	format(string, sizeof(string), "[Staff]: ¡hemos superado el record de usuarios online! (%d jugadores)", playerCount);
 			AdministratorMessage(COLOR_LIGHTORANGE, string, 1);
@@ -3731,28 +3773,27 @@ public globalUpdate() {
 					PayDay(playerid);
 				}
 				
-    			//Contadores
 				updateThiefCounters(playerid);
 				
 				if(PlayerInfo[playerid][pMuteB] > 0)
 				    PlayerInfo[playerid][pMuteB]--;
-				//
-				
 			}
 			
 			UpdateAfkSystem(playerid);
 			
-			if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID) {
-				if(GetPlayerInterior(playerid) != GetPlayerInterior(PlayerInfo[playerid][pSpectating])){
+			if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID)
+			{
+				if(GetPlayerInterior(playerid) != GetPlayerInterior(PlayerInfo[playerid][pSpectating]))
 					SetPlayerInterior(playerid, GetPlayerInterior(PlayerInfo[playerid][pSpectating]));
-				}
-				if(GetPlayerVirtualWorld(playerid) != GetPlayerVirtualWorld(PlayerInfo[playerid][pSpectating])){
+					
+				if(GetPlayerVirtualWorld(playerid) != GetPlayerVirtualWorld(PlayerInfo[playerid][pSpectating]))
 					SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(PlayerInfo[playerid][pSpectating]));
-				}
 			}
 			
-			if(PlayerInfo[playerid][pHospitalized] == 0 && PlayerInfo[playerid][pJailed] != 2) {
-                // Camara normal si se curó o si esta arriba de un auto
+			if(PlayerInfo[playerid][pHospitalized] == 0 && PlayerInfo[playerid][pJailed] != 2)
+			{
+                //=====Camara normal si se curó o si esta arriba de un auto=====
+                
 				if(dyingCamera[playerid] == true)
 				{
 				    if(PlayerInfo[playerid][pHealth] > 25 || IsPlayerInAnyVehicle(playerid))
@@ -3763,15 +3804,17 @@ public globalUpdate() {
 				}
 				//==============================================================
 				
-		        if(PlayerInfo[playerid][pHealth] > 0 && PlayerInfo[playerid][pHealth] < 25 && GetPVarInt(playerid, "disabled") != DISABLE_DYING && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED) {
+		        if(PlayerInfo[playerid][pHealth] > 0 && PlayerInfo[playerid][pHealth] < 25 && GetPVarInt(playerid, "disabled") != DISABLE_DYING && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED)
+				{
 		         	TogglePlayerControllable(playerid, false);
-		            if(!IsPlayerInAnyVehicle(playerid)) {
+		            if(!IsPlayerInAnyVehicle(playerid))
+					{
 		                if(TakeHeadShot[playerid] == 1)
-		                {
 		                	ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
-		                } else {
+		                else
+						{
 							ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
-	                        SetPlayerHealthEx(playerid, 25);
+	                        SetPlayerHealthEx(playerid, 24);
                         }
 					}
 
@@ -4609,18 +4652,22 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
 	return 0;
 }
 
-public OnPlayerClickPlayer(playerid, clickedplayerid, source) {
-    if(PlayerInfo[playerid][pAdmin] >= 1) {
-	    if(!IsPlayerConnected(clickedplayerid)) {
+public OnPlayerClickPlayer(playerid, clickedplayerid, source)
+{
+    if(PlayerInfo[playerid][pAdmin] >= 1)
+	{
+	    if(!IsPlayerConnected(clickedplayerid))
 	    	return SendClientMessage(playerid, COLOR_GREY, "{FF4600}[Error]:{C8C8C8} el jugador no se ha conectado.");
-		}
-		if(PlayerInfo[playerid][pSpectating] == INVALID_PLAYER_ID) {
+		
+		if(PlayerInfo[playerid][pSpectating] == INVALID_PLAYER_ID)
+		{
 			GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 			PlayerInfo[playerid][pInterior] = GetPlayerInterior(playerid);
 			PlayerInfo[playerid][pVirtualWorld] = GetPlayerVirtualWorld(playerid);
 			PlayerInfo[playerid][pSkin] = GetPlayerSkin(playerid);
 
-			if(AdminDuty[playerid] == 0) {
+			if(AdminDuty[playerid] == 0)
+			{
 			    new Float:hp;
 				GetPlayerHealthEx(playerid, hp);
 				SetPVarFloat(playerid, "tempHealth", hp);
@@ -4633,12 +4680,11 @@ public OnPlayerClickPlayer(playerid, clickedplayerid, source) {
 		SetPlayerInterior(playerid, GetPlayerInterior(clickedplayerid));
 		SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(clickedplayerid));
 
-	    if(IsPlayerInAnyVehicle(clickedplayerid)) {
+	    if(IsPlayerInAnyVehicle(clickedplayerid))
 	        PlayerSpectateVehicle(playerid, GetPlayerVehicleID(clickedplayerid));
-	    }
-	    else {
+	    else
 			PlayerSpectatePlayer(playerid, clickedplayerid);
-		}
+
 		TextDrawShowForPlayer(playerid, textdrawVariables[0]);
 	}
 	return 1;
@@ -4955,20 +5001,19 @@ SetNormalPlayerGunSkills(playerid)
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_MICRO_UZI, 20);
 }
 
-public SetPlayerSpawn(playerid) {
-    if(AdminDuty[playerid] == 1) {
+public SetPlayerSpawn(playerid)
+{
+    if(AdminDuty[playerid] == 1)
 		SetPlayerHealthEx(playerid, 9999);
-	} else {
+	else
 		SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
-	}
 
     SetNormalPlayerGunSkills(playerid);
 
-	if(!GetPlayerInterior(playerid)) {
+	if(!GetPlayerInterior(playerid))
 		SetPlayerWeather(playerid, weatherVariables[0]);
-	} else {
+	else
 		SetPlayerWeather(playerid, INTERIOR_WEATHER_ID);
-	}
 
 	syncPlayerTime(playerid);
 
@@ -4982,8 +5027,10 @@ public SetPlayerSpawn(playerid) {
     HidePlayerSpeedo(playerid);
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
 
- 	switch(PlayerInfo[playerid][pJailed]) {
-   		case 1:	{
+ 	switch(PlayerInfo[playerid][pJailed])
+	 {
+   		case 1:
+		   {
    		    // Jail IC.
    		    TogglePlayerControllable(playerid, 0);
    		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
@@ -4995,7 +5042,8 @@ public SetPlayerSpawn(playerid) {
 		    SetCameraBehindPlayer(playerid);
 		    return 1;
 		}
-		case 2:	{
+		case 2:
+		{
 		    // Jail OOC.
 		    SetPlayerVirtualWorld(playerid, 0);
 		    TogglePlayerControllable(playerid, 0);
@@ -5008,12 +5056,15 @@ public SetPlayerSpawn(playerid) {
 		}
 	}
 
-	if(PlayerInfo[playerid][pRegStep] != 0) {
+	if(PlayerInfo[playerid][pRegStep] != 0)
+	{
 	    TogglePlayerControllable(playerid, false);
 		SetPlayerCameraPos(playerid, -1828.273, -32.900, 1061.583);
 		SetPlayerCameraLookAt(playerid, -1828.288, -30.311, 1061.143, 2);
         SetPlayerPos(playerid, -1828.2881, -30.3119, 1061.1436);
-	} else {
+	}
+	else
+	{
 	    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
      	SetPlayerInterior(playerid, PlayerInfo[playerid][pInterior]);
@@ -5247,18 +5298,21 @@ stock log(playerid, logType, text[])
 	return 1;
 }
 
-stock initiateHospital(playerid) {
+stock initiateHospital(playerid)
+{
 	TogglePlayerControllable(playerid, false);
 	SetPlayerVirtualWorld(playerid, 0);
 	SetPlayerInterior(playerid, 0);
 
-	if(random(2) == 0) {
+	if(random(2) == 0)
+	{
 		SetPlayerPos(playerid, 1188.4574,-1309.2242,10.5625);
 		SetPlayerCameraPos(playerid,1188.4574,-1309.2242,13.5625+6.0);
 		SetPlayerCameraLookAt(playerid,1175.5581,-1324.7922,18.1610);
 
 		SetPVarInt(playerid, "hosp", 1);
-	} else {
+	} else
+	{
 		SetPlayerPos(playerid, 1999.5308,-1449.3281,10.5594);
 		SetPlayerCameraPos(playerid,1999.5308,-1449.3281,13.5594+6.0);
 		SetPlayerCameraLookAt(playerid,2036.2179,-1410.3223,17.1641);
@@ -7177,20 +7231,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	    return 1;
     }
 	
-	
-	if(PRESSED(KEY_SPRINT)) 
-	{
-	    if(DoPesas[playerid]== 1)
-		{
-		    if(ReloadPesas[playerid] == 1)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un momento para volver a realizar una repetición.");
-		    ApplyAnimation(playerid, "Freeweights", "gym_barbell", 4.1, 0, 1, 1, 1, 1, 1);
-			CountRepePesas[playerid] += 1;
-			ReloadPesas[playerid] = 1;
-			SetTimerEx("PesasReload", 2500, false, "i", playerid);
-			
-		}
-	}
 	if(newkeys == KEY_SECONDARY_ATTACK && oldkeys != KEY_SECONDARY_ATTACK) {
 		
 		
@@ -7259,12 +7299,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 		}
 	}
-	return 1;
-}
-
-public PesasReload(playerid) 
-{
-    ReloadPesas[playerid] = 0;
 	return 1;
 }
 
@@ -8134,10 +8168,9 @@ public licenseTimer(playerid, lic) {
 	return 1;
 }
 
-//====[ZCMD COMMANDS]===========================================================
-CMD:pos(playerid, params[]) {
-	new
-	    string[128],
+CMD:pos(playerid, params[])
+{
+	new string[128],
 		Float:posX,
 		Float:posY,
 		Float:posZ,
@@ -8154,17 +8187,22 @@ CMD:pos(playerid, params[]) {
 	return 1;
 }
 
-//[CMD_DB]
-CMD:resetcars(playerid, params[]) {
-	new
-		pass[128],
+CMD:resetcars(playerid, params[])
+{
+	new pass[128],
  		id = 1;
 
-	if(PlayerInfo[playerid][pAdmin] < 20) return 1;
-	if(sscanf(params, "s[128]", pass)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /resetcars [contraseña de seguridad]");
-	else if(!strcmp(pass,SECPASS,false)) {
-		while(id < MAX_VEH) {
-			if(VehicleInfo[id][VehType] == VEH_OWNED) {
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+
+	if(sscanf(params, "s[128]", pass))
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /resetcars [contraseña de seguridad]");
+	else if(!strcmp(pass,SECPASS,false))
+	{
+		while(id < MAX_VEH)
+		{
+			if(VehicleInfo[id][VehType] == VEH_OWNED)
+			{
 				VehicleInfo[id][VehType] = VEH_NONE;
 				SetVehicleToRespawn(id);
 			}
@@ -8172,24 +8210,27 @@ CMD:resetcars(playerid, params[]) {
 		}
 		printf("[RESET]: los vehículos han sido reseteados por %s.",GetPlayerNameEx(playerid));
         SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has reseteado todos los vehículos del servidor.");
-	}else {
-	    SendClientMessage(playerid, COLOR_LIGHTBLUE, "{FF4600}[Error]:{C8C8C8} contraseña de seguridad incorrecta");
 	}
+	else
+	    SendClientMessage(playerid, COLOR_LIGHTBLUE, "{FF4600}[Error]:{C8C8C8} contraseña de seguridad incorrecta");
 	return 1;
 }
 
-//[CMD_A1]
-CMD:aservicio(playerid, params[]) {
-    new
-        Float:hp;
+CMD:aservicio(playerid, params[])
+{
+    new Float:hp;
 
-	if(PlayerInfo[playerid][pAdmin] >= 1) {
-	    if(AdminDuty[playerid] == 1) {
+	if(PlayerInfo[playerid][pAdmin] >= 1)
+	{
+	    if(AdminDuty[playerid] == 1)
+		{
 			AdminDuty[playerid] = 0;
 			SetPlayerHealthEx(playerid, GetPVarFloat(playerid, "tempHealth"));
 			SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 	     	SetPlayerColor(playerid, 0xFFFFFF00);
-	    } else {
+	    }
+		else
+		{
 			AdminDuty[playerid] = 1;
 			SetPlayerColor(playerid, COLOR_ADMINDUTY);
 			GetPlayerHealthEx(playerid, hp);
