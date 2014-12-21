@@ -395,7 +395,7 @@ CMD:terminar(playerid,params[])
 			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    PlayerInfo[playerid][pCantWork] = 1;
 		    LastCP[playerid] = -1;
-		    ServerInfo[sDrugRawMats] += 5;
+		    ServerInfo[sDrugRawMats] += 1;
 		    GivePlayerCash(playerid, CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    CollectedProds[playerid] = 0;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));

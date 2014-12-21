@@ -117,6 +117,50 @@ stock bool:LeaveBuilding(playerid)
 	return false;
 }
 
+CMD:cerrar(playerid, params[])
+{
+	for(new i = 1; i < MAX_BUILDINGS; i++)
+	{
+		if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]) || PlayerToPoint(1.0, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]))
+		{
+			if(Building[i][blFaction] != 0 && PlayerInfo[playerid][pFaction] == Building[i][blFaction])
+			{
+				if(Building[i][blLocked] == 0)
+				{
+				    Building[i][blLocked] = 1;
+				    GameTextForPlayer(playerid, "Puertas cerradas", 2000, 4);
+				    PlayerActionMessage(playerid, 15.0, "toma un manojo de llaves de su bolsillo y cierra la puerta.");
+    			}
+			} else {
+				GameTextForPlayer(playerid, "~r~No tienes las llaves", 2000, 4);
+			}
+		}
+	}
+	return 1;
+}
+
+CMD:abrir(playerid, params[])
+{
+	for(new i = 1; i < MAX_BUILDINGS; i++)
+	{
+		if(PlayerToPoint(1.0, playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]) || PlayerToPoint(1.0, playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]))
+		{
+			if(Building[i][blFaction] != 0 && PlayerInfo[playerid][pFaction] == Building[i][blFaction])
+			{
+				if(Building[i][blLocked] == 1)
+				{
+				    Building[i][blLocked] = 0;
+				    GameTextForPlayer(playerid, "Puertas abiertas", 2000, 4);
+				    PlayerActionMessage(playerid, 15.0, "toma un manojo de llaves de su bolsillo y abre la puerta.");
+    			}
+			} else {
+				GameTextForPlayer(playerid, "~r~No tienes las llaves", 2000, 4);
+			}
+		}
+	}
+	return 1;
+}
+
 //========================COMANDOS ADMIN DE EDIFICIOS===========================
 
 CMD:aedificios(playerid, params[])

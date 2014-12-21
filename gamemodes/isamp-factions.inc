@@ -381,18 +381,11 @@ CMD:comprarmateriales(playerid, params[])
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 	    SetHandItemAndParam(playerid, freehand, ITEM_ID_MATERIALES, amount);
 		GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
-		SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los materiales con /guardarmateriales. Utiliza /nomateriales para sacar la animación de carga.");
+		SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los materiales con /guardarmateriales. Utiliza /nocargar para sacar la animación de carga.");
 		PlayerActionMessage(playerid, 15.0, "compra una caja de materiales");
 	} else {
 	    SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¿Te conozco?");
 	}
-	return 1;
-}
-
-CMD:nomateriales(playerid, params[])
-{
-	if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
-	    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 	return 1;
 }
 

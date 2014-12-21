@@ -1312,15 +1312,8 @@ CMD:comprarproductos(playerid, params[])
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
     SetHandItemAndParam(playerid, freehand, ITEM_ID_PRODUCTOS, amount);
 	GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_PRODUCTOS));
-	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito de tu negocio y descarga los productos con /guardarproductos. Utiliza /noproductos para sacar la animación de carga.");
+	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito de tu negocio y descarga los productos con /guardarproductos. Utiliza /nocargar para sacar la animación de carga.");
 	PlayerActionMessage(playerid, 15.0, "compra una caja de productos.");
-	return 1;
-}
-
-CMD:noproductos(playerid, params[])
-{
-	if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
-	    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 	return 1;
 }
 
