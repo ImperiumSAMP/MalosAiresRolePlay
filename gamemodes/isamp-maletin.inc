@@ -7,26 +7,19 @@
 
 //================================CONSTANTES====================================
 
-#define MAX_DINERO_MALETIN 200000
-
-//==============================DATA STORAGE====================================
-
-//===============================FUNCIONES======================================
-
-//======================IMPLEMENTACION DE FUNCIONES=============================
+#define MAX_DINERO_MALETIN 500000
 
 //================================COMANDOS======================================
 
 CMD:maletin(playerid, params[])
 {
-	new
-	    command[40],
-	    amount,
-	    briefCaseMoney = GetHandParam(playerid);
+	new command[40], amount, hand, briefCaseMoney, string[128];
 
-	if(GetHandItem(playerid) != ITEM_ID_MALETIN)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de un maletín en tus manos.");
-		
+	hand = SearchHandsForItem(playerid, ITEM_ID_MALETIN);
+	if(hand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes un maletin en alguna de tus manos.");
+
+ 	briefCaseMoney = GetHandParam(playerid, hand);
 	if(sscanf(params, "s[40]i", command, amount))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /maletin [comando]");
@@ -39,9 +32,11 @@ CMD:maletin(playerid, params[])
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "Cantidad inválida.");
 		        
 	    GivePlayerCash(playerid, amount);
-		SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney - amount);
+		SetHandItemAndParam(playerid, hand, ITEM_ID_MALETIN, briefCaseMoney - amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+  		format(string, sizeof(string), "Retiró $%d de un maletín", amount);
+    	log(playerid, LOG_MONEY, string);
 			
 	} else if(strcmp(command, "guardar", true) == 0) {
 		
@@ -51,9 +46,11 @@ CMD:maletin(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tanto dinero no entra en el maletín!");
 
 	    GivePlayerCash(playerid, -amount);
-		SetHandItemAndParam(playerid, ITEM_ID_MALETIN, briefCaseMoney + amount);
+		SetHandItemAndParam(playerid, hand, ITEM_ID_MALETIN, briefCaseMoney + amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y guarda algo en su interior.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+  		format(string, sizeof(string), "Guardó $%d en un maletín", amount);
+    	log(playerid, LOG_MONEY, string);
 	}
 	return 1;
 }

@@ -75,9 +75,17 @@ enum pInfo {
 	pMarijuana,
 	pLSD,
 	pEcstasy,
-	pCocaine
+	pCocaine,
+	
+	pTakeInputs,
+	
+	pHouseKeyIncome,
 };
+
 new PlayerInfo[MAX_PLAYERS][pInfo];
+
+// Inmunidad al anticheat
+new antiCheatImmunity[MAX_PLAYERS];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];

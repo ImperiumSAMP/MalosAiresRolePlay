@@ -3,55 +3,72 @@
 #endif 
 #define _isamp_descripcion_yo
 
-new
-	Text3D:DescLabel[MAX_PLAYERS],
-	GCounter[MAX_PLAYERS] = 0,
-	textodescripcion[70][MAX_PLAYERS];
+new Text3D:descLabel[MAX_PLAYERS],
+	descText[MAX_PLAYERS][70],
+	bool:descActive[MAX_PLAYERS];
 	
+stock ResetDescVariables(playerid)
+{
+    descText[playerid] = "BUG";
+    descActive[playerid] = false;
+}
+
+stock bool:HasPlayerDesc(playerid)
+{
+	return descActive[playerid];
+}
+
+stock ResetDescLabel(playerid)
+{
+	if(descActive[playerid])
+		DestroyDynamic3DTextLabel(descLabel[playerid]);
+}
+
+forward ReplenishDesc(playerid);
+public ReplenishDesc(playerid)
+{
+    if(!descActive[playerid])
+    {
+        descLabel[playerid] = CreateDynamic3DTextLabel(descText[playerid], COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
+        descActive[playerid] = true;
+	}
+	return 1;
+}
+
+stock HidePlayerDesc(playerid, time)
+{
+    DestroyDynamic3DTextLabel(descLabel[playerid]);
+    descActive[playerid] = false;
+    SetTimerEx("ReplenishDesc", time, false, "i", playerid);
+}
+
 CMD:yo(playerid, params[])
 { 
-	new
-	    str[120],
-	    Float:X,
-	    Float:Y,
-	    Float:Z;
+	new desc[70], str[70];
 	    
-	if(sscanf(params, "s[70]", textodescripcion[playerid]))
-	     return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yo [descripción]. La descripción no puede ser mayor a 65 caracteres.");
+	if(sscanf(params, "s[70]", desc))
+	     return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yo [descripción] (hasta 65 caracteres)");
+	if(descActive[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes otra descripción activa. Borrala con /yob.");
+	if(strlen(desc) > 65)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La descripción es demasiada larga, ingresa una más corta. (MAX 65 CARACTERES)");
 
-	if(GCounter[playerid] == 1)
-	{
-		SendFMessage(playerid, COLOR_WHITE , "Tu descripción actual es: %s", textodescripcion[playerid]);
-    	return 1;
-	}
-	if(GCounter[playerid] == 0)
-	{
-		if(strlen(textodescripcion[playerid]) > 65)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Texto demasiado largo.");
-			
-		GetPlayerPos(playerid, X, Y, Z);
-		format(str, sizeof(str), "%s", textodescripcion[playerid]);
-		DescLabel[playerid] = Create3DTextLabel(textodescripcion[playerid], COLOR_RED, X, Y, Z, 10, -1);
-		Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
-		SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s .Usa /yob para eliminarla.", textodescripcion[playerid]);
-		GCounter[playerid] = 1;
-	} else {
-		Update3DTextLabelText(DescLabel[playerid], COLOR_RED, textodescripcion[playerid]);
-		Attach3DTextLabelToPlayer(DescLabel[playerid], playerid, 0.0, 0.0, 0.3);
-		SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s", textodescripcion[playerid]);
-	}
+	format(str, sizeof(str), "%s", desc);
+	descLabel[playerid] = CreateDynamic3DTextLabel(str, COLOR_RED, 0.0, 0.0, 0.3, 15.0, playerid, INVALID_VEHICLE_ID, 1);
+	SendFMessage(playerid, COLOR_WHITE, "Tu descripción es: %s. Usa /yob para eliminarla.", str);
+	strmid(descText[playerid], str, 0, strlen(str));
+	descActive[playerid] = true;
 	return 1;
 } 
 
 CMD:yob(playerid, params[])
 {
-	if(GCounter[playerid] != 0)
-	{
-		 GCounter[playerid] = 0;
-		 Delete3DTextLabel(DescLabel[playerid]);
-		 SendClientMessage(playerid, COLOR_WHITE, "Borraste tu descripción actual.");
-	} else {
-		SendClientMessage(playerid, -1, "No tenés ninguna descripción actualmente");
-	}
+	if(!descActive[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ninguna descripción activa.");
+
+	DestroyDynamic3DTextLabel(descLabel[playerid]);
+	SendClientMessage(playerid, COLOR_WHITE, "Has borrado tu descripción actual. Para escribir una nueva usa /yo.");
+	ResetDescVariables(playerid);
 	return 1;
 }
+

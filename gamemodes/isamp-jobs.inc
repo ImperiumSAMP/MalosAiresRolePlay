@@ -17,22 +17,17 @@
 #define JOB_DRUGF          		7
 #define JOB_DRUGD          		8
 
-#define FAC_TYPE_ILLEGAL        0
-#define FAC_TYPE_GOV            1
-#define FAC_TYPE_LEGAL          2
-#define FAC_TYPE_GANG	        3
-
 #define JOB_TAXI_MAXPASSENGERS  10
 
 #define JOB_FARM_MAXPRODS       20
-#define JOB_FARM_PRODVALUE      200  
+#define JOB_FARM_PRODVALUE      90
 #define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     160
+#define JOB_DRUGF_PRODVALUE     80
 
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
-#define JOB_TRAN_PRODVALUE      500    	// VALOR POR PAQUETE
+#define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
 
-#define JOB_GARB_MONEY       	4000 	// MONEY + random(MONEY / 2)
+#define JOB_GARB_MONEY       	1800 	// MONEY + random(MONEY / 2)
 
 #define JOB_EXP_MULTIPLIER      3
 //
@@ -255,10 +250,16 @@ CMD:comenzar(playerid,params[])
 CMD:trabajar(playerid,params[])
 {
 	new job = PlayerInfo[playerid][pJob];
-	    
+
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
-		jobDuty[playerid] = true;
+	    if(!jobDuty[playerid])
+		{
+			SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
+			jobDuty[playerid] = true;
+		} else {
+			SendClientMessage(playerid, COLOR_YELLOW2, "¡Has dejado el servicio como mecánico!");
+			jobDuty[playerid] = false;
+		}
 	} else
 	    {
 			if(job == 0)
@@ -336,7 +337,7 @@ CMD:trabajar(playerid,params[])
 			    	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
 
 					new gbCP = 0, route = random(2);
-						    
+
           			SetPVarInt(playerid, "jobVehicle", GetPlayerVehicleID(playerid));
              		jobDuty[playerid] = true;
              		if(route == 0) {
@@ -391,10 +392,10 @@ CMD:terminar(playerid,params[])
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
 
 			PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    PlayerInfo[playerid][pCantWork] = 1;
 		    LastCP[playerid] = -1;
-		    ServerInfo[sDrugRawMats] += 5;
+		    ServerInfo[sDrugRawMats] += 1;
 		    GivePlayerCash(playerid, CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    CollectedProds[playerid] = 0;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
@@ -511,7 +512,7 @@ CMD:setjob(playerid, params[])
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
     PlayerInfo[targetid][pJob] = job;
 	if(job == JOB_FELON)
-		createThiefJob(playerid);
+		createThiefJob(targetid);
 	return 1;
 }
 

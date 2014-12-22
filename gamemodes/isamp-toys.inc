@@ -7,7 +7,7 @@
 
 //================================CONSTANTES====================================
 
-#define MAX_PLAYER_INDEX    	7 // El limite es 10 y es nativo de samp. Se pone 7 (va de 0 a 6) para guardar dos index para la mano izq - derecha y otro a la mascara, temporalmente.
+#define MAX_PLAYER_INDEX    	6 // Indexs para attachs de 0 a 5.
 
 #define TOY_CREATE             	1
 #define TOY_UPDATE             	2
@@ -273,6 +273,48 @@ public SaveToyInfo(playerid, index, option)
 	
 //================================COMANDOS======================================
 
+stock TakeItemFromToys(playerid, playerhand, index)
+{
+	new itemid = GetToyItem(playerid, index),
+		str[128];
+
+	if(itemid == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Index inválido.");
+	if(GetHandItem(playerid, playerhand) != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo ya que tienes otro item en esa mano.");
+
+	SetHandItemAndParam(playerid, playerhand, itemid, GetToyParam(playerid, index));
+	SetToyItemAndParam(playerid, index, 0, 0);
+	format(str, sizeof(str), "se saca su/s %s.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+
+stock SaveItemOnToys(playerid, playerhand)
+{
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    if(PlayerInfo[playerid][pHealth] < 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+
+	new itemid = GetHandItem(playerid, playerhand),
+	    index,
+	    str[128];
+
+	if(itemid == 0 || GetItemType(itemid) != ITEM_TOY)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningun item en esa mano / El item no se puede equipar (no es del tipo TOY).");
+
+	index = SearchToyFreeIndex(playerid);
+	if(index == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio para equiparte objetos.");
+
+	SetToyItemAndParam(playerid, index, itemid, GetHandParam(playerid, playerhand));
+	SetHandItemAndParam(playerid, playerhand, 0, 0);
+	format(str, sizeof(str), "se equipa un/a %s.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	return 1;
+}
+	
 CMD:toy(playerid, params[])
 {
 	new cmd[32], index;
@@ -280,43 +322,24 @@ CMD:toy(playerid, params[])
 	if(sscanf(params, "s[32]I(-1)", cmd, index))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toy [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} equipar - desequipar [index] - editar [index]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar/usari - sacar/sacari [index] - editar [index]");
 		PrintToysForPlayer(playerid, playerid);
     } else {
-        if(strcmp(cmd, "equipar", true) == 0) {
-        
-			new itemid = GetHandItem(playerid);
-			
-			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-			if(itemid == 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en tu mano para equiparte.");
-			if(GetItemType(itemid) != ITEM_TOY)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes equiparte ese item (No es del tipo TOY).");
-			index = SearchToyFreeIndex(playerid);
-			if(index == -1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes mas espacio para equiparte objetos.");
+        if(strcmp(cmd, "usar", true) == 0) {
 
-			new str[128];
-			format(str, sizeof(str), "se equipa un/a %s.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
-			SetToyItemAndParam(playerid, index, itemid, GetHandParam(playerid));
-			SetHandItemAndParam(playerid, 0, 0);
+			SaveItemOnToys(playerid, HAND_RIGHT);
 			
-		} else if(strcmp(cmd, "desequipar", true) == 0) {
+		} else if(strcmp(cmd, "usari", true) == 0) {
 		
-		    new itemid = GetToyItem(playerid, index);
+		    SaveItemOnToys(playerid, HAND_LEFT);
 		    
-			if(itemid == 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Index inválido.");
-   			if(GetHandItem(playerid) != 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo ya que tienes otro item en tu mano.");
-
-			new str[128];
-			format(str, sizeof(str), "se saca su/s %s.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
-			SetHandItemAndParam(playerid, itemid, GetToyParam(playerid, index));
-			SetToyItemAndParam(playerid, index, 0, 0);
+		} else if(strcmp(cmd, "sacar", true) == 0) {
+		
+		    TakeItemFromToys(playerid, HAND_RIGHT, index);
+		    
+		} else if(strcmp(cmd, "sacari", true) == 0) {
+		
+		    TakeItemFromToys(playerid, HAND_LEFT, index);
 
 		} else if(strcmp(cmd, "editar", true) == 0) {
 
