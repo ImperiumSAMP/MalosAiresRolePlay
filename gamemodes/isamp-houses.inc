@@ -157,6 +157,38 @@ RentalExpiration(playerid)
 	
 }
 
+GetPlayerHouseAddress(playerid)
+{
+	new targetid, houselocation[MAX_ZONE_NAME];
+	
+    if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
+	{
+	    GetCoords2DZone(House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceX],House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceY], houselocation, MAX_ZONE_NAME);
+		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKeyIncome], houselocation);
+	}
+	else if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0)
+	{
+	    SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
+	}
+	else if(PlayerInfo[playerid][pHouseKey] != 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
+	{
+	    GetCoords2DZone(House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceX],House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceY], houselocation, MAX_ZONE_NAME);
+		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKey], houselocation);
+	}
+	else if(PlayerInfo[playerid][pHouseKey] != 0)
+	{
+		GetCoords2DZone(House[PlayerInfo[playerid][pHouseKey]][EntranceX],House[PlayerInfo[playerid][pHouseKey]][EntranceY], houselocation, MAX_ZONE_NAME);
+		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKey], houselocation);
+	}
+	else if(PlayerInfo[playerid][pHouseKey] == 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
+	{
+		GetCoords2DZone(House[PlayerInfo[playerid][pHouseKey]][EntranceX],House[PlayerInfo[playerid][pHouseKey]][EntranceY], houselocation, MAX_ZONE_NAME);
+		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKeyIncome], houselocation);
+	}
+	else
+		SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
+}
+
 //=============================COMANDOS DE CASA=================================
 
 CMD:ayudacasa(playerid, params[])
@@ -237,6 +269,10 @@ CMD:casavender(playerid, params[])
 	if(strcmp(House[house][Owner], name, true) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Error, la casa no está a tu nombre (Consulta a un administrador).");
 
+	if(House[house][Income] >= 1)
+	{
+	    House[house][IncomePrice] = House[house][HousePrice] / 100;
+	}
 	House[house][Locked] = 1;
 	House[house][Owned] = 0;
 	strmid(House[house][Owner], "Ninguno", 0, strlen("Ninguno"), 255);
@@ -421,6 +457,8 @@ CMD:casaalquilar(playerid, params[])
 		{
 		    if(House[h][Owner] == PlayerInfo[playerid][pName])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes alquilar tu propia casa!");
+            if(PlayerInfo[playerid][pHouseKeyIncome] != 0)
+				return 1;
 		    if(House[h][IncomePrice] <= 0)
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta casa no tiene precio!, probablemente no está en alquiler.");
 			if(GetPlayerCash(playerid) < House[h][IncomePrice])
@@ -457,6 +495,10 @@ CMD:casadesalquilar(playerid, params[])
 	if(strcmp(House[house][Tenant], name, true) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Error, la casa no está a tu nombre (Consulta a un administrador).");
 
+    if(House[house][Owned] == 0)
+	{
+	    House[house][IncomePrice] = House[house][HousePrice] / 100;
+	}
 	House[house][Locked] = 1;
 	House[house][Income] = 0;
 	strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);

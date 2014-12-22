@@ -10752,7 +10752,7 @@ stock ShowPocket(playerid, targetid)
 
 CMD:mostrardoc(playerid, params[])
 {
-	new targetid, sexText[15], houselocation[MAX_ZONE_NAME];
+	new targetid, sexText[15];
 
     if(sscanf(params, "u", targetid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mostrardoc [ID/Jugador]");
@@ -10769,33 +10769,7 @@ CMD:mostrardoc(playerid, params[])
  	SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
  	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
  	SendFMessage(targetid, COLOR_WHITE, "Sexo: %s", sexText);
-
- 	if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
-	{
-	    GetCoords2DZone(House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceX],House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceY], houselocation, MAX_ZONE_NAME);
-		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKeyIncome], houselocation);
-	}
-	else if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0)
-	{
-	    SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
-	}
-	else if(PlayerInfo[playerid][pHouseKey] != 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
-	{
-	    GetCoords2DZone(House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceX],House[PlayerInfo[playerid][pHouseKeyIncome]][EntranceY], houselocation, MAX_ZONE_NAME);
-		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKey], houselocation);
-	}
-	else if(PlayerInfo[playerid][pHouseKey] != 0)
-	{
-		GetCoords2DZone(House[PlayerInfo[playerid][pHouseKey]][EntranceX],House[PlayerInfo[playerid][pHouseKey]][EntranceY], houselocation, MAX_ZONE_NAME);
-		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKey], houselocation);
-	}
-	else if(PlayerInfo[playerid][pHouseKey] == 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
-	{
-		GetCoords2DZone(House[PlayerInfo[playerid][pHouseKey]][EntranceX],House[PlayerInfo[playerid][pHouseKey]][EntranceY], houselocation, MAX_ZONE_NAME);
-		SendFMessage(targetid, COLOR_WHITE, "Domicilio: %d %s", PlayerInfo[playerid][pHouseKeyIncome], houselocation);
-	}
-	else
-		SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
+    GetPlayerHouseAddress(playerid);
 		
 	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su documento del bolsillo y se lo muestra a");
