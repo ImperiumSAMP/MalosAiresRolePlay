@@ -1060,7 +1060,8 @@ stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],m
 	
 	if(sscanf(params, "i", option))
 		return bizShowMenu(playerid,menu,menusize);
-			
+	if(Business[businessid][bProducts] <= 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene más stock de productos, vuelve mas tarde.");
 	if(option > menusize)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
 		
