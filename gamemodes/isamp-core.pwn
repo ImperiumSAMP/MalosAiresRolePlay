@@ -1963,7 +1963,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 						format(string, sizeof(string), "[OOC Global]: activado por %s.", GetPlayerNameEx(playerid));
 						SendClientMessageToAll(COLOR_ADMINCMD, string);
 					}
-					log(playerid, LOG_ADMIN, string);
 				}
 			}
 			return 1;
@@ -8187,76 +8186,72 @@ CMD:admincmds(playerid, params[]) {
 	return 1;
 }
 
-CMD:saltartuto(playerid, params[]) {
-	new
-		targetID,
-		string[128];
+CMD:saltartuto(playerid, params[])
+{
+	new targetID;
 		
-	if(PlayerInfo[playerid][pAdmin] <= 3) return 1;
-	if(sscanf(params, "u", targetID)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saltartuto [ID-Jugador]");
-	} else {
+	if(PlayerInfo[playerid][pAdmin] <= 3)
+		return 1;
+	if(sscanf(params, "u", targetID))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saltartuto [ID-Jugador]");
 	
-		StopAudioStreamForPlayer(playerid);
-		PlayerInfo[playerid][pTutorial] = 1;
-		
-		// Cerramos cualquier dialog y textdraw abierto.
-		ShowPlayerDialog(playerid, -1, DIALOG_STYLE_MSGBOX, " ", " ", " ", ""); 
-		for(new i = 0; i < 7; i++) {
-		    PlayerTextDrawHide(playerid, TutTD_Text[playerid][i]);
-		}
-		TextDrawHideForPlayer(playerid, TutTDBackground);
-		
-		if(PlayerInfo[playerid][pRegStep] != 0) {
-			TextDrawShowForPlayer(playerid, RegTDBorder1);
-			TextDrawShowForPlayer(playerid, RegTDBorder2);
-			TextDrawShowForPlayer(playerid, RegTDTitle);
-			TextDrawShowForPlayer(playerid, RegTDBackground);
-			PlayerTextDrawShow(playerid, RegTDGender[playerid]);
-			PlayerTextDrawShow(playerid, RegTDSkin[playerid]);
-			PlayerTextDrawShow(playerid, RegTDAge[playerid]);
-			PlayerTextDrawShow(playerid, RegTDOrigin[playerid]);
-
-			PlayerInfo[playerid][pSex] = 1;
-			PlayerInfo[playerid][pSkin] = SkinRegMale[0][0];
-			PlayerInfo[playerid][pRegStep] = 1;
-
-			SetPlayerInterior(playerid, 14);
-	     	SetPlayerVirtualWorld(playerid, random(100000) + 44000);
-
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para seleccionar una opción, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
-			SetSpawnInfo(playerid, 0, SkinRegMale[0][0], -1828.2881, -30.3119, 1061.1436, 182.0051, 0, 0, 0, 0, 0, 0);
-		} else {
-			SetSpawnInfo(playerid, 0, PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ], PlayerInfo[playerid][pA], 0, 0, 0, 0, 0, 0);
-		}
-		TogglePlayerSpectating(playerid, false);
-		
-		SpawnPlayer(targetID);
-		format(string, sizeof(string), "[SALTARTUTO] a %s (DBID: %d)", PlayerInfo[targetID][pName], PlayerInfo[targetID][pID]);
-		log(playerid, LOG_ADMIN, string);
+	StopAudioStreamForPlayer(playerid);
+	PlayerInfo[playerid][pTutorial] = 1;
+	
+	// Cerramos cualquier dialog y textdraw abierto.
+	ShowPlayerDialog(playerid, -1, DIALOG_STYLE_MSGBOX, " ", " ", " ", ""); 
+	for(new i = 0; i < 7; i++) {
+	    PlayerTextDrawHide(playerid, TutTD_Text[playerid][i]);
 	}
-	return 1;
-}
+	TextDrawHideForPlayer(playerid, TutTDBackground);
+	
+	if(PlayerInfo[playerid][pRegStep] != 0) {
+		TextDrawShowForPlayer(playerid, RegTDBorder1);
+		TextDrawShowForPlayer(playerid, RegTDBorder2);
+		TextDrawShowForPlayer(playerid, RegTDTitle);
+		TextDrawShowForPlayer(playerid, RegTDBackground);
+		PlayerTextDrawShow(playerid, RegTDGender[playerid]);
+		PlayerTextDrawShow(playerid, RegTDSkin[playerid]);
+		PlayerTextDrawShow(playerid, RegTDAge[playerid]);
+		PlayerTextDrawShow(playerid, RegTDOrigin[playerid]);
 
-CMD:tutorial(playerid, params[]) {
-	new
-	    targetID,
-		string[128];
-		
-	if(PlayerInfo[playerid][pAdmin] <= 3) return 1;
-	if(sscanf(params, "u", targetID)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tutorial [ID-Jugador]");
+		PlayerInfo[playerid][pSex] = 1;
+		PlayerInfo[playerid][pSkin] = SkinRegMale[0][0];
+		PlayerInfo[playerid][pRegStep] = 1;
+
+		SetPlayerInterior(playerid, 14);
+     	SetPlayerVirtualWorld(playerid, random(100000) + 44000);
+
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para seleccionar una opción, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
+		SetSpawnInfo(playerid, 0, SkinRegMale[0][0], -1828.2881, -30.3119, 1061.1436, 182.0051, 0, 0, 0, 0, 0, 0);
 	} else {
-		PlayerInfo[targetID][pTutorial] = 0;
-		KickPlayer(targetID, GetPlayerNameEx(targetID), "rehacer el tutorial");
-		format(string, sizeof(string), "[TUTORIAL] a %s (DBID: %d)", PlayerInfo[targetID][pName], PlayerInfo[targetID][pID]);
-		log(playerid, LOG_ADMIN, string);
+		SetSpawnInfo(playerid, 0, PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ], PlayerInfo[playerid][pA], 0, 0, 0, 0, 0, 0);
 	}
+	TogglePlayerSpectating(playerid, false);
+	
+	SpawnPlayer(targetID);
 	return 1;
 }
 
-CMD:teleayuda(playerid, params[]) {
-	if(PlayerInfo[playerid][pAdmin] < 1) return 1;
+CMD:tutorial(playerid, params[])
+{
+	new targetID;
+
+	if(PlayerInfo[playerid][pAdmin] <= 3)
+		return 1;
+	if(sscanf(params, "u", targetID))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tutorial [ID-Jugador]");
+
+	PlayerInfo[targetID][pTutorial] = 0;
+	KickPlayer(targetID, GetPlayerNameEx(targetID), "rehacer el tutorial");
+	return 1;
+}
+
+CMD:teleayuda(playerid, params[])
+{
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotolv /gotosf /gotols /goto /gotopos /traer /gotospawn");
 	return 1;
 }
@@ -12706,8 +12701,6 @@ public CheckNameAvailable(playerid, accountName[])
 	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
-	format(string, sizeof(string), "Creó la cuenta %s", accountName);
- 	log(playerid, LOG_ADMIN, string);
 	return 1;
 }
 
@@ -12771,7 +12764,7 @@ CMD:desbanear(playerid, params[])
 
 CMD:money(playerid, params[])
 {
-	new targetid, money;
+	new targetid, money, string[128];
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
         return 1;
@@ -12781,12 +12774,14 @@ CMD:money(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerCash(targetid, money);
+	format(string, sizeof(string), "[MONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	log(playerid, LOG_ADMIN, string);
     return 1;
 }
 
 CMD:givemoney(playerid, params[])
 {
-	new targetid, money;
+	new targetid, money, string[128];
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
         return 1;
@@ -12796,6 +12791,8 @@ CMD:givemoney(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
 	GivePlayerCash(targetid, money);
+	format(string, sizeof(string), "[GIVEMONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	log(playerid, LOG_ADMIN, string);
     return 1;
 }
 
@@ -12834,7 +12831,7 @@ CMD:setarmour(playerid, params[])
 
 CMD:givegun(playerid, params[])
 {
-	new targetid, weapon, ammo;
+	new targetid, weapon, ammo, string[128];
 
    	if(PlayerInfo[playerid][pAdmin] < 4)
         return 1;
@@ -12850,7 +12847,12 @@ CMD:givegun(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La munición debe ser 1-999.");
 	if(weapon < 1 || weapon > 46)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
-    if(!GivePlayerGun(targetid, weapon, ammo))
+    if(GivePlayerGun(targetid, weapon, ammo))
+    {
+   		format(string, sizeof(string), "[GIVEGUN] %d con %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+		log(playerid, LOG_ADMIN, string);
+	}
+	else
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El usuario no tiene ninguna mano libre para agarrar el arma.");
 	return 1;
 }
@@ -13181,15 +13183,11 @@ CMD:set(playerid, params[]) {
 			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a femenino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 			AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	        PlayerInfo[target][pSex] = 0;
-	        format(string, sizeof(string), "%s ha seteado el sexo de %s a femenino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-	        log(playerid, LOG_ADMIN, string);
 	    } else if(strval(value) == 1) {
 	        SendFMessage(target, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el sexo a masculino.", GetPlayerNameEx(playerid));
 			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a masculino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 			AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	        PlayerInfo[target][pSex] = 1;
-	        format(string, sizeof(string), "%s ha seteado el sexo de %s a masculino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-	        log(playerid, LOG_ADMIN, string);
 	    } else {
 	        SendClientMessage(playerid, COLOR_WHITE, "Solo se admite un valor igual a 0 (femenino) o 1 (masculino).");
 	    }
@@ -13199,8 +13197,6 @@ CMD:set(playerid, params[]) {
 			format(string, sizeof(string), "[Staff]: %s ha seteado la edad de %s a %d años.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), strval(value));
 			AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	        PlayerInfo[target][pAge] = strval(value);
-	        format(string, sizeof(string), "%s ha seteado la edad de %s %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), PlayerInfo[target][pAge]);
-	        log(playerid, LOG_ADMIN, string);
 	    } else {
 	        SendClientMessage(playerid, COLOR_WHITE, "Solo se admite un valor mayor o igual a 1 y menor o igual a 100.");
 	    }
