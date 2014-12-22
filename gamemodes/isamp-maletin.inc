@@ -13,7 +13,7 @@
 
 CMD:maletin(playerid, params[])
 {
-	new command[40], amount, hand, briefCaseMoney;
+	new command[40], amount, hand, briefCaseMoney, string[128];
 
 	hand = SearchHandsForItem(playerid, ITEM_ID_MALETIN);
 	if(hand == -1)
@@ -35,6 +35,8 @@ CMD:maletin(playerid, params[])
 		SetHandItemAndParam(playerid, hand, ITEM_ID_MALETIN, briefCaseMoney - amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y retira algo de su interior.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+  		format(string, sizeof(string), "Retiró $%d de un maletín", amount);
+    	log(playerid, LOG_MONEY, string);
 			
 	} else if(strcmp(command, "guardar", true) == 0) {
 		
@@ -47,6 +49,8 @@ CMD:maletin(playerid, params[])
 		SetHandItemAndParam(playerid, hand, ITEM_ID_MALETIN, briefCaseMoney + amount);
 		PlayerActionMessage(playerid, 15.0, "abre su maletín y guarda algo en su interior.");
 		ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+  		format(string, sizeof(string), "Guardó $%d en un maletín", amount);
+    	log(playerid, LOG_MONEY, string);
 	}
 	return 1;
 }

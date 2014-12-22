@@ -149,17 +149,36 @@ RentalExpiration(playerid)
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 3;
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 	    {
-	        SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmoviliaria: Señor, le queremos informar que el dueño de la vivienda la cual usted alquila ha decidido...");
-    		SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmoviliaria: ...rescindirle el contrato, tiene 3 dias (paydays) para retirar sus pertenencias.");
+	        SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmobiliaria: Señor, le queremos informar que el dueño de la vivienda la cual usted alquila ha decidido...");
+    		SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmobiliaria: ...rescindirle el contrato, tiene 3 dias (paydays) para retirar sus pertenencias.");
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 4;
 		}
 	}
-	
 }
 
-GetPlayerHouseAddress(playerid)
+PrintHouseRentAdvise(playerid)
 {
-	new targetid, houselocation[MAX_ZONE_NAME];
+	if(PlayerInfo[playerid][pHouseKeyIncome] != 0 && House[PlayerInfo[playerid][pHouseKeyIncome]][Income] >= 3)
+	{
+	    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
+	    {
+	        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+		}
+		else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
+	    {
+            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+		}
+		else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
+	    {
+            SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+		}
+	}
+}
+
+PrintPlayerHouseAddress(playerid)
+{
+	new targetid,
+		houselocation[MAX_ZONE_NAME];
 	
     if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
 	{

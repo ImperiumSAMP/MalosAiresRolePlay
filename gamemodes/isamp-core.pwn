@@ -211,11 +211,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define BODY_PART_RIGHT_LEG     8
 #define BODY_PART_HEAD          9
 
-//====[TIPOS DE LOGS]===========================================================
-#define LOG_ADMIN            	1
-#define LOG_MONEY            	2
-#define LOG_CHAT                3
-
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
 #define UpdateMoneyBar 			GivePlayerMoney
@@ -2545,22 +2540,9 @@ public OnPlayerDataLoad(playerid) {
 			    	SendClientMessage(playerid, COLOR_WHITE, "Se ha acabado el tiempo de renta de tu vehículo alquilado.");
 				}
 			}
+
+			PrintHouseRentAdvise(playerid);
 			
-			if(PlayerInfo[playerid][pHouseKeyIncome] != 0 && House[PlayerInfo[playerid][pHouseKeyIncome]][Income] >= 3)
-			{
-			    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
-			    {
-			        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
-	   			}
-   				else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
-			    {
-                    SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
-	   			}
-   				else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
-			    {
-                    SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
-	   			}
-			}
 			SendClientMessage(playerid, COLOR_YELLOW2, " ");
 			SpawnPlayer(playerid);
 		}
@@ -3622,10 +3604,10 @@ public AntiCheatTimer()
 								format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
 				    			AdministratorMessage(COLOR_WHITE, string, 1);
 							}
+							ResetPlayerWeapons(playerid);
+		    				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+		    			    	GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
  					 	}
-      				 	ResetPlayerWeapons(playerid);
-		    			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-		    			    GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					}
 					else
 					{
@@ -8283,35 +8265,37 @@ CMD:getpos(playerid, params[]) {
 	return 1;
 }
 
-CMD:ajail(playerid, params[]) {
-	new
-	    string[128],
-	    time[3],
+CMD:ajail(playerid, params[])
+{
+	new string[128],
 	    targetID,
 		minutes,
 		reason[64];
 
-	if(PlayerInfo[playerid][pAdmin] < 1) return 1;
-	if(sscanf(params,"uds[64]", targetID, minutes, reason)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ajail [ID-Jugador] [minutos] [razón]");
-	else if(targetID != INVALID_PLAYER_ID) {
-		gettime(time[0], time[1], time[2]);
-		format(string, sizeof(string), "[Admin %s] %s ha sido castigado por %d minutos (razón: %s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetID), minutes, reason);
-        log(playerid, LOG_CHAT, string);
-		SendClientMessageToAll(COLOR_ADMINCMD, string);
-		SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar castigado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
-		ResetPlayerWeapons(targetID);
-		PlayerInfo[targetID][pJailed] = 2;
-		PlayerInfo[targetID][pJailTime] = minutes * 60;
-		SetPlayerInterior(targetID, 6);
-		SetPlayerPos(targetID, 1412.01, -2.59, 1001.47);
-		SetPlayerVirtualWorld(targetID, 0);
-	}
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params,"uds[64]", targetID, minutes, reason))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ajail [ID-Jugador] [minutos] [razón]");
+	if(!IsPlayerConnected(targetID))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida.");
+		
+	format(string, sizeof(string), "[Admin %s] %s ha sido castigado por %d minutos (razón: %s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetID), minutes, reason);
+	SendClientMessageToAll(COLOR_ADMINCMD, string);
+	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar castigado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
+	ResetPlayerWeapons(targetID);
+	PlayerInfo[targetID][pJailed] = 2;
+	PlayerInfo[targetID][pJailTime] = minutes * 60;
+	SetPlayerInterior(targetID, 6);
+	SetPlayerPos(targetID, 1412.01, -2.59, 1001.47);
+	SetPlayerVirtualWorld(targetID, 0);
+	format(string, sizeof(string), "[AJAIL] %d min a %s razon %s", minutes, GetPlayerNameEx(targetID), reason);
+	log(playerid, LOG_ADMIN, string);
 	return 1;
 }
 
-CMD:traer(playerid, params[]) {
-	new
-		Float:xPos,
+CMD:traer(playerid, params[])
+{
+	new	Float:xPos,
 		Float:yPos,
 		Float:zPos,
 		interior,
@@ -8319,22 +8303,24 @@ CMD:traer(playerid, params[]) {
 		targetID,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 1) return 1;
-	if(sscanf(params,"u", targetID)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /traer [ID-Jugador]");
-	else if(targetID != INVALID_PLAYER_ID) {
-		GetPlayerPos(playerid, xPos, yPos, zPos);
-		interior = GetPlayerInterior(playerid);
-		virtualWorld = GetPlayerVirtualWorld(playerid);
-		SetPlayerVirtualWorld(targetID, virtualWorld);
-		SetPlayerInterior(targetID, interior);
-		if(GetPlayerState(targetID) == 2) {
-			SetVehiclePos(GetPlayerVehicleID(targetID), xPos, yPos+4, zPos);
-		} else {
-			SetPlayerPos(targetID, xPos, yPos+2, zPos);
-		}
-		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el administrador %s te ha teletransportado junto a él.", GetPlayerNameEx(playerid));
-		SendClientMessage(targetID, COLOR_LIGHTYELLOW2, string);
-	}
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "u", targetID))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /traer [ID-Jugador]");
+	if(!IsPlayerConnected(targetID))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida.");
+		
+	GetPlayerPos(playerid, xPos, yPos, zPos);
+	interior = GetPlayerInterior(playerid);
+	virtualWorld = GetPlayerVirtualWorld(playerid);
+	SetPlayerVirtualWorld(targetID, virtualWorld);
+	SetPlayerInterior(targetID, interior);
+	if(GetPlayerState(targetID) == 2)
+		SetVehiclePos(GetPlayerVehicleID(targetID), xPos, yPos+4, zPos);
+	else
+		SetPlayerPos(targetID, xPos, yPos+2, zPos);
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el administrador %s te ha teletransportado junto a él.", GetPlayerNameEx(playerid));
+	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, string);
 	return 1;
 }
 
@@ -10769,7 +10755,8 @@ CMD:mostrardoc(playerid, params[])
  	SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
  	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
  	SendFMessage(targetid, COLOR_WHITE, "Sexo: %s", sexText);
-    GetPlayerHouseAddress(playerid);
+
+	PrintPlayerHouseAddress(playerid);
 		
 	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su documento del bolsillo y se lo muestra a");
