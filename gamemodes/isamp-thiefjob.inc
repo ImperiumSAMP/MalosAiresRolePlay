@@ -277,7 +277,7 @@ stock robberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
 			{
 			    SendClientMessage(play, COLOR_PMA, string);
-				SetPlayerCheckpoint(play, House[houseId][EntranceX], House[houseId][EntranceY], House[houseId][EntranceZ], 2.0);
+				SetPlayerCheckpoint(play, House[houseId][OutsideX], House[houseId][OutsideY], House[houseId][OutsideZ], 2.0);
 			}
 		}
 	} else {

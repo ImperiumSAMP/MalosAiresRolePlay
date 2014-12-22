@@ -194,7 +194,8 @@ CMD:armario(playerid, params[])
 			    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario con su llave.");
 			    	LockerStatus[houseid] = 0;
 				}
-		} else if((House[houseid][Income] == 0 && House[houseid][Owner] == PlayerInfo[playerid][pName]) || AdminDuty[playerid])
+		}
+		else if((House[houseid][Income] == 0 && House[houseid][OwnerSQLID] == PlayerInfo[playerid][pID]) || AdminDuty[playerid])
 		{
 		    if(LockerStatus[houseid] != 1)
 			{
@@ -219,7 +220,7 @@ CMD:armario(playerid, params[])
 
         House[houseid][Money] -= param1;
         GivePlayerCash(playerid, param1);
-        saveHouse(houseid);
+        SaveHouse(houseid);
 		PlayerActionMessage(playerid, 15.0, "toma algo de dinero del armario.");
 
 	} else if(strcmp(cmd, "guardardinero", true) == 0) {
@@ -239,7 +240,7 @@ CMD:armario(playerid, params[])
 
 		House[houseid][Money] += param1;
         GivePlayerCash(playerid, -param1);
-        saveHouse(houseid);
+        SaveHouse(houseid);
         PlayerActionMessage(playerid, 15.0, "guarda algo de dinero en el armario.");
 
 	} else if(strcmp(cmd, "tomar", true) == 0) {
@@ -271,7 +272,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Marijuana] -= param1;
             PlayerInfo[playerid][pMarijuana] += param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "toma un paquete desconocido del armario.");
 
 		} else if(strcmp(param2, "LSD", true) == 0) {
@@ -280,7 +281,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][LSD] -= param1;
             PlayerInfo[playerid][pLSD] += param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "toma un paquete desconocido del armario.");
 
 		} else if(strcmp(param2, "cocaina", true) == 0) {
@@ -290,7 +291,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Cocaine] -= param1;
             PlayerInfo[playerid][pCocaine] += param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "toma un paquete desconocido del armario.");
 
 		} else if(strcmp(param2, "extasis", true) == 0) {
@@ -300,7 +301,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Ecstasy] -= param1;
             PlayerInfo[playerid][pEcstasy] += param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "toma un paquete desconocido del armario.");
 
         } else
@@ -326,7 +327,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Marijuana] += param1;
             PlayerInfo[playerid][pMarijuana] -= param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "guarda un paquete desconocido en el armario.");
 
 		} else if(strcmp(param2, "LSD", true) == 0) {
@@ -338,7 +339,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][LSD] += param1;
             PlayerInfo[playerid][pLSD] -= param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "guarda un paquete desconocido en el armario.");
 
 		} else if(strcmp(param2, "cocaina", true) == 0) {
@@ -350,7 +351,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Cocaine] += param1;
             PlayerInfo[playerid][pCocaine] -= param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "guarda un paquete desconocido en el armario.");
 
 		} else if(strcmp(param2, "extasis", true) == 0) {
@@ -362,7 +363,7 @@ CMD:armario(playerid, params[])
 
             House[houseid][Ecstasy] += param1;
             PlayerInfo[playerid][pEcstasy] -= param1;
-            saveHouse(houseid);
+            SaveHouse(houseid);
             PlayerActionMessage(playerid, 15.0, "guarda un paquete desconocido en el armario.");
 
         } else

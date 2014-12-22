@@ -2664,50 +2664,6 @@ public OnBusinessDataLoad(id) {
 	return 1;
 }
 
-forward OnHouseDataLoad(id);
-public OnHouseDataLoad(id) {
-   	new
-		result[128],
-		rows,
-		fields;
-
-	cache_get_data(rows, fields);
-
-    if(rows) {
-		House[id][InsideWorld] = id + 15000;
-		cache_get_field_content(0, "EntranceInterior", result); 	House[id][EntranceInterior]		= strval(result);
-		cache_get_field_content(0, "ExitInterior", result); 		House[id][ExitInterior] 		= strval(result);
-		cache_get_field_content(0, "Owned", result); 				House[id][Owned] 				= strval(result);
-		cache_get_field_content(0, "HousePrice", result); 			House[id][HousePrice] 			= strval(result);
-		cache_get_field_content(0, "Money", result); 				House[id][Money] 				= strval(result);
-		cache_get_field_content(0, "Locked", result); 				House[id][Locked]				= strval(result);
-		
-		cache_get_field_content(0, "Marijuana", result); 			House[id][Marijuana]			= strval(result);
-		cache_get_field_content(0, "LSD", result); 					House[id][LSD]					= strval(result);
-		cache_get_field_content(0, "Cocaine", result); 				House[id][Cocaine]				= strval(result);
-		cache_get_field_content(0, "Ecstasy", result); 				House[id][Ecstasy]				= strval(result);
-
-		cache_get_field_content(0, "Owner", 						House[id][Owner],1,MAX_PLAYER_NAME);
-
-		cache_get_field_content(0, "EntranceX", result); 			House[id][EntranceX] 			= floatstr(result);
-		cache_get_field_content(0, "EntranceY", result); 			House[id][EntranceY] 			= floatstr(result);
-		cache_get_field_content(0, "EntranceZ", result); 			House[id][EntranceZ] 			= floatstr(result);
-		cache_get_field_content(0, "EntranceAngle", result); 		House[id][EntranceAngle] 		= floatstr(result);
-		cache_get_field_content(0, "ExitX", result); 				House[id][ExitX] 				= floatstr(result);
-		cache_get_field_content(0, "ExitY", result); 				House[id][ExitY] 				= floatstr(result);
-		cache_get_field_content(0, "ExitZ", result); 				House[id][ExitZ] 				= floatstr(result);
-		cache_get_field_content(0, "ExitAngle", result); 			House[id][ExitAngle] 			= floatstr(result);
-		
-		cache_get_field_content(0, "Tenant", 						House[id][Tenant],1,MAX_PLAYER_NAME);
-		cache_get_field_content(0, "IncomeAccept", result); 		House[id][IncomeAccept] 		= strval(result);
-		cache_get_field_content(0, "Income", result); 				House[id][Income] 				= strval(result);
-		cache_get_field_content(0, "IncomePrice", result); 			House[id][IncomePrice] 			= strval(result);
-		cache_get_field_content(0, "IncomePriceAdd", result); 		House[id][IncomePriceAdd] 		= strval(result);
-	}
-	ReloadHouseIcon(id);
-	return 1;
-}
-
 forward OnBuildingDataLoad(id);
 public OnBuildingDataLoad(id) {
    	new
@@ -3251,14 +3207,14 @@ public PayDay(playerid) {
 	 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Owned] != 0){
 				new h = PlayerInfo[playerid][pHouseKeyIncome];
 		        House[h][IncomePriceAdd] += pago;
-		        saveHouse(h);
+		        SaveHouse(h);
 			}
 		}
 		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0){
 			alquileradd = pago2;
 			new h = PlayerInfo[playerid][pHouseKey];
 	        House[h][IncomePriceAdd] -= pago2;
-	        saveHouse(h);
+	        SaveHouse(h);
 		}
         
         //============================INGRESOS==================================
@@ -3434,7 +3390,8 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		
 		//==========================HERIDAS DE BALA=============================
 		
-		CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
+		if(amount > 4.0)
+			CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
 
 		//========================EFECTOS DE LA DROGA===========================
 		
@@ -5388,110 +5345,6 @@ stock ReloadBizIcon(bizid) {
 	Business[bizid][bOutsideLabel] = CreateDynamic3DTextLabel(string, COLOR_WHITE, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	Business[bizid][bInsideLabel] = CreateDynamic3DTextLabel("{A9E2F3}Presiona ENTER para salir", COLOR_WHITE, Business[bizid][bInsideX], Business[bizid][bInsideY], Business[bizid][bInsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, Business[bizid][bInsideWorld], -1, -1, 100.0);
 	Business[bizid][bInsidePickup] = CreateDynamicPickup(19198, 1, Business[bizid][bInsideX], Business[bizid][bInsideY], Business[bizid][bInsideZ], Business[bizid][bInsideWorld]);
-	return 1;
-}
-
-stock ReloadHouseIcon(houseid) {
-    new
-	    string[228],
-		houseLoc[MAX_ZONE_NAME];
-
-	DestroyDynamic3DTextLabel(House[houseid][hEntranceLabel]);
-	DestroyDynamic3DTextLabel(House[houseid][hExitLabel]);
-
-	DestroyDynamicPickup(House[houseid][hEntrancePickup]);
-	DestroyDynamicPickup(House[houseid][hExitPickup]);
-
-    House[houseid][hExitPickup] = CreateDynamicPickup(19198, 1, House[houseid][ExitX], House[houseid][ExitY], House[houseid][ExitZ], House[houseid][InsideWorld]);
-
-	GetCoords2DZone(House[houseid][EntranceX], House[houseid][EntranceY], houseLoc, MAX_ZONE_NAME);
-
-	if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 0 && House[houseid][Income] == 0) {
-		format(string, sizeof(string), "{21A325}Casa a la venta {FFFFFF}\nUtiliza /casacomprar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][HousePrice]);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {
-		format(string, sizeof(string), "{21A325}Casa en alquiler {FFFFFF}\nUtiliza /casaalquilar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 0 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] != 0) {
-	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] != 0) {
-	    format(string, sizeof(string), "{49AFE6}Casa con inquilino {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 1 && House[houseid][Income] == 0) {
-	    format(string, sizeof(string), "{21A325}Casa en alquiler {FFFFFF}\nUtiliza /casaalquilar\nDirección: %d %s\nPrecio: $%d", houseid, houseLoc, House[houseid][IncomePrice]);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1273, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}else if(House[houseid][Owned] == 1 && House[houseid][IncomeAccept] == 0 && House[houseid][Income] == 0) {
-	    format(string, sizeof(string), "{49AFE6}Casa con dueño {FFFFFF}\nDirección: %d %s\nPresiona ENTER para entrar", houseid, houseLoc);
-		House[houseid][hEntrancePickup] = CreateDynamicPickup(1239, 1, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ], -1);
-	}
-
-	House[houseid][hEntranceLabel] = CreateDynamic3DTextLabel(string, COLOR_WHITE, House[houseid][EntranceX], House[houseid][EntranceY], House[houseid][EntranceZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
-	House[houseid][hExitLabel] = CreateDynamic3DTextLabel("{A9E2F3}Presiona ENTER para salir", COLOR_WHITE, House[houseid][ExitX], House[houseid][ExitY], House[houseid][ExitZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[houseid][InsideWorld], -1, -1, 100.0);
-}
-
-stock LoadHouses() {
-	new query[128], id = 1;
-	while(id < sizeof(House)) {
-	    format(query, sizeof(query),"SELECT * FROM `houses` WHERE `id` = %d LIMIT 1", id);
-		mysql_function_query(dbHandle, query, true, "OnHouseDataLoad", "i", id);
-		House[id][hEntranceLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][EntranceX], House[id][EntranceY], House[id][EntranceZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
-		House[id][hExitLabel] = CreateDynamic3DTextLabel("-", 0x008080FF, House[id][ExitX], House[id][ExitY], House[id][ExitZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][ExitInterior], -1, 100.0);
-		id++;
-	}
-	return 1;
-}
-
-saveHouses() {
-  	new
-	    id = 1;
-
-    if(dontsave) return 1;
-
-	while(id < MAX_HOUSES) {
-	    saveHouse(id);
-		id++;
-	}
-    print("[INFO]: casas guardadas.");
-	return 1;
-}
-
-stock saveHouse(id) {
-	new
-		query[1024];
-
-    if(dontsave)
-		return 1;
-
-    format(query,sizeof(query),"UPDATE `houses` SET `Owner`='%s', `EntranceX`=%f, `EntranceY`=%f, `EntranceZ`=%f, `EntranceAngle`=%f, `ExitX`=%f, `ExitY`=%f, `ExitZ`=%f, `ExitAngle`=%f, `EntranceInterior`=%d, `ExitInterior`=%d, `Owned`=%d, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d, `HousePrice`=%d, `Money`=%d, `Locked`=%d, `Marijuana`=%d, `LSD`=%d, `Cocaine`=%d, `Ecstasy`=%d WHERE `id`=%d",
-    House[id][Owner],
-    House[id][EntranceX],
-    House[id][EntranceY],
-    House[id][EntranceZ],
-    House[id][EntranceAngle],
-    House[id][ExitX],
-	House[id][ExitY],
-	House[id][ExitZ],
-	House[id][ExitAngle],
-	House[id][EntranceInterior],
-	House[id][ExitInterior],
-	House[id][Owned],
-	House[id][Tenant],
-	House[id][IncomeAccept],
-	House[id][Income],
-	House[id][IncomePrice],
-	House[id][IncomePriceAdd],
-	House[id][HousePrice],
-	House[id][Money],
-	House[id][Locked],
-	House[id][Marijuana],
-	House[id][LSD],
-	House[id][Cocaine],
-	House[id][Ecstasy],
-	id);
-	
-	mysql_function_query(dbHandle, query, false, "", "");
-	ReloadHouseIcon(id);
 	return 1;
 }
 
@@ -8670,7 +8523,7 @@ CMD:gmx(playerid, params[]) {
 	SaveServerInfo();
  	SaveFactions();
 	SaveVehicles();
-	saveHouses();
+	SaveHouses();
 	SaveAllBusiness();
 	saveBuildings();
 	iGMXTick = 11;
@@ -8705,7 +8558,7 @@ CMD:exit(playerid, params[]) {
 	SaveServerInfo();
  	SaveFactions();
 	SaveVehicles();
-	saveHouses();
+	SaveHouses();
 	SaveAllBusiness();
 	saveBuildings();
 	iGMXTick = 11;
@@ -12625,8 +12478,8 @@ CMD:cambiarnombre(playerid, params[])
     
 	if(houseID != 0)
 	{
-	    House[houseID][Owner] = name;
-	    saveHouse(houseID);
+	    House[houseID][OwnerName] = name;
+	    SaveHouse(houseID);
 	}
 	if(bizID != 0 && Business[bizID][bOwnerSQLID] == PlayerInfo[target][pID])
 	{
@@ -12675,6 +12528,8 @@ public CheckNameAvailable(playerid, accountName[])
 	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
+	format(string, sizeof(string), "[CREA LA CUENTA] a %s", accountName);
+	log(playerid, LOG_ADMIN, string);
 	return 1;
 }
 
@@ -12823,7 +12678,7 @@ CMD:givegun(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
     if(GivePlayerGun(targetid, weapon, ammo))
     {
-   		format(string, sizeof(string), "[GIVEGUN] %d con %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+   		format(string, sizeof(string), "[GUN] %d - %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 		log(playerid, LOG_ADMIN, string);
 	}
 	else
