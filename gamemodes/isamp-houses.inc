@@ -1426,7 +1426,6 @@ CMD:accrear(playerid, params[])
 CMD:acborrar(playerid, params[])
 {
 	new houseid,
-		pconnected = 0,
 		string[128];
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
@@ -1438,22 +1437,19 @@ CMD:acborrar(playerid, params[])
 	if(House[houseid][Created] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida: la casa no está creada.");
 
-	if(House[houseid][Owned] == 1)
+	foreach(new i : Player)
 	{
-		foreach(new i : Player)
-		{
-			if(PlayerInfo[i][pHouseKey] == houseid)
-			{
-   				PlayerInfo[i][pHouseKey] = 0;
-				pconnected = 1;
-			}
-		}
-		if(pconnected == 0)
-		{
-			format(string, sizeof(string), "UPDATE `accounts` SET `HouseKey` = 0 WHERE `HouseKey` = %d", houseid);
-			mysql_function_query(dbHandle, string, false, "", "");
-		}
+		if(PlayerInfo[i][pHouseKey] == houseid)
+			PlayerInfo[i][pHouseKey] = 0;
+		if(PlayerInfo[i][pHouseKeyIncome] == houseid)
+			PlayerInfo[i][pHouseKeyIncome] = 0;
 	}
+	
+	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKey` = 0 WHERE `HouseKey` = %d", houseid);
+	mysql_function_query(dbHandle, string, false, "", "");
+	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKeyIncome` = 0 WHERE `HouseKeyIncome` = %d", houseid);
+	mysql_function_query(dbHandle, string, false, "", "");
+
 	ResetLocker(houseid);
 	DeleteHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido BORRADA.", houseid);
@@ -1564,7 +1560,7 @@ CMD:acalquilar(playerid, params[])
 	new houseid,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
+	if(PlayerInfo[playerid][pAdmin] < 4)
 	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acalquilar [ID casa]");
@@ -1590,7 +1586,7 @@ CMD:acnoalquilar(playerid, params[])
 	new houseid,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
+	if(PlayerInfo[playerid][pAdmin] < 4)
 	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acnoalquilar [ID casa]");
