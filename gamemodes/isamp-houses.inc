@@ -70,7 +70,7 @@ stock LoadHouses()
 		
 	while(id < MAX_HOUSES)
 	{
-	    format(query, sizeof(query),"SELECT * FROM `houses` WHERE `id` = %d LIMIT 1", id);
+	    format(query, sizeof(query),"SELECT * FROM `houses` WHERE `Id` = %d LIMIT 1", id);
 		mysql_function_query(dbHandle, query, true, "OnHouseDataLoad", "i", id);
 		id++;
 	}
@@ -176,7 +176,7 @@ stock CreateHouse(id)
     if(dontsave)
 		return 1;
 
-    format(query, sizeof(query), "INSERT INTO `houses` (id, OwnerName, OutsideX, OutsideY, OutsideZ, OutsideAngle, OutsideInterior, OutsideWorld, InsideX, InsideY, InsideZ, InsideInterior, InsideWorld, HousePrice, Locked)");
+    format(query, sizeof(query), "INSERT INTO `houses` (Id, OwnerName, OutsideX, OutsideY, OutsideZ, OutsideAngle, OutsideInterior, OutsideWorld, InsideX, InsideY, InsideZ, InsideInterior, InsideWorld, HousePrice, Locked)");
 	format(query, sizeof(query), "%s VALUES (%d, '%s', %f, %f, %f, %f, %d, %d, %f, %f, %f, %d, %d, %d, %d)",
 	    query,
 	    id,
@@ -216,7 +216,7 @@ stock DeleteHouse(id)
 	DestroyDynamicPickup(House[id][hOutsidePickup]);
 	DestroyDynamicPickup(House[id][hInsidePickup]);
 
-	format(query, sizeof(query), "DELETE FROM `houses` WHERE `id` = %d", id);
+	format(query, sizeof(query), "DELETE FROM `houses` WHERE `Id` = %d", id);
  	mysql_function_query(dbHandle, query, false, "", "");
 
  	House[id][Created] = 0;
@@ -302,7 +302,7 @@ stock SaveHouse(id)
 		House[id][Ecstasy],
 		House[id][Radio]
 	);
-	format(query, sizeof(query), "%s, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d WHERE `id`=%d",
+	format(query, sizeof(query), "%s, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d WHERE `Id`=%d",
 		query,
 		House[id][Tenant],
 		House[id][IncomeAccept],
@@ -895,11 +895,9 @@ CMD:acasas(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
 
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /acdisp - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /accrear - /acborrar - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acalquilar - /acnoalquilar");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} para agregar una casa consulta con el comando '/acdisp' qué casa está disponible para ser añadida.");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}No utilizar '/acalquilarall' si ya fue utilizado.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones, deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
 	return 1;
 }
 
@@ -1336,7 +1334,6 @@ CMD:acprecio(playerid, params[])
 CMD:acvender(playerid, params[])
 {
 	new houseid,
-		pconnected = 0,
 		string[128];
 	
 	if(PlayerInfo[playerid][pAdmin] < 20)
@@ -1348,22 +1345,19 @@ CMD:acvender(playerid, params[])
 	if(House[houseid][Created] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida: la casa no está creada.");
 	    
-	if(House[houseid][Owned] == 1)
+
+	foreach(new i : Player)
 	{
-		foreach(new i : Player)
-		{
-			if(PlayerInfo[i][pHouseKey] == houseid)
-			{
-   				PlayerInfo[i][pHouseKey] = 0;
-				pconnected = 1;
-			}
-		}
-		if(pconnected == 0)
-		{
-			format(string, sizeof(string), "UPDATE `accounts` SET `HouseKey` = 0 WHERE `HouseKey` = %d", houseid);
-			mysql_function_query(dbHandle, string, false, "", "");
-		}
+		if(PlayerInfo[i][pHouseKey] == houseid)
+			PlayerInfo[i][pHouseKey] = 0;
+		if(PlayerInfo[i][pHouseKeyIncome] == houseid)
+			PlayerInfo[i][pHouseKeyIncome] = 0;
 	}
+	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKey` = 0 WHERE `HouseKey` = %d", houseid);
+	mysql_function_query(dbHandle, string, false, "", "");
+	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKeyIncome` = 0 WHERE `HouseKeyIncome` = %d", houseid);
+	mysql_function_query(dbHandle, string, false, "", "");
+
 	House[houseid][Owned] = 0;
 	House[houseid][OwnerSQLID] = 0;
 	strmid(House[houseid][OwnerName], "Ninguno", 0, strlen("Ninguno"), 255);
@@ -1374,6 +1368,11 @@ CMD:acvender(playerid, params[])
 	House[houseid][Ecstasy] = 0;
 	House[houseid][Cocaine] = 0;
 	House[houseid][Radio] = 0;
+    House[houseid][IncomePrice] = 0;
+    House[houseid][IncomePriceAdd] = 0;
+	House[houseid][IncomeAccept] = 0;
+	House[houseid][Income] = 0;
+	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	ResetLocker(houseid);
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido vendida.", houseid);
@@ -1599,11 +1598,19 @@ CMD:acnoalquilar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
 	if(House[houseid][Created] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida: la casa no está creada.");
-	if(House[houseid][Income] == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "La casa tiene un inquilino.");
+
+	foreach(new i : Player)
+	{
+		if(PlayerInfo[i][pHouseKeyIncome] == houseid)
+			PlayerInfo[i][pHouseKeyIncome] = 0;
+	}
+	
+	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKeyIncome` = 0 WHERE `HouseKeyIncome` = %d", houseid);
+	mysql_function_query(dbHandle, string, false, "", "");
 		
     House[houseid][IncomePrice] = 0;
 	House[houseid][IncomeAccept] = 0;
+	House[houseid][IncomePriceAdd] = 0;
 	House[houseid][Income] = 0;
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ya no está disponible para ser rentada.", houseid);
