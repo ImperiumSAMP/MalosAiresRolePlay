@@ -2368,16 +2368,17 @@ public tutorial(playerid, step) {
 }
 
 forward OnPlayerDataLoad(playerid);
-public OnPlayerDataLoad(playerid) {
-   	new
-   	    query[128],
+public OnPlayerDataLoad(playerid)
+{
+   	new query[128],
 		result[128],
 		rows,
 		fields;
 
 	cache_get_data(rows, fields);
 
-	if(rows) {
+	if(rows)
+	{
 		DeletePVar(playerid, "LoginAttempts");
 
 
@@ -10609,7 +10610,7 @@ CMD:mostrardoc(playerid, params[])
  	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
  	SendFMessage(targetid, COLOR_WHITE, "Sexo: %s", sexText);
 
-	PrintPlayerHouseAddress(playerid);
+	PrintPlayerHouseAddress(playerid, targetid);
 		
 	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su documento del bolsillo y se lo muestra a");

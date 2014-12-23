@@ -253,7 +253,7 @@ LoadCarDealerPickups()
 
 CMD:vercatalogo(playerid, params[])
 {
-	new string[2000] = "Modelo\t\tPrecio\t\tMaletero",
+	new string[2000] = "Modelo-----Precio-----Maletero",
 	    dealer = GetPlayerCarDealer(playerid),
 	    model;
 
@@ -268,9 +268,9 @@ CMD:vercatalogo(playerid, params[])
 	        if(CarDealerInfo[dealer][i][dStock] > 0)
 	        {
 	            if(GetVehicleModelTrunkSlots(model) > 0)
-	        		format(string, sizeof(string), "%s\n%s\t\t$%d\t\tSlots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
+	        		format(string, sizeof(string), "%s\n%s-----$%d-----Slots: %d", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100), GetVehicleModelTrunkSlots(model));
 				else
-				    format(string, sizeof(string), "%s\n%s\t\t$%d\t\tNo tiene", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100));
+				    format(string, sizeof(string), "%s\n%s-----$%d-----No tiene", string, GetVehicleModelName(model), GetVehicleModelPrice(model, 100));
 			}
 		}
 	}
