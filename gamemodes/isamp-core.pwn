@@ -10370,13 +10370,9 @@ stock EndPlayerDuty(playerid)
 	{
 		CopDuty[playerid] = 0;
 		SIDEDuty[playerid] = 0;
-		ResetAndSaveInv(playerid); // Borramos cualquier arma del inventario.
-		ResetAndSaveHands(playerid); // Borramos cualquier arma de las manos.
-		ResetAndSaveBack(playerid); // Borramos el arma larga que tenga en la espalda.
-		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
 		resetTazer(playerid);
-		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario, espalda y manos.");
+		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio.");
 	}
 }
 
