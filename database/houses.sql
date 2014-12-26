@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 22-12-2014 a las 02:51:24
+-- Tiempo de generación: 23-12-2014 a las 00:52:54
 -- Versión del servidor: 5.5.34
 -- Versión de PHP: 5.3.10-1ubuntu3.9
 
@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS `houses` (
   `HousePrice` int(11) NOT NULL DEFAULT '0',
   `Money` int(11) NOT NULL DEFAULT '0',
   `Locked` tinyint(1) NOT NULL DEFAULT '0',
+  `Radio` smallint(6) NOT NULL DEFAULT '0',
   `Marijuana` smallint(6) NOT NULL DEFAULT '0',
   `LSD` smallint(6) NOT NULL DEFAULT '0',
   `Ecstasy` smallint(6) NOT NULL DEFAULT '0',

@@ -2368,16 +2368,17 @@ public tutorial(playerid, step) {
 }
 
 forward OnPlayerDataLoad(playerid);
-public OnPlayerDataLoad(playerid) {
-   	new
-   	    query[128],
+public OnPlayerDataLoad(playerid)
+{
+   	new query[128],
 		result[128],
 		rows,
 		fields;
 
 	cache_get_data(rows, fields);
 
-	if(rows) {
+	if(rows)
+	{
 		DeletePVar(playerid, "LoginAttempts");
 
 
@@ -10369,13 +10370,9 @@ stock EndPlayerDuty(playerid)
 	{
 		CopDuty[playerid] = 0;
 		SIDEDuty[playerid] = 0;
-		ResetAndSaveInv(playerid); // Borramos cualquier arma del inventario.
-		ResetAndSaveHands(playerid); // Borramos cualquier arma de las manos.
-		ResetAndSaveBack(playerid); // Borramos el arma larga que tenga en la espalda.
-		ResetPlayerWeapons(playerid);
 		SetPlayerArmour(playerid, 0);
 		resetTazer(playerid);
-		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio. Se borraron todas las armas de tu inventario, espalda y manos.");
+		SendClientMessage(playerid, COLOR_WHITE, "Ya no te encuentras en servicio.");
 	}
 }
 
@@ -10609,7 +10606,7 @@ CMD:mostrardoc(playerid, params[])
  	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
  	SendFMessage(targetid, COLOR_WHITE, "Sexo: %s", sexText);
 
-	PrintPlayerHouseAddress(playerid);
+	PrintPlayerHouseAddress(playerid, targetid);
 		
 	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
 	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su documento del bolsillo y se lo muestra a");
@@ -10992,6 +10989,7 @@ CMD:curarse(playerid, params[])
 	format(string, sizeof(string), "[Hospital]: El paciente %s se ha registrado en el %s y está siendo atendido.", GetPlayerNameEx(playerid), Building[GetPlayerBuilding(playerid)][blText]);
 	SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
 	HospHealing[playerid] = 1;
+	TakeHeadShot[playerid] = 0;
 	SetPVarInt(playerid, "disabled", DISABLE_HEALING);
 	GameTextForPlayer(playerid, "Aguarda unos instantes mientras te atienden", 10000, 4);
 	return 1;
@@ -12020,7 +12018,7 @@ CMD:beber(playerid, params[])
 					if(drink < 0 || drink >= sizeof(DrinksMenuBar))
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
 					if(GetPlayerCash(playerid) < DrinksMenuBar[drink][drPrice])
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
 
 					GivePlayerCash(playerid, -DrinksMenuBar[drink][drPrice]);
 		            Business[i][bTill] += DrinksMenuBar[drink][drPrice];
@@ -12041,7 +12039,7 @@ CMD:beber(playerid, params[])
 					if(drink < 0 || drink >= sizeof(DrinksMenuDisco))
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
 					if(GetPlayerCash(playerid) < DrinksMenuDisco[drink][drPrice])
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
 
 					GivePlayerCash(playerid, -DrinksMenuDisco[drink][drPrice]);
 		            Business[i][bTill] += DrinksMenuDisco[drink][drPrice];
@@ -12239,7 +12237,8 @@ stock PlayRadioStreamForPlayer(playerid, radio)
 	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
 	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
 	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://shaincast.caster.fm:21294/listen.mp3?authnb6b02a87f4f181869b27c85dd2e74f4a");//radio CTR
+	    case 15: PlayAudioStreamForPlayer(playerid, "http://50.22.218.197:35635/listen.pls");//radio CTR
+	    case 16: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");//juance
 	}
 	hearingRadioStream[playerid] = true;
 	return 1;
@@ -12251,13 +12250,13 @@ CMD:emisora(playerid, params[])
 	vType = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-15]. Para apagarla utiliza /emisoraoff.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-16]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
-	if(radio < 1 || radio > 15)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15.");
+	if(radio < 1 || radio > 16)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
 
 	foreach(new i : Player)
 	{
@@ -12637,7 +12636,7 @@ CMD:sethp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerHealthEx(targetid, health);
-    TakeHeadShot[playerid] = 0;
+    TakeHeadShot[targetid] = 0;
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;

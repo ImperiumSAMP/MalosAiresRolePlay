@@ -269,12 +269,12 @@ SaveHouses()
 
 stock SaveHouse(id)
 {
-	new query[1256];
+	new query[1512];
 
     if(dontsave || House[id][Created] == 0)
 		return 1;
 		
-	format(query, sizeof(query), "UPDATE `houses` SET `Owned`=%d, `OwnerSQLID`=%d, `OwnerName`='%s', `OutsideX`=%f, `OutsideY`=%f, `OutsideZ`=%f, `OutsideAngle`=%f, `OutsideInterior`=%d, `OutsideWorld`=%d, `InsideX`=%f, `InsideY`=%f",
+	format(query, sizeof(query), "UPDATE `houses` SET `Owned`=%d, `OwnerSQLID`=%d, `OwnerName`='%s', `OutsideX`=%f, `OutsideY`=%f, `OutsideZ`=%f, `OutsideAngle`=%f, `OutsideInterior`=%d, `OutsideWorld`=%d",
 	    House[id][Owned],
 	    House[id][OwnerSQLID],
 	    House[id][OwnerName],
@@ -283,12 +283,12 @@ stock SaveHouse(id)
 	    House[id][OutsideZ],
 	    House[id][OutsideAngle],
 	    House[id][OutsideInterior],
-	    House[id][OutsideWorld],
-	    House[id][InsideX],
-		House[id][InsideY]
+	    House[id][OutsideWorld]
 	);
-	format(query, sizeof(query), "%s, `InsideZ`=%f, `InsideAngle`=%f, `InsideInterior`=%d, `InsideWorld`=%d, `HousePrice`=%d, `Money`=%d, `Locked`=%d, `Marijuana`=%d, `LSD`=%d, `Cocaine`=%d, `Ecstasy`=%d, `Radio`=%d",
+	format(query, sizeof(query), "%s, `InsideX`=%f, `InsideY`=%f, `InsideZ`=%f, `InsideAngle`=%f, `InsideInterior`=%d, `InsideWorld`=%d, `HousePrice`=%d, `Money`=%d, `Locked`=%d, `Marijuana`=%d, `LSD`=%d",
 		query,
+	    House[id][InsideX],
+		House[id][InsideY],
 		House[id][InsideZ],
 		House[id][InsideAngle],
 		House[id][InsideInterior],
@@ -297,13 +297,13 @@ stock SaveHouse(id)
 		House[id][Money],
 		House[id][Locked],
 		House[id][Marijuana],
-		House[id][LSD],
+		House[id][LSD]
+	);
+	format(query, sizeof(query), "%s, `Cocaine`=%d, `Ecstasy`=%d, `Radio`=%d, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d WHERE `Id`=%d",
+		query,
 		House[id][Cocaine],
 		House[id][Ecstasy],
-		House[id][Radio]
-	);
-	format(query, sizeof(query), "%s, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d WHERE `Id`=%d",
-		query,
+		House[id][Radio],
 		House[id][Tenant],
 		House[id][IncomeAccept],
 		House[id][Income],
@@ -436,10 +436,9 @@ PrintHouseRentAdvise(playerid)
 	}
 }
 
-PrintPlayerHouseAddress(playerid)
+PrintPlayerHouseAddress(playerid, targetid)
 {
-	new targetid,
-		houselocation[MAX_ZONE_NAME];
+	new houselocation[MAX_ZONE_NAME];
 	
     if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income]!= 0 && PlayerInfo[playerid][pHouseKeyIncome] != 0)
 	{
@@ -488,8 +487,8 @@ CMD:casaradio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaradio [ID radio]");
 	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en tu casa.");
-	if(radio < 0 || radio > 15)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 16)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
 
     House[houseid][Radio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]:{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
