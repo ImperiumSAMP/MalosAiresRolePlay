@@ -12017,7 +12017,7 @@ CMD:beber(playerid, params[])
 					if(drink < 0 || drink >= sizeof(DrinksMenuBar))
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
 					if(GetPlayerCash(playerid) < DrinksMenuBar[drink][drPrice])
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
 
 					GivePlayerCash(playerid, -DrinksMenuBar[drink][drPrice]);
 		            Business[i][bTill] += DrinksMenuBar[drink][drPrice];
@@ -12038,7 +12038,7 @@ CMD:beber(playerid, params[])
 					if(drink < 0 || drink >= sizeof(DrinksMenuDisco))
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una opción válida.");
 					if(GetPlayerCash(playerid) < DrinksMenuDisco[drink][drPrice])
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Vuelve cuando tengas el dinero suficiente!");
 
 					GivePlayerCash(playerid, -DrinksMenuDisco[drink][drPrice]);
 		            Business[i][bTill] += DrinksMenuDisco[drink][drPrice];
