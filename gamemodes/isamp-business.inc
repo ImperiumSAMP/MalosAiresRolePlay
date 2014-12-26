@@ -501,8 +501,8 @@ CMD:negocioradio(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un negocio!");
 	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en tu negocio.");
-	if(radio < 0 || radio > 15)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 16)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
 
 	Business[bizID][bRadio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del negocio a %d.", Business[bizID][bRadio]);

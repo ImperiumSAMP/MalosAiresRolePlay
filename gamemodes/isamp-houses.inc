@@ -487,8 +487,8 @@ CMD:casaradio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaradio [ID radio]");
 	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en tu casa.");
-	if(radio < 0 || radio > 15)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 16)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
 
     House[houseid][Radio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]:{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
