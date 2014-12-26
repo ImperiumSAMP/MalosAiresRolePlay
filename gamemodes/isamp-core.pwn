@@ -11024,7 +11024,6 @@ CMD:curar(playerid,params[])
 	SetPVarInt(target, "healIssuer", playerid);
 	SetPVarInt(target, "healCost", cost);
 	SetTimerEx("healTimer", 15000, false, "i", playerid);
-	TakeHeadShot[target] = 0;
 	return 1;
 }
 
