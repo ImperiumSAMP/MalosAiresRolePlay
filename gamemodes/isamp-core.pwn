@@ -10989,6 +10989,7 @@ CMD:curarse(playerid, params[])
 	format(string, sizeof(string), "[Hospital]: El paciente %s se ha registrado en el %s y está siendo atendido.", GetPlayerNameEx(playerid), Building[GetPlayerBuilding(playerid)][blText]);
 	SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
 	HospHealing[playerid] = 1;
+	TakeHeadShot[playerid] = 0;
 	SetPVarInt(playerid, "disabled", DISABLE_HEALING);
 	GameTextForPlayer(playerid, "Aguarda unos instantes mientras te atienden", 10000, 4);
 	return 1;
@@ -11023,6 +11024,7 @@ CMD:curar(playerid,params[])
 	SetPVarInt(target, "healIssuer", playerid);
 	SetPVarInt(target, "healCost", cost);
 	SetTimerEx("healTimer", 15000, false, "i", playerid);
+	TakeHeadShot[target] = 0;
 	return 1;
 }
 
@@ -12635,7 +12637,7 @@ CMD:sethp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerHealthEx(targetid, health);
-    TakeHeadShot[playerid] = 0;
+    TakeHeadShot[targetid] = 0;
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;
