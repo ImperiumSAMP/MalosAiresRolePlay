@@ -6438,7 +6438,7 @@ public JailTimer()
 
 	foreach(new i : Player)
 	{
-	    if(PlayerInfo[i][pJailed] >= 0)
+	    if(PlayerInfo[i][pJailed] > 0)
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
@@ -6451,7 +6451,7 @@ public JailTimer()
 			}
 			if(PlayerInfo[i][pJailTime] == 0)
 			{
-			    switch (PlayerInfo[i][pJailed])
+			    switch(PlayerInfo[i][pJailed])
 				{
 			        case 1:
 					{
@@ -6475,6 +6475,7 @@ public JailTimer()
 						PlayerInfo[i][pZ] = 13.5469;
 						SetPlayerPos(i, 1685.7615, -2241.1375, 13.5469);
 						SetPlayerFacingAngle(i, 176.6281);
+						SetPlayerHealthEx(i, 100.0);
 						TogglePlayerControllable(i, true);
 			        }
 				}
