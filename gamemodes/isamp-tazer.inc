@@ -25,7 +25,7 @@ resetTazer(playerid)
 {
 	if(tazerInUse[playerid])
 	{
-	    if(GetPlayerHand(playerid, HAND_RIGHT) == WEAPON_SILENCED)
+	    if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED)
 	        SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	}
 	tazerInUse[playerid] = 0;

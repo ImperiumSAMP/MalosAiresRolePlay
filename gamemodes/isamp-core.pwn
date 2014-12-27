@@ -3191,8 +3191,7 @@ public PayDay(playerid) {
         
         //========================COSTOS BANCARIOS==============================
 
-		new banktax = 0;
-		banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
+		new banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
 		if(banktax < 50)
 		    banktax = 50; // Mínimo de 50 pesos por tener la cuenta abierta
 		    
@@ -3220,7 +3219,7 @@ public PayDay(playerid) {
         
         //============================INGRESOS==================================
 
-	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd;
+	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
 
 		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0) {
 		    PlayerInfo[playerid][pCantWork] = 0;
