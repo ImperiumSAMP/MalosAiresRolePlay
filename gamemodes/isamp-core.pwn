@@ -13361,7 +13361,7 @@ CMD:llenar(playerid, params[])
 
 	if(!IsAtGasStation(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un dispenser de combustible en alguna estación de servicio.");
-	if(GetPlayerCash(playerid) < 6) // Lo mínimo para llenar
+	if(GetPlayerCash(playerid) < (PRICE_FULLTANK / 100)) // Lo mínimo para llenar
 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Vuelve cuando tengas el dinero suficiente.");
 	if(fillingFuel[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras cargando nafta.");
@@ -13384,13 +13384,12 @@ CMD:llenar(playerid, params[])
 			    preamount = GetHandParam(playerid, HAND_RIGHT);
 				refilltype = 2;
 				PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el bidón de combustible.");
-
 			}
 		}
 	refillprice = PRICE_FULLTANK / 100 * (100 - preamount); // precio para llenar el tanque
 	if(GetPlayerCash(playerid) < refillprice)
 	{
-        refillamount = GetPlayerCash(playerid) / 6; // en porcentaje
+        refillamount = GetPlayerCash(playerid) / (PRICE_FULLTANK / 100); // en porcentaje
     	refillprice = GetPlayerCash(playerid);
 	} else
 		refillamount = 100 - preamount; // le llenamos lo que le falta, en porcentaje
