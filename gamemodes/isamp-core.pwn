@@ -62,7 +62,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.0"
+#define GAMEMODE				"MA:RP v1.0.2"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
@@ -490,7 +490,8 @@ main() {
 	return 1;
 }
 
-public OnGameModeInit() {
+public OnGameModeInit()
+{
 	print("HELP");
     loadMySQLcfg();
 	print("HELP");
@@ -680,7 +681,7 @@ public OnPlayerConnectEx(playerid)
 	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, PTD_Speedo[playerid], 1);
 
-	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 103, " ");
+	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 160, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Timer[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_Timer[playerid], 1);
 	PlayerTextDrawLetterSize(playerid, PTD_Timer[playerid], 0.5, 1.9);
@@ -1577,7 +1578,13 @@ public OnPlayerDeath(playerid, killerid, reason)
  	
 	if(PlayerInfo[playerid][pJailed] == 0)
 		PlayerInfo[playerid][pHospitalized] = 1;
-	
+
+	// Los policias en servicio que mueren no pierden las armas (no se las confiscan en el hospital)
+	if(!isPlayerCopOnDuty(playerid))
+	{
+	    ResetAndSaveHands(playerid);
+		ResetAndSaveBack(playerid);
+	}
 	EndPlayerDuty(playerid);
 	
 	if(hearingRadioStream[playerid])
@@ -1589,9 +1596,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 
     ResetMaskLabel(playerid);
 	ResetPlayerWeapons(playerid);
-	ResetAndSaveHands(playerid);
-	ResetAndSaveBack(playerid);
-	
 	return 1;
 }
 
