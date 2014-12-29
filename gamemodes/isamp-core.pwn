@@ -11665,8 +11665,8 @@ CMD:darlicencia(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la comisaría.");
 	if(!ProxDetectorS(4.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
-	if(PlayerInfo[targetid][pLevel] < 7)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no posee el tiempo de residencia en el pais necesario ((NIVEL 7)).");
+	if(PlayerInfo[targetid][pLevel] < 5)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no posee el tiempo de residencia en el pais necesario ((NIVEL 5)).");
   	if(PlayerInfo[targetid][pWepLic] != 0)
   	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya cuenta con una licencia de armas.");
 	if(GetPlayerCash(targetid) < PRICE_LIC_GUN)

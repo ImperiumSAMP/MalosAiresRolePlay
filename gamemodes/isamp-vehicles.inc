@@ -1056,6 +1056,7 @@ CMD:usarbidon(playerid, params[])
 	new gasAmount,
 		refillAmount,
 		vehicleid = GetClosestVehicle(playerid, 4.0),
+		string[128],
 		hand;
 
 	if(IsPlayerInAnyVehicle(playerid))
@@ -1082,14 +1083,17 @@ CMD:usarbidon(playerid, params[])
         GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
 		SetHandItemAndParam(playerid, hand, ITEM_ID_BIDON, 0);
 		PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía todo el contenido del bidón dentro.");
-        SendFMessage(playerid, COLOR_WHITE, "Has vaciado el bidón, tu vehículo ahora tiene un %d%% de combustible.", VehicleInfo[vehicleid][VehFuel]);
-	} else {
+  		format(string, sizeof(string), "Has vaciado el bidón, tu vehículo ahora tiene un %d %% de combustible.", VehicleInfo[vehicleid][VehFuel] + gasAmount);
+	}
+	else
+	{
         SetPVarInt(playerid, "fuelCarWithCan", SetTimerEx("fuelCarWithCan", 6000, false, "iii", playerid, vehicleid, 100));
         GameTextForPlayer(playerid, "~w~Llenando tanque", 6000, 4);
         SetHandItemAndParam(playerid, hand, ITEM_ID_BIDON, gasAmount - refillAmount);
         PlayerActionMessage(playerid, 15.0, "abre la tapa del tanque y vacía parte del bidón dentro.");
-        SendFMessage(playerid, COLOR_WHITE, "Has llenado el tanque de tu vehículo. Tu bidón ahora tiene un %d%% de combustible.", GetHandParam(playerid, hand));
+        format(string, sizeof(string), "Has llenado el tanque de tu vehículo. Tu bidón ahora tiene un %d %% de combustible.", GetHandParam(playerid, hand));
     }
+    SendClientMessage(playerid, COLOR_WHITE, string);
 	return 1;
 }
 
