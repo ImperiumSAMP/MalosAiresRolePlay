@@ -3225,24 +3225,27 @@ public PayDay(playerid) {
 
 	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
 
-		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0) {
+		//=============================EMPLEO===================================
+		
+		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0)
 		    PlayerInfo[playerid][pCantWork] = 0;
-		}
+		jobBreak[playerid] = 80;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
+		
+		
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
 	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
 	    SendFMessage(playerid, COLOR_WHITE, "- Balance anterior: $%d - Nuevo balance: $%d", PlayerInfo[playerid][pBank], newbank);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
-		if(bizID != 0) {
-			    SendFMessage(playerid, COLOR_WHITE, "[Negocio %s] Ingresos: $%d - Impuestos: $%d - Balance de caja: $%d - Productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
-	        	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
+		if(bizID != 0)
+		{
+  			SendFMessage(playerid, COLOR_WHITE, "[Negocio %s] Ingresos: $%d - Impuestos: $%d - Balance de caja: $%d - Productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
+	        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
 		}
 		if(gangProfits > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-		if(alquiler > 0 || alquileradd > 0) {
+		if(alquiler > 0 || alquileradd > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
-		}
-		
 		
 		PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
@@ -3997,17 +4000,17 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
 		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
 		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
 		{
 	    	SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 
 	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI)
@@ -4209,15 +4212,20 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	return 1;
 }
 
-public garbageTimer(playerid, garbcp) {
+public garbageTimer(playerid, garbcp)
+{
     TogglePlayerControllable(playerid, true);
-    if(garbcp == 25) {
+    if(garbcp == 25)
+	{
 		SendClientMessage(playerid, COLOR_WHITE, "Vuelve y vacía el camión en el depósito.");
-  	} else if(garbcp == 26) {
+  	}
+  	else if(garbcp == 26)
+	{
   	    new paycheck = JOB_GARB_MONEY;
   	    RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    PlayerInfo[playerid][pPayCheck] += paycheck;
+	    jobBreak[playerid] = 80;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	    SetEngine(GetPlayerVehicleID(playerid), 0);
