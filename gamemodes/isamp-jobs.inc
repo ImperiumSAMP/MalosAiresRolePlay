@@ -516,30 +516,29 @@ CMD:setjob(playerid, params[])
 	return 1;
 }
 
-
-//Timers
-public jobBreakTimer(playerid, job) {
-	if(jobBreak[playerid] > 0) {
+public jobBreakTimer(playerid, job)
+{
+	if(jobBreak[playerid] > 0)
+	{
 		jobBreak[playerid]--;
-		if(jobBreak[playerid] == 40) {
+		if(jobBreak[playerid] == 40)
 		    SendClientMessage(playerid, COLOR_WHITE, "¡Te quedan 40 segundos para ingresar al vehículo!");
-		}
-		SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "dd", playerid, job));
-	} else {
+		SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, job));
+	}
+	else
+	{
 	    SendClientMessage(playerid, COLOR_WHITE, "¡Has agotado el tiempo disponible para ingresar al vehículo!");
 	    SendClientMessage(playerid, COLOR_WHITE, "No recibirás ninguna paga y no podrás volver a trabajar hasta el próximo día de pago.");
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		jobDuty[playerid] = false;
-		if(PlayerInfo[playerid][pJobAllowed] == 1) {
-			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-		}
 		CollectedProds[playerid] = 0;
 		LastCP[playerid] = -1;
-		
+		jobBreak[playerid] = 80;
 		DisablePlayerCheckpoint(playerid);
 		
-		if(job == JOB_GARB) {
+		if(job == JOB_GARB)
+		{
 			DeletePVar(playerid, "garbageCheckpoint");
 			DeletePVar(playerid, "garbageRoute");
 		}

@@ -62,7 +62,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.0"
+#define GAMEMODE				"MA:RP v1.0.2"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
@@ -490,7 +490,8 @@ main() {
 	return 1;
 }
 
-public OnGameModeInit() {
+public OnGameModeInit()
+{
 	print("HELP");
     loadMySQLcfg();
 	print("HELP");
@@ -680,7 +681,7 @@ public OnPlayerConnectEx(playerid)
 	PlayerTextDrawSetOutline(playerid, PTD_Speedo[playerid], 1);
 	PlayerTextDrawSetProportional(playerid, PTD_Speedo[playerid], 1);
 
-	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 103, " ");
+	PTD_Timer[playerid] = CreatePlayerTextDraw(playerid, 496, 160, " ");
 	PlayerTextDrawBackgroundColor(playerid, PTD_Timer[playerid], 255);
 	PlayerTextDrawFont(playerid, PTD_Timer[playerid], 1);
 	PlayerTextDrawLetterSize(playerid, PTD_Timer[playerid], 0.5, 1.9);
@@ -1577,7 +1578,13 @@ public OnPlayerDeath(playerid, killerid, reason)
  	
 	if(PlayerInfo[playerid][pJailed] == 0)
 		PlayerInfo[playerid][pHospitalized] = 1;
-	
+
+	// Los policias en servicio que mueren no pierden las armas (no se las confiscan en el hospital)
+	if(!isPlayerCopOnDuty(playerid))
+	{
+	    ResetAndSaveHands(playerid);
+		ResetAndSaveBack(playerid);
+	}
 	EndPlayerDuty(playerid);
 	
 	if(hearingRadioStream[playerid])
@@ -1589,9 +1596,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 
     ResetMaskLabel(playerid);
 	ResetPlayerWeapons(playerid);
-	ResetAndSaveHands(playerid);
-	ResetAndSaveBack(playerid);
-	
 	return 1;
 }
 
@@ -3191,8 +3195,7 @@ public PayDay(playerid) {
         
         //========================COSTOS BANCARIOS==============================
 
-		new banktax = 0;
-		banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
+		new banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
 		if(banktax < 50)
 		    banktax = 50; // Mínimo de 50 pesos por tener la cuenta abierta
 		    
@@ -3220,26 +3223,29 @@ public PayDay(playerid) {
         
         //============================INGRESOS==================================
 
-	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd;
+	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
 
-		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0) {
+		//=============================EMPLEO===================================
+		
+		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0)
 		    PlayerInfo[playerid][pCantWork] = 0;
-		}
+		jobBreak[playerid] = 80;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
+		
+		
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
 	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
 	    SendFMessage(playerid, COLOR_WHITE, "- Balance anterior: $%d - Nuevo balance: $%d", PlayerInfo[playerid][pBank], newbank);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
-		if(bizID != 0) {
-			    SendFMessage(playerid, COLOR_WHITE, "[Negocio %s] Ingresos: $%d - Impuestos: $%d - Balance de caja: $%d - Productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
-	        	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
+		if(bizID != 0)
+		{
+  			SendFMessage(playerid, COLOR_WHITE, "[Negocio %s] Ingresos: $%d - Impuestos: $%d - Balance de caja: $%d - Productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
+	        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
 		}
 		if(gangProfits > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-		if(alquiler > 0 || alquileradd > 0) {
+		if(alquiler > 0 || alquileradd > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
-		}
-		
 		
 		PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
@@ -3994,17 +4000,17 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
 		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
 		{
 	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
 		{
 	    	SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ddd", playerid, PlayerInfo[playerid][pJob]));
+            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
 	    }
 
 	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI)
@@ -4206,15 +4212,20 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	return 1;
 }
 
-public garbageTimer(playerid, garbcp) {
+public garbageTimer(playerid, garbcp)
+{
     TogglePlayerControllable(playerid, true);
-    if(garbcp == 25) {
+    if(garbcp == 25)
+	{
 		SendClientMessage(playerid, COLOR_WHITE, "Vuelve y vacía el camión en el depósito.");
-  	} else if(garbcp == 26) {
+  	}
+  	else if(garbcp == 26)
+	{
   	    new paycheck = JOB_GARB_MONEY;
   	    RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    PlayerInfo[playerid][pPayCheck] += paycheck;
+	    jobBreak[playerid] = 80;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	    SetEngine(GetPlayerVehicleID(playerid), 0);
@@ -6439,7 +6450,7 @@ public JailTimer()
 
 	foreach(new i : Player)
 	{
-	    if(PlayerInfo[i][pJailed] >= 0)
+	    if(PlayerInfo[i][pJailed] > 0)
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
@@ -6452,7 +6463,7 @@ public JailTimer()
 			}
 			if(PlayerInfo[i][pJailTime] == 0)
 			{
-			    switch (PlayerInfo[i][pJailed])
+			    switch(PlayerInfo[i][pJailed])
 				{
 			        case 1:
 					{
@@ -6476,6 +6487,7 @@ public JailTimer()
 						PlayerInfo[i][pZ] = 13.5469;
 						SetPlayerPos(i, 1685.7615, -2241.1375, 13.5469);
 						SetPlayerFacingAngle(i, 176.6281);
+						SetPlayerHealthEx(i, 100.0);
 						TogglePlayerControllable(i, true);
 			        }
 				}
@@ -11661,8 +11673,8 @@ CMD:darlicencia(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la comisaría.");
 	if(!ProxDetectorS(4.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra muy lejos.");
-	if(PlayerInfo[targetid][pLevel] < 7)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no posee el tiempo de residencia en el pais necesario ((NIVEL 7)).");
+	if(PlayerInfo[targetid][pLevel] < 5)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no posee el tiempo de residencia en el pais necesario ((NIVEL 5)).");
   	if(PlayerInfo[targetid][pWepLic] != 0)
   	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto ya cuenta con una licencia de armas.");
 	if(GetPlayerCash(targetid) < PRICE_LIC_GUN)
@@ -13362,7 +13374,7 @@ CMD:llenar(playerid, params[])
 
 	if(!IsAtGasStation(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un dispenser de combustible en alguna estación de servicio.");
-	if(GetPlayerCash(playerid) < 6) // Lo mínimo para llenar
+	if(GetPlayerCash(playerid) < (PRICE_FULLTANK / 100)) // Lo mínimo para llenar
 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Vuelve cuando tengas el dinero suficiente.");
 	if(fillingFuel[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras cargando nafta.");
@@ -13385,13 +13397,12 @@ CMD:llenar(playerid, params[])
 			    preamount = GetHandParam(playerid, HAND_RIGHT);
 				refilltype = 2;
 				PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el bidón de combustible.");
-
 			}
 		}
 	refillprice = PRICE_FULLTANK / 100 * (100 - preamount); // precio para llenar el tanque
 	if(GetPlayerCash(playerid) < refillprice)
 	{
-        refillamount = GetPlayerCash(playerid) / 6; // en porcentaje
+        refillamount = GetPlayerCash(playerid) / (PRICE_FULLTANK / 100); // en porcentaje
     	refillprice = GetPlayerCash(playerid);
 	} else
 		refillamount = 100 - preamount; // le llenamos lo que le falta, en porcentaje

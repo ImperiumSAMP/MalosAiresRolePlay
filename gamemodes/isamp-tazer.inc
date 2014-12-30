@@ -23,6 +23,11 @@ new tazerAmmo[MAX_PLAYERS],
 	
 resetTazer(playerid)
 {
+	if(tazerInUse[playerid])
+	{
+	    if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED)
+	        SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
 	tazerInUse[playerid] = 0;
 	tazerStatus[playerid] = TAZER_NONE;
 	tazerAmmo[playerid] = 0;
