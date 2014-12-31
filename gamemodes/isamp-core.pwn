@@ -333,18 +333,6 @@ new
 	TransportCost[MAX_PLAYERS],
 	TaxiTimer=PRICE_TAXI_INTERVAL,
 	
-	// Sistema de toggle 
-	bool:PhoneEnabled[MAX_PLAYERS],
-	bool:PMsEnabled[MAX_PLAYERS],
-	bool:NewsEnabled[MAX_PLAYERS],
-	bool:NicksEnabled[MAX_PLAYERS],
-	bool:RadioEnabled[MAX_PLAYERS],
-	bool:FactionEnabled[MAX_PLAYERS],
-	bool:TalkAnimEnabled[MAX_PLAYERS],
-    bool:HudEnabled[MAX_PLAYERS],
-	
-	
-	
 	//Alcoholemia
 	DrinksTaken[MAX_PLAYERS],
 	BlowingPipette[MAX_PLAYERS],

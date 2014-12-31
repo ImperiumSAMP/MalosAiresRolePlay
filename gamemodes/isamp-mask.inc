@@ -199,7 +199,7 @@ CMD:mascara(playerid, params[])
 		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-				ShowPlayerNameTagForPlayer(i, playerid, 0);
+				ShowPlayerNameTagForPlayer(i, playerid, false);
 		}
 	} else
 		{
@@ -211,7 +211,10 @@ CMD:mascara(playerid, params[])
 			DestroyDynamic3DTextLabel(maskLabel[playerid]);
 			ResetMaskVariables(playerid);
 		    foreach(new i : Player)
-		        ShowPlayerNameTagForPlayer(i, playerid, 1);
+	  		{
+	            if(NicksEnabled[i])
+		        	ShowPlayerNameTagForPlayer(i, playerid, true);
+			}
 		}
 	return 1;
 }
