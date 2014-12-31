@@ -1582,7 +1582,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 	
 	InEnforcer[playerid] = 0;
 
-    ResetMaskLabel(playerid);
 	ResetPlayerWeapons(playerid);
 	return 1;
 }
@@ -4873,6 +4872,7 @@ public SetPlayerSpawn(playerid)
 	
 	SetPlayerFightingStyle(playerid, PlayerInfo[playerid][pFightStyle]);
 
+	ResetMaskLabel(playerid);
     usingMask[playerid] = false; // Al spawnear, deja de estar con la mascara puesta
 
     HidePlayerSpeedo(playerid);

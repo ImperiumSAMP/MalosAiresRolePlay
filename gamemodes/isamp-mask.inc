@@ -130,7 +130,10 @@ stock bool:HasPlayerMask(playerid)
 stock ResetMaskLabel(playerid)
 {
 	if(maskActive[playerid])
+	{
 		DestroyDynamic3DTextLabel(maskLabel[playerid]);
+		maskActive[playerid] = false;
+	}
 }
 
 stock HidePlayerMask(playerid, time)
@@ -170,7 +173,6 @@ stock logmask(playerid, logType, maskid)
 	return 1;
 }
 
-//===================================XXX===================================
 PlayerTakeMaskID(playerid, maskid)
 {
 	new str[12];
@@ -182,7 +184,6 @@ PlayerTakeMaskID(playerid, maskid)
 }
 
 //===================================COMANDOS===================================
-//============================SISTEMA DE MASCARA================================
 
 CMD:mascara(playerid, params[])
 {
