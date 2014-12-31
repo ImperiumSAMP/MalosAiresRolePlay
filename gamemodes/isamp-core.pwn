@@ -3145,7 +3145,6 @@ public PayDay(playerid) {
             default: {
             	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
 					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
-					PlayerInfo[playerid][pJob] == JOB_DRUGF  || // Si para el estado el sujeto no tiene empleo (job ilegal)
 					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
             		PlayerInfo[playerid][pPayCheck] += 600; // ASIGNACION A LOS DESEMPLEADOS
                 if(PlayerInfo[playerid][pJob] == JOB_TAXI)//Mínimo por si no hay pasajeros disponibles
@@ -3227,7 +3226,7 @@ public PayDay(playerid) {
 
 		//=============================EMPLEO===================================
 		
-		if(PlayerInfo[playerid][pCantWork] == 1 && PlayerInfo[playerid][pJailed] == 0)
+		if(PlayerInfo[playerid][pCantWork] > 0 && PlayerInfo[playerid][pJailed] == 0)
 		    PlayerInfo[playerid][pCantWork] = 0;
 		jobBreak[playerid] = 80;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
@@ -9401,9 +9400,14 @@ CMD:comprar(playerid, params[])
 					return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una bolsa de materia prima en tus manos para canjear.");
 				if(type < 1 || type > 4)
 					return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de droga inválido.");
-     			if(amount < 1 || amount > 50)
-			    	return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas a canjear no debe ser menor a 1 o mayor a 50.");
-                handparam = GetHandParam(playerid, hand);
+     			if(amount < 1 || amount > 5)
+			    	return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas a canjear no debe ser menor a 1 o mayor a 5.");
+				if(PlayerInfo[playerid][pCantWork] + amount > MAX_DRUG_PURCHASE_PAYDAY)
+				{
+	   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una maldita fábrica? Ya te he vendido %d grs hoy. No puedo preparar mas de %d grs por día.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
+					return SendClientMessage(playerid, COLOR_YELLOW2, "Sujeto: Vuelve mañana y tendré lista otra tanda.");
+				}
+				handparam = GetHandParam(playerid, hand);
                 if(handparam < amount)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de suficiente materia prima en la mano para canjear.");
 					
@@ -9412,21 +9416,25 @@ CMD:comprar(playerid, params[])
 				    case 1:
 					{
 						PlayerInfo[playerid][pMarijuana] += 5 * amount;
+						PlayerInfo[playerid][pCantWork] += 5 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d gramos de marihuana por %d bolsas de materia prima.", 5 * amount, amount);
 					}
 				    case 2:
 					{
 						PlayerInfo[playerid][pLSD] += 4 * amount;
+						PlayerInfo[playerid][pCantWork] += 4 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d dosis de LSD por %d bolsas de materia prima.", 4 * amount, amount);
 					}
 				    case 3:
 					{
 						PlayerInfo[playerid][pEcstasy] += 3 * amount;
+						PlayerInfo[playerid][pCantWork] += 3 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d dosis de éxtasis por %d bolsas de materia prima.", 3 * amount, amount);
 				    }
 					case 4:
 					{
 						PlayerInfo[playerid][pCocaine] += 2 * amount;
+						PlayerInfo[playerid][pCantWork] += 2 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d gramos de cocaína por %d bolsas de materia prima.", 2 * amount, amount);
 					}
  				}
@@ -9453,8 +9461,8 @@ CMD:comprar(playerid, params[])
 				}
 				if(freehand == -1)
 					return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar las bolsas de materia prima.");
-				if(amount < 1 || amount > 50)
-    				return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas de materia prima no debe ser menor a 1 o mayor a 50.");
+				if(amount < 1 || amount > 5)
+    				return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas de materia prima no debe ser menor a 1 o mayor a 5.");
 				if(ServerInfo[sDrugRawMats] < amount)
 				{
 				    SendFMessage(playerid, COLOR_YELLOW2, "No hay suficiente materia prima en la granja. Materia prima actual: %d.", ServerInfo[sDrugRawMats]);

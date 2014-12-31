@@ -23,6 +23,7 @@
 #define JOB_FARM_PRODVALUE      90
 #define JOB_DRUGF_MAXPRODS      30
 #define JOB_DRUGF_PRODVALUE     80
+#define	MAX_DRUG_PURCHASE_PAYDAY 10
 
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
 #define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
@@ -392,7 +393,7 @@ CMD:terminar(playerid,params[])
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
 
 			PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 1 bolsa de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    PlayerInfo[playerid][pCantWork] = 1;
 		    LastCP[playerid] = -1;
 		    ServerInfo[sDrugRawMats] += 1;
