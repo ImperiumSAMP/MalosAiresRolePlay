@@ -753,7 +753,7 @@ public OnPlayerNameCheck(playerid)
 	    SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
         SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
         SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-    	SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
+    	SendClientMessage(playerid, COLOR_YELLOW2, "Dentro del foro, visita el thread '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!', que te dirá como registrarte.");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
