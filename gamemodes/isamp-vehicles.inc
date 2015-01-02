@@ -37,7 +37,7 @@
 #define VTYPE_BOAT 				VTYPE_SEA
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
-#define PRICE_GPS   			500
+#define PRICE_GPS   			100
 
 //CHOICES
 // Selecciones.
@@ -1110,7 +1110,7 @@ CMD:lojack(playerid, params[])
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Requieres de un telefono para utilizar el Lojack!");
 	if(GetPlayerCash(playerid) < PRICE_GPS)
-		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para rastrear el vehículo. ($500)");
+		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para rastrear el vehículo. ($100)");
 
 	foreach(new i : Player)
 	{
