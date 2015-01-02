@@ -62,7 +62,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.2"
+#define GAMEMODE				"MA:RP v1.0.3"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
@@ -4666,7 +4666,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		return 1;
 
 	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero", 2000, 4);
+		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco", 2000, 4);
 		return 1;
 
 	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
@@ -9711,7 +9711,7 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /sospechoso /radio /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /cono /barricada /camaras");
  	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta");
     if(PlayerInfo[playerid][pRank] <= 3)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos");
@@ -13176,62 +13176,43 @@ CMD:sservicio(playerid, params[])
 	return 1;
 }
 
-CMD:schaleco(playerid, params[])
+CMD:stars(playerid, params[])
 {
-	new Float:armour;
-
-    if(!isPlayerSideOnDuty(playerid))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
-	    
-    GetPlayerArmour(playerid, armour);
-	if(armour == 0.0)
-	{
-		PlayerActionMessage(playerid, 15.0, "toma un chaleco antibalas de su casillero.");
-		SetPlayerArmour(playerid, 100);
-	} else
-		{
-			PlayerActionMessage(playerid, 15.0, "deja el chaleco antibalas en su casillero.");
-			SetPlayerArmour(playerid, 0);
-		}
-	return 1;
-}
-
-CMD:stars(playerid, params[]) {
-	new
-	    toggle,
+	new toggle,
 	    string[128];
 
-    if(PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
-
-    if(PlayerInfo[playerid][pRank] != 1) {
-        SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente.");
+    if(PlayerInfo[playerid][pFaction] != FAC_SIDE)
 		return 1;
-	}
-
-    if(SIDEDuty[playerid] != 1) {
-        SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
-        return 1;
-    }
-
-    if(sscanf(params, "i", toggle)) {
+    if(PlayerInfo[playerid][pRank] != 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente.");
+    if(SIDEDuty[playerid] != 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
+    if(sscanf(params, "i", toggle))
+	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /stars [0-1]");
-	    switch(STARS) {
+	    switch(STARS)
+		{
 	        case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado S.T.A.R.S.: {D40000}desautorizado");
 	        case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado S.T.A.R.S.: {00D41C}autorizado");
 	    }
-	} else if(toggle == 1 && STARS != 1) {
+	}
+	else if(toggle == 1 && STARS != 1)
+	{
 	    format(string, sizeof(string), "¡Atención! el S.T.A.R.S. ha sido autorizado por %s.", GetPlayerNameEx(playerid));
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
         STARS = 1;
-	} else if(toggle == 0 && STARS != 0) {
+	}
+	else if(toggle == 0 && STARS != 0)
+	{
 	    format(string, sizeof(string), "¡Atención! el S.T.A.R.S. ha sido desautorizado por %s.", GetPlayerNameEx(playerid));
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
         STARS = 0;
-	} else {
+	}
+	else
+	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /stars [0-1]");
-	    switch(STARS) {
+	    switch(STARS)
+		{
 	        case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado S.T.A.R.S.: {D40000}desautorizado");
 	        case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado S.T.A.R.S.: {00D41C}autorizado");
 	    }
