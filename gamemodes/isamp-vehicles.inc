@@ -1164,7 +1164,7 @@ CMD:motor(playerid, params[])
 	if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 	if(jobRequiresVehicle(VehicleInfo[vehicleid][VehJob]))
-	    return SendClientMessage(playerid, COLOR_WHITE, "Para encender esta vehículo utiliza /trabajar.");
+	    return SendClientMessage(playerid, COLOR_WHITE, "Para encender este vehículo utiliza /trabajar.");
 	if(VehicleInfo[vehicleid][VehJob] != 0 && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 	if(VehicleInfo[vehicleid][VehHP] < 500)
@@ -1190,7 +1190,8 @@ CMD:motor(playerid, params[])
 
 //==========================COMANDOS DE VEHICULOS===============================
 
-CMD:veh(playerid, params[]) {
+CMD:veh(playerid, params[])
+{
 	cmd_vehiculo(playerid, params);
 	return 1;
 }
@@ -1198,7 +1199,7 @@ CMD:veh(playerid, params[]) {
 CMD:vehiculo(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================[COMANDOS DE VEHICULOS]===========================");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehcomprar [color1] [color2] - /vehvender - /vehvendera [ID/Jugador] [IDvehiculo] [precio] - /vehestacionar");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehcomprar [color1] [color2] - /vehvender - /vehvendera [ID/Jugador] [ID vehículo] [precio] - /vehestacionar");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehpuertas - /vehluces - /vehmal - /vehcapot");
 	return 1;
 }

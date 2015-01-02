@@ -100,7 +100,7 @@ stock LookObject(playerid)
 	new object = GetClosestObject(playerid);
 	
 	if(object == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún objeto cerca tuyo.");
 
 	SendFMessage(playerid, COLOR_WHITE, "Examinas el objeto y ves un/a: %s - %s: %d", GetItemName(ServerObject[object][sItemID]), GetItemParamName(ServerObject[object][sItemID]), ServerObject[object][sAmount]);
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);

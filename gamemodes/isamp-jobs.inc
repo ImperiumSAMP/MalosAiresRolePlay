@@ -3,11 +3,8 @@
 #endif
 #define _isamp_jobs_included
 
-// Misiones.
-#define JOB_EVENT_TIMER         55//25  // Tiempo en minutos minimo entre eventos de empleo.
-#define JOB_EVENT_MAXTIMER      90//60  // Tiempo extra random, varía entre 0 y la cantidad especificada y se añaden al mínimo.
-
 //====[EMPLEOS]=================================================================
+
 //#define JOB_MECH              1 		// Mecánicos.
 #define JOB_TAXI             	2 		// Conductor.
 #define JOB_FARM             	3 		// Granjero.
@@ -28,7 +25,7 @@
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
 #define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
 
-#define JOB_GARB_MONEY       	1800 	// MONEY + random(MONEY / 2)
+#define JOB_GARB_MONEY       	1800
 
 #define JOB_EXP_MULTIPLIER      3
 //
@@ -381,6 +378,7 @@ CMD:terminar(playerid,params[])
 			LastCP[playerid] = -1;
 			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
 			CollectedProds[playerid] = 0;
+			jobBreak[playerid] = 80;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		}
 		case JOB_DRUGF:
@@ -414,6 +412,7 @@ CMD:terminar(playerid,params[])
 			LastCP[playerid] = -1;
 			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
 			CollectedProds[playerid] = 0;
+			jobBreak[playerid] = 80;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 			PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
 		}
