@@ -9066,7 +9066,8 @@ CMD:tomartelefono(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(GetHandItem(playerid, HAND_RIGHT) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
-	PlayerActionMessage(playerid, 15.0, "toma su telefono celular del bolsillo");
+
+	PlayerActionMessage(playerid, 15.0, "toma su teléfono celular del bolsillo.");
 	PhoneHand[playerid] = 1;	
 	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
 	return 1;
@@ -9078,7 +9079,8 @@ CMD:guardartelefono(playerid,params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(PhoneHand[playerid] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
-	PlayerActionMessage(playerid, 15.0, "guarda su telefono celular en el bolsillo");
+	    
+	PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
 	PhoneHand[playerid] = 0;
 	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
     return 1;
@@ -9093,13 +9095,14 @@ CMD:atender(playerid, params[])
 	if(CheckMissionEvent(playerid, 1))
 	    return 1;
 
-	foreach(new i : Player) {
-		if(Mobile[i] == playerid) {
+	foreach(new i : Player)
+	{
+		if(Mobile[i] == playerid)
+		{
 			Mobile[playerid] = i;
 			SendClientMessage(i, COLOR_YELLOW2, "Han atendido tu llamada...");
-			if(!IsPlayerInAnyVehicle(playerid)) {
+			if(!IsPlayerInAnyVehicle(playerid))
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
-			}
 			PlayerActionMessage(playerid, 15.0, "ha atendido a un llamado telefónico.");
 		}
 	}
@@ -9528,25 +9531,32 @@ CMD:nocargar(playerid, params[])
 	return 1;
 }
 
-CMD:licencias(playerid, params[]) {
-	if(PlayerToPoint(4.0, playerid, -2033.2118, -117.4678, 1035.1719)) {
+CMD:licencias(playerid, params[])
+{
+	if(PlayerToPoint(4.0, playerid, -2033.2118, -117.4678, 1035.1719))
+	{
 		TogglePlayerControllable(playerid, false);
 		ShowMenuForPlayer(licenseMenu, playerid);
 	}
 	return 1;
 }
 
-CMD:empleos(playerid, params[]) {
-	if(PlayerToPoint(4.0, playerid, 361.8299, 173.4907, 1008.3828)) {
+CMD:empleos(playerid, params[])
+{
+	if(PlayerToPoint(4.0, playerid, 361.8299, 173.4907, 1008.3828))
+	{
 		TogglePlayerControllable(playerid, false);
 		ShowPlayerDialog(playerid, DLG_JOBS, DIALOG_STYLE_LIST, "Empleos de Malos Aires", "Empleo de mecanico\nEmpleo de taxista\nEmpleo de granjero\nEmpleo de transportista\nEmpleo de basurero", "Ver", "Cerrar");
 	}
 	return 1;
 }
 
-CMD:guia(playerid, params[]) {
-	for(new i = 0; i < sizeof(P_GUIDE); i++) {
-        if(PlayerToPoint(4.0, playerid, GUIDE_POS[i][0], GUIDE_POS[i][1], GUIDE_POS[i][2])) {
+CMD:guia(playerid, params[])
+{
+	for(new i = 0; i < sizeof(P_GUIDE); i++)
+	{
+        if(PlayerToPoint(4.0, playerid, GUIDE_POS[i][0], GUIDE_POS[i][1], GUIDE_POS[i][2]))
+		{
 			TogglePlayerControllable(playerid, false);
             ShowPlayerDialog(playerid, DLG_GUIDE, DIALOG_STYLE_LIST, "Guía de Malos Aires", "Alquiler de vehiculos\nCentro de licencias\nCentro de empleos\nTienda de ropa urbana\nTienda de ropa fina\nMercado de Malos Aires", "Ver", "Cerrar");
 		}
@@ -9554,19 +9564,25 @@ CMD:guia(playerid, params[]) {
 	return 1;
 }
 
-CMD:manuales(playerid, params[]) {
-	new
-	    option;
+CMD:manuales(playerid, params[])
+{
+	new option;
 
-    if(PlayerToPoint(4.0, playerid, -2033.2118, -117.4678, 1035.1719)) {
-        if(sscanf(params, "d", option)) {
+    if(PlayerToPoint(4.0, playerid, -2033.2118, -117.4678, 1035.1719))
+	{
+        if(sscanf(params, "d", option))
+		{
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /manuales [licencia]");
 			SendClientMessage(playerid, COLOR_WHITE, "1: licencia de conducción.");
 			SendClientMessage(playerid, COLOR_WHITE, "2: licencia de navegación.");
 			SendClientMessage(playerid, COLOR_WHITE, "3: licencia de vuelo.");
-		} else {
-		    switch(option) {
-		        case 1: {
+		}
+		else
+		{
+		    switch(option)
+			{
+		        case 1:
+				{
           			SendClientMessage(playerid, COLOR_WHITE, " ");
           			SendClientMessage(playerid, COLOR_WHITE, "---------------------");
 		            SendClientMessage(playerid, COLOR_YELLOW2, "Manual de conducción:");
@@ -9579,7 +9595,8 @@ CMD:manuales(playerid, params[]) {
                     SendClientMessage(playerid, COLOR_WHITE, "- (6) Los peatones tienen prioridad para cruzar en las esquinas.");
                     SendClientMessage(playerid, COLOR_YELLOW2, "De no respetar alguna de las normas podrá ser multado por una suma de entre $100 a $30,000 según la gravedad.");
 		        }
-		        default: {
+		        default:
+				{
 		            SendClientMessage(playerid, COLOR_YELLOW2, "El manual que intentó leer no existe o bien la licencia no se encuentra disponible actualmente.");
 		        }
 		    }
@@ -9588,7 +9605,8 @@ CMD:manuales(playerid, params[]) {
 	return 1;
 }
 
-CMD:cla(playerid, params[]) {
+CMD:cla(playerid, params[])
+{
 	cmd_clasificado(playerid, params);
 	return 1;
 }
@@ -9605,7 +9623,8 @@ CMD:clasificado(playerid,params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"Debes ser al menos nivel 2 para enviar un anuncio.");
     if(AllowAdv[playerid] != 1)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Espere 60 segundos antes de enviar otro anuncio.");
-    if(GetPlayerCash(playerid) < PRICE_ADVERTISE) {
+    if(GetPlayerCash(playerid) < PRICE_ADVERTISE)
+	{
     	SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", PRICE_ADVERTISE);
 		return 1;
 	}
@@ -9651,10 +9670,10 @@ CMD:rentar(playerid, params[])
 	        if(RentCarInfo[i][rRented] == 1)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar subido a un vehículo de renta disponible para alquiler.");
 			else
-			    {
-			        rentcarid = i;
-			    	break;
-				}
+		    {
+		        rentcarid = i;
+		    	break;
+			}
 		}
 	}
 	if(time < 1 || time > 3)

@@ -72,7 +72,7 @@ ShowNotebook(playerid)
 				aux = 1;
 			}
 			else
-			    format(str, sizeof(str), "%s[%d] Vacio\n", str, i);
+			    format(str, sizeof(str), "%s[%d] Vacío\n", str, i);
 		}
 		if(aux != 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu agenda no tiene ningún contacto agregado.");
@@ -256,14 +256,14 @@ CMD:agenda(playerid, params[])
 	if(sscanf(params, "s[32]I(-1)S(-1)[32]", cmd, param1, param2))
 	{
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [comando]");
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - agregar [numero] [nombre] - borrar [slot]");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} ver - agregar [número] [nombre] - borrar [slot]");
 	    return 1;
 	}
 	
 	if(!strcmp("agregar", cmd, true))
 	{
 	    if(strval(param2) == -1)
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [numero] [nombre]");
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda agregar [número] [nombre]");
 		if(PhoneHand[playerid] == 0)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 		if(param1 < 0 || strlen(param2) >= 32)
