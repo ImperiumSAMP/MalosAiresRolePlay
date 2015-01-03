@@ -3144,10 +3144,12 @@ public PayDay(playerid)
             }
             default:
 			{
-            	if(PlayerInfo[playerid][pJob] == 0 ||  PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGD)
-            		PlayerInfo[playerid][pPayCheck] += 600; // ASIGNACION A LOS DESEMPLEADOS
-                if(PlayerInfo[playerid][pJob] == JOB_TAXI)//Mínimo por si no hay pasajeros disponibles
-            		PlayerInfo[playerid][pPayCheck] += 1200; // ASIGNACION A LOS DESEMPLEADOS
+            	if(PlayerInfo[playerid][pJob] == 0 ||  PlayerInfo[playerid][pJob] == JOB_FELON) // ASIGNACION A LOS DESEMPLEADOS
+            		PlayerInfo[playerid][pPayCheck] += 600;
+				if(PlayerInfo[playerid][pJob] == JOB_DRUGD) //Mínimo por si no hay ventas
+				    PlayerInfo[playerid][pPayCheck] += 800;
+                if(PlayerInfo[playerid][pJob] == JOB_TAXI) //Mínimo por si no hay pasajeros disponibles
+            		PlayerInfo[playerid][pPayCheck] += 1200;
 			}
         }
         
@@ -4603,7 +4605,7 @@ stock LoadPickups() {
     }
 
     /* Cosechador de materia prima */
-	P_DRUGFARM_MATS = CreateDynamicPickup(1239, 1, -1060.9709,-1195.5382,129.6939);
+	P_DRUGFARM_MATS = CreateDynamicPickup(1239, 1, -1060.9709, -1195.5382, 129.6939);
 
     // Garages de tuneo.
    	P_TUNE[0] = CreateDynamicPickup(1239, 1, -2714.6985, 222.1743, 4.3281, -1);
@@ -9397,10 +9399,10 @@ CMD:comprar(playerid, params[])
 				if(sscanf(params, "ii", type, amount))
 				{
 	                SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [tipo] [cant de bolsas de mat. prima a canjear]");
-			        SendClientMessage(playerid, COLOR_YELLOW2, "1: marihuana    -    5 grs. por cada bolsa de materia prima.");
-			        SendClientMessage(playerid, COLOR_YELLOW2, "2: LSD   	           -    4 grs. por cada bolsa de materia prima.");
-			        SendClientMessage(playerid, COLOR_YELLOW2, "3: éxtasis          -    3 grs. por cada bolsa de materia prima.");
-			        SendClientMessage(playerid, COLOR_YELLOW2, "4: cocaína         -    2 grs. por cada bolsa de materia prima.");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "1: Marihuana - 5 grs. por cada bolsa de materia prima.");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "2: LSD - 4 grs. por cada bolsa de materia prima.");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "3: Extasis - 3 grs. por cada bolsa de materia prima.");
+			        SendClientMessage(playerid, COLOR_YELLOW2, "4: Cocaína - 2 grs. por cada bolsa de materia prima.");
 					return 1;
 				}
 				if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
@@ -9411,11 +9413,6 @@ CMD:comprar(playerid, params[])
 					return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de droga inválido.");
      			if(amount < 1 || amount > 5)
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad de bolsas a canjear no debe ser menor a 1 o mayor a 5.");
-				if(PlayerInfo[playerid][pCantWork] + amount > MAX_DRUG_PURCHASE_PAYDAY)
-				{
-	   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una maldita fábrica? Ya te he vendido %d grs hoy. No puedo preparar mas de %d grs por día.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
-					return SendClientMessage(playerid, COLOR_YELLOW2, "Sujeto: Vuelve mañana y tendré lista otra tanda.");
-				}
 				handparam = GetHandParam(playerid, hand);
                 if(handparam < amount)
                     return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de suficiente materia prima en la mano para canjear.");
@@ -9424,24 +9421,44 @@ CMD:comprar(playerid, params[])
 				{
 				    case 1:
 					{
+						if(PlayerInfo[playerid][pCantWork] + 5 * amount > MAX_DRUG_PURCHASE_PAYDAY)
+						{
+			   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una fábrica? Ya te he vendido %d grs hoy y solo puedo hacer %d grs por día. Vuelve mañana y tendré más.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
+							return 1;
+						}
 						PlayerInfo[playerid][pMarijuana] += 5 * amount;
 						PlayerInfo[playerid][pCantWork] += 5 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d gramos de marihuana por %d bolsas de materia prima.", 5 * amount, amount);
 					}
 				    case 2:
 					{
+						if(PlayerInfo[playerid][pCantWork] + 4 * amount > MAX_DRUG_PURCHASE_PAYDAY)
+						{
+			   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una fábrica? Ya te he vendido %d grs hoy y solo puedo hacer %d grs por día. Vuelve mañana y tendré más.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
+							return 1;
+						}
 						PlayerInfo[playerid][pLSD] += 4 * amount;
 						PlayerInfo[playerid][pCantWork] += 4 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d dosis de LSD por %d bolsas de materia prima.", 4 * amount, amount);
 					}
 				    case 3:
 					{
+						if(PlayerInfo[playerid][pCantWork] + 3 * amount > MAX_DRUG_PURCHASE_PAYDAY)
+						{
+			   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una fábrica? Ya te he vendido %d grs hoy y solo puedo hacer %d grs por día. Vuelve mañana y tendré más.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
+							return 1;
+						}
 						PlayerInfo[playerid][pEcstasy] += 3 * amount;
 						PlayerInfo[playerid][pCantWork] += 3 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d dosis de éxtasis por %d bolsas de materia prima.", 3 * amount, amount);
 				    }
 					case 4:
 					{
+						if(PlayerInfo[playerid][pCantWork] + 2 * amount > MAX_DRUG_PURCHASE_PAYDAY)
+						{
+			   				SendFMessage(playerid, COLOR_YELLOW2, "Sujeto: ¿Te piensas que soy una fábrica? Ya te he vendido %d grs hoy y solo puedo hacer %d grs por día. Vuelve mañana y tendré más.", PlayerInfo[playerid][pCantWork], MAX_DRUG_PURCHASE_PAYDAY);
+							return 1;
+						}
 						PlayerInfo[playerid][pCocaine] += 2 * amount;
 						PlayerInfo[playerid][pCantWork] += 2 * amount;
 						SendFMessage(playerid, COLOR_LIGHTBLUE, "Has comprado %d gramos de cocaína por %d bolsas de materia prima.", 2 * amount, amount);
@@ -9454,12 +9471,12 @@ CMD:comprar(playerid, params[])
                 PlayerActionMessage(playerid, 15.0, "realiza un intercambio de paquetes con un sujeto");
 			}
 
-	 	} else if(PlayerToPoint(4.0, playerid,	JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2])) {
-
+	 	}
+		else if(PlayerToPoint(1.0, playerid, -1060.9709, -1195.5382, 129.6939))
+		{
 			if(PlayerInfo[playerid][pJob] == JOB_DRUGD)
 			{
-		        new amount,
-		            freehand = SearchFreeHand(playerid);
+		        new amount, freehand = SearchFreeHand(playerid);
 		        
 				if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 			    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
@@ -9491,10 +9508,10 @@ CMD:comprar(playerid, params[])
        			GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIAPRIMA));
 				SendClientMessage(playerid, COLOR_WHITE, "Vé al punto de venta y tipea /comprar para cambiar las bolsas por droga. Usa /nocargar para borrar la animación de carga.");
 		    }
-       	// Mercado Negro
-		} else if(IsAtBlackMarket(playerid)) {
-
-			new item, option, cant, freehand;
+		}
+		else if(IsAtBlackMarket(playerid))
+		{
+			new item, option, cant, freehand = SearchFreeHand(playerid);
 
 			if(sscanf(params, "ii", option, cant))
 			{
@@ -9502,7 +9519,6 @@ CMD:comprar(playerid, params[])
 				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d", GetItemPrice(ITEM_ID_BARRETA));
 				return 1;
 			}
-			freehand = SearchFreeHand(playerid);
 			if(freehand == -1)
 		   		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes ambas manos ocupadas y no puedes agarrar el item.");
 			if(cant < 1 || cant > 5)
@@ -9518,7 +9534,6 @@ CMD:comprar(playerid, params[])
 			SetHandItemAndParam(playerid, freehand, item, cant);
 			GivePlayerCash(playerid, -GetItemPrice(item) * cant);
 			return 1;
-		
 		}
 	}
 	return 1;
