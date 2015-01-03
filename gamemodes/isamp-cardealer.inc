@@ -246,9 +246,9 @@ CMD:borrarmodelo(playerid, params[])
 LoadCarDealerPickups()
 {
     CreateDynamicPickup(1239, 1, 542.3592, -1292.8329, 17.1696);
-    CreateDynamic3DTextLabel("Consecionaria\n/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 542.3592, -1292.8329, 17.1696 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+    CreateDynamic3DTextLabel("Concesionaria\n/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 542.3592, -1292.8329, 17.1696 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
     CreateDynamicPickup(1239, 1, 2131.7793, -1150.9172, 24.0211);
-    CreateDynamic3DTextLabel("Consecionaria\n/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 2131.7793, -1150.9172, 24.0211 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+    CreateDynamic3DTextLabel("Concesionaria\n/vercatalogo para ver los vehículos en venta.", COLOR_WHITE, 2131.7793, -1150.9172, 24.0211 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
 }
 
 CMD:vercatalogo(playerid, params[])

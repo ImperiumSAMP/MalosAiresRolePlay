@@ -130,7 +130,10 @@ stock bool:HasPlayerMask(playerid)
 stock ResetMaskLabel(playerid)
 {
 	if(maskActive[playerid])
+	{
 		DestroyDynamic3DTextLabel(maskLabel[playerid]);
+		maskActive[playerid] = false;
+	}
 }
 
 stock HidePlayerMask(playerid, time)
@@ -170,7 +173,6 @@ stock logmask(playerid, logType, maskid)
 	return 1;
 }
 
-//===================================XXX===================================
 PlayerTakeMaskID(playerid, maskid)
 {
 	new str[12];
@@ -182,7 +184,6 @@ PlayerTakeMaskID(playerid, maskid)
 }
 
 //===================================COMANDOS===================================
-//============================SISTEMA DE MASCARA================================
 
 CMD:mascara(playerid, params[])
 {
@@ -199,7 +200,7 @@ CMD:mascara(playerid, params[])
 		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
-				ShowPlayerNameTagForPlayer(i, playerid, 0);
+				ShowPlayerNameTagForPlayer(i, playerid, false);
 		}
 	} else
 		{
@@ -211,7 +212,10 @@ CMD:mascara(playerid, params[])
 			DestroyDynamic3DTextLabel(maskLabel[playerid]);
 			ResetMaskVariables(playerid);
 		    foreach(new i : Player)
-		        ShowPlayerNameTagForPlayer(i, playerid, 1);
+	  		{
+	            if(NicksEnabled[i])
+		        	ShowPlayerNameTagForPlayer(i, playerid, true);
+			}
 		}
 	return 1;
 }

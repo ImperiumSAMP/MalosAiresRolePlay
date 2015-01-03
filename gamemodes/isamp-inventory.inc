@@ -124,7 +124,7 @@ stock PrintInvForPlayer(playerid, targetid)
 	    if(itemid > 0)
 			SendFMessage(targetid, COLOR_WHITE, " - %d- Item: %s - %s: %d", i, GetItemName(itemid), GetItemParamName(itemid), GetInvParam(playerid, i));
 	    else
-	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacio", i);
+	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
 	}
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
 	return 1;
@@ -142,7 +142,8 @@ stock LoadInvInfo(playerid)
 
 //================================COMANDOS======================================
 
-CMD:inv(playerid, params[]) {
+CMD:inv(playerid, params[])
+{
 	cmd_inventario(playerid, params);
 	return 1;
 }
@@ -211,29 +212,32 @@ CMD:inventario(playerid, params[])
 	new returnid,
 		cmd[32];
 
-    if(sscanf(params, "s[32]I(-1)", cmd, returnid)) {
+    if(sscanf(params, "s[32]I(-1)", cmd, returnid))
+	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot] - guardar/guardari [slot (opcional)] - desechar [slot]");
 		PrintInvForPlayer(playerid, playerid);
-    } else {
-		if(strcmp(cmd, "tomar", true) == 0) {
-		
+    }
+	else
+	{
+		if(strcmp(cmd, "tomar", true) == 0)
+		{
 			TakeItemFromInv(playerid, HAND_RIGHT, returnid);
-			
-        } else if(strcmp(cmd, "tomari", true) == 0) {
-
+        }
+		else if(strcmp(cmd, "tomari", true) == 0)
+		{
 			TakeItemFromInv(playerid, HAND_LEFT, returnid);
-
-	    } else if(strcmp(cmd, "guardar", true) == 0) {
-
+	    }
+		else if(strcmp(cmd, "guardar", true) == 0)
+		{
 			SaveItemOnInv(playerid, HAND_RIGHT, returnid);
-
-	    } else if(strcmp(cmd, "guardari", true) == 0) {
-
+	    }
+		else if(strcmp(cmd, "guardari", true) == 0)
+		{
 			SaveItemOnInv(playerid, HAND_LEFT, returnid);
-
-	    } else if(strcmp(cmd, "desechar", true) == 0) {
-
+	    }
+		else if(strcmp(cmd, "desechar", true) == 0)
+		{
 			new itemid = GetInvItem(playerid, returnid),
 				string[128];
 			

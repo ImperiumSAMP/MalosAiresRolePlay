@@ -98,6 +98,30 @@ stock bool:CheckTakeInputs(playerid)
 
 //===================================COMANDOS===================================
 
+CMD:schaleco(playerid, params[])
+{
+	new Float:armour;
+
+    if(!isPlayerSideOnDuty(playerid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
+
+    GetPlayerArmour(playerid, armour);
+    
+	if(armour == 0.0)
+	{
+		PlayerActionMessage(playerid, 15.0, "toma un chaleco antibalas de su casillero.");
+		SetPlayerArmour(playerid, 100);
+	}
+	else
+	{
+		PlayerActionMessage(playerid, 15.0, "deja el chaleco antibalas en su casillero.");
+		SetPlayerArmour(playerid, 0);
+	}
+	return 1;
+}
+
 CMD:sequipo(playerid, params[])
 {
 	new equipo;
@@ -351,9 +375,32 @@ CMD:pequipo(playerid, params[])
         default:
             return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de equipo válida.");
 	}
-	SetPlayerArmour(playerid, 100);
 	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
 	tazerStatus[playerid] = TAZER_EQUIPPED;
+	return 1;
+}
+
+CMD:pchaleco(playerid, params[])
+{
+	new Float:armour;
+
+    if(!isPlayerCopOnDuty(playerid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
+
+    GetPlayerArmour(playerid, armour);
+    
+	if(armour == 0.0)
+	{
+		PlayerActionMessage(playerid, 15.0, "toma un chaleco antibalas de su casillero.");
+		SetPlayerArmour(playerid, 100);
+	}
+	else
+	{
+		PlayerActionMessage(playerid, 15.0, "deja el chaleco antibalas en su casillero.");
+		SetPlayerArmour(playerid, 0);
+	}
 	return 1;
 }
 

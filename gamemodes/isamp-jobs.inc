@@ -3,11 +3,8 @@
 #endif
 #define _isamp_jobs_included
 
-// Misiones.
-#define JOB_EVENT_TIMER         55//25  // Tiempo en minutos minimo entre eventos de empleo.
-#define JOB_EVENT_MAXTIMER      90//60  // Tiempo extra random, varía entre 0 y la cantidad especificada y se añaden al mínimo.
-
 //====[EMPLEOS]=================================================================
+
 //#define JOB_MECH              1 		// Mecánicos.
 #define JOB_TAXI             	2 		// Conductor.
 #define JOB_FARM             	3 		// Granjero.
@@ -22,12 +19,13 @@
 #define JOB_FARM_MAXPRODS       20
 #define JOB_FARM_PRODVALUE      90
 #define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     80
+#define JOB_DRUGF_PRODVALUE     75
+#define	MAX_DRUG_PURCHASE_PAYDAY 10
 
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
 #define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
 
-#define JOB_GARB_MONEY       	1800 	// MONEY + random(MONEY / 2)
+#define JOB_GARB_MONEY       	1800
 
 #define JOB_EXP_MULTIPLIER      3
 //
@@ -380,6 +378,7 @@ CMD:terminar(playerid,params[])
 			LastCP[playerid] = -1;
 			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
 			CollectedProds[playerid] = 0;
+			jobBreak[playerid] = 80;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		}
 		case JOB_DRUGF:
@@ -392,7 +391,7 @@ CMD:terminar(playerid,params[])
 		        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has terminado con tu trabajo!, vé y continua cosechando.");
 
 			PlayerActionMessage(playerid, 15.0, "descarga el producto y estaciona la cosechadora.");
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 5 bolsas de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado 1 bolsa de materia prima, por lo tanto recibes $%d.", CollectedProds[playerid] * JOB_DRUGF_PRODVALUE);
 		    PlayerInfo[playerid][pCantWork] = 1;
 		    LastCP[playerid] = -1;
 		    ServerInfo[sDrugRawMats] += 1;
@@ -413,6 +412,7 @@ CMD:terminar(playerid,params[])
 			LastCP[playerid] = -1;
 			PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
 			CollectedProds[playerid] = 0;
+			jobBreak[playerid] = 80;
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 			PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
 		}

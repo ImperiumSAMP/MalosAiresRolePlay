@@ -198,7 +198,7 @@ CMD:desafiarpicada(playerid, params[])
 	new racerid, moneyBet;
 
 	if(sscanf(params, "ii", racerid, moneyBet))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desafiarpicada [ID-Jugador] [dinero]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /desafiarpicada [ID/Jugador] [dinero]");
     if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
     	return SendClientMessage(playerid, COLOR_WHITE, "Para desafiar a alguien, debes ir al punto de encuentro de corredores conocido como 'El Sotano'.");
  	if(racerid == INVALID_PLAYER_ID || racerid == playerid)

@@ -177,14 +177,19 @@ public RestartPlayerEffectMarijuana(playerid)
 	return 1;
 }
 
-CMD:consumir(playerid, params[]) {
-	new type[32];
-	new weathers[4] = {234, 22, 401, -234};
-	if(sscanf(params, "s[32]", type)) {
+CMD:consumir(playerid, params[])
+{
+	new type[32],
+		weathers[4] = {234, 22, 401, -234};
+		
+	if(sscanf(params, "s[32]", type))
+	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /consumir [tipo de droga]");
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipo s: marihuana - lsd - extasis - cocaina");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
 	    SendClientMessage(playerid, COLOR_YELLOW2, "Para ver cuánta droga tienes, utiliza '/bolsillo'.");
-	} else if(strcmp(type, "marihuana", true) == 0) {
+	}
+	else if(strcmp(type, "marihuana", true) == 0)
+	{
 
 		if(PlayerInfo[playerid][pMarijuana] < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes gramos de marihuana!");
@@ -198,11 +203,12 @@ CMD:consumir(playerid, params[]) {
    			DrugEffectMarijuana[playerid] = true;
 			SetTimerEx("RestartPlayerEffectMarijuana", 600000, false, "i", playerid);
 		}
-
-	} else if(strcmp(type, "lsd", true) == 0) {
-
+	}
+	else if(strcmp(type, "lsd", true) == 0)
+	{
 		if(PlayerInfo[playerid][pLSD] < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes dosis de LSD!");
+			
 		PlayerInfo[playerid][pLSD] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
@@ -215,14 +221,16 @@ CMD:consumir(playerid, params[]) {
 		    	SetPlayerHealthEx(playerid, 115.0);
 		    	DrugEffectLSD[playerid] = true;
 		    	SetTimerEx("RestartPlayerEffectLSD", 600000, false, "i", playerid);
-			} else
+			}
+			else
 			    SendClientMessage(playerid, COLOR_YELLOW2, "La droga no ha surtido efecto ya que no estabas en la plenitud de tu salud!");
 		}
-
-	} else if(strcmp(type, "extasis", true) == 0) {
-
+	}
+	else if(strcmp(type, "extasis", true) == 0)
+	{
 		if(PlayerInfo[playerid][pEcstasy] < 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes pastillas de éxtasis!");
+		    
 		PlayerInfo[playerid][pEcstasy] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
@@ -233,11 +241,12 @@ CMD:consumir(playerid, params[]) {
    			DrugEffectEcstasy[playerid] = true;
 			SetTimerEx("RestartPlayerEffectEcstasy", 600000, false, "i", playerid);
 		}
-
-	} else if(strcmp(type, "cocaina", true) == 0) {
-
+	}
+	else if(strcmp(type, "cocaina", true) == 0)
+	{
 		if(PlayerInfo[playerid][pCocaine] < 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes gramos de cocaína!");
+		    
 		PlayerInfo[playerid][pCocaine] -= 1;
 		SetPlayerWeather(playerid, weathers[random(4)]);
 		SetPVarInt(playerid, "drugEffect", 600);
