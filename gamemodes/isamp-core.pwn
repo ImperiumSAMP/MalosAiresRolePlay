@@ -3056,11 +3056,16 @@ GetBusinessTaxes(bizID)
 
 //===================================PAYDAY=====================================
 
-public PayDay(playerid) {
-    if(gPlayerLogged[playerid]) {
-        switch(PlayerInfo[playerid][pFaction]) {
-            case FAC_PMA: {
-                switch(PlayerInfo[playerid][pRank]) {
+public PayDay(playerid)
+{
+    if(gPlayerLogged[playerid])
+	{
+        switch(PlayerInfo[playerid][pFaction])
+		{
+            case FAC_PMA:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
 	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
 	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
 	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
@@ -3073,8 +3078,10 @@ public PayDay(playerid) {
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
-            case FAC_HOSP: {
-                switch(PlayerInfo[playerid][pRank]) {
+            case FAC_HOSP:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
 	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
 	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
 	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
@@ -3087,22 +3094,26 @@ public PayDay(playerid) {
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
-            case FAC_MECH: {
-                switch(PlayerInfo[playerid][pRank]) {
+            case FAC_MECH:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
 	                case 1: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 1800;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 1600;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 1400;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 1200;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 1000;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 1850;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 1700;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 1550;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 1400;
+	                case 6: PlayerInfo[playerid][pPayCheck] += 1250;
 	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
-            case FAC_MAN: {
-                switch(PlayerInfo[playerid][pRank]) {
+            case FAC_MAN:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
 	                case 1: PlayerInfo[playerid][pPayCheck] += 2600;
 	                case 2: PlayerInfo[playerid][pPayCheck] += 2300;
 	                case 3: PlayerInfo[playerid][pPayCheck] += 2000;
@@ -3115,8 +3126,10 @@ public PayDay(playerid) {
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
-            case FAC_SIDE: {
-                switch(PlayerInfo[playerid][pRank]) {
+            case FAC_SIDE:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
 	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
 	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
 	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
@@ -3129,10 +3142,9 @@ public PayDay(playerid) {
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
-            default: {
-            	if(PlayerInfo[playerid][pJob] == 0 || // Si no tiene empleo realmente
-					PlayerInfo[playerid][pJob] == JOB_FELON || // Si para el estado el sujeto no tiene empleo (job ilegal)
-					PlayerInfo[playerid][pJob] == JOB_DRUGD) // Si para el estado el sujeto no tiene empleo (job ilegal)
+            default:
+			{
+            	if(PlayerInfo[playerid][pJob] == 0 ||  PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGD)
             		PlayerInfo[playerid][pPayCheck] += 600; // ASIGNACION A LOS DESEMPLEADOS
                 if(PlayerInfo[playerid][pJob] == JOB_TAXI)//Mínimo por si no hay pasajeros disponibles
             		PlayerInfo[playerid][pPayCheck] += 1200; // ASIGNACION A LOS DESEMPLEADOS
@@ -8273,8 +8285,10 @@ CMD:gotosf(playerid, params[]) {
 	return 1;
 }
 
-CMD:gotobanco(playerid, params[]) {
-    if(PlayerInfo[playerid][pAdmin] < 1) return 1;
+CMD:gotobanco(playerid, params[])
+{
+    if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
 
     SetPlayerPos(playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z);
 	SetPlayerInterior(playerid, POS_BANK_I);
@@ -8282,40 +8296,43 @@ CMD:gotobanco(playerid, params[]) {
 	return 1;
 }
 
-CMD:descongelar(playerid, params[]) {
-    new
-        string[128],
+CMD:descongelar(playerid, params[])
+{
+    new string[128],
 		targetid;
 
-	if(PlayerInfo[playerid][pAdmin] < 1) return 1;
-
-	if(sscanf(params,"u", targetid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /descongelar [ID-Jugador]");
-	else if(IsPlayerConnected(targetid) && targetid != INVALID_PLAYER_ID) {
-		TogglePlayerControllable(targetid, 1);
-		DeletePVar(playerid, "disabled");
-		SendFMessage(targetid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} has sido descongelado por %s.", GetPlayerNameEx(playerid));
-		format(string, sizeof(string), "[Staff]: %s ha descongelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
-	}
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "i", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /descongelar [ID/Jugador]");
+	if(!IsPlayerConnected(targetid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
+	    
+	TogglePlayerControllable(targetid, true);
+	SetPVarInt(targetid, "disabled", DISABLE_NONE);
+	SendFMessage(targetid, COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} has sido descongelado por %s.", GetPlayerNameEx(playerid));
+	format(string, sizeof(string), "[Staff]: %s ha descongelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	return 1;
 }
 
-CMD:congelar(playerid, params[]) {
-    new
-    	string[128],
+CMD:congelar(playerid, params[])
+{
+    new string[128],
 		targetid;
 
-	if(PlayerInfo[playerid][pAdmin] < 1) return 1;
+	if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "i", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /congelar [ID/Jugador]");
+	if(!IsPlayerConnected(targetid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
 
-	if(sscanf(params,"u", targetid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /congelar [ID-Jugador]");
-	else if(IsPlayerConnected(targetid) && targetid != INVALID_PLAYER_ID) {
-		TogglePlayerControllable(targetid, 0);
-		SetPVarInt(targetid, "disabled", DISABLE_FREEZE);
-		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} has sido congelado por %s.", GetPlayerNameEx(playerid));
-		SendClientMessage(targetid,COLOR_LIGHTYELLOW2,string);
-		format(string, sizeof(string), "[Staff]: %s ha congelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
-	}
+	TogglePlayerControllable(targetid, false);
+	SetPVarInt(targetid, "disabled", DISABLE_FREEZE);
+	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} has sido congelado por %s.", GetPlayerNameEx(playerid));
+	format(string, sizeof(string), "[Staff]: %s ha congelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	return 1;
 }
 
