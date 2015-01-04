@@ -3144,7 +3144,7 @@ public PayDay(playerid)
             }
             default:
 			{
-            	if(PlayerInfo[playerid][pJob] == 0 ||  PlayerInfo[playerid][pJob] == JOB_FELON) // ASIGNACION A LOS DESEMPLEADOS
+            	if(PlayerInfo[playerid][pJob] == 0 || PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGF) // ASIGNACION A LOS DESEMPLEADOS
             		PlayerInfo[playerid][pPayCheck] += 600;
 				if(PlayerInfo[playerid][pJob] == JOB_DRUGD) //Mínimo por si no hay ventas
 				    PlayerInfo[playerid][pPayCheck] += 800;

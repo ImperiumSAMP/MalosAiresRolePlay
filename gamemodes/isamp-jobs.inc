@@ -19,7 +19,7 @@
 #define JOB_FARM_MAXPRODS       20
 #define JOB_FARM_PRODVALUE      90
 #define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     75
+#define JOB_DRUGF_PRODVALUE     55
 #define	MAX_DRUG_PURCHASE_PAYDAY 10
 
 #define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
