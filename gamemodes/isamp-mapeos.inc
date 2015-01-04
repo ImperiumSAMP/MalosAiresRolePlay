@@ -479,67 +479,6 @@ stock removeBuildings(playerid) {
 	
 	//================================CLOACAS===================================
 	RemoveBuildingForPlayer(playerid, 1224, 1900.1641, -1824.1250, 3.5938, 0.25);
-	
-    //=======================CRICELAN CARCEL EXTERIOR===========================
-    RemoveBuildingForPlayer(playerid, 700, 1799.1563, -1596.5391, 13.4453, 0.25);
-    RemoveBuildingForPlayer(playerid, 1216, 1805.4063, -1600.4609, 13.2266, 0.25);
-    RemoveBuildingForPlayer(playerid, 700, 1807.4688, -1590.4766, 13.4453, 0.25);
-    RemoveBuildingForPlayer(playerid, 1216, 1809.3438, -1597.0859, 13.2266, 0.25);
-    RemoveBuildingForPlayer(playerid, 1308, 1811.9844, -1582.2500, 12.8672, 0.25);
-    RemoveBuildingForPlayer(playerid, 3682, -1029.3438, -702.8125, 54.8516, 0.25);
-    RemoveBuildingForPlayer(playerid, 17339, -1041.6641, -728.3359, 44.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 17340, -1072.8281, -620.6328, 40.2969, 0.25);
-    RemoveBuildingForPlayer(playerid, 17341, -1083.4766, -687.9453, 31.0234, 0.25);
-    RemoveBuildingForPlayer(playerid, 17342, -1107.0703, -620.8906, 40.2969, 0.25);
-    RemoveBuildingForPlayer(playerid, 17343, -1055.5313, -617.6094, 82.6094, 0.25);
-    RemoveBuildingForPlayer(playerid, 17344, -1056.0469, -632.4141, 82.7891, 0.25);
-    RemoveBuildingForPlayer(playerid, 17345, -1026.7500, -705.1719, 82.4063, 0.25);
-    RemoveBuildingForPlayer(playerid, 17346, -1014.3594, -703.8828, 83.2109, 0.25);
-    RemoveBuildingForPlayer(playerid, 17347, -1055.1094, -603.5703, 61.8203, 0.25);
-    RemoveBuildingForPlayer(playerid, 17348, -1004.2969, -704.1484, 63.5000, 0.25);
-    RemoveBuildingForPlayer(playerid, 17349, -542.0078, -522.8438, 29.5938, 0.25);
-    RemoveBuildingForPlayer(playerid, 17434, -984.4219, -494.8984, 60.0938, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -1124.1797, -682.5625, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -1124.1797, -706.7500, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -1124.1797, -658.3750, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -1124.1797, -634.1953, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1114.4531, -595.7969, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 17013, -1107.0703, -620.8906, 40.2969, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1107.3906, -595.8281, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1101.1250, -595.8594, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 17014, -1041.6641, -728.3359, 44.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 17024, -1026.7500, -705.1719, 82.4063, 0.25);
-    RemoveBuildingForPlayer(playerid, 3673, -1029.3438, -702.8125, 54.8516, 0.25);
-    RemoveBuildingForPlayer(playerid, 17001, -1083.4766, -687.9453, 31.0234, 0.25);
-    RemoveBuildingForPlayer(playerid, 17454, -1089.9297, -684.7891, 44.0859, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1037.4219, -694.1016, 36.1172, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1030.3594, -694.1406, 36.1172, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1024.0938, -694.1719, 36.1172, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -999.7813, -682.5625, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -999.7813, -706.7500, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 17022, -1004.2969, -704.1484, 63.5000, 0.25);
-    RemoveBuildingForPlayer(playerid, 17023, -1014.3594, -703.8828, 83.2109, 0.25);
-    RemoveBuildingForPlayer(playerid, 3674, -1020.1094, -702.4375, 57.3359, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -973.7031, -706.7500, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -973.7031, -682.5625, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 3637, -992.2891, -711.9766, 38.9922, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -999.7813, -658.3750, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -973.7031, -658.3750, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 17017, -1056.0469, -632.4141, 82.7891, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -973.7031, -634.1953, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 1278, -999.7813, -634.1953, 38.9531, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1043.6406, -632.3281, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 17021, -1072.8281, -620.6328, 40.2969, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1043.6406, -626.0625, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1065.9375, -595.8594, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1079.2656, -595.7969, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1072.2031, -595.8281, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 17015, -1055.1094, -603.5703, 61.8203, 0.25);
-    RemoveBuildingForPlayer(playerid, 17016, -1055.5313, -617.6094, 82.6094, 0.25);
-    RemoveBuildingForPlayer(playerid, 3643, -1043.6406, -619.0000, 36.2578, 0.25);
-    RemoveBuildingForPlayer(playerid, 17019, -606.0313, -528.8203, 30.5234, 0.25);
-    RemoveBuildingForPlayer(playerid, 17012, -542.0078, -522.8438, 29.5938, 0.25);
-    RemoveBuildingForPlayer(playerid, 17020, -475.9766, -544.8516, 28.1172, 0.25);
     
     //=====================CRICELAN CARCEL INTERIOR=========================
     RemoveBuildingForPlayer(playerid, 1499, 2522.3516, -1303.4063, 1047.2734, 0.25);
