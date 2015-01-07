@@ -6730,6 +6730,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
     }
 
+	if((newkeys & KEY_ACTION) && !(oldkeys & KEY_ACTION))
+	{
+		new v = GetPlayerVehicleID(playerid);
+		if(GetVehicleModel(v) == 481 || GetVehicleModel(v) == 509 || GetVehicleModel(v) == 510)
+			TogglePlayerControllable(playerid, 0);
+	}
+	if((oldkeys & KEY_ACTION) && !(newkeys & KEY_ACTION))
+	{
+		new v = GetPlayerVehicleID(playerid);
+		if(GetVehicleModel(v) == 481 || GetVehicleModel(v) == 509 || GetVehicleModel(v) == 510)
+	  		TogglePlayerControllable(playerid, 1);
+	}
+
 	// Puertas-barreras.
 	if((IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleSeat(playerid) == 0 && newkeys & KEY_CROUCH) || newkeys & KEY_SECONDARY_ATTACK) {
         if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
@@ -7605,7 +7618,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				else if(listitem == 11) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nMalos Aires y el de tu personaje.","Aceptar","Cancelar"); }
 				else if(listitem == 12) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /ME","/ME:\nPara describir acciones de tu personaje. Por ejemplo:\n/me se rasca la cabeza.\n/me saca unos auriculares de su bolsillo.","Aceptar","Cancelar"); }
 				else if(listitem == 13) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /DO","/DO:\nPara describir acciones del ambiente, en tercera persona. Por ejemplo:\n/do Se escucha a un gallo cacarear.\n/do Hay una mancha de sangre en el piso.","Aceptar","Cancelar"); }
-				else if(listitem == 14) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /INTENTAR","/INTENTAR:\nPara poder realizar una accion que tal vez puede fallar. Por ejemplo:\n/intentar sacar al sujeto del auto.\nSolo se puede hacer un /intentar cada 1 minuto.","Aceptar","Cancelar"); }
+				//else if(listitem == 14) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /INTENTAR","/INTENTAR:\nPara poder realizar una accion que tal vez puede fallar. Por ejemplo:\n/intentar sacar al sujeto del auto.\nSolo se puede hacer un /intentar cada 1 minuto.","Aceptar","Cancelar"); }
 			}
 			return 1;
 		}
@@ -8964,10 +8977,10 @@ CMD:ayuda(playerid,params[])
 {
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /comprar (/cla)sificado /pagar /id /admins /toy");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
@@ -11765,7 +11778,7 @@ CMD:aceptarlicencia(playerid, params[])
     return 1;
 }
     
-CMD:intentar(playerid, params[])
+/*CMD:intentar(playerid, params[])
 {
 	new succeed = random(2),
 	    string[128];
@@ -11783,6 +11796,34 @@ CMD:intentar(playerid, params[])
 			ProxDetector(15.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 		}
 	return 1;
+}*/
+
+CMD:moneda(playerid, params[])
+{
+	new coin = random(2),
+	    string[128];
+    if(GetPlayerCash(playerid) < 1)
+        return SendClientMessage (playerid, COLOR_YELLOW2, "¿Cómo pretendes tirar una moneda si no tienes dinero?");
+	if(coin == 0)
+	{
+		format(string, sizeof(string), "[Moneda] %s tiró una moneda y salió cruz.", GetPlayerNameEx(playerid) );
+		ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	}
+	else
+	{
+		format(string, sizeof(string), "[Moneda] %s tiró una moneda y salió cara.", GetPlayerNameEx(playerid) );
+		ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	}
+	return 1;
+}
+
+CMD:dado(playerid, params[])
+{
+	new dice = random(6),
+	    string[128];
+    format(string, sizeof(string), "[Dado] %s lanzó un dado y salió el %d.", GetPlayerNameEx(playerid), dice++);
+    ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+    return 1;
 }
 
 CMD:ventanillas(playerid, params[])
@@ -13093,7 +13134,7 @@ CMD:set(playerid, params[]) {
 }
 
 CMD:reglas(playerid, params[]) {
-	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nCarKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO\n/INTENTAR","Seleccionar","Cancelar");
+	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nCarKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO","Seleccionar","Cancelar");
 	return 1;
 }
 
