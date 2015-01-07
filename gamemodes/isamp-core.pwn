@@ -6732,19 +6732,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 
 	if((newkeys & KEY_ACTION) && !(oldkeys & KEY_ACTION))
 	{
-	    new Float:x,
-	        Float:y,
-	        Float:z,
-	        Float:zA;
 		new v = GetPlayerVehicleID(playerid);
-     	GetPlayerPos(playerid, x, y, z);
-     	GetVehicleZAngle(v, zA);
 		if(GetVehicleModel(v) == 481 || GetVehicleModel(v) == 509 || GetVehicleModel(v) == 510)
-		{
 			TogglePlayerControllable(playerid, 0);
-			SetVehiclePos(v, x, y, z);
-			SetVehicleZAngle(v, zA);
-		}
 	}
 	if((oldkeys & KEY_ACTION) && !(newkeys & KEY_ACTION))
 	{
