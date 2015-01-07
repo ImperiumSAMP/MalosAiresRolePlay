@@ -11821,7 +11821,7 @@ CMD:dado(playerid, params[])
 {
 	new dice = random(6),
 	    string[128];
-    format(string, sizeof(string), "[Dado] %s lanzó un dado y salió el %d.", GetPlayerNameEx(playerid), dice++);
+    format(string, sizeof(string), "[Dado] %s lanzó un dado y salió el %d.", GetPlayerNameEx(playerid), dice + 1);
     ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
     return 1;
 }
