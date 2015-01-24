@@ -3545,13 +3545,14 @@ public AntiCheatImmunityTimer(playerid)
 
 public AntiCheatTimer()
 {
-	new string[128], weapon;
+	new string[128], weapon, ammo, hack;
 
 	foreach(new playerid : Player)
 	{
 		if(gPlayerLogged[playerid] == 1)
 		{
-		    weapon = GetPlayerWeapon(playerid);
+		    weapon = GetPlayerWeapon(playerid),
+		    ammo = GetPlayerAmmo(playerid);
 
 			if(GetPVarInt(playerid, "died") != 1)
 			{
@@ -3561,7 +3562,7 @@ public AntiCheatTimer()
 				{
 				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
         			{
-            			if(GetPlayerAmmo(playerid) != 0)
+            			if(ammo != 0)
             			{
              				if(antiCheatImmunity[playerid] == 0)
              				{
@@ -3575,7 +3576,7 @@ public AntiCheatTimer()
 					}
 					else
 					{
-						if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
+						if(ammo > GetHandParam(playerid, HAND_RIGHT))
 					    {
 	        				if(antiCheatImmunity[playerid] == 0)
 					        {
@@ -3584,8 +3585,13 @@ public AntiCheatTimer()
 							}
 		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					    }
-					    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
-			    			SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
+					    else if(ammo < GetHandParam(playerid, HAND_RIGHT))
+					    {
+     						if(antiCheatImmunity[playerid] == 0)
+					        {
+			    				SynchronizeWeaponAmmo(playerid, ammo);
+							}
+						}
 					}
 				}
 				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
@@ -3607,12 +3613,12 @@ public AntiCheatTimer()
 					KickPlayer(playerid, "el sistema", string);
 				}
 				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
-					BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
+					BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Jet Pack");
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 			{
- 				new hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
+ 				hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
 		  		if(hack >= 5000)
 			  	{
 				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
@@ -3869,16 +3875,21 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid) {
 	return 1;
 }
 
-public OnVehicleMod(playerid, vehicleid, componentid) {
-    if(GetPlayerInterior(playerid) == 0) {
-        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat [T]");
+public OnVehicleMod(playerid, vehicleid, componentid)
+{
+    if(GetPlayerInterior(playerid) == 0)
+	{
+        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod");
 	}
 	
-	if(GetPlayerCash(playerid) >= 2000) {
+	if(GetPlayerCash(playerid) >= 2000)
+	{
 	    GivePlayerCash(playerid, -2000);
 		FactionInfo[FAC_MECH][fBank] += 2000 / 10;
 	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspension hidraulica).");
-	} else {
+	}
+	else
+	{
 	    SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4500), las modificaciones no serán almacenadas.");
 		return 1;
 	}
@@ -3888,7 +3899,8 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
 	    GetVehicleComponentType(componentid) == 9) // Si es suspension
   		return 1;
 
-    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
+    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
+	{
         new vID = GetPlayerVehicleID(playerid);
 		VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
 		SaveVehicle(vID);
@@ -3899,7 +3911,8 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 
-	if(AdminDuty[playerid]) {
+	if(AdminDuty[playerid])
+	{
 	    return 1;
 	}
 
@@ -4580,7 +4593,7 @@ stock LoadPickups() {
 	for(new i = 0; i < 3; i++)
 	{
 		CreateDynamicPickup(1239, 1, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2], -1);
-		CreateDynamic3DTextLabel("/repararvehiculo (Min $600)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+		CreateDynamic3DTextLabel("/repararvehiculo (Min $250)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 	}
 	
 	/* Banco de Malos Aires */
@@ -12703,6 +12716,11 @@ CMD:money(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerCash(targetid, money);
+
+	format(string, sizeof(string), "El administrador %s ha seteado tu dinero en efectivo en $%d.", GetPlayerNameEx(playerid), money);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "El administrador %s ha seteado el dinero en efectivo de %s en $%d.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), money);
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	format(string, sizeof(string), "[MONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12720,6 +12738,11 @@ CMD:givemoney(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
 	GivePlayerCash(targetid, money);
+	
+	format(string, sizeof(string), "El administrador %s te ha seteado $%d en efectivo adicional a lo que ya tenías.", GetPlayerNameEx(playerid), money);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "El administrador %s le ha seteado $%d en efectivo adicional a lo que ya tenía %s.", GetPlayerNameEx(playerid), money, GetPlayerNameEx(targetid));
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	format(string, sizeof(string), "[GIVEMONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12778,6 +12801,10 @@ CMD:givegun(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
     if(GivePlayerGun(targetid, weapon, ammo))
     {
+		format(string, sizeof(string), "El administrador %s te ha seteado el arma %s con %d de munición.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo);
+		SendClientMessage(targetid, COLOR_WHITE, string);
+		format(string, sizeof(string), "El administrador %s le ha seteado el arma %s con %d de munición a %s.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo, GetPlayerNameEx(targetid));
+        AdministratorMessage(COLOR_ADMINCMD, string, 1);
    		format(string, sizeof(string), "[GUN] %d - %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 		log(playerid, LOG_ADMIN, string);
 	}
