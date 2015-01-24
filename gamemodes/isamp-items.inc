@@ -348,7 +348,14 @@ stock LoadHandItem(playerid, hand)
 			if(GetItemType(itemid) != ITEM_WEAPON)
 				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
 			else
+			{
+   				//======================[Inmunidad anticheat]=======================
+			    if(antiCheatImmunity[playerid] != 0)
+			        KillTimer(antiCheatImmunity[playerid]);
+	      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
+	      		//==================================================================
 			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			}
 		}
 		else
  			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemLeftXPos(itemid), GetItemLeftYPos(itemid), GetItemLeftZPos(itemid), GetItemLeftRxPos(itemid), GetItemLeftRyPos(itemid), GetItemLeftRzPos(itemid), 1.0, 1.0, 1.0);
