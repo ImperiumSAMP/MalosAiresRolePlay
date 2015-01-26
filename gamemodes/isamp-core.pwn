@@ -62,11 +62,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.3"
+#define GAMEMODE				"MA:RP v1.0.4"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
-#define WEBSITE					"isamp.com.ar"
+#define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
+#define WEBSITE					"pheek.net/foro"
 #define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
@@ -738,10 +738,10 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-    	SendClientMessage(playerid, COLOR_YELLOW2, "Dentro del foro, visita el thread '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!', que te dirá como registrarte.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: www.pheek.net/foro");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Dentro del foro, busca el subforo de 'Pheek SA:MP Malos Aires(RolePlay)'");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Luego ingresa a la sección '[OOC] Out Of Character', donde verás un thread llamado '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!'");
+        SendClientMessage(playerid, COLOR_YELLOW2, "En ese thread encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
@@ -754,7 +754,7 @@ public OnPlayerNameCheck(playerid)
 			{
  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
  				AdministratorMessage(COLOR_GREY, string, 1);
-				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Imperium Malos Aires RP!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
+				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
 			}
 			else
 			{
@@ -2225,15 +2225,13 @@ public tutorial(playerid, step) {
 	
 	switch(step) {
 	    case 1: {
-	        PlayAudioStreamForPlayer(playerid, "http://www.isamp.com.ar/streamtest.mp3");
-	        
 	        for(new i = 0; i < 32; i++) {
 	            SendClientMessage(playerid, COLOR_WHITE, " ");
 	        }
 			
 	    	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
 			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires RolePlay");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~El breve tutorial a continuacion te guiara por los conceptos basicos del RolePlay.");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hayas entendido correctamente.");
 			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
@@ -2569,7 +2567,7 @@ public OnBanDataLoad(playerid)
 	    cache_get_field_content(0, "banReason", banReason, 1, 128);
 	    ClearScreen(playerid);
 	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
-	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
+	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.pheek.net/foro");
 		SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	}
 	return 1;
@@ -5908,7 +5906,7 @@ public BanPlayer(playerid, issuerid, reason[]) {
 	    }
 	}
 	TogglePlayerControllable(playerid, false);
-	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
+	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.pheek.net/foro");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -7106,7 +7104,7 @@ stock LoadTDs() {
 	TextDrawSetProportional(textdrawVariables[0], 1);
 	TextDrawSetShadow(textdrawVariables[0], 1);
 	
-	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "isamp.com.ar");
+	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "pheek.net");
 	TextDrawBackgroundColor(textdrawVariables[1], 255);
 	TextDrawFont(textdrawVariables[1], 1);
 	TextDrawLetterSize(textdrawVariables[1], 0.300000, 1.200000);
