@@ -738,9 +738,9 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestros foros: www.malosaires.com.ar");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa a la sección '[OOC] Out Of Character', donde verás un thread llamado '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!'");
-        SendClientMessage(playerid, COLOR_YELLOW2, "En ese thread encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en los foros de nuestra web: www.malosaires.com.ar");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Dentro de la pagina haz click en el boton de 'Registrar Cuenta' y se te direccionará automaticamente a la pagina de registro.");
+        SendClientMessage(playerid, COLOR_YELLOW2, "En la página encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
