@@ -404,15 +404,18 @@ RentalExpiration(playerid)
 	    {
 	        SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
 	        House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 2;
+	        SaveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
 	    {
             SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 3;
+            SaveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 	    {
 	        SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmobiliaria: Señor, le queremos informar que el dueño de la vivienda la cual usted alquila ha decidido...");
     		SendClientMessage(playerid,COLOR_LIGHTGREEN,"SMS de Inmobiliaria: ...rescindirle el contrato, tiene 3 dias (paydays) para retirar sus pertenencias.");
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 4;
+            SaveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
 		}
 	}
 }

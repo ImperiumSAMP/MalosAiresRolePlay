@@ -663,7 +663,7 @@ CMD:anegocios(playerid, params[])
 		return 1;
 
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Negocios:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aninfo /aninsert /anremove /angetid /anproductos /anprecio /antipo");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aninfo /aninsert /anremove /angetid /anproductos /anprecio /antipo /anradio");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/anentrada /ansalida /annombre /anhabilitado /anvender /antele /anvworld /ancaja");
 	return 1;
 }
@@ -824,16 +824,38 @@ CMD:anhabilitado(playerid, params[]) {
 	return 1;
 }
 
-CMD:anproductos(playerid, params[]) {
-	new
-	    string[128],
+CMD:anradio(playerid,params[])
+{
+	new radio,
+	    bizID = PlayerInfo[playerid][pBizKey];
+
+    if(PlayerInfo[playerid][pAdmin] < 1)
+		return 1;
+	if(sscanf(params, "ii", bizID, radio))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anradio [ID negocio] [ID radio]");
+	if(radio < 0 || radio > 16)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
+	if(bizID >= 0 && bizID < MAX_BUSINESS)
+	{
+		Business[bizID][bRadio] = radio;
+		SendFMessage(playerid, COLOR_ADMINCMD, "Has seteado la radio del negocio [%d] a %d.", bizID, radio);
+		PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+ 	}
+	return 1;
+}
+
+CMD:anproductos(playerid, params[])
+{
+	new string[128],
 	    bizID,
 	    products;
 
     if(PlayerInfo[playerid][pAdmin] < 4)
 		return 1;
-	if(sscanf(params, "dd", bizID, products)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anproductos [idnegocio] [cantidad]");
-	else if(bizID >= 0 && bizID < MAX_BUSINESS) {
+	if(sscanf(params, "dd", bizID, products))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anproductos [idnegocio] [cantidad]");
+	if(bizID >= 0 && bizID < MAX_BUSINESS)
+	{
 		Business[bizID][bProducts] = products;
 		format(string, sizeof(string), "Has seteado los productos del negocio [%d] a %d.", bizID, products);
 		SendClientMessage(playerid, COLOR_ADMINCMD, string);

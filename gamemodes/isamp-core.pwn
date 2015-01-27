@@ -62,11 +62,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.3"
+#define GAMEMODE				"MA:RP v1.0.4"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Imperium Malos Aires RP [0.3z] [ESPAÑOL]"
-#define WEBSITE					"isamp.com.ar"
+#define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
+#define WEBSITE					"malosaires.com.ar"
 #define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
@@ -738,10 +738,9 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: http://www.imperiumgames.com.ar/foro/f1025/");
-    	SendClientMessage(playerid, COLOR_YELLOW2, "Dentro del foro, visita el thread '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!', que te dirá como registrarte.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestros foros: www.malosaires.com.ar");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa a la sección '[OOC] Out Of Character', donde verás un thread llamado '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!'");
+        SendClientMessage(playerid, COLOR_YELLOW2, "En ese thread encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
@@ -754,7 +753,7 @@ public OnPlayerNameCheck(playerid)
 			{
  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
  				AdministratorMessage(COLOR_GREY, string, 1);
-				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Imperium Malos Aires RP!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
+				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
 			}
 			else
 			{
@@ -2225,15 +2224,13 @@ public tutorial(playerid, step) {
 	
 	switch(step) {
 	    case 1: {
-	        PlayAudioStreamForPlayer(playerid, "http://www.isamp.com.ar/streamtest.mp3");
-	        
 	        for(new i = 0; i < 32; i++) {
 	            SendClientMessage(playerid, COLOR_WHITE, " ");
 	        }
 			
 	    	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
 			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires RolePlay");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~El breve tutorial a continuacion te guiara por los conceptos basicos del RolePlay.");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hayas entendido correctamente.");
 			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
@@ -2569,7 +2566,7 @@ public OnBanDataLoad(playerid)
 	    cache_get_field_content(0, "banReason", banReason, 1, 128);
 	    ClearScreen(playerid);
 	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
-	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
+	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 		SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	}
 	return 1;
@@ -3144,7 +3141,7 @@ public PayDay(playerid)
             }
             default:
 			{
-            	if(PlayerInfo[playerid][pJob] == 0 ||  PlayerInfo[playerid][pJob] == JOB_FELON) // ASIGNACION A LOS DESEMPLEADOS
+            	if(PlayerInfo[playerid][pJob] == 0 || PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGF) // ASIGNACION A LOS DESEMPLEADOS
             		PlayerInfo[playerid][pPayCheck] += 600;
 				if(PlayerInfo[playerid][pJob] == JOB_DRUGD) //Mínimo por si no hay ventas
 				    PlayerInfo[playerid][pPayCheck] += 800;
@@ -3545,13 +3542,14 @@ public AntiCheatImmunityTimer(playerid)
 
 public AntiCheatTimer()
 {
-	new string[128], weapon;
+	new string[128], weapon, ammo, hack;
 
 	foreach(new playerid : Player)
 	{
 		if(gPlayerLogged[playerid] == 1)
 		{
-		    weapon = GetPlayerWeapon(playerid);
+		    weapon = GetPlayerWeapon(playerid),
+		    ammo = GetPlayerAmmo(playerid);
 
 			if(GetPVarInt(playerid, "died") != 1)
 			{
@@ -3561,7 +3559,7 @@ public AntiCheatTimer()
 				{
 				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
         			{
-            			if(GetPlayerAmmo(playerid) != 0)
+            			if(ammo != 0)
             			{
              				if(antiCheatImmunity[playerid] == 0)
              				{
@@ -3575,7 +3573,7 @@ public AntiCheatTimer()
 					}
 					else
 					{
-						if(GetPlayerAmmo(playerid) > GetHandParam(playerid, HAND_RIGHT))
+						if(ammo > GetHandParam(playerid, HAND_RIGHT))
 					    {
 	        				if(antiCheatImmunity[playerid] == 0)
 					        {
@@ -3584,8 +3582,13 @@ public AntiCheatTimer()
 							}
 		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					    }
-					    else if(GetPlayerAmmo(playerid) < GetHandParam(playerid, HAND_RIGHT))
-			    			SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
+					    else if(ammo < GetHandParam(playerid, HAND_RIGHT))
+					    {
+     						if(antiCheatImmunity[playerid] == 0)
+					        {
+			    				SynchronizeWeaponAmmo(playerid, ammo);
+							}
+						}
 					}
 				}
 				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
@@ -3607,12 +3610,12 @@ public AntiCheatTimer()
 					KickPlayer(playerid, "el sistema", string);
 				}
 				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
-					BanPlayer(playerid, INVALID_PLAYER_ID, "cheat");
+					BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Jet Pack");
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 			{
- 				new hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
+ 				hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
 		  		if(hack >= 5000)
 			  	{
 				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
@@ -3869,16 +3872,21 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid) {
 	return 1;
 }
 
-public OnVehicleMod(playerid, vehicleid, componentid) {
-    if(GetPlayerInterior(playerid) == 0) {
-        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat [T]");
+public OnVehicleMod(playerid, vehicleid, componentid)
+{
+    if(GetPlayerInterior(playerid) == 0)
+	{
+        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod");
 	}
 	
-	if(GetPlayerCash(playerid) >= 2000) {
+	if(GetPlayerCash(playerid) >= 2000)
+	{
 	    GivePlayerCash(playerid, -2000);
 		FactionInfo[FAC_MECH][fBank] += 2000 / 10;
 	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspension hidraulica).");
-	} else {
+	}
+	else
+	{
 	    SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4500), las modificaciones no serán almacenadas.");
 		return 1;
 	}
@@ -3888,7 +3896,8 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
 	    GetVehicleComponentType(componentid) == 9) // Si es suspension
   		return 1;
 
-    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED) {
+    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
+	{
         new vID = GetPlayerVehicleID(playerid);
 		VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
 		SaveVehicle(vID);
@@ -3899,7 +3908,8 @@ public OnVehicleMod(playerid, vehicleid, componentid) {
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 
-	if(AdminDuty[playerid]) {
+	if(AdminDuty[playerid])
+	{
 	    return 1;
 	}
 
@@ -4580,7 +4590,7 @@ stock LoadPickups() {
 	for(new i = 0; i < 3; i++)
 	{
 		CreateDynamicPickup(1239, 1, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2], -1);
-		CreateDynamic3DTextLabel("/repararvehiculo (Min $600)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
+		CreateDynamic3DTextLabel("/repararvehiculo (Min $250)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 	}
 	
 	/* Banco de Malos Aires */
@@ -5895,7 +5905,7 @@ public BanPlayer(playerid, issuerid, reason[]) {
 	    }
 	}
 	TogglePlayerControllable(playerid, false);
-	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.isamp.com.ar");
+	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -6730,6 +6740,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
     }
 
+	if((newkeys & KEY_ACTION) && !(oldkeys & KEY_ACTION))
+	{
+		new v = GetPlayerVehicleID(playerid);
+		if(GetVehicleModel(v) == 481 || GetVehicleModel(v) == 509 || GetVehicleModel(v) == 510)
+			TogglePlayerControllable(playerid, 0);
+	}
+	if((oldkeys & KEY_ACTION) && !(newkeys & KEY_ACTION))
+	{
+		new v = GetPlayerVehicleID(playerid);
+		if(GetVehicleModel(v) == 481 || GetVehicleModel(v) == 509 || GetVehicleModel(v) == 510)
+	  		TogglePlayerControllable(playerid, 1);
+	}
+
 	// Puertas-barreras.
 	if((IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleSeat(playerid) == 0 && newkeys & KEY_CROUCH) || newkeys & KEY_SECONDARY_ATTACK) {
         if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
@@ -7080,7 +7103,7 @@ stock LoadTDs() {
 	TextDrawSetProportional(textdrawVariables[0], 1);
 	TextDrawSetShadow(textdrawVariables[0], 1);
 	
-	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "isamp.com.ar");
+	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "malosaires.com.ar");
 	TextDrawBackgroundColor(textdrawVariables[1], 255);
 	TextDrawFont(textdrawVariables[1], 1);
 	TextDrawLetterSize(textdrawVariables[1], 0.300000, 1.200000);
@@ -7597,7 +7620,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				else if(listitem == 3) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - MG","MetaGaming:\nUsar informacion OOC dentro del rol (IC).\nEjemplo: Preguntar a un user donde esta por /w.\nLlamar a alguien por su nombre cuando IC no lo conocemos.\n El MG es sancionado.","Aceptar","Cancelar"); }
 				else if(listitem == 4) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - RK","RevengeKill:\nVengarte de que te mataron matando al usuario que te mato.\nEsto no esta permitido ya que cuando mueres\npierdes la memoria.","Aceptar","Cancelar"); }
 				else if(listitem == 5) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - BH","BunnyHop:\nSaltar abusivamente con el personaje o con la bicicleta.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
-				else if(listitem == 6) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - CK","CarKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
+				else if(listitem == 6) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - VK","VehicleKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangrado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
 				else if(listitem == 7) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - ZZ","ZigZag:\nMoverte de un lado al otro para esquivar las balas.\nEs considerado PowerGaming.\nSeras sancionado si lo haces.","Aceptar","Cancelar"); }
 				else if(listitem == 8) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - HK","HeliKill:\nUsar las haspas del helicoptero para matar a alguien.\nSi lo haces seras sancionado.","Aceptar","Cancelar"); }
 				else if(listitem == 9) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DB","DriveBy:\nDisparar estando como conductor de un auto o una moto.\nSi lo haces seras sancionado.","Aceptar","Cancelar"); }
@@ -7605,7 +7628,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				else if(listitem == 11) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nMalos Aires y el de tu personaje.","Aceptar","Cancelar"); }
 				else if(listitem == 12) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /ME","/ME:\nPara describir acciones de tu personaje. Por ejemplo:\n/me se rasca la cabeza.\n/me saca unos auriculares de su bolsillo.","Aceptar","Cancelar"); }
 				else if(listitem == 13) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /DO","/DO:\nPara describir acciones del ambiente, en tercera persona. Por ejemplo:\n/do Se escucha a un gallo cacarear.\n/do Hay una mancha de sangre en el piso.","Aceptar","Cancelar"); }
-				else if(listitem == 14) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /INTENTAR","/INTENTAR:\nPara poder realizar una accion que tal vez puede fallar. Por ejemplo:\n/intentar sacar al sujeto del auto.\nSolo se puede hacer un /intentar cada 1 minuto.","Aceptar","Cancelar"); }
+				//else if(listitem == 14) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /INTENTAR","/INTENTAR:\nPara poder realizar una accion que tal vez puede fallar. Por ejemplo:\n/intentar sacar al sujeto del auto.\nSolo se puede hacer un /intentar cada 1 minuto.","Aceptar","Cancelar"); }
 			}
 			return 1;
 		}
@@ -8964,10 +8987,10 @@ CMD:ayuda(playerid,params[])
 {
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /comprar (/cla)sificado /pagar /id /admins /toy");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /mostrarlic /mostrarced /mano (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /bidon /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /intentar /gooc /toggle /animhablar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora /animaciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
@@ -11477,7 +11500,10 @@ CMD:aceptar(playerid,params[]) {
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
-		} else {
+            SaveVehicle(VehicleOfferID[playerid]);
+		}
+		else
+		{
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más llaves en tu llavero, cancelando...");
 		    SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más llaves en su llavero, cancelando...");
 		}
@@ -11765,7 +11791,7 @@ CMD:aceptarlicencia(playerid, params[])
     return 1;
 }
     
-CMD:intentar(playerid, params[])
+/*CMD:intentar(playerid, params[])
 {
 	new succeed = random(2),
 	    string[128];
@@ -11783,6 +11809,34 @@ CMD:intentar(playerid, params[])
 			ProxDetector(15.0, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 		}
 	return 1;
+}*/
+
+CMD:moneda(playerid, params[])
+{
+	new coin = random(2),
+	    string[128];
+    if(GetPlayerCash(playerid) < 1)
+        return SendClientMessage (playerid, COLOR_YELLOW2, "¿Cómo pretendes tirar una moneda si no tienes dinero?");
+	if(coin == 0)
+	{
+		format(string, sizeof(string), "[Moneda] %s tiró una moneda y salió cruz.", GetPlayerNameEx(playerid) );
+		ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	}
+	else
+	{
+		format(string, sizeof(string), "[Moneda] %s tiró una moneda y salió cara.", GetPlayerNameEx(playerid) );
+		ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	}
+	return 1;
+}
+
+CMD:dado(playerid, params[])
+{
+	new dice = random(6),
+	    string[128];
+    format(string, sizeof(string), "[Dado] %s lanzó un dado y salió el %d.", GetPlayerNameEx(playerid), dice + 1);
+    ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+    return 1;
 }
 
 CMD:ventanillas(playerid, params[])
@@ -12662,6 +12716,11 @@ CMD:money(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerCash(targetid, money);
+
+	format(string, sizeof(string), "El administrador %s ha seteado tu dinero en efectivo en $%d.", GetPlayerNameEx(playerid), money);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "El administrador %s ha seteado el dinero en efectivo de %s en $%d.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), money);
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	format(string, sizeof(string), "[MONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12679,6 +12738,11 @@ CMD:givemoney(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
 	GivePlayerCash(targetid, money);
+	
+	format(string, sizeof(string), "El administrador %s te ha seteado $%d en efectivo adicional a lo que ya tenías.", GetPlayerNameEx(playerid), money);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "El administrador %s le ha seteado $%d en efectivo adicional a lo que ya tenía %s.", GetPlayerNameEx(playerid), money, GetPlayerNameEx(targetid));
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	format(string, sizeof(string), "[GIVEMONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12737,6 +12801,10 @@ CMD:givegun(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
     if(GivePlayerGun(targetid, weapon, ammo))
     {
+		format(string, sizeof(string), "El administrador %s te ha seteado el arma %s con %d de munición.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo);
+		SendClientMessage(targetid, COLOR_WHITE, string);
+		format(string, sizeof(string), "El administrador %s le ha seteado el arma %s con %d de munición a %s.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo, GetPlayerNameEx(targetid));
+        AdministratorMessage(COLOR_ADMINCMD, string, 1);
    		format(string, sizeof(string), "[GUN] %d - %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 		log(playerid, LOG_ADMIN, string);
 	}
@@ -13093,7 +13161,7 @@ CMD:set(playerid, params[]) {
 }
 
 CMD:reglas(playerid, params[]) {
-	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nCarKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO\n/INTENTAR","Seleccionar","Cancelar");
+	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nVehicleKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO","Seleccionar","Cancelar");
 	return 1;
 }
 
