@@ -66,7 +66,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
-#define WEBSITE					"pheek.net/foro"
+#define WEBSITE					"malosaires.com.ar"
 #define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
@@ -738,9 +738,8 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestro foro: www.pheek.net/foro");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Dentro del foro, busca el subforo de 'Pheek SA:MP Malos Aires(RolePlay)'");
-        SendClientMessage(playerid, COLOR_YELLOW2, "Luego ingresa a la sección '[OOC] Out Of Character', donde verás un thread llamado '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!'");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestros foros: www.malosaires.com.ar");
+        SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa a la sección '[OOC] Out Of Character', donde verás un thread llamado '[IMPORTANTE] ¡Como registrar tu cuenta en el servidor!'");
         SendClientMessage(playerid, COLOR_YELLOW2, "En ese thread encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
@@ -2567,7 +2566,7 @@ public OnBanDataLoad(playerid)
 	    cache_get_field_content(0, "banReason", banReason, 1, 128);
 	    ClearScreen(playerid);
 	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
-	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.pheek.net/foro");
+	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 		SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	}
 	return 1;
@@ -5906,7 +5905,7 @@ public BanPlayer(playerid, issuerid, reason[]) {
 	    }
 	}
 	TogglePlayerControllable(playerid, false);
-	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros www.pheek.net/foro");
+	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -7104,7 +7103,7 @@ stock LoadTDs() {
 	TextDrawSetProportional(textdrawVariables[0], 1);
 	TextDrawSetShadow(textdrawVariables[0], 1);
 	
-	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "pheek.net");
+	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "malosaires.com.ar");
 	TextDrawBackgroundColor(textdrawVariables[1], 255);
 	TextDrawFont(textdrawVariables[1], 1);
 	TextDrawLetterSize(textdrawVariables[1], 0.300000, 1.200000);
@@ -7621,7 +7620,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				else if(listitem == 3) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - MG","MetaGaming:\nUsar informacion OOC dentro del rol (IC).\nEjemplo: Preguntar a un user donde esta por /w.\nLlamar a alguien por su nombre cuando IC no lo conocemos.\n El MG es sancionado.","Aceptar","Cancelar"); }
 				else if(listitem == 4) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - RK","RevengeKill:\nVengarte de que te mataron matando al usuario que te mato.\nEsto no esta permitido ya que cuando mueres\npierdes la memoria.","Aceptar","Cancelar"); }
 				else if(listitem == 5) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - BH","BunnyHop:\nSaltar abusivamente con el personaje o con la bicicleta.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
-				else if(listitem == 6) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - CK","CarKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
+				else if(listitem == 6) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - VK","VehicleKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangrado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar"); }
 				else if(listitem == 7) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - ZZ","ZigZag:\nMoverte de un lado al otro para esquivar las balas.\nEs considerado PowerGaming.\nSeras sancionado si lo haces.","Aceptar","Cancelar"); }
 				else if(listitem == 8) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - HK","HeliKill:\nUsar las haspas del helicoptero para matar a alguien.\nSi lo haces seras sancionado.","Aceptar","Cancelar"); }
 				else if(listitem == 9) { ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DB","DriveBy:\nDisparar estando como conductor de un auto o una moto.\nSi lo haces seras sancionado.","Aceptar","Cancelar"); }
@@ -11501,7 +11500,10 @@ CMD:aceptar(playerid,params[]) {
 		    SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
-		} else {
+            SaveVehicle(VehicleOfferID[playerid]);
+		}
+		else
+		{
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, "No puedes tener más llaves en tu llavero, cancelando...");
 		    SendClientMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "El jugador no puede tener más llaves en su llavero, cancelando...");
 		}
@@ -13159,7 +13161,7 @@ CMD:set(playerid, params[]) {
 }
 
 CMD:reglas(playerid, params[]) {
-	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nCarKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO","Seleccionar","Cancelar");
+	ShowPlayerDialog(playerid,DLG_RULES,DIALOG_STYLE_LIST,"Terminos RP","DeathMatch\nPowerGaming\nCarJacking\nMetaGaming\nRevengeKill\nBunnyHop\nVehicleKill\nZigZag\nHeliKill\nDriveBy\nOOC\nIC\n/ME\n/DO","Seleccionar","Cancelar");
 	return 1;
 }
 

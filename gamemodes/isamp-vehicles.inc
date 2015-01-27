@@ -928,6 +928,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pMarijuana] -= returnid2;
                 VehicleInfo[vehicleid][VehMarijuana] += returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
             } else if(strcmp(returnstr, "lsd", true) == 0) {
     			if(returnid2 <= 0 || returnid2 > 5000)
@@ -937,6 +938,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pLSD] -= returnid2;
              	VehicleInfo[vehicleid][VehLSD] += returnid2;
+             	SaveVehicle(vehicleid);
              	PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
             } else if(strcmp(returnstr, "extasis", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
@@ -946,6 +948,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pEcstasy] -= returnid2;
                 VehicleInfo[vehicleid][VehEcstasy] += returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
             } else if(strcmp(returnstr, "cocaina", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
@@ -955,6 +958,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pCocaine] -= returnid2;
                 VehicleInfo[vehicleid][VehCocaine] += returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
             } else {
                 SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero guardardroga [tipo] [cantidad]");
@@ -970,6 +974,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pMarijuana] += returnid2;
                 VehicleInfo[vehicleid][VehMarijuana] -= returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
             } else if(strcmp(returnstr, "lsd", true) == 0) {
     			if(returnid2 <= 0 || returnid2 > 5000)
@@ -979,6 +984,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pLSD] += returnid2;
              	VehicleInfo[vehicleid][VehLSD] -= returnid2;
+             	SaveVehicle(vehicleid);
              	PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
             } else if(strcmp(returnstr, "extasis", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
@@ -988,6 +994,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pEcstasy] += returnid2;
                 VehicleInfo[vehicleid][VehEcstasy] -= returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
             } else if(strcmp(returnstr, "cocaina", true) == 0) {
                 if(returnid2 <= 0 || returnid2 > 5000)
@@ -997,6 +1004,7 @@ CMD:maletero(playerid, params[])
 
 				PlayerInfo[playerid][pCocaine] += returnid2;
                 VehicleInfo[vehicleid][VehCocaine] -= returnid2;
+                SaveVehicle(vehicleid);
                 PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
             } else {
                 SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero tomardroga [tipo] [cantidad]");
