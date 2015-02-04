@@ -3634,12 +3634,12 @@ public fuelCar(playerid, refillprice, refillamount, refilltype)
 	if(refilltype == 1)
 	{
     	VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
-		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al %d porciento por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
+		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
 	} else
 		if(refilltype == 2)
 		{
 		    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
-		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al %d porciento por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
+		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
@@ -7417,8 +7417,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
 						SetHandItemAndParam(playerid, freehand, ITEM_ID_SANDWICH, 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
-						PlayerActionMessage(playerid, 15.0, "agarra un sandwich de jamon y queso y le paga al empleado su precio.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sandwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
+						PlayerActionMessage(playerid, 15.0, "agarra un sándwich de jamón y queso y le paga al empleado su precio.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sándwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_SANDWICH);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
@@ -9362,9 +9362,9 @@ CMD:comprar(playerid, params[])
 	        case BIZ_247:
 			{
 			    if(Business[business][bProducts] <= 0)
-		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 20u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sandwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 20u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
 		            PRICE_ASPIRIN,
 					PRICE_CIGARETTES,
 					PRICE_LIGHTER,

@@ -1232,7 +1232,7 @@ public OnPlayerBuyClot(biz, playerid)
 	new skintype;
 	
 	if(Business[biz][bProducts] < 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 
 	TogglePlayerControllable(playerid, false);
 	DestroySelectionMenu(playerid);
@@ -1276,7 +1276,7 @@ public OnPlayerBuyAmmu(biz, playerid, params[])
 	new option, param, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
     if(sscanf(params, "ii", option, param))
         return ShowAmmuCatalog(playerid);
 	if(option < 0 || option >= sizeof(AmmuItems))
