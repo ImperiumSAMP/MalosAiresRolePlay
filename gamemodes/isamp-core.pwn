@@ -3634,12 +3634,12 @@ public fuelCar(playerid, refillprice, refillamount, refilltype)
 	if(refilltype == 1)
 	{
     	VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
-		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
+		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
 	} else
 		if(refilltype == 2)
 		{
 		    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
-		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
+		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
