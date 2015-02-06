@@ -232,7 +232,7 @@ CMD:mano(playerid, params[])
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
-			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los items que estabas sosteniendo.");
+			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
 

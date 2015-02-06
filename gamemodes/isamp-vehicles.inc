@@ -209,7 +209,7 @@ stock PrintTrunkForPlayer(trunkid, targetid)
 	    if(itemid > 0)
 			SendFMessage(targetid, COLOR_WHITE, " - %d- Item: %s - %s: %d", i, GetItemName(itemid), GetItemParamName(itemid), GetTrunkParam(trunkid, i));
 	    else
-	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacio", i);
+	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
 	}
 	return 1;
 }
