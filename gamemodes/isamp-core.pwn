@@ -61,7 +61,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
 #include "isamp-cardealer.inc"          //Concesionarias
 #include "isamp-afk.inc"          		//Sistema de AFK
-#include "isamp-cmdpermisions.inc"      //Permisos dinámicos para comandos
+#include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.0.4"
