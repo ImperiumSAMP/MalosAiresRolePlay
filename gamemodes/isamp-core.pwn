@@ -13,6 +13,7 @@
 #include <zcmd>
 #include <streamer>
 #include <Dini>
+#include <cstl>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
@@ -2191,7 +2192,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 }
 
 public OnPlayerCommandReceived(playerid, cmdtext[]) {
-    new comm[64];
+    new comm[256];
 	new idx;
     comm = strtok(cmdtext, idx);
     sscanf(cmdtext,"%s",comm);
