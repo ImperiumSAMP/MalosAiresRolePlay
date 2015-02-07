@@ -64,7 +64,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.5"
+#define GAMEMODE				"MA:RP v1.0.5-b"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
@@ -2195,7 +2195,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     new comm[256];
 	new idx;
     comm = strtok(cmdtext, idx);
-    sscanf(cmdtext,"%s",comm);
+
     if(checkCmdPermission(comm,PlayerInfo[playerid][pAdmin])==0)
     {
         SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No tienes acceso a este comando");
