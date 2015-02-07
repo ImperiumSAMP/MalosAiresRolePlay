@@ -13,6 +13,12 @@ new const MAP_CMD_PERMISSIONS = 0;
 
 stock checkCmdPermission(cmdstring[], level)
 {
+    new i=0;
+    while(cmdstring[i]!=0){ 
+        cmdstring[i]=tolower(cmdstring[i]);
+        i++;
+    }
+
     if(map_contains(MAP_CMD_PERMISSIONS,cmdstring)){
         return map_get(MAP_CMD_PERMISSIONS,cmdstring)<=level;
     }
