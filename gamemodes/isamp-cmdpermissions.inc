@@ -49,3 +49,15 @@ public OnCmdListRecovered(){
 	}
 	return 1;
 }
+
+CMD:nivelcomando(playerid,params[]){
+	new cmdstring[64];
+	new level;
+
+	if(!sscanf(params,"s[64]i",cmdstring,level) && cmdstring[0]=='/')
+		setCmdPermission(cmdstring,level);
+	else
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /nivelcomando /[comando] [nivel]");
+	
+	return 1;
+}
