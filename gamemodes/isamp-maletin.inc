@@ -17,7 +17,7 @@ CMD:maletin(playerid, params[])
 
 	hand = SearchHandsForItem(playerid, ITEM_ID_MALETIN);
 	if(hand == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes un maletin en alguna de tus manos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes un maletín en alguna de tus manos.");
 
  	briefCaseMoney = GetHandParam(playerid, hand);
 	if(sscanf(params, "s[40]i", command, amount))

@@ -912,7 +912,7 @@ CMD:acinterior(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] < 20)
 	    return 1;
 	if(sscanf(params, "ii", houseid, interiorid))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acinfo [ID casa] [ID interior (1-42)]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acinterior [ID casa] [ID interior (1-42)]");
  	if(houseid < 1 || houseid >= MAX_HOUSES)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
  	if(House[houseid][Created] == 0)

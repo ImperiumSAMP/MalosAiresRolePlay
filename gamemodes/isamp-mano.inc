@@ -232,7 +232,7 @@ CMD:mano(playerid, params[])
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
-			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los items que estabas sosteniendo.");
+			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
 
@@ -274,7 +274,7 @@ CMD:mano(playerid, params[])
 		} else if(strcmp(command, "usar", true) == 0) {
 
 			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
-	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sandwich de jamon y queso.");
+	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sándwich de jámon y queso.");
 	            PlayerEat(playerid, 40);
 	            if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 	            	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
