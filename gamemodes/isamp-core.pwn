@@ -9025,16 +9025,26 @@ CMD:servicios(playerid, params[]) {
     return 1;
 }
 
-CMD:tomartelefono(playerid,params[])
+CMD:telefono(playerid,params[])
 {
+    
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
-	if(GetHandItem(playerid, HAND_RIGHT) != 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
-
-	PlayerActionMessage(playerid, 15.0, "toma su teléfono celular del bolsillo.");
-	PhoneHand[playerid] = 1;	
-	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
+	if(PhoneHand[playerid] == 0)
+	{
+	    if(GetHandItem(playerid, HAND_RIGHT) != 0)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
+	        
+		PlayerActionMessage(playerid, 15.0, "toma su teléfono celular del bolsillo.");
+	    PhoneHand[playerid] = 1;	
+	    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
+	}
+	else
+	{
+	    PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
+	    PhoneHand[playerid] = 0;
+	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
 	return 1;
 }
 
