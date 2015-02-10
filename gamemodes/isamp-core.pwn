@@ -9048,19 +9048,6 @@ CMD:telefono(playerid,params[])
 	return 1;
 }
 
-CMD:guardartelefono(playerid,params[])
-{
-    if(PlayerInfo[playerid][pPhoneNumber] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
-	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
-	    
-	PlayerActionMessage(playerid, 15.0, "guarda su teléfono celular en el bolsillo.");
-	PhoneHand[playerid] = 0;
-	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-    return 1;
-}
-
 CMD:atender(playerid, params[])
 {
 	if(Mobile[playerid] != 255)
@@ -10037,8 +10024,8 @@ CMD:arrestar(playerid, params[])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio como oficial de policía!");
 	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el escritorio junto al calabozo!");
-	if(time < 1 || time > 60)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El tiempo no puede ser menor a 1 minuto ni mayor a 60!");
+	if(time < 1 || time > 700)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El tiempo no puede ser menor a 1 minuto ni mayor a 700!");
 	if(GetDistanceBetweenPlayers(playerid, targetID) > 5)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
 	if(PlayerInfo[targetID][pWantedLevel] < 1)
