@@ -6974,11 +6974,16 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 		}
 	}
 	
-	if(Choice[playerid] != CHOICE_NONE) {
-		if(PRESSED(KEY_YES)) {
-            switch(Choice[playerid]) {
-                case CHOICE_CARSELL: {
+	if(Choice[playerid] != CHOICE_NONE)
+	{
+		if(PRESSED(KEY_YES))
+		{
+            switch(Choice[playerid])
+			{
+                case CHOICE_CARSELL:
+				{
                     Choice[playerid] = CHOICE_NONE;
+                    
                    	new vehicleid = GetPlayerVehicleID(playerid),
 					   	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
 					   
@@ -6997,7 +7002,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 					removeKeyFromPlayer(playerid,vehicleid);
 					deleteExtraKeysForCar(vehicleid);
 					SendFMessage(playerid, COLOR_WHITE, "Empleado: has vendido tu vehículo por $%d, que tenga un buen día.", price / 2);
-                }
+                    VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/vehvender", "");
+				}
             }
             PlayerPlaySound(playerid, 5201, 0.0, 0.0, 0.0);
 		} else if(PRESSED(KEY_NO)) {
@@ -11438,6 +11444,9 @@ CMD:aceptar(playerid,params[]) {
 		    SendFMessage(VehicleOffer[playerid], COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido el %s por $%d!", GetVehicleName(VehicleOfferID[playerid]), VehicleOfferPrice[playerid]);
 		    PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
             SaveVehicle(VehicleOfferID[playerid]);
+            new str[32];
+            format(str, sizeof(str), "%d %d %d", playerid, VehicleOfferID[playerid], VehicleOfferPrice[playerid]);
+            VehicleLog(VehicleOfferID[playerid], VehicleOffer[playerid], playerid, "/vehvendera", str);
 		}
 		else
 		{
