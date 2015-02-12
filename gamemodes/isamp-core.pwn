@@ -9044,7 +9044,7 @@ CMD:telefono(playerid,params[])
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
 	        
 		PlayerActionMessage(playerid, 15.0, "toma su teléfono celular del bolsillo.");
-		SendclientMessage(playerid,-1,"Para guardar tu telefono pon nuevamente /telefono");
+		SendClientMessage(playerid,-1,"Para guardar tu telefono pon nuevamente /telefono");
 	    PhoneHand[playerid] = 1;	
 	    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
 	}
