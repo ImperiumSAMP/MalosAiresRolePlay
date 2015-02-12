@@ -12300,7 +12300,7 @@ stock PlayRadioStreamForPlayer(playerid, radio)
 	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
 	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
 	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://50.22.218.197:35635/listen.pls");//radio CTR
+	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");//radio CTR
 	    case 16: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");//juance
 	}
 	hearingRadioStream[playerid] = true;
