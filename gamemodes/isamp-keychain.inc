@@ -215,7 +215,7 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 	PlayerActionMessage(playerid, 15.0, message);
 	SendFMessage(user, COLOR_WHITE, "¡Has recibido una llave del %s!", getVehicleDescription(vehicleid));
 	SendFMessage(playerid,COLOR_LIGHTYELLOW2,"Le has dado una llave de tu %s a %s",GetVehicleName(vehicleid),receiverName);
-	
+    VehicleLog(vehicleid, playerid, user, "/llavero", "darcopia");
 	return 1;
 }
 
@@ -247,6 +247,7 @@ CMD:llavero(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes desechar una llave del auto que eres dueño.");
 		removeKeyFromPlayer(playerid, vehicleid);
 		SendFMessage(playerid, COLOR_WHITE, "Has desechado la llave Nro %d", keyId);
+		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/llavero", "desechar");
 	}
 	
 	else if(!sscanf(params, "s[16]iu", subCmd, keyId, user) && !strcmp(subCmd, "darcopia", true))

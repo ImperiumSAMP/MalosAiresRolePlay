@@ -873,7 +873,7 @@ stock TakeItemFromTrunk(playerid, playerhand, vehicleid, trunkslot)
 	SetTrunkItemAndParam(vehicleid, trunkslot, 0, 0);
 	format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
-	format(str, sizeof(str), "tomar %d", trunkslot);
+	format(str, sizeof(str), "tomar %d %s slot %d", itemparam, GetItemName(itemid), trunkslot);
 	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
 	return 1;
 }
@@ -892,6 +892,7 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono.");
 		
 	new itemid = GetHandItem(playerid, playerhand),
+	    itemparam = GetHandParam(playerid, playerhand),
 		validslot,
 		str[128];
 
@@ -912,13 +913,13 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
 		}
 		
-	SetTrunkItemAndParam(vehicleid, validslot, itemid, GetHandParam(playerid, playerhand));
+	SetTrunkItemAndParam(vehicleid, validslot, itemid, itemparam);
 	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico.
 	format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
   	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-	format(str, sizeof(str), "guardar %d", trunkslot);
+	format(str, sizeof(str), "guardar %d %s slot %d", itemparam, GetItemName(itemid), trunkslot);
 	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
 	return 1;
 }
