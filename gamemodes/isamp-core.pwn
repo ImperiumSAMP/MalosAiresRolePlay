@@ -373,7 +373,7 @@ new Float:GUIDE_POS[][3] = {
 
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
-new TakeHeadShot[MAX_PLAYERS] = 0;
+/*new TakeHeadShot[MAX_PLAYERS] = 0;*/
 
 // Pickups
 new
@@ -823,7 +823,7 @@ public ResetStats(playerid)
 {
     MedDuty[playerid] = 0;
     
-    TakeHeadShot[playerid] = 0;
+    /*TakeHeadShot[playerid] = 0;*/
     
 	/* Vehiculos */
     OfferingVehicle[playerid] = false;
@@ -1495,7 +1495,7 @@ public OnPlayerSpawn(playerid)
 		}
 	}
 	
-	TakeHeadShot[playerid] = 0;
+	/*TakeHeadShot[playerid] = 0;*/
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
@@ -3349,7 +3349,7 @@ stock chargeTaxis()
 	}
 }
 
-stock isWeaponForHeadshot(weaponid)
+/*stock isWeaponForHeadshot(weaponid)
 {
 	if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_SILENCED || weaponid == WEAPON_DEAGLE ||
 		weaponid == WEAPON_SHOTGUN ||weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 ||
@@ -3358,7 +3358,7 @@ stock isWeaponForHeadshot(weaponid)
 	    return 1;
 
 	return 0;
-}
+}*/
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
@@ -3380,13 +3380,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 		//==============================HEADSHOT================================
 		
-		if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
+		/*if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
 		{
 			SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 		    SetPlayerHealthEx(playerid, 24);
             TakeHeadShot[playerid] = 1;
             return 1;
-		}
+		}*/
 		
 		//==========================HERIDAS DE BALA=============================
 		
@@ -3754,13 +3754,15 @@ public globalUpdate()
 		         	TogglePlayerControllable(playerid, false);
 		            if(!IsPlayerInAnyVehicle(playerid))
 					{
-		                if(TakeHeadShot[playerid] == 1)
+		                /*if(TakeHeadShot[playerid] == 1)
 		                	ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
 		                else
 						{
 							ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
 	                        SetPlayerHealthEx(playerid, 24);
-                        }
+                        }*/
+                        ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+                        SetPlayerHealthEx(playerid, 24);
 					}
 
 		            SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡Te encuentras herido e incapaz de moverte!, con cada segundo que pase perderás algo de sangre.");
@@ -11015,7 +11017,7 @@ CMD:curarse(playerid, params[])
 	format(string, sizeof(string), "[Hospital]: El paciente %s se ha registrado en el %s y está siendo atendido.", GetPlayerNameEx(playerid), Building[GetPlayerBuilding(playerid)][blText]);
 	SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
 	HospHealing[playerid] = 1;
-	TakeHeadShot[playerid] = 0;
+	/*TakeHeadShot[playerid] = 0;*/
 	SetPVarInt(playerid, "disabled", DISABLE_HEALING);
 	GameTextForPlayer(playerid, "Aguarda unos instantes mientras te atienden", 10000, 4);
 	return 1;
@@ -11462,7 +11464,7 @@ CMD:aceptar(playerid,params[]) {
 			new price = GetPVarInt(playerid, "healCost");
 			new victimcash = GetPlayerCash(playerid);
 			SetPlayerHealthEx(playerid, 100.00);
-			TakeHeadShot[playerid] = 0;
+			/*TakeHeadShot[playerid] = 0;*/
 			TogglePlayerControllable(playerid, true);
 			PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 			PlayerPlaySound(medic, 1150, 0.0, 0.0, 0.0);
@@ -12690,7 +12692,7 @@ CMD:sethp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
     SetPlayerHealthEx(targetid, health);
-    TakeHeadShot[targetid] = 0;
+    /*TakeHeadShot[targetid] = 0;*/
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;
