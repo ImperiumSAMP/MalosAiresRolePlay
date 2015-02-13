@@ -3135,6 +3135,22 @@ public PayDay(playerid)
 	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
+            case FAC_GOB:
+			{
+                switch(PlayerInfo[playerid][pRank])
+				{
+	                case 1: PlayerInfo[playerid][pPayCheck] += 3500;
+	                case 2: PlayerInfo[playerid][pPayCheck] += 3300;
+	                case 3: PlayerInfo[playerid][pPayCheck] += 3100;
+	                case 4: PlayerInfo[playerid][pPayCheck] += 2900;
+	                case 5: PlayerInfo[playerid][pPayCheck] += 2700;
+	                case 6: PlayerInfo[playerid][pPayCheck] += 2500;
+	                case 7: PlayerInfo[playerid][pPayCheck] += 2300;
+	                case 8: PlayerInfo[playerid][pPayCheck] += 2100;
+	                case 9: PlayerInfo[playerid][pPayCheck] += 1900;
+	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
+	            }
+            }
             default:
 			{
             	if(PlayerInfo[playerid][pJob] == 0 || PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGF) // ASIGNACION A LOS DESEMPLEADOS
@@ -3215,8 +3231,12 @@ public PayDay(playerid)
 		}
         
         //============================INGRESOS==================================
+        
+        new taxGob = tax + bizTax;
 
 	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
+	    
+	    FactionInfo[FAC_GOB][fBank] += taxGob;
 
 		//=============================EMPLEO===================================
 		

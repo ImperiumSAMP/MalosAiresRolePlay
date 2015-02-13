@@ -19,6 +19,10 @@
 #define FAC_BOCA               	9
 #define FAC_SIDE                10
 
+/* Luego hay que reescribir esto */
+
+#define FAC_GOB                	19
+
 #define FAC_TYPE_ILLEGAL        0
 #define FAC_TYPE_GOV            1
 #define FAC_TYPE_LEGAL          2
