@@ -4,7 +4,7 @@
 #define _isamp_factions_included
 
 //Defines
-#define MAX_FACTIONS            20
+#define MAX_FACTIONS            21
 
 //====[FACCIONES]===============================================================
 #define FAC_NONE                0
