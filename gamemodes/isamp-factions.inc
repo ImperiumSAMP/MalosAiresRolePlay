@@ -9,19 +9,26 @@
 //====[FACCIONES]===============================================================
 #define FAC_NONE                0
 #define FAC_PMA                 1 		// Policía Metropolitana.
-#define FAC_HOSP                2
-#define FAC_FORZ                3
-#define FAC_CHIN                4
-#define FAC_BERT                5
-#define FAC_MAN                 6
-#define FAC_MECH                7
-#define FAC_RIV                	8
-#define FAC_BOCA               	9
-#define FAC_SIDE                10
+#define FAC_HOSP                2       // SAME
+#define FAC_SIDE                3		// SIDE
+#define FAC_GOB	                4       // Malos Aires Ciudad
+#define FAC_MECH                5       // TMMA
+#define FAC_MAN                 6       // CTR-MAN
+#define FAC_FREE_LEGAL_1        7       // Faccion Legal
+#define FAC_FREE_LEGAL_2        8       // Faccion Legal
+#define FAC_FREE_LEGAL_3        9       // Faccion Legal
+#define FAC_FREE_LEGAL_4        10       // Faccion Legal
+#define FAC_FREE_ILLEGAL_GANG_1 11       // Faccion Ilegal Gang
+#define FAC_FREE_ILLEGAL_GANG_2 12       // Faccion Ilegal Gang
+#define FAC_FREE_ILLEGAL_GANG_3 13       // Faccion Ilegal Gang
+#define FAC_FREE_ILLEGAL_GANG_4 14       // Faccion Ilegal Gang
+#define FAC_FREE_ILLEGAL_GANG_5 15       // Faccion Ilegal Gang
+#define FAC_FREE_ILLEGAL_MAF_1	16       // Faccion Ilegal Mafia
+#define FAC_FREE_ILLEGAL_MAF_2 	17       // Faccion Ilegal Mafia
+#define FAC_FREE_ILLEGAL_MAF_3 	18       // Faccion Ilegal Mafia
+#define FAC_FREE_ILLEGAL_MAF_4 	19       // Faccion Ilegal Mafia
+#define FAC_FREE_ILLEGAL_MAF_5 	20       // Faccion Ilegal Mafia
 
-/* Luego hay que reescribir esto */
-
-#define FAC_GOB                	19
 
 #define FAC_TYPE_ILLEGAL        0
 #define FAC_TYPE_GOV            1

@@ -6806,13 +6806,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	            SetTimerEx("CloseGate", 4000, false, "i", HOSPGate);
 	        }
 	    } else
-	    if(PlayerInfo[playerid][pFaction] == FAC_BERT) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_4) {
 	        if(PlayerToPoint(15.0, playerid, 1245.11, -767.45, 92.16)) {
 	            MoveObject(BERTGate,  1241.1888, -771.8996, 90.6015, 2.0, 0.0000, 0.0000, 96.6600);
 	            SetTimerEx("CloseGate", 6000, false, "i", BERTGate);
 	        }
-	    }
-	    if(PlayerInfo[playerid][pFaction] == FAC_FORZ) {
+	    } else
+		if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_1) {
 	        if(PlayerToPoint(10.0, playerid, 263.70, -1332.88, 53.43)) {
 	            MoveObject(FORZGate,  257.1657, -1338.4166, 51.3975, 2, 0.0000, 0.0000, 35.8200);
 	            SetTimerEx("CloseGate", 6000, false, "i", FORZGate);
@@ -12181,7 +12181,7 @@ CMD:it(playerid, params[]) {
 
 CMD:italiano(playerid, params[])
 {
-	if(PlayerInfo[playerid][pFaction] == FAC_BERT)
+	if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_4)
 	{
 		new text[128];
 		if(sscanf(params, "s[128]", text))
@@ -12195,7 +12195,7 @@ CMD:italiano(playerid, params[])
 		{
 		    if(ProxDetectorS(15.0, playerid, i))
  			{
-		    	if(PlayerInfo[i][pFaction] == FAC_BERT || AdminDuty[i])
+		    	if(PlayerInfo[i][pFaction] == FAC_FREE_ILLEGAL_MAF_4 || AdminDuty[i])
 		    	    if(!usingMask[playerid])
 						SendFMessage(i, COLOR_WHITE, "%s dice en italiano: %s", GetPlayerNameEx(playerid), text);
 					else
@@ -13455,4 +13455,3 @@ public EndAnim(playerid)
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
-
