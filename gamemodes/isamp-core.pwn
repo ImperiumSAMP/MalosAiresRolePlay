@@ -1562,7 +1562,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 				
 				ResetPlayerWantedLevelEx(playerid);
 				ResetAndSaveInv(playerid);
-				FactionInfo[FAC_PMA][fBank] += PlayerInfo[playerid][pJailTime];
+				GiveFactionMoney(FAC_PMA, PlayerInfo[playerid][pJailTime]);
 				SaveFactions();
 			}
 	    }
@@ -3164,14 +3164,15 @@ public PayDay(playerid)
         
 		//===========================IMPUESTOS==================================
 
-		new tax = 0;
-		tax+=calculateVehiclesTaxes(playerid);
+		new tax = calculateVehiclesTaxes(playerid);
+		
 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] != 0)
 		{
-			    tax += ( House[PlayerInfo[playerid][pHouseKeyIncome]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
+			tax += (House[PlayerInfo[playerid][pHouseKeyIncome]][HousePrice] / 100) / 7; //0.15 porciendo del precio aprox.
 		}
-		if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income] == 0) {
-		        tax += ( House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100 ) / 7; //0.15 porciendo del precio aprox.
+		if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income] == 0)
+		{
+  			tax += (House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100) / 7; //0.15 porciendo del precio aprox.
   		}
 		    
 		//============================NEGOCIOS==================================
@@ -3198,7 +3199,7 @@ public PayDay(playerid)
 		    if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG && PlayerInfo[playerid][pRank] == 1)
 			{
 			    gangProfits = GetGangZoneLiderIncome(playerid);
-			    FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += gangProfits;
+				GiveFactionMoney(PlayerInfo[playerid][pFaction], gangProfits);
 			}
 		}
         
@@ -3231,12 +3232,11 @@ public PayDay(playerid)
 		}
         
         //============================INGRESOS==================================
-        
-        new taxGob = tax + bizTax;
 
 	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
 	    
-	    FactionInfo[FAC_GOB][fBank] += taxGob;
+		GiveFactionMoney(FAC_GOB, tax);
+		GiveFactionMoney(FAC_GOB, bizTax);
 
 		//=============================EMPLEO===================================
 		
@@ -3850,7 +3850,8 @@ public globalUpdate()
 						    ResetPlayerCash(playerid);
 						} else
 						    PlayerInfo[playerid][pBank] -= PRICE_TREATMENT;
-					FactionInfo[FAC_HOSP][fBank] += PRICE_TREATMENT / 8;
+
+					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
 		            ResetPlayerWeapons(playerid);
@@ -3905,7 +3906,7 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 	if(GetPlayerCash(playerid) >= 2000)
 	{
 	    GivePlayerCash(playerid, -2000);
-		FactionInfo[FAC_MECH][fBank] += 2000 / 10;
+	    GiveFactionMoney(FAC_MECH, 2000 / 10);
 	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspension hidraulica).");
 	}
 	else
@@ -9647,7 +9648,7 @@ CMD:clasificado(playerid,params[])
 		else
 			SendClientMessage(i, COLOR_ADVERTISMENT, string);
 	}
-	FactionInfo[FAC_MAN][fBank] += PRICE_ADVERTISE;
+	GiveFactionMoney(FAC_MAN, PRICE_ADVERTISE);
 	printf("[Anuncio] %s: %s", GetPlayerNameEx(playerid), text);
 	return 1;
 }
@@ -10069,7 +10070,7 @@ CMD:arrestar(playerid, params[])
 	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
 	PlayerInfo[targetID][pJailed] = 1;
 	ResetPlayerWantedLevelEx(targetID);
-	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += PlayerInfo[targetID][pJailTime];
+	GiveFactionMoney(FAC_PMA, PlayerInfo[targetID][pJailTime]);
 	SaveFactions();
 	return 1;
 }
@@ -11031,7 +11032,7 @@ CMD:curarse(playerid, params[])
 	}
 
 	GivePlayerCash(playerid, -PRICE_HOSP_HEAL);
-	FactionInfo[FAC_HOSP][fBank] += PRICE_HOSP_HEAL;
+	GiveFactionMoney(FAC_HOSP, PRICE_HOSP_HEAL);
 	PlayerDoMessage(playerid, 15.0, "Un médico examina al paciente y tras un diagnostico inicial, comienza a curarlo.");
 	TogglePlayerControllable(playerid, 0);
 	SetTimerEx("HospHeal", 30000, false, "i", playerid);
@@ -11143,7 +11144,7 @@ CMD:rehabilitarse(playerid, params[])
     SendClientMessage(RehabOffer[playerid], COLOR_YELLOW2, "Una parte del dinero del paciente te será pagado en la siguiente hora, y otra parte irá al fondo del hospital.");
 	GivePlayerCash(playerid, -ADICTION_REHAB_PRICE);
  	PlayerInfo[RehabOffer[playerid]][pPayCheck] += ADICTION_REHAB_PRICE / 4;
-	FactionInfo[FAC_HOSP][fBank] += ADICTION_REHAB_PRICE / 4;
+ 	GiveFactionMoney(FAC_HOSP, ADICTION_REHAB_PRICE / 4);
 	return 1;
 }
 
@@ -11297,7 +11298,7 @@ CMD:fverbalance(playerid,params[])
     if(PlayerInfo[playerid][pRank] != 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
-	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
     return 1;
 }
@@ -11316,8 +11317,8 @@ CMD:fdepositar(playerid,params[])
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
  	    
 	GivePlayerCash(playerid, -amount);
-	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] += amount;
-	format(string, sizeof(string), "Has depositado $%d en la cuenta compartida, nuevo balance: $%d.", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	GiveFactionMoney(PlayerInfo[playerid][pFaction], amount);
+	format(string, sizeof(string), "Has depositado $%d en la cuenta compartida, nuevo balance: $%d.", amount, GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	SendClientMessage(playerid, COLOR_WHITE, string);
 	format(string, sizeof(string), "[DEPOSITO FAC] $%d a %s", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fName]);
 	log(playerid, LOG_MONEY, string);
@@ -11337,12 +11338,12 @@ CMD:fretirar(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(sscanf(params, "d", amount))
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fretirar [cantidad]");
- 	if(FactionInfo[PlayerInfo[playerid][pFaction]][fBank] < amount || amount < 1)
+ 	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
  	    
 	GivePlayerCash(playerid, amount);
-	FactionInfo[PlayerInfo[playerid][pFaction]][fBank] -= amount;
-	format(string, sizeof(string), "Has retirado $%d de la cuenta compartida, nuevo balance: $%d.", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fBank]);
+	GiveFactionMoney(PlayerInfo[playerid][pFaction], -amount);
+	format(string, sizeof(string), "Has retirado $%d de la cuenta compartida, nuevo balance: $%d.", amount, GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	SendClientMessage(playerid, COLOR_WHITE, string);
     PlayerActionMessage(playerid, 15.0, "retira una suma de dinero de su cuenta.");
     return 1;
@@ -11547,36 +11548,29 @@ CMD:aceptar(playerid,params[]) {
 		SetPlayerFaction(playerid, factionid, FactionInfo[factionid][fJoinRank]);
 		FactionRequest[playerid] = 0;
 		
-	} else if(strcmp(text,"multa",true) == 0) {
-	    if(TicketOffer[playerid] < 999) {
-	        if(IsPlayerConnected(TicketOffer[playerid])) {
-	            if (ProxDetectorS(5.0, playerid, TicketOffer[playerid])) {
-					if(GetPlayerCash(playerid) >= TicketMoney[playerid]) {
-						format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} multa pagada - costo: $%d.", TicketMoney[playerid]);
-						SendClientMessage(playerid, COLOR_WHITE, string);
-						format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
-						SendClientMessage(TicketOffer[playerid], COLOR_LIGHTYELLOW2, string);
-						new faction = PlayerInfo[TicketOffer[playerid]][pFaction];
-						FactionInfo[faction][fBank] += TicketMoney[playerid];
-						GivePlayerCash(playerid, - TicketMoney[playerid]);
-						TicketOffer[playerid] = 999;
-						TicketMoney[playerid] = 0;
-						return 1;
-					} else {
-					    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-					    return 1;
-					}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca del oficial que te ha multado!");
-				    return 1;
-				}
-	        }
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ninguna multa!");
-		    return 1;
-		}
-		
-	} else if(strcmp(text,"mecanico",true) == 0) {
+	}
+	else if(strcmp(text,"multa",true) == 0)
+	{
+	    if(TicketOffer[playerid] >= 999)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ninguna multa!");
+      	if(!IsPlayerConnected(TicketOffer[playerid]))
+      	    return SendClientMessage(playerid, COLOR_YELLOW2, "El oficial se ha desconectado.");
+		if(!ProxDetectorS(5.0, playerid, TicketOffer[playerid]))
+        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca del oficial que te ha multado!");
+		if(GetPlayerCash(playerid) < TicketMoney[playerid])
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+
+		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} multa pagada - costo: $%d.", TicketMoney[playerid]);
+		SendClientMessage(playerid, COLOR_WHITE, string);
+		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
+		SendClientMessage(TicketOffer[playerid], COLOR_LIGHTYELLOW2, string);
+		GiveFactionMoney(FAC_PMA, TicketMoney[playerid]);
+		GivePlayerCash(playerid, -TicketMoney[playerid]);
+		TicketOffer[playerid] = 999;
+		TicketMoney[playerid] = 0;
+		return 1;
+	}
+	else if(strcmp(text,"mecanico",true) == 0) {
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
 		{
 			if(MechanicCallTime[playerid] > 0)
@@ -11753,7 +11747,7 @@ CMD:aceptarlicencia(playerid, params[])
 
     GivePlayerCash(playerid, -PRICE_LIC_GUN);
     PlayerInfo[playerid][pWepLic] = 1;
-    FactionInfo[FAC_PMA][fBank] += PRICE_LIC_GUN;
+    GiveFactionMoney(FAC_PMA, PRICE_LIC_GUN);
     wepLicOffer[playerid] = INVALID_PLAYER_ID;
     SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades! has conseguido una licencia de armas. Ahora puedes comprar un arma en cualquier armería.");
     SendFMessage(offer, COLOR_WHITE, "Le has dado una licencia de armas a %s por %d. El dinero se recaudará para el fondo de facción.", GetPlayerNameEx(playerid), PRICE_LIC_GUN);

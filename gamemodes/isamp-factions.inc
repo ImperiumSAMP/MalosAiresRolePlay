@@ -96,6 +96,22 @@ public CountCopsOnDuty()
  	return aux;
 }
 
+//==========================FACTION MONEY FUNCTIONS=============================
+
+stock GiveFactionMoney(factionid, money)
+{
+	FactionInfo[factionid][fBank] += money;
+}
+
+stock SetFactionMoney(factionid, money)
+{
+	FactionInfo[factionid][fBank] = money;
+}
+
+stock GetFactionMoney(factionid)
+{
+	return FactionInfo[factionid][fBank];
+}
 //=======================COMANDOS DE ADMIN PARA FACCIONES=======================
 
 CMD:afacciones(playerid, params[])
@@ -120,7 +136,7 @@ CMD:afinfo(playerid, params[])
 	if(id < 0 || id >= MAX_FACTIONS)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
 
-	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],FactionInfo[id][fBank],FactionInfo[id][fJoinRank],FactionInfo[id][fType]);
+	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],GetFactionMoney(id),FactionInfo[id][fJoinRank],FactionInfo[id][fType]);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
 	format(string, sizeof(string), "[ID:%d] Rank Amount: %d - Permite Empleo: %d", id,FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
@@ -238,24 +254,23 @@ CMD:afmats(playerid, params[]) {
 	return 1;
 }
 
-CMD:afdinero(playerid, params[]) {
-	new
-	    string[128],
+CMD:afdinero(playerid, params[])
+{
+	new string[128],
 	    factionID,
 		money;
 
 	if(PlayerInfo[playerid][pAdmin] < 20)
 		return 1;
+	if(sscanf(params, "dd", factionID, money))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdinero [idfacción] [cantidad]");
+	if(factionID < 1 || factionID >= MAX_FACTIONS)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
 
-	if(sscanf(params, "dd", factionID, money)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdinero [idfacción] [cantidad]");
-	else if(factionID >= 0 && factionID < MAX_FACTIONS) {
-    	FactionInfo[factionID][fBank] = money;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de dinero de la facción %d ha sido ajustada a %d.", factionID, money);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
-	    SaveFactions();
-	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facción incorrecta.");
-	}
+	SetFactionMoney(factionID, money);
+	format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de dinero de la facción %d ha sido ajustada a %d.", factionID, money);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+    SaveFactions();
 	return 1;
 }
 
