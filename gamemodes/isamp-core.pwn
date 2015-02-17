@@ -2204,7 +2204,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     
 	if(usingCamera[playerid] && strcmp(cmdtext,"/salircam")!=0)
 	{
-		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Para utilizar un comando antes debes salir de la c?ra.");
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} Para utilizar un comando antes debes salir de la cámara.");
 	    return 0;
 	}
     return 1;
