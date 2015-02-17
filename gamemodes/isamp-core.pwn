@@ -1562,7 +1562,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 				
 				ResetPlayerWantedLevelEx(playerid);
 				ResetAndSaveInv(playerid);
-				GiveFactionMoney(FAC_PMA, PlayerInfo[playerid][pJailTime]);
+				GiveFactionMoney(FAC_GOB, PlayerInfo[playerid][pJailTime]);
 				SaveFactions();
 			}
 	    }
@@ -3216,15 +3216,18 @@ public PayDay(playerid)
 		new alquiler = 0;
 		new alquileradd = 0;
 		
-		if(PlayerInfo[playerid][pHouseKeyIncome] != 0){
+		if(PlayerInfo[playerid][pHouseKeyIncome] != 0)
+		{
 			alquiler = pago;
-	 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Owned] != 0){
+	 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Owned] != 0)
+		 	{
 				new h = PlayerInfo[playerid][pHouseKeyIncome];
 		        House[h][IncomePriceAdd] += pago;
 		        SaveHouse(h);
 			}
 		}
-		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0){
+		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0)
+		{
 			alquileradd = pago2;
 			new h = PlayerInfo[playerid][pHouseKey];
 	        House[h][IncomePriceAdd] -= pago2;
@@ -3245,6 +3248,7 @@ public PayDay(playerid)
 		jobBreak[playerid] = 80;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
 		
+		//======================================================================
 		
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
 	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
@@ -3272,9 +3276,12 @@ public PayDay(playerid)
 
 		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
 
-		if(PlayerInfo[playerid][pExp] < expamount) {
+		if(PlayerInfo[playerid][pExp] < expamount)
+		{
 			SendFMessage(playerid, COLOR_WHITE, "(( Tienes %d/%d puntos de respeto. ))", PlayerInfo[playerid][pExp], expamount);
-		} else {
+		}
+		else
+		{
 		    PlayerInfo[playerid][pExp] = 0;
 		    PlayerInfo[playerid][pLevel]++;
 		    expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
@@ -10070,7 +10077,7 @@ CMD:arrestar(playerid, params[])
 	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
 	PlayerInfo[targetID][pJailed] = 1;
 	ResetPlayerWantedLevelEx(targetID);
-	GiveFactionMoney(FAC_PMA, PlayerInfo[targetID][pJailTime]);
+	GiveFactionMoney(FAC_GOB, PlayerInfo[targetID][pJailTime]);
 	SaveFactions();
 	return 1;
 }
@@ -11332,12 +11339,14 @@ CMD:fretirar(playerid,params[])
 
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
-    if(PlayerInfo[playerid][pFaction] == 0)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
-    if(PlayerInfo[playerid][pRank] != 1)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(sscanf(params, "d", amount))
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fretirar [cantidad]");
+    if(PlayerInfo[playerid][pFaction] == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
+	if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GOV)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tiene permiso para retirar dinero de una facción gubernamental.");
+    if(PlayerInfo[playerid][pRank] != 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
  	    
@@ -11564,7 +11573,7 @@ CMD:aceptar(playerid,params[]) {
 		SendClientMessage(playerid, COLOR_WHITE, string);
 		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
 		SendClientMessage(TicketOffer[playerid], COLOR_LIGHTYELLOW2, string);
-		GiveFactionMoney(FAC_PMA, TicketMoney[playerid]);
+		GiveFactionMoney(FAC_GOB, TicketMoney[playerid]);
 		GivePlayerCash(playerid, -TicketMoney[playerid]);
 		TicketOffer[playerid] = 999;
 		TicketMoney[playerid] = 0;
@@ -11747,7 +11756,7 @@ CMD:aceptarlicencia(playerid, params[])
 
     GivePlayerCash(playerid, -PRICE_LIC_GUN);
     PlayerInfo[playerid][pWepLic] = 1;
-    GiveFactionMoney(FAC_PMA, PRICE_LIC_GUN);
+    GiveFactionMoney(FAC_GOB, PRICE_LIC_GUN);
     wepLicOffer[playerid] = INVALID_PLAYER_ID;
     SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades! has conseguido una licencia de armas. Ahora puedes comprar un arma en cualquier armería.");
     SendFMessage(offer, COLOR_WHITE, "Le has dado una licencia de armas a %s por %d. El dinero se recaudará para el fondo de facción.", GetPlayerNameEx(playerid), PRICE_LIC_GUN);
