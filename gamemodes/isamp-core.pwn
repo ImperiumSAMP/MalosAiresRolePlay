@@ -8144,7 +8144,7 @@ CMD:tutorial(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tutorial [ID-Jugador]");
 
 	PlayerInfo[targetID][pTutorial] = 0;
-	KickPlayer(targetID, GetPlayerNameEx(targetID), "rehacer el tutorial");
+	KickPlayer(targetID, GetPlayerNameEx(playerid), "rehacer el tutorial");
 	return 1;
 }
 
@@ -8664,7 +8664,7 @@ CMD:resetabstinencia(playerid, params[])
     
     format(string, sizeof(string), "El administrador %s te ha reseteado la abstinencia.", GetPlayerNameEx(playerid));
 	SendClientMessage(targetid, COLOR_WHITE, string);
-	format(string, sizeof(string), "El administrador %s le ha reseteado la abstinencia a $%s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "El administrador %s le ha reseteado la abstinencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
     AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	format(string, sizeof(string), "[ABSTINENCE] Reset abstinence a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
@@ -13496,5 +13496,43 @@ CMD:animhablar(playerid, params[])
 public EndAnim(playerid)
 {
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
+	return 1;
+}
+
+// COMANDOS GOBIERNO.
+/*
+/liberar - Comando para liberar presos en caso de que sea aprobado por un juez o gobernador SOLO UTILIZABLE MEDIANTE CASOS PUNTUALES Y ESPECIFICOS
+/clausurar y /desclausurar - Comando para clausurar locales/casas donde se llevasen a cabo actividades delictivas. Solo se podría reabrir un local mediante post en el foro,
+solicitando su reapertura y exponiendo COMO el local ha dejado de realizar actividades delictivas - Esto se podrá hacer al finalizar el caso policial y la investigación haya finalizado.
+LA PMA DEBERÍA TENER ACCESO AL MISMO COMANDO. Si un local se encuentra CLAUSURADO el mismo no cobraría impuestos ni recibiría ganancias.
+/antecedentes - Ver antecedentes de la persona (Arrestos previos y porque estaría o no preso)
+/verfaccion (PMA-MERCURY- - Mostraría quienes están conectados en las facciones legales y estatales para mejor control en caso de reportes IC recibidos.
+/verpresos - Muestra quienes están presos (Para ver antecedentes, está el otro cmd)
+/impuestos - Modifica los impuestos (En un rango máximo de agregar un 20% o reducir un 20%) a la propiedad y a los vehículos. Los impuestos de los ciudadanos irían a parar a la caja de
+la facción (Explicado mas abajo)
+/ojudicial ID - Utilizable SOLO por jueces para rolear ordenes judiciales de captura y allanamientos (revisar maleteros/revisar casas/revisar locales) SIEMPRE SERÁ USADO DE MANERA JUSTIFICADA.
+Este comando habilitaría a la PMA a que pueda ingresar a viviendas/maleteros de la persona que posea una orden judicial.
+*/
+
+CMD:verpresos(playerid, params[])
+{
+	new string[128], count = 0;
+	
+	if(PlayerInfo[playerid][pFaction] != FAC_GOB) return 1;
+	if(PlayerInfo[playerid][pRank] > 4)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
+		
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[PRESOS]===================");
+	foreach(new i : Player) {
+	    if(PlayerInfo[i][pJailed] == 1) {
+			format(string, 256, "%s", GetPlayerNameEx(i));
+			SendClientMessage(playerid, COLOR_WHITE, string);
+			count++;
+		}
+	}
+	if(count == 0){
+	    SendClientMessage(playerid, COLOR_WHITE, "No hay ninguna persona presa actualmente");
+	}
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "===============================================");
 	return 1;
 }
