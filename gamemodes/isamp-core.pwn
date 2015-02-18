@@ -8631,6 +8631,46 @@ CMD:payday(playerid, params[]) {
 	return 1;
 }
 
+CMD:verjail(playerid, params[])
+{
+	new targetid;
+
+    if(sscanf(params, "u", targetid))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /verjail [ID/Jugador]");
+    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+	if(PlayerInfo[targetid][pJailed] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no tiene ninguna condena.");
+
+	if(PlayerInfo[targetid][pJailed] == 1) {
+    	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+	} else {
+	    SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[OOC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+	}
+    return 1;
+}
+
+CMD:resetabstinencia(playerid, params[])
+{
+	new targetid, string[128];
+
+    if(sscanf(params, "u", targetid))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /resetabstinencia [ID/Jugador]");
+    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+
+    PlayerInfo[targetid][pAdictionPercent] = 0.0;
+    PlayerInfo[targetid][pAdictionAbstinence] = 0;
+    
+    format(string, sizeof(string), "El administrador %s te ha reseteado la abstinencia.", GetPlayerNameEx(playerid));
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "El administrador %s le ha reseteado la abstinencia a $%s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+    AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	format(string, sizeof(string), "[ABSTINENCE] Reset abstinence a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	log(playerid, LOG_ADMIN, string);
+    return 1;
+}
+
 //====================COMANDOS DE COMUNICACION CON STAFF========================
 
 CMD:duda(playerid,params[]) {

@@ -380,6 +380,58 @@ CMD:pequipo(playerid, params[])
 	return 1;
 }
 
+CMD:ptazer(playerid, params[])
+{
+	if(!isPlayerCopOnDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
+	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
+	ResetPlayerWeapons(playerid);
+	tazerStatus[playerid] = TAZER_EQUIPPED;
+	return 1;
+}
+
+CMD:stazer(playerid, params[])
+{
+	if(!isPlayerSideOnDuty(playerid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
+	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
+	ResetPlayerWeapons(playerid);
+	tazerStatus[playerid] = TAZER_EQUIPPED;
+	return 1;
+}
+
+CMD:pmacana(playerid, params[])
+{
+	if(!isPlayerCopOnDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
+	if(!CheckFreeSpaceForDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
+	ResetPlayerWeapons(playerid);
+    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
+	PlayerActionMessage(playerid, 15.0, "toma una macana de los casilleros.");
+	return 1;
+}
+
+CMD:smacana(playerid, params[])
+{
+	if(!isPlayerSideOnDuty(playerid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
+	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
+	if(!CheckFreeSpaceForDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
+    ResetPlayerWeapons(playerid);
+    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
+	PlayerActionMessage(playerid, 15.0, "toma una macana de los casilleros.");
+	return 1;
+}
+
 CMD:pchaleco(playerid, params[])
 {
 	new Float:armour;
