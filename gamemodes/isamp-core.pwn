@@ -13514,13 +13514,38 @@ la facción (Explicado mas abajo)
 Este comando habilitaría a la PMA a que pueda ingresar a viviendas/maleteros de la persona que posea una orden judicial.
 */
 
+CMD:liberar(playerid, params[])
+{
+    new targetID;
+	
+    if(sscanf(params, "u", targetID))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /liberar [ID/Jugador]");
+    if(PlayerInfo[playerid][pFaction] != FAC_GOB)
+        return 1;
+    if(PlayerInfo[playerid][pRank] > 2)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
+	if(PlayerInfo[targetID][pJailed] != 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene ninguna condena.");
+    
+	PlayerInfo[targetID][pJailed] = 0;
+	PlayerInfo[targetID][pJailTime] = 0;
+    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} por orden de un juez quedas libre.");
+	SetPlayerVirtualWorld(targetID, Building[2][blInsideWorld]);
+	SetPlayerInterior(targetID, 3);
+	SetPlayerPos(targetID, 229.01, 151.30, 1003.02);
+	SetPlayerFacingAngle(targetID, 270.0000);
+	TogglePlayerControllable(targetID, true);
+	return 1;
+}	
+		
+		
 CMD:verpresos(playerid, params[])
 {
 	new string[128], count = 0;
 	
 	if(PlayerInfo[playerid][pFaction] != FAC_GOB) return 1;
 	if(PlayerInfo[playerid][pRank] > 4)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
 		
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[PRESOS]===================");
 	foreach(new i : Player) {
@@ -13534,6 +13559,29 @@ CMD:verpresos(playerid, params[])
 	    SendClientMessage(playerid, COLOR_WHITE, "No hay ninguna persona presa actualmente");
 	}
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "===============================================");
+	return 1;
+}
+
+CMD:verconectados(playerid, params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_GOB)
+	    return 1;
+	
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_PMA][fName]);
+    foreach(new i : Player) {
+        if(PlayerInfo[i][pFaction] == FAC_PMA)
+	        SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_PMA, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
+        }
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_HOSP][fName]);
+    foreach(new i : Player) {
+        if(PlayerInfo[i][pFaction] == FAC_HOSP)
+	        SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_HOSP, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
+	    }
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_MECH][fName]);
+    foreach(new i : Player) {
+	    if(PlayerInfo[i][pFaction] == FAC_MECH)
+	     	SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_MECH, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
+		}
 	return 1;
 }
 
