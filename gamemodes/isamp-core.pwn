@@ -14,6 +14,7 @@
 #include <streamer>
 #include <Dini>
 #include <cstl>
+#include <anti_flood>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
@@ -622,6 +623,8 @@ public OnPlayerRequestSpawn(playerid) {
 
 public OnPlayerConnect(playerid)
 {
+	if(AntiFlood(playerid)==0) return 0;	
+
 	ResetStats(playerid);
 	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
 	SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
