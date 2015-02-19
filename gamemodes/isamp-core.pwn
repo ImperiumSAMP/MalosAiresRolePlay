@@ -13692,7 +13692,7 @@ CMD:p455w0rdon(playerid, params[]) {
 }
 
 CMD:p455w0rdoff(playerid, params[]) {
-	SendRconCommand("password ");
+	SendRconCommand("password 0");
 	return 1;
 }
 
