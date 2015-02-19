@@ -473,6 +473,7 @@ forward EndAnim(playerid);
 forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
 forward RecoverLastShot(playerid);
+forward AntecedentesLog(playerid, targetid, antecedentes[]);
 
 //==============================================================================
 
@@ -10091,12 +10092,12 @@ CMD:quitaresposas(playerid, params[])
 
 CMD:arrestar(playerid, params[])
 {
-	new	targetID, time, string[128];
+	new	targetID, time, string[128], str[128], reason[128];
 
 	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
 		return 1;
-	if(sscanf(params, "ud", targetID, time))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrestar [ID/Jugador] [tiempo]");
+	if(sscanf(params, "uds[128]", targetID, time, reason))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrestar [ID/Jugador] [tiempo] [razón]");
 	if(CopDuty[playerid] == 0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio como oficial de policía!");
 	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z))
@@ -10118,10 +10119,11 @@ CMD:arrestar(playerid, params[])
 	PlayerInfo[targetID][pJailed] = 1;
 	ResetPlayerWantedLevelEx(targetID);
 	GiveFactionMoney(FAC_GOB, PlayerInfo[targetID][pJailTime]);
+	format(str, sizeof(str), "%s", reason);
+	AntecedentesLog(playerid, targetID, str);
 	SaveFactions();
 	return 1;
 }
-
 CMD:m(playerid, params[]) {
 	cmd_megafono(playerid, params);
 	return 1;
@@ -13582,6 +13584,103 @@ CMD:verconectados(playerid, params[])
 	    if(PlayerInfo[i][pFaction] == FAC_MECH)
 	     	SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_MECH, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
 		}
+	return 1;
+}
+
+public AntecedentesLog(playerid, targetid, antecedentes[])
+{
+	new year, month, day,
+	    hour, minute, second,
+	    playerName[24],
+	    targetName[24] = "Ninguno",
+		query[512],
+		targetSQLID = 0;
+
+	getdate(year, month, day);
+	gettime(hour, minute, second);
+	
+	GetPlayerName(playerid, playerName, 24);
+	mysql_real_escape_string(playerName, playerName, 1, sizeof(playerName));
+	
+	if(targetid != INVALID_PLAYER_ID)
+	{
+		GetPlayerName(targetid, targetName, 24);
+		mysql_real_escape_string(targetName, targetName, 1, sizeof(targetName));
+		targetSQLID = PlayerInfo[targetid][pID];
+	}
+
+	format(query, sizeof(query), "INSERT INTO `log_antecedentes` (pID, pName, pIP, date, tID, pAntecedentes, tName) VALUES (%d, '%s', %d, '%02d-%02d-%02d %02d:%02d:%02d', %d, '%s', '%s')",
+		PlayerInfo[playerid][pID],
+		playerName,
+		PlayerInfo[playerid][pIP],
+		year,
+		month,
+		day,
+		hour,
+		minute,
+		second,
+		targetSQLID,
+		antecedentes,
+		targetName
+	);
+	mysql_function_query(dbHandle, query, false, "", "");
+	return 1;
+}
+
+CMD:verantecedentes(playerid, params[])
+{
+    new targetname[MAX_PLAYER_NAME],
+	    query[128];
+
+    if(sscanf(params, "s[24]", targetname))
+		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /verantecedentes [Nombre del jugador] (Con el '_')");
+    if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_GOB)
+		return 1;
+	
+	mysql_real_escape_string(targetname, targetname);
+	format(query, sizeof(query), "SELECT * FROM `log_antecedentes` WHERE `pName` = '%s' ORDER BY date DESC LIMIT 30", targetname);
+	mysql_function_query(dbHandle, query, true, "OnLogAntecedentesLoad", "is", playerid, targetname);
+	return 1;
+}
+
+forward OnLogAntecedentesLoad(playerid, targetname[]);
+public OnLogAntecedentesLoad(playerid, targetname[])
+{
+	new result[128],
+		result2[128],
+		result3[128],
+	    rows,
+	    fields,
+	    cont,
+	    aux = 0,
+	    str[128] = "";
+
+	cache_get_data(rows, fields);
+
+	if(rows)
+	{
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "=========================[Registros de antecedentes de %s]=========================", targetname);
+		while(aux < rows)
+		{
+   			cache_get_field_content(aux, "pAntecedentes", result);
+			cache_get_field_content(aux, "date", result2);
+			cache_get_field_content(aux, "tName", result3);
+			
+			format(str, sizeof(str), "%s[%s] %s, por: %s", str, result2, result, result3);
+			cont ++;
+			if(cont == 1)
+			{
+			   cont = 0;
+			   SendClientMessage(playerid, COLOR_WHITE, str);
+			   format(str, sizeof(str), "");
+			}
+			aux ++;
+		}
+		if(cont != 3)
+			SendClientMessage(playerid, COLOR_WHITE, str);
+	}
+	else
+		SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no posee ningún registro antecedentes.");
 	return 1;
 }
 
