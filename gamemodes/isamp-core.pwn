@@ -13501,21 +13501,6 @@ public EndAnim(playerid)
 	return 1;
 }
 
-// COMANDOS GOBIERNO.
-/*
-/liberar - Comando para liberar presos en caso de que sea aprobado por un juez o gobernador SOLO UTILIZABLE MEDIANTE CASOS PUNTUALES Y ESPECIFICOS
-/clausurar y /desclausurar - Comando para clausurar locales/casas donde se llevasen a cabo actividades delictivas. Solo se podría reabrir un local mediante post en el foro,
-solicitando su reapertura y exponiendo COMO el local ha dejado de realizar actividades delictivas - Esto se podrá hacer al finalizar el caso policial y la investigación haya finalizado.
-LA PMA DEBERÍA TENER ACCESO AL MISMO COMANDO. Si un local se encuentra CLAUSURADO el mismo no cobraría impuestos ni recibiría ganancias.
-/antecedentes - Ver antecedentes de la persona (Arrestos previos y porque estaría o no preso)
-/verfaccion (PMA-MERCURY- - Mostraría quienes están conectados en las facciones legales y estatales para mejor control en caso de reportes IC recibidos.
-/verpresos - Muestra quienes están presos (Para ver antecedentes, está el otro cmd)
-/impuestos - Modifica los impuestos (En un rango máximo de agregar un 20% o reducir un 20%) a la propiedad y a los vehículos. Los impuestos de los ciudadanos irían a parar a la caja de
-la facción (Explicado mas abajo)
-/ojudicial ID - Utilizable SOLO por jueces para rolear ordenes judiciales de captura y allanamientos (revisar maleteros/revisar casas/revisar locales) SIEMPRE SERÁ USADO DE MANERA JUSTIFICADA.
-Este comando habilitaría a la PMA a que pueda ingresar a viviendas/maleteros de la persona que posea una orden judicial.
-*/
-
 CMD:liberar(playerid, params[])
 {
     new targetID;
@@ -13531,7 +13516,7 @@ CMD:liberar(playerid, params[])
     
 	PlayerInfo[targetID][pJailed] = 0;
 	PlayerInfo[targetID][pJailTime] = 0;
-    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} por orden de un juez quedas libre.");
+    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} por orden de un juez quedas en libertad.");
 	SetPlayerVirtualWorld(targetID, Building[2][blInsideWorld]);
 	SetPlayerInterior(targetID, 3);
 	SetPlayerPos(targetID, 229.01, 151.30, 1003.02);
@@ -13545,7 +13530,8 @@ CMD:verpresos(playerid, params[])
 {
 	new string[128], count = 0;
 	
-	if(PlayerInfo[playerid][pFaction] != FAC_GOB) return 1;
+	if(PlayerInfo[playerid][pFaction] != FAC_GOB)
+		return 1;
 	if(PlayerInfo[playerid][pRank] > 4)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
 		
@@ -13568,6 +13554,8 @@ CMD:verconectados(playerid, params[])
 {
     if(PlayerInfo[playerid][pFaction] != FAC_GOB)
 	    return 1;
+	if(PlayerInfo[playerid][pRank] > 3)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
 	
 	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_PMA][fName]);
     foreach(new i : Player) {
@@ -13638,7 +13626,7 @@ CMD:verantecedentes(playerid, params[])
 		return 1;
 	
 	mysql_real_escape_string(targetname, targetname);
-	format(query, sizeof(query), "SELECT * FROM `log_antecedentes` WHERE `pName` = '%s' ORDER BY date DESC LIMIT 30", targetname);
+	format(query, sizeof(query), "SELECT * FROM `log_antecedentes` WHERE `tName` = '%s' ORDER BY date DESC LIMIT 30", targetname);
 	mysql_function_query(dbHandle, query, true, "OnLogAntecedentesLoad", "is", playerid, targetname);
 	return 1;
 }
@@ -13664,7 +13652,7 @@ public OnLogAntecedentesLoad(playerid, targetname[])
 		{
    			cache_get_field_content(aux, "pAntecedentes", result);
 			cache_get_field_content(aux, "date", result2);
-			cache_get_field_content(aux, "tName", result3);
+			cache_get_field_content(aux, "pName", result3);
 			
 			format(str, sizeof(str), "%s[%s] %s, por: %s", str, result2, result, result3);
 			cont ++;
