@@ -6090,7 +6090,15 @@ IsAtGasStation(playerid)
         else if(PlayerToPoint(10.0,playerid,2257.4990, -2439.8804, 13.5243) || PlayerToPoint(6.0,playerid,1377.2927, -1757.9093, 13.7249))
 		{// LS NEW
 		    return 1;
-		} else if(PlayerToPoint(6.0, playerid, 1575.4045,-1618.2090,13.1889)) {
+		}
+		else if(PlayerToPoint(10.0,playerid,1634.2987,-1824.2925,14.2372)) {// Taller
+		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		    return 1;
+		    } else {
+		        SendClientMessage(playerid, COLOR_YELLOW2, "Debes pertenecer al taller mecánico.");
+		    }
+		}
+		else if(PlayerToPoint(6.0, playerid, 1575.4045,-1618.2090,13.1889)) {
 		    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		        return 1;
 		    } else {
@@ -6712,7 +6720,9 @@ public CloseGate(gateID) {
 	if(gateID == PMBarrier) {
 		MoveObject(PMBarrier,  1544.68, -1631.00, 13.19, 0.004, 0.00, 90.00, 90.00);
 	} else if(gateID == TMMAGate) {
-	   	MoveObject(TMMAGate, 1623.01730, -1862.1691, 12.00760, 3.0, 0.00, 0.00, 180.00);
+	   	MoveObject(TMMAGate, 1579.33435, -1822.82764, 11.95710, 3.0, 0.00, 0.00, 90.00);
+	} else if(gateID == TMMABarrier) {
+	   	MoveObject(TMMABarrier, 1605.30334, -1813.58618, 13.54430, 0.004, 0.00000, 90.00000, 0.00000);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
@@ -6797,9 +6807,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	        }
 	    } else
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    	if(PlayerToPoint(10.0, playerid, 1623.01730, -1862.1691, 13.55)) {
-	            MoveObject(TMMAGate, 1612.2173, -1862.1691, 12.0076, 3.0, 0.00, 0.00, 180.00);
+	    	if(PlayerToPoint(10.0, playerid, 1579.33435, -1822.82764, 11.95710)) {
+	            MoveObject(TMMAGate, 1579.33435, -1810.82764, 11.95710, 3.0, 0.00, 0.00, 90.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate);
+	            } else
+	        if(PlayerToPoint(10.0, playerid, 1605.30334, -1813.58618, 13.54430)) {
+	            MoveObject(TMMABarrier, 1605.30334, -1813.58618, 13.54430, 0.004, 0.00000, 0.00000, 0.00000);
+	            SetTimerEx("CloseGate", 6000, false, "i", TMMABarrier);
 	        }
 	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {

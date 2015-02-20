@@ -11,17 +11,17 @@
 
 #define JOB_MECH_MAXPRICE       	1000
 
-#define MEC_OFFICE_X				1584.54
-#define MEC_OFFICE_Y        		-1819.68
-#define MEC_OFFICE_Z        		13.34
+#define MEC_OFFICE_X                1655.1940
+#define MEC_OFFICE_Y                -1801.0410
+#define MEC_OFFICE_Z                17.3454
 
 #define MEC_TUNING_PLACE_X      	1595.92
 #define MEC_TUNING_PLACE_Y      	-1840.69
 #define MEC_TUNING_PLACE_Z      	13.48
 
-#define MEC_REPAIR_PLACE_X      	1594.65
-#define MEC_REPAIR_PLACE_Y      	-1797.73
-#define MEC_REPAIR_PLACE_Z      	13.34
+#define MEC_REPAIR_PLACE_X          1619.8162
+#define MEC_REPAIR_PLACE_Y          -1847.5525
+#define MEC_REPAIR_PLACE_Z          14.5239
 
 #define MEC_CARPART_SHOP_X      	976.1300
 #define MEC_CARPART_SHOP_Y   		-1254.8500
