@@ -57,7 +57,7 @@ CMD:dardroga(playerid, params[])
 	if(sscanf(params, "usd", targetid, type, amount))
 	{
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dardroga [ID/Jugador] [tipo] [cantidad]");
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaina");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
 	}
 	if(SellingDrugs[playerid] == true)
 	     return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras ofreciendo droga a otro sujeto, aguarda 15 segundos a que termine el intercambio.");
@@ -104,7 +104,7 @@ CMD:dardroga(playerid, params[])
 	   			 } else
 					{
            				SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dardroga [IDJugador/ParteDelNombre] [tipo] [cantidad]");
-						return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaína");
+						return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
 	    			}
 
    	SetPVarInt(targetid, "CancelDrugTransfer", SetTimerEx("CancelDrugTransfer", 15 * 1000, false, "ii", targetid, 1));
@@ -185,7 +185,7 @@ CMD:consumir(playerid, params[])
 	if(sscanf(params, "s[32]", type))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /consumir [tipo de droga]");
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaína");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
 	    SendClientMessage(playerid, COLOR_YELLOW2, "Para ver cuánta droga tienes, utiliza '/bolsillo'.");
 	}
 	else if(strcmp(type, "marihuana", true) == 0)
