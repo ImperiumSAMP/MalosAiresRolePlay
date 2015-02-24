@@ -10293,7 +10293,7 @@ public AceptarPipeta(playerid)
 CMD:soplarpipeta(playerid,params[])
 {
     if(BlowingPipette[playerid] == 0)
-	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te esta ofreciendo una pipeta para soplar.");
+	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te está ofreciendo una pipeta para soplar.");
 		
 	BlowingPipette[playerid] = 0;
 	PlayerActionMessage(playerid, 15.0, "toma la pipeta ofrecida por el oficial y comienza a soplarla");
@@ -10307,7 +10307,7 @@ CMD:soplarpipeta(playerid,params[])
 public SoplandoPipeta(playerid)
 {
 	if(GetPlayerDrunkLevel(playerid) > 0)
-		PlayerDoMessage(playerid, 15.0, "La pipeta marca que se superó el limite permitido de alcohol en la sangre.");
+		PlayerDoMessage(playerid, 15.0, "La pipeta marca que se superó el límite permitido de alcohol en la sangre.");
 	else
 		PlayerDoMessage(playerid, 15.0, "La pipeta indica que no hay alcohol en la sangre.");
 	return 1;
@@ -10696,7 +10696,7 @@ stock ShowPocket(playerid, targetid)
 	if(PlayerInfo[targetid][pLSD] > 0)
 	    SendFMessage(playerid, COLOR_WHITE, "- LSD: %d dosis.", PlayerInfo[targetid][pLSD]);
 	if(PlayerInfo[targetid][pEcstasy] > 0)
-	    SendFMessage(playerid, COLOR_WHITE, "- Extasis: %d pastillas.", PlayerInfo[targetid][pEcstasy]);
+	    SendFMessage(playerid, COLOR_WHITE, "- Éxtasis: %d pastillas.", PlayerInfo[targetid][pEcstasy]);
 	if(PlayerInfo[targetid][pCocaine] > 0)
 	    SendFMessage(playerid, COLOR_WHITE, "- Cocaína: %d gramos.", PlayerInfo[targetid][pCocaine]);
 	SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
@@ -10860,7 +10860,7 @@ public UpdatePlayerAdiction()
 					{
 			        	PlayerInfo[playerid][pAdictionAbstinence] -= ADICTION_UPDATE_TIME;
 			        	if(PlayerInfo[playerid][pAdictionAbstinence] <= 0.0)
-			        	    SendClientMessage(playerid, COLOR_RED, "Ultima advertencia, consume alguna droga antes de los próximos 5 minutos o tu estado será crítico");
+			        	    SendClientMessage(playerid, COLOR_RED, "Última advertencia, consume alguna droga antes de los próximos 5 minutos o tu estado será crítico");
 			        	else
 							SendFMessage(playerid, COLOR_RED, "Entras en abstinencia. Consume alguna droga dentro de %d minutos o entrarás en estado crítico.", PlayerInfo[playerid][pAdictionAbstinence] / 60);
 					} else
@@ -11058,7 +11058,7 @@ CMD:mservicio(playerid, params[])
 		format(string, sizeof(string), "Anuncio: un paramédico se ha puesto en servicio.", GetPlayerNameEx(playerid));
 		SendClientMessageToAll(COLOR_LIGHTGREEN, string);
 	} else {
-		PlayerActionMessage(playerid,15.0,"se quita el uniforme de medico y guarda su morral en el armario.");
+		PlayerActionMessage(playerid,15.0,"se quita el uniforme de médico y guarda su morral en el armario.");
 		ResetPlayerWeapons(playerid);
 		PlayerInfo[playerid][pHealth] = 100;
 		MedDuty[playerid] = 0;
@@ -11099,7 +11099,7 @@ CMD:curarse(playerid, params[])
 
 	GivePlayerCash(playerid, -PRICE_HOSP_HEAL);
 	GiveFactionMoney(FAC_HOSP, PRICE_HOSP_HEAL);
-	PlayerDoMessage(playerid, 15.0, "Un médico examina al paciente y tras un diagnostico inicial, comienza a curarlo.");
+	PlayerDoMessage(playerid, 15.0, "Un médico examina al paciente y tras un diagnóstico inicial, comienza a curarlo.");
 	TogglePlayerControllable(playerid, 0);
 	SetTimerEx("HospHeal", 30000, false, "i", playerid);
 	format(string, sizeof(string), "[Hospital]: El paciente %s se ha registrado en el %s y está siendo atendido.", GetPlayerNameEx(playerid), Building[GetPlayerBuilding(playerid)][blText]);
@@ -11189,7 +11189,7 @@ CMD:rehabilitarse(playerid, params[])
  	if(RehabOffer[playerid] == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
  	if(GetPlayerBuilding(playerid) != BLD_HOSP && GetPlayerBuilding(playerid) != BLD_HOSP2)
-	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ambos, medico y paciente, deben estar en el hospital!");
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ambos, médico y paciente, deben estar en el hospital!");
   	if(GetPlayerCash(playerid) < ADICTION_REHAB_PRICE)
     {
 	   	SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario para la rehabilitación. ($%d.-)", ADICTION_REHAB_PRICE);
@@ -11954,20 +11954,20 @@ CMD:apruleta(playerid, params[])
 					new number, numberbet, colour[10], colourbet, dozen, dozenbet;
 					if(sscanf(params, "iis[10]iii", number, numberbet, colour, colourbet, dozen, dozenbet))
 					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [docena] [apuesta].");
-     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del color, y su apuesta escribe '0'.");
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [número] [apuesta] [rojo/negro] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del número/docena o 'no' en el caso del color, y su apuesta escribe '0'.");
 						return 1;
 					}
 					if(strcmp(colour, "rojo", true) != 0 && strcmp(colour, "negro", true) != 0 && strcmp(colour, "no", true) != 0)
 					{
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [numero] [apuesta] [rojo/negro] [apuesta] [docena] [apuesta].");
-     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del numero/docena o 'no' en el caso del color, y en su apuesta escribe '0'.");
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apruleta [número] [apuesta] [rojo/negro] [apuesta] [docena] [apuesta].");
+     					SendClientMessage(playerid, COLOR_WHITE, "Si en algun campo no deseas apostar, escribe '-1' en el caso del número/docena o 'no' en el caso del color, y en su apuesta escribe '0'.");
 						return 1;
 					}
 					if(isBetingRoulette[playerid] == true)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
 					if(number < -1 || number > 36)
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "Los numeros de una ruleta van del 0 al 36!");
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "Los números de una ruleta van del 0 al 36!");
 					if(dozen < -1 || dozen > 3)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes elegir 1ra, 2da o 3er docena! (1,2,3 o -1 para omitir esa apuesta).");
 					if(numberbet < 0 || numberbet > 20000 || colourbet < 0 ||colourbet > 20000 || dozenbet < 0 || dozenbet > 20000)
@@ -12039,7 +12039,7 @@ CMD:apfortuna(playerid, params[])
 	    		{
   					new number, numberbet;
    					if(sscanf(params, "ii",number, numberbet))
-						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apfortuna [numero] [apuesta]");
+						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /apfortuna [número] [apuesta]");
 	    			if(isBetingFortune[playerid] == true)
 			    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar un minuto para volver a apostar!");
 					if(number != 1 && number != 2 && number != 5 && number != 10 && number != 20 && number != 40)
@@ -12069,9 +12069,9 @@ CMD:apfortuna(playerid, params[])
                     {
                         GivePlayerCash(playerid, number * (numberbet + 1));
                     	Business[i][bTill] += number * (numberbet + 1);
-                    	format(string, sizeof(string), "ha ganado $%d apostandole al %d!", number * (numberbet + 1), number);
+                    	format(string, sizeof(string), "ha ganado $%d apostándole al %d!", number * (numberbet + 1), number);
 					} else
-					    	format(string, sizeof(string), "ha perdido $%d apostandole al %d!", numberbet, number);
+					    	format(string, sizeof(string), "ha perdido $%d apostándole al %d!", numberbet, number);
        				PlayerActionMessage(playerid, 15.0, string);
 					isBetingFortune[playerid] = true;
 					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_FORTUNE);
@@ -12483,7 +12483,7 @@ CMD:vercinturon(playerid, params[])
     new vehicleid = GetPlayerVehicleID(targetid),
 		vType = GetVehicleType(vehicleid);
 	if(!IsPlayerInAnyVehicle(targetid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY && vType != VTYPE_MONSTER))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El jugador no esta en un vehiculo / el vehículo no posee cinturón!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El jugador no esta en un vehículo / el vehículo no posee cinturón!");
 	/*--------------*/
 	if(SeatBelt[targetid])
 		SendFMessage(playerid, COLOR_WHITE, "El cinturón de %s se encuentra abrochado.", GetPlayerNameEx(targetid));
@@ -12512,7 +12512,7 @@ CMD:noticia(playerid, params[])
 	if(!IsPlayerInAnyVehicle(playerid) && (closestVeh == INVALID_VEHICLE_ID || VehicleInfo[closestVeh][VehFaction] != FAC_MAN) && GetPlayerBuilding(playerid) != BLD_MAN)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca de una furgoneta, helicóptero de reportero o en la central de CTR!");
 	if(IsPlayerInAnyVehicle(playerid) && VehicleInfo[GetPlayerVehicleID(playerid)][VehFaction] != FAC_MAN)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en algún vehiculo de la facción para transmitir!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en algún vehículo de la facción para transmitir!");
 	if(InterviewActive[playerid] && !ProxDetectorS(5.0, playerid, InterviewOffer[playerid]))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para poder transmitir debes estar cerca del reportero que te ofreció la entrevista.");
 
@@ -12667,7 +12667,7 @@ public CheckNameAvailable(playerid, accountName[])
 	mysql_function_query(dbHandle, query, false, "", "");
 	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
-	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberas informar al usuario es '%s' (sin las comillas).", password);
+	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberás informar al usuario es '%s' (sin las comillas).", password);
 	format(string, sizeof(string), "[CREA LA CUENTA] a %s", accountName);
 	log(playerid, LOG_ADMIN, string);
 	return 1;
