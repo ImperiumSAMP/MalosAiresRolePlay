@@ -629,7 +629,7 @@ CMD:comprarinsumos(playerid, params[])
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
     SetHandItemAndParam(playerid, freehand, ITEM_ID_MATERIALES, amount);
 	GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
-	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y descarga los insumos con /guardarinsumos. Utiliza /nocargar para sacar la animación de carga.");
+	SendClientMessage(playerid, COLOR_WHITE, "Vé al depósito y descarga los insumos con /guardarinsumos. Utiliza /nocargar para sacar la animación de carga.");
 	PlayerActionMessage(playerid, 15.0, "compra una caja de insumos.");
 	return 1;
 }
@@ -649,7 +649,7 @@ CMD:guardarinsumos(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de insumos en tus manos para descargar.");
 	amount = GetHandParam(playerid, hand);
 	if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas insumos al deposito ya que el mismo está lleno.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar más insumos al depósito ya que el mismo está lleno.");
 	
 	FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
 	SetHandItemAndParam(playerid, hand, 0, 0);

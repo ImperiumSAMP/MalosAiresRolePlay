@@ -32,7 +32,7 @@ DeleteAdminObject(playerid)
 	{
 		DestroyDynamicObject(adminServerObjects[adminServerObjectsCant-1]);
 		adminServerObjectsCant --;
-        SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Has borrado el ultimo objeto puesto por un administrador.");
+        SendClientMessage(playerid, COLOR_WHITE, "[DEBUG]: Has borrado el último objeto puesto por un administrador.");
 	}
 	
 }

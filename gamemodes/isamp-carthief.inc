@@ -37,7 +37,7 @@ public UsarBarreta(playerid, vehicleid)
 
     hand = SearchHandsForItem(playerid, ITEM_ID_BARRETA);
     if(hand == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus alguna de tus manos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en alguna de tus manos.");
 
 	if(random(10) > 4)
 	{
@@ -50,7 +50,7 @@ public UsarBarreta(playerid, vehicleid)
 	else
 	{
  		VehicleInfo[vehicleid][VehLocked] = 0;
- 		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con exito la cerradura.");
+ 		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con éxito la cerradura.");
 		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
  			GiveJobExp(playerid, JOB_FELON, 2);
         ThiefJobInfo[playerid][pForceDoorLimit] = CMD_BARRETA_COOLDOWN * 60;
@@ -105,9 +105,9 @@ CMD:barreta(playerid, params[])
 	if(IsPlayerInAnyVehicle(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
 	if(SearchHandsForItem(playerid, ITEM_ID_BARRETA) == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en tus alguna de tus manos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una barreta en alguna de tus manos.");
 	if(vehicleid == INVALID_VEHICLE_ID)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningun vehiculo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningún vehículo.");
 	if(VehicleInfo[vehicleid][VehLocked] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas están abiertas.");
 
@@ -119,14 +119,14 @@ CMD:barreta(playerid, params[])
     
     if(random(10) > 4)
     {
-		SendClientMessage(playerid, COLOR_WHITE, "Un civil te vió forzando la cerradura y alertó a la policía. ¡Apurate o te atraparán!");
+		SendClientMessage(playerid, COLOR_WHITE, "Un civil te vió forzando la cerradura y alertó a la policía. ¡Apúrate o te atraparán!");
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 		GetPlayer2DZone(playerid, location, MAX_ZONE_NAME);
 		foreach(new i : Player)
 		{
 		    if(isPlayerCopOnDuty(i))
 		    {
-		        SendClientMessage(i, COLOR_PMA, "[Dpto. de policía]: Un civil ha reportado un robo de auto en curso. Hemos marcado la ubicacion en el radar.");
+		        SendClientMessage(i, COLOR_PMA, "[Dpto. de policía]: Un civil ha reportado un robo de auto en curso. Hemos marcado la ubicación en el radar.");
                 SendFMessage(i, COLOR_PMA, "[Dpto. de policía]: El modelo del vehículo es un %s y la zona es %s.", GetVehicleName(vehicleid), location);
                 SetPlayerCheckpoint(i, pos[0], pos[1], pos[2], 3.0);
 			}

@@ -97,7 +97,7 @@ public OnLogMaskLoad(playerid)
 			SendClientMessage(playerid, COLOR_WHITE, str);
 	}
 	else
-		SendClientMessage(playerid, COLOR_YELLOW2, "El id de máscara no posee ningun usuario en la base de datos.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "El id de máscara no posee ningún usuario en la base de datos.");
 	return 1;
 }
 
@@ -188,11 +188,11 @@ PlayerTakeMaskID(playerid, maskid)
 CMD:mascara(playerid, params[])
 {
 	if(PlayerInfo[playerid][pMask] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una mascara en tu bolsillo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una máscara en tu bolsillo.");
 	if(!usingMask[playerid])
 	{
  		if(IsPlayerAttachedObjectSlotUsed(playerid, INDEX_ID_MASK))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una mascara puesta.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una máscara puesta.");
 		SetPlayerAttachedObject(playerid, INDEX_ID_MASK, PlayerInfo[playerid][pMask], BONE_ID_HEAD, 0.058999, 0.026000, 0.004999, 87.400039, 159.800033, 84.100013, 1.0, 1.0, 1.0);
 		usingMask[playerid] = true;
   		EditAttachedObject(playerid, INDEX_ID_MASK);
@@ -228,7 +228,7 @@ CMD:comprarmascara(playerid, params[])
     if(sscanf(params, "i", idmask))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
     if(business == 0 || (Business[business][bType] != BIZ_CLOT &&  Business[business][bType] != BIZ_CLOT2))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algun negocio de ropa que los venda.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algún negocio de ropa que los venda.");
 	if(idmask < 0 || idmask > 8)
         return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
 	if(GetPlayerCash(playerid) < 50)

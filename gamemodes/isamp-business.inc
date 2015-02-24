@@ -305,8 +305,8 @@ CMD:ayudanegocio(playerid, params[])
 
 CMD:ayudaproductos(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, y estaciona en la puerta del depósito y bajá a comprar.");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprarproductos, y cuando llegues con la mercaderia a la entrada de tu negocio usa /guardarproductos.");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Para comprar productos dirígete a la zona de transportistas, estaciona en la puerta del depósito y bajá a comprar.");
+    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Una vez allí, escribe /comprarproductos, y cuando llegues con la mercadería a la entrada de tu negocio usa /guardarproductos.");
 	return 1;
 }
 
@@ -330,7 +330,7 @@ CMD:negociollave(playerid, params[])
 		{
 			Business[bizID][bLocked] = 1;
 			PlayerActionMessage(playerid, 15.0, "toma unas llaves de su bolsillo y cierra las puertas del negocio.");
-			SendClientMessage(playerid, COLOR_YELLOW2,"Una vez cerrado, no podrás abrirlo hasta el próximo payday y perderas los ingresos de ese día.");
+			SendClientMessage(playerid, COLOR_YELLOW2,"Una vez cerrado, no podrás abrirlo hasta el próximo payday y perderás los ingresos de ese día.");
 			openBizPermission[bizID] = false;
 		}
 	saveBusiness(bizID);
@@ -1083,7 +1083,7 @@ stock processRestMenu(params[],playerid,businessid,const menu[][RES_PRICELIST],m
 	if(sscanf(params, "i", option))
 		return bizShowMenu(playerid,menu,menusize);
 	if(Business[businessid][bProducts] <= 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene más stock de productos, vuelve mas tarde.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene más stock de productos, vuelve más tarde.");
 	if(option > menusize)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ese menú no se encuentra en la carta, ordena alguno de los disponibles!");
 		
@@ -1126,7 +1126,7 @@ CMD:comer(playerid, params[])
 public OnPlayerBuyHard(playerid, biz)
 {
 	if(Business[biz][bProducts] < 1)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve más tarde.");
 
     TogglePlayerControllable(playerid, false);
 	ShowPlayerHardBizDialog(playerid, biz);
@@ -1178,7 +1178,7 @@ public OnPlayerBuyHardDialog(playerid, listitem)
 public OnPlayerBuyAccess(playerid, biz)
 {
 	if(Business[biz][bProducts] < 1)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve mas tarde.");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve más tarde.");
 
     TogglePlayerControllable(playerid, false);
 	ShowPlayerAccessBizDialog(playerid, biz);
@@ -1232,7 +1232,7 @@ public OnPlayerBuyClot(biz, playerid)
 	new skintype;
 	
 	if(Business[biz][bProducts] < 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo más tarde.");
 
 	TogglePlayerControllable(playerid, false);
 	DestroySelectionMenu(playerid);
@@ -1276,11 +1276,11 @@ public OnPlayerBuyAmmu(biz, playerid, params[])
 	new option, param, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo más tarde.");
     if(sscanf(params, "ii", option, param))
         return ShowAmmuCatalog(playerid);
 	if(option < 0 || option >= sizeof(AmmuItems))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un numero de opcion válido.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de opción válido.");
 	if(!PlayerInfo[playerid][pWepLic])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar si no tienes una licencia de portación de armas.");
 	if(param < 1 || param > 200)

@@ -57,7 +57,7 @@ CMD:dardroga(playerid, params[])
 	if(sscanf(params, "usd", targetid, type, amount))
 	{
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dardroga [ID/Jugador] [tipo] [cantidad]");
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaina");
 	}
 	if(SellingDrugs[playerid] == true)
 	     return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras ofreciendo droga a otro sujeto, aguarda 15 segundos a que termine el intercambio.");
@@ -99,12 +99,12 @@ CMD:dardroga(playerid, params[])
 	       			if(PlayerInfo[playerid][pCocaine] < amount)
 	           			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 					SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido %d gramos de cocaína a %s. La oferta termina en 15 segundos.", amount, GetPlayerNameEx(targetid));
-	    			format(string, sizeof(string), "%s quiere darte %d gramos de cocaina. Escribe '/aceptar droga' para aceptar. La oferta termina en 15 segundos.",GetPlayerNameEx(playerid), amount);
+	    			format(string, sizeof(string), "%s quiere darte %d gramos de cocaína. Escribe '/aceptar droga' para aceptar. La oferta termina en 15 segundos.",GetPlayerNameEx(playerid), amount);
 					DrugOfferType[targetid] = 4;
 	   			 } else
 					{
            				SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dardroga [IDJugador/ParteDelNombre] [tipo] [cantidad]");
-						return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
+						return SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaína");
 	    			}
 
    	SetPVarInt(targetid, "CancelDrugTransfer", SetTimerEx("CancelDrugTransfer", 15 * 1000, false, "ii", targetid, 1));
@@ -135,7 +135,7 @@ public  RestartPlayerEffectCocaine(playerid)
     {
 		SetNormalPlayerGunSkills(playerid);
 		DrugEffectCocaine[playerid] = false;
-		SendClientMessage(playerid, COLOR_YELLOW2, "El efecto de la cocaina se ha ido.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "El efecto de la cocaína se ha ido.");
 	}
 	return 1;
 }
@@ -185,7 +185,7 @@ CMD:consumir(playerid, params[])
 	if(sscanf(params, "s[32]", type))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /consumir [tipo de droga]");
-	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - éxtasis - cocaína");
 	    SendClientMessage(playerid, COLOR_YELLOW2, "Para ver cuánta droga tienes, utiliza '/bolsillo'.");
 	}
 	else if(strcmp(type, "marihuana", true) == 0)

@@ -47,7 +47,7 @@ CMD:tomarbarrio(playerid, params[])
  	if(FactionInfo[faction][fType] != FAC_TYPE_GANG)
  	    return 1;
 	if(PlayerInfo[playerid][pRank] != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para iniciar la toma de un barrio debes ser el lider de la facción.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para iniciar la toma de un barrio debes ser el líder de la facción.");
 	if(IsFactionTakingGangZone[faction] == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu facción ya está tomando un barrio en estos momentos.");
 	gangzone = GetPlayerGangZone(playerid);

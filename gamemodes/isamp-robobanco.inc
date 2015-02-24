@@ -362,7 +362,7 @@ CMD:grupocrear(playerid, params[])
 	if(!CreateRobberyGroup(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya hay otro grupo de robo al banco en curso.");
 
-	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Malos Aires. Mas info en /grupoayuda.");
+	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Malos Aires. Más info en /grupoayuda.");
   	return 1;
 }
 
@@ -437,7 +437,7 @@ CMD:grupoabandonar(playerid, params[])
 	new str[128];
 	
 	if(IsPlayerRobberyGroupLeader(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando siendo el lider. Puedes eliminar el grupo con /grupoeliminar.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando siendo el líder. Puedes eliminar el grupo con /grupoeliminar.");
 	if(isPlayerInRobberyGroup[playerid])
 	{
 	    format(str, sizeof(str), "%s ha abandonado el grupo de robo al banco.", GetPlayerNameEx(playerid));
@@ -450,7 +450,7 @@ CMD:grupoabandonar(playerid, params[])
 CMD:grupoeliminar(playerid, params[])
 {
 	if(!IsPlayerRobberyGroupLeader(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No eres lider de ningún grupo de robo.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "No eres líder de ningún grupo de robo.");
 
 	RobberyGroupMessage(COLOR_WHITE, "El lider ha eliminado el grupo de robo al banco. Mas info en /grupoayuda.");
 	ResetRobberyGroup();
@@ -475,9 +475,9 @@ CMD:robarbanco(playerid, params[])
 		string[128];
 	
 	if(!IsPlayerRobberyGroupLeader(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el líder de un grupo de robo para utilizar este comando.");
 	if(bankRobberyCooldown > 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Las bovedas del banco están vacias, no tiene sentido. (OOC: El banco todavía no está disponible para asaltar)");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Las bóvedas del banco están vacias, no tiene sentido. (OOC: El banco todavía no está disponible para asaltar)");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
 	if(!hasFireGun(playerid))
@@ -490,12 +490,12 @@ CMD:robarbanco(playerid, params[])
 			if(!IsPlayerInRangeOfPoint(memberid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
 			if(!hasFireGun(memberid))
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Todo tu equipo debe contar con algun arma de fuego en la mano.");
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Todo tu equipo debe contar con algún arma de fuego en la mano.");
 		}
 	}
  	if(CountCopsOnDuty() < MIN_DUTYCOPS_NEEDED)
  	{
- 		SendFMessage(playerid, COLOR_YELLOW2, "Deben haber minimo %d policias en servicio conectados.", MIN_DUTYCOPS_NEEDED);
+ 		SendFMessage(playerid, COLOR_YELLOW2, "Deben haber mínimo %d policias en servicio conectados.", MIN_DUTYCOPS_NEEDED);
  		return 1;
 	}
 	if(CountRobberyGroupMembers() < MIN_THIEFS_NEEDED)
@@ -510,7 +510,7 @@ CMD:robarbanco(playerid, params[])
  	RobberyGroup[RobberyStageProgress] = 0;
  	pRobberyStage[playerid] = STAGE_INICIO_ROBO;
  	PlayerDoMessage(playerid, 15.0, "Un grupo armado de sujetos entra al banco violentamente y desenfundan sus armas");
-	PlayerDoMessage(playerid, 15.0, "Uno de los empleados oprime el boton de la alarma, forzando la inminente llegada de la policía");
+	PlayerDoMessage(playerid, 15.0, "Uno de los empleados oprime el botón de la alarma, forzando la inminente llegada de la policía");
 	RobberyGroupMessage(COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
     PoliceBankRobberyAlarm();
     bankRobberyCooldown = BANK_ROBBERY_COOLDOWN * 60 * 60;
@@ -657,7 +657,7 @@ CMD:robarboveda(playerid, params[])
 	if(!isPlayerInRobberyGroup[playerid] || pRobberyStage[playerid] != STAGE_DETONAR_BOVEDA)
     	return 1;
 	if(!IsPlayerRobberyGroupLeader(playerid))
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el lider de un grupo de robo para utilizar este comando.");
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser el líder de un grupo de robo para utilizar este comando.");
 	if(GetRobberyGroupStage() != STAGE_TOMAR_DINERO)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Tu grupo se encuentra en otra etapa del robo.");
    	if(!IsPlayerInRangeOfPoint(playerid, 4.0, POS_BANK_INSIDE_SAFE_X, POS_BANK_INSIDE_SAFE_Y, POS_BANK_INSIDE_SAFE_Z))
@@ -683,7 +683,7 @@ public RobarBoveda(playerid)
 		GivePlayerCash(playerid, MAX_DINERO_BOVEDA);
 		pHoldingMoney[playerid] = true;
 		pHoldingMoneyTimer[playerid] = SetTimerEx("TimeHoldMoney", 20 * 60 * 1000, false, "i", playerid);
-		RobberyGroupMessage(COLOR_WHITE, "¡El lider ha terminado de guardar el dinero, huye rapido o te atraparán! (OOC: El dinero se pierde si el lider deslogea/muere)");
+		RobberyGroupMessage(COLOR_WHITE, "¡El líder ha terminado de guardar el dinero, huye rápido o te atraparán! (OOC: El dinero se pierde si el lider deslogea/muere)");
 		ResetRobberyGroup();
 	}
 	return 1;

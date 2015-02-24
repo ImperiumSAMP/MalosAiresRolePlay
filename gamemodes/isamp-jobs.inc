@@ -323,7 +323,7 @@ CMD:trabajar(playerid,params[])
 						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión!");
 
 					SendClientMessage(playerid, COLOR_WHITE, "Entrega los paquetes en los puntos rojos del mapa y vuelve a buscar más o bien utiliza /terminar cuando lo desees.");
-                    SendClientMessage(playerid, COLOR_WHITE, "Te pagarán acorde a la cantidad de paquetes entregados y no podras volver a trabajar durante este día de pago.");
+                    SendClientMessage(playerid, COLOR_WHITE, "Te pagarán acorde a la cantidad de paquetes entregados y no podrás volver a trabajar durante este día de pago.");
 					SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
 					jobDuty[playerid] = true;
 					SetEngine(GetPlayerVehicleID(playerid), 1);

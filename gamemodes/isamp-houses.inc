@@ -393,7 +393,7 @@ RentalExpiration(playerid)
 	{
         if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 2)
 	    {
-	        SendClientMessage(playerid, COLOR_WHITE, "Te han desalojado de tu vivienda como se te informo que pasaria, todo lo que hayas dejado dentro dalo por perdido.");
+	        SendClientMessage(playerid, COLOR_WHITE, "Te han desalojado de tu vivienda como se te informo que pasaría, todo lo que hayas dejado dentro dalo por perdido.");
         	House[PlayerInfo[playerid][pHouseKeyIncome]][Locked] = 1;
 			House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 0;
 			House[PlayerInfo[playerid][pHouseKeyIncome]][IncomeAccept] = 0;
@@ -402,12 +402,12 @@ RentalExpiration(playerid)
 			PlayerInfo[playerid][pHouseKeyIncome] = 0;
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
 	    {
-	        SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	        SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojarán y las perderás.");
 	        House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 2;
 	        SaveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
 	    {
-            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que rescinda el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojarán y las perderás.");
             House[PlayerInfo[playerid][pHouseKeyIncome]][Income] = 3;
             SaveHouse(PlayerInfo[playerid][pHouseKeyIncome]);
 		} else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
@@ -426,15 +426,15 @@ PrintHouseRentAdvise(playerid)
 	{
 	    if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 5)
 	    {
-	        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+	        SendClientMessage(playerid, COLOR_WHITE, "Te quedan 3 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojarán y las perderás.");
 		}
 		else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 4)
 	    {
-            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+            SendClientMessage(playerid, COLOR_WHITE, "Te quedan 2 paydays antes de que finalice el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojarán y las perderás.");
 		}
 		else if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] == 3)
 	    {
-            SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojaran y las perderas.");
+            SendClientMessage(playerid, COLOR_WHITE, "En el próximo payday rescinde el contrato de la vivienda en la cual vives, retira tus cosas antes o te desalojarán y las perderás.");
 		}
 	}
 }
@@ -537,7 +537,7 @@ CMD:casacomprar(playerid, params[])
 				PlayRadioStreamForPlayer(playerid, House[h][Radio]);
 				GivePlayerCash(playerid, -House[h][HousePrice]);
 				SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has comprado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
-			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y este le entrega un par de llaves.");
+			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y éste le entrega un par de llaves.");
 				SaveHouse(h);
 				return 1;
 			}
@@ -780,7 +780,7 @@ CMD:casaalquilar(playerid, params[])
 				SetCameraBehindPlayer(playerid);
 				PlayRadioStreamForPlayer(playerid, House[h][Radio]);
 				SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has alquilado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
-			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y este le entrega un par de llaves.");
+			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y éste le entregaun par de llaves.");
 				SaveHouse(h);
 				return 1;
 			}

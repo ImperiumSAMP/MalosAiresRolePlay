@@ -456,7 +456,7 @@ CMD:resistirte(playerid, params[])
 	if(felon[playerid] != INVALID_PLAYER_ID)
 	{
 		PlayerActionMessage(playerid, 15.0, "se resiste al robo.");
-		SendClientMessage(felon[playerid], COLOR_WHITE, "La victima ha rechazado darte del dinero.");
+		SendClientMessage(felon[playerid], COLOR_WHITE, "La víctima ha rechazado darte del dinero.");
 		KillTimer(GetPVarInt(felon[playerid], "robberyCancel"));
 		felon[playerid] = INVALID_PLAYER_ID;
 	}

@@ -119,7 +119,7 @@ startSprintRaceChallenge(playerid)
 	if(challengerid == 999 || challengerid == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha desafiado a una carrera de sprint / Jugador inválido.");
 	if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Para aceptar un desafio, debes estar en el punto de reunion de corredores conocido como 'El Sótano'");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Para aceptar un desafío, debes estar en el punto de reunión de corredores conocido como 'El Sótano'");
  	if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent[challengerid] != 999)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "Alguno de los dos está en una carrera!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(challengerid) != PLAYER_STATE_DRIVER)
@@ -132,7 +132,7 @@ startSprintRaceChallenge(playerid)
 	new content[128],
 	    randomPos = random(MAX_SPRINTRACE_POS);
 	    
-	format(content, sizeof(content), "ha aceptado el desafio de %s a una carrera sprint por $%d.", GetPlayerNameEx(challengerid), moneyBet);
+	format(content, sizeof(content), "ha aceptado el desafío de %s a una carrera sprint por $%d.", GetPlayerNameEx(challengerid), moneyBet);
 	PlayerActionMessage(playerid, 15.0, content);
 	SprintRaceOpponent[playerid] = challengerid;
 	SprintRaceOpponent[challengerid] = playerid;
@@ -146,8 +146,8 @@ startSprintRaceChallenge(playerid)
 	GivePlayerCash(challengerid, -moneyBet);
 	SetPlayerRaceCheckpoint(playerid, 1, SPRINT_RACE_POS[randomPos][0], SPRINT_RACE_POS[randomPos][1], SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
 	SetPlayerRaceCheckpoint(challengerid, 1, SPRINT_RACE_POS[randomPos][0], SPRINT_RACE_POS[randomPos][1], SPRINT_RACE_POS[randomPos][2], 0.0, 0.0, 0.0, 4.0);
-	SendClientMessage(playerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
-	SendClientMessage(challengerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicacion de la meta en tu GPS. Preparate!");
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicación de la meta en tu GPS. Preparate!");
+	SendClientMessage(challengerid, COLOR_LIGHTGREEN, "La carrera comienza en 10 segundos. Se ha marcado la ubicación de la meta en tu GPS. Preparate!");
 	SprintRaceTimer[challengerid] = SetTimerEx("SprintRaceCountdown", 1000, 1, "ii", challengerid, playerid);
 	return 1;
 }
@@ -202,13 +202,13 @@ CMD:desafiarpicada(playerid, params[])
     if(!IsPlayerInRangeOfPoint(playerid, 20.0, 2337.5864,-1245.0068,22.5000))
     	return SendClientMessage(playerid, COLOR_WHITE, "Para desafiar a alguien, debes ir al punto de encuentro de corredores conocido como 'El Sotano'.");
  	if(racerid == INVALID_PLAYER_ID || racerid == playerid)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "Jugador invalido.");
+ 	    return SendClientMessage(playerid, COLOR_WHITE, "Jugador inválido.");
 	if(SprintRaceOpponent[playerid] != 999 || SprintRaceOpponent [racerid] != 999)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Alguno de los dos está en una carrera!");
 	if(SprintRaceOffer[playerid] != 999)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "Ya tienes un desafio pendiente!");
+ 	    return SendClientMessage(playerid, COLOR_WHITE, "Ya tienes un desafío pendiente!");
 	if(SprintRaceOffer[racerid] != 999)
- 	    return SendClientMessage(playerid, COLOR_WHITE, "El sujeto esta con otro desafio en este instante, aguarda.");
+ 	    return SendClientMessage(playerid, COLOR_WHITE, "El sujeto está con otro desafío en este instante, aguarda.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER || GetPlayerState(racerid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Ambos deben estar de conductor en el auto con el cual correrán!");
 	if(moneyBet < 500)

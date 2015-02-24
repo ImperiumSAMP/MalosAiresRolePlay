@@ -59,7 +59,7 @@ stock DropObject(playerid, playerhand)
 	if(GetHandItem(playerid, playerhand) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(GetHandItem(playerid, playerhand) == ITEM_ID_TELEFONO_CELULAR)
-   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con tu telefono");
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con tu teléfono");
  	new j = -1;
 	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
 	{

@@ -96,7 +96,7 @@ CMD:tomartazer(playerid, params[])
 	if(tazerStatus[playerid] == TAZER_NONE)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar equipado con un tazer!");
 	if(tazerStatus[playerid] == TAZER_EMPTY)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaria a recargarlo!");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaría a recargarlo!");
 	if(tazerInUse[playerid])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes el tazer en la mano!");
 	if(GetHandItem(playerid, HAND_RIGHT) != 0)

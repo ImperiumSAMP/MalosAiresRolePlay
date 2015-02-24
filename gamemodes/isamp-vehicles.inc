@@ -889,7 +889,7 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 	if(GetHandItem(playerid, playerhand) == ITEM_ID_TELEFONO_CELULAR)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el teléfono.");
 		
 	new itemid = GetHandItem(playerid, playerhand),
 	    itemparam = GetHandParam(playerid, playerhand),
@@ -959,7 +959,7 @@ CMD:maletero(playerid, params[])
 		    SendFMessage(playerid, COLOR_WHITE, " - LSD: %d dosis.", VehicleInfo[vehicleid][VehLSD]);
 		}
 		if(VehicleInfo[vehicleid][VehEcstasy] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Extasis: %d dosis.", VehicleInfo[vehicleid][VehEcstasy]);
+		    SendFMessage(playerid, COLOR_WHITE, " - Éxtasis: %d dosis.", VehicleInfo[vehicleid][VehEcstasy]);
 		}
 		if(VehicleInfo[vehicleid][VehCocaine] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", VehicleInfo[vehicleid][VehCocaine]);
@@ -1194,7 +1194,7 @@ CMD:lojack(playerid, params[])
 	if(sscanf(params, "i", vehicleid))
 		return SendClientMessage (playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lojack [ID vehículo]");
     if(!playerOwnsCar(playerid, vehicleid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehiculo no te pertenece.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no te pertenece.");
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Requieres de un telefono para utilizar el Lojack!");
 	if(GetPlayerCash(playerid) < PRICE_GPS)
@@ -1203,7 +1203,7 @@ CMD:lojack(playerid, params[])
 	foreach(new i : Player)
 	{
  		if(IsPlayerInVehicle(i, vehicleid))
-   			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes localizar tu vehiculo en este momento.");
+   			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes localizar tu vehículo en este momento.");
 	}
 
 	GivePlayerCash(playerid, -PRICE_GPS);
@@ -1286,7 +1286,7 @@ CMD:veh(playerid, params[])
 
 CMD:vehiculo(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================[COMANDOS DE VEHICULOS]===========================");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================[COMANDOS DE VEHÍCULOS]===========================");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehcomprar [color1] [color2] - /vehvender - /vehvendera [ID/Jugador] [ID vehículo] [precio] - /vehestacionar");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehpuertas - /vehluces - /vehmal - /vehcapot");
 	return 1;
@@ -1305,7 +1305,7 @@ CMD:vehcomprar(playerid, params[])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes comprar un vehículo que no está a la venta!");
 	//if(PlayerInfo[playerid][pVeh1] != 0 && PlayerInfo[playerid][pVeh2] != 0)
 	if(getPlayerFreeKeySlots(playerid) < 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehiculos.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes espacio en tu llavero para más vehículos.");
 	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
     if(GetPlayerCash(playerid) < price)
         return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
