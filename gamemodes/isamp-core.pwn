@@ -9047,6 +9047,12 @@ CMD:ayuda(playerid,params[])
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar");
+			
+		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
+			if(PlayerInfo[playerid][pRank] == 1) {
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno /liberar");
+			}
 
 		} else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG) {
 			if(PlayerInfo[playerid][pRank] == 1) {
