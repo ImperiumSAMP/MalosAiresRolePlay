@@ -252,7 +252,7 @@ CMD:agenda(playerid, params[])
 	new cmd[32], param1, param2[32];
 
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un telefono con agenda de contactos!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono con agenda de contactos!");
 	if(sscanf(params, "s[32]I(-1)S(-1)[32]", cmd, param1, param2))
 	{
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agenda [comando]");
@@ -267,7 +267,7 @@ CMD:agenda(playerid, params[])
 		if(PhoneHand[playerid] == 0)
 	        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
 		if(param1 < 0 || strlen(param2) >= 32)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "El numero no puede ser menor a 0 / Solo puedes usar una descripción de hasta 30 caracteres.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "El número no puede ser menor a 0 / Solo puedes usar una descripción de hasta 30 caracteres.");
 		for(new i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 		{
 		    if(playerNotebook[playerid][i][cNumber] == 0)

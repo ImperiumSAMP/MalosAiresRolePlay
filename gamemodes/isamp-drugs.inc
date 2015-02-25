@@ -99,7 +99,7 @@ CMD:dardroga(playerid, params[])
 	       			if(PlayerInfo[playerid][pCocaine] < amount)
 	           			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
 					SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido %d gramos de cocaína a %s. La oferta termina en 15 segundos.", amount, GetPlayerNameEx(targetid));
-	    			format(string, sizeof(string), "%s quiere darte %d gramos de cocaina. Escribe '/aceptar droga' para aceptar. La oferta termina en 15 segundos.",GetPlayerNameEx(playerid), amount);
+	    			format(string, sizeof(string), "%s quiere darte %d gramos de cocaína. Escribe '/aceptar droga' para aceptar. La oferta termina en 15 segundos.",GetPlayerNameEx(playerid), amount);
 					DrugOfferType[targetid] = 4;
 	   			 } else
 					{
@@ -135,7 +135,7 @@ public  RestartPlayerEffectCocaine(playerid)
     {
 		SetNormalPlayerGunSkills(playerid);
 		DrugEffectCocaine[playerid] = false;
-		SendClientMessage(playerid, COLOR_YELLOW2, "El efecto de la cocaina se ha ido.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "El efecto de la cocaína se ha ido.");
 	}
 	return 1;
 }

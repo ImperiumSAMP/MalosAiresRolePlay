@@ -111,7 +111,7 @@ stock PrintLockerForPlayer(lockerid, targetid)
 	    if(itemid > 0)
 			SendFMessage(targetid, COLOR_WHITE, " - %d- Item: %s - %s: %d", i, GetItemName(itemid), GetItemParamName(itemid), GetLockerParam(lockerid, i));
 	    else
-	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacio", i);
+	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
 	}
 	return 1;
 }
@@ -172,7 +172,7 @@ CMD:armario(playerid, params[])
 		    SendFMessage(playerid, COLOR_WHITE, " - LSD: %d dosis.", House[houseid][LSD]);
 		}
 		if(House[houseid][Ecstasy] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Extasis: %d dosis.", House[houseid][Ecstasy]);
+		    SendFMessage(playerid, COLOR_WHITE, " - Éxtasis: %d dosis.", House[houseid][Ecstasy]);
 		}
 		if(House[houseid][Cocaine] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", House[houseid][Cocaine]);

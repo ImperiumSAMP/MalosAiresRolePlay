@@ -171,7 +171,7 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(itemid == ITEM_ID_TELEFONO_CELULAR)
-   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con tu telefono");
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con tu teléfono");
 	targetfreehand = SearchFreeHand(targetid);
 	if(targetfreehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");

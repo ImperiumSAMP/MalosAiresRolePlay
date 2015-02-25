@@ -174,11 +174,11 @@ CMD:agregarmodelo(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] < 20)
 	    return 1;
 	if(sscanf(params, "iii", dealer, model, carstock))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID consecionaria] [modelo] [stock] (IDs Grotti:0 - Jefferson:1)");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo] [stock] (IDs Grotti:0 - Jefferson:1)");
 	if(GetPlayerCarDealer(playerid) == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la consecionaria y chequear que nadie esté comprando en este momento.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la concesionaria y chequear que nadie esté comprando en este momento.");
 	if(dealer < 0 || dealer >= MAX_DEALERS)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de consecionaria inválida.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
 	if(model < 400 || model > 611)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de modelo inválida.");
 	if(carstock < 1 || carstock > 50)
@@ -188,7 +188,7 @@ CMD:agregarmodelo(playerid, params[])
 	{
 	    if(CarDealerInfo[dealer][i][dModel] == model)
 	    {
-	        SendFMessage(playerid, COLOR_WHITE, "El modelo %d ya se encontraba a la venta en la consecionaria ID %d con un stock de %d.", model, dealer, CarDealerInfo[dealer][i][dStock]);
+	        SendFMessage(playerid, COLOR_WHITE, "El modelo %d ya se encontraba a la venta en la concesionaria ID %d con un stock de %d.", model, dealer, CarDealerInfo[dealer][i][dStock]);
             SendFMessage(playerid, COLOR_WHITE, "Ahora el stock de ese modelo ha sido seteado en %d unidades.", carstock);
             CarDealerInfo[dealer][i][dStock] = carstock;
             SaveDealershipModel(dealer, i, MODEL_UPDATE);
@@ -219,11 +219,11 @@ CMD:borrarmodelo(playerid, params[])
 	if(PlayerInfo[playerid][pAdmin] < 20)
 	    return 1;
 	if(sscanf(params, "ii", dealer, model))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID consecionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
 	if(GetPlayerCarDealer(playerid) == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la consecionaria y chequear que nadie esté comprando en este momento.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la concesionaria y chequear que nadie esté comprando en este momento.");
 	if(dealer < 0 || dealer >= MAX_DEALERS)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de consecionaria inválida.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
 	if(model < 400 || model > 611)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de modelo inválida.");
 
@@ -234,12 +234,12 @@ CMD:borrarmodelo(playerid, params[])
 	        SaveDealershipModel(dealer, i, MODEL_DELETE);
             CarDealerInfo[dealer][i][dModel] = 0;
 			CarDealerInfo[dealer][i][dStock] = 0;
-	        SendFMessage(playerid, COLOR_WHITE, "El modelo %d ha sido quitado de venta en la consecionaria ID %d.", model, dealer);
+	        SendFMessage(playerid, COLOR_WHITE, "El modelo %d ha sido quitado de venta en la concesionaria ID %d.", model, dealer);
 		    return 1;
 		}
 	}
 
-	SendFMessage(playerid, COLOR_YELLOW2, "Error: el modelo %d no se encuentra a la venta en la consecionaria ID %d.", model, dealer);
+	SendFMessage(playerid, COLOR_YELLOW2, "Error: el modelo %d no se encuentra a la venta en la concesionaria ID %d.", model, dealer);
 	return 1;
 }
 
@@ -258,7 +258,7 @@ CMD:vercatalogo(playerid, params[])
 	    model;
 
 	if(dealer == -1)
-     	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una consecionaria.");
+     	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
      	
 	for(new i = 0; i < MAX_DEALER_CARS; i++)
 	{
@@ -284,7 +284,7 @@ OnCarDealerDialogResponse(playerid, response, listitem)
 	    aux = 0;
 	
 	if(dealer == -1)
-     	return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una consecionaria.");
+     	return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
 
 	if(response)
 	{
@@ -337,7 +337,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 		    str[128];
 
 		if(dealer == -1)
-     		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una consecionaria.");
+     		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
 		if(color2 < 0 || color2 > 255)
 		{
 			ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el numero de color {00FF00}secundario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
@@ -364,7 +364,7 @@ OnCarDealer4DialogResponse(playerid, response)
 		    playerName[MAX_PLAYER_NAME];
 
 		if(dealer == -1)
-     		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una consecionaria.");
+     		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
 		if(dealerSlot == -1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Error: ese modelo ya no se encuentra a la venta.");
 		if(CarDealerInfo[dealer][dealerSlot][dStock] <= 0)
@@ -383,7 +383,7 @@ OnCarDealer4DialogResponse(playerid, response)
 			}
 	    }
 	    if(newveh == -1) // Si no encontró ningun auto de tipo VEH_NONE es pq ya no hay mas lugar dentro de los MAX_VEH
-			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay mas espacio para autos en el servidor. REPORTAR A UN ADMIN.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay más espacio para autos en el servidor. REPORTAR A UN ADMIN.");
 
         CarDealerInfo[dealer][dealerSlot][dStock] --;
         if(CarDealerInfo[dealer][dealerSlot][dStock] == 0)
@@ -420,8 +420,8 @@ OnCarDealer4DialogResponse(playerid, response)
 		}
 
 		VehicleInfo[newveh][VehFuel] = 100;
-		SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado un %s! El vehículo se encuentra en el estacionamiento de la consecionaria.", GetVehicleModelName(carModelSelection[playerid]));
-		SendClientMessage(playerid, COLOR_WHITE, "Recuerda estacionarlo fuera de la consecionaria con '/vehestacionar'. De no hacerlo podrá ser incautado.");
+		SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades, has comprado un %s! El vehículo se encuentra en el estacionamiento de la concesionaria.", GetVehicleModelName(carModelSelection[playerid]));
+		SendClientMessage(playerid, COLOR_WHITE, "Recuerda estacionarlo fuera de la concesionaria con '/vehestacionar'. De no hacerlo podrá ser incautado.");
 
 	 	DestroyVehicle(newveh);
 		newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);

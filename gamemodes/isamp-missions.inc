@@ -178,7 +178,7 @@ stock bool:MissionCar(playerid, step, text[])
 		case 1: // Atender la llamada.
 		{
 		    PlayerActionMessage(playerid, 15.0, "saca su teléfono y atiende la llamada.");
-			SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tengo un trabajo para ti: consígueme el auto que te indique. Dinero facil, ¿qué dices?");
+			SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: tengo un trabajo para ti: consígueme el auto que te indique. Dinero fácil, ¿qué dices?");
 	        Mobile[playerid] = NUM_MISSION;
 			pMissionEventStep[playerid] = 2;
 		}
@@ -216,7 +216,7 @@ stock bool:MissionCar(playerid, step, text[])
 		{
         	if((strcmp("si", text, true) == 0) && (strlen(text) == strlen("si")))
 			{
-				SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: Perfecto, llevame rapidamente el vehículo al lugar que te he pasado por el celular.");
+				SendClientMessage(playerid, COLOR_FADE1, "[Voz al teléfono]: Perfecto, llevame rápidamente el vehículo al lugar que te he pasado por el celular.");
 				new rnd = random(MAX_MISSION_CAR_POS);
 				SetPlayerCheckpoint(playerid, MissionCarPos[rnd][0], MissionCarPos[rnd][1], MissionCarPos[rnd][2], 3.0);
 				pMissionEventStep[playerid] = 4;
@@ -248,7 +248,7 @@ stock bool:MissionCar(playerid, step, text[])
       			        new price = GetVehiclePrice(vehicleid, 100) / 360;
       			        if(price < 1000)
 						  	price = 1000;
-      			        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aqui tienes $%d por el coche. Nunca nos vimos.", price);
+      			        SendFMessage(playerid, COLOR_WHITE, "Sujeto desconocido: Bien, en tiempo y forma. Aquí tienes $%d por el coche. Nunca nos vimos.", price);
 						GivePlayerCash(playerid, price);
 						HideStolenCar(vehicleid);
 						PlayerActionMessage(playerid, 15.0, "le entrega un vehículo a un sujeto desconocido y recibe a cambio un paquete.");
@@ -471,7 +471,7 @@ stock bool:MissionMaterials(playerid, step, text[])
 			} else {
 				SetPlayerPos(playerid, 2767.2983, -2417.6804, 13.7573);
 				SetPlayerCheckpoint(playerid, 2792.4609, -2417.5508, 13.7599, 3.0);
-				SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vehiculo de la misión.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vehículo de la misión.");
 			}
 		}
 		case 5: // Descarga de materiales cuando llege a destino HQ

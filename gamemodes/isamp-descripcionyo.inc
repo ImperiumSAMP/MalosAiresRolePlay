@@ -49,7 +49,7 @@ CMD:yo(playerid, params[])
 	if(sscanf(params, "s[70]", desc))
 	     return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yo [descripción] (hasta 65 caracteres)");
 	if(descActive[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes otra descripción activa. Borrala con /yob.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes otra descripción activa. Bórrala con /yob.");
 	if(strlen(desc) > 65)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "La descripción es demasiada larga, ingresa una más corta. (MAX 65 CARACTERES)");
 

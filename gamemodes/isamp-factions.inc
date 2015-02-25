@@ -428,7 +428,7 @@ CMD:guardarmateriales(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de materiales en tus manos para descargar.");
 		amount = GetHandParam(playerid, hand);
 		if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas materiales al deposito ya que el mismo está lleno.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas materiales al depósito ya que el mismo está lleno.");
 
 	    for(new i = 1; i < MAX_BUILDINGS; i++)
 		{

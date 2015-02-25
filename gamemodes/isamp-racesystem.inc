@@ -269,7 +269,7 @@ CMD:carreranuevocp(playerid, params[])
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCheckpointsCount] >= MAX_RACE_CHECKPOINTS)
 	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "No puedes agregar mas checkpoints en la carrera (MAX: %d).", MAX_RACE_CHECKPOINTS);
+	    SendFMessage(playerid, COLOR_YELLOW2, "No puedes agregar más checkpoints en la carrera (MAX: %d).", MAX_RACE_CHECKPOINTS);
 		return 1;
 	}
 	
@@ -301,7 +301,7 @@ CMD:carreraborrarcp(playerid, params[])
  	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rStarted] == true)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera ya ha comenzado.");
 	if(RaceInfo[PlayerRaceInfo[playerid][pRaceID]][rCheckpointsCount] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes borrar mas checkpoints en la carrera ya que no tienes ninguno.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes borrar más checkpoints en la carrera ya que no tienes ninguno.");
 
 	DeleteLastRaceCheckpoint(playerid, PlayerRaceInfo[playerid][pRaceID]);
 	return 1;

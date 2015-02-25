@@ -186,8 +186,8 @@ public Reparacion(playerid)
 	{
 	    if(FactionInfo[FAC_MECH][fMaterials] < RepairProducts[playerid])
 	    {
-			SendFMessage(playerid, COLOR_YELLOW2, "La reparacion se canceló ya que el taller no cuenta con los repuestos necesarios (%d).", RepairProducts[playerid]);
-			SendFMessage(mechanic, COLOR_YELLOW2, "La reparacion se canceló ya que el taller no cuenta con los repuestos necesarios (%d).", RepairProducts[playerid]);
+			SendFMessage(playerid, COLOR_YELLOW2, "La reparación se canceló ya que el taller no cuenta con los repuestos necesarios (%d).", RepairProducts[playerid]);
+			SendFMessage(mechanic, COLOR_YELLOW2, "La reparación se canceló ya que el taller no cuenta con los repuestos necesarios (%d).", RepairProducts[playerid]);
 			return EndRepairOffer(playerid);
 		}
 
@@ -251,7 +251,7 @@ CMD:ayudamec(playerid, params[])
 {
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH)
 	{
-	    SendClientMessage(playerid, COLOR_WHITE, "[COMANDOS DE MECANICO]: /mecequipo - /mecreparar - /mecremolcar - /mectaller - /mecdestunear - /mectunear - /mectuning - /meccerradura");
+	    SendClientMessage(playerid, COLOR_WHITE, "[COMANDOS DE MECÁNICO]: /mecequipo - /mecreparar - /mecremolcar - /mectaller - /mecdestunear - /mectunear - /mectuning - /meccerradura");
         SendClientMessage(playerid, COLOR_WHITE, "/meccomprar - /mecguardar - /mecdeposito");
         if(PlayerInfo[playerid][pRank] == 1)
         	SendClientMessage(playerid, COLOR_WHITE, "[Lider] /mecretirar");
@@ -332,9 +332,9 @@ CMD:mecguardar(playerid, params[])
         return 1;
 	hand = SearchHandsForItem(playerid, ITEM_ID_REPUESTOAUTO);
 	if(hand == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún repuesto en alguna de tus manos para guardar en el deposito del taller.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún repuesto en alguna de tus manos para guardar en el depósito del taller.");
 	if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de repuestos y tuning.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de repuestos y tuning.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 
@@ -354,16 +354,16 @@ CMD:mecretirar(playerid, params[])
 	if(sscanf(params, "i", cant))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mecretirar [Cantidad de repuestos]");
 	if(cant < 1 || cant > 10)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes retirar hasta 10 repuestos del deposito.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes retirar hasta 10 repuestos del depósito.");
 	freehand = SearchFreeHand(playerid);
 	if(freehand == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes las manos ocupadas y no puedes agarrar los repuestos.");
 	if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de repuestos y tuning.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de repuestos y tuning.");
 	if(FactionInfo[FAC_MECH][fMaterials] < 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas repuestos en el deposito del taller: está vacio.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay más repuestos en el depósito del taller: está vacio.");
 	if(FactionInfo[FAC_MECH][fMaterials] < cant)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay tantos repuestos en el deposito del taller.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay tantos repuestos en el depósito del taller.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 
@@ -379,7 +379,7 @@ CMD:mecdeposito(playerid, params[])
  	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
 
-	SendFMessage(playerid, COLOR_WHITE, "[Taller Mecánico]: Actualmente nuestro deposito cuenta con %d repuestos de vehículos.", FactionInfo[FAC_MECH][fMaterials]);
+	SendFMessage(playerid, COLOR_WHITE, "[Taller Mecánico]: Actualmente nuestro depósito cuenta con %d repuestos de vehículos.", FactionInfo[FAC_MECH][fMaterials]);
  	return 1;
 }
 
@@ -456,14 +456,14 @@ CMD:mecreparar(playerid,params[])
 	    return 1;
  	}
  	if(carAvailable == 0 && IsPlayerInAnyVehicle(playerid))
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehiculo desde adentro, ni tampoco repararselo a un pasajero.");
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar un vehículo desde adentro, ni tampoco repararselo a un pasajero.");
 
 	RepairOffer[target] = playerid;
 	RepairPrice[target] = price;
 	RepairType[target] = MEC_OFFER_REPARACION;
 	RepairProducts[target] = repuestos;
 	RepairClient[playerid] = target;
-	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s reparar su auto por $%d. La propuesta vence en 10 segs.", GetPlayerNameEx(target), price);
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s reparar su vehículo por $%d. La propuesta vence en 10 segs.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "%s te ofreció reparar el vehículo por $%d. Usa /mecaceptar. La propuesta vence en 10 segs.", GetPlayerNameEx(playerid), price);
 	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
@@ -524,7 +524,7 @@ CMD:mecdestunear(playerid, params[])
   	if(!ProxDetectorS(5.0, playerid, target))
   	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
     if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de tuning del Taller Mercury.");
 	if(!IsPlayerInAnyVehicle(target))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no esta en un vehiculo.");
 	new vID = GetPlayerVehicleID(target);
@@ -546,11 +546,11 @@ CMD:mecdestunear(playerid, params[])
 CMD:mecaceptar(playerid, params[])
 {
 	if(RepairOffer[playerid] == 999)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ningún mecánico te ha ofrecido algun trabajo sobre el vehículo!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ningún mecánico te ha ofrecido algún trabajo sobre el vehículo!");
 	if(GetPlayerCash(playerid) < RepairPrice[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente para pagar el trabajo!");
     if(!IsPlayerConnected(RepairOffer[playerid]))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "El mecanico no está conectado.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está conectado.");
 	if(!IsPlayerInAnyVehicle(playerid) && RepairType[playerid] != MEC_OFFER_TUNING)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en un ningún vehiculo.");
 	if(!ProxDetectorS(5.0, playerid, RepairOffer[playerid]))
@@ -624,9 +624,9 @@ CMD:mectunear(playerid,params[])
     if(GetVehicleType(tuningVehicleID) != VTYPE_CAR && GetVehicleType(tuningVehicleID) != VTYPE_BIKE)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
     if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de tuning del Taller Mercury.");
 
-    SendClientMessage(target, COLOR_LIGHTBLUE, "Te han ofrecido un tuneo, usa /mecaceptar si asi lo deseas. La oferta termina en dos minutos.");
+    SendClientMessage(target, COLOR_LIGHTBLUE, "Te han ofrecido un tuneo, usa /mecaceptar si así lo deseas. La oferta termina en dos minutos.");
     SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has ofrecido un tuneo, el tiempo para poder tunearlo termina en dos minutos.");
 	RepairOffer[target] = playerid;
 	RepairType[target] = MEC_OFFER_TUNING;
@@ -646,13 +646,13 @@ CMD:mectuning(playerid, params[])
     if(!jobDuty[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
     if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpon de tuning del Taller Mercury.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de tuning del Taller Mercury.");
     if(PlayerInfo[playerid][pRank] > 5)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el rango suficiente.");
  	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de conductor del auto que vas a tunear!");
     if(clientID == 999)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes autorizacion del dueño para tunear este vehículo.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes autorización del dueño para tunear este vehículo.");
 	if(RepairOffer[clientID] != playerid || RepairType[clientID] != MEC_OFFER_TUNING)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Error, se cancela el tuning.");
 	new vID = GetPlayerVehicleID(playerid);
@@ -827,7 +827,7 @@ CMD:repararvehiculo(playerid, params[])
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el asiento del conductor de un vehículo!");
     if(CountMecasDuty() >= 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecanico en servicio, contactalo para reparar el vehículo.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Hay un mecánico en servicio, contactalo para reparar el vehículo.");
 	if(PayNSprayOccupied[paynsprayid - 1])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Hay otro vehículo en reparación en el taller, espera a que salga.");
  	repuestos = GetRepairMaterialCost(vehicleid);
