@@ -68,4 +68,3 @@ INSERT INTO commands VALUES('/gametext', 4);
 INSERT INTO commands VALUES('/unknowngametext', 20);
 INSERT INTO commands VALUES('/aservicio', 1);
 INSERT INTO commands VALUES('/nivelcomando', 20);
-INSERT INTO commands VALUES('/vaciarmanos', 2);
