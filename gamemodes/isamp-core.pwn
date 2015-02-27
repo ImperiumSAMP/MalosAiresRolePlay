@@ -13699,7 +13699,7 @@ CMD:verdeudores(playerid, params[])
 	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Lista de cuentas bancarias cuyo balance indica una deuda hacia el estado:");
     foreach(new i : Player) {
         if(PlayerInfo[i][pBank] < 0)
-	        SendFMessage(playerid, COLOR_WHITE, "*  %s (Balance de la cuenta: {FF0000}$%s)", GetPlayerNameEx(i), PlayerInfo[i][pBank]);
+	        SendFMessage(playerid, COLOR_WHITE, "*  %s (Balance de la cuenta: {FF0000}$%s{FFFFFF})", GetPlayerNameEx(i), PlayerInfo[i][pBank]);
         }
 	return 1;
 }
