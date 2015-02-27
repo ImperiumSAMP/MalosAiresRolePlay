@@ -9002,12 +9002,17 @@ CMD:vaciarmanos(playerid, params[])
 
 	    format(string, sizeof(string), "[Staff] el administrador %s le ha vaciado a %s la mano %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), hand);
 	   	AdministratorMessage(COLOR_ADMINCMD, string, 1);
-	   	if(hand == 1)
-	   	    return SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
-		if(hand == 2)
-			return SetHandItemAndParam(target, HAND_LEFT, 0, 0);
-		if(hand == 3)
-		    return ResetAndSaveHands(target);
+	   	if(hand == 1) {
+	   	    SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+	   	    PhoneHand[target] = 0;
+	    }
+		if(hand == 2) {
+			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+		}
+		if(hand == 3) {
+		    ResetAndSaveHands(target);
+		    PhoneHand[target] = 0;
+		}
 	}
 	return 1;
 }
