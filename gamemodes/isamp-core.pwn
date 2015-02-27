@@ -9049,7 +9049,7 @@ CMD:ayuda(playerid,params[])
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar");
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /verdeudores /departamento");
 			if(PlayerInfo[playerid][pRank] == 1) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno /liberar");
 			}
