@@ -9049,7 +9049,7 @@ CMD:ayuda(playerid,params[])
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar");
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /verdeudores /departamento");
 			if(PlayerInfo[playerid][pRank] == 1) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno /liberar");
 			}
@@ -13686,6 +13686,21 @@ public OnLogAntecedentesLoad(playerid, targetname[])
 	}
 	else
 		SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no posee ningún registro antecedentes.");
+	return 1;
+}
+
+CMD:verdeudores(playerid, params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_GOB)
+	    return 1;
+	if(PlayerInfo[playerid][pRank] > 7) // Secretaría en adelante.
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
+
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Lista de cuentas bancarias cuyo balance indica una deuda hacia el estado:");
+    foreach(new i : Player) {
+        if(PlayerInfo[i][pBank] < 0)
+	        SendFMessage(playerid, COLOR_WHITE, "*  %s (Balance de la cuenta: {FF0000}$%s{FFFFFF})", GetPlayerNameEx(i), PlayerInfo[i][pBank]);
+        }
 	return 1;
 }
 
