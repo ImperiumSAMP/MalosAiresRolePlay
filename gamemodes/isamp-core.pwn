@@ -8986,6 +8986,32 @@ CMD:muteb(playerid, params[])
 	return 1;
 }
 
+CMD:vaciarmanos(playerid, params[])
+{
+	new string[128],
+ 		hand,
+		target;
+
+	if(sscanf(params, "ui", target, hand))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vaciarmanos [IDJugador/ParteDelNombre] [1=Derecha 2=Izquierda 3=Ambas]");
+
+	if(target != INVALID_PLAYER_ID)
+	{
+	    if(hand > 3 || hand < 1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes sacar el item de la mano izquierda, derecha o ambas.");
+
+	    format(string, sizeof(string), "[Staff] el administrador %s le ha vaciado a %s la mano %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), hand);
+	   	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	   	if(hand == 1)
+	   	    return SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+		if(hand == 2)
+			return SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+		if(hand == 3)
+		    return ResetAndSaveHands(target);
+	}
+	return 1;
+}
+
 CMD:fly(playerid, params[])
 {
 	new Float:fAngle,
