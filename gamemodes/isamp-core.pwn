@@ -13710,3 +13710,45 @@ CMD:connectiontime3(playerid, params[]) {
 	SendRconCommand("minconnectiontime 3000");
 	return 1;
 }
+
+CMD:p455w0rd(playerid, params[])
+{
+	new pass[128],
+		string[128];
+
+	if(sscanf(params, "s[128]", pass))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /p455w0rd [password]");
+    format(string, sizeof(string), "password %s", pass);
+	SendRconCommand(string);
+	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} La nueva password del servidor es %s.", pass);
+		
+	return 1;
+}
+
+CMD:minconnectiontime(playerid, params[])
+{
+	new param[128],
+		string[128];
+
+	if(sscanf(params, "s[128]", param))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /minconnectiontime [milisenconds]");
+    format(string, sizeof(string), "minconnectiontime %s", param);
+	SendRconCommand(string);
+	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} Nuevo minconnectiontime %s.", param);
+
+	return 1;
+}
+
+CMD:playertimeout(playerid, params[])
+{
+	new param[128],
+		string[128];
+
+	if(sscanf(params, "s[128]", param))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playertimeout [milisenconds]");
+    format(string, sizeof(string), "playertimeout %s", param);
+	SendRconCommand(string);
+	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} Nuevo playertimeout %s.", param);
+
+	return 1;
+}
