@@ -8081,7 +8081,7 @@ CMD:acmds(playerid, params[]) {
 CMD:admincmds(playerid, params[]) {
 
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotoplace");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras /crearcuenta");
 	}
@@ -8162,7 +8162,7 @@ CMD:tutorial(playerid, params[])
 
 CMD:teleayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotolv /gotosf /gotols /goto /gotopos /traer /gotospawn");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotoplace /goto /gotopos /traer");
 	return 1;
 }
 
@@ -8283,63 +8283,6 @@ CMD:goto(playerid, params[]) {
 			SetPlayerPos(playerid, xPos, yPos+2, zPos);
 		}
 	}
-	return 1;
-}
-
-CMD:gotols(playerid, params[]) {
-
-	if(GetPlayerState(playerid) == 2) {
-		SetVehiclePos(GetPlayerVehicleID(playerid), 1529.6, -1691.2, 13.3);
-	}else {
-		SetPlayerPos(playerid, 1529.6, -1691.2, 13.3);
-	}
-	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 0);
-	return 1;
-}
-
-CMD:gotospawn(playerid, params[]) {
-
-	if(GetPlayerState(playerid) == 2) {
-		SetVehiclePos(GetPlayerVehicleID(playerid), 1681.5281,-2256.2827,13.3512);
-	}else {
-		SetPlayerPos(playerid, 1682.9645, -2244.8215, 13.5445);
-	}
-	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 0);
-	return 1;
-}
-
-CMD:gotolv(playerid, params[]) {
-
-	if(GetPlayerState(playerid) == 2) {
-		SetVehiclePos(GetPlayerVehicleID(playerid), 1699.2, 1435.1, 10.7);
-	}else {
-		SetPlayerPos(playerid, 1699.2, 1435.1, 10.7);
-	}
-	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 0);
-	return 1;
-}
-
-CMD:gotosf(playerid, params[]) {
-
-	if(GetPlayerState(playerid) == 2) {
-		SetVehiclePos(GetPlayerVehicleID(playerid), -1417.0,-295.8,14.1);
-	}else {
-		SetPlayerPos(playerid, -1417.0,-295.8,14.1);
-	}
-	SetPlayerInterior(playerid, 0);
-	SetPlayerVirtualWorld(playerid, 0);
-	return 1;
-}
-
-CMD:gotobanco(playerid, params[])
-{
-
-    SetPlayerPos(playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z);
-	SetPlayerInterior(playerid, POS_BANK_I);
-	SetPlayerVirtualWorld(playerid, POS_BANK_W);
 	return 1;
 }
 
@@ -13182,6 +13125,57 @@ CMD:set(playerid, params[]) {
 	    } else {
 	        SendClientMessage(playerid, COLOR_WHITE, "Solo se admite un valor mayor o igual a 1 y menor o igual a 100.");
 	    }
+	}
+	return 1;
+}
+
+CMD:gotoplace(playerid, params[]) {
+	new param[64];
+
+	if(sscanf(params, "s[64]", param)) {
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /gotoplace [Lugar]");
+	    SendClientMessage(playerid, COLOR_WHITE, "Lugares: ls | sf | lv | spawn | banco");
+	} else if(strcmp(param, "ls", true) == 0) {
+	    if(GetPlayerState(playerid) == 2) {
+			SetVehiclePos(GetPlayerVehicleID(playerid), 1529.6, -1691.2, 13.3);
+		}else {
+			SetPlayerPos(playerid, 1529.6, -1691.2, 13.3);
+		}
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		return 1;
+	} else if(strcmp(param, "sf", true) == 0) {
+	   if(GetPlayerState(playerid) == 2) {
+			SetVehiclePos(GetPlayerVehicleID(playerid), -1417.0,-295.8,14.1);
+		}else {
+			SetPlayerPos(playerid, -1417.0,-295.8,14.1);
+		}
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		return 1;
+	} else if(strcmp(param, "lv", true) == 0) {
+	    if(GetPlayerState(playerid) == 2) {
+			SetVehiclePos(GetPlayerVehicleID(playerid), 1699.2, 1435.1, 10.7);
+		}else {
+			SetPlayerPos(playerid, 1699.2, 1435.1, 10.7);
+		}
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		return 1;
+	} else if(strcmp(param, "spawn", true) == 0) {
+	   if(GetPlayerState(playerid) == 2) {
+			SetVehiclePos(GetPlayerVehicleID(playerid), 1681.5281,-2256.2827,13.3512);
+		}else {
+			SetPlayerPos(playerid, 1682.9645, -2244.8215, 13.5445);
+		}
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		return 1;
+	} else if(strcmp(param, "banco", true) == 0) {
+ 	   	SetPlayerPos(playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z);
+		SetPlayerInterior(playerid, POS_BANK_I);
+		SetPlayerVirtualWorld(playerid, POS_BANK_W);
+		return 1;
 	}
 	return 1;
 }
