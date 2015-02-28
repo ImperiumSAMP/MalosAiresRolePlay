@@ -8081,7 +8081,7 @@ CMD:acmds(playerid, params[]) {
 CMD:admincmds(playerid, params[]) {
 
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotoplace");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /goplace /quitarobjmano");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras /crearcuenta");
 	}
@@ -8162,7 +8162,7 @@ CMD:tutorial(playerid, params[])
 
 CMD:teleayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotoplace /goto /gotopos /traer");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gp /goto /gotopos /traer");
 	return 1;
 }
 
@@ -8929,22 +8929,27 @@ CMD:muteb(playerid, params[])
 	return 1;
 }
 
-CMD:vaciarmanos(playerid, params[])
+CMD:quitarobjmano(playerid, params[])
 {
 	new string[128],
  		hand,
 		target;
 
 	if(sscanf(params, "ui", target, hand))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vaciarmanos [IDJugador/ParteDelNombre] [1=Derecha 2=Izquierda 3=Ambas]");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjeto [IDJugador/ParteDelNombre] [Mano | 1=Derecha 2=Izquierda 3=Ambas]");
 
 	if(target != INVALID_PLAYER_ID)
 	{
 	    if(hand > 3 || hand < 1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes sacar el item de la mano izquierda, derecha o ambas.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes quitar el item de la mano izquierda, derecha o ambas.");
 
-	    format(string, sizeof(string), "[Staff] el administrador %s le ha vaciado a %s la mano %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), hand);
-	   	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+		if(hand < 3){
+	    	format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), hand);
+		}
+ 		else {
+ 			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+		}
+		AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	   	if(hand == 1) {
 	   	    SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
 	   	    PhoneHand[target] = 0;
@@ -8953,7 +8958,8 @@ CMD:vaciarmanos(playerid, params[])
 			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
 		}
 		if(hand == 3) {
-		    ResetAndSaveHands(target);
+		    SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+		    SetHandItemAndParam(target, HAND_LEFT, 0, 0);
 		    PhoneHand[target] = 0;
 		}
 	}
@@ -13129,11 +13135,16 @@ CMD:set(playerid, params[]) {
 	return 1;
 }
 
-CMD:gotoplace(playerid, params[]) {
+CMD:gp(playerid, params[]) {
+	cmd_goplace(playerid, params);
+	return 1;
+}
+
+CMD:goplace(playerid, params[]) {
 	new param[64];
 
 	if(sscanf(params, "s[64]", param)) {
-	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /gotoplace [Lugar]");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /goplace [Lugar]");
 	    SendClientMessage(playerid, COLOR_WHITE, "Lugares: ls | sf | lv | spawn | banco");
 	} else if(strcmp(param, "ls", true) == 0) {
 	    if(GetPlayerState(playerid) == 2) {
