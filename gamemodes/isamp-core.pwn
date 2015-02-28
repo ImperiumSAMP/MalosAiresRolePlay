@@ -8936,7 +8936,7 @@ CMD:quitarobjmano(playerid, params[])
 		target;
 
 	if(sscanf(params, "ui", target, hand))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjeto [IDJugador/ParteDelNombre] [Mano | 1=Derecha 2=Izquierda 3=Ambas]");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjmano [IDJugador/ParteDelNombre] [Mano: 1=Derecha 2=Izquierda 3=Ambas]");
 
 	if(target != INVALID_PLAYER_ID)
 	{
