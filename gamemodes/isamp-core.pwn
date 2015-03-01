@@ -8942,25 +8942,27 @@ CMD:quitarobjmano(playerid, params[])
 	{
 	    if(hand > 3 || hand < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes quitar el item de la mano izquierda, derecha o ambas.");
-
-		if(hand < 3){
-	    	format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano %d.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), hand);
-		}
- 		else {
- 			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-		}
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			
 	   	if(hand == 1) {
-	   	    SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
-	   	    PhoneHand[target] = 0;
-	    }
-		if(hand == 2) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid), hand);
+			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+			PhoneHand[target] = 0;
+			
+	    } if(hand == 2) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
 			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
-		}
-		if(hand == 3) {
-		    SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
-		    SetHandItemAndParam(target, HAND_LEFT, 0, 0);
-		    PhoneHand[target] = 0;
+			
+		} if(hand == 3) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado los objetos que tenías en ambas manos.", GetPlayerNameEx(playerid));
+			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+			PhoneHand[target] = 0;
 		}
 	}
 	return 1;
@@ -13142,46 +13144,50 @@ CMD:gp(playerid, params[]) {
 
 CMD:goplace(playerid, params[]) {
 	new param[64];
-
 	if(sscanf(params, "s[64]", param)) {
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /goplace [Lugar]");
 	    SendClientMessage(playerid, COLOR_WHITE, "Lugares: ls | sf | lv | spawn | banco");
+	    
 	} else if(strcmp(param, "ls", true) == 0) {
 	    if(GetPlayerState(playerid) == 2) {
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1529.6, -1691.2, 13.3);
-		}else {
+		} else {
 			SetPlayerPos(playerid, 1529.6, -1691.2, 13.3);
 		}
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		return 1;
+		
 	} else if(strcmp(param, "sf", true) == 0) {
 	   if(GetPlayerState(playerid) == 2) {
 			SetVehiclePos(GetPlayerVehicleID(playerid), -1417.0,-295.8,14.1);
-		}else {
+		} else {
 			SetPlayerPos(playerid, -1417.0,-295.8,14.1);
 		}
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		return 1;
+		
 	} else if(strcmp(param, "lv", true) == 0) {
 	    if(GetPlayerState(playerid) == 2) {
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1699.2, 1435.1, 10.7);
-		}else {
+		} else {
 			SetPlayerPos(playerid, 1699.2, 1435.1, 10.7);
 		}
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		return 1;
+		
 	} else if(strcmp(param, "spawn", true) == 0) {
 	   if(GetPlayerState(playerid) == 2) {
 			SetVehiclePos(GetPlayerVehicleID(playerid), 1681.5281,-2256.2827,13.3512);
-		}else {
+		} else {
 			SetPlayerPos(playerid, 1682.9645, -2244.8215, 13.5445);
 		}
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		return 1;
+		
 	} else if(strcmp(param, "banco", true) == 0) {
  	   	SetPlayerPos(playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z);
 		SetPlayerInterior(playerid, POS_BANK_I);
