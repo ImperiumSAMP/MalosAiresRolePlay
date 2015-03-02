@@ -8087,7 +8087,7 @@ CMD:admincmds(playerid, params[]) {
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acinfo /aninfo /aeinfo /actele /antele /aetele /ban /check /checkinv /fly /sethp");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/mps /setint /setvw /set /togglegooc /verf");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/mps /setint /setvw /set /togglegooc /verf /quitarobjmano");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /cambiarnombre /afinfo /jetx /setarmour /setjob /setcoord");
@@ -8681,6 +8681,45 @@ CMD:resetabstinencia(playerid, params[])
 	format(string, sizeof(string), "[ABSTINENCE] Reset abstinence a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
+}
+
+CMD:quitarobjmano(playerid, params[])
+{
+	new string[128],
+		hand,
+		target;
+
+	if(sscanf(params, "ui", target, hand))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjmano [IDJugador/ParteDelNombre] [Mano: 1=Derecha 2=Izquierda 3=Ambas]");
+
+	if(target != INVALID_PLAYER_ID)
+	{
+	    if(hand > 3 || hand < 1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes quitar el item de la mano izquierda, derecha o ambas.");
+
+	   	if(hand == 1) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid), hand);
+			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+			PhoneHand[target] = 0;
+
+	    } if(hand == 2) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
+			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+
+		} if(hand == 3) {
+			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado los objetos que tenías en ambas manos.", GetPlayerNameEx(playerid));
+			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+			PhoneHand[target] = 0;
+		}
+	}
+	return 1;
 }
 
 //====================COMANDOS DE COMUNICACION CON STAFF========================
