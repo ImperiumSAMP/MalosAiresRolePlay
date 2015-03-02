@@ -761,13 +761,13 @@ public OnPlayerNameCheck(playerid)
 			if(strval(result) == 1)
 			{
  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
- 				AdministratorMessage(COLOR_GREY, string, 1);
+ 				AdministratorMessage(COLOR_GREY, string, 2);
 				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
 			}
 			else
 			{
   				format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
- 				AdministratorMessage(COLOR_GREY, string, 1);
+ 				AdministratorMessage(COLOR_GREY, string, 2);
 				ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido de nuevo!", "Ingresa tu contraseña a continuación:", "Ingresar", "");
 			}
 		}
@@ -2513,7 +2513,7 @@ public OnPlayerDataLoad(playerid)
 		if(PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
 		{
 
-			if(PlayerInfo[playerid][pAdmin] > 0)
+			if(PlayerInfo[playerid][pAdmin] > 1)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
 			else
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
@@ -2601,7 +2601,7 @@ public OnUnbanDataLoad(playerid, type, target[32]) {
 		}
 	}
 	mysql_function_query(dbHandle, query, false, "", "");
-    AdministratorMessage(COLOR_ADMINCMD, string, 1);
+    AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	return 1;
 }
 
@@ -3591,7 +3591,7 @@ public AntiCheatTimer()
              				if(antiCheatImmunity[playerid] == 0)
              				{
 								format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				    			AdministratorMessage(COLOR_WHITE, string, 1);
+				    			AdministratorMessage(COLOR_WHITE, string, 2);
 							}
 							ResetPlayerWeapons(playerid);
 		    				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
@@ -3605,7 +3605,7 @@ public AntiCheatTimer()
 	        				if(antiCheatImmunity[playerid] == 0)
 					        {
 						        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
-			    				AdministratorMessage(COLOR_WHITE, string, 1);
+			    				AdministratorMessage(COLOR_WHITE, string, 2);
 							}
 		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
 					    }
@@ -3625,7 +3625,7 @@ public AntiCheatTimer()
 				}
 			}
 			
-			if(PlayerInfo[playerid][pAdmin] < 1)
+			if(PlayerInfo[playerid][pAdmin] < 2)
 			{
 				if(!isWeaponAllowed(GetHandItem(playerid, HAND_RIGHT)))
 				{
@@ -3646,7 +3646,7 @@ public AntiCheatTimer()
 		  		if(hack >= 5000)
 			  	{
 				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
-				    AdministratorMessage(COLOR_WHITE, string, 1);
+				    AdministratorMessage(COLOR_WHITE, string, 2);
 				    format(string, sizeof(string), "Intentó editarse $%d.", hack);
 				    log(playerid, LOG_MONEY, string);
 		  		}
@@ -3724,7 +3724,7 @@ public globalUpdate()
 		{
 	        ServerInfo[sPlayersRecord] = playerCount;
 	       	format(string, sizeof(string), "[Staff]: ¡hemos superado el récord de usuarios online! (%d jugadores)", playerCount);
-			AdministratorMessage(COLOR_LIGHTORANGE, string, 1);
+			AdministratorMessage(COLOR_LIGHTORANGE, string, 2);
 		}
 		
 		SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
@@ -4563,7 +4563,7 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
 
 public OnPlayerClickPlayer(playerid, clickedplayerid, source)
 {
-    if(PlayerInfo[playerid][pAdmin] >= 1)
+    if(PlayerInfo[playerid][pAdmin] >= 2)
 	{
 	    if(!IsPlayerConnected(clickedplayerid))
 	    	return SendClientMessage(playerid, COLOR_GREY, "{FF4600}[Error]:{C8C8C8} el jugador no se ha conectado.");
@@ -6765,7 +6765,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	}
 
 	if(PRESSED(KEY_WALK)) {
-		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 1) {
+		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 2) {
 			PlayerInfo[playerid][pSpectating] = INVALID_PLAYER_ID;
 		    TogglePlayerSpectating(playerid, false);
 			SetCameraBehindPlayer(playerid);
@@ -8080,20 +8080,20 @@ CMD:acmds(playerid, params[]) {
 
 CMD:admincmds(playerid, params[]) {
 
-	if(PlayerInfo[playerid][pAdmin] >= 1) {
+	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras /crearcuenta");
 	}
-	if(PlayerInfo[playerid][pAdmin] >= 2) {
+	if(PlayerInfo[playerid][pAdmin] >= 3) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acinfo /aninfo /aeinfo /actele /antele /aetele /ban /check /checkinv /fly /sethp");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/mps /setint /setvw /set /togglegooc /verf");
 	}
-	if(PlayerInfo[playerid][pAdmin] >= 3) {
+	if(PlayerInfo[playerid][pAdmin] >= 4) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /cambiarnombre /afinfo /jetx /setarmour /setjob /setcoord");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aobjeto /aeditobjeto /ainfoobjetos /aobjetosquitartodo /aobjetoquitar");
 	}
-	if(PlayerInfo[playerid][pAdmin] >= 4) {
+	if(PlayerInfo[playerid][pAdmin] >= 5) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/givegun /advertir /clima /darlider /desbanear /saltartuto /tutorial /anproductos /annombre /gametext /sinfo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
@@ -8357,7 +8357,7 @@ CMD:descongelar(playerid, params[])
 	SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} has sido descongelado por %s.", GetPlayerNameEx(playerid));
 	format(string, sizeof(string), "[Staff]: %s ha descongelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
-	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	return 1;
 }
 
@@ -8375,7 +8375,7 @@ CMD:congelar(playerid, params[])
 	SetPVarInt(targetid, "disabled", DISABLE_FREEZE);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} has sido congelado por %s.", GetPlayerNameEx(playerid));
 	format(string, sizeof(string), "[Staff]: %s ha congelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
-	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	return 1;
 }
 
@@ -8677,7 +8677,7 @@ CMD:resetabstinencia(playerid, params[])
     format(string, sizeof(string), "El administrador %s te ha reseteado la abstinencia.", GetPlayerNameEx(playerid));
 	SendClientMessage(targetid, COLOR_WHITE, string);
 	format(string, sizeof(string), "El administrador %s le ha reseteado la abstinencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
-    AdministratorMessage(COLOR_ADMINCMD, string, 1);
+    AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	format(string, sizeof(string), "[ABSTINENCE] Reset abstinence a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -8691,7 +8691,7 @@ CMD:duda(playerid,params[]) {
 	else
 	{
 	    format(string2,sizeof(string2),"[Duda] (%d) %s: %s",playerid,GetPlayerNameEx(playerid),string);
-        AdministratorMessage(COLOR_ADMINQUESTION, string2, 1);
+        AdministratorMessage(COLOR_ADMINQUESTION, string2, 2);
         SendClientMessage(playerid,COLOR_RED,"La duda ha sido enviada, por favor sea paciente.");
 	}
 	return 1;
@@ -8706,7 +8706,7 @@ CMD:reportar(playerid,params[])
 		if(id != INVALID_PLAYER_ID)
 	    {
 			format(string, sizeof(string), "[Reporte]: %s ha reportado a %s (ID:%d), razón: %s", GetPlayerNameEx(playerid), GetPlayerNameEx(id), id, reporttext);
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 			format(string, sizeof(string), "Has reportado a %s (ID:%d), razón: %s", GetPlayerNameEx(id), id, reporttext);
 			SendClientMessage(playerid, COLOR_WHITE, string);
 			ReportLog(string);
@@ -8980,7 +8980,7 @@ CMD:muteb(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes mutear por menos de 0 minutos o más de 30.");
 			
 	    format(string, sizeof(string), "[Staff] el administrador %s ha muteado el canal '/b' de %s por %d minutos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), minutes);
-	   	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	   	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		PlayerInfo[target][pMuteB] = 60 * minutes;
 	}
 	return 1;
@@ -11347,7 +11347,7 @@ CMD:donar(playerid, params[])
 	    
 	GivePlayerCash(playerid, -money);
 	format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} %s ha donado $%d.", GetPlayerNameEx(playerid), money);
-	AdministratorMessage(COLOR_LIGHTYELLOW2, str, 1);
+	AdministratorMessage(COLOR_LIGHTYELLOW2, str, 2);
 	format(str, sizeof(str), "[DONACION] $%d", money);
 	log(playerid, LOG_MONEY, str);
 	return 1;
@@ -12611,7 +12611,7 @@ CMD:cambiarnombre(playerid, params[])
 
 	format(PlayerInfo[target][pName], 24, "%s", name);
 	format(string, sizeof(string), "[Staff] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
-	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	SetPlayerName(target, PlayerInfo[target][pName]);
 
 	new houseID = PlayerInfo[target][pHouseKey], bizID = PlayerInfo[target][pBizKey];
@@ -12665,7 +12665,7 @@ public CheckNameAvailable(playerid, accountName[])
  	mysql_real_escape_string(password, password, 1, sizeof(password));
 	format(query, sizeof(query), "INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", accountName, password);
 	mysql_function_query(dbHandle, query, false, "", "");
-	format(string, sizeof(string), "[Staff] el administrador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
+	format(string, sizeof(string), "[Staff] el administrador/certificador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberás informar al usuario es '%s' (sin las comillas).", password);
 	format(string, sizeof(string), "[CREA LA CUENTA] a %s", accountName);
@@ -12739,7 +12739,7 @@ CMD:money(playerid, params[])
 	format(string, sizeof(string), "El administrador %s ha seteado tu dinero en efectivo en $%d.", GetPlayerNameEx(playerid), money);
 	SendClientMessage(targetid, COLOR_WHITE, string);
 	format(string, sizeof(string), "El administrador %s ha seteado el dinero en efectivo de %s en $%d.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), money);
-    AdministratorMessage(COLOR_ADMINCMD, string, 1);
+    AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	format(string, sizeof(string), "[MONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12759,7 +12759,7 @@ CMD:givemoney(playerid, params[])
 	format(string, sizeof(string), "El administrador %s te ha seteado $%d en efectivo adicional a lo que ya tenías.", GetPlayerNameEx(playerid), money);
 	SendClientMessage(targetid, COLOR_WHITE, string);
 	format(string, sizeof(string), "El administrador %s le ha seteado $%d en efectivo adicional a lo que ya tenía %s.", GetPlayerNameEx(playerid), money, GetPlayerNameEx(targetid));
-    AdministratorMessage(COLOR_ADMINCMD, string, 1);
+    AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	format(string, sizeof(string), "[GIVEMONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -12815,7 +12815,7 @@ CMD:givegun(playerid, params[])
 		format(string, sizeof(string), "El administrador %s te ha seteado el arma %s con %d de munición.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo);
 		SendClientMessage(targetid, COLOR_WHITE, string);
 		format(string, sizeof(string), "El administrador %s le ha seteado el arma %s con %d de munición a %s.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo, GetPlayerNameEx(targetid));
-        AdministratorMessage(COLOR_ADMINCMD, string, 1);
+        AdministratorMessage(COLOR_ADMINCMD, string, 2);
    		format(string, sizeof(string), "[GUN] %d - %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 		log(playerid, LOG_ADMIN, string);
 	}
@@ -12928,12 +12928,12 @@ CMD:gooc(playerid, params[])
 
  	if(sscanf(params, "s[128]", text))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} [/go]oc [mensaje]");
-    if(OOCStatus == 0 && PlayerInfo[playerid][pAdmin] < 1)
+    if(OOCStatus == 0 && PlayerInfo[playerid][pAdmin] < 2)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} OOC global desactivado.");
 	if(Muted[playerid])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Usted se encuentra muteado.");
 
-	if(PlayerInfo[playerid][pAdmin] >= 1 && AdminDuty[playerid])
+	if(PlayerInfo[playerid][pAdmin] >= 2 && AdminDuty[playerid])
 	{
 		format(string, sizeof(string), "(( [Global] {3CB371}%s{87CEFA}: %s ))", GetPlayerNameEx(playerid), text);
 		SendClientMessageToAll(COLOR_GLOBALOOC, string);
@@ -13040,7 +13040,7 @@ CMD:b(playerid, params[])
 	}
 	format(string, sizeof(string), "%s", text);
 	PlayerLocalMessage(playerid, 15.0, string);
-	if(PlayerInfo[playerid][pAdmin] == 0)
+	if(PlayerInfo[playerid][pAdmin] <= 1)
 	    PlayerInfo[playerid][pMuteB] = 5;
 	    
 	return 1;
@@ -13060,7 +13060,7 @@ CMD:mp(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
 
 	OnPlayerPrivmsg(playerid, targetid, text);
-	if(PlayerInfo[playerid][pAdmin] == 0)
+	if(PlayerInfo[playerid][pAdmin] <= 1)
 	{
 		TiempoEsperaMps[playerid] = 1;
 		SetTimerEx("TimeMps", 5000, false, "i", playerid);
@@ -13132,12 +13132,12 @@ CMD:set(playerid, params[]) {
 	    if(strval(value) == 0) {
 	        SendFMessage(target, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el sexo a femenino.", GetPlayerNameEx(playerid));
 			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a femenino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pSex] = 0;
 	    } else if(strval(value) == 1) {
 	        SendFMessage(target, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el sexo a masculino.", GetPlayerNameEx(playerid));
 			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a masculino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pSex] = 1;
 	    } else {
 	        SendClientMessage(playerid, COLOR_WHITE, "Solo se admite un valor igual a 0 (femenino) o 1 (masculino).");
@@ -13146,7 +13146,7 @@ CMD:set(playerid, params[]) {
 	    if(strval(value) >= 1 && strval(value) <= 100) {
 	        SendFMessage(target,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado la edad a %d años.", GetPlayerNameEx(playerid), strval(value));
 			format(string, sizeof(string), "[Staff]: %s ha seteado la edad de %s a %d años.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), strval(value));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pAge] = strval(value);
 	    } else {
 	        SendClientMessage(playerid, COLOR_WHITE, "Solo se admite un valor mayor o igual a 1 y menor o igual a 100.");
@@ -13176,10 +13176,10 @@ CMD:admin(playerid, params[]) {
 		if(strlen(string) > 128) {
 		    strmid(string2, string, 128, 256);
 		    strdel(string, 128, 256);
-		    AdministratorMessage(COLOR_ACHAT, string, 1);
-		    AdministratorMessage(COLOR_ACHAT, string2, 1);
+		    AdministratorMessage(COLOR_ACHAT, string, 2);
+		    AdministratorMessage(COLOR_ACHAT, string2, 2);
 		} else {
-		    AdministratorMessage(COLOR_ACHAT, string, 1);
+		    AdministratorMessage(COLOR_ACHAT, string, 2);
 		}
 	}
 	return 1;
@@ -13194,7 +13194,7 @@ CMD:ao(playerid, params[]) {
 	if(sscanf(params, "s[256]", text)) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/a)ooc [mensaje]");
 	} else {
-	    if(PlayerInfo[playerid][pAdmin] < 2) {
+	    if(PlayerInfo[playerid][pAdmin] < 3) {
 			format(string, sizeof(string), "(( [Anuncio] Mod %s: %s ))", GetPlayerNameEx(playerid), text);
 		} else {
 		    format(string, sizeof(string), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
@@ -13445,7 +13445,7 @@ CMD:exp10de(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /exp10de [IDJugador/ParteDelNombre]");
 	} else {
 		format(string, sizeof(string), "[Staff]: %s ha explotado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-		AdministratorMessage(COLOR_ADMINCMD, string, 1);
+		AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		SetPlayerHealth(target, 10);
 		GetPlayerPos(target, boom[0], boom[1], boom[2]);
 		CreateExplosion(boom[0], boom[1] , boom[2], 7, 10);
