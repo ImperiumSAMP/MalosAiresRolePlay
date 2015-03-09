@@ -8699,20 +8699,20 @@ CMD:quitarobjmano(playerid, params[])
 
 	   	if(hand == 1) {
 			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid), hand);
 			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
 			PhoneHand[target] = 0;
 
 	    } if(hand == 2) {
 			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
 			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
 
 		} if(hand == 3) {
 			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 1);
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado los objetos que tenías en ambas manos.", GetPlayerNameEx(playerid));
 			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
 			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
@@ -9747,7 +9747,7 @@ CMD:clasificado(playerid,params[])
 	format(string, sizeof(string), "Publicidad: %s", text);
 	foreach(new i : Player)
 	{
-		if(PlayerInfo[i][pAdmin] >= 1)
+		if(PlayerInfo[i][pAdmin] >= 2)
 			SendClientMessage(i, COLOR_ADVERTISMENT, adminstring);
 		else
 			SendClientMessage(i, COLOR_ADVERTISMENT, string);
