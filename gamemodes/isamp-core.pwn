@@ -65,7 +65,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.8c"
+#define GAMEMODE				"MA:RP v1.0.9"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
