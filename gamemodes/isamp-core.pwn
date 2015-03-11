@@ -5874,7 +5874,7 @@ public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
 	    if(i == playerid)
 		{
 	        SendFMessage(i, COLOR_ADMINCMD, "Has sido expulsado/a por %s, razón: %s", kickedby, reason);
-	    } else if(PlayerInfo[i][pAdmin] > 0)
+	    } else if(PlayerInfo[i][pAdmin] > 1)
 		{
 	        SendFMessage(i, COLOR_ADMINCMD, "%s ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
 	    }
