@@ -6833,7 +6833,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	        }
 		} else
 		if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-	        if(PlayerToPoint(10.0, playerid, 1545.50000, -1451.39893, 14.45500)) {
+	        if(PlayerToPoint(10.0, playerid, 1534.54236, -1451.39893, 14.45500)) {
 	            MoveObject(GOBGate,  1545.50000, -1451.39893, 14.45500, 3.0, 0.0000, 0.0000, 0.0000);
 	            SetTimerEx("CloseGate", 6000, false, "i", GOBGate);
 	        }
@@ -11441,8 +11441,6 @@ CMD:fretirar(playerid,params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /fretirar [cantidad]");
     if(PlayerInfo[playerid][pFaction] == 0)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
-	if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_GOV)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tiene permiso para retirar dinero de una facción gubernamental.");
     if(PlayerInfo[playerid][pRank] != 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
@@ -13724,7 +13722,7 @@ public OnLogAntecedentesLoad(playerid, targetname[])
 			SendClientMessage(playerid, COLOR_WHITE, str);
 	}
 	else
-		SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no posee ningún registro antecedentes.");
+		SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no posee ningún registro de antecedentes.");
 	return 1;
 }
 
