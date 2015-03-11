@@ -229,9 +229,13 @@ CMD:mano(playerid, params[])
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
 			if(rightitem == ITEM_ID_TELEFONO_CELULAR)
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono celular.");
+            if(GetPVarInt(playerid, "cantSaveItems") == 1)
+ 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
+          	SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 3000, false, "i", playerid);
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
