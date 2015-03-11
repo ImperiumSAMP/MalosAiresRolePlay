@@ -6833,7 +6833,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	        }
 		} else
 		if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-	        if(PlayerToPoint(10.0, playerid, 1545.50000, -1451.39893, 14.45500)) {
+	        if(PlayerToPoint(10.0, playerid, 1534.54236, -1451.39893, 14.45500)) {
 	            MoveObject(GOBGate,  1545.50000, -1451.39893, 14.45500, 3.0, 0.0000, 0.0000, 0.0000);
 	            SetTimerEx("CloseGate", 6000, false, "i", GOBGate);
 	        }
