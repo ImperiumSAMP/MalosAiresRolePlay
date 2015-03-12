@@ -13001,9 +13001,29 @@ CMD:susurrar(playerid, params[])
 		format(string, sizeof(string), "%s susurra: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(string, sizeof(string), "Enmascarado %d susurra: %s", maskNumber[playerid], text);
+	    
+    foreach(new i : Player)	{
+		if(GetPVarInt(i, "vers") == 1)
+			SendFMessage(i, 0x00D67FFF, "%s(%d) susurra a %s(%d): %s", GetPlayerNameEx(playerid),playerid,GetPlayerNameEx(recieverid),recieverid, text);
+	}
 	SendClientMessage(targetid, COLOR_YELLOW, string);
 	SendClientMessage(playerid, COLOR_YELLOW, string);
 	PlayerPlayerActionMessage(playerid, targetid, 5.0, "ha susurrado algo al oído de");
+	return 1;
+}
+
+CMD:vers(playerid, params[]) {
+
+	if(GetPVarInt(playerid, "vers") == 0) {
+		SetPVarInt(playerid, "vers", 1);
+		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros activado.");
+		return 1;
+	}
+	if(GetPVarInt(playerid, "vers") == 1) {
+		SetPVarInt(playerid, "vers", 0);
+		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros desactivado.");
+		return 1;
+	}
 	return 1;
 }
 
