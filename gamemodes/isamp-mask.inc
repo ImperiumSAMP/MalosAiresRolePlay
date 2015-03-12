@@ -199,7 +199,7 @@ CMD:mascara(playerid, params[])
   		PlayerTakeMaskID(playerid, random(99999999));
 		foreach(new i : Player)
 		{
-			if(PlayerInfo[i][pAdmin] < 1) // Si el tipo es admin no se lo ocultamos
+			if(PlayerInfo[i][pAdmin] < 2) // Si el tipo es admin no se lo ocultamos
 				ShowPlayerNameTagForPlayer(i, playerid, false);
 		}
 	} else
