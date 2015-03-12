@@ -102,6 +102,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_POLICE_ARREST_Y     168.1084
 #define POS_POLICE_ARREST_Z     1002.9252
 
+#define POS_POLICE_ARREST2_X 	2551.4516
+#define POS_POLICE_ARREST2_Y    -1303.5604
+#define POS_POLICE_ARREST2_Z    1046
+
 #define POS_BM1_X               2659.6992
 #define POS_BM1_Y               -2056.4814
 #define POS_BM1_Z               13.4214
@@ -1534,6 +1538,15 @@ public OnPlayerDeath(playerid, killerid, reason)
     if(PlayerInfo[playerid][pJailed] == 1)
 	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
+		SetPlayerVirtualWorld(playerid, Building[2][blInsideWorld]);
+ 		SetPlayerInterior(playerid, 3);
+    }
+    
+    if(PlayerInfo[playerid][pJailed] == 3)
+	{
+		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
+		SetPlayerVirtualWorld(playerid, 38000);
+ 		SetPlayerInterior(playerid, 2);
     }
     
 	if(AdminDuty[playerid] == 1)
@@ -4964,6 +4977,19 @@ public SetPlayerSpawn(playerid)
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Castigo OOC]:{C8C8C8} todavía no ha finalizado tu castigo.");
 			return 1;
 		}
+		case 3:
+		   {
+   		    // Jail IC Carcel.
+   		    TogglePlayerControllable(playerid, 0);
+   		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
+   		    SetPlayerVirtualWorld(playerid, 38000);
+   		    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
+	    	SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
+	    	SetPlayerInterior(playerid, 2);
+		    PlayerInfo[playerid][pHealth] = 100;
+		    SetCameraBehindPlayer(playerid);
+		    return 1;
+		}
 	}
 
 	if(PlayerInfo[playerid][pRegStep] != 0)
@@ -6147,6 +6173,15 @@ stock ParkedVehicleToPoint(Float:radius, vehicleid, Float:x, Float:y, Float:z)
 	return 0;
 }
 
+stock IsAtJail(playerid)
+{
+	if (PlayerToPoint(15.0, playerid, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z) ||
+		PlayerToPoint(25.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z)) {
+        return 1;
+    }
+    return 0;
+}
+
 //====[ACTION MESSAGES]=========================================================
 PlayerLocalMessage(playerid,Float:radius,message[])
 {
@@ -6536,6 +6571,16 @@ public JailTimer()
 						SetPlayerHealthEx(i, 100.0);
 						TogglePlayerControllable(i, true);
 			        }
+			        case 3:
+					{
+			            PlayerInfo[i][pJailed] = 0;
+						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
+						SetPlayerVirtualWorld(i, 38000);
+					    SetPlayerInterior(i, 2);
+						SetPlayerPos(i, 2543.43, 1315.38, 1031.50);
+						SetPlayerFacingAngle(i, 0.0000);
+						TogglePlayerControllable(i, true);
+		  			}
 				}
 			}
 		}
@@ -8654,7 +8699,7 @@ CMD:verjail(playerid, params[])
 	if(PlayerInfo[targetid][pJailed] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no tiene ninguna condena.");
 
-	if(PlayerInfo[targetid][pJailed] == 1) {
+	if(PlayerInfo[targetid][pJailed] == 1 || PlayerInfo[targetid][pJailed] == 3) {
     	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
 	} else {
 	    SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[OOC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
@@ -9927,6 +9972,210 @@ CMD:apuerta(playerid,params[]) {
 				PMJail3[0] = 0;
 				MoveObject(PMJail3[1], 188.70599, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2541.14380, -1316.36438, 1031.68628)) {
+            // PM Big Cárcel 001
+			if(PMBigJail1[0] == 0) {
+				PMBigJail1[0] = 1;
+			 	MoveObject(PMBigJail1[1], 2543.86380, -1316.36438, 1031.68628, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail1[0] = 0;
+				MoveObject(PMBigJail1[1], 2542.14380, -1316.36438, 1031.68628, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2528.12061, -1316.32617, 1031.72595)) {
+            // PM Big Cárcel 002
+			if(PMBigJail2[0] == 0) {
+				PMBigJail2[0] = 1;
+			 	MoveObject(PMBigJail2[1], 2526.38061, -1316.32617, 1031.72595, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail2[0] = 0;
+				MoveObject(PMBigJail2[1], 2528.12061, -1316.32617, 1031.72595, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2528.09570, -1300.04114, 1031.73108)) {
+            // PM Big Cárcel 003
+			if(PMBigJail3[0] == 0) {
+				PMBigJail3[0] = 1;
+			 	MoveObject(PMBigJail3[1], 2526.37570, -1300.04114, 1031.73108, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail3[0] = 0;
+				MoveObject(PMBigJail3[1], 2528.09570, -1300.04114, 1031.73108, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.74414, -1301.25818, 1031.62891)) {
+            // PM Big Cárcel 004
+			if(PMBigJail4[0] == 0) {
+				PMBigJail4[0] = 1;
+			 	MoveObject(PMBigJail4[1], 2563.74414, -1302.99828, 1031.62891, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail4[0] = 0;
+				MoveObject(PMBigJail4[1], 2563.74414, -1301.25818, 1031.62891, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2569.73291, -1280.75586, 1031.70044)) {
+            // PM Big Cárcel 005
+			if(PMBigJail5[0] == 0) {
+				PMBigJail5[0] = 1;
+			 	MoveObject(PMBigJail5[1], 2569.73291, -1282.49596, 1031.70044, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail5[0] = 0;
+				MoveObject(PMBigJail5[1], 2569.73291, -1280.75586, 1031.70044, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2573.31030, -1287.04639, 1031.66443)) {
+            // PM Big Cárcel 006
+			if(PMBigJail6[0] == 0) {
+				PMBigJail6[0] = 1;
+			 	MoveObject(PMBigJail6[1], 2573.31030, -1285.30649, 1031.66443, 1.00, 0.00, 0.00, 270.00);
+			} else {
+				PMBigJail6[0] = 0;
+				MoveObject(PMBigJail6[1], 2573.31030, -1287.04639, 1031.66443, 1.00, 0.00, 0.00, 270.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2570.37134, -1300.18420, 1038.00903)) {
+            // PM Big Cárcel 007
+			if(PMBigJail7[0] == 0) {
+				PMBigJail7[0] = 1;
+			 	MoveObject(PMBigJail7[1], 2572.13134, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail23[1], 2566.83948, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail7[0] = 0;
+				MoveObject(PMBigJail7[1], 2570.37134, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail23[1], 2568.61938, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2573.71509, -1288.36536, 1044.39682)) {
+            // PM Big Cárcel 008
+			if(PMBigJail8[0] == 0) {
+				PMBigJail8[0] = 1;
+			 	MoveObject(PMBigJail8[1], 2575.45519, -1288.36536, 1044.39682, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail8[0] = 0;
+				MoveObject(PMBigJail8[1], 2573.71509, -1288.36536, 1044.39682, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2539.63940, -1291.89478, 1044.38550)) {
+            // PM Big Cárcel 009
+			if(PMBigJail9[0] == 0) {
+				PMBigJail9[0] = 1;
+			 	MoveObject(PMBigJail9[1], 2537.89940, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail24[1], 2543.09949, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail9[0] = 0;
+				MoveObject(PMBigJail9[1], 2539.63940, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail24[1], 2541.37939, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2538.59131, -1299.19592, 1044.37817)) {
+            // PM Big Cárcel 010
+			if(PMBigJail10[0] == 0) {
+				PMBigJail10[0] = 1;
+			 	MoveObject(PMBigJail10[1], 2536.83131, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail25[1], 2542.07130, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail10[0] = 0;
+				MoveObject(PMBigJail10[1], 2538.59131, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail25[1], 2540.33130, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2540.99341, -1303.98450, 1044.37817)) {
+            // PM Big Cárcel 011
+			if(PMBigJail11[0] == 0) {
+				PMBigJail11[0] = 1;
+			 	MoveObject(PMBigJail11[1], 2539.23341, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail11[0] = 0;
+				MoveObject(PMBigJail11[1], 2540.99341, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2545.52930, -1303.98450, 1044.37817)) {
+            // PM Big Cárcel 012
+			if(PMBigJail12[0] == 0) {
+				PMBigJail12[0] = 1;
+			 	MoveObject(PMBigJail12[1], 2543.76930, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail12[0] = 0;
+				MoveObject(PMBigJail12[1], 2545.52930, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2548.30688, -1303.97729, 1044.38550)) {
+            // PM Big Cárcel 013
+			if(PMBigJail13[0] == 0) {
+				PMBigJail13[0] = 1;
+			 	MoveObject(PMBigJail13[1], 2550.06698, -1303.97729, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail13[0] = 0;
+				MoveObject(PMBigJail13[1], 2548.30688, -1303.97729, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2554.60107, -1303.98450, 1044.37817)) {
+            // PM Big Cárcel 014
+			if(PMBigJail14[0] == 0) {
+				PMBigJail14[0] = 1;
+			 	MoveObject(PMBigJail14[1], 2552.84117, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail14[0] = 0;
+				MoveObject(PMBigJail14[1], 2554.60107, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2559.13696, -1303.98450, 1044.37817)) {
+            // PM Big Cárcel 015
+			if(PMBigJail15[0] == 0) {
+				PMBigJail15[0] = 1;
+			 	MoveObject(PMBigJail15[1], 2557.39706, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail15[0] = 0;
+				MoveObject(PMBigJail15[1], 2559.13696, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.66821, -1303.96692, 1044.37817)) {
+            // PM Big Cárcel 016
+			if(PMBigJail16[0] == 0) {
+				PMBigJail16[0] = 1;
+			 	MoveObject(PMBigJail16[1], 2561.90821, -1303.96692, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail16[0] = 0;
+				MoveObject(PMBigJail16[1], 2563.66821, -1303.96692, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.69531, -1303.98621, 1048.52222)) {
+            // PM Big Cárcel 017
+			if(PMBigJail17[0] == 0) {
+				PMBigJail17[0] = 1;
+			 	MoveObject(PMBigJail17[1], 2561.93531, -1303.98621, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail17[0] = 0;
+				MoveObject(PMBigJail17[1], 2563.69531, -1303.98621, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2559.16675, -1303.95361, 1048.52222)) {
+            // PM Big Cárcel 018
+			if(PMBigJail18[0] == 0) {
+				PMBigJail18[0] = 1;
+			 	MoveObject(PMBigJail18[1], 2557.40675, -1303.95361, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail18[0] = 0;
+				MoveObject(PMBigJail18[1], 2559.16675, -1303.95361, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2554.60669, -1303.95032, 1048.52222)) {
+            // PM Big Cárcel 019
+			if(PMBigJail19[0] == 0) {
+				PMBigJail19[0] = 1;
+			 	MoveObject(PMBigJail19[1], 2552.86679, -1303.95032, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail19[0] = 0;
+				MoveObject(PMBigJail19[1], 2554.60669, -1303.95032, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2548.31885, -1303.96375, 1048.52954)) {
+            // PM Big Cárcel 020
+			if(PMBigJail20[0] == 0) {
+				PMBigJail20[0] = 1;
+			 	MoveObject(PMBigJail20[1], 2550.07885, -1303.96375, 1048.52954, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail20[0] = 0;
+				MoveObject(PMBigJail20[1], 2548.31885, -1303.96375, 1048.52954, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2543.79272, -1303.95728, 1048.52222)) {
+            // PM Big Cárcel 021
+			if(PMBigJail21[0] == 0) {
+				PMBigJail21[0] = 1;
+			 	MoveObject(PMBigJail21[1], 2545.55272, -1303.95728, 1048.52222, 1.00, 0.00, 0.00, 180.00);
+			} else {
+				PMBigJail21[0] = 0;
+				MoveObject(PMBigJail21[1], 2543.79272, -1303.95728, 1048.52222, 1.00, 0.00, 0.00, 180.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2541.02222, -1303.99585, 1048.52222)) {
+            // PM Big Cárcel 022
+			if(PMBigJail22[0] == 0) {
+				PMBigJail22[0] = 1;
+			 	MoveObject(PMBigJail22[1], 2539.26222, -1303.99585, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			} else {
+				PMBigJail22[0] = 0;
+				MoveObject(PMBigJail22[1], 2541.02222, -1303.99585, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			}
 		}
 	}
 }
@@ -10156,8 +10405,8 @@ CMD:arrestar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrestar [ID/Jugador] [tiempo] [razón]");
 	if(CopDuty[playerid] == 0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio como oficial de policía!");
-	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el escritorio junto al calabozo!");
+	if(!IsAtJail(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a las celdas!");
 	if(time < 1 || time > 700)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El tiempo no puede ser menor a 1 minuto ni mayor a 700!");
 	if(GetDistanceBetweenPlayers(playerid, targetID) > 5)
@@ -10172,7 +10421,12 @@ CMD:arrestar(playerid, params[])
 	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar arrestado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
 	format(string, sizeof(string), "[Dpto. de policía]: %s ha arrestado al criminal %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetID));
 	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-	PlayerInfo[targetID][pJailed] = 1;
+	if(PlayerInfo[targetID][pVirtualWorld] == 38000)
+	{
+		PlayerInfo[targetID][pJailed] = 3;
+	} else {
+		PlayerInfo[targetID][pJailed] = 1;
+	}
 	ResetPlayerWantedLevelEx(targetID);
 	GiveFactionMoney(FAC_GOB, PlayerInfo[targetID][pJailTime]);
 	format(str, sizeof(str), "%s", reason);
@@ -13004,7 +13258,7 @@ CMD:susurrar(playerid, params[])
 	    
     foreach(new i : Player)	{
 		if(GetPVarInt(i, "vers") == 1)
-			SendFMessage(i, 0x00D67FFF, "%s(%d) susurra a %s(%d): %s", GetPlayerNameEx(playerid),playerid,GetPlayerNameEx(recieverid),recieverid, text);
+			SendFMessage(i, 0x00D67FFF, "%s(%d) susurra a %s(%d): %s", GetPlayerNameEx(playerid), playerid, GetPlayerNameEx(targetid), targetid, text);
 	}
 	SendClientMessage(targetid, COLOR_YELLOW, string);
 	SendClientMessage(playerid, COLOR_YELLOW, string);
@@ -13585,7 +13839,7 @@ CMD:liberar(playerid, params[])
         return 1;
     if(PlayerInfo[playerid][pRank] > 2)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
-	if(PlayerInfo[targetID][pJailed] != 1)
+	if(PlayerInfo[targetID][pJailed] != 1 || PlayerInfo[targetID][pJailed] != 3)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene ninguna condena.");
     
 	PlayerInfo[targetID][pJailed] = 0;
@@ -13611,7 +13865,7 @@ CMD:verpresos(playerid, params[])
 		
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[PRESOS]===================");
 	foreach(new i : Player) {
-	    if(PlayerInfo[i][pJailed] == 1) {
+	    if(PlayerInfo[i][pJailed] == 1 || PlayerInfo[i][pJailed] == 3) {
 			format(string, 256, "%s", GetPlayerNameEx(i));
 			SendClientMessage(playerid, COLOR_WHITE, string);
 			count++;
