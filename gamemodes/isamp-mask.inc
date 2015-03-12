@@ -250,8 +250,6 @@ CMD:vermascaras(playerid, params[])
 	new targetname[MAX_PLAYER_NAME],
 	    query[128];
 
-    if(PlayerInfo[playerid][pAdmin] < 1)
-		return 1;
     if(sscanf(params, "s[24]", targetname))
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascaras [Nombre del jugador] (Con el '_')");
 
@@ -266,8 +264,6 @@ CMD:vermascara(playerid, params[])
 	new maskid,
 	    query[128];
 
-    if(PlayerInfo[playerid][pAdmin] < 1)
-		return 1;
     if(sscanf(params, "i", maskid))
 		return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vermascara [ID de la máscara]");
 

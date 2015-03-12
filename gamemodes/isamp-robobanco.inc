@@ -65,8 +65,6 @@ new bool:isPlayerInRobberyGroup[MAX_PLAYERS],
 
 CMD:robobancodebug(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 
 	SendFMessage(playerid, COLOR_YELLOW, "bankRobberyCooldown = %d", bankRobberyCooldown);
 	SendFMessage(playerid, COLOR_YELLOW, "Active = %b", RobberyGroup[Active]);
@@ -82,8 +80,6 @@ CMD:playerrobobancodebug(playerid, params[])
 {
 	new id;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "i", id))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playerrobobancodebug [playerid]");
 	if(id < 0 || id >= MAX_PLAYERS)
