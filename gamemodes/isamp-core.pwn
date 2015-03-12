@@ -65,7 +65,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.9"
+#define GAMEMODE				"MA:RP v1.0.9b"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
@@ -4982,7 +4982,7 @@ public SetPlayerSpawn(playerid)
    		    // Jail IC Carcel.
    		    TogglePlayerControllable(playerid, 0);
    		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
-   		    SetPlayerVirtualWorld(playerid, 38000);
+			SetPlayerVirtualWorld(playerid, 38000);
    		    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    	SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
 	    	SetPlayerInterior(playerid, 2);
@@ -6577,7 +6577,7 @@ public JailTimer()
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, 38000);
 					    SetPlayerInterior(i, 2);
-						SetPlayerPos(i, 2543.43, 1315.38, 1031.50);
+						SetPlayerPos(i, 2543.43, -1315.38, 1034.50);
 						SetPlayerFacingAngle(i, 0.0000);
 						TogglePlayerControllable(i, true);
 		  			}
@@ -10421,7 +10421,7 @@ CMD:arrestar(playerid, params[])
 	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar arrestado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
 	format(string, sizeof(string), "[Dpto. de policía]: %s ha arrestado al criminal %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetID));
 	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-	if(PlayerInfo[targetID][pVirtualWorld] == 38000)
+	if(PlayerToPoint(25.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
 	{
 		PlayerInfo[targetID][pJailed] = 3;
 	} else {
