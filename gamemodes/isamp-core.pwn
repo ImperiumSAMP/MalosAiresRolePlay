@@ -13903,6 +13903,22 @@ CMD:verconectados(playerid, params[])
 	return 1;
 }
 
+CMD:verdeudores(playerid, params[])
+{
+		if(PlayerInfo[playerid][pRank] >= 7 || PlayerInfo[playerid][pFaction] != FAC_GOB)
+			return 1;
+
+   		SendFMessage(playerid, COLOR_YELLOW, "===============[Cuentas bancarias en deuda con el Estado]===============",);
+		for(new i=0; i<MAX_PLAYERS; i++)
+		{
+		    if(PlayerInfo[i][pBank] < 0)
+		        SendFMessage(playerid, COLOR_WHITE, "Cuenta bancaria de {f9fca1}%s {ffffff}- {ff0000}Balance: $%d", PlayerInfo[i][pName], PlayerInfo[i][pBank]);
+		}
+		SendClientMessage(playerid, COLOR_YELLOW, "====================================================================");
+	}
+	return 1;
+}
+
 public AntecedentesLog(playerid, targetid, antecedentes[])
 {
 	new year, month, day,
