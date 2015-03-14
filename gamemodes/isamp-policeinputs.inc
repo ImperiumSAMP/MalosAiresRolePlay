@@ -656,3 +656,16 @@ CMD:guardarinsumos(playerid, params[])
 	PlayerActionMessage(playerid, 15.0, "descarga una caja de insumos en el depósito.");
  	return 1;
 }
+
+CMD:verinsumos(playerid, params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA || PlayerInfo[playerid][pRank] > 4)
+    	return 1;
+	if(!PlayerToPoint(4.0, playerid, PMA_WAREHOUSE_X, PMA_WAREHOUSE_Y, PMA_WAREHOUSE_Z) && !PlayerToPoint(4.0, playerid, SIDE_WAREHOUSE_X, SIDE_WAREHOUSE_Y, SIDE_WAREHOUSE_Z)) {
+		SendFMessage(playerid, COLOR_YELLOW2, "Debes estar en el depósito de insumos de la %s.", FactionInfo[PlayerInfo[playerid][pFaction]][fName]);
+		return 1;
+  	}
+
+	SendFMessage(playerid, COLOR_WHITE, "[%s] El depósito cuenta actualmente con %d insumos.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
+	return 1;
+}
