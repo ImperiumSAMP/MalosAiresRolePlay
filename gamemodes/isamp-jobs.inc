@@ -509,7 +509,7 @@ CMD:setjob(playerid, params[])
 	    
 	SendFMessage(targetid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
 	format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
-	AdministratorMessage(COLOR_ADMINCMD, string, 1);
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
     PlayerInfo[targetid][pJob] = job;
 	if(job == JOB_FELON)
 		createThiefJob(targetid);
