@@ -11559,7 +11559,7 @@ CMD:ayudabanco(playerid,params[])
 
 CMD:depositar(playerid,params[])
 {
-	new amount;
+	new amount, string[128];
 
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
@@ -11572,12 +11572,14 @@ CMD:depositar(playerid,params[])
 	PlayerInfo[playerid][pBank] += amount;
 	SendFMessage(playerid, COLOR_WHITE, "Has depositado $%d. Nuevo balance: $%d.", amount, PlayerInfo[playerid][pBank]);
  	PlayerActionMessage(playerid, 15.0, "toma una suma de dinero y la deposita en su cuenta.");
+	format(string, sizeof(string), "Deposito $%d en el cajero", amount);
+    log(playerid, LOG_MONEY, string);
     return 1;
 }
 
 CMD:retirar(playerid,params[])
 {
-	new amount;
+	new amount, string[128];
 	
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
@@ -11590,6 +11592,8 @@ CMD:retirar(playerid,params[])
 	PlayerInfo[playerid][pBank] -= amount;
 	SendFMessage(playerid, COLOR_WHITE, "Has retirado $%d. Nuevo balance: $%d.", amount, PlayerInfo[playerid][pBank]);
     PlayerActionMessage(playerid, 15.0, "retira una suma de dinero de su cuenta.");
+	format(string, sizeof(string), "Retiro $%d del cajero", amount);
+    log(playerid, LOG_MONEY, string);
     return 1;
 }
 
