@@ -662,6 +662,6 @@ CMD:verinsumos(playerid, params[])
     if(PlayerInfo[playerid][pFaction] != FAC_SIDE || PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pRank] > 4)
     	return 1;
 
-	SendFMessage(playerid, COLOR_WHITE, "[%s] El dep?sito cuenta actualmente con %d insumos.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
+	SendFMessage(playerid, COLOR_WHITE, "[%s] El depósito cuenta actualmente con %d insumos.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
 	return 1;
 }
