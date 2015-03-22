@@ -497,9 +497,6 @@ CMD:setjob(playerid, params[])
 {
 	new string[128], job, targetid;
 
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
-
 	if(sscanf(params,"ui", targetid, job))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setjob [ID/Jugador] [id empleo]");
 	if(!IsPlayerConnected(targetid))

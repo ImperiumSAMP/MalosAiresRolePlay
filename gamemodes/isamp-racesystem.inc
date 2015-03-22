@@ -119,8 +119,6 @@ CMD:racedebug(playerid, params[])
 {
 	new id;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "i", id))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /racedebug [raceid]");
 	if(id < 0 || id >= MAX_SERVER_RACES)
@@ -142,8 +140,6 @@ CMD:playerracedebug(playerid, params[])
 {
 	new id;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "i", id))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playerracedebug [playerid]");
 	if(id < 0 || id >= MAX_PLAYERS)
