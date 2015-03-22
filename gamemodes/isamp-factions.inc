@@ -116,6 +116,9 @@ stock GetFactionMoney(factionid)
 
 CMD:afacciones(playerid, params[])
 {
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afrangos /afrangoingreso /afdinero /afmats /afrango /afvehmision");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos /afallowjob /afinfo");
@@ -126,6 +129,8 @@ CMD:afinfo(playerid, params[])
 {
 	new id, string[128];
 
+	if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
 	if(sscanf(params, "i", id))
 		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afinfo [idfacción]");
 	if(id < 0 || id >= MAX_FACTIONS)
@@ -142,6 +147,8 @@ CMD:afallowjob(playerid, params[])
 {
 	new factionID, option;
 
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 	if(sscanf(params, "ii", factionID, option))
 		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afallowjob [idfacción] [1=SI 0=NO]");
 	if(factionID < 1 || factionID >= MAX_FACTIONS)
@@ -156,6 +163,9 @@ CMD:afallowjob(playerid, params[])
 CMD:aftipo(playerid, params[])
 {
 	new string[128], factionID, type;
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	if(sscanf(params, "dd", factionID, type)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aftipo [idfacción] [tipo]");
@@ -173,6 +183,9 @@ CMD:aftipo(playerid, params[])
 
 CMD:afvehiculos(playerid, params[])
 {
+    if(PlayerInfo[playerid][pAdmin] < 4)
+		return 1;
+
 	new factionID;
 	if(sscanf(params, "dd", factionID))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehiculos [idfacción]");
@@ -194,6 +207,9 @@ CMD:afrango(playerid, params[]) {
 	    factionID,
 		rankID,
 		rankName[32];
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	if(sscanf(params, "dds[32]", factionID, rankID, rankName)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrango [idfacción] [rango 1-10] [nombre 32 chars]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && rankID >= 1 && rankID <= 10) {
@@ -223,6 +239,9 @@ CMD:afmats(playerid, params[]) {
 	    factionID,
 		mats;
 
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+
 	if(sscanf(params, "dd", factionID, mats)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdmats [idfacción] [cantidad]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS) {
     	FactionInfo[factionID][fMaterials] = mats;
@@ -240,7 +259,9 @@ CMD:afdinero(playerid, params[])
 	new string[128],
 	    factionID,
 		money;
-		
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 	if(sscanf(params, "dd", factionID, money))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdinero [idfacción] [cantidad]");
 	if(factionID < 1 || factionID >= MAX_FACTIONS)
@@ -259,6 +280,8 @@ CMD:afvehmision(playerid, params[]) {
 	    vehicleid,
 		faction;
 
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	if(sscanf(params, "dd", faction, vehicleid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehmision [idfacción] [idvehiculo]");
 	else if(faction >= 0 && faction < MAX_FACTIONS) {
@@ -278,6 +301,8 @@ CMD:afrangoingreso(playerid, params[]) {
 	    factionID,
 		joinRank;
 
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	if(sscanf(params, "dd", factionID, joinRank)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangoingreso [idfacción] [rango 2-10]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && joinRank >= 2 && joinRank <= 10) {
@@ -296,7 +321,10 @@ CMD:afrangos(playerid, params[]) {
 	    string[128],
 	    factionID,
 		rankNum;
-		
+
+	if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
+
 	if(sscanf(params, "dd", factionID, rankNum)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangos [idfacción] [cantidad de rangos 2-10]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && rankNum >= 2 && rankNum <= 10) {
 	    FactionInfo[factionID][fRankAmount] = rankNum;
@@ -315,6 +343,8 @@ CMD:afnombre(playerid, params[]) {
 	    factionID,
 		name[32];
 
+    if(PlayerInfo[playerid][pAdmin] < 20)
+		return 1;
 
 	if(sscanf(params, "ds[32]", factionID, name)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afnombre [idfacción] [nombre 32 chars]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && strlen(name) <= 32) {
@@ -332,6 +362,9 @@ CMD:afexpulsar(playerid, params[]) {
 	    reason[64],
 		string[128],
 	    targetID;
+
+    if(PlayerInfo[playerid][pAdmin] < 3)
+		return 1;
 
 	if(sscanf(params, "uS(sin razon)[64]", targetID, reason)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afexpulsar [playerid/ParteDelNombre] [razón]");
 	else if(IsPlayerConnected(targetID) && targetID != INVALID_PLAYER_ID) {
