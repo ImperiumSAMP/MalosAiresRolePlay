@@ -2526,7 +2526,7 @@ public OnPlayerDataLoad(playerid)
 		if(PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
 		{
 
-			if(PlayerInfo[playerid][pAdmin] > 1)
+			if(PlayerInfo[playerid][pAdmin] > 0)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
 			else
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]:{C8C8C8} bienvenido, para ver los comandos escribe /ayuda.");
@@ -8125,25 +8125,29 @@ CMD:acmds(playerid, params[]) {
 
 CMD:admincmds(playerid, params[]) {
 
+	if(PlayerInfo[playerid][pAdmin] >= 1) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[CERTIFICADOR] /crearcuenta /aobjeto /aobjetoquitar /aobjetoquitartodo /aeditobjeto /ainfoobjetos");
+	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/a /ao /ajail /aservicio /getpos /gotopos /gotols /gotospawn /gotolv /gotosf");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/goto /kick /mute /skin /traer /up /descongelar /congelar /slap /muteb /teleayuda (/av)hiculo");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vermascara /vermascaras /crearcuenta");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 2] /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjmano");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 2] /setcoord /setint /setvw /vers /vermascara /vermascaras /avehiculo /teleayuda");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acinfo /aninfo /aeinfo /actele /antele /aetele /ban /check /checkinv /fly /sethp");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/mps /setint /setvw /set /togglegooc /verf /quitarobjmano");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 3] /ajail /ao /gooc /ban /kick /check /checkinv /mps /verf /vers /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 3] /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /cambiarnombre /afinfo /jetx /setarmour /setjob /setcoord");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aobjeto /aeditobjeto /ainfoobjetos /aobjetosquitartodo /aobjetoquitar");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 4] /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/givegun /advertir /clima /darlider /desbanear /saltartuto /tutorial /anproductos /annombre /gametext /sinfo");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 5] /clima /darlider /desbanear /givegun");
+	}
+	if(PlayerInfo[playerid][pAdmin] >= 10) {
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 10] /gametext /exp10de /money /afexpulsar /afacciones");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/acasas /aedificios /afacciones /anegocios /ppvehiculos /gmx /exit /tod /unknowngametext /money /givemoney");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/resetcars /setadmin /rerollplates");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 20] /agregarmodelo /exit /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 20] /resetabstinencia /resetcars /setadmin /tod /unknowngametext /debugayuda");
 	}
 	return 1;
 }
@@ -8208,6 +8212,12 @@ CMD:tutorial(playerid, params[])
 CMD:teleayuda(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotolv /gotosf /gotols /goto /gotopos /traer /gotospawn");
+	return 1;
+}
+
+CMD:debugayuda(playerid, params[])
+{
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/racedebug /cardealerdebug /playercardealerdebug /playerracedebug /playerrobobancodebug /robobancodebug /inputsdebug");
 	return 1;
 }
 
