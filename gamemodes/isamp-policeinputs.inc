@@ -460,10 +460,8 @@ CMD:inputsdebug(playerid, params[])
 {
 	new targetid;
 	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "i", targetid))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /inputdebug [playerid]");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /inputsdebug [playerid]");
 	if(targetid < 0 || targetid >= MAX_PLAYERS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	    
