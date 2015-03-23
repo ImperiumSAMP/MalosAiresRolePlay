@@ -165,9 +165,13 @@ CMD:abrir(playerid, params[])
 
 CMD:aedificios(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de edificios]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aeinfo /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida - /aecosto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA EDIFICIOS]==============================");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aeinfo - /aetele");
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aecosto - /aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+	}
 	return 1;
 }
 
