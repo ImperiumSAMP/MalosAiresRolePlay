@@ -894,10 +894,15 @@ CMD:casacontrato(playerid, params[])
 
 CMD:acasas(playerid, params[])
 {
-
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /accrear - /acborrar - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acalquilar - /acnoalquilar");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones, deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+  		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA CASAS]==============================");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /acinfo - /actele");
+	if(PlayerInfo[playerid][pAdmin] >= 5) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
+	}
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acprecio /acvender");
+    	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+	}
 	return 1;
 }
 
