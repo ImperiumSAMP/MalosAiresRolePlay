@@ -8129,7 +8129,7 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aobjetoquitartodo /aeditobjeto /ainfoobjetos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjmano");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /setcoord /setint /setvw /vers /vermascara /vermascaras /avehiculo /teleayuda");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
@@ -8742,40 +8742,55 @@ CMD:resetabstinencia(playerid, params[])
     return 1;
 }
 
-CMD:quitarobjmano(playerid, params[])
+CMD:quitarobjeto(playerid, params[])
 {
 	new string[128],
-		hand,
+		slot,
 		target;
 
-	if(sscanf(params, "ui", target, hand))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjmano [IDJugador/ParteDelNombre] [Mano: 1=Derecha 2=Izquierda 3=Ambas]");
+	if(sscanf(params, "ui", target, slot)) {
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjeto [IDJugador/ParteDelNombre] [Número de slot]");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Slots posibles: 1.Mano derecha | 2.Mano izquierda | 3.Inventario 0 | 4.Inventario 1 | 5.Espalda");
+		return 1;
+	}
 
 	if(target != INVALID_PLAYER_ID)
 	{
-	    if(hand > 3 || hand < 1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Mano inválida, únicamente puedes quitar el item de la mano izquierda, derecha o ambas.");
+	    if(slot > 5 || slot < 1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido, los números de slot posibles van del 1 al 5.");
 
-	   	if(hand == 1) {
-			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 2);
-			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid), hand);
-			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
-			PhoneHand[target] = 0;
-
-	    } if(hand == 2) {
-			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 2);
-			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
-			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
-
-		} if(hand == 3) {
-			format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s los objetos de ambas manos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-			AdministratorMessage(COLOR_ADMINCMD, string, 2);
-			SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado los objetos que tenías en ambas manos.", GetPlayerNameEx(playerid));
-			SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
-			SetHandItemAndParam(target, HAND_LEFT, 0, 0);
-			PhoneHand[target] = 0;
+		switch(hand) {
+		    case 1: { // Mano derecha
+   				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid));
+				SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
+				PhoneHand[target] = 0;
+		    }
+		    case 2: { // Mano izquierda
+   				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
+				SetHandItemAndParam(target, HAND_LEFT, 0, 0);
+		    }
+		    case 3: { // Slot 0 del inventario
+  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto del inventario 0.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 0 del inventario.", GetPlayerNameEx(playerid));
+				SetInvItemAndParam(target, 0, 0, 0);
+		    }
+		    case 4: { // Slot 1 del inventario
+  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto del inventario 1.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 1 del inventario.", GetPlayerNameEx(playerid));
+				SetInvItemAndParam(target, 1, 0, 0);
+		    }
+		    case 5: { // Espalda
+  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la espalda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+				AdministratorMessage(COLOR_ADMINCMD, string, 2);
+				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la espalda.", GetPlayerNameEx(playerid));
+				SetBackItemAndParam(target, 0, 0);
+		    }
 		}
 	}
 	return 1;

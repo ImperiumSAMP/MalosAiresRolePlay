@@ -1609,13 +1609,13 @@ CMD:av(playerid, params[])
 CMD:avehiculo(playerid, params[])
 {
   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA VEHICULOS]==============================");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 2] /avmotor - /avinfo");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /avmotor - /avinfo");
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 4] /avfix - /avfuel - /aventrar - /avtraer - /avrespawn - /avpatente - /avestacionar");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 4] /avrespawnall - /avfuelcars - /avfixcars");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /avfix - /avfuel - /aventrar - /avtraer - /avrespawn - /avpatente - /avestacionar");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /avrespawnall - /avfuelcars - /avfixcars");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[LVL 20] /avtipo - /avmodelo - /avcolor - /avfaccion - /avempleo - /avhp - /avnitro - /avcrear - /avcrearperma");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /avtipo - /avmodelo - /avcolor - /avfaccion - /avempleo - /avhp - /avnitro - /avcrear - /avcrearperma");
 		SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/avtipo 0', si éste estaba asociado a un personaje el...");
 	 	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}...vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
 	}
