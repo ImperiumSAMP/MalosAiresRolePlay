@@ -8759,7 +8759,7 @@ CMD:quitarobjeto(playerid, params[])
 	    if(slot > 5 || slot < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido, los números de slot posibles van del 1 al 5.");
 
-		switch(hand) {
+		switch(slot) {
 		    case 1: { // Mano derecha
    				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
