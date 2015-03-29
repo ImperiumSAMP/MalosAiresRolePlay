@@ -300,6 +300,31 @@ CMD:mano(playerid, params[])
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 			} else
   				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+		} else if(strcmp(command, "usari", true) == 0) {
+
+			if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_SANDWICH) {
+	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sándwich de jámon y queso.");
+	            PlayerEat(playerid, 40);
+	            if(GetHandParam(playerid, HAND_LEFT) - 1 > 0)
+	            	SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_LEFT) - 1);
+				else
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico
+	        } else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_ALFAJOR) {
+         		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
+		        PlayerEat(playerid, 15);
+		        if(GetHandParam(playerid, HAND_LEFT) - 1 > 0)
+		          	SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_LEFT) - 1);
+				else
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico
+			} else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_AGUAMINERAL) {
+				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
+			    PlayerDrink(playerid, 50);
+			    if(GetHandParam(playerid, HAND_LEFT) - 1 > 0)
+			      	SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_LEFT) - 1);
+				else
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico
+			} else
+  				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		}
 	}
 	return 1;
