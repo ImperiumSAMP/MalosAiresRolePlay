@@ -8870,8 +8870,6 @@ CMD:radio(playerid, params[])
 	foreach(new i : Player)
 	{
  		if(PlayerInfo[i][pFaction] == factionID && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0)
-			if(PlayerInfo[i][pRank] == 10 && PlayerInfo[i][pFaction] == FAC_PMA)
-				return 1;
    			SendClientMessage(i, COLOR_PMA, string);
 	}
 	FactionChatLog(string);
