@@ -165,12 +165,13 @@ CMD:abrir(playerid, params[])
 
 CMD:aedificios(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de edificios]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aeinfo /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida - /aecosto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA EDIFICIOS]==============================");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aeinfo - /aetele");
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aecosto - /aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+	}
 	return 1;
 }
 
@@ -178,8 +179,6 @@ CMD:aeinfo(playerid, params[])
 {
 	new id;
 
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
 	if(sscanf(params, "i", id))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeinfo [IDedificio]");
 	if(id < 1 || id >= MAX_BUILDINGS)
@@ -198,8 +197,6 @@ CMD:aeremove(playerid, params[])
 {
 	new blid;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "d", blid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeremove [idedificio]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -214,8 +211,6 @@ CMD:aeinsert(playerid, params[])
 {
 	new blid, name[32], Float:entAngle, locked, fee, faction, pickupModel;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dddds[32]", fee, locked, pickupModel,  faction, name))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeinsert [costo entrada] [locked] [modelo pickup] [faccion, 0 = n/a] [text (64 ch)]");
 	if(locked != 1 && locked != 0)
@@ -249,8 +244,6 @@ CMD:aeinsert(playerid, params[])
 
 CMD:aegetid(playerid, params[])
 {
-    if(PlayerInfo[playerid][pAdmin] < 10)
-		return 1;
 
 	for(new i = 1; i < MAX_BUILDINGS; i++)
 	{
@@ -268,8 +261,6 @@ CMD:aetexto(playerid, params[])
 {
 	new blid, text[64];
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "ds[64]", blid, text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto [idedificio] [texto 64 chars]");
  	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -288,8 +279,6 @@ CMD:aeradio(playerid, params[])
 {
 	new blid, radio;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "ii", blid, radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeradio [ID edificio] [ID radio]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -306,8 +295,6 @@ CMD:aetexto2(playerid, params[])
 {
 	new blid, text[64];
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "ds[64]", blid, text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetexto2 [idedificio] [texto 64 chars]");
  	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -326,8 +313,6 @@ CMD:aeentrada(playerid, params[])
 {
 	new string[128], blid, entranceInterior, Float:entranceX, Float:entranceY, Float:entranceZ, Float:entranceAngle;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "d", blid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeentrada [idedificio] - setea la entrada a tu posición, tu ángulo será el adoptado al salir.");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -351,8 +336,6 @@ CMD:aesalida(playerid, params[])
 {
 	new string[128], blid, exitInterior, Float:exitX, Float:exitY, Float:exitZ, Float:exitAngle;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "d", blid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aesalida [idedificio] - setea la salida a tu posición, tu ángulo será el adoptado al ingresar.");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -377,8 +360,6 @@ CMD:aecosto(playerid, params[])
 {
 	new blid, cost;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dd", blid, cost))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aecosto [idedificio] [costo de entrada]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -394,8 +375,6 @@ CMD:aefaccion(playerid, params[])
 {
 	new blid, faction;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dd", blid, faction))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aefaccion [idedificio] [facción, 0 = ninguna]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -411,8 +390,6 @@ CMD:aepickup(playerid, params[])
 {
 	new blid, pickupModel;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dd", blid, pickupModel))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aepickup [idedificio] [id modelo]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -428,8 +405,6 @@ CMD:aevworld(playerid, params[])
 {
 	new blid, vworld;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dd", blid, vworld))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aevworld [idedificio] [mundo virtual]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
@@ -445,8 +420,6 @@ CMD:aecerrado(playerid, params[])
 {
 	new blid, locked;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "dd", blid, locked))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aecerrado [idedificio] [1=SI, 0=NO]");
 	if(locked < 0 || locked > 1)
@@ -468,8 +441,6 @@ CMD:aetele(playerid, params[])
 {
 	new blid;
 
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
 	if(sscanf(params, "i", blid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aetele [ID edificio]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)

@@ -124,9 +124,7 @@ SearchCarDealerForModel(dealer, model)
 CMD:cardealerdebug(playerid, params[])
 {
 	new dealer;
-	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
+
 	if(sscanf(params, "i", dealer))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /cardealerdebug [id consecionaria]");
 	if(dealer < 0 || dealer >= MAX_DEALERS)
@@ -144,8 +142,6 @@ CMD:playercardealerdebug(playerid, params[])
 {
 	new targetid;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "i", targetid))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playercardealerdebug [playerid]");
 	if(targetid < 0 || targetid >= MAX_PLAYERS)
@@ -171,8 +167,6 @@ CMD:agregarmodelo(playerid, params[])
 {
 	new dealer, model, carstock;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "iii", dealer, model, carstock))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo] [stock] (IDs Grotti:0 - Jefferson:1)");
 	if(GetPlayerCarDealer(playerid) == -1)
@@ -215,9 +209,7 @@ CMD:agregarmodelo(playerid, params[])
 CMD:borrarmodelo(playerid, params[])
 {
 	new dealer, model;
-	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
+
 	if(sscanf(params, "ii", dealer, model))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
 	if(GetPlayerCarDealer(playerid) == -1)

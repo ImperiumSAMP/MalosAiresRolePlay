@@ -894,12 +894,15 @@ CMD:casacontrato(playerid, params[])
 
 CMD:acasas(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acinfo - /accrear - /acborrar - /acentrada - /acsalida - /actele - /acprecio - /acvender - /acinterior");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[COMANDOS]:{C8C8C8} /acalquilar - /acnoalquilar");
-    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones, deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+  		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA CASAS]==============================");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /acinfo - /actele");
+	if(PlayerInfo[playerid][pAdmin] >= 5) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
+	}
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acprecio /acvender");
+    	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
+	}
 	return 1;
 }
 
@@ -909,8 +912,6 @@ CMD:acinterior(playerid, params[])
 	    interiorid,
 	    string[128];
 	    
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
 	if(sscanf(params, "ii", houseid, interiorid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acinterior [ID casa] [ID interior (1-42)]");
  	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1314,8 +1315,6 @@ CMD:acprecio(playerid, params[])
 		price,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "ii", houseid, price))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acprecio [ID casa] [Precio]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1338,8 +1337,6 @@ CMD:acvender(playerid, params[])
 	new houseid,
 		string[128];
 	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acvender [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1388,8 +1385,6 @@ CMD:accrear(playerid, params[])
 		Float:angle,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "i", price))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /accrear [Precio de la casa]");
 	if(price < 1 || price > 10000000)
@@ -1430,8 +1425,6 @@ CMD:acborrar(playerid, params[])
 	new houseid,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acborrar [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1464,9 +1457,7 @@ CMD:acentrada(playerid, params[])
 	new houseid,
 		Float:angle,
 		string[128];
-		
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
+
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acentrada [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1491,8 +1482,6 @@ CMD:acsalida(playerid, params[])
 		Float:angle,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acsalida [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1514,8 +1503,6 @@ CMD:acinfo(playerid, params[])
 {
 	new id;
 
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
 	if(sscanf(params, "i", id))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acinfo [ID casa]");
 	if(id < 1 || id >= MAX_HOUSES)
@@ -1542,8 +1529,6 @@ CMD:actele(playerid, params[])
 {
 	new houseid;
 
-    if(PlayerInfo[playerid][pAdmin] < 2)
-		return 1;
 	if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /actele [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1562,8 +1547,6 @@ CMD:acalquilar(playerid, params[])
 	new houseid,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 4)
-	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acalquilar [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)
@@ -1588,8 +1571,6 @@ CMD:acnoalquilar(playerid, params[])
 	new houseid,
 		string[128];
 
-	if(PlayerInfo[playerid][pAdmin] < 4)
-	    return 1;
     if(sscanf(params, "i", houseid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acnoalquilar [ID casa]");
 	if(houseid < 1 || houseid >= MAX_HOUSES)

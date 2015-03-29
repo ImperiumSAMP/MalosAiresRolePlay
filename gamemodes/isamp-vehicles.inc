@@ -1608,20 +1608,14 @@ CMD:av(playerid, params[])
 
 CMD:avehiculo(playerid, params[])
 {
-    if(PlayerInfo[playerid][pAdmin] < 1) {
-		return 1;
-	}
-	if(PlayerInfo[playerid][pAdmin] >= 1) {
   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA VEHICULOS]==============================");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 1] /avmotor - /avinfo");
-	}
-	if(PlayerInfo[playerid][pAdmin] >= 3) {
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 3] /avfix - /avfuel - /aventrar [IDvehiculo] - /avtraer [IDvehiculo] - /avrespawn [IDvehiculo] - /avrespawnall");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfuelcars - /avfixcars - /avpatente - /avestacionar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /avmotor - /avinfo");
+	if(PlayerInfo[playerid][pAdmin] >= 4) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /avfix - /avfuel - /aventrar - /avtraer - /avrespawn - /avpatente - /avestacionar");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /avrespawnall - /avfuelcars - /avfixcars");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[NIVEL 20] /avtipo [IDtipo] - /avmodelo [IDmodelo] - /avcolor [color1] [color2]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/avfaccion [idfaccion] - /avempleo [IDempleo] /avnitro /avcrear /avcrearperma /avhp");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /avtipo - /avmodelo - /avcolor - /avfaccion - /avempleo - /avhp - /avnitro - /avcrear - /avcrearperma");
 		SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/avtipo 0', si éste estaba asociado a un personaje el...");
 	 	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}...vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
 	}
@@ -1632,8 +1626,6 @@ CMD:avmotor(playerid, params[])
 {
 	new vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 1)
-		return 1;
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
@@ -1650,8 +1642,6 @@ CMD:avinfo(playerid, params[])
 {
 	new Float:hp, id;
 
-    if(PlayerInfo[playerid][pAdmin] < 1)
-		return 1;
 	if(sscanf(params, "d", id))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avinfo [idvehiculo]");
 	if(id < 1 || id >= MAX_VEH)
@@ -1676,8 +1666,6 @@ CMD:aventrar(playerid, params[])
 {
 	new vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
     if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aventrar [idvehiculo]");
 	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH || VehicleInfo[vehicleid][VehType] == VEH_NONE)
@@ -1691,8 +1679,6 @@ CMD:avrespawn(playerid, params[])
 {
 	new vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
     if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avrespawn [idvehiculo]");
 	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH)
@@ -1705,8 +1691,6 @@ CMD:avrespawn(playerid, params[])
 
 CMD:avrespawnall(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 
 	for(new i = 1; i < MAX_VEH; i++)
 	{
@@ -1725,8 +1709,6 @@ CMD:avtraer(playerid, params[])
 {
 	new Float:x, Float:y, Float:z, Float:angle, vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 	if(sscanf(params, "i", vehicleid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtraer [idvehiculo]");
 	if(vehicleid == INVALID_VEHICLE_ID || vehicleid < 1 || vehicleid >= MAX_VEH)
@@ -1743,8 +1725,6 @@ CMD:avfix(playerid, params[])
 {
 	new vehicleid;
 
-    if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 	if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
@@ -1760,8 +1740,6 @@ CMD:avfuel(playerid, params[])
 {
 	new vehicleid;
 
-    if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 	if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
@@ -1774,8 +1752,6 @@ CMD:avfuel(playerid, params[])
 
 CMD:avfuelcars(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 
 	for(new c = 0; c < MAX_VEH; c++)
 	{
@@ -1788,8 +1764,6 @@ CMD:avfuelcars(playerid, params[])
 
 CMD:avfixcars(playerid, params[])
 {
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
 
 	for(new c = 0; c < MAX_VEH; c++)
 	{
@@ -1805,8 +1779,6 @@ CMD:avnitro(playerid, params[])
 {
 	new vehicleid;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
@@ -1820,8 +1792,6 @@ CMD:avempleo(playerid, params[])
 {
 	new vehicleid, jobid;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "i", jobid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avempleo [idempleo]");
     if(!IsPlayerInAnyVehicle(playerid))
@@ -1841,8 +1811,6 @@ CMD:avfaccion(playerid, params[])
 {
 	new vehicleid, factionid;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "i", factionid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avfaccion [idfaccion]");
     if(!IsPlayerInAnyVehicle(playerid))
@@ -1862,8 +1830,6 @@ CMD:avcolor(playerid, params[])
 {
 	new vehicleid, color1, color2, Float:cx, Float:cy, Float:cz, Float:angle;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "ii", color1, color2))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcolor [color1] [color2]");
     if(!IsPlayerInAnyVehicle(playerid))
@@ -1891,8 +1857,6 @@ CMD:avmodelo(playerid, params[])
 {
 	new vehicleid, modelid, Float:cx, Float:cy, Float:cz, Float:angle;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "i", modelid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avmodelo [idmodelo]");
     if(!IsPlayerInAnyVehicle(playerid))
@@ -1923,8 +1887,6 @@ CMD:avtipo(playerid, params[])
 {
 	new vehicleid, type;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "i", type))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtipo [idtipo]");
     if(!IsPlayerInAnyVehicle(playerid))
@@ -1994,8 +1956,6 @@ CMD:avestacionar(playerid, params[])
 {
 	new vehicleid, Float:cx, Float:cy, Float:cz, Float:angle;
 
-	if(PlayerInfo[playerid][pAdmin] < 3)
-		return 1;
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 
@@ -2024,8 +1984,6 @@ CMD:avcrear(playerid, params[])
 {
 	new id = 1, Float:px, Float:py, Float:pz, Float:pa, modelid, color1, color2;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "iii", modelid, color1, color2))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcrear [idmodelo] [color1] [color2]");
 	if(modelid < 400 || modelid > 611)
@@ -2059,8 +2017,6 @@ CMD:avcrearperma(playerid, params[])
 {
 	new id = 1, Float:px, Float:py, Float:pz, Float:pa, modelid, color1, color2;
 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(sscanf(params, "iii", modelid, color1, color2))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avcrearperma [idmodelo] [color1] [color2]");
 	if(modelid < 400 || modelid > 611)
@@ -2094,8 +2050,6 @@ CMD:avhp(playerid, params[])
 {
 	new vehicleid, vhp;
 
-	if(PlayerInfo[playerid][pAdmin] < 20)
-	    return 1;
     if(sscanf(params, "ii", vehicleid, vhp))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avhp [idvehiculo] [hp]");
 	if(vehicleid < 1 || vehicleid >= MAX_VEH)
@@ -2114,8 +2068,6 @@ CMD:avpatente(playerid, params[])
 {
 	new vehicleid, string[32];
 	
-	if(PlayerInfo[playerid][pAdmin] < 3)
-	    return 1;
     if(sscanf(params, "is[32]", vehicleid, string))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avpatente [idvehiculo] [patente]");
 
