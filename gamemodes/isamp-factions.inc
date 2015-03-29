@@ -116,9 +116,12 @@ stock GetFactionMoney(factionid)
 
 CMD:afacciones(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Comandos de facciones]:");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afexpulsar /aftipo /afnombre /afrangos /afrangoingreso /afdinero /afmats /afrango /afvehmision");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/afvehiculos /afallowjob /afinfo");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA FACCIONES]==============================");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afexpulsar");
+	if(PlayerInfo[playerid][pAdmin] >= 20) {
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aftipo - /afnombre - /afrangos - /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /afvehiculos /afallowjob /afinfo");
+	}
 	return 1;
 }
 
