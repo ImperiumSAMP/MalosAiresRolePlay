@@ -1797,7 +1797,7 @@ public OnPlayerPrivmsg(playerid, recieverid, text[])
 
 	foreach(new i : Player)	{
 		if(GetPVarInt(i, "pms") == 1)
-			SendFMessage(i, 0x00D67FFF, "[OOC]: MP de %s(%d) a %s(%d): %s", GetPlayerNameEx(playerid),playerid,GetPlayerNameEx(recieverid),recieverid, text);
+			SendFMessage(i, 0x00B400DC, "[MPS] ID %d a ID %d: %s", playerid, recieverid, text);
 	}
 	SendFMessage(recieverid, COLOR_MEDIUMBLUE, "[OOC]: MP de %s(%d): %s", GetPlayerNameEx(playerid),playerid, text);
 	SendFMessage(playerid, COLOR_MEDIUMBLUE, "[OOC]: MP a %s(%d): %s", GetPlayerNameEx(recieverid),recieverid, text);
@@ -6851,10 +6851,14 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
 	        if(PlayerToPoint(10.0, playerid, 1544.69, -1630.79, 13.10)) {
+      			if(PlayerInfo[playerid][pRank] == 10)
+		    		return 1;
 	            MoveObject(PMBarrier,  1544.68, -1631.00, 13.191, 0.004,0.00, 0.00, 90.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", PMBarrier);
 	        } else
 	        if(PlayerToPoint(10.0, playerid, 1588.58, -1638.11, 13.48)) {
+      			if(PlayerInfo[playerid][pRank] == 10)
+		    		return 1;
 	            MoveObject(PMGate, 1589.73499, -1638.32410, 17.43779, 2.0, 0.00000, 0.00000, 90.00000);
 	            SetTimerEx("CloseGate", 6000, false, "i", PMGate);
 	        }
@@ -6877,7 +6881,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	            SetTimerEx("CloseGate", 6000, false, "i", FORZGate);
 	        }
 		} else
-		if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
+		if(PlayerInfo[playerid][pFaction] == FAC_GOB && PlayerInfo[playerid][pRank] < 5) {
 	        if(PlayerToPoint(10.0, playerid, 1534.54236, -1451.39893, 14.45500)) {
 	            MoveObject(GOBGate,  1545.50000, -1451.39893, 14.45500, 3.0, 0.0000, 0.0000, 0.0000);
 	            SetTimerEx("CloseGate", 6000, false, "i", GOBGate);
@@ -8130,10 +8134,10 @@ CMD:admincmds(playerid, params[]) {
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /setcoord /setint /setvw /vers /vermascara /vermascaras /avehiculo /teleayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /setcoord /setint /setvw /vers /vermascara /vermascaras /vers /avehiculo /teleayuda");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /verf /vers /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /verf /mute /slap /skin");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
@@ -8143,7 +8147,7 @@ CMD:admincmds(playerid, params[]) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /clima /darlider /desbanear /givegun");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 10) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /money /afexpulsar /afacciones");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /money /afacciones");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /agregarmodelo /exit /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
@@ -9949,9 +9953,7 @@ CMD:ayudap(playerid, params[])
 CMD:apuerta(playerid,params[]) {
 
     // Policía de Malos Aires
-	if(PlayerInfo[playerid][pFaction] == FAC_PMA || AdminDuty[playerid] == 1) {
-		if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
-		    return 1;
+	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1) {
 
 		if(IsPlayerInRangeOfPoint(playerid, 4.0, 228.1902, 151.2390, 1003.0037)) {
 			// PM Puerta que da para el interior del edificio izq
@@ -13330,7 +13332,7 @@ CMD:susurrar(playerid, params[])
 	    
     foreach(new i : Player)	{
 		if(GetPVarInt(i, "vers") == 1)
-			SendFMessage(i, 0x00D67FFF, "%s(%d) susurra a %s(%d): %s", GetPlayerNameEx(playerid), playerid, GetPlayerNameEx(targetid), targetid, text);
+			SendFMessage(i, 0x00C800DC, "[SUSURRO] ID %d a ID %d: %s", playerid, targetid, text);
 	}
 	SendClientMessage(targetid, COLOR_YELLOW, string);
 	SendClientMessage(playerid, COLOR_YELLOW, string);
