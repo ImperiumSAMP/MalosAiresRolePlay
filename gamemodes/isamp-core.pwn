@@ -9943,11 +9943,11 @@ CMD:ayudap(playerid, params[])
 CMD:apuerta(playerid,params[]) {
 
     // Policía de Malos Aires
-
+<<<<<<< HEAD
 	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1) {
-
+=======
 	if(PlayerInfo[playerid][pFaction] == FAC_PMA || AdminDuty[playerid] == 1) {
-
+>>>>>>> parent of e8be532... Rank 10 de la PMA sin comandos
 
 		if(IsPlayerInRangeOfPoint(playerid, 4.0, 228.1902, 151.2390, 1003.0037)) {
 			// PM Puerta que da para el interior del edificio izq
