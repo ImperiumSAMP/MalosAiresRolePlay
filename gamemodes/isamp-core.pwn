@@ -8506,10 +8506,8 @@ CMD:departamento(playerid, params[])
 {
 	new text[128], string[128], factionID = PlayerInfo[playerid][pFaction];
 
-	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
-		return 1;
-    if(factionID == 0)
-		return 1;
+	if(factionID == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
+	    return 1;
 	if(FactionInfo[factionID][fType] != FAC_TYPE_GOV)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes permiso para hablar por esta frecuencia.");
 	if(sscanf(params, "s[128]", text))
@@ -8530,9 +8528,8 @@ CMD:departamento(playerid, params[])
 	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player) {
 		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0) {
-			if(PlayerInfo[i][pRank] == 10 && PlayerInfo[i][pFaction] == FAC_PMA)
-				return 1;
-			SendClientMessage(i, COLOR_LIGHTGREEN, string);
+			if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
+				SendClientMessage(i, COLOR_LIGHTGREEN, string);
 		}
   	}
 	return 1;
@@ -8847,9 +8844,7 @@ CMD:radio(playerid, params[])
 {
 	new text[128], string[128], factionID = PlayerInfo[playerid][pFaction];
 
-	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
-		return 1;
-	if(factionID == 0)
+	if(factionID == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
 	    return 1;
 	if(sscanf(params, "s[128]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/r)adio [mensaje]");
@@ -8867,13 +8862,12 @@ CMD:radio(playerid, params[])
 	    format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
-	foreach(new i : Player)
-	{
- 		if(PlayerInfo[i][pFaction] == factionID && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0)
-			if(PlayerInfo[i][pRank] == 10 && PlayerInfo[i][pFaction] == FAC_PMA)
-				return 1;
-   			SendClientMessage(i, COLOR_PMA, string);
-	}
+	foreach(new i : Player) {
+		if(PlayerInfo[i][pFaction] == factionID && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0) {
+			if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
+				SendClientMessage(i, COLOR_PMA, string);
+			}
+		}
 	FactionChatLog(string);
 	return 1;
 }
