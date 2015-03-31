@@ -50,11 +50,11 @@ enum jInf {
 	jTakeI,
 	jSkin,
 	jTable[24],
-	jCharge1,
-	jCharge2,
-	jCharge3,
-	jCharge4,
-	jCharge5,
+	jCharge1[64],
+	jCharge2[64],
+	jCharge3[64],
+	jCharge4[64],
+	jCharge5[64],
 	jBaseSalary,
 };
 
@@ -131,7 +131,7 @@ forward OnJobDataLoad(id);
 public OnJobDataLoad(id)
 {
    	new string[128],
-		result[128],
+		result[32],
 		rows,
 		fields;
 
@@ -152,11 +152,11 @@ public OnJobDataLoad(id)
 		cache_get_field_content(0, "jTakeY", result); 		JobInfo[id][jTakeY] = floatstr(result);
 		cache_get_field_content(0, "jTakeZ", result); 		JobInfo[id][jTakeZ] = floatstr(result);
 
-        cache_get_field_content(0, "jCharge1", result); 	JobInfo[id][jCharge1] = strval(result);
-        cache_get_field_content(0, "jCharge2", result); 	JobInfo[id][jCharge2] = strval(result);
-        cache_get_field_content(0, "jCharge3", result); 	JobInfo[id][jCharge3] = strval(result);
-        cache_get_field_content(0, "jCharge4", result); 	JobInfo[id][jCharge4] = strval(result);
-        cache_get_field_content(0, "jCharge5", result); 	JobInfo[id][jCharge5] = strval(result);
+        cache_get_field_content(0, "jCharge1", JobInfo[id][jCharge1]);
+        cache_get_field_content(0, "jCharge2", JobInfo[id][jCharge2]);
+        cache_get_field_content(0, "jCharge3", JobInfo[id][jCharge3]);
+        cache_get_field_content(0, "jCharge4", JobInfo[id][jCharge4]);
+        cache_get_field_content(0, "jCharge5", JobInfo[id][jCharge5]);
 
 		CreateDynamicPickup(1274, 1, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ], JobInfo[id][jTakeW], JobInfo[id][jTakeI], -1);
         format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\n/consultarempleo para información detallada", JobInfo[id][jName]);

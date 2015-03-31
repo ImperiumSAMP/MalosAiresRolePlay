@@ -3012,9 +3012,9 @@ public SaveAccount(playerid)
 
 		if(ThiefJobInfo[playerid][pFelonLevel] >= 1) // Si fue o es delincuente (si tiene una tabla asociada)
 		    saveThiefJob(playerid);
-
+		else 
+			SavePlayerJobData(playerid); // Guardamos la información del viejo, si fuese legal.
 	}
-	
 	return 1;
 }
 

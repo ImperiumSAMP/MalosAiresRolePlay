@@ -152,7 +152,7 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		else
   		{
   		    PlayerJobInfo[playerid][pState] = JOB_STATE_ACTIVE;
-			cache_get_field_content(0, "pWorkingHours", result); 	PlayerJobInfo[playerid][pWorkingHours] = strval(result);
+			PlayerJobInfo[playerid][pWorkingHours] = 0; // Al renunciar, se borra la antiguedad.
 			cache_get_field_content(0, "pCharge", result); 			PlayerJobInfo[playerid][pCharge] = strval(result);
 			cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
 			cache_get_field_content(0, "pTotalEarnings", result);   PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
