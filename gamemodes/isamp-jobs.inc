@@ -146,17 +146,17 @@ public OnJobDataLoad(id)
 		cache_get_field_content(0, "jBaseSalary", result); 	JobInfo[id][jBaseSalary] = strval(result);
 
 		cache_get_field_content(0, "jName", JobInfo[id][jName], 1, JOB_NAME_FIELD_MAX);
-		cache_get_field_content(0, "jTable", JobInfo[id][jTable]);
+		cache_get_field_content(0, "jTable", JobInfo[id][jTable], 1, 24);
 
 		cache_get_field_content(0, "jTakeX", result); 		JobInfo[id][jTakeX] = floatstr(result);
 		cache_get_field_content(0, "jTakeY", result); 		JobInfo[id][jTakeY] = floatstr(result);
 		cache_get_field_content(0, "jTakeZ", result); 		JobInfo[id][jTakeZ] = floatstr(result);
 
-        cache_get_field_content(0, "jCharge1", JobInfo[id][jCharge1]);
-        cache_get_field_content(0, "jCharge2", JobInfo[id][jCharge2]);
-        cache_get_field_content(0, "jCharge3", JobInfo[id][jCharge3]);
-        cache_get_field_content(0, "jCharge4", JobInfo[id][jCharge4]);
-        cache_get_field_content(0, "jCharge5", JobInfo[id][jCharge5]);
+        cache_get_field_content(0, "jCharge1", JobInfo[id][jCharge1], 1, 64);
+        cache_get_field_content(0, "jCharge2", JobInfo[id][jCharge2], 1, 64);
+        cache_get_field_content(0, "jCharge3", JobInfo[id][jCharge3], 1, 64);
+        cache_get_field_content(0, "jCharge4", JobInfo[id][jCharge4], 1, 64);
+        cache_get_field_content(0, "jCharge5", JobInfo[id][jCharge5], 1, 64);
 
 		CreateDynamicPickup(1274, 1, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ], JobInfo[id][jTakeW], JobInfo[id][jTakeI], -1);
         format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\n/consultarempleo para información detallada", JobInfo[id][jName]);
@@ -165,6 +165,14 @@ public OnJobDataLoad(id)
 	return 1;
 }
 
+CMD:debugjob(playerid, params[])
+{
+    SendFMessageToAll(COLOR_LIGHTGREEN, "name %s", JobInfo[5][jName]);
+    SendFMessageToAll(COLOR_LIGHTGREEN, "table %s", JobInfo[5][jTable]);
+    SendFMessageToAll(COLOR_LIGHTGREEN, "charge %s", JobInfo[5][jCharge1]);
+    SendFMessageToAll(COLOR_LIGHTGREEN, "salary %d", JobInfo[5][jBaseSalary]);
+	return 1;
+}
 
 //Comandos de jobs
 

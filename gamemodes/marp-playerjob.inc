@@ -69,9 +69,11 @@ CMD:tomarempleo(playerid,params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
 			if(job == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
 				return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Sal de aquí! (OOC: Requiere nivel 3)"); // Si es uno nuevo en el servidor o multicuenta
-                
+
+			SendClientMessage(playerid, COLOR_WHITE, "Debug: getjobtype");
 			if(GetJobType(job) == JOB_TYPE_LEGAL) // Para comprobar si ya tuvo ese empleo y si por ende ya tiene un registro en DB asociado a ese job.
 			{
+			    SendClientMessage(playerid, COLOR_WHITE, "Debug: setplayerjob");
 				SetPlayerJob(playerid, job);
 			}
 			else
@@ -128,6 +130,7 @@ stock SetPlayerJob(playerid, job, admincmd=0)
     new query[128];
 
     format(query, sizeof(query), "SELECT * FROM `%s` WHERE pID = %d", JobInfo[job][jTable], PlayerInfo[playerid][pID]);
+    SendClientMessage(playerid, COLOR_WHITE, query);
 	mysql_function_query(dbHandle, query, true, "OnPlayerJobDataCheck", "iii", playerid, job, admincmd);
 	return 1;
 }
