@@ -63,6 +63,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-cardealer.inc"          //Concesionarias
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
+#include "marp-playerjob.inc"
+#include "marp-garbjob.inc"
+#include "marp-tranjob.inc"
+#include "marp-farmjob.inc"
+#include "marp-drugfjob.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.0.9b"
@@ -152,6 +157,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_CARDEALER3	    10033
 // #define DLG_CARDEALER4	    10034
 #define DLG_FIRST_LOGIN 		10035
+//#define DLG_JOB_INFO_1 		10036
+//#define DLG_JOB_INFO_2 		10037
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -419,7 +426,6 @@ new playerLicense[MAX_PLAYERS][pLicInfo];
 // Timers
 forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
 forward theftTimer(playerid, type, biz);
-forward garbageTimer(playerid, garbcp);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -4270,31 +4276,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	return 1;
 }
 
-public garbageTimer(playerid, garbcp)
-{
-    TogglePlayerControllable(playerid, true);
-    if(garbcp == 25)
-	{
-		SendClientMessage(playerid, COLOR_WHITE, "Vuelve y vacía el camión en el depósito.");
-  	}
-  	else if(garbcp == 26)
-	{
-  	    new paycheck = JOB_GARB_MONEY;
-  	    RemovePlayerFromVehicle(playerid);
-	    PlayerInfo[playerid][pCantWork] = 1;
-	    PlayerInfo[playerid][pPayCheck] += paycheck;
-	    jobBreak[playerid] = 80;
-	    jobDuty[playerid] = false;
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	    SetEngine(GetPlayerVehicleID(playerid), 0);
-		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
-		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
-		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo, recibirás $%d en el próximo payday.", paycheck);
-		DeletePVar(playerid, "garbageRoute");
-  	    DeletePVar(playerid, "garbageCheckpoint");
-  	}
-	return 1;
-}
 
 stock hasFireGun(playerid) {
 	new wep = GetPlayerWeapon(playerid);
@@ -4302,19 +4283,19 @@ stock hasFireGun(playerid) {
 }
 
 
-public OnPlayerEnterCheckpoint(playerid) {
+public OnPlayerEnterCheckpoint(playerid)
+{
 	PlayerPlaySound(playerid, 1139, 0.0, 0.0, 0.0);
 	DisablePlayerCheckpoint(playerid);
 	
-    if(TaxiCallTime[playerid] > 0 && TaxiAccepted[playerid] < 999) {
+    if(TaxiCallTime[playerid] > 0 && TaxiAccepted[playerid] < 999)
+	{
 	    TaxiAccepted[playerid] = 999;
 		GameTextForPlayer(playerid, "~w~Has llegado al destino", 5000, 1);
 		TaxiCallTime[playerid] = 0;
 	}
 
-	new
-		string[128],
-		faction = PlayerInfo[playerid][pFaction],
+	new faction = PlayerInfo[playerid][pFaction],
 		vehicleID = GetPlayerVehicleID(playerid),
 		Float:vehicleHP;
 
@@ -4326,89 +4307,23 @@ public OnPlayerEnterCheckpoint(playerid) {
 	if(CheckMissionEvent(playerid, 4)) {}
 		else CheckMissionEvent(playerid, 5);
 	
-    if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleID][VehJob] == JOB_FARM) {
-    	if(CollectedProds[playerid] < JOB_FARM_MAXPRODS) {
-    	   	new rCP = -1;
-			while(rCP == -1 || rCP == LastCP[playerid]) {
-	 			rCP = random(sizeof(JOB_FARM_POS) - 2);
-    		}
-	 		LastCP[playerid] = rCP;
-            CollectedProds[playerid]++;
-            format(string, sizeof(string), "Producto: %d/%d", CollectedProds[playerid], JOB_FARM_MAXPRODS);
-			GameTextForPlayer(playerid, string, 1400, 1);
-			if(CollectedProds[playerid] == JOB_FARM_MAXPRODS) {
-			 	SetPlayerCheckpoint(playerid, JOB_FARM_POS[sizeof(JOB_FARM_POS) - 1][0], JOB_FARM_POS[sizeof(JOB_FARM_POS) - 1][1], JOB_FARM_POS[sizeof(JOB_FARM_POS) - 1][2], 5.4);
-				SendClientMessage(playerid, COLOR_WHITE, "¡Has terminado con tu trabajo!, ahora vé y descarga el material (/terminar).");
-			} else {
-			    SetPlayerCheckpoint(playerid, JOB_FARM_POS[rCP][0], JOB_FARM_POS[rCP][1], JOB_FARM_POS[rCP][2], 5.4);
-			}
-        }
-    } else if(PlayerInfo[playerid][pJob] == JOB_DRUGF && jobDuty[playerid] && VehicleInfo[vehicleID][VehJob] == JOB_DRUGF) {
-    	if(CollectedProds[playerid] < JOB_DRUGF_MAXPRODS) {
-    	   	new rCP = -1;
-    
-			while(rCP == -1 || rCP == LastCP[playerid] || GetDistance(JOB_DRUGF_POS[rCP][0], JOB_DRUGF_POS[rCP][1], JOB_DRUGF_POS[rCP][2], JOB_DRUGF_POS[LastCP[playerid]][0], JOB_DRUGF_POS[LastCP[playerid]][1], JOB_DRUGF_POS[LastCP[playerid]][2]) < 30) {
-	 			rCP = random(sizeof(JOB_DRUGF_POS) - 2);
-    		}
-    		
-	 		LastCP[playerid] = rCP;
-            CollectedProds[playerid]++;
-            format(string, sizeof(string), "Producto: %d/%d", CollectedProds[playerid], JOB_DRUGF_MAXPRODS);
-			GameTextForPlayer(playerid, string, 1400, 1);
-			if(CollectedProds[playerid] == JOB_DRUGF_MAXPRODS) {
-			 	SetPlayerCheckpoint(playerid, JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][0], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][1], JOB_DRUGF_POS[sizeof(JOB_DRUGF_POS) - 1][2], 5.4);
-				SendClientMessage(playerid, COLOR_WHITE, "¡Has terminado con tu trabajo!, ahora vé y descarga el material (/terminar).");
-            	LastCP[playerid] = sizeof(JOB_DRUGF_POS) - 1;
-			} else {
-			    SetPlayerCheckpoint(playerid, JOB_DRUGF_POS[rCP][0], JOB_DRUGF_POS[rCP][1], JOB_DRUGF_POS[rCP][2], 5.4);
-			}
-        }
-    } else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleID][VehJob] == JOB_TRAN) {
-    	if(CollectedProds[playerid] < JOB_TRAN_MAXPRODS) {
-    	    if(carryingProd[playerid]) {
-    	        carryingProd[playerid] = false;
-	            CollectedProds[playerid]++;
-	            format(string, sizeof(string), "Paquetes entregados: %d/%d", CollectedProds[playerid], JOB_TRAN_MAXPRODS);
-				GameTextForPlayer(playerid, string, 1400, 1);
-				SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
-				if(CollectedProds[playerid] == JOB_TRAN_MAXPRODS) {
-					SendClientMessage(playerid, COLOR_WHITE, "¡Has terminado con tu trabajo!, vuelve a la agencia.");
-				}
-    	    } else {
-    	        if(CollectedProds[playerid] == JOB_TRAN_MAXPRODS) {
-					SendClientMessage(playerid, COLOR_WHITE, "Tipea /terminar para confirmar los envíos.");
-    	            return 1;
-    	        }
-                carryingProd[playerid] = true;
-    	       	new rCP = -1;
-				while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid]) {
-		 			rCP = random(sizeof(JOB_TRAN_POS));
-		 		}
-		 		LastCP[playerid] = rCP;
-                SetPlayerCheckpoint(playerid, JOB_TRAN_POS[rCP][0], JOB_TRAN_POS[rCP][1], JOB_TRAN_POS[rCP][2], 5.4);
-    	    }
-        }
-    } else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleID][VehType] == VEH_JOB && VehicleInfo[vehicleID][VehJob] == JOB_GARB) {
-        new
-			gbCP = GetPVarInt(playerid, "garbageCheckpoint"),
-			route = GetPVarInt(playerid, "garbageRoute");
-			
-        if(gbCP == 26) {
-			SendClientMessage(playerid, COLOR_WHITE, "Vaciando camión...");
-			TogglePlayerControllable(playerid, false);
-			SetPVarInt(playerid, "garbT", SetTimerEx("garbageTimer", 6000, false, "ii", playerid, gbCP));
-        } else {
-            TogglePlayerControllable(playerid, false);
-            SetPVarInt(playerid, "garbT", SetTimerEx("garbageTimer", 2000, false, "ii", playerid, gbCP));
-            GameTextForPlayer(playerid, "Cargando basura...", 2000, 4);
-			SetPVarInt(playerid, "garbageCheckpoint", gbCP + 1);
-			if(route == 0) {
- 	 			SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP][0], JOB_GARB_POS_R0[gbCP][1], JOB_GARB_POS_R0[gbCP][2], 5.4);
-			} else if(route == 1) {
-			    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
-			}
-        }
-    } else if(playerLicense[playerid][lDStep] >= 1 && VehicleInfo[vehicleID][VehType] == VEH_SCHOOL) {
+    if(FarmJob_IsPlayerWorking(playerid, vehicleID))
+	{
+    	FarmJob_PlayerEnterCheckpoint(playerid);
+    }
+	else if(DrugfJob_IsPlayerWorking(playerid, vehicleID))
+	{
+    	DrugfJob_PlayerEnterCheckpoint(playerid);
+    }
+	else if(TranJob_IsPlayerWorking(playerid, vehicleID))
+	{
+    	TranJob_PlayerEnterCheckpoint(playerid);
+	}
+	else if(GarbJob_IsPlayerWorking(playerid, vehicleID))
+	{
+	    GarbJob_PlayerEnterCheckpoint(playerid);
+    }
+	else if(playerLicense[playerid][lDStep] >= 1 && VehicleInfo[vehicleID][VehType] == VEH_SCHOOL) {
 
 		if(PlayerToPoint(5.0, playerid, 1109.8116, -1743.4208, 13.1255) && playerLicense[playerid][lDStep] == 1) {
             playerLicense[playerid][lDStep] = 2;
@@ -4456,11 +4371,16 @@ public OnPlayerEnterCheckpoint(playerid) {
 			KillTimer(timersID[10]);
 			PlayerTextDrawHide(playerid, PTD_Timer[playerid]);
 
-		    if(vehicleHP < 1000.0) {
+		    if(vehicleHP < 1000.0)
+			{
 				SendClientMessage(playerid, COLOR_LIGHTRED, "¡Has fallado la prueba!, el vehículo se encuentra dañado.");
-		    } else if(playerLicense[playerid][lDMaxSpeed] >= 76) {
+		    }
+			else if(playerLicense[playerid][lDMaxSpeed] >= 76)
+			{
 		    	SendFMessage(playerid, COLOR_LIGHTRED, "¡Has fallado la prueba!, has conducido muy rápido (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
-			} else {
+			}
+			else
+			{
 		        SendFMessage(playerid, COLOR_LIGHTGREEN, "¡Has superado la prueba!, ahora tienes una licencia de conducir (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
 		    	PlayerInfo[playerid][pCarLic] = 1;
 	    	 	GivePlayerCash(playerid, -PRICE_LIC_DRIVING);
