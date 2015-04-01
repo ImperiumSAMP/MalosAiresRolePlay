@@ -63,17 +63,13 @@ CMD:tomarempleo(playerid,params[])
 		{
 		    if(job == JOB_TAXI && (PlayerInfo[playerid][pCarLic] == 0))
 		        return SendClientMessage(playerid, COLOR_WHITE, "No puedo emplearte si no tienes licencia de manejo, hasta luego.");
-		    if(JobInfo[job][jType] != 0)
-               	return 1;
             if(job == JOB_DRUGD && (PlayerInfo[playerid][pFaction] == 0 || FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
 			if(job == JOB_DRUGF && PlayerInfo[playerid][pLevel] < 3) // para coshechar droga minimo nivel 3
 				return SendClientMessage(playerid, COLOR_WHITE, "Granjero: buscamos gente con experiencia, no aceptamos novatos. ¡Sal de aquí! (OOC: Requiere nivel 3)"); // Si es uno nuevo en el servidor o multicuenta
 
-			SendClientMessage(playerid, COLOR_WHITE, "Debug: getjobtype");
 			if(GetJobType(job) == JOB_TYPE_LEGAL) // Para comprobar si ya tuvo ese empleo y si por ende ya tiene un registro en DB asociado a ese job.
 			{
-			    SendClientMessage(playerid, COLOR_WHITE, "Debug: setplayerjob");
 				SetPlayerJob(playerid, job);
 			}
 			else
@@ -130,7 +126,6 @@ stock SetPlayerJob(playerid, job, admincmd=0)
     new query[128];
 
     format(query, sizeof(query), "SELECT * FROM `%s` WHERE pID = %d", JobInfo[job][jTable], PlayerInfo[playerid][pID]);
-    SendClientMessage(playerid, COLOR_WHITE, query);
 	mysql_function_query(dbHandle, query, true, "OnPlayerJobDataCheck", "iii", playerid, job, admincmd);
 	return 1;
 }
@@ -180,7 +175,15 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		PlayerJobInfo[playerid][pCharge] = 1;
 		PlayerJobInfo[playerid][pState] = JOB_STATE_ACTIVE;
 		PlayerJobInfo[playerid][pReputation] = 0;
+
+        SendFMessage(playerid, COLOR_WHITE, "%s", GetDateString());
 		strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
+		SendFMessage(playerid, COLOR_WHITE, "%s", PlayerJobInfo[playerid][pLastWorked]);
+		new str[64];
+		format(str, sizeof(str), "%s", GetDateString());
+		strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str));
+		SendFMessage(playerid, COLOR_WHITE, "%s", PlayerJobInfo[playerid][pLastWorked]);
+		
 		PlayerInfo[playerid][pJob] = job;
 		PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
@@ -188,9 +191,8 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d PayDay/s antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
 		if(!admincmd)
 			SendFMessage(playerid, COLOR_WHITE, "Empleador: Bienvenido a nuestra empresa, %s. Empezarás como %s. ¡Suerte y a trabajar!", GetPlayerNameEx(playerid), GetJobChargeName(job, PlayerJobInfo[playerid][pCharge]));
-		format(query, sizeof(query), "INSERT INTO `%s` (`pID`) VALUES ('%d')", JobInfo[job][jTable], PlayerInfo[playerid][pID]);
+		format(query, sizeof(query), "INSERT INTO `%s` (`pID`, `pLastWorked`) VALUES ('%d', '%s')", JobInfo[job][jTable], PlayerInfo[playerid][pID], PlayerJobInfo[playerid][pLastWorked]);
 		mysql_function_query(dbHandle, query, false, "", "");
-		SavePlayerJobData(playerid);
 	}
 }
 
@@ -241,38 +243,38 @@ CMD:verempleo(playerid, params[])
 
 stock GetJobReputationString(reputation)
 {
-	new str[32];
+	new str[64];
 
     if(reputation > 300)
-        format(str, sizeof(str), "{00FF00}Excelente"); // Verde claro
+        format(str, sizeof(str), "{00FF00}Excelente{FFFFFF}"); // Verde claro
     else if(reputation > 200)
-    	format(str, sizeof(str), "{97D000}Muy buena"); // Verde turbio
+    	format(str, sizeof(str), "{97D000}Muy buena{FFFFFF}"); // Verde turbio
     else if(reputation > 100)
-    	format(str, sizeof(str), "{CFFF00}Buena"); // Verde amarillo
-    else if(reputation > 0)
-    	format(str, sizeof(str), "{FFFF00}Neutral"); // Amarillo
+    	format(str, sizeof(str), "{CFFF00}Buena{FFFFFF}"); // Verde amarillo
+    else if(reputation >= 0)
+    	format(str, sizeof(str), "{FFFF00}Neutral{FFFFFF}"); // Amarillo
     else if(reputation > -100)
-    	format(str, sizeof(str), "{FFB900}Mala"); // Naranja claro
+    	format(str, sizeof(str), "{FFB900}Mala{FFFFFF}"); // Naranja claro
     else if(reputation > -200)
-    	format(str, sizeof(str), "{FF5900}Muy mala"); // Naranja rojizo
+    	format(str, sizeof(str), "{FF5900}Muy mala{FFFFFF}"); // Naranja rojizo
     else
-    	format(str, sizeof(str), "{FF0000}Horrible"); // Rojo
+    	format(str, sizeof(str), "{FF0000}Horrible{FFFFFF}"); // Rojo
         
 	return str;
 }
 
 stock GetJobStateString(status)
 {
-	new str[32];
+	new str[64];
 	
 	if(status == JOB_STATE_ACTIVE)
-	    format(str, sizeof(str), "{00FF00}En actividad"); // Verde
+	    format(str, sizeof(str), "{00FF00}En actividad{FFFFFF}"); // Verde
 	else if(status == JOB_STATE_FIRED)
-	    format(str, sizeof(str), "{FF0000}Despedido"); // Rojo
+	    format(str, sizeof(str), "{FF0000}Despedido{FFFFFF}"); // Rojo
 	else if(status == JOB_STATE_RESIGNED)
-        format(str, sizeof(str), "{FFFF00}Renunció"); // Amarillo
+        format(str, sizeof(str), "{FFFF00}Renunció{FFFFFF}"); // Amarillo
 	else if(status == JOB_STATE_NONE)
-        format(str, sizeof(str), "{868282}Nunca trabajó"); // Gris
+        format(str, sizeof(str), "{868282}Nunca trabajó{FFFFFF}"); // Gris
 
 	return str;
 }
