@@ -60,8 +60,8 @@ FarmJob_FinishWork(playerid)
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
 	PlayerInfo[playerid][pCantWork] = 1;
 	LastCP[playerid] = -1;
-	//PlayerJobInfo[playerid][pWorkinHours]++;
-	//format(PlayerJobInfo[playerid][pLastWorked], sizeof(PlayerJobInfo[playerid][pLastWorked]), "%s", GetDateString());
+	PlayerJobInfo[playerid][pWorkingHours]++;
+	strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
 	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
 	CollectedProds[playerid] = 0;
 	jobBreak[playerid] = 80;

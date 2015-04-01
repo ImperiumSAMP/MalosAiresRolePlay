@@ -54,8 +54,8 @@ TranJob_FinishWork(playerid)
 	carryingProd[playerid] = false;
 	LastCP[playerid] = -1;
 	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
-	//PlayerJobInfo[playerid][pWorkinHours]++;
-	//format(PlayerJobInfo[playerid][pLastWorked], sizeof(PlayerJobInfo[playerid][pLastWorked]), "%s", GetDateString());
+	PlayerJobInfo[playerid][pWorkingHours]++;
+    strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
 	CollectedProds[playerid] = 0;
 	jobBreak[playerid] = 80;
 	SetVehicleToRespawn(GetPlayerVehicleID(playerid));

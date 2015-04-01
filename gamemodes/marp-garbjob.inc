@@ -135,21 +135,20 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	}
   	else if(garbcp == 26)
 	{
-  	    new paycheck = JOB_GARB_MONEY;
   	    RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
-	    PlayerInfo[playerid][pPayCheck] += paycheck;
+	    PlayerInfo[playerid][pPayCheck] += JOB_GARB_MONEY;
 	    jobBreak[playerid] = 80;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	    SetEngine(GetPlayerVehicleID(playerid), 0);
 		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
-		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo, recibirás $%d en el próximo payday.", paycheck);
+		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo, recibirás $%d en el próximo payday.", JOB_GARB_MONEY);
 		DeletePVar(playerid, "garbageRoute");
   	    DeletePVar(playerid, "garbageCheckpoint");
-  	    //PlayerJobInfo[playerid][pWorkinHours]++;
-		//format(PlayerJobInfo[playerid][pLastWorked], sizeof(PlayerJobInfo[playerid][pLastWorked]), "%s", GetDateString());
+  	    PlayerJobInfo[playerid][pWorkingHours]++;
+		strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
   	}
 	return 1;
 }

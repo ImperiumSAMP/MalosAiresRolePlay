@@ -165,15 +165,6 @@ public OnJobDataLoad(id)
 	return 1;
 }
 
-CMD:debugjob(playerid, params[])
-{
-    SendFMessageToAll(COLOR_LIGHTGREEN, "name %s", JobInfo[5][jName]);
-    SendFMessageToAll(COLOR_LIGHTGREEN, "table %s", JobInfo[5][jTable]);
-    SendFMessageToAll(COLOR_LIGHTGREEN, "charge %s", JobInfo[5][jCharge1]);
-    SendFMessageToAll(COLOR_LIGHTGREEN, "salary %d", JobInfo[5][jBaseSalary]);
-	return 1;
-}
-
 //Comandos de jobs
 
 CMD:trabajar(playerid,params[])
@@ -242,9 +233,7 @@ CMD:trabajar(playerid,params[])
 
 stock GetDateString()
 {
-	new year, month, day,
-	    hour, minute, second,
-	    str[64];
+	new year, month, day, hour, minute, second, str[64];
 
 	getdate(year, month, day);
 	gettime(hour, minute, second);
