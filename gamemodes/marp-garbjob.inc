@@ -147,6 +147,7 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo, recibirás $%d en el próximo payday.", JOB_GARB_MONEY);
 		DeletePVar(playerid, "garbageRoute");
   	    DeletePVar(playerid, "garbageCheckpoint");
+  	    PlayerJobInfo[playerid][pTotalEarnings] += JOB_GARB_MONEY;
   	    PlayerJobInfo[playerid][pWorkingHours]++;
 		strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
   	}

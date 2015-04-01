@@ -176,12 +176,10 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		PlayerJobInfo[playerid][pState] = JOB_STATE_ACTIVE;
 		PlayerJobInfo[playerid][pReputation] = 0;
 
-        SendFMessage(playerid, COLOR_WHITE, "%s", GetDateString());
-		strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
-		SendFMessage(playerid, COLOR_WHITE, "%s", PlayerJobInfo[playerid][pLastWorked]);
 		new str[64];
 		format(str, sizeof(str), "%s", GetDateString());
-		strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str));
+		strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str), 255);
+		SendFMessage(playerid, COLOR_WHITE, "%s", str);
 		SendFMessage(playerid, COLOR_WHITE, "%s", PlayerJobInfo[playerid][pLastWorked]);
 		
 		PlayerInfo[playerid][pJob] = job;
