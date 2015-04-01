@@ -76,15 +76,12 @@ stock GetJobType(job)
 	return JobInfo[job][jType];
 }
 
-forward jobBreakTimer(playerid, job);
-
 //Variables generales:
 
 new bool:jobDuty[MAX_PLAYERS],
 	LastCP[MAX_PLAYERS],
 	CollectedProds[MAX_PLAYERS],
-	bool:carryingProd[MAX_PLAYERS],
-	jobBreak[MAX_PLAYERS];
+	bool:carryingProd[MAX_PLAYERS];
 
 stock jobRequiresVehicle(jobid)
 {
@@ -293,41 +290,5 @@ CMD:dejarempleo(playerid,params[])
 	}
 	SendFMessage(playerid, COLOR_YELLOW2, "¡Has dejado tu empleo de %s!", JobInfo[job][jName]);
 	PlayerInfo[playerid][pJob] = 0;
-	return 1;
-}
-
-//===============================COMANDOS DE ADMIN==============================
-
-public jobBreakTimer(playerid, job)
-{
-	if(jobBreak[playerid] > 0)
-	{
-		jobBreak[playerid]--;
-		if(jobBreak[playerid] == 40)
-		    SendClientMessage(playerid, COLOR_WHITE, "¡Te quedan 40 segundos para ingresar al vehículo!");
-		SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, job));
-	}
-	else
-	{
-	    SendClientMessage(playerid, COLOR_WHITE, "¡Has agotado el tiempo disponible para ingresar al vehículo!");
-	    SendClientMessage(playerid, COLOR_WHITE, "No recibirás ninguna paga y no podrás volver a trabajar hasta el próximo día de pago.");
-	    PlayerInfo[playerid][pCantWork] = 1;
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-		jobDuty[playerid] = false;
-		CollectedProds[playerid] = 0;
-		LastCP[playerid] = -1;
-		jobBreak[playerid] = 80;
-		DisablePlayerCheckpoint(playerid);
-		
-		if(job == JOB_GARB)
-		{
-			DeletePVar(playerid, "garbageCheckpoint");
-			DeletePVar(playerid, "garbageRoute");
-		}
-		SetEngine(GetPlayerVehicleID(playerid), 0);
-		SetVehicleToRespawn(GetPVarInt(playerid, "jobVehicle"));
-		DeletePVar(playerid, "jobVehicle");
-		KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	}
 	return 1;
 }

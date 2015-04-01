@@ -867,7 +867,6 @@ public ResetStats(playerid)
 
 	LastCP[playerid] = -1;
 	CollectedProds[playerid] = 0;
-	jobBreak[playerid] = 80;
 	
 	/* Sistema de Mecanicos y Tuning */
 	ResetRepairOffer(playerid);
@@ -1097,7 +1096,6 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
     KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
-    KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
     KillTimer(GetPVarInt(playerid, "tutTimer"));
     KillTimer(GetPVarInt(playerid, "garbT"));
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
@@ -3268,7 +3266,6 @@ public PayDay(playerid)
 		
 		if(PlayerInfo[playerid][pCantWork] > 0 && PlayerInfo[playerid][pJailed] == 0)
 		    PlayerInfo[playerid][pCantWork] = 0;
-		jobBreak[playerid] = 80;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
 		
 		//======================================================================
@@ -4061,22 +4058,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	    KillTimer(pSpeedoTimer[playerid]);
 	    //=================================
 
-		if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
-		{
-	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
-	    }
-		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
-		{
-	        SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
-	    }
-		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
-		{
-	    	SendFMessage(playerid, COLOR_WHITE, "¡Has dejado el vehículo!, tienes %d segundos de descanso para volver a ingresar.", jobBreak[playerid]);
-            SetPVarInt(playerid, "jobBreakTimerID", SetTimerEx("jobBreakTimer", 1000, false, "ii", playerid, PlayerInfo[playerid][pJob]));
-	    }
-
 	    if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI)
 		{
 		    if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI)
@@ -4180,21 +4161,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				SendFMessage(playerid, COLOR_WHITE, "Vehículo ID: %d | Nombre de dueño: %s | ID en la DB: %d.", vehicleid, VehicleInfo[vehicleid][VehOwnerName], VehicleInfo[vehicleid][VehOwnerSQLID]);
 			
 		}
-		else if(PlayerInfo[playerid][pJob] == JOB_FARM && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_FARM)
-		{
-	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
-	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	    }
-		else if(PlayerInfo[playerid][pJob] == JOB_TRAN && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_TRAN)
-		{
-	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
-	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	    }
-		else if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
-		{
-	        SendFMessage(playerid, COLOR_WHITE, "Has vuelto a trabajar, te quedan %d segundos de descanso disponibles.", jobBreak[playerid]);
-	        KillTimer(GetPVarInt(playerid, "jobBreakTimerID"));
-	    }
 		else if(VehicleInfo[vehicleid][VehType] == VEH_SCHOOL && AdminDuty[playerid] != 1)
 		{
 			if(playerLicense[playerid][lDTaking] != 1)

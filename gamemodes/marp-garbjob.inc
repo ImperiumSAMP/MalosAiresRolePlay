@@ -138,7 +138,6 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	    RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    PlayerInfo[playerid][pPayCheck] += JOB_GARB_MONEY;
-	    jobBreak[playerid] = 80;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	    SetEngine(GetPlayerVehicleID(playerid), 0);
@@ -149,7 +148,7 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	    DeletePVar(playerid, "garbageCheckpoint");
   	    PlayerJobInfo[playerid][pTotalEarnings] += JOB_GARB_MONEY;
   	    PlayerJobInfo[playerid][pWorkingHours]++;
-		strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
+		UpdatePlayerJobLastWorked(playerid);
   	}
 	return 1;
 }

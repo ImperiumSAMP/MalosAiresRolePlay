@@ -175,13 +175,7 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		PlayerJobInfo[playerid][pCharge] = 1;
 		PlayerJobInfo[playerid][pState] = JOB_STATE_ACTIVE;
 		PlayerJobInfo[playerid][pReputation] = 0;
-
-		new str[64];
-		format(str, sizeof(str), "%s", GetDateString());
-		strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str), 255);
-		SendFMessage(playerid, COLOR_WHITE, "%s", str);
-		SendFMessage(playerid, COLOR_WHITE, "%s", PlayerJobInfo[playerid][pLastWorked]);
-		
+  		UpdatePlayerJobLastWorked(playerid);
 		PlayerInfo[playerid][pJob] = job;
 		PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
@@ -194,6 +188,12 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 	}
 }
 
+stock UpdatePlayerJobLastWorked(playerid)
+{
+	new str[64];
+	format(str, sizeof(str), "%s", GetDateString());
+	strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str), 255);
+}
 
 forward SavePlayerJobData(playerid);
 public SavePlayerJobData(playerid)

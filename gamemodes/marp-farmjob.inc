@@ -62,10 +62,9 @@ FarmJob_FinishWork(playerid)
 	LastCP[playerid] = -1;
 	PlayerJobInfo[playerid][pTotalEarnings] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
 	PlayerJobInfo[playerid][pWorkingHours]++;
-	strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
+	UpdatePlayerJobLastWorked(playerid);
 	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
 	CollectedProds[playerid] = 0;
-	jobBreak[playerid] = 80;
 	SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 	return 1;
 }

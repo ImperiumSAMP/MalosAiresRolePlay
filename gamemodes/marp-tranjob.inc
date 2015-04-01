@@ -56,9 +56,8 @@ TranJob_FinishWork(playerid)
 	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
 	PlayerJobInfo[playerid][pTotalEarnings]+= CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
 	PlayerJobInfo[playerid][pWorkingHours]++;
-    strmid(PlayerJobInfo[playerid][pLastWorked], GetDateString(), 0, strlen(GetDateString()));
+    UpdatePlayerJobLastWorked(playerid);
 	CollectedProds[playerid] = 0;
-	jobBreak[playerid] = 80;
 	SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 	PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
 	return 1;
