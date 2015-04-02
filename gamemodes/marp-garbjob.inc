@@ -4,6 +4,7 @@
 #define _marp_garbjob_included
 
 #define JOB_GARB_MONEY       	1800
+#define JOB_GARB_TRAVEL_TIME  	10 // Tiempo limite para hacer el recorrido, en minutos.
 
 forward GarbJob_LoadingTimer(playerid, garbcp);
 
@@ -86,7 +87,9 @@ GarbJob_StartWork(playerid)
 	}
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SetEngine(GetPlayerVehicleID(playerid), 1);
-	SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura, al final, serás recompensado por tu trabajo.");
+	SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura. Al finalizar serás recompensado por tu trabajo.");
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_GARB_TRAVEL_TIME);
+	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;
 }
 
@@ -107,6 +110,7 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 		SendClientMessage(playerid, COLOR_WHITE, "Vaciando camión...");
 		TogglePlayerControllable(playerid, false);
 		SetPVarInt(playerid, "garbT", SetTimerEx("GarbJob_LoadingTimer", 6000, false, "ii", playerid, gbCP));
+		BorrarCronometro(playerid);
     }
 	else
 	{
@@ -124,6 +128,23 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 		}
     }
 	return 1;
+}
+
+GarbJob_TravelTimeLimit(playerid)
+{
+    PlayerInfo[playerid][pCantWork] = 1;
+    jobDuty[playerid] = false;
+    if(VehicleInfo[GetPlayerVehicleID(playerid)][VehJob] == JOB_GARB)
+    {
+	    SetEngine(GetPlayerVehicleID(playerid), 0);
+		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+	}
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite, por lo que no recibirás ninguna paga el día de hoy.");
+	DeletePVar(playerid, "garbageRoute");
+    DeletePVar(playerid, "garbageCheckpoint");
+    PlayerJobInfo[playerid][pWorkingHours]++;
+	UpdatePlayerJobLastWorked(playerid);
 }
         
 public GarbJob_LoadingTimer(playerid, garbcp)

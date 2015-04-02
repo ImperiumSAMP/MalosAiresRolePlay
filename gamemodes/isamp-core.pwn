@@ -1201,7 +1201,7 @@ public OnPlayerDisconnect(playerid, reason)
 	KillTimer(pSpeedoTimer[playerid]); // Si se desonectó estando arriba del auto, borramos el timer recursivo de la gasolina
 	
 	HideGangZonesToPlayer(playerid);
-	
+	BorrarCronometro(playerid);
 	return 1;
 }
 
