@@ -34,7 +34,7 @@ public OnPlayerJobDataLoad(playerid)
 		cache_get_field_content(0, "pState", result);		 	PlayerJobInfo[playerid][pState] = strval(result);
 		cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
 		cache_get_field_content(0, "pTotalEarnings", result); 	PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
-		cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked]);
+		cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 64);
 	}
 	else // Tiene un job legal pero no tiene su correspondiente registro en la DB? (No debería de pasar) Error, reportar. Y le seteamos job NULO, para evitar inconvenientes si quisiese usarlo.
 	{
@@ -154,7 +154,7 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 			cache_get_field_content(0, "pCharge", result); 			PlayerJobInfo[playerid][pCharge] = strval(result);
 			cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
 			cache_get_field_content(0, "pTotalEarnings", result);   PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
-			cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked]);
+			cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 64);
 			
 			PlayerInfo[playerid][pJob] = job;
 			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
@@ -244,19 +244,19 @@ stock GetJobReputationString(reputation)
 	new str[64];
 
     if(reputation > 300)
-        format(str, sizeof(str), "{00FF00}Excelente{FFFFFF}"); // Verde claro
+        format(str, sizeof(str), "{00FF00}Excelente{a9c4e4}"); // Verde claro
     else if(reputation > 200)
-    	format(str, sizeof(str), "{97D000}Muy buena{FFFFFF}"); // Verde turbio
+    	format(str, sizeof(str), "{97D000}Muy buena{a9c4e4}"); // Verde turbio
     else if(reputation > 100)
-    	format(str, sizeof(str), "{CFFF00}Buena{FFFFFF}"); // Verde amarillo
+    	format(str, sizeof(str), "{CFFF00}Buena{a9c4e4}"); // Verde amarillo
     else if(reputation >= 0)
-    	format(str, sizeof(str), "{FFFF00}Neutral{FFFFFF}"); // Amarillo
+    	format(str, sizeof(str), "{FFFF00}Neutral{a9c4e4}"); // Amarillo
     else if(reputation > -100)
-    	format(str, sizeof(str), "{FFB900}Mala{FFFFFF}"); // Naranja claro
+    	format(str, sizeof(str), "{FFB900}Mala{a9c4e4}"); // Naranja claro
     else if(reputation > -200)
-    	format(str, sizeof(str), "{FF5900}Muy mala{FFFFFF}"); // Naranja rojizo
+    	format(str, sizeof(str), "{FF5900}Muy mala{a9c4e4}"); // Naranja rojizo
     else
-    	format(str, sizeof(str), "{FF0000}Horrible{FFFFFF}"); // Rojo
+    	format(str, sizeof(str), "{FF0000}Horrible{a9c4e4}"); // Rojo
         
 	return str;
 }
@@ -266,13 +266,13 @@ stock GetJobStateString(status)
 	new str[64];
 	
 	if(status == JOB_STATE_ACTIVE)
-	    format(str, sizeof(str), "{00FF00}En actividad{FFFFFF}"); // Verde
+	    format(str, sizeof(str), "{00FF00}En actividad{a9c4e4}"); // Verde
 	else if(status == JOB_STATE_FIRED)
-	    format(str, sizeof(str), "{FF0000}Despedido{FFFFFF}"); // Rojo
+	    format(str, sizeof(str), "{FF0000}Despedido{a9c4e4}"); // Rojo
 	else if(status == JOB_STATE_RESIGNED)
-        format(str, sizeof(str), "{FFFF00}Renunció{FFFFFF}"); // Amarillo
+        format(str, sizeof(str), "{FFFF00}Renunció{a9c4e4}"); // Amarillo
 	else if(status == JOB_STATE_NONE)
-        format(str, sizeof(str), "{868282}Nunca trabajó{FFFFFF}"); // Gris
+        format(str, sizeof(str), "{868282}Nunca trabajó{a9c4e4}"); // Gris
 
 	return str;
 }
@@ -324,7 +324,7 @@ public OnPlayerInvestJob(playerid, job)
 		cache_get_field_content(0, "pCharge", result); 				chargeResult = strval(result);
 		cache_get_field_content(0, "pReputation", result); 			reputationResult = strval(result);
 		cache_get_field_content(0, "pTotalEarnings", result); 		totalEarningsResult = strval(result);
-		cache_get_field_content(0, "pLastWorked", lastWorkedResult);
+		cache_get_field_content(0, "pLastWorked", lastWorkedResult, 1 ,64);
 
 		switch(stateResult)
 		{
