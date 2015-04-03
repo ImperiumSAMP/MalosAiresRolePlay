@@ -268,7 +268,9 @@ stock GetJobStateString(status)
 	if(status == JOB_STATE_ACTIVE)
 	    format(str, sizeof(str), "{00FF00}En actividad{a9c4e4}"); // Verde
 	else if(status == JOB_STATE_FIRED)
-	    format(str, sizeof(str), "{FF0000}Despedido{a9c4e4}"); // Rojo
+	    format(str, sizeof(str), "{FF0000}Despedido - Mal desempeño{a9c4e4}"); // Rojo
+	else if(status == JOB_STATE_FIRED_MISSING)
+	    format(str, sizeof(str), "{FF0000}Despedido - No asiste a trabajar{a9c4e4}"); // Rojo
 	else if(status == JOB_STATE_RESIGNED)
         format(str, sizeof(str), "{FFFF00}Renunció{a9c4e4}"); // Amarillo
 	else if(status == JOB_STATE_NONE)

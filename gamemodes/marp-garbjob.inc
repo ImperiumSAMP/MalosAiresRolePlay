@@ -3,7 +3,6 @@
 #endif
 #define _marp_garbjob_included
 
-#define JOB_GARB_MONEY       	1800
 #define JOB_GARB_TRAVEL_TIME  	10 // Tiempo limite para hacer el recorrido, en minutos.
 
 forward GarbJob_LoadingTimer(playerid, garbcp);
@@ -68,6 +67,8 @@ new Float:JOB_GARB_POS_R1[][3] = {
     {2389.2288,-2064.5564,13.2214} // entraga 25
 };
 
+new Float:jobVehicleHealth[MAX_PLAYERS];
+
 GarbJob_StartWork(playerid)
 {
 	if(getVehicleType(GetPlayerVehicleID(playerid)) != VEH_JOB || getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_GARB)
@@ -85,10 +86,12 @@ GarbJob_StartWork(playerid)
 	{
 	    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
 	}
+	GetVehicleHealth(GetPlayerVehicleID(playerid), jobVehicleHealth[playerid]);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SetEngine(GetPlayerVehicleID(playerid), 1);
 	SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura. Al finalizar serás recompensado por tu trabajo.");
     SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_GARB_TRAVEL_TIME);
+    SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas el camión recolector en peor estado del que lo recibiste, tu imagen laboral disminuirá.");
 	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;
 }
@@ -140,13 +143,14 @@ GarbJob_TravelTimeLimit(playerid)
 		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 	}
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite, por lo que no recibirás ninguna paga el día de hoy.");
+	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
 	DeletePVar(playerid, "garbageRoute");
     DeletePVar(playerid, "garbageCheckpoint");
     PlayerJobInfo[playerid][pWorkingHours]++;
 	UpdatePlayerJobLastWorked(playerid);
+	PlayerJobInfo[playerid][pReputation] -= 30;
 }
-        
+
 public GarbJob_LoadingTimer(playerid, garbcp)
 {
     TogglePlayerControllable(playerid, true);
@@ -156,20 +160,56 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	}
   	else if(garbcp == 26)
 	{
-  	    RemovePlayerFromVehicle(playerid);
+	    new Float:vHealth;
+	    
+	    GetVehicleHealth(GetPlayerVehicleID(playerid), vHealth);
+	    if(vHealth + 30.0 < jobVehicleHealth[playerid])
+	    {
+	        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+            PlayerInfo[playerid][pPayCheck] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
+			SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión recolector en mal estado.");
+		}
+		else
+		    PlayerJobInfo[playerid][pReputation]++;
+
+        GarbJob_CheckPromotePlayer(playerid);
+		RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
-	    PlayerInfo[playerid][pPayCheck] += JOB_GARB_MONEY;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	    SetEngine(GetPlayerVehicleID(playerid), 0);
 		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
-		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo, recibirás $%d en el próximo payday.", JOB_GARB_MONEY);
+	    PlayerInfo[playerid][pPayCheck] += GarbJob_GetPaycheck(playerid);
+	    PlayerJobInfo[playerid][pTotalEarnings] += GarbJob_GetPaycheck(playerid);
+		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado  tu trabajo, recibirás $%d en el próximo payday.", GarbJob_GetPaycheck(playerid));
 		DeletePVar(playerid, "garbageRoute");
   	    DeletePVar(playerid, "garbageCheckpoint");
-  	    PlayerJobInfo[playerid][pTotalEarnings] += JOB_GARB_MONEY;
   	    PlayerJobInfo[playerid][pWorkingHours]++;
 		UpdatePlayerJobLastWorked(playerid);
   	}
 	return 1;
+}
+
+GarbJob_GetPaycheck(playerid)
+{
+	new paycheck = 0;
+
+	paycheck += GetJobBaseSalary(JOB_GARB); // Salario base
+	paycheck += PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
+	paycheck += (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+
+	return paycheck;
+}
+
+GarbJob_CheckPromotePlayer(playerid)
+{
+	if(140 * PlayerJobInfo[playerid][pCharge] >= PlayerJobInfo[playerid][pWorkingHours] && PlayerJobInfo[playerid][pReputation] >= 0 && PlayerJobInfo[playerid][pCharge] < 5) // Minimo de X horas trabajadas (proporcional al siguiente puesto) y de una imágen laboral neutral.
+	{
+	    if(PlayerJobInfo[playerid][pWorkingHours] + PlayerJobInfo[playerid][pReputation] / 10 >= 180 * PlayerJobInfo[playerid][pCharge]) // Para ascender hay que llegar a una cantidad de puntos. Nuestro puntaje se suma entre la reputacion y la antiguedad.
+	    {
+	        PlayerJobInfo[playerid][pCharge]++;
+	        SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has sido promovido a %s, lo que te garantiza una mejora en tu sueldo. ¡Buen trabajo! Sigue así.", GetJobChargeName(JOB_GARB, PlayerJobInfo[playerid][pCharge]));
+		}
+	}
 }

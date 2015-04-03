@@ -33,6 +33,7 @@
 #define JOB_STATE_ACTIVE        1
 #define JOB_STATE_FIRED         2
 #define JOB_STATE_RESIGNED      3
+#define JOB_STATE_FIRED_MISSING 4
 
 #define JOB_TYPE_NONE           0
 #define JOB_TYPE_LEGAL        	1
