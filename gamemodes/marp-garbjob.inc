@@ -71,12 +71,14 @@ new Float:jobVehicleHealth[MAX_PLAYERS];
 
 GarbJob_StartWork(playerid)
 {
-	if(getVehicleType(GetPlayerVehicleID(playerid)) != VEH_JOB || getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_GARB)
+    new vehicleid = GetPlayerVehicleID(playerid);
+
+	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_GARB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
 
 	new gbCP = 0, route = random(2);
 
-	SetPVarInt(playerid, "jobVehicle", GetPlayerVehicleID(playerid));
+	SetPVarInt(playerid, "jobVehicle", vehicleid);
 	jobDuty[playerid] = true;
 	if(route == 0)
 	{
@@ -86,9 +88,9 @@ GarbJob_StartWork(playerid)
 	{
 	    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
 	}
-	GetVehicleHealth(GetPlayerVehicleID(playerid), jobVehicleHealth[playerid]);
+	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-	SetEngine(GetPlayerVehicleID(playerid), 1);
+	SetEngine(vehicleid, 1);
 	SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura. Al finalizar serás recompensado por tu trabajo.");
     SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_GARB_TRAVEL_TIME);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas el camión recolector en peor estado del que lo recibiste, tu imagen laboral disminuirá.");
@@ -172,7 +174,6 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 		else
 		    PlayerJobInfo[playerid][pReputation]++;
 
-        GarbJob_CheckPromotePlayer(playerid);
 		RemovePlayerFromVehicle(playerid);
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    jobDuty[playerid] = false;
@@ -187,6 +188,7 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	    DeletePVar(playerid, "garbageCheckpoint");
   	    PlayerJobInfo[playerid][pWorkingHours]++;
 		UpdatePlayerJobLastWorked(playerid);
+        GarbJob_CheckPromotePlayer(playerid);
   	}
 	return 1;
 }

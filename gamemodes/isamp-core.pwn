@@ -864,7 +864,7 @@ public ResetStats(playerid)
 	smoking[playerid] = false;
 	LastVeh[playerid] = 0;
 	AllowAdv[playerid] = 1;
-
+	
 	LastCP[playerid] = -1;
 	CollectedProds[playerid] = 0;
 	
@@ -963,7 +963,6 @@ public ResetStats(playerid)
 	TransportCost[playerid] = 0;
 
     dyingCamera[playerid] = false;
-	carryingProd[playerid] = false;
     jobDuty[playerid] = false;
 	RegCounter[playerid] = 1;
 	Choice[playerid] = 0;

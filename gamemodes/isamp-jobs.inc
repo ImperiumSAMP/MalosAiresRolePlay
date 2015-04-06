@@ -80,9 +80,8 @@ stock GetJobType(job)
 //Variables generales:
 
 new bool:jobDuty[MAX_PLAYERS],
-	LastCP[MAX_PLAYERS],
 	CollectedProds[MAX_PLAYERS],
-	bool:carryingProd[MAX_PLAYERS];
+    LastCP[MAX_PLAYERS];
 
 stock jobRequiresVehicle(jobid)
 {
@@ -257,10 +256,6 @@ CMD:terminar(playerid,params[])
 		case JOB_DRUGF:
 		{
 			DrugfJob_FinishWork(playerid);
-		}
-		case JOB_TRAN:
-		{
-			TranJob_FinishWork(playerid);
 		}
 	}
 	

@@ -363,6 +363,7 @@ public OnPlayerInvestJob(playerid, job)
 //==============================================================================
 
 #define JOB_GARB_CRONOMETRO  	1
+#define JOB_TRAN_CRONOMETRO   	2
 
 new pCronometro[MAX_PLAYERS],
 	pCronometroTimer[MAX_PLAYERS],

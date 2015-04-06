@@ -3,63 +3,49 @@
 #endif
 #define _marp_tranjob_included
 
-#define JOB_TRAN_MAXPRODS       8 		// Cargas máximas que se pueden transportar.
-#define JOB_TRAN_PRODVALUE      225    	// VALOR POR PAQUETE
+#define JOB_TRAN_TRAVEL_TIME  	10 // Tiempo limite para hacer el recorrido, en minutos.
 
 new Float:JOB_TRAN_POS[][3] = {
 	// Puntos de transporte.
-    {1879.1420,-1617.4001,13.6332},
-    {1933.8116,-1777.0908,13.5565},
-    {1072.1393,-1576.8750,13.6338},
-    {1005.5207,-933.0194,42.3528},
-    {425.3821,-1323.6420,15.0959},
-    {938.3804,-1795.8016,13.9731},
-    {1208.7485,-1856.8451,13.6338},
-    {2125.1741,-1116.2593,25.4264},
-    {2225.7415,-1140.4315,25.8735},
-    {2351.3555,-1305.5288,24.1854},
-    {2646.6379,-1103.8756,68.9008},
-    {2858.3772,-1536.1311,11.1725},
-    {2849.4207,-1483.9521,11.0082},
-    {1928.3282,-1131.2484,25.2764},
-    {1447.2676,-1029.3236,23.9110},
-    {1046.4854,-1034.7568,32.0465},
-    // Punto de entrega (16).
-    {2186.1924,-2263.9763,13.6376}
+	{2173.3335,-2264.3806,13.3377},
+    {1984.9891,-2103.1277,13.5426},
+    {1934.3876,-2022.4773,13.5391},
+    {1848.0168,-1794.6053,13.5380},
+    {1681.3280,-1587.3014,13.4504},
+    {2095.2166,-1216.5635,23.8710},
+    {2374.7629,-1200.3588,27.4134},
+    {2366.5222,-1341.8680,23.9054},
+    {2362.9202,-1527.8542,23.8142},
+    {2437.0708,-1736.6228,13.6174},
+    {2434.7507,-1927.6259,13.4213},
+    {2286.7681,-1980.3414,13.5587},
+    {2164.2163,-1889.4619,13.4035},
+    {996.5835,-1298.9790,13.3789},
+    {834.8406,-1391.3583,13.4296},
+    {875.6892,-1796.0223,13.7804}
 };
+
+new TranJob_currentCheckpoint[MAX_PLAYERS],
+	TranJob_jobVehicle[MAX_PLAYERS];
 
 TranJob_StartWork(playerid)
 {
-	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TRAN)
+	new vehicleid = GetPlayerVehicleID(playerid);
+	
+	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_TRAN)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión de transporte!");
 
-	SendClientMessage(playerid, COLOR_WHITE, "Entrega los paquetes en los puntos rojos del mapa y vuelve a buscar más o bien utiliza /terminar cuando lo desees.");
-    SendClientMessage(playerid, COLOR_WHITE, "Te pagarán acorde a la cantidad de paquetes entregados y no podrás volver a trabajar durante este día de pago.");
-	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
+	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y carga la mercadería en el camión. Luego tendrás que distribuirla a los distintos mercados de la ciudad.");
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_TRAN_TRAVEL_TIME);
+    SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas el camión en peor estado del que lo recibiste, tu imagen laboral disminuirá.");
+	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
 	jobDuty[playerid] = true;
-	SetEngine(GetPlayerVehicleID(playerid), 1);
+	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
+	SetEngine(vehicleid, 1);
+	TranJob_jobVehicle[playerid] = vehicleid;
+	TranJob_currentCheckpoint[playerid] = 0;
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-	return 1;
-}
-
-TranJob_FinishWork(playerid)
-{
-	if(!PlayerToPoint(20.0, playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2]))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve a la zona indicada!");
-    if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TRAN)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de un camión!");
-
-	SendFMessage(playerid, COLOR_WHITE, "Has descargado %d paquetes por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_TRAN_PRODVALUE);
-	PlayerInfo[playerid][pCantWork] = 1;
-	carryingProd[playerid] = false;
-	LastCP[playerid] = -1;
-	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
-	PlayerJobInfo[playerid][pTotalEarnings]+= CollectedProds[playerid] * JOB_TRAN_PRODVALUE;
-	PlayerJobInfo[playerid][pWorkingHours]++;
-    UpdatePlayerJobLastWorked(playerid);
-	CollectedProds[playerid] = 0;
-	SetVehicleToRespawn(GetPlayerVehicleID(playerid));
-	PlayerActionMessage(playerid, 15.0, "estaciona el camión.");
+	CrearCronometro(playerid, JOB_TRAN_CRONOMETRO, JOB_TRAN_TRAVEL_TIME * 60);
 	return 1;
 }
 
@@ -70,35 +56,95 @@ TranJob_IsPlayerWorking(playerid, vehicleid)
 	return 0;
 }
 
+forward TranJob_NextCheckpoint(playerid, cp);
+public TranJob_NextCheckpoint(playerid, cp)
+{
+    TogglePlayerControllable(playerid, true);
+    TranJob_currentCheckpoint[playerid]++;
+    
+    if(cp == 15)
+    {
+        SendClientMessage(playerid, COLOR_WHITE, "Has terminado de repartir la mercadería. Ahora vuelve a la central y estaciona el camión en su lugar.");
+        SetPlayerCheckpoint(playerid, VehicleInfo[TranJob_jobVehicle[playerid]][VehPosX], VehicleInfo[TranJob_jobVehicle[playerid]][VehPosY], VehicleInfo[TranJob_jobVehicle[playerid]][VehPosZ], 5.0);
+	}
+	else
+	{
+	    SendClientMessage(playerid, COLOR_WHITE, "Dirígete al siguiente punto de descarga.");
+	    SetPlayerCheckpoint(playerid, JOB_TRAN_POS[cp][0], JOB_TRAN_POS[cp][1], JOB_TRAN_POS[cp][2], 5.0);
+	}
+	return 1;
+}
+	    
 TranJob_PlayerEnterCheckpoint(playerid)
 {
-	if(CollectedProds[playerid] < JOB_TRAN_MAXPRODS)
-	{
-	    if(carryingProd[playerid])
-		{
-		    new str[128];
-	        carryingProd[playerid] = false;
-            CollectedProds[playerid]++;
-            format(str, sizeof(str), "Paquetes entregados: %d/%d", CollectedProds[playerid], JOB_TRAN_MAXPRODS);
-			GameTextForPlayer(playerid, str, 1400, 1);
-			SetPlayerCheckpoint(playerid, JOB_TRAN_POS[16][0], JOB_TRAN_POS[16][1], JOB_TRAN_POS[16][2], 5.4);
-			if(CollectedProds[playerid] == JOB_TRAN_MAXPRODS)
-				SendClientMessage(playerid, COLOR_WHITE, "¡Has terminado con tu trabajo!, vuelve a la agencia.");
-	    }
-		else
-		{
-	        if(CollectedProds[playerid] == JOB_TRAN_MAXPRODS)
-				return SendClientMessage(playerid, COLOR_WHITE, "Tipea /terminar para confirmar los envíos.");
+	new actualCP = TranJob_currentCheckpoint[playerid],
+	    vehicleid = GetPlayerVehicleID(playerid);
 
-            carryingProd[playerid] = true;
-	       	new rCP = -1;
-			while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid])
-			{
-	 			rCP = random(sizeof(JOB_TRAN_POS));
-	 		}
-	 		LastCP[playerid] = rCP;
-            SetPlayerCheckpoint(playerid, JOB_TRAN_POS[rCP][0], JOB_TRAN_POS[rCP][1], JOB_TRAN_POS[rCP][2], 5.4);
-	    }
-    }
-    return 1;
+	if(TranJob_jobVehicle[playerid] != vehicleid)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el camión de transporte con el que empezaste a trabajar!");
+
+	if(actualCP == 0)
+	{
+		GameTextForPlayer(playerid, "Cargando mercaderia...", 8000, 4);
+		TogglePlayerControllable(playerid, false);
+		SetTimerEx("TranJob_NextCheckpoint", 8000, false, "ii", playerid, actualCP + 1);
+	}
+	else if(actualCP < 16)
+	{
+	    GameTextForPlayer(playerid, "Descargando mercaderia...", 5000, 4);
+	    TogglePlayerControllable(playerid, false);
+	    SetTimerEx("TranJob_NextCheckpoint", 5000, false, "ii", playerid, actualCP + 1);
+	}
+	else if(actualCP == 16)
+	{
+		TranJob_Payment(playerid, vehicleid);
+		RemovePlayerFromVehicle(playerid);
+  		SetEngine(vehicleid, 0);
+		SetVehicleToRespawn(vehicleid);
+	    PlayerInfo[playerid][pCantWork] = 1;
+	    jobDuty[playerid] = false;
+	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	    PlayerJobInfo[playerid][pWorkingHours]++;
+		PlayerActionMessage(playerid, 15.0, "estaciona el camion de transporte en su lugar.");
+		UpdatePlayerJobLastWorked(playerid);
+        TranJob_CheckPromotePlayer(playerid);
+	}
+	return 1;
+}
+
+TranJob_Payment(playerid, vehicleid)
+{
+	new paycheck, Float:vHealth, injuriesCost, seniorityBonus, chargeBonus;
+		
+    GetVehicleHealth(vehicleid, vHealth);
+    if(vHealth + 30.0 < jobVehicleHealth[playerid])
+    {
+        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
+		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión en mal estado.");
+	}
+	else
+	    PlayerJobInfo[playerid][pReputation]++;
+
+	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
+	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+	
+	paycheck = GetJobBaseSalary(JOB_TRAN) + seniorityBonus + chargeBonus - injuriesCost;
+	PlayerInfo[playerid][pPayCheck] += paycheck;
+	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
+	
+	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: ${00FF00}%d{FFFFFF} - Bonus por antiguedad: ${00FF00}%d{FFFFFF} - Bonus por cargo: ${00FF00}%d{FFFFFF} - Descuento por roturas: ${FF0000}%d{FFFFFF}", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
+}
+
+TranJob_CheckPromotePlayer(playerid)
+{
+	if(140 * PlayerJobInfo[playerid][pCharge] >= PlayerJobInfo[playerid][pWorkingHours] && PlayerJobInfo[playerid][pReputation] >= 0 && PlayerJobInfo[playerid][pCharge] < 5) // Minimo de X horas trabajadas (proporcional al siguiente puesto) y de una imágen laboral neutral.
+	{
+	    if(PlayerJobInfo[playerid][pWorkingHours] + PlayerJobInfo[playerid][pReputation] / 10 >= 180 * PlayerJobInfo[playerid][pCharge]) // Para ascender hay que llegar a una cantidad de puntos. Nuestro puntaje se suma entre la reputacion y la antiguedad.
+	    {
+	        PlayerJobInfo[playerid][pCharge]++;
+	        SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has sido promovido a %s, lo que te garantiza una mejora en tu sueldo. ¡Buen trabajo! Sigue así.", GetJobChargeName(JOB_TRAN, PlayerJobInfo[playerid][pCharge]));
+		}
+	}
 }
