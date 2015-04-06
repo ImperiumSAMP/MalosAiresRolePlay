@@ -410,6 +410,8 @@ public Cronometro(playerid, type)
 	 	{
 	 	    case JOB_GARB_CRONOMETRO:
 	 	        GarbJob_TravelTimeLimit(playerid);
+            case JOB_TRAN_CRONOMETRO:
+	 	        TranJob_TravelTimeLimit(playerid);
 		}
 	    BorrarCronometro(playerid);
 	}

@@ -3,7 +3,7 @@
 #endif
 #define _marp_tranjob_included
 
-#define JOB_TRAN_TRAVEL_TIME  	10 // Tiempo limite para hacer el recorrido, en minutos.
+#define JOB_TRAN_TRAVEL_TIME  	12 // Tiempo limite para hacer el recorrido, en minutos.
 
 new Float:JOB_TRAN_POS[][3] = {
 	// Puntos de transporte.
@@ -25,9 +25,6 @@ new Float:JOB_TRAN_POS[][3] = {
     {875.6892,-1796.0223,13.7804}
 };
 
-new TranJob_currentCheckpoint[MAX_PLAYERS],
-	TranJob_jobVehicle[MAX_PLAYERS];
-
 TranJob_StartWork(playerid)
 {
 	new vehicleid = GetPlayerVehicleID(playerid);
@@ -35,16 +32,16 @@ TranJob_StartWork(playerid)
 	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_TRAN)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión de transporte!");
 
+	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
+	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y carga la mercadería en el camión. Luego tendrás que distribuirla a los distintos mercados de la ciudad.");
     SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_TRAN_TRAVEL_TIME);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas el camión en peor estado del que lo recibiste, tu imagen laboral disminuirá.");
-	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
 	jobDuty[playerid] = true;
 	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	SetEngine(vehicleid, 1);
-	TranJob_jobVehicle[playerid] = vehicleid;
-	TranJob_currentCheckpoint[playerid] = 0;
-	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
+	jobVehicle[playerid] = vehicleid;
+	jobCheckpoint[playerid] = 0;
 	CrearCronometro(playerid, JOB_TRAN_CRONOMETRO, JOB_TRAN_TRAVEL_TIME * 60);
 	return 1;
 }
@@ -56,20 +53,37 @@ TranJob_IsPlayerWorking(playerid, vehicleid)
 	return 0;
 }
 
+TranJob_TravelTimeLimit(playerid)
+{
+	new vehicleid = GetPlayerVehicleID(playerid);
+	
+    PlayerInfo[playerid][pCantWork] = 1;
+    jobDuty[playerid] = false;
+    if(jobVehicle[playerid] == vehicleid)
+	{
+	    SetEngine(vehicleid, 0);
+		SetVehicleToRespawn(vehicleid);
+	}
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
+	UpdatePlayerJobLastWorked(playerid);
+	PlayerJobInfo[playerid][pReputation] -= 30;
+}
+
 forward TranJob_NextCheckpoint(playerid, cp);
 public TranJob_NextCheckpoint(playerid, cp)
 {
     TogglePlayerControllable(playerid, true);
-    TranJob_currentCheckpoint[playerid]++;
+    jobCheckpoint[playerid]++;
     
-    if(cp == 15)
+    if(cp == 16)
     {
         SendClientMessage(playerid, COLOR_WHITE, "Has terminado de repartir la mercadería. Ahora vuelve a la central y estaciona el camión en su lugar.");
-        SetPlayerCheckpoint(playerid, VehicleInfo[TranJob_jobVehicle[playerid]][VehPosX], VehicleInfo[TranJob_jobVehicle[playerid]][VehPosY], VehicleInfo[TranJob_jobVehicle[playerid]][VehPosZ], 5.0);
+        SetPlayerCheckpoint(playerid, VehicleInfo[jobVehicle[playerid]][VehPosX], VehicleInfo[jobVehicle[playerid]][VehPosY], VehicleInfo[jobVehicle[playerid]][VehPosZ], 5.0);
 	}
 	else
 	{
-	    SendClientMessage(playerid, COLOR_WHITE, "Dirígete al siguiente punto de descarga.");
+	    GameTextForPlayer(playerid, "Dirígete al siguiente punto de descarga", 1500, 4);
 	    SetPlayerCheckpoint(playerid, JOB_TRAN_POS[cp][0], JOB_TRAN_POS[cp][1], JOB_TRAN_POS[cp][2], 5.0);
 	}
 	return 1;
@@ -77,12 +91,14 @@ public TranJob_NextCheckpoint(playerid, cp)
 	    
 TranJob_PlayerEnterCheckpoint(playerid)
 {
-	new actualCP = TranJob_currentCheckpoint[playerid],
+	new actualCP = jobCheckpoint[playerid],
 	    vehicleid = GetPlayerVehicleID(playerid);
 
-	if(TranJob_jobVehicle[playerid] != vehicleid)
+	if(jobVehicle[playerid] != vehicleid)
+	{
+	    SetTimerEx("TranJob_NextCheckpoint", 5000, false, "ii", playerid, actualCP); // Le vuelvo a poner el checkpoint al que no pudo entrar, pero despues de unos segundos.
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el camión de transporte con el que empezaste a trabajar!");
-
+	}
 	if(actualCP == 0)
 	{
 		GameTextForPlayer(playerid, "Cargando mercaderia...", 8000, 4);
@@ -97,6 +113,7 @@ TranJob_PlayerEnterCheckpoint(playerid)
 	}
 	else if(actualCP == 16)
 	{
+ 		PlayerJobInfo[playerid][pWorkingHours]++;
 		TranJob_Payment(playerid, vehicleid);
 		RemovePlayerFromVehicle(playerid);
   		SetEngine(vehicleid, 0);
@@ -104,10 +121,10 @@ TranJob_PlayerEnterCheckpoint(playerid)
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	    PlayerJobInfo[playerid][pWorkingHours]++;
 		PlayerActionMessage(playerid, 15.0, "estaciona el camion de transporte en su lugar.");
 		UpdatePlayerJobLastWorked(playerid);
         TranJob_CheckPromotePlayer(playerid);
+		BorrarCronometro(playerid);
 	}
 	return 1;
 }

@@ -1142,12 +1142,16 @@ public OnPlayerDisconnect(playerid, reason)
 		}
 	}
 
-	if(jobDuty[playerid]) {
-	    if(PlayerInfo[playerid][pJob] == JOB_TAXI && TransportPassenger[playerid] < 999) {
+	if(jobDuty[playerid])
+	{
+	    if(PlayerInfo[playerid][pJob] == JOB_TAXI && TransportPassenger[playerid] < 999)
+		{
 			SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el juego, por favor espera a que se reconecte.");
 			TransportDriver[TransportPassenger[playerid]] = 999;
-		} else if(PlayerInfo[playerid][pJob] == JOB_GARB) {
-			SetVehicleToRespawn(GetPVarInt(playerid, "jobVehicle"));
+		}
+		else if(PlayerInfo[playerid][pJob] == JOB_GARB || PlayerInfo[playerid][pJob] == JOB_TRAN)
+		{
+			SetVehicleToRespawn(jobVehicle[playerid]);
 		}
 	}
 	

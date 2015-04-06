@@ -67,7 +67,11 @@ new Float:JOB_GARB_POS_R1[][3] = {
     {2389.2288,-2064.5564,13.2214} // entraga 25
 };
 
-new Float:jobVehicleHealth[MAX_PLAYERS];
+new Float:jobVehicleHealth[MAX_PLAYERS],
+    jobVehicle[MAX_PLAYERS],
+    jobCheckpoint[MAX_PLAYERS];
+    
+new GarbJob_garbageRoute[MAX_PLAYERS];
 
 GarbJob_StartWork(playerid)
 {
@@ -76,40 +80,45 @@ GarbJob_StartWork(playerid)
 	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_GARB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
 
-	new gbCP = 0, route = random(2);
+	new route = random(2);
 
-	SetPVarInt(playerid, "jobVehicle", vehicleid);
-	jobDuty[playerid] = true;
 	if(route == 0)
 	{
- 		SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP][0], JOB_GARB_POS_R0[gbCP][1], JOB_GARB_POS_R0[gbCP][2], 5.4);
+ 		SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[0][0], JOB_GARB_POS_R0[0][1], JOB_GARB_POS_R0[0][2], 5.0);
 	}
 	else if(route == 1) 
 	{
-	    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
+	    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[0][0], JOB_GARB_POS_R1[0][1], JOB_GARB_POS_R1[0][2], 5.0);
 	}
-	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-	SetEngine(vehicleid, 1);
-	SendClientMessage(playerid, COLOR_WHITE, "Completa el siguiente recorrido para dejar la ciudad libre de basura. Al finalizar serás recompensado por tu trabajo.");
+	SendClientMessage(playerid, COLOR_WHITE, "Completa el recorrido para dejar la ciudad libre de basura. Al finalizar serás recompensado por tu trabajo.");
     SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde no se te pagará, y tu imagen laboral empeorará.", JOB_GARB_TRAVEL_TIME);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas el camión recolector en peor estado del que lo recibiste, tu imagen laboral disminuirá.");
+	jobDuty[playerid] = true;
+	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
+	SetEngine(vehicleid, 1);
+	jobVehicle[playerid] = vehicleid;
+	GarbJob_garbageRoute[playerid] = route;
 	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;
 }
 
 GarbJob_IsPlayerWorking(playerid, vehicleid)
 {
-	if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehType] == VEH_JOB && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
+	if(PlayerInfo[playerid][pJob] == JOB_GARB && jobDuty[playerid] && VehicleInfo[vehicleid][VehJob] == JOB_GARB)
 	    return 1;
 	return 0;
 }
 
 GarbJob_PlayerEnterCheckpoint(playerid)
 {
-    new gbCP = GetPVarInt(playerid, "garbageCheckpoint"),
-		route = GetPVarInt(playerid, "garbageRoute");
+    new gbCP = jobCheckpoint[playerid],
+		vehicleid = GetPlayerVehicleID(playerid);
 
+	if(jobVehicle[playerid] != vehicleid)
+	{
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el camión de transporte con el que empezaste a trabajar!");
+	}
     if(gbCP == 26)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Vaciando camión...");
@@ -122,14 +131,14 @@ GarbJob_PlayerEnterCheckpoint(playerid)
         TogglePlayerControllable(playerid, false);
         SetPVarInt(playerid, "garbT", SetTimerEx("GarbJob_LoadingTimer", 2000, false, "ii", playerid, gbCP));
         GameTextForPlayer(playerid, "Cargando basura...", 2000, 4);
-		SetPVarInt(playerid, "garbageCheckpoint", gbCP + 1);
-		if(route == 0)
+		jobCheckpoint[playerid]++;
+		if(GarbJob_garbageRoute[playerid] == 0)
 		{
- 			SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP][0], JOB_GARB_POS_R0[gbCP][1], JOB_GARB_POS_R0[gbCP][2], 5.4);
+ 			SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP+1][0], JOB_GARB_POS_R0[gbCP+1][1], JOB_GARB_POS_R0[gbCP+1][2], 5.0);
 		}
-		else if(route == 1)
+		else if(GarbJob_garbageRoute[playerid] == 1)
 		{
-		    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP][0], JOB_GARB_POS_R1[gbCP][1], JOB_GARB_POS_R1[gbCP][2], 5.4);
+		    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP+1][0], JOB_GARB_POS_R1[gbCP+1][1], JOB_GARB_POS_R1[gbCP+1][2], 5.0);
 		}
     }
 	return 1;
@@ -137,18 +146,17 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 
 GarbJob_TravelTimeLimit(playerid)
 {
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
-    if(VehicleInfo[GetPlayerVehicleID(playerid)][VehJob] == JOB_GARB)
+    if(jobVehicle[playerid] == vehicleid)
     {
-	    SetEngine(GetPlayerVehicleID(playerid), 0);
-		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+	    SetEngine(vehicleid, 0);
+		SetVehicleToRespawn(vehicleid);
 	}
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
-	DeletePVar(playerid, "garbageRoute");
-    DeletePVar(playerid, "garbageCheckpoint");
-    PlayerJobInfo[playerid][pWorkingHours]++;
 	UpdatePlayerJobLastWorked(playerid);
 	PlayerJobInfo[playerid][pReputation] -= 30;
 }
@@ -184,8 +192,6 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 	    PlayerInfo[playerid][pPayCheck] += GarbJob_GetPaycheck(playerid);
 	    PlayerJobInfo[playerid][pTotalEarnings] += GarbJob_GetPaycheck(playerid);
 		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado  tu trabajo, recibirás $%d en el próximo payday.", GarbJob_GetPaycheck(playerid));
-		DeletePVar(playerid, "garbageRoute");
-  	    DeletePVar(playerid, "garbageCheckpoint");
   	    PlayerJobInfo[playerid][pWorkingHours]++;
 		UpdatePlayerJobLastWorked(playerid);
         GarbJob_CheckPromotePlayer(playerid);
