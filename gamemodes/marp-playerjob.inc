@@ -159,8 +159,8 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 			PlayerInfo[playerid][pJob] = job;
 			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-			SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para ver los comandos disponibles escribe /ayuda.", JobInfo[job][jName]);
-			SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d PayDays antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
+			SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /ayuda, seccion [Empleos].", JobInfo[job][jName]);
+			SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
 			if(!admincmd)
 			{
 				SendFMessage(playerid, COLOR_WHITE, "Empleador: %s, ¿sos vos?. Es bueno que hayas vuelto. Esperemos que esta vez no renuncies.", GetPlayerNameEx(playerid));

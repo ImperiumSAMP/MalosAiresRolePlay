@@ -1251,10 +1251,8 @@ CMD:motor(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
 	if(VehicleInfo[vehicleid][VehType] == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
-	if(jobRequiresVehicle(VehicleInfo[vehicleid][VehJob]))
-	    return SendClientMessage(playerid, COLOR_WHITE, "Para encender este vehículo utiliza /trabajar.");
-	if(VehicleInfo[vehicleid][VehJob] != 0 && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes las llaves.");
+	if(VehicleInfo[vehicleid][VehType] == VEH_JOB)
+	    return SendClientMessage(playerid, COLOR_WHITE, "Para encender este vehículo debes tener el empleo necesario y utilizar /trabajar.");
 	if(VehicleInfo[vehicleid][VehHP] < 500)
  	{
 	    PlayerActionMessage(playerid, 15.0, "intenta encender el motor del vehículo pero se encuentra dañado.");

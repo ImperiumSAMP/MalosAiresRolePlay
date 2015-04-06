@@ -67,11 +67,6 @@ new Float:JOB_GARB_POS_R1[][3] = {
     {2389.2288,-2064.5564,13.2214} // entraga 25
 };
 
-new Float:jobVehicleHealth[MAX_PLAYERS],
-    jobVehicle[MAX_PLAYERS],
-    jobCheckpoint[MAX_PLAYERS],
-    jobRoute[MAX_PLAYERS];
-
 GarbJob_StartWork(playerid)
 {
     new vehicleid = GetPlayerVehicleID(playerid);
@@ -123,16 +118,16 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 	}
     if(gbCP == 26)
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "Vaciando camión...");
 		TogglePlayerControllable(playerid, false);
-		SetPVarInt(playerid, "garbT", SetTimerEx("GarbJob_LoadingTimer", 6000, false, "ii", playerid, gbCP));
+		GameTextForPlayer(playerid, "Vaciando camión...", 6000, 4);
+		SetTimerEx("GarbJob_LoadingTimer", 6000, false, "ii", playerid, gbCP);
 		BorrarCronometro(playerid);
     }
 	else
 	{
         TogglePlayerControllable(playerid, false);
-        SetPVarInt(playerid, "garbT", SetTimerEx("GarbJob_LoadingTimer", 2000, false, "ii", playerid, gbCP));
-        GameTextForPlayer(playerid, "Cargando basura...", 2000, 4);
+        GameTextForPlayer(playerid, "Cargando basura...", 3000, 4);
+    	SetTimerEx("GarbJob_LoadingTimer", 3000, false, "ii", playerid, gbCP);
 		jobCheckpoint[playerid]++;
 		if(jobRoute[playerid] == 0)
 		{
@@ -165,6 +160,8 @@ GarbJob_TravelTimeLimit(playerid)
 
 public GarbJob_LoadingTimer(playerid, garbcp)
 {
+	new vehicleid = GetPlayerVehicleID(playerid);
+	
     TogglePlayerControllable(playerid, true);
     if(garbcp == 25)
 	{
@@ -172,44 +169,45 @@ public GarbJob_LoadingTimer(playerid, garbcp)
   	}
   	else if(garbcp == 26)
 	{
-	    new Float:vHealth;
-	    
-	    GetVehicleHealth(GetPlayerVehicleID(playerid), vHealth);
-	    if(vHealth + 30.0 < jobVehicleHealth[playerid])
-	    {
-	        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
-            PlayerInfo[playerid][pPayCheck] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
-			SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión recolector en mal estado.");
-		}
-		else
-		    PlayerJobInfo[playerid][pReputation]++;
-
+	    PlayerJobInfo[playerid][pWorkingHours]++;
+	    GarbJob_Payment(playerid, vehicleid);
 		RemovePlayerFromVehicle(playerid);
-	    PlayerInfo[playerid][pCantWork] = 1;
+	    SetEngine(vehicleid, 0);
+		SetVehicleToRespawn(vehicleid);
+  		PlayerInfo[playerid][pCantWork] = 1;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	    SetEngine(GetPlayerVehicleID(playerid), 0);
-		SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
-	    PlayerInfo[playerid][pPayCheck] += GarbJob_GetPaycheck(playerid);
-	    PlayerJobInfo[playerid][pTotalEarnings] += GarbJob_GetPaycheck(playerid);
-		SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado  tu trabajo, recibirás $%d en el próximo payday.", GarbJob_GetPaycheck(playerid));
-  	    PlayerJobInfo[playerid][pWorkingHours]++;
 		UpdatePlayerJobLastWorked(playerid);
         GarbJob_CheckPromotePlayer(playerid);
+        BorrarCronometro(playerid);
   	}
 	return 1;
 }
 
-GarbJob_GetPaycheck(playerid)
+GarbJob_Payment(playerid, vehicleid)
 {
-	new paycheck = 0;
+	new paycheck, Float:vHealth, injuriesCost, seniorityBonus, chargeBonus;
 
-	paycheck += GetJobBaseSalary(JOB_GARB); // Salario base
-	paycheck += PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
-	paycheck += (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+    GetVehicleHealth(vehicleid, vHealth);
+    if(vHealth + 30.0 < jobVehicleHealth[playerid])
+    {
+        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
+		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión recolector en mal estado.");
+	}
+	else
+	    PlayerJobInfo[playerid][pReputation]++;
 
-	return paycheck;
+	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
+	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+
+	paycheck = GetJobBaseSalary(JOB_TRAN) + seniorityBonus + chargeBonus - injuriesCost;
+	PlayerInfo[playerid][pPayCheck] += paycheck;
+	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
+
+	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
 }
 
 GarbJob_CheckPromotePlayer(playerid)

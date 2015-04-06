@@ -72,21 +72,16 @@ enum pPlayerJob {
 
 new PlayerJobInfo[MAX_PLAYERS][pPlayerJob];
 
-stock GetJobType(job)
-{
-	return JobInfo[job][jType];
-}
-
 //Variables generales:
 
 new bool:jobDuty[MAX_PLAYERS],
 	CollectedProds[MAX_PLAYERS],
     LastCP[MAX_PLAYERS];
-
-stock jobRequiresVehicle(jobid)
-{
-	return jobid == JOB_FARM || jobid == JOB_DRUGF || jobid == JOB_TRAN || jobid == JOB_GARB;
-}
+    
+ new Float:jobVehicleHealth[MAX_PLAYERS],
+    jobVehicle[MAX_PLAYERS],
+    jobCheckpoint[MAX_PLAYERS],
+    jobRoute[MAX_PLAYERS];
 
 stock GetJobChargeName(job, charge)
 {
@@ -101,6 +96,11 @@ stock GetJobChargeName(job, charge)
 		case 5: format(str, sizeof(str), "%s", JobInfo[job][jCharge5]);
 	}
 	return str;
+}
+
+stock GetJobType(job)
+{
+	return JobInfo[job][jType];
 }
 
 stock GetJobBaseSalary(job)
@@ -264,6 +264,8 @@ CMD:terminar(playerid,params[])
 		{
 			DrugfJob_FinishWork(playerid);
 		}
+		default:
+			return 1;
 	}
 	
 	if(PlayerInfo[playerid][pJobAllowed] == 1)

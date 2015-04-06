@@ -1097,7 +1097,6 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
     KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
     KillTimer(GetPVarInt(playerid, "tutTimer"));
-    KillTimer(GetPVarInt(playerid, "garbT"));
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
     KillTimer(GetPVarInt(playerid, "theftTimer"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
@@ -9089,7 +9088,7 @@ CMD:ayuda(playerid,params[])
 	} else if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
         SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Narcotraficante]:{C8C8C8} /comenzar /comprar /dardroga /dejarempleo");
 	} else {
-		SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Empleo]:{C8C8C8} /tomarempleo /dejarempleo /trabajar /terminar");
+		SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Empleo]:{C8C8C8} /tomarempleo /consultarempleo /dejarempleo /verempleo /trabajar /terminar");
 	}
 	return 1;
 }

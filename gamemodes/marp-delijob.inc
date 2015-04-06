@@ -17,19 +17,13 @@ enum DeliJob_RouteInfo {
 }
 
 static const DeliJob_Route[][DeliJob_RouteInfo] = {
-	{1439.3058, -926.6467, 39.6477, 120},
-	{1468.5417, -904.9522, 54.8359, 120},
-	{1525.7418, -774.5235, 79.8811, 120},
-	{1442.7665, -629.5516, 95.7186, 120},
-	{1090.8308, -788.0885, 107.3270, 120},
-	{1033.1843, -809.6239, 101.8516, 120},
-	{936.8040, -845.8781, 93.9246, 120},
-	{836.9149, -893.5928, 68.7689, 120},
-	{832.5596, -867.5470, 68.8743, 120},
+	{1439.3058, -926.6467, 39.6477, 80},
+	{1525.7418, -774.5235, 79.8811, 95},
+	{1442.7665, -629.5516, 95.7186, 105},
+	{1033.1843, -809.6239, 101.8516, 125},
+	{836.9149, -893.5928, 68.7689, 115},
 	{689.8444, -1053.7305, 50.1541, 120},
-	{551.5204, -1197.1387, 44.5455, 120},
 	{200.0531, -1385.0724, 48.6990, 120},
-	{248.4863, -1262.6874, 69.7666, 120},
 	{345.8627, -1191.2847, 76.5199, 120},
 	{474.1737, -1174.8789, 63.6685, 120},
 	{908.5896, -684.1473, 116.1911, 120},
@@ -138,7 +132,7 @@ DeliJob_StartWork(playerid)
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra un paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
-    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. Si llegas tarde no te pagarán y tu imagen laboral empeorará.", DeliJob_Route[destination][djTime]);
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. Si llegas tarde, no te pagarán y tu imagen laboral empeorará.", DeliJob_Route[destination][djTime]);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas la moto en peor estado de como la recibiste, tu imagen laboral disminuirá.");
 	jobDuty[playerid] = true;
 	SetEngine(vehicleid, 1);
@@ -200,6 +194,7 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 	}
 	else if(actualCP == 2)
 	{
+	    PlayerInfo[playerid][pCantWork]++;
  		PlayerJobInfo[playerid][pWorkingHours]++;
 		DeliJob_Payment(playerid, vehicleid);
 		RemovePlayerFromVehicle(playerid);
