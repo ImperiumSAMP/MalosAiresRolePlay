@@ -98,6 +98,7 @@ GarbJob_StartWork(playerid)
 	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	SetEngine(vehicleid, 1);
 	jobVehicle[playerid] = vehicleid;
+	jobCheckpoint[playerid] = 0;
 	GarbJob_garbageRoute[playerid] = route;
 	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;

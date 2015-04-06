@@ -2469,7 +2469,7 @@ public OnPlayerDataLoad(playerid)
 		LoadToysInfo(playerid); // Toys
 		LoadBackInfo(playerid); // Info de espalda
 		LoadNotebookContacts(playerid); // Carga la agenda del jugador
-		
+		LoadPlayerJobData(playerid); // Carga la info del job, si fuese legal.
        	CreatePlayerBasicNeeds(playerid);
        	
        	if(PlayerInfo[playerid][pFaction] != 0)
