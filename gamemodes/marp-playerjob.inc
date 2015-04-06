@@ -349,7 +349,7 @@ public OnPlayerInvestJob(playerid, job)
 	else // Nunca lo tuvo
 	{
 	    format(auxInformation, sizeof(auxInformation), "En esta empresa se valora el buen desempeño laboral, como también se castiga el malo.");
-		format(content, sizeof(content), "Empleo: %s\nCargo en el que comienzas: %s\nGanancias iniciales por día: $%d\n\n%s",
+		format(content, sizeof(content), "Empleo: %s\nCargo en el que comienzas: %s\nGanancias iniciales por trabajo: $%d\n\n%s",
 		    JobInfo[job][jName],
 		    GetJobChargeName(job, 1),
 		    GetJobBaseSalary(job),

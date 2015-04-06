@@ -1156,12 +1156,16 @@ public OnPlayerDisconnect(playerid, reason)
 		}
 	}
 	
-	if(TransportDriver[playerid] < 999) {
-		if(TransportCost[TransportDriver[playerid]] > 0) {
-			if(IsPlayerConnected(TransportDriver[playerid])) {
+	if(TransportDriver[playerid] < 999)
+	{
+		if(TransportCost[TransportDriver[playerid]] > 0)
+		{
+			if(IsPlayerConnected(TransportDriver[playerid]))
+			{
 				format(string, sizeof(string), "~w~El pasajero~r~ha dejado el juego~n~~g~Dinero ganado: $%d", TransportCost[TransportDriver[playerid]]);
 				GameTextForPlayer(TransportDriver[playerid], string, 2000, 1);
-				if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") <= JOB_TAXI_MAXPASSENGERS) {
+				if(GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") <= JOB_TAXI_MAXPASSENGERS)
+				{
 				    SetPVarInt(TransportDriver[playerid], "pJobLimitCounter", GetPVarInt(TransportDriver[playerid], "pJobLimitCounter") + 1);
 					PlayerInfo[TransportDriver[playerid]][pPayCheck] += PRICE_TAXI_PERPASSENGER;
 				}
@@ -1176,9 +1180,12 @@ public OnPlayerDisconnect(playerid, reason)
 
 	OnPlayerLeaveRobberyGroup(playerid, 1);
 	
-    if(gPlayerLogged[playerid]) {
-		switch(reason) {
-	        case 0,2:{
+    if(gPlayerLogged[playerid])
+	{
+		switch(reason)
+		{
+	        case 0,2:
+			{
 				PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
 			}
 			case 1:{

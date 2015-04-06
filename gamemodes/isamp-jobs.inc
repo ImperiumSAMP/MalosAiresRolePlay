@@ -185,7 +185,7 @@ CMD:trabajar(playerid,params[])
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún empleo!");
 		if(jobDuty[playerid])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya te encuentras trabajando!");
-        if(PlayerInfo[playerid][pCantWork] != 0)
+        if(PlayerInfo[playerid][pCantWork] != 0 && job != JOB_DELI)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya has trabajado lo suficiente! vé, y espera hasta el próximo día de pago.");
 
 		switch(job)
