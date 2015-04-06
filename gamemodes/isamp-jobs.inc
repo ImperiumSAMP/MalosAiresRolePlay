@@ -5,7 +5,7 @@
 
 //====[EMPLEOS]=================================================================
 
-//#define JOB_MECH              1 		// Mecánicos.
+#define JOB_DELI	            1 		// Moto-delivery.
 #define JOB_TAXI             	2 		// Conductor.
 #define JOB_FARM             	3 		// Granjero.
 #define JOB_TRAN                4       // Transportista.
@@ -168,7 +168,8 @@ CMD:trabajar(playerid,params[])
 {
 	new job = PlayerInfo[playerid][pJob];
 
-	if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+	if(PlayerInfo[playerid][pFaction] == FAC_MECH)
+	{
 	    if(!jobDuty[playerid])
 		{
 			SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
@@ -193,7 +194,9 @@ CMD:trabajar(playerid,params[])
 			{
 		    	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_TAXI)
 					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un taxi!");
-
+				if(PlayerInfo[playerid][pCarLic] == 0)
+			        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
+			        
 				SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un taxista se encuentra en servicio (Tel: 444).");
 				jobDuty[playerid] = true;
 			}
@@ -219,6 +222,10 @@ CMD:trabajar(playerid,params[])
 			{
 				GarbJob_StartWork(playerid);
 		    }
+		    case JOB_DELI:
+		    {
+		        DeliJob_StartWork(playerid);
+			}
 			default:
 				return 1;
 		}

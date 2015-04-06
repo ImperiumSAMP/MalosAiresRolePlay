@@ -61,7 +61,7 @@ CMD:tomarempleo(playerid,params[])
 	{
 		if(PlayerToPoint(1.0, playerid, JobInfo[job][jTakeX], JobInfo[job][jTakeY], JobInfo[job][jTakeZ]))
 		{
-		    if(job == JOB_TAXI && (PlayerInfo[playerid][pCarLic] == 0))
+		    if((job == JOB_TAXI || job == JOB_TRAN || job == JOB_GARB || job == JOB_DELI) && PlayerInfo[playerid][pCarLic] == 0)
 		        return SendClientMessage(playerid, COLOR_WHITE, "No puedo emplearte si no tienes licencia de manejo, hasta luego.");
             if(job == JOB_DRUGD && (PlayerInfo[playerid][pFaction] == 0 || FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar este empleo. (OOC: Requiere que tengas contactos y seas nivel 3)"); // Si no es de la mafia o es menor a nivel 3
@@ -224,7 +224,7 @@ CMD:verempleo(playerid, params[])
 	{
 	    new content[300];
 	    
-		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nDías trabajados: %d\nUltimo día de trabajo: %s\nIngresos totales: $%d\nImagen laboral: %s\nEstado laboral: %s",
+		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nTrabajos realizados: %d\nUltimo día de trabajo: %s\nIngresos totales: $%d\nImagen laboral: %s\nEstado laboral: %s",
 		    JobInfo[PlayerInfo[playerid][pJob]][jName],
 		    GetJobChargeName(PlayerInfo[playerid][pJob], PlayerJobInfo[playerid][pCharge]),
 		    PlayerJobInfo[playerid][pWorkingHours],
@@ -314,7 +314,7 @@ public OnPlayerInvestJob(playerid, job)
 		reputationResult,
 		totalEarningsResult,
 		lastWorkedResult[64],
-		content[300],
+		content[400],
 		auxInformation[128] = "";
 
 	cache_get_data(rows, fields);
@@ -335,7 +335,7 @@ public OnPlayerInvestJob(playerid, job)
 			case JOB_STATE_RESIGNED:
 				format(auxInformation, sizeof(auxInformation), "Como habías renunciado, volverás a entrar con tu último cargo pero perderás toda antiguedad acumulada.");
 		}
-		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nDías trabajados: %d\nUltimo día de trabajo: %s\nIngresos totales: $%d\nImagen laboral: %s\nEstado laboral: %s\n\n%s",
+		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nTrabajos realizados: %d\nUltimo día de trabajo: %s\nIngresos totales: $%d\nImagen laboral: %s\nEstado laboral: %s\n\n%s",
 		    JobInfo[job][jName],
 		    GetJobChargeName(job, chargeResult),
 		    workingHoursResult,
@@ -349,7 +349,7 @@ public OnPlayerInvestJob(playerid, job)
 	else // Nunca lo tuvo
 	{
 	    format(auxInformation, sizeof(auxInformation), "En esta empresa se valora el buen desempeño laboral, como también se castiga el malo.");
-		format(content, sizeof(content), "Empleo: %s\nCargo en el que comienzas: %s\nGanancias iniciales por día: %d\n\n%s",
+		format(content, sizeof(content), "Empleo: %s\nCargo en el que comienzas: %s\nGanancias iniciales por día: $%d\n\n%s",
 		    JobInfo[job][jName],
 		    GetJobChargeName(job, 1),
 		    GetJobBaseSalary(job),
@@ -364,6 +364,7 @@ public OnPlayerInvestJob(playerid, job)
 
 #define JOB_GARB_CRONOMETRO  	1
 #define JOB_TRAN_CRONOMETRO   	2
+#define JOB_DELI_CRONOMETRO    	3
 
 new pCronometro[MAX_PLAYERS],
 	pCronometroTimer[MAX_PLAYERS],
@@ -412,6 +413,8 @@ public Cronometro(playerid, type)
 	 	        GarbJob_TravelTimeLimit(playerid);
             case JOB_TRAN_CRONOMETRO:
 	 	        TranJob_TravelTimeLimit(playerid);
+            case JOB_DELI_CRONOMETRO:
+	 	        DeliJob_TravelTimeLimit(playerid);
 		}
 	    BorrarCronometro(playerid);
 	}

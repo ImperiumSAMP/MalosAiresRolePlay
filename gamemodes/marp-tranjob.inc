@@ -31,6 +31,8 @@ TranJob_StartWork(playerid)
 	
 	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_TRAN)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión de transporte!");
+	if(PlayerInfo[playerid][pCarLic] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
 
 	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
@@ -83,7 +85,7 @@ public TranJob_NextCheckpoint(playerid, cp)
 	}
 	else
 	{
-	    GameTextForPlayer(playerid, "Dirígete al siguiente punto de descarga", 1500, 4);
+	    GameTextForPlayer(playerid, "Dirigete al siguiente punto de descarga", 1500, 4);
 	    SetPlayerCheckpoint(playerid, JOB_TRAN_POS[cp][0], JOB_TRAN_POS[cp][1], JOB_TRAN_POS[cp][2], 5.0);
 	}
 	return 1;
@@ -151,7 +153,7 @@ TranJob_Payment(playerid, vehicleid)
 	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
 	
 	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
-	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: ${00FF00}%d{FFFFFF} - Bonus por antiguedad: ${00FF00}%d{FFFFFF} - Bonus por cargo: ${00FF00}%d{FFFFFF} - Descuento por roturas: ${FF0000}%d{FFFFFF}", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
 }
 
 TranJob_CheckPromotePlayer(playerid)

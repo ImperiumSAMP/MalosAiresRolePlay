@@ -68,6 +68,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-tranjob.inc"
 #include "marp-farmjob.inc"
 #include "marp-drugfjob.inc"
+#include "marp-delijob.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.0.9b"
@@ -1149,7 +1150,7 @@ public OnPlayerDisconnect(playerid, reason)
 			SendClientMessage(TransportPassenger[playerid], COLOR_YELLOW2, "El conductor ha dejado el juego, por favor espera a que se reconecte.");
 			TransportDriver[TransportPassenger[playerid]] = 999;
 		}
-		else if(PlayerInfo[playerid][pJob] == JOB_GARB || PlayerInfo[playerid][pJob] == JOB_TRAN)
+		else if(GetJobType(PlayerInfo[playerid][pJob]) == JOB_TYPE_LEGAL)
 		{
 			SetVehicleToRespawn(jobVehicle[playerid]);
 		}
@@ -4291,6 +4292,10 @@ public OnPlayerEnterCheckpoint(playerid)
 	else if(GarbJob_IsPlayerWorking(playerid, vehicleID))
 	{
 	    GarbJob_PlayerEnterCheckpoint(playerid);
+    }
+	else if(DeliJob_IsPlayerWorking(playerid, vehicleID))
+	{
+	    DeliJob_PlayerEnterCheckpoint(playerid);
     }
 	else if(playerLicense[playerid][lDStep] >= 1 && VehicleInfo[vehicleID][VehType] == VEH_SCHOOL) {
 

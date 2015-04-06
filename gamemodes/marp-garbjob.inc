@@ -69,9 +69,8 @@ new Float:JOB_GARB_POS_R1[][3] = {
 
 new Float:jobVehicleHealth[MAX_PLAYERS],
     jobVehicle[MAX_PLAYERS],
-    jobCheckpoint[MAX_PLAYERS];
-    
-new GarbJob_garbageRoute[MAX_PLAYERS];
+    jobCheckpoint[MAX_PLAYERS],
+    jobRoute[MAX_PLAYERS];
 
 GarbJob_StartWork(playerid)
 {
@@ -79,7 +78,9 @@ GarbJob_StartWork(playerid)
 
 	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_GARB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
-
+	if(PlayerInfo[playerid][pCarLic] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
+		
 	new route = random(2);
 
 	if(route == 0)
@@ -99,7 +100,7 @@ GarbJob_StartWork(playerid)
 	SetEngine(vehicleid, 1);
 	jobVehicle[playerid] = vehicleid;
 	jobCheckpoint[playerid] = 0;
-	GarbJob_garbageRoute[playerid] = route;
+	jobRoute[playerid] = route;
 	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;
 }
@@ -133,11 +134,11 @@ GarbJob_PlayerEnterCheckpoint(playerid)
         SetPVarInt(playerid, "garbT", SetTimerEx("GarbJob_LoadingTimer", 2000, false, "ii", playerid, gbCP));
         GameTextForPlayer(playerid, "Cargando basura...", 2000, 4);
 		jobCheckpoint[playerid]++;
-		if(GarbJob_garbageRoute[playerid] == 0)
+		if(jobRoute[playerid] == 0)
 		{
  			SetPlayerCheckpoint(playerid, JOB_GARB_POS_R0[gbCP+1][0], JOB_GARB_POS_R0[gbCP+1][1], JOB_GARB_POS_R0[gbCP+1][2], 5.0);
 		}
-		else if(GarbJob_garbageRoute[playerid] == 1)
+		else if(jobRoute[playerid] == 1)
 		{
 		    SetPlayerCheckpoint(playerid, JOB_GARB_POS_R1[gbCP+1][0], JOB_GARB_POS_R1[gbCP+1][1], JOB_GARB_POS_R1[gbCP+1][2], 5.0);
 		}
