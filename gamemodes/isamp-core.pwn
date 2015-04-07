@@ -8086,6 +8086,8 @@ CMD:saltartuto(playerid, params[])
 		PlayerInfo[playerid][pSex] = 1;
 		PlayerInfo[playerid][pSkin] = SkinRegMale[0][0];
 		PlayerInfo[playerid][pRegStep] = 1;
+		
+		KillTimer(GetPVarInt(playerid, "tutTimer"));
 
 		SetPlayerInterior(playerid, 14);
      	SetPlayerVirtualWorld(playerid, random(100000) + 44000);

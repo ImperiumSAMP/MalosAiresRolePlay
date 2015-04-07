@@ -900,7 +900,7 @@ CMD:acasas(playerid, params[])
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acprecio /acvender");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acpuerta /acprecio /acvender");
     	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
 	}
 	return 1;
@@ -1376,6 +1376,23 @@ CMD:acvender(playerid, params[])
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido vendida.", houseid);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	return 1;
+}
+
+CMD:acpuerta(playerid, params[]) {
+	for(new i = 0; i < MAX_HOUSES; i++)	{
+		if(PlayerToPoint(1.0, playerid, House[i][OutsideX], House[i][OutsideY], House[i][OutsideZ]))
+		{
+		    if(House[i][Locked] == 1) {
+				House[i][Locked] = 0;
+		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
+			} else {
+				House[i][Locked] = 1;
+		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
+			}
+		    return 1;
+		}
+	}
 	return 1;
 }
 
