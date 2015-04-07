@@ -410,7 +410,7 @@ CMD:pmacana(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
-	if(!CheckFreeSpaceForDuty(playerid))
+	if(GetHandItem(playerid, HAND_RIGHT) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
 	ResetPlayerWeapons(playerid);
     SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
@@ -424,7 +424,7 @@ CMD:smacana(playerid, params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
-	if(!CheckFreeSpaceForDuty(playerid))
+	if(GetHandItem(playerid, HAND_RIGHT) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
     ResetPlayerWeapons(playerid);
     SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
@@ -657,9 +657,9 @@ CMD:guardarinsumos(playerid, params[])
 
 CMD:verinsumos(playerid, params[])
 {
-    if(PlayerInfo[playerid][pFaction] != FAC_SIDE || PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pRank] > 4)
-    	return 1;
-
+	if((PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_SIDE) || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] > 2) || (PlayerInfo[playerid][pFaction] == FAC_SIDE && PlayerInfo[playerid][pRank] > 2))
+		return 1;
+		
 	SendFMessage(playerid, COLOR_WHITE, "[%s] El depósito cuenta actualmente con %d insumos.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
 	return 1;
 }
