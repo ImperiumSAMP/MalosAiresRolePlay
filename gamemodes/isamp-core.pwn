@@ -8894,10 +8894,10 @@ CMD:gritar(playerid, params[]) {
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/g)ritar [texto]");
 	} else {
 		if(!usingMask[playerid])
-			format(string, sizeof(string), "{a52a2a}%s grita: 　%s!!", GetPlayerNameEx(playerid), text);
+			format(string, sizeof(string), "%s grita: 　%s!!", GetPlayerNameEx(playerid), text);
 		else
-		    format(string, sizeof(string), "{a52a2a}Enmascarado %d grita: 　%s!!", maskNumber[playerid], text);
-		ProxDetector(35.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+		    format(string, sizeof(string), "Enmascarado %d grita: 　%s!!", maskNumber[playerid], text);
+		ProxDetector(35.0, playerid, string, COLOR_FADEG1, COLOR_FADEG2, COLOR_FADEG3, COLOR_FADEG4, COLOR_FADEG5);
 	}
 	return 1;
 }
