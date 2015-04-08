@@ -3,18 +3,27 @@
 #endif
 #define _marp_paintball_included
 
+// DEFINES
+#define POS_PAINTBALL_X     	2576.2273
+#define POS_PAINTBALL_Y     	2805.7642
+#define POS_PAINTBALL_Z     	10.8203
+
+#define POS_DISQUALIFIED_X  	2575.6660
+#define POS_DISQUALIFIED_Y  	2834.5100
+#define POS_DISQUALIFIED_Z  	19.9922
+
 new PaintballPlay = 0,
     PaintballStart = 0,
-	PaintballCountdownStart = 0,
-	PaintballCountdownSecs = 11;
+    BlueTeamMaxPlayers = 0,
+    RedTeamMaxPlayers = 0;
 
+
+// COMANDOS
 CMD:empezarpaintball(playerid,params[])
 { 
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(PaintballPlay == 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El paintball ya fuÃ© iniciado.");
-	if(!IsPlayerInRangeOfPoint(playerid, 15.0, 2308 ,-1610 ,484))
+	if(!IsPlayerInRangeOfPoint(playerid, 25.0, POS_PAINTBALL_X, POS_PAINTBALL_Y, POS_PAINTBALL_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes encontrarte en la zona donde se realizan los paintballs.");
 	
 	PaintballPlay = 1;
@@ -24,9 +33,7 @@ CMD:empezarpaintball(playerid,params[])
 CMD:creargruporojo(playerid, params[])
 {
 	new player1, player2, player3, player4, player5;
-	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
+
 	if(PaintballPlay != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de crear los grupos debes iniciar el Paintball. (/empezarpaintball)");
 	if(sscanf(params, "uuuuu", player1, player2, player3, player4, player5))
@@ -44,9 +51,7 @@ CMD:creargruporojo(playerid, params[])
 CMD:creargrupoazul(playerid, params[])
 {
 	new player1, player2, player3, player4, player5;
-	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
+
 	if(PaintballPlay != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de crear los grupos debes iniciar el Paintball. (/empezarpaintball)");
 	if(sscanf(params, "uuuuu", player1, player2, player3, player4, player5))
@@ -61,70 +66,41 @@ CMD:creargrupoazul(playerid, params[])
 	return 1;
 }
 
-CMD:creargrupoverde(playerid, params[])
+CMD:comenzarpaintball(playerid, params[])
 {
-	new player1, player2, player3, player4, player5;
-	
-	if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
-	if(PaintballPlay != 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de crear los grupos debes iniciar el Paintball. (/empezarpaintball)");
-	if(sscanf(params, "uuuuu", player1, player2, player3, player4, player5))
-	   	return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /creargrupoverde  [ID/Jugador1] [ID/Jugador2] [ID/Jugador3] [ID/Jugador4] [ID/Jugador5]");
-	
-	SetPVarInt(player1, "GrupoPaintball", 3);
-	SetPVarInt(player2, "GrupoPaintball", 3);
-	SetPVarInt(player3, "GrupoPaintball", 3);
-	SetPVarInt(player4, "GrupoPaintball", 3);
-	SetPVarInt(player5, "GrupoPaintball", 3);
-	SendFMessage(playerid, -1, "Haz invitado a %s, %s, %s, %s y %s al grupo verde de Paintball.", GetPlayerNameEx(player1), GetPlayerNameEx(player2), GetPlayerNameEx(player3), GetPlayerNameEx(player4), GetPlayerNameEx(player5));
-	return 1;
-}
-
-forward PaintballCountdown(playerid);
-public PaintballCountdown(playerid)
-{ 
-    PaintballCountdownSecs --;
-    if (PaintballCountdownSecs > 0)
-	{
- 	    new PaintballCountdownString[10];
-	    format(PaintballCountdownString, sizeof(PaintballCountdownString), "%d", PaintballCountdownSecs);
-        GameTextForPlayer(playerid, PaintballCountdownString, 500, 3);    
-	}
-	if(PaintballCountdownSecs == 0)
-	{
-		GameTextForPlayer(playerid, "YA!!!", 500, 3);
-		PaintballCountdownSecs = 11;
-		PaintballStart = 1;
-		PaintballCountdownStart = 0;
-		KillTimer(GetPVarInt(playerid, "TimerPaintball"));
-    }     
-	return 1;
-}
-CMD:conteopaintball(playerid, params[])
-{
-    if(PlayerInfo[playerid][pAdmin] < 20)
-		return 1;
 	if(PaintballPlay != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de empezar el conteo debes iniciar el Paintball y crear los grupos. (/empezarpaintball)");
-	if(PaintballCountdownStart == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El conteo ya fuÃ© iniciado.");
 	if(PaintballStart == 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El juego estÃ¡ en proceso, no puedes iniciar un conteo ahora.");
 	
-    
-    SendClientMessage(playerid, -1, "Haz comenzado el conteo del paintbail");
+    SendClientMessage(playerid, -1, "Has comenzado el juego.");
 	foreach(new i : Player) 
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
-            SetPVarInt(i, "TimerPaintball", SetTimerEx("PaintballCountdown", 1000, 1, "i", playerid));
+			GameTextForPlayer(playerid, "YA!!!", 500, 3);
+			PaintballStart = 1;
 		}
 	}
-	PaintballCountdownStart = 1;
 	return 1;
 }
 
+CMD:pbmaxplayers(playerid, params[]) {
+	new equipo[4], maxplayers[10];
+
+	if(sscanf(params, "su", equipo, maxplayers)) {
+		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbmaxplayers [equipo: azul - rojo] [máximo de jugadores]");
+	} else if(strcmp(equipo, "azul", true) == 0) {
+		BlueTeamMaxPlayers = strval(maxplayers);
+		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo azul a %d.", strval(maxplayers));
+	} else if(strcmp(equipo, "rojo", true) == 0) {
+		RedTeamMaxPlayers = strval(maxplayers);
+		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo rojo a %d.", strval(maxplayers));
+	} else {
+		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
+	}
+	return 1;
+}
 
 
 
