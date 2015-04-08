@@ -14,6 +14,8 @@
 
 new PaintballPlay = 0,
     PaintballStart = 0,
+    BlueTeamPlayers = 0,
+	RedTeamPlayers = 0,
     BlueTeamMaxPlayers = 0,
     RedTeamMaxPlayers = 0;
 
@@ -96,6 +98,29 @@ CMD:pbmaxplayers(playerid, params[]) {
 	} else if(strcmp(equipo, "rojo", true) == 0) {
 		RedTeamMaxPlayers = strval(maxplayers);
 		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo rojo a %d.", strval(maxplayers));
+	} else {
+		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
+	}
+	return 1;
+}
+
+CMD:pbinvitar(playerid, params[]) {
+	new equipo[4], target;
+
+	if(sscanf(params, "su", equipo, target)) {
+		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbinvitar [equipo: azul - rojo] [ID/Nombre del jugador a invitar]");
+	} else if(strcmp(equipo, "azul", true) == 0) {
+	    if(BlueTeamPlayers < BlueTeamMaxPlayers) {
+	        SetPVarInt(target, "GrupoPaintball", 2)
+	        BlueTeamPlayers += 1;
+	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo azul de Paintball.", GetPlayerNameEx(target));
+		} else { SendClientMessage(playerid, COLOR_WHITE, "¡El equipo azul está lleno! Podés modificar el límite de jugadores con /pbmaxplayers."); }
+	} else if(strcmp(equipo, "rojo", true) == 0) {
+	    if(RedTeamPlayers < RedTeamMaxPlayers) {
+	        SetPVarInt(target, "GrupoPaintball", 1)
+	        RedTeamPlayers += 1;
+	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo rojo de Paintball.", GetPlayerNameEx(target));
+		} else { SendClientMessage(playerid, COLOR_WHITE, "¡El equipo rojo está lleno! Podés modificar el límite de jugadores con /pbmaxplayers."); }
 	} else {
 		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
 	}
