@@ -85,7 +85,7 @@ CMD:creargrupoverde(playerid, params[])
 forward PaintballCountdown(playerid);
 public PaintballCountdown(playerid)
 { 
-    foreach(new i : Player) 
+    foreach(new i : playerid) 
 	{
 	    if(GetPVarInt(i, "GrupoPaintball") != 0)
 		{
