@@ -6,8 +6,7 @@
 new PaintballPlay = 0,
     PaintballStart = 0,
 	PaintballCountdownStart = 0,
-	PaintballCountdownSecs[MAX_PLAYERS],
-    PaintballMatchTimer[MAX_PLAYERS];
+	PaintballCountdownSecs = 11;
 
 CMD:empezarpaintball(playerid,params[])
 { 
@@ -85,28 +84,21 @@ CMD:creargrupoverde(playerid, params[])
 forward PaintballCountdown(playerid);
 public PaintballCountdown(playerid)
 { 
-    foreach(new i : playerid) 
+    PaintballCountdownSecs --;
+    if (PaintballCountdownSecs > 0)
 	{
-	    if(GetPVarInt(i, "GrupoPaintball") != 0)
-		{
-            PaintballCountdownSecs[i] --;
-	        if (PaintballCountdownSecs[i] > 0)
-	        {
- 		        new PaintballCountdownString[8];
-		        format(PaintballCountdownString, sizeof(PaintballCountdownString), "%d", PaintballCountdownSecs[i]);
-		        GameTextForPlayer(i, PaintballCountdownString, 500, 3);
-		        GameTextForPlayer(i, PaintballCountdownString, 500, 3);
-	        }
-	        if(PaintballCountdownSecs[i] == 0)
-	        {
-		        GameTextForPlayer(i, "YA!!!", 500, 3);
-		        PaintballCountdownSecs[i] = 11;
-				PaintballStart = 1;
-				PaintballCountdownStart = 0;
-		        KillTimer(PaintballMatchTimer[i]);
-	        }
-		}
+ 	    new PaintballCountdownString[10];
+	    format(PaintballCountdownString, sizeof(PaintballCountdownString), "%d", PaintballCountdownSecs);
+        GameTextForPlayer(playerid, PaintballCountdownString, 500, 3);    
 	}
+	if(PaintballCountdownSecs == 0)
+	{
+		GameTextForPlayer(playerid, "YA!!!", 500, 3);
+		PaintballCountdownSecs = 11;
+		PaintballStart = 1;
+		PaintballCountdownStart = 0;
+		KillTimer(GetPVarInt(playerid, "TimerPaintball"));
+    }     
 	return 1;
 }
 CMD:conteopaintball(playerid, params[])
@@ -121,8 +113,14 @@ CMD:conteopaintball(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El juego está en proceso, no puedes iniciar un conteo ahora.");
 	
     
-    SendClientMessage(playerid, -1, "Haz comensado el conteo del paintbail");
-    PaintballMatchTimer[playerid] = SetTimerEx("PaintballCountdown", 1000, 1, "i", playerid);
+    SendClientMessage(playerid, -1, "Haz comenzado el conteo del paintbail");
+	foreach(new i : Player) 
+	{
+		if(GetPVarInt(i, "GrupoPaintball") > 0)
+		{
+            SetPVarInt(i, "TimerPaintball", SetTimerEx("PaintballCountdown", 1000, 1, "i", playerid));
+		}
+	}
 	PaintballCountdownStart = 1;
 	return 1;
 }
