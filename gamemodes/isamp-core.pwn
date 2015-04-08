@@ -69,6 +69,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-farmjob.inc"
 #include "marp-drugfjob.inc"
 #include "marp-delijob.inc"
+#include "marp-paintball.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.0.9b"
@@ -3420,23 +3421,34 @@ stock chargeTaxis()
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
 	new Float:armour;
-    	
+
     GetPlayerArmour(playerid, armour);
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
 		//==========================SPRAY NO SACA VIDA==========================
-		
+
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
-	
+
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+		{
+			if(PaintballStart == 1)
+		    {
+			    if(weaponid == WEAPON_SILENCED)
+			    {
+				    SetPlayerPos(playerid, 2308, -1610, 490);
+				    SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+			    }
+			}
+		}
 	    //===============================TAZER==================================
-	    
+
 		if(checkTazer(playerid, issuerid, amount, weaponid))
 		    return 1;
 
 		//==============================HEADSHOT================================
-		
+
 		/*if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
 		{
 			SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
@@ -3444,14 +3456,14 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             TakeHeadShot[playerid] = 1;
             return 1;
 		}*/
-		
+
 		//==========================HERIDAS DE BALA=============================
-		
+
 		if(amount > 4.0)
 			CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
 
 		//========================EFECTOS DE LA DROGA===========================
-		
+
 		if(weaponid == 0)
 		{
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
@@ -3477,7 +3489,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 			}
 		}
 	}
-	
+
 	if(armour > 0.0)
 	{
 	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
@@ -3487,7 +3499,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 	}
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
- 		
+
     return 1;
 }
 
