@@ -900,7 +900,7 @@ CMD:acasas(playerid, params[])
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acpuerta /acprecio /acvender");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /accrear /acborrar /acentrada /acsalida /acinterior /acpuerta /acprecio /acvender /acvworld");
     	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
 	}
 	return 1;
@@ -1512,6 +1512,25 @@ CMD:acsalida(playerid, params[])
 	House[houseid][InsideAngle] = angle + 180;
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la salida de la casa %d ha sido cambiada a tu posición y a tu interior.", houseid);
+	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+ 	return 1;
+}
+
+CMD:acvworld(playerid, params[])
+{
+	new houseid,
+		string[128];
+
+    if(sscanf(params, "i", houseid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /acvworld [ID casa]");
+	if(houseid < 1 || houseid >= MAX_HOUSES)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
+	if(House[houseid][Created] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida: la casa no está creada.");
+
+	House[houseid][InsideWorld] = GetPlayerVirtualWorld(playerid);
+	SaveHouse(houseid);
+	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el mundo virtual del interior de la casa %d fue cambiado al que tienes actualmente.", houseid);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
  	return 1;
 }
