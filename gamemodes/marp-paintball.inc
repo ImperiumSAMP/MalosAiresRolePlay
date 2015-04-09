@@ -93,11 +93,11 @@ CMD:pbmaxplayers(playerid, params[]) {
 	if(sscanf(params, "si", equipo, maxplayers)) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbmaxplayers [equipo: azul - rojo] [máximo de jugadores]");
 	} else if(strcmp(equipo, "azul", true) == 0) {
-		BlueTeamMaxPlayers = strval(maxplayers);
-		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo azul a %d.", strval(maxplayers));
+		BlueTeamMaxPlayers = maxplayers;
+		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo azul a %d.", maxplayers);
 	} else if(strcmp(equipo, "rojo", true) == 0) {
-		RedTeamMaxPlayers = strval(maxplayers);
-		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo rojo a %d.", strval(maxplayers));
+		RedTeamMaxPlayers = maxplayers;
+		SendFMessage(playerid, COLOR_WHITE, "Configuraste el límite de jugadores del equipo rojo a %d.", maxplayers);
 	} else {
 		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
 	}
