@@ -60,9 +60,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
 #include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
-#include "isamp-cardealer.inc"          //Concesionarias
 #include "isamp-afk.inc"          		//Sistema de AFK
-#include "isamp-cmdpermissions.inc"      //Permisos dinámicos para comandos
+#include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
+#include "marp-concesionaria.inc"     	//Concesionarias
 #include "marp-playerjob.inc"
 #include "marp-garbjob.inc"
 #include "marp-tranjob.inc"

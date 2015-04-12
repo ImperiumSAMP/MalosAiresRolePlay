@@ -1,7 +1,7 @@
-#if defined _isamp_cardealer_included
+#if defined _marp_concesionaria_included
 	#endinput
 #endif
-#define _isamp_cardealer_included
+#define _marp_concesionaria_included
 
 //=================================CONSTANTES===================================
 
@@ -29,6 +29,8 @@ enum DealerModelInfo {
 };
 
 new CarDealerInfo[MAX_DEALERS][MAX_DEALER_CARS][DealerModelInfo];
+
+new PlayerText:PTD_Concesionaria[MAX_PLAYERS];
 
 new carModelSelection[MAX_PLAYERS],
 	carColor1Selection[MAX_PLAYERS],
@@ -295,7 +297,8 @@ OnCarDealerDialogResponse(playerid, response, listitem)
 				}
 			}
 			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color 1", "Ingrese a continuación el número de color {00FF00}primario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
-  		}
+			CarDealer_CreateCarModel(playerid, carModelSelection[playerid], 3, 3);
+		}
 	}
  	return 1;
 }
@@ -313,10 +316,14 @@ OnCarDealer2DialogResponse(playerid, response, inputtext[])
 		}
 		
 		carColor1Selection[playerid] = color1;
+		CarDealer_SetCarModelColor(playerid, carColor1Selection[playerid], 3);
 		ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color 2", "Ingrese a continuación el número de color {00FF00}secundario {a9c4e4}que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
 	}
 	else
-	    cmd_vercatalogo(playerid, "");
+ 	{
+	   	cmd_vercatalogo(playerid, "");
+	   	CarDealer_DestroyCarModel(playerid);
+	}
  	return 1;
 }
 
@@ -337,6 +344,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 		}
 
         carColor2Selection[playerid] = color2;
+        CarDealer_SetCarModelColor(playerid, carColor1Selection[playerid], carColor2Selection[playerid]);
   		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}
@@ -347,6 +355,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 
 OnCarDealer4DialogResponse(playerid, response)
 {
+    CarDealer_DestroyCarModel(playerid);
 	if(response)
 	{
 		new dealer = GetPlayerCarDealer(playerid),
@@ -423,3 +432,28 @@ OnCarDealer4DialogResponse(playerid, response)
 	}
  	return 1;
 }
+
+CarDealer_CreateCarModel(playerid, carmodel, color1, color2)
+{
+	PTD_Concesionaria[playerid] = CreatePlayerTextDraw(playerid, 480, 150, " ");
+	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid], TEXT_DRAW_FONT_MODEL_PREVIEW);
+	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid], 1);
+	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid], 0x00000090);
+	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid], 150.0, 112.0);
+	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid], carmodel);
+	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid], -20.0, 0.0, -25.0, 0.85);
+	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid], color1, color2);
+	PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid]);
+}
+
+CarDealer_SetCarModelColor(playerid, color1, color2)
+{
+	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid], color1, color2);
+    PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid]);
+}
+
+CarDealer_DestroyCarModel(playerid)
+{
+	PlayerTextDrawDestroy(playerid, PTD_Concesionaria[playerid]);
+}
+
