@@ -161,6 +161,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_FIRST_LOGIN 		10035
 //#define DLG_JOB_INFO_1 		10036
 //#define DLG_JOB_INFO_2 		10037
+// #define DLG_CARDEALER5	    10038
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -232,9 +233,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define UpdateMoneyBar 			GivePlayerMoney
 
 /* Sistema de hambre y sed */
-#define BASIC_NEEDS_MAX_TIME   	7000 // En segundos. Tiempo que tarda en bajar de 100 a 0
+#define BASIC_NEEDS_MAX_TIME   	10000 // En segundos. Tiempo que tarda en bajar de 100 a 0
 #define BASIC_NEEDS_UPDATE_TIME 360 // En segundos
-#define BASIC_NEEDS_HP_LOSS  	5.0 // Vida que pierde en cada actualizacion si la sed en 0
+#define BASIC_NEEDS_HP_LOSS  	5.0 // Vida que pierde en cada actualizacion si la sed o el hambre está en 0
 
 #define OFFROAD_WHEEL_ID 1025
 #define SHADOW_WHEEL_ID 1073
@@ -7554,7 +7555,12 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		}
 		case DLG_CARDEALER4:
 		{
-		    OnCarDealer4DialogResponse(playerid, response);
+		    OnCarDealer4DialogResponse(playerid, response, listitem);
+		    return 1;
+		}
+		case DLG_CARDEALER5:
+		{
+		    OnCarDealer5DialogResponse(playerid, response);
 		    return 1;
 		}
 	    case DLG_GUIDE: {

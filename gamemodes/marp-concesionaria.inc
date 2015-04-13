@@ -19,9 +19,13 @@
 #define DLG_CARDEALER2	    	10032
 #define DLG_CARDEALER3	    	10033
 #define DLG_CARDEALER4	    	10034
+#define DLG_CARDEALER5 			10038
 
 #define MODEL_CREATE            1
 #define MODEL_DELETE            2
+
+#define DEALERSHIP_PAYMENT_CASH 1
+#define DEALERSHIP_PAYMENT_BANK 2
 
 //=================================VARIABLES====================================
 
@@ -41,16 +45,17 @@ static const Dealership[MAX_DEALERSHIPS][DealershipInfo] = {
 	{"Sergio Trepat Automoviles", 2260.35, -2140.87, 13.54, 2260.28, -2124.71, 13.18, 316.07},
 	{"Concesionaria Ciudad Moto", 1295.83, -1870.33, 13.54, 1296.01, -1859.91, 13.18, 89.33},
 	{"Freddi Aviones", 1921.14, -2235.02, 13.54, 1903.13, -2315.69, 13.18, 218.39},
-	{"Nautica Gabott", 2939.37, -2051.45, 3.54, 2963.19, -2090.92, 0.66, 176.03}
+	{"Nautica Gabott", 2939.37, -2051.45, 3.54, 2937.79, -2064.40, 0.09, 271.84}
 };
 
 new DealershipVehicles[MAX_DEALERSHIPS][MAX_DEALERSHIP_VEHICLES];
 
-new PlayerText:PTD_Concesionaria[MAX_PLAYERS];
+new PlayerText:PTD_Concesionaria[MAX_PLAYERS][2];
 
 new carModelSelection[MAX_PLAYERS],
 	carColor1Selection[MAX_PLAYERS],
-	carColor2Selection[MAX_PLAYERS];
+	carColor2Selection[MAX_PLAYERS],
+	carPaymentSelection[MAX_PLAYERS];
 
 //============================FUNCIONES PUBLICAS================================
 
@@ -58,7 +63,7 @@ GetPlayerDealership(playerid)
 {
 	for(new i = 0; i < MAX_DEALERSHIPS; i++)
 	{
-	    if(PlayerToPoint(2.0, playerid, Dealership[i][dX], Dealership[i][dY], Dealership[i][dZ]))
+	    if(PlayerToPoint(1.0, playerid, Dealership[i][dX], Dealership[i][dY], Dealership[i][dZ]))
 	        return i;
 	}
 	return -1;
@@ -327,8 +332,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 	if(response)
 	{
 		new color2 = strval(inputtext),
-		    dealership = GetPlayerDealership(playerid),
-		    str[128];
+		    dealership = GetPlayerDealership(playerid);
 
 		if(dealership == -1)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
@@ -339,16 +343,45 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 		}
 
         carColor2Selection[playerid] = color2;
-        Dealership_SetPreviewModelColor(playerid, carColor1Selection[playerid], carColor2Selection[playerid]);
-  		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
-		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
+		Dealership_SetPreviewModelColor(playerid, carColor1Selection[playerid], carColor2Selection[playerid]);
+		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_LIST, "Selecciona la forma de pago que usarás", "Con efectivo\nTransferencia bancaria", "Continuar", "Volver");
 	}
 	else
 	    ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
  	return 1;
 }
 
-OnCarDealer4DialogResponse(playerid, response)
+OnCarDealer4DialogResponse(playerid, response, listitem)
+{
+	new dealership = GetPlayerDealership(playerid),
+	    str[128],
+	    str2[32];
+
+	if(dealership == -1)
+     	return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
+
+	if(response)
+	{
+		if(listitem == 0)
+		{
+			carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_CASH;
+			format(str2, sizeof(str2), "%s", "Pago en efectivo");
+		}
+  		else if(listitem == 1)
+  		{
+  		    carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_BANK;
+  		    format(str2, sizeof(str2), "%s", "Transferencia bancaria");
+		}
+		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d\n\tForma de pago: %s", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100), str2);
+		ShowPlayerDialog(playerid, DLG_CARDEALER5, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
+	}
+	else
+	    ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el numero de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+	return 1;
+}
+
+
+OnCarDealer5DialogResponse(playerid, response)
 {
     Dealership_DestroyPreviewModel(playerid);
 	if(response)
@@ -365,8 +398,10 @@ OnCarDealer4DialogResponse(playerid, response)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Error: ese modelo ya no se encuentra a la venta.");
 		if(getPlayerFreeKeySlots(playerid) < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Error: no tienes más espacio en tu llavero para otra llave.");
-		if(GetPlayerCash(playerid) < price)
-        	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero suficiente!");
+		if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_CASH && GetPlayerCash(playerid) < price)
+        	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero en efectivo suficiente!");
+        if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_BANK && PlayerInfo[playerid][pBank] < price)
+        	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡No tienes suficiente dinero en tu cuenta bancaria!");
 
 		for(new vid = 1; vid < MAX_VEH; vid++)
 		{
@@ -379,7 +414,11 @@ OnCarDealer4DialogResponse(playerid, response)
 	    if(newveh == -1) // Si no encontró ningun auto de tipo VEH_NONE es pq ya no hay mas lugar dentro de los MAX_VEH
 			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: No hay más espacio para autos en el servidor. REPORTAR A UN ADMIN.");
 
-		GivePlayerCash(playerid, -price);
+		if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_CASH)
+			GivePlayerCash(playerid, -price);
+		else
+		    PlayerInfo[playerid][pBank] -= price;
+		    
 	 	GetPlayerName(playerid, playerName, sizeof(playerName));
 		VehicleInfo[newveh][VehType] = VEH_OWNED;
 		VehicleInfo[newveh][VehOwnerSQLID] = PlayerInfo[playerid][pID];
@@ -410,24 +449,42 @@ OnCarDealer4DialogResponse(playerid, response)
 
 Dealership_CreatePreviewModel(playerid, carmodel, color1, color2)
 {
-	PTD_Concesionaria[playerid] = CreatePlayerTextDraw(playerid, 480, 150, " ");
-	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid], TEXT_DRAW_FONT_MODEL_PREVIEW);
-	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid], 1);
-	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid], 0x00000090);
-	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid], 150.0, 112.0);
-	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid], carmodel);
-	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid], -20.0, 0.0, -28.0, 0.85);
-	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid], color1, color2);
-	PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid]);
+	// Frente
+	PTD_Concesionaria[playerid][0] = CreatePlayerTextDraw(playerid, 480, 150, " ");
+	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid][0], TEXT_DRAW_FONT_MODEL_PREVIEW);
+	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid][0], 1);
+	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid][0], 0x00000090);
+	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid][0], 150.0, 112.0);
+	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid][0], carmodel);
+	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid][0], -20.0, 0.0, -28.0, 0.85);
+	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid][0], color1, color2);
+	PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid][0]);
+	// Cola
+	PTD_Concesionaria[playerid][1] = CreatePlayerTextDraw(playerid, 480, 262, " ");
+	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid][1], TEXT_DRAW_FONT_MODEL_PREVIEW);
+	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid][1], 1);
+	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid][1], 0x00000090);
+	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid][1], 150.0, 112.0);
+	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid][1], carmodel);
+	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid][1], 20.0, 0.0, 152.0, 0.85);
+	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid][1], color1, color2);
+	PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid][1]);
 }
 
 Dealership_SetPreviewModelColor(playerid, color1, color2)
 {
-	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid], color1, color2);
-    PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid]);
+	// Frente
+	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid][0], color1, color2);
+    PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid][0]);
+    // Cola
+   	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid][1], color1, color2);
+    PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid][1]);
 }
 
 Dealership_DestroyPreviewModel(playerid)
 {
-	PlayerTextDrawDestroy(playerid, PTD_Concesionaria[playerid]);
+	// Frente
+	PlayerTextDrawDestroy(playerid, PTD_Concesionaria[playerid][0]);
+	// Cola
+	PlayerTextDrawDestroy(playerid, PTD_Concesionaria[playerid][1]);
 }
