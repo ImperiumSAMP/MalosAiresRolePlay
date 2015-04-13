@@ -354,7 +354,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 OnCarDealer4DialogResponse(playerid, response, listitem)
 {
 	new dealership = GetPlayerDealership(playerid),
-	    str[128],
+	    str[150],
 	    str2[32];
 
 	if(dealership == -1)
@@ -466,7 +466,7 @@ Dealership_CreatePreviewModel(playerid, carmodel, color1, color2)
 	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid][1], 0x00000090);
 	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid][1], 150.0, 112.0);
 	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid][1], carmodel);
-	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid][1], 20.0, 0.0, 152.0, 0.85);
+	PlayerTextDrawSetPreviewRot(playerid, PTD_Concesionaria[playerid][1], -20.0, 0.0, 152.0, 0.85);
 	PlayerTextDrawSetPreviewVehCol(playerid, PTD_Concesionaria[playerid][1], color1, color2);
 	PlayerTextDrawShow(playerid, PTD_Concesionaria[playerid][1]);
 }

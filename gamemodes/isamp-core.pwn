@@ -72,7 +72,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-paintball.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.0.9b"
+#define GAMEMODE				"MA:RP v1.1.0"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
@@ -3467,6 +3467,8 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 		if(weaponid == 0)
 		{
+		    amount = amount/2; // Bajamos el daño base por puño para hacer mas duraderas las peleas y para darle utilidad a las armas melee.
+		    
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
 		    {
 			    if(DrugEffectEcstasy[issuerid] == true)
