@@ -460,7 +460,7 @@ forward SetPlayerSpawn(playerid);
 forward PayDay(playerid);
 forward ResetStats(playerid);
 forward ShowStats(playerid, targetid, bool:admin);
-forward BanPlayer(playerid, issuerid,reason[]);
+forward BanPlayer(playerid, issuerid, reason[], days);
 forward KickPlayer(playerid,kickedby[MAX_PLAYER_NAME],reason[]);
 forward ProxDetectorS(Float:radi, playerid, targetid);
 forward KickLog(string[]);
@@ -1543,7 +1543,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		{
             DeathSpam{playerid}++;
             if(DeathSpam{playerid} == 3)
-				return BanPlayer(playerid, INVALID_PLAYER_ID, "fake kills cheat");
+				return BanPlayer(playerid, INVALID_PLAYER_ID, "fake kills cheat", 0);
         }
         default: DeathSpam{playerid} = 0;
     }
@@ -2584,6 +2584,7 @@ public OnBanDataLoad(playerid)
 {
    	new issuerName[MAX_PLAYER_NAME],
    	    banReason[128],
+   	    banEndDate[32],
 		rows,
 		fields;
 
@@ -2593,8 +2594,9 @@ public OnBanDataLoad(playerid)
 	{
 		cache_get_field_content(0, "banIssuerName", issuerName, 1, MAX_PLAYER_NAME);
 	    cache_get_field_content(0, "banReason", banReason, 1, 128);
+	    cache_get_field_content(0, "banEnd", banEndDate, 1, 32);
 	    ClearScreen(playerid);
-	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a por %s, razón: %s", issuerName, banReason);
+	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a hasta el %s por %s, razón: %s", banEndDate, issuerName, banReason);
 	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 		SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	}
@@ -3678,7 +3680,7 @@ public AntiCheatTimer()
 					KickPlayer(playerid, "el sistema", string);
 				}
 				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
-					BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Jet Pack");
+					BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Jet Pack", 0);
 			}
 			
 			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
@@ -3952,7 +3954,7 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 {
     if(GetPlayerInterior(playerid) == 0)
 	{
-        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod");
+        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod", 0);
 	}
 	
 	if(GetPlayerCash(playerid) >= 2000)
@@ -5826,60 +5828,49 @@ public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
 	return 1;
 }
 
-public BanPlayer(playerid, issuerid, reason[]) {
-	new
-	    pid,
-	   	year, month, day,
-	    hour, minute, second,
-	    targetName[24], issuerName[24], targetIP[16],
-		query[512];
-
-    getdate(year, month, day);
-	gettime(hour, minute, second);
+public BanPlayer(playerid, issuerid, reason[], days)
+{
+	new	issuerSQLID, issuerName[24], playerName[24], playerIP[16], query[512], str[128];
 	
-	if(issuerid == INVALID_PLAYER_ID) {
+	if(issuerid == INVALID_PLAYER_ID)
+	{
 		issuerName = "el servidor";
-		pid = -1;
-	} else {
-	    pid = PlayerInfo[issuerid][pID];
+		issuerSQLID = -1;
+	}
+	else
+	{
+        GetPlayerName(issuerid, issuerName, 24);
+	    issuerSQLID = PlayerInfo[issuerid][pID];
 	}
 		
-	GetPlayerName(issuerid, issuerName, 24);
-	GetPlayerName(playerid, targetName, 24);
-	mysql_real_escape_string(issuerName, issuerName,1,sizeof(issuerName));
-	mysql_real_escape_string(targetName, targetName, 1,sizeof(issuerName));
+	GetPlayerName(playerid, playerName, 24);
 	
-	GetPlayerIp(playerid, targetIP, sizeof(targetIP));
+	mysql_real_escape_string(issuerName, issuerName, 1, 24);
+	mysql_real_escape_string(playerName, playerName, 1, 24);
+	
+	GetPlayerIp(playerid, playerIP, sizeof(playerIP));
 
-	format(query, sizeof(query), "INSERT INTO `bans` (pID, pName, pIP, banDate, banEnd, banReason, banIssuerID, banIssuerName, banActive) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%02d-%02d-%02d %02d:%02d:%02d', '%s', %d, '%s', 1)",
+	if(days == 0) // Perma ban
+	{
+	    days = 700; // Una fecha lejana
+		format(str, sizeof(str), "%s ha sido baneado/a permanentemente por %s, razón: %s.", playerName, issuerName, reason);
+	}
+	else
+        format(str, sizeof(str), "%s ha sido baneado/a %d días por %s, razón: %s.", playerName, days, issuerName, reason);
+    	    
+	format(query, sizeof(query), "INSERT INTO `bans` (pID, pName, pIP, banDate, banEnd, banReason, banIssuerID, banIssuerName, banActive) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, TIMESTAMPADD(DAY, %d, CURRENT_TIMESTAMP), '%s', %d, '%s', 1)",
 		PlayerInfo[playerid][pID],
-		targetName,
-		targetIP,
-		year,
-		month,
-		day,
-		hour,
-		minute,
-		second,
-		3040,
-		12,
-		1,
-		0,
-		0,
-		0,
+		playerName,
+		playerIP,
+		days,
 		reason,
-		pid,
+		issuerSQLID,
 		issuerName
 	);
+	
 	mysql_function_query(dbHandle, query, false, "", "");
 
-	foreach(new i : Player) {
-	    if(i == playerid) {
-	        SendFMessage(i, COLOR_ADMINCMD, "Has sido baneado/a por %s, razón: %s", issuerName, reason);
-	    } else {
-	        SendFMessage(i, COLOR_ADMINCMD, "%s ha sido baneado/a por %s, razón: %s.", targetName, issuerName, reason);
-	    }
-	}
+	SendClientMessageToAll(COLOR_ADMINCMD, str);
 	TogglePlayerControllable(playerid, false);
 	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
@@ -12975,16 +12966,18 @@ CMD:ban(playerid, params[])
 
 CMD:banear(playerid, params[])
 {
-	new targetid, reason[128];
+	new targetid, reason[128], days;
 	
-	if(sscanf(params, "us[128]", targetid, reason))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ban)ear [ID/Jugador] [razón]");
+	if(sscanf(params, "uis[128]", targetid, days, reason))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ban)ear [ID/Jugador] [días (0 = permaban)] [razón]");
    	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+	if(days < 0 ||days > 1000)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La cantidad de días de duración debe estar entre (0 - 1000).");
     if(IsPlayerNPC(targetid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la ID corresponde a un NPC.");
 	    
-	BanPlayer(targetid, playerid, reason);
+	BanPlayer(targetid, playerid, reason, days);
 	return 1;
 }
 
@@ -13156,10 +13149,7 @@ CMD:advertir(playerid, params[])
 	SendClientMessage(targetid, COLOR_LIGHTYELLOW2, string);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "A las 5 advertencias serás baneado del servidor, ahora tienes %d.", PlayerInfo[targetid][pWarnings]);
 	if(PlayerInfo[targetid][pWarnings] >= 5)
-	{
-		format(string, sizeof(string), "[BAN]: %s ha sido baneado por tener 5+ advertencias.", GetPlayerNameEx(targetid));
-		BanPlayer(targetid, playerid, reason);
-	}
+		BanPlayer(targetid, playerid, "Acumulación de advertencias", 7);
 	return 1;
 }
 
