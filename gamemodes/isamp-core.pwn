@@ -536,7 +536,7 @@ public OnGameModeInit()
 	loadBuildings();
 	LoadLockersSlotsInfo();
 	LoadTrunksSlotsInfo();
-	LoadCarDealerships();
+	Dealerships_LoadData();
 
     weatherVariables[0] = validWeatherIDs[random(sizeof(validWeatherIDs))];
 	//SetWeather(weatherVariables[0]);
@@ -4605,7 +4605,7 @@ stock LoadPickups() {
 	P_INPUTS_SHOP_S = CreateDynamicPickup(1239, 1, POS_INPUTS_SUR_X, POS_INPUTS_SUR_Y, POS_INPUTS_SUR_Z, -1);
 
 	// Consecionarias
-	LoadCarDealerPickups();
+	Dealership_LoadPickups();
 	
 	return 1;
 }
