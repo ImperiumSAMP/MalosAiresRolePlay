@@ -10128,30 +10128,24 @@ CMD:apuerta(playerid,params[]) {
 
 CMD:multar(playerid, params[])
 {
-    new reason[64], cost, targetID;
+    new reason[64], cost, targetid;
 
-  	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+  	if(PlayerInfo[playerid][pFaction] != FAC_PMA || PlayerInfo[playerid][pRank] == 10)
 	  	return 1;
-	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
-		return 1;
-	if(sscanf(params, "uds[64]", targetID, cost, reason))
+	if(sscanf(params, "uds[64]", targetid, cost, reason))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /multa [ID/Jugador] [costo] [razón]");
 	if(CopDuty[playerid] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio como oficial de policía!");
-	if(!ProxDetectorS(8.0, playerid, targetID))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El objetivo se encuentra demasiado lejos!");
-	if(targetID == INVALID_PLAYER_ID)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
-	if(targetID == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes multarte a tí mismo!");
+	if(!ProxDetectorS(3.0, playerid, targetid) || targetid == playerid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o se encuentra demasiado lejos.");
 	if(cost > 50000 || cost < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El costo no puede ser menor a $1 ni sobrepasar los $50.000!");
 
-	SendFMessage(playerid, COLOR_YELLOW2, "Has multado a %s por $%d - razón: %s.", GetPlayerNameEx(targetID), cost, reason);
-	SendFMessage(targetID, COLOR_YELLOW2, "%s te ha multado por $%d - razón: %s.", GetPlayerNameEx(playerid), cost, reason);
-	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} escribe /aceptar multa, para pagar.");
-	TicketOffer[targetID] = playerid;
-	TicketMoney[targetID] = cost;
+	SendFMessage(playerid, COLOR_YELLOW2, "Has multado a %s por $%d - razón: %s.", GetPlayerNameEx(targetid), cost, reason);
+	SendFMessage(targetid, COLOR_YELLOW2, "%s te ha multado por $%d - razón: %s.", GetPlayerNameEx(playerid), cost, reason);
+	SendClientMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} escribe /aceptar multa, para pagar.");
+	TicketOffer[targetid] = playerid;
+	TicketMoney[targetid] = cost;
   	return 1;
 }
 
@@ -11705,25 +11699,27 @@ TIMER:CancelVehicleTransfer(playerid, timer) {
 }
 
 
-CMD:aceptar(playerid,params[]) {
-	new
-		text[128],
-		string[128];
+CMD:aceptar(playerid,params[])
+{
+	new text[128], string[128];
 
-	if(sscanf(params, "s[64]", text)) {
+	if(sscanf(params, "s[64]", text))
+	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aceptar [comando]");
-		
-    } else if(strcmp(text,"droga",true) == 0) {
+    }
+	else if(strcmp(text,"droga",true) == 0)
+	{
         if(DrugOffer[playerid] == INVALID_PLAYER_ID)
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido droga.");
 		if(GetDistanceBetweenPlayers(playerid, DrugOffer[playerid]) > 4.0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "La persona se encuentra demasiado lejos.");
-		if(!IsPlayerConnected(DrugOffer[playerid])) {
+		if(!IsPlayerConnected(DrugOffer[playerid]))
+		{
 		    KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
 		    CancelDrugTransfer(playerid, 0);
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se ha desconectado.");
 		}
-
+		
         switch(DrugOfferType[playerid])
 		{
 			case 1:
@@ -11765,9 +11761,10 @@ CMD:aceptar(playerid,params[]) {
         PlayerActionMessage(playerid, 8.0, string);
 		KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
 		CancelDrugTransfer(playerid, 0);
-
- 	} else if(strcmp(text,"vehiculo",true) == 0) {
-    
+		return 1;
+ 	}
+	else if(strcmp(text,"vehiculo",true) == 0)
+	{
         if(VehicleOffer[playerid] == INVALID_PLAYER_ID)
             return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te ha ofrecido ningún vehículo.");
 		if(GetDistanceBetweenPlayers(playerid, VehicleOffer[playerid]) > 4.0)
@@ -11819,12 +11816,16 @@ CMD:aceptar(playerid,params[]) {
 		}
 		KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
 		CancelVehicleTransfer(playerid, 2);
-
-	} else if(strcmp(text,"medico",true) == 0) {
- 		if(GetPVarInt(GetPVarInt(playerid, "healIssuer"), "isHealing") == 1) {
-			new medic = GetPVarInt(playerid, "healIssuer");
-			new price = GetPVarInt(playerid, "healCost");
-			new victimcash = GetPlayerCash(playerid);
+		return 1;
+	}
+	else if(strcmp(text,"medico",true) == 0)
+	{
+ 		if(GetPVarInt(GetPVarInt(playerid, "healIssuer"), "isHealing") == 1)
+		 {
+			new medic = GetPVarInt(playerid, "healIssuer"),
+				price = GetPVarInt(playerid, "healCost"),
+				victimcash = GetPlayerCash(playerid);
+				
 			SetPlayerHealthEx(playerid, 100.00);
 			/*TakeHeadShot[playerid] = 0;*/
 			TogglePlayerControllable(playerid, true);
@@ -11838,45 +11839,48 @@ CMD:aceptar(playerid,params[]) {
 				SendFMessage(playerid, COLOR_LIGHTBLUE, "Has aceptado el tratamiento por $%d en efectivo.", price);
 	        	SendFMessage(medic, COLOR_LIGHTBLUE, "El herido ha aceptado el tratamiento y te ha pagado $%d en efectivo.", price);
 			}
+			else if(victimcash > 0)
+			{
+			    if(PlayerInfo[playerid][pBank] > price - victimcash)
+			    {
+					PlayerInfo[playerid][pBank] -= price - victimcash; // Se le debita lo que le falta del banco
+					PlayerInfo[medic][pPayCheck] += price - victimcash; // Esa parte que se debita le entra al banco mediante payday
+				}
+				else if(PlayerInfo[playerid][pBank] > 0) // Esto es para que no saque plata del banco si no tiene
+			    {
+			        PlayerInfo[medic][pPayCheck] += PlayerInfo[playerid][pBank];
+			        PlayerInfo[playerid][pBank] = 0;
+				}
+				GivePlayerCash(medic, victimcash); // La parte que se pagó en efectivo
+			    ResetPlayerCash(playerid); // Todo lo que pudo pagar en efectivo
+			    SendFMessage(playerid, COLOR_LIGHTBLUE, "Has aceptado el tratamiento por $%d. Una parte se descontó de tu cuenta bancaria al no tener todo en efectivo.", price);
+ 				SendFMessage(medic, COLOR_LIGHTBLUE, "El herido aceptó tu tratamiento por $%d. Una parte la pagó vía banco, y la cobraras en el próximo Payday.", price);
+			}
 			else
-				if(victimcash > 0)
-				{
-				    if(PlayerInfo[playerid][pBank] > price - victimcash)
-				    {
-						PlayerInfo[playerid][pBank] -= price - victimcash; // Se le debita lo que le falta del banco
-						PlayerInfo[medic][pPayCheck] += price - victimcash; // Esa parte que se debita le entra al banco mediante payday
-					} else
-					    if(PlayerInfo[playerid][pBank] > 0) // Esto es para que no saque plata del banco si no tiene
-					    {
-					        PlayerInfo[medic][pPayCheck] += PlayerInfo[playerid][pBank];
-					        PlayerInfo[playerid][pBank] = 0;
-						}
-					GivePlayerCash(medic, victimcash); // La parte que se pagó en efectivo
-				    ResetPlayerCash(playerid); // Todo lo que pudo pagar en efectivo
-				    SendFMessage(playerid, COLOR_LIGHTBLUE, "Has aceptado el tratamiento por $%d. Una parte se descontó de tu cuenta bancaria al no tener todo en efectivo.", price);
-     				SendFMessage(medic, COLOR_LIGHTBLUE, "El herido aceptó tu tratamiento por $%d. Una parte la pagó vía banco, y la cobraras en el próximo Payday.", price);
-				} else
-				    {
-				    	if(PlayerInfo[playerid][pBank] > price) // Esto es para que no saque plata del banco si no tiene
-				    	{
-							PlayerInfo[playerid][pBank] -= price; // Se le debita la totalidad del pago
-	                        PlayerInfo[medic][pPayCheck] += price; // Y el medico lo cobra via banco con el payday
-						} else
-						    if(PlayerInfo[playerid][pBank] > 0) // Esto es para que no saque plata del banco si no tiene
-						    {
-		        				PlayerInfo[medic][pPayCheck] += PlayerInfo[playerid][pBank];
-				        		PlayerInfo[playerid][pBank] = 0;
-							}
-				   		SendFMessage(playerid, COLOR_LIGHTBLUE, "Has aceptado el tratamiento por $%d. Como no tenías efectivo, se descontó de tu cuenta bancaria.", price);
-	        			SendFMessage(medic, COLOR_LIGHTBLUE, "El herido ha aceptado el tratamiento por $%d vía banco, y lo cobraras en el próximo Payday.", price);
-					}
+		    {
+		    	if(PlayerInfo[playerid][pBank] > price) // Esto es para que no saque plata del banco si no tiene
+		    	{
+					PlayerInfo[playerid][pBank] -= price; // Se le debita la totalidad del pago
+                    PlayerInfo[medic][pPayCheck] += price; // Y el medico lo cobra via banco con el payday
+				}
+				else if(PlayerInfo[playerid][pBank] > 0) // Esto es para que no saque plata del banco si no tiene
+			    {
+    				PlayerInfo[medic][pPayCheck] += PlayerInfo[playerid][pBank];
+	        		PlayerInfo[playerid][pBank] = 0;
+				}
+		   		SendFMessage(playerid, COLOR_LIGHTBLUE, "Has aceptado el tratamiento por $%d. Como no tenías efectivo, se descontó de tu cuenta bancaria.", price);
+    			SendFMessage(medic, COLOR_LIGHTBLUE, "El herido ha aceptado el tratamiento por $%d vía banco, y lo cobraras en el próximo Payday.", price);
+			}
 			SetPVarInt(GetPVarInt(playerid, "healIssuer"), "isHealing", 0);
-   		} else {
+   		}
+ 		else
 			SendClientMessage(playerid, COLOR_YELLOW2, "¡Ningún médico te ha ofrecido tratamiento!");
-		}
-		
-	} else if(strcmp(text,"faccion",true) == 0) {
+		return 1;
+	}
+	else if(strcmp(text,"faccion",true) == 0)
+	{
 	    new factionid = FactionRequest[playerid];
+	    
 		if(factionid == 0)
 			return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} nadie te ha invitado a una facción.");
 		if(PlayerInfo[playerid][pFaction] != 0)
@@ -11887,6 +11891,7 @@ CMD:aceptar(playerid,params[]) {
   		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]:{C8C8C8} ¡felicitaciones! ahora eres miembro de la facción: %s.",FactionInfo[factionid][fName]);
 		SetPlayerFaction(playerid, factionid, FactionInfo[factionid][fJoinRank]);
 		FactionRequest[playerid] = 0;
+		return 1;
 		
 	}
 	else if(strcmp(text,"multa",true) == 0)
@@ -11910,7 +11915,8 @@ CMD:aceptar(playerid,params[]) {
 		TicketMoney[playerid] = 0;
 		return 1;
 	}
-	else if(strcmp(text,"mecanico",true) == 0) {
+	else if(strcmp(text,"mecanico",true) == 0)
+	{
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
 		{
 			if(MechanicCallTime[playerid] > 0)
@@ -11932,10 +11938,11 @@ CMD:aceptar(playerid,params[]) {
 				return 1;
 			}
 		}
-		
-	} else if(strcmp(text,"revision",true) == 0) {
-
+	}
+	else if(strcmp(text,"revision",true) == 0)
+	{
 		new idToShow = ReviseOffer[playerid];
+		
 		if(idToShow == 999)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te quiere revisar.");
 		if(!IsPlayerConnected(idToShow))
@@ -11951,20 +11958,19 @@ CMD:aceptar(playerid,params[]) {
 		PlayerPlayerActionMessage(idToShow, playerid, 15.0, "ha revisado en busca de objetos a");
 		ReviseOffer[playerid] = 999;
 		return 1;
+	}
+	else if(strcmp(text,"taxi",true) == 0)
+	{
+	    new Float:ptX, Float:ptY, Float:ptZ;
 
-	} else if(strcmp(text,"taxi",true) == 0) {
-	    new
-			Float:ptX,
-			Float:ptY,
-			Float:ptZ;
-
-	    if(!jobDuty[playerid] || PlayerInfo[playerid][pJob] != JOB_TAXI) return 1;
-        if(TaxiCallTime[playerid] > 0) {
-            SendClientMessage(playerid, COLOR_GREY, "¡Ya has aceptado una llamada!");
-		    return 1;
-        }
-        if(TaxiCall < 999) {
-            if(IsPlayerConnected(TaxiCall)) {
+	    if(!jobDuty[playerid] || PlayerInfo[playerid][pJob] != JOB_TAXI)
+			return 1;
+        if(TaxiCallTime[playerid] > 0)
+            return SendClientMessage(playerid, COLOR_GREY, "¡Ya has aceptado una llamada!");
+        if(TaxiCall < 999)
+		{
+            if(IsPlayerConnected(TaxiCall))
+			{
             	SendClientMessage(playerid, COLOR_WHITE, "has aceptado la llamada, verás un marcador en el GPS.");
 				SendClientMessage(TaxiCall, COLOR_WHITE, "* Un taxista ha aceptado tu llamada, espere en el lugar por favor.");
 				TaxiCallTime[playerid] = 1;
@@ -11974,13 +11980,12 @@ CMD:aceptar(playerid,params[]) {
 				TaxiCall = 999;
 				return 1;
 			}
-        } else {
-            SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie ha llamado a un taxi!");
-	    	return 1;
         }
-
-	} else if(strcmp(text,"picada",true) == 0){
-	
+		else
+            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Nadie ha llamado a un taxi!");
+	}
+	else if(strcmp(text,"picada",true) == 0)
+	{
 		startSprintRaceChallenge(playerid); // sistema de picadas
 		return 1;
 	} 
