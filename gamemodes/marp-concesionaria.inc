@@ -59,11 +59,11 @@ new carModelSelection[MAX_PLAYERS],
 
 //============================FUNCIONES PUBLICAS================================
 
-GetPlayerDealership(playerid)
+GetNearestDealership(playerid, Float:distance)
 {
 	for(new i = 0; i < MAX_DEALERSHIPS; i++)
 	{
-	    if(PlayerToPoint(1.0, playerid, Dealership[i][dX], Dealership[i][dY], Dealership[i][dZ]))
+	    if(PlayerToPoint(distance, playerid, Dealership[i][dX], Dealership[i][dY], Dealership[i][dZ]))
 	        return i;
 	}
 	return -1;
@@ -139,13 +139,13 @@ public Dealership_SaveModel(dealership, dealershipSlot, option)
 }
 
 
-Dealership_SearchCar(id, modelid)
+Dealership_SearchCar(dealership, modelid)
 {
-	if(id >= 0 && id < MAX_DEALERSHIPS)
+	if(dealership >= 0 && dealership < MAX_DEALERSHIPS)
 	{
 		for(new i = 0; i < MAX_DEALERSHIP_VEHICLES; i++)
 		{
-		    if(DealershipVehicles[id][i] == modelid)
+		    if(DealershipVehicles[dealership][i] == modelid)
 		        return i;
 		}
 	}
@@ -189,7 +189,7 @@ CMD:agregarmodelo(playerid, params[])
 
 	if(sscanf(params, "ii", dealership, modelid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
-	if(GetPlayerDealership(playerid) == -1)
+	if(GetNearestDealership(playerid, 1.0) == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
@@ -226,7 +226,7 @@ CMD:borrarmodelo(playerid, params[])
 
 	if(sscanf(params, "ii", dealership, modelid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
-	if(GetPlayerDealership(playerid) == -1)
+	if(GetNearestDealership(playerid, 1.0) == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
@@ -251,7 +251,7 @@ CMD:borrarmodelo(playerid, params[])
 CMD:vercatalogo(playerid, params[])
 {
 	new string[2000] = "Modelo_____Precio_____Maletero",
-	    dealership = GetPlayerDealership(playerid),
+	    dealership = GetNearestDealership(playerid, 1.0),
 	    modelid;
 
 	if(dealership == -1)
@@ -274,7 +274,7 @@ CMD:vercatalogo(playerid, params[])
 	
 OnCarDealerDialogResponse(playerid, response, listitem)
 {
-	new dealership = GetPlayerDealership(playerid),
+	new dealership = GetNearestDealership(playerid, 1.0),
 	    aux = 0;
 	
 	if(dealership == -1)
@@ -332,7 +332,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 	if(response)
 	{
 		new color2 = strval(inputtext),
-		    dealership = GetPlayerDealership(playerid);
+		    dealership = GetNearestDealership(playerid, 1.0);
 
 		if(dealership == -1)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
@@ -353,7 +353,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 
 OnCarDealer4DialogResponse(playerid, response, listitem)
 {
-	new dealership = GetPlayerDealership(playerid),
+	new dealership = GetNearestDealership(playerid, 1.0),
 	    str[150],
 	    str2[32];
 
@@ -386,11 +386,12 @@ OnCarDealer5DialogResponse(playerid, response)
     Dealership_DestroyPreviewModel(playerid);
 	if(response)
 	{
-		new dealership = GetPlayerDealership(playerid),
+		new dealership = GetNearestDealership(playerid, 1.0),
 		    price = GetVehicleModelPrice(carModelSelection[playerid], 100),
 		    dealershipSlot = Dealership_SearchCar(dealership, carModelSelection[playerid]),
  		   	newveh = -1,
-		    playerName[MAX_PLAYER_NAME];
+		    playerName[MAX_PLAYER_NAME],
+		    str[64];
 
 		if(dealership == -1)
      		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
@@ -443,6 +444,8 @@ OnCarDealer5DialogResponse(playerid, response)
 
 		addKeyToPlayer(playerid, newveh, playerid);
 		SaveVehicle(newveh);
+		format(str, sizeof(str), "Mod:%d C1:%d C2:%d", carModelSelection[playerid], carColor1Selection[playerid], carColor2Selection[playerid]);
+		VehicleLog(newveh, playerid, INVALID_PLAYER_ID, "/vehcomprar", str);
 	}
  	return 1;
 }

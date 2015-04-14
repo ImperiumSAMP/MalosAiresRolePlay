@@ -2740,15 +2740,16 @@ public OnServerDataLoad() {
 }
 
 forward OnFactionDataLoad(id);
-public OnFactionDataLoad(id) {
-    new
-		result[128],
+public OnFactionDataLoad(id)
+{
+    new result[128],
 		rows,
 		fields;
 
 	cache_get_data(rows, fields);
 
-    if(rows) {
+    if(rows)
+	{
 		cache_get_field_content(0, "Type", result); 					FactionInfo[id][fType] 		= strval(result);
 		cache_get_field_content(0, "Materials", result);				FactionInfo[id][fMaterials] = strval(result);
 		cache_get_field_content(0, "Bank", result); 					FactionInfo[id][fBank] 		= strval(result);
@@ -2772,7 +2773,8 @@ public OnFactionDataLoad(id) {
 }
 
 forward OnVehicleDataLoad(id);
-public OnVehicleDataLoad(id) {
+public OnVehicleDataLoad(id)
+{
    	new
 		result[128],
 		rows,
@@ -2780,7 +2782,8 @@ public OnVehicleDataLoad(id) {
 
 	cache_get_data(rows, fields);
 
-    if(rows) {
+    if(rows)
+	{
 	    cache_get_field_content(0, "VehSQLID", result); 				VehicleInfo[id][VehSQLID] 		= strval(result);
 		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
 		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
@@ -2811,7 +2814,8 @@ public OnVehicleDataLoad(id) {
 		cache_get_field_content(0, "VehPlate",							VehicleInfo[id][VehPlate],1,32);
 		cache_get_field_content(0, "VehOwnerName",						VehicleInfo[id][VehOwnerName],1,MAX_PLAYER_NAME);
 		
-		if(VehicleInfo[id][VehType] == VEH_OWNED) {
+		if(VehicleInfo[id][VehType] == VEH_OWNED)
+		{
 		    cache_get_field_content(0, "VehCompSlot0", result); 		VehicleInfo[id][VehCompSlot][0] = strval(result);
 		    cache_get_field_content(0, "VehCompSlot1", result); 		VehicleInfo[id][VehCompSlot][1] = strval(result);
 		    cache_get_field_content(0, "VehCompSlot2", result); 		VehicleInfo[id][VehCompSlot][2] = strval(result);
@@ -2831,17 +2835,16 @@ public OnVehicleDataLoad(id) {
 		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
  			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
 
-		} else {
-			if(VehicleInfo[id][VehType] == VEH_DEALERSHIP || VehicleInfo[id][VehType] == VEH_DEALERSHIP2 || VehicleInfo[id][VehType] == VEH_SHIPYARD) {
-			    // Vehículos de consecionaria.
-                VehicleInfo[id][VehColor1] = random(255);
-				VehicleInfo[id][VehColor2] = random(255);
-				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_RENT) {
+		}
+		else
+		{
+			if(VehicleInfo[id][VehType] == VEH_RENT)
+			{
 			    // Vehículos de renta.
-			    for(new i = 1; i < MAX_RENTCAR; i++) {
-			    	if(RentCarInfo[i][rVehicleID] < 1) { // Si ese slot no está cargado
+			    for(new i = 1; i < MAX_RENTCAR; i++)
+				{
+			    	if(RentCarInfo[i][rVehicleID] < 1) // Si ese slot no está cargado
+					{
                     	RentCarInfo[i][rVehicleID] = id;
                     	RentCarInfo[i][rOwnerSQLID] = 0;
                     	RentCarInfo[i][rTime] = 0;
@@ -4126,10 +4129,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				}
 		 	}
 		}
-		else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
-		{
-			RemovePlayerFromVehicle(playerid);
-		}
 		else if(VehicleInfo[vehicleid][VehType] == VEH_OWNED && VehicleInfo[vehicleid][VehLocked] == 1 && AdminDuty[playerid] != 1)
 		{
 		    if(vehicleModelType == VTYPE_BMX || vehicleModelType == VTYPE_BIKE || vehicleModelType == VTYPE_QUAD)
@@ -4229,19 +4228,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					SendClientMessage(playerid, COLOR_WHITE, "=============================================================");
 				}
 			}
-		}
-		else if(VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP || VehicleInfo[vehicleid][VehType] == VEH_DEALERSHIP2 || VehicleInfo[vehicleid][VehType] == VEH_SHIPYARD)
-		{
-		    SendClientMessage(playerid,COLOR_WHITE,"=======================[Vehículo en Venta]=======================");
-			SendFMessage(playerid, COLOR_WHITE, "Modelo: %s.", GetVehicleName(vehicleid));
-			SendFMessage(playerid, COLOR_WHITE, "Costo real: $%d.", GetVehiclePrice(vehicleid,100));
-			SendFMessage(playerid, COLOR_WHITE, "Costo actual: {3E9D41}$%d{FFFFFF} (%d%%%%).", GetVehiclePrice(vehicleid,ServerInfo[sVehiclePricePercent]), ServerInfo[sVehiclePricePercent]);
-			if(GetVehicleMaxTrunkSlots(vehicleid) > 0)
-				SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
-			else
-			    SendClientMessage(playerid, COLOR_WHITE, "Maletero: No.");
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"(( Para comprar éste vehículo utiliza '/vehcomprar [color1] [color2]'. ))");
-			SendClientMessage(playerid,COLOR_WHITE,"=============================================================");
 		}
 		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid))
 		{
@@ -6033,31 +6019,11 @@ IsAtGasStation(playerid)
 	return 0;
 }
 
-stock IsAtDealership(playerid)
-{
-    if (PlayerToPoint(35.0, playerid, 2128.0864, -1135.3912, 25.5855) ||
-		PlayerToPoint(50.0, playerid, 537.3366, -1293.2140, 17.2422) ||
-		PlayerToPoint(35.0, playerid, 2940.2000, -2051.7338, 3.5480)) {
-        return 1;
-    }
-    return 0;
-}
-
 stock IsAtBlackMarket(playerid)
 {
 	if (PlayerToPoint(2.0, playerid, POS_BM1_X, POS_BM1_Y, POS_BM1_Z) ||
 		PlayerToPoint(2.0, playerid, POS_BM2_X, POS_BM2_Y, POS_BM2_Z) ||
 		PlayerToPoint(2.0, playerid, POS_BM3_X, POS_BM3_Y, POS_BM3_Z)) {
-        return 1;
-    }
-    return 0;
-}
-
-stock IsVehicleParkedAtDealership(vehicleid)
-{
-    if (ParkedVehicleToPoint(35.0, vehicleid, 2128.0864, -1135.3912, 25.5855) ||
-		ParkedVehicleToPoint(50.0, vehicleid, 537.3366, -1293.2140, 17.2422) ||
-		ParkedVehicleToPoint(35.0, vehicleid, 2940.2000, -2051.7338, 3.5480)) {
         return 1;
     }
     return 0;
@@ -6982,12 +6948,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
                     Choice[playerid] = CHOICE_NONE;
                     
                    	new vehicleid = GetPlayerVehicleID(playerid),
-					   	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]);
+					   	price = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]),
+					   	dealership = GetNearestDealership(playerid, 25.0);
 					   
 					if(!IsPlayerInAnyVehicle(playerid))
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras en un vehículo.");
-					if(!IsAtDealership(playerid))
-					    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo en cualquier lugar!");
+					if(dealership == -1)
+        				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de una concesionaria para vender el vehículo.");
 					if(!playerOwnsCar(playerid,vehicleid))
 						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo que no te pertenece!");
 
@@ -7003,10 +6970,13 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				}
             }
             PlayerPlaySound(playerid, 5201, 0.0, 0.0, 0.0);
-		} else if(PRESSED(KEY_NO)) {
-            switch(Choice[playerid]) {
-                case CHOICE_CARSELL: {
-
+		}
+		else if(PRESSED(KEY_NO))
+		{
+            switch(Choice[playerid])
+			{
+                case CHOICE_CARSELL:
+				{
                 }
             }
             PlayerPlaySound(playerid, 5205, 0.0, 0.0, 0.0);
