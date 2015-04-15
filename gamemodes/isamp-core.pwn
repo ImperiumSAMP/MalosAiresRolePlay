@@ -7499,25 +7499,39 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		{
 		    new str[128];
 		    
+		    if(TicketOffer[playerid] >= 999)
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ninguna multa!");
+      		if(!IsPlayerConnected(TicketOffer[playerid]))
+      	    	return SendClientMessage(playerid, COLOR_YELLOW2, "El oficial que te multó se ha desconectado.");
+      	    	
 		    if(response)
 		    {
    				if(GetPlayerCash(playerid) < TicketMoney[playerid])
-		    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero en efectivo suficiente!");
-
+   				{
+   				    SendClientMessage(TicketOffer[playerid], COLOR_YELLOW2, "El sujeto decidió pagar en efectivo, pero no tiene el dinero suficiente.");
+		    		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero en efectivo suficiente!");
+		    		return 1;
+				}
+				
+				format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa con efectivo - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
 				GivePlayerCash(playerid, -TicketMoney[playerid]);
 			}
 		    else
 		    {
 		    	if(PlayerInfo[playerid][pBank] < TicketMoney[playerid])
-		    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente en tu cuenta bancaria!");
-
+		    	{
+		    	    SendClientMessage(TicketOffer[playerid], COLOR_YELLOW2, "El sujeto decidió pagar por transferencia bancaria, pero no tiene dinero suficiente en su cuenta.");
+		    		SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente en tu cuenta bancaria!");
+					return 1;
+				}
+				
 				PlayerInfo[playerid][pBank] -= TicketMoney[playerid];
+				format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa por transferencia bancaria - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
 			}
-
+			
+            SendClientMessage(TicketOffer[playerid], COLOR_LIGHTYELLOW2, str);
 			format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} multa pagada - costo: $%d.", TicketMoney[playerid]);
 			SendClientMessage(playerid, COLOR_WHITE, str);
-			format(str, sizeof(str), "{878EE7}[INFO]:{C8C8C8} %s ha pagado tu multa - costo: $%d.", GetPlayerNameEx(playerid), TicketMoney[playerid]);
-			SendClientMessage(TicketOffer[playerid], COLOR_LIGHTYELLOW2, str);
 			GiveFactionMoney(FAC_GOB, TicketMoney[playerid]);
 			TicketOffer[playerid] = 999;
 			TicketMoney[playerid] = 0;
@@ -11905,12 +11919,14 @@ CMD:aceptar(playerid,params[])
 	    if(TicketOffer[playerid] >= 999)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ninguna multa!");
       	if(!IsPlayerConnected(TicketOffer[playerid]))
-      	    return SendClientMessage(playerid, COLOR_YELLOW2, "El oficial se ha desconectado.");
+      	    return SendClientMessage(playerid, COLOR_YELLOW2, "El oficial que te multó se ha desconectado.");
 		if(!ProxDetectorS(3.0, playerid, TicketOffer[playerid]))
         	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar cerca del oficial que te ha multado!");
 
+        format(string, sizeof(string), "%s ha aceptado tu multa. Espera a que elija una forma de pago.", GetPlayerNameEx(playerid));
+        SendClientMessage(TicketOffer[playerid], COLOR_WHITE, string);
 		format(string, sizeof(string), "Aceptaste la multa de %s por %d.\nSeleciona la forma de pago:", GetPlayerNameEx(TicketOffer[playerid]), TicketMoney[playerid]);
-		ShowPlayerDialog(playerid, DLG_POLICE_FINE, DIALOG_STYLE_MSGBOX, "Te han multado", string, "Pagar en efectivo", "Pagar por transferencia bancaria");
+		ShowPlayerDialog(playerid, DLG_POLICE_FINE, DIALOG_STYLE_MSGBOX, "Te han multado", string, "Efectivo", "Tarjeta");
 		return 1;
 	}
 	else if(strcmp(text,"mecanico",true) == 0)
