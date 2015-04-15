@@ -2604,29 +2604,37 @@ public OnBanDataLoad(playerid)
 }
 
 forward OnUnbanDataLoad(playerid, type, target[32]);
-public OnUnbanDataLoad(playerid, type, target[32]) {
-	new rows;
-	new fields;
-	new string[128];
-	new query[128];
+public OnUnbanDataLoad(playerid, type, target[32])
+{
+	new rows,
+		fields,
+		string[128],
+		query[128];
 	
     cache_get_data(rows, fields);
 
-	if (type == 0) {
-	    if (rows) {
+	if(type == 0)
+	{
+	    if(rows)
+		{
 			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
-
 			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pName` = '%s'", target);
-		} else {
+		}
+		else
+		{
 		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con el nombre '%s' en la base de datos.", target);
 		    return 1;
 		}
-	} else if (type == 1) {
-		if (rows) {
+	}
+	else if(type == 1)
+	{
+		if(rows)
+		{
 			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
-
 			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pIP` = '%s'", target);
-		} else {
+		}
+		else
+		{
 		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con la IP '%s' en la base de datos.", target);
 		    return 1;
 		}

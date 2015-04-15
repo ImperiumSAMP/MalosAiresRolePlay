@@ -402,7 +402,7 @@ static const CarModels[][CarModelInfo] = {
 /*576*/	{"Tornado", VTYPE_CAR, 68000, 2},
 /*577*/	{"AT400", VTYPE_PLANE, 3500000, 6},
 /*578*/	{"DFT-30", VTYPE_CAR, 190000, 2},
-/*579*/	{"Huntley", VTYPE_CAR, 135000, 4},
+/*579*/	{"Huntley", VTYPE_CAR, 250000, 4},
 /*580*/	{"Stafford", VTYPE_CAR, 95000, 4},
 /*581*/	{"BF-400", VTYPE_BIKE, 60000, 0},
 /*582*/	{"Newsvan", VTYPE_CAR, 125000, 4},

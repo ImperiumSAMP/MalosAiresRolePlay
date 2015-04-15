@@ -200,7 +200,7 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 17518, 2361.9375, -1699.9375, 15.9219, 0.25);
 	RemoveBuildingForPlayer(playerid, 1408, 2265.2969, -1791.0000, 13.1563, 0.25);
 
-	// Concesionaria Trepat
+	// Concesionaria Pinar
 	RemoveBuildingForPlayer(playerid, 5873, 1022.5078, -1078.8906, 34.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 5876, 1022.5313, -1096.3672, 34.6250, 0.25);
 	RemoveBuildingForPlayer(playerid, 5963, 982.3672, -1090.9219, 28.9219, 0.25);
@@ -8526,55 +8526,55 @@ stock LoadMap() {
 	CreateDynamicObject(2103, 1888.03577, 1895.65527, 1015.66138,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(2596, 1887.53674, 1888.08838, 1015.83496,   10.00000, 0.00000, 132.89999);
 	
-	//==========================Concesionaria Trepat============================
+	//===========================CONCESIONARIA PINAR============================
 	// Paredes
 	Textura = CreateDynamicObject(18766, 991.80701, -1124.63293, 25.30030,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 991.80701, -1114.63611, 25.30030,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 991.80701, -1124.63293, 30.29900,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 991.80701, -1114.63611, 30.29900,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 988.64069, -1130.28955, 30.29900,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 986.30811, -1110.14075, 30.29900,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 977.65460, -1110.13684, 25.30030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 986.30811, -1110.13684, 25.30030,   0.00000, 0.00000, 0.18000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 977.65460, -1110.13684, 30.29990,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 973.15472, -1125.62512, 30.29900,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 978.64508, -1130.28955, 30.29900,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 973.15472, -1115.63245, 30.30950,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18766, 991.81403, -1125.79285, 25.30030,   0.00000, 0.00000, 90.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	// Columnas
 	Textura = CreateDynamicObject(18762, 973.15472, -1115.15784, 25.34030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 977.24652, -1130.28955, 25.32030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 987.06982, -1130.14856, 25.30030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 973.15472, -1120.44763, 25.34030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 982.09161, -1130.22961, 25.32030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 973.15472, -1130.34827, 25.34030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 973.15472, -1125.33655, 25.34030,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 982.57910, -1119.79663, 23.61890,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", 0xFF848383);
 	Textura = CreateDynamicObject(18762, 991.80701, -1130.11230, 30.29900,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	Textura = CreateDynamicObject(18762, 973.16467, -1130.34827, 30.29900,   0.00000, 0.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 5720, "sunrise10_lawn", "holbuild02d_law", -1);
+	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	//Pisos y techos
 	Textura = CreateDynamicObject(19380, 978.87250, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
@@ -8592,7 +8592,7 @@ stock LoadMap() {
 	CreateDynamicObject(3858, 984.64172, -1130.66467, 25.71500,   0.00000, 0.00000, -134.16010);
 	CreateDynamicObject(3859, 972.67029, -1113.04810, 25.54560,   0.00000, 0.00000, -162.95999);
 	CreateDynamicObject(3858, 972.67029, -1122.89050, 25.54560,   0.00000, 0.00000, -225.00011);
-
+	
 	CreateDynamicObject(8572, 988.42908, -1121.20203, 25.04080,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(3850, 982.10431, -1111.64331, 26.82750,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(3850, 982.09949, -1115.10095, 26.82750,   0.00000, 0.00000, 0.00000);
@@ -8633,6 +8633,74 @@ stock LoadMap() {
 	CreateDynamicObject(2773, 984.76428, -1126.14221, 23.34520,   0.00000, 0.00000, 326.69974);
 	CreateDynamicObject(2773, 986.93604, -1127.47217, 23.34520,   0.00000, 0.00000, 328.79965);
 	CreateDynamicObject(2773, 984.53308, -1129.02612, 23.34520,   0.00000, 0.00000, 237.77968);
+
+	Textura = CreateDynamicObject(18762, 980.20923, -1130.89600, 30.92920,   0.00000, 90.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 2164, "cj_office", "white32", 0xFF020202);
+	Textura = CreateDynamicObject(18762, 983.60919, -1130.89673, 30.92920,   0.00000, 90.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 2164, "cj_office", "white32", 0xFF020202);
+	Textura = CreateDynamicObject(18244, 981.91711, -1130.90259, 29.70910,   90.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 6357, "sunstrans_law2", "SunBillB10", -1);
+
+	Textura = CreateDynamicObject(18762, 972.51880, -1120.21082, 30.92920,   0.00000, 90.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 2164, "cj_office", "white32", 0xFF020202);
+	Textura = CreateDynamicObject(18762, 972.51813, -1123.60864, 30.92920,   0.00000, 90.00000, 90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 2164, "cj_office", "white32", 0xFF020202);
+	Textura = CreateDynamicObject(18244, 972.53247, -1121.77551, 29.70910,   90.00000, 0.00000, -90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 6357, "sunstrans_law2", "SunBillB10", -1);
+
+	CreateDynamicObject(18263, 987.17511, -1116.72034, 35.08197,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(1635, 982.00391, -1109.08154, 29.44268,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(2254, 991.28149, -1123.86267, 25.50780,   0.00000, 0.00000, -90.00000);
+	Textura = CreateDynamicObject(19172, 991.29651, -1127.43079, 25.82215,   0.00000, 0.00000, -90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 10249, "ottos2_sfw", "ottos_pics_sfe", -1);
+	Textura = CreateDynamicObject(19172, 991.30505, -1114.54138, 25.05154,   0.00000, 0.00000, -90.00000);
+	SetDynamicObjectMaterial(Textura, 0, 10249, "ottos2_sfw", "ottos_pics_sfe", -1);
+	Textura = CreateDynamicObject(19172, 978.07458, -1110.67651, 25.05150,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterial(Textura, 0, 10249, "ottos2_sfw", "ottos_pics_sfe", -1);
+	
+	Textura = CreateDynamicObject(19361, 979.7401, -1131.3258, 31.0649,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "Pinar", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+	Textura = CreateDynamicObject(19361, 982.1201, -1131.3258, 31.0649,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "Automo", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+	Textura = CreateDynamicObject(19361, 984.0581, -1131.3258, 31.0649,   0.00000, 0.00000, 90.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "tores", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+	
+	Textura = CreateDynamicObject(19361, 972.08038, -1119.75085, 31.06490,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "Pinar", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+	Textura = CreateDynamicObject(19361, 972.08038, -1122.10229, 31.06490,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "Automo", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+	Textura = CreateDynamicObject(19361, 972.08038, -1124.03880, 31.06490,   0.00000, 0.00000, 0.00000);
+	SetDynamicObjectMaterialText(Textura, 0, "tores", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
+
+	CreateDynamicObject(2835, 985.35791, -1116.50293, 26.28590,   0.00000, 0.00000, -43.98000);
+	CreateDynamicObject(2231, 973.45038, -1114.91162, 26.63880,   10.00000, 0.00000, 90.00000);
+	CreateDynamicObject(2231, 986.83710, -1129.85364, 26.63880,   10.00000, 0.00000, 180.00000);
+	CreateDynamicObject(3920, 973.55292, -1116.97046, 30.76000,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3920, 973.55292, -1123.54248, 30.76000,   0.00000, 0.00000, -90.00000);
+	CreateDynamicObject(3920, 980.07599, -1129.90332, 30.76000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(3920, 985.03003, -1129.90332, 30.76000,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(3920, 991.37750, -1123.27576, 30.76000,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(3920, 991.37750, -1116.95081, 30.76000,   0.00000, 0.00000, 90.00000);
+	CreateDynamicObject(3920, 984.75940, -1110.38550, 30.76000,   0.00000, 0.00000, 180.00000);
+	CreateDynamicObject(3920, 980.10748, -1110.39758, 30.76000,   0.00000, 0.00000, 180.00000);
+	//Plazita
+	CreateDynamicObject(800, 986.92218, -1053.95911, 31.82136,   0.00000, 0.00000, 28.25999);
+	CreateDynamicObject(800, 985.79871, -1056.37598, 30.17197,   0.00000, 0.00000, 81.30000);
+	CreateDynamicObject(800, 983.13440, -1060.45203, 29.33634,   0.00000, 0.00000, 135.48000);
+	CreateDynamicObject(800, 980.95825, -1064.23047, 29.33634,   0.00000, 0.00000, 198.12004);
+	CreateDynamicObject(800, 978.33264, -1068.02747, 27.22262,   0.00000, 0.00000, 198.12004);
+	CreateDynamicObject(616, 986.36066, -1058.18799, 24.93420,   0.00000, 0.00000, 70.61999);
+	CreateDynamicObject(617, 984.87097, -1064.41638, 22.70635,   0.00000, 0.00000, 211.50000);
+	CreateDynamicObject(656, 984.70905, -1074.24316, 24.80081,   0.00000, 0.00000, 66.12002);
+	CreateDynamicObject(714, 992.67664, -1092.25183, 22.73260,   0.00000, 0.00000, 210.89990);
+	CreateDynamicObject(6965, 980.36792, -1090.88672, 25.39555,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(3472, 987.62378, -1085.45459, 23.23172,   0.00000, 0.00000, 165.77995);
+	CreateDynamicObject(3472, 987.60406, -1096.10205, 23.18963,   0.00000, 0.00000, 73.79996);
+	CreateDynamicObject(1280, 987.44208, -1091.00427, 23.27345,   0.00000, 0.00000, 0.60000);
+	CreateDynamicObject(1280, 980.87811, -1085.90063, 23.27350,   0.00000, 0.00000, 91.97999);
+	CreateDynamicObject(1280, 980.68573, -1096.05664, 23.31806,   0.00000, 0.00000, -89.52001);
+	CreateDynamicObject(669, 978.99579, -1054.64417, 28.61099,   0.00000, 0.00000, 0.00000);
+	CreateDynamicObject(803, 976.05499, -1051.99854, 29.17070,   0.00000, 0.00000, 167.70000);
 	//==========================================================================
 	return 1;
 }
