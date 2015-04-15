@@ -369,7 +369,7 @@ OnCarDealer4DialogResponse(playerid, response, listitem)
   		else if(listitem == 1)
   		{
   		    carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_BANK;
-  		    format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d + 3%\n\tForma de pago: Transferencia bancaria", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
+  		    format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d + 3%%\n\tForma de pago: Transferencia bancaria", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		}
 		ShowPlayerDialog(playerid, DLG_CARDEALER5, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}

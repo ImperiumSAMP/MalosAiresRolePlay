@@ -506,11 +506,14 @@ GetVehicleType(vehicleid)
 	return CarModels[modelid-400][mType];
 }
 
-VehTypeName(type) {
+VehTypeName(type)
+{
     new name[32];
-    switch(type) {
+    
+    switch(type)
+	{
         case 0: format(name, 32, "ninguno");
-		case 1,8,10: format(name, 32, "venta");
+		case 1: format(name, 32, "estático");
 		case 2: format(name, 32, "personal");
 		case 3: format(name, 32, "faccion");
 		case 4: format(name, 32, "escuela");
@@ -522,21 +525,25 @@ VehTypeName(type) {
     return name;
 }
 
-stock getVehicleJob(vehid) {
+stock getVehicleJob(vehid)
+{
 	return VehicleInfo[vehid][VehJob];
 }
 
-stock getVehicleType(vehid) {
+stock getVehicleType(vehid)
+{
 	return VehicleInfo[vehid][VehType];
 }
 
-stock getVehicleDescription(vehicleid){
+stock getVehicleDescription(vehicleid)
+{
 	new vehdesc[64];
 	format(vehdesc,64, "%s de %s",GetVehicleName(vehicleid),VehicleInfo[vehicleid][VehOwnerName]);
 	return vehdesc;
 }
 
-public respawnVeh(vehicleid) {
+public respawnVeh(vehicleid)
+{
 	SetVehicleToRespawn(vehicleid);
 	return 1;
 }
