@@ -344,7 +344,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 
         carColor2Selection[playerid] = color2;
 		Dealership_SetPreviewModelColor(playerid, carColor1Selection[playerid], carColor2Selection[playerid]);
-		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_LIST, "Selecciona la forma de pago que usarás", "Con efectivo\nTransferencia bancaria", "Continuar", "Volver");
+		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_LIST, "Selecciona la forma de pago que usarás", "Con efectivo\nTransferencia bancaria (recargo del 3%)", "Continuar", "Volver");
 	}
 	else
 	    ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
@@ -354,8 +354,7 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
 OnCarDealer4DialogResponse(playerid, response, listitem)
 {
 	new dealership = GetNearestDealership(playerid, 1.0),
-	    str[150],
-	    str2[32];
+	    str[150];
 
 	if(dealership == -1)
      	return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
@@ -365,14 +364,13 @@ OnCarDealer4DialogResponse(playerid, response, listitem)
 		if(listitem == 0)
 		{
 			carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_CASH;
-			format(str2, sizeof(str2), "%s", "Pago en efectivo");
+			format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d\n\tForma de pago: Pago en efectivo", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		}
   		else if(listitem == 1)
   		{
   		    carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_BANK;
-  		    format(str2, sizeof(str2), "%s", "Transferencia bancaria");
+  		    format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d + 3%\n\tForma de pago: Transferencia bancaria", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		}
-		format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d\n\tForma de pago: %s", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100), str2);
 		ShowPlayerDialog(playerid, DLG_CARDEALER5, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}
 	else
@@ -401,7 +399,7 @@ OnCarDealer5DialogResponse(playerid, response)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Error: no tienes más espacio en tu llavero para otra llave.");
 		if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_CASH && GetPlayerCash(playerid) < price)
         	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡Vuelve cuando tengas el dinero en efectivo suficiente!");
-        if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_BANK && PlayerInfo[playerid][pBank] < price)
+        if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_BANK && PlayerInfo[playerid][pBank] < price / 100 * 103)
         	return SendClientMessage(playerid, COLOR_YELLOW2,"* Vendedor: ¡No tienes suficiente dinero en tu cuenta bancaria!");
 
 		for(new vid = 1; vid < MAX_VEH; vid++)
@@ -418,7 +416,7 @@ OnCarDealer5DialogResponse(playerid, response)
 		if(carPaymentSelection[playerid] == DEALERSHIP_PAYMENT_CASH)
 			GivePlayerCash(playerid, -price);
 		else
-		    PlayerInfo[playerid][pBank] -= price;
+		    PlayerInfo[playerid][pBank] -= price / 100 * 103; // Recargo 3%
 		    
 	 	GetPlayerName(playerid, playerName, sizeof(playerName));
 		VehicleInfo[newveh][VehType] = VEH_OWNED;
