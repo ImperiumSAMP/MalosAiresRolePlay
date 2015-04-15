@@ -5,7 +5,7 @@
 
 //=================================CONSTANTES===================================
 
-#define MAX_DEALERSHIPS         6
+#define MAX_DEALERSHIPS         7
 #define MAX_DEALERSHIP_VEHICLES 30
 
 #define DEALERSHIP_GROTTI       0
@@ -45,7 +45,8 @@ static const Dealership[MAX_DEALERSHIPS][DealershipInfo] = {
 	{"Sergio Trepat Automoviles", 986.23, -1116.85, 27.28, 980.71, -1135.76, 23.46, 90.74},
 	{"Concesionaria Ciudad Moto", 1295.83, -1870.33, 13.54, 1296.01, -1859.91, 13.18, 89.33},
 	{"Freddi Aviones", 1921.14, -2235.02, 13.54, 1903.13, -2315.69, 13.18, 218.39},
-	{"Nautica Gabott", 2939.37, -2051.45, 3.54, 2937.79, -2064.40, 0.09, 271.84}
+	{"Nautica Gabott", 2939.37, -2051.45, 3.54, 2937.79, -2064.40, 0.09, 271.84},
+	{"RS Hauling Utilitarios", 2248.24, -2185.43, 13.57, 2219.23, -2178.56, 14.04, 45.25}
 };
 
 new DealershipVehicles[MAX_DEALERSHIPS][MAX_DEALERSHIP_VEHICLES];

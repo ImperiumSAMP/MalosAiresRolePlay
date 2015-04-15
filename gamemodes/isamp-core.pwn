@@ -4610,8 +4610,8 @@ stock LoadPickups() {
 	return 1;
 }
 
-public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
-
+public OnPlayerPickUpDynamicPickup(playerid, pickupid)
+{
 	for(new i = 0; i < 5; i++) {
 	    if(pickupid == P_TUNE[i]) {
 	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
@@ -4650,7 +4650,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		return 1;
 
 	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco", 2000, 4);
+		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
 		return 1;
 
 	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
@@ -4658,7 +4658,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid) {
 		return 1;
 
 	} else if(pickupid == P_SIDE_DUTY && PlayerInfo[playerid][pFaction] == FAC_SIDE) {
-		GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco", 2000, 4);
+		GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco - /smacana - /stazer", 2000, 4);
 		return 1;
 
 	} else if(pickupid == P_LICENSE_CENTER) {
