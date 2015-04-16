@@ -6525,6 +6525,8 @@ SetPlayerFaction(targetid, factionid, rank)
 		if(FactionInfo[factionid][fAllowJob] == 0)
 		{
 			PlayerInfo[targetid][pJobAllowed] = 0;
+			if(GetJobType(PlayerInfo[targetid][pJob]) == JOB_TYPE_LEGAL)
+			    PlayerJobInfo[targetid][pState] = JOB_STATE_RESIGNED;
 			PlayerInfo[targetid][pJob] = 0;
 		}
 			
