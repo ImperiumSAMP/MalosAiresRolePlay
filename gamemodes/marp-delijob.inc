@@ -128,7 +128,7 @@ DeliJob_StartWork(playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu cargo en la empresa no tiene acceso a ese modelo de moto!");
 	if(PlayerInfo[playerid][pCarLic] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
-	if(PlayerInfo[playerid][pCantWork] > JOB_DELI_MAX_DELIVERYS)
+	if(PlayerInfo[playerid][pCantWork] >= JOB_DELI_MAX_DELIVERYS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya has alcanzado el máximo de entregas posibles por este día de pago.");
 
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);

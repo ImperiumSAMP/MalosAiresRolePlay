@@ -10,7 +10,7 @@
 
 #define DEALERSHIP_GROTTI       0
 #define DEALERSHIP_JEFFERSON    1
-#define DEALERSHIP_TREPAT     	2
+#define DEALERSHIP_PINAR     	2
 #define DEALERSHIP_CIUDADMOTO   3
 #define DEALERSHIP_FREDDI     	4
 #define DEALERSHIP_GABOTT     	5
@@ -43,7 +43,7 @@ enum DealershipInfo {
 static const Dealership[MAX_DEALERSHIPS][DealershipInfo] = {
 	{"Concesionarios Grotti", 542.35, -1292.83, 17.16, 546.86, -1266.70, 16.86, 302.50},
 	{"Concesionarios Jefferson", 2131.77, -1150.91, 24.02, 2128.34, -1135.81, 25.16, 355.38},
-	{"Sergio Trepat Automoviles", 986.23, -1116.85, 27.28, 980.71, -1135.76, 23.46, 90.74},
+	{"Pinar Automotores", 986.23, -1116.85, 27.28, 980.71, -1135.76, 23.46, 90.74},
 	{"Concesionaria Ciudad Moto", 1295.83, -1870.33, 13.54, 1296.01, -1859.91, 13.18, 89.33},
 	{"Freddi Aviones", 1921.14, -2235.02, 13.54, 1903.13, -2315.69, 13.18, 218.39},
 	{"Nautica Gabott", 2939.37, -2051.45, 3.54, 2937.79, -2064.40, 0.09, 271.84},
@@ -455,7 +455,6 @@ Dealership_CreatePreviewModel(playerid, carmodel, color1, color2)
 	// Frente
 	PTD_Concesionaria[playerid][0] = CreatePlayerTextDraw(playerid, 480, 150, " ");
 	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid][0], TEXT_DRAW_FONT_MODEL_PREVIEW);
-	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid][0], 1);
 	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid][0], 0x00000090);
 	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid][0], 150.0, 112.0);
 	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid][0], carmodel);
@@ -465,7 +464,6 @@ Dealership_CreatePreviewModel(playerid, carmodel, color1, color2)
 	// Cola
 	PTD_Concesionaria[playerid][1] = CreatePlayerTextDraw(playerid, 480, 262, " ");
 	PlayerTextDrawFont(playerid, PTD_Concesionaria[playerid][1], TEXT_DRAW_FONT_MODEL_PREVIEW);
-	PlayerTextDrawUseBox(playerid, PTD_Concesionaria[playerid][1], 1);
 	PlayerTextDrawBackgroundColor(playerid, PTD_Concesionaria[playerid][1], 0x00000090);
 	PlayerTextDrawTextSize(playerid, PTD_Concesionaria[playerid][1], 150.0, 112.0);
 	PlayerTextDrawSetPreviewModel(playerid, PTD_Concesionaria[playerid][1], carmodel);
