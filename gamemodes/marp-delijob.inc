@@ -112,7 +112,7 @@ stock DeliJob_GetVehicleCharge(vehicleid)
  	{
  	    case 462: return 1; //faggio
 		case 581: return 3; //bf400
-		case 461: return 4; //pcj600
+		case 461: return 5; //pcj600
 	}
 	return 1;
 }
@@ -202,7 +202,6 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 		RemovePlayerFromVehicle(playerid);
   		SetEngine(vehicleid, 0);
 		SetVehicleToRespawn(vehicleid);
-	    PlayerInfo[playerid][pCantWork]++;
 	    jobDuty[playerid] = false;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
@@ -227,7 +226,7 @@ DeliJob_TravelTimeLimit(playerid)
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);
-	PlayerJobInfo[playerid][pReputation] -= 30;
+	PlayerJobInfo[playerid][pReputation] -= 6;
 }
 
 DeliJob_Payment(playerid, vehicleid)
@@ -237,7 +236,7 @@ DeliJob_Payment(playerid, vehicleid)
     GetVehicleHealth(vehicleid, vHealth);
     if(vHealth + 30.0 < jobVehicleHealth[playerid])
     {
-        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 20; // La reputación que baja es proporcional al daño del vehículo (un décimo)
         injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 2; // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo / 2.
 		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste la moto en mal estado.");
 	}
@@ -251,7 +250,7 @@ DeliJob_Payment(playerid, vehicleid)
 	PlayerInfo[playerid][pPayCheck] += paycheck;
 	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
 
-	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado la entrega a tiempo y recibirás $%d adicionales en el próximo payday. Puedes hacer %d entregas más el día de hoy.", paycheck, JOB_DELI_MAX_DELIVERYS - PlayerInfo[playerid][pCantWork]);
+	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado la entrega a tiempo y recibirás $%d adicionales en el próximo payday. Puedes hacer %d entrega/s más el día de hoy.", paycheck, JOB_DELI_MAX_DELIVERYS - PlayerInfo[playerid][pCantWork]);
 	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Pago base por entrega: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_DELI), seniorityBonus, chargeBonus, injuriesCost);
 }
 
