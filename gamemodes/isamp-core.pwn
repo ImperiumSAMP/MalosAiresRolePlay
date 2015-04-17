@@ -70,6 +70,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-drugfjob.inc"
 #include "marp-delijob.inc"
 #include "marp-paintball.inc"
+#include "marp-tutorial.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
@@ -88,7 +89,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MAX_TEXTDRAWS           10
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
 #define MAX_LOGIN_ATTEMPTS      5
-#define TUT_TIME                10000                                           // Tiempo para reintentar el tutorial.
 
 // Posiciones.
 #define POS_BANK_X              1479.6465
@@ -126,7 +126,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // Dialogs.
 #define DLG_LOGIN 				10000
 #define DLG_REGISTER        	10001
-#define DLG_TUT1                10002
+// #define DLG_TUT1             10002
 #define DLG_TUT2                10003
 #define DLG_TUT3                10004
 #define DLG_TUT4                10005
@@ -284,13 +284,12 @@ new
 	Menu:phoneMenu,
 	Menu:licenseMenu,
 	// Textdraws.
+	Text:TD_Logotipo[5],
 	Text:textdrawVariables[MAX_TEXTDRAWS],
 	Text:RegTDBorder1,
 	Text:RegTDBorder2,
 	Text:RegTDBackground,
 	Text:RegTDTitle,
-	Text:TutTDBackground,
-	PlayerText:TutTD_Text[MAX_PLAYERS][8],
 	PlayerText:RegTDGender[MAX_PLAYERS],
 	PlayerText:RegTDSkin[MAX_PLAYERS],
 	PlayerText:RegTDAge[MAX_PLAYERS],
@@ -1091,8 +1090,9 @@ public OnPlayerDisconnect(playerid, reason)
 		SetPlayerInterior(playerid, 0);
 		InEnforcer[playerid] = 0;
 	}
+	
+	TD_LogotipoHideForPlayer(playerid);
 
-    TextDrawHideForPlayer(playerid, textdrawVariables[1]);
 	ResetDescLabel(playerid);
  	ResetMaskLabel(playerid);
 	
@@ -1510,7 +1510,8 @@ public OnPlayerSpawn(playerid)
 	if(gPlayerLogged[playerid])
 	{
 	    SetPlayerSpawn(playerid);
-	    TextDrawShowForPlayer(playerid, textdrawVariables[1]);
+	    
+	    TD_LogotipoShowForPlayer(playerid);
 
 	    SetPVarInt(playerid, "died", 0);
 	    
@@ -2244,147 +2245,6 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     return 1;
 }
 
-forward tutorial(playerid, step);
-public tutorial(playerid, step) {
-	for(new i = 0; i < 7; i++) {
-	    PlayerTextDrawShow(playerid, TutTD_Text[playerid][i]);
-	    PlayerTextDrawSetString(playerid, TutTD_Text[playerid][i], " ");
-	}
-	TextDrawShowForPlayer(playerid, TutTDBackground);
-	
-	switch(step) {
-	    case 1: {
-	        for(new i = 0; i < 32; i++) {
-	            SendClientMessage(playerid, COLOR_WHITE, " ");
-	        }
-			
-	    	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
-			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires RolePlay");
-            PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~El breve tutorial a continuacion te guiara por los conceptos basicos del RolePlay.");
-            PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hayas entendido correctamente.");
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 2: {
-			InterpolateCameraPos(playerid, 1466.869506, -1575.771972, 109.123466, 1481.400268, -1576.889038, 90.823272, 3000, 1);
-			InterpolateCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196, 1481.267700, -1580.246704, 88.653373, 3000, 1);
-
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Concepto de RolePlay:~w~ MARP es un servidor basado en la ciudad ficticia de Malos Aires. Dentro");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~de un juego de rol tu personaje debe actuar como lo haria un humano en la vida real, es decir, se debe");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~comportar como una persona comun y corriente que vive dentro de un mundo PARALELO.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~w~Recuerda los siguientes terminos:");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][4], "~b~~h~~h~OOC:~w~ fuera del personaje en ingles (/b, /gooc).");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][5], "~b~~h~~h~IC:~w~ dentro del personaje (local, /gritar).");
-					
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-		case 3: {
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Normas basicas a respetar:");
-            PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~Lo siguiente esta prohibido y sera sancionado dentro del servidor.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~MetaGaming [MG]:~w~ utilizar informacion ~b~OOC~w~ dentro de un canal ~b~IC~w~.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~w~Ejemplo: nombrar a otro personaje solo con verle el tag encima de su cabeza en vez de preguntarselo.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][4], "~b~~h~~h~DeathMatch [DM]:~w~ agredir fisicamente a otro personaje sin ninguna razon rolera.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][5], "~b~~h~~h~PowerGaming [PG]:~w~ realizar hazanas imposibles, como arrojarse de un precipicio y salir ileso o");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][6], "~w~forzar el rol de otro personaje. Es posible caer de dicho precipicio si el hecho es roleado correctamente.");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][7], "~w~Si ves a otra persona incumpliendo con las normas utiliza ~b~~h~~h~~h~~h~/reportar");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 4: {
-	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-	    	SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 5: {
-	    	InterpolateCameraPos(playerid, 1481.400268, -1576.889038, 90.823272, 1494.139770, -1643.703613, 60.716976, 3000, 1);
-			InterpolateCameraLookAt(playerid, 1481.267700, -1580.246704, 88.653373, 1497.297119, -1644.638916, 58.446140, 3000, 1);
-	    
-	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 6: {
-	    	InterpolateCameraPos(playerid, 1494.139770, -1643.703613, 60.716976, 1288.580200, -1241.240356, 95.973281, 3000, CAMERA_CUT);
-			InterpolateCameraLookAt(playerid, 1497.297119, -1644.638916, 58.446140, 1285.706665, -1243.337768, 94.144744, 3000, CAMERA_CUT);
-			InterpolateCameraPos(playerid, 1288.580200, -1241.240356, 95.973281, 1211.487670, -1293.440307, 27.860240, 3000, 1);
-			InterpolateCameraLookAt(playerid, 1285.706665, -1243.337768, 94.144744, 1208.612304, -1295.868041, 26.504356, 3000, 1);
-			
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 7: {
-	        InterpolateCameraPos(playerid, 1211.487670, -1293.440307, 27.860240, 1892.619873, -1798.850219, 68.025955, 3000, CAMERA_CUT);
-			InterpolateCameraLookAt(playerid, 1208.612304, -1295.868041, 26.504356, 1889.938354, -1801.596801, 66.900779, 3000, CAMERA_CUT);
-			InterpolateCameraPos(playerid, 1892.619873, -1798.850219, 68.025955, 1830.553344, -1882.067016, 33.868297, 3000, 1);
-			InterpolateCameraLookAt(playerid, 1889.938354, -1801.596801, 66.900779, 1827.444335, -1883.833740, 32.075828, 3000, 1);
-			
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 8: {
-	    	InterpolateCameraPos(playerid, 1830.553344, -1882.067016, 33.868297, 2217.920654, -2129.320312, 59.432971, 3000, CAMERA_CUT);
-			InterpolateCameraLookAt(playerid, 1827.444335, -1883.833740, 32.075828, 2218.117675, -2133.008789, 57.897941, 3000, CAMERA_CUT);
-			InterpolateCameraPos(playerid, 2217.920654, -2129.320312, 59.432971, 2246.860839, -2233.512207, 23.764274, 3000, 1);
-			InterpolateCameraLookAt(playerid, 2218.117675, -2133.008789, 57.897941, 2243.064697, -2232.351562, 23.272230, 3000, 1);
-
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][4], "~b~~h~~h~ - camionero");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 9: {
-	    	InterpolateCameraPos(playerid, 2246.860839, -2233.512207, 23.764274, 60.416469, -198.172134, 64.205131, 3000, CAMERA_CUT);
-			InterpolateCameraLookAt(playerid, 2243.064697, -2232.351562, 23.272230, 58.964233, -194.497375, 63.582897, 3000, CAMERA_CUT);
-	    	InterpolateCameraPos(playerid, 60.416469, -198.172134, 64.205131, -37.132026, 123.020172, 33.543777, 5000, 1);
-			InterpolateCameraLookAt(playerid, 58.964233, -194.497375, 63.582897, -37.137905, 119.544448, 31.564058, 5000, 1);
-			
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][4], "~b~~h~~h~ - camionero");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][5], "~b~~h~~h~ - granjero");
-
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 10: {
-	    	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
-			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
-			InterpolateCameraPos(playerid, 1466.869506, -1575.771972, 109.123466, 1481.400268, -1576.889038, 90.823272, 3000, 1);
-			InterpolateCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196, 1481.267700, -1580.246704, 88.653373, 3000, 1);
-			
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][4], "~b~~h~~h~ - camionero");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][5], "~b~~h~~h~ - granjero");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][6], "~b~~h~~h~ - entre muchos otros...");
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][7], "~w~Pero tambien puedes crear los tuyos contratando a otras personas o trabajando para ellas.");
-			
-			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
-	    }
-	    case 11: {
-			for(new i = 0; i < 7; i++) {
-			    PlayerTextDrawHide(playerid, TutTD_Text[playerid][i]);
-			}
-			TextDrawHideForPlayer(playerid, TutTDBackground);
-	        ShowPlayerDialog(playerid, DLG_TUT1, DIALOG_STYLE_LIST, "Escoge una forma válida para averiguar el nombre de un personaje", "Le pregunto por un canal IC\nLe pregunto discretamente por un canal OOC\nLe pregunto por facebook\nLe pregunto roleramente por /b\nLe robo la billetera", "Siguiente", "");
-		}
-	}
-	return 1;
-}
-
 forward OnPlayerDataLoad(playerid);
 public OnPlayerDataLoad(playerid)
 {
@@ -2508,10 +2368,7 @@ public OnPlayerDataLoad(playerid)
 
 		if(!PlayerInfo[playerid][pTutorial])
 		{
-			TogglePlayerSpectating(playerid, true);
-      		SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 200, false, "ii", playerid, 1));
-		    SetPlayerHealthEx(playerid, 100.00);
-		    PlayerInfo[playerid][pArmour] = 0.0;
+			PlayerStartTutorial(playerid);
 		}
 		else if(PlayerInfo[playerid][pRegStep] > 0)
 		{
@@ -3783,13 +3640,23 @@ public globalUpdate()
 		}
 		
 		SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
+		
 		if(gTime[2] >= 59)
 			syncPlayerTime(playerid);
 		
-		if(gPlayerLogged[playerid] && PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0) {
-			if(MechanicCallTime[playerid] > 0) {
-				if(MechanicCallTime[playerid] == 90) { MechanicCallTime[playerid] = 0; DisablePlayerCheckpoint(playerid); PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(playerid, "~r~El marcador desaparecio", 2500, 1); }
-				else {
+		if(gPlayerLogged[playerid] && PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
+		{
+			if(MechanicCallTime[playerid] > 0)
+			{
+				if(MechanicCallTime[playerid] == 90)
+				{
+					MechanicCallTime[playerid] = 0;
+					DisablePlayerCheckpoint(playerid);
+					PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
+					GameTextForPlayer(playerid, "~r~El marcador desaparecio", 2500, 1);
+				}
+				else
+				{
 					format(string, sizeof(string), "%d", 90 - MechanicCallTime[playerid]);
 					GameTextForPlayer(playerid, string, 1500, 6);
 					MechanicCallTime[playerid] += 1;
@@ -3799,7 +3666,8 @@ public globalUpdate()
 			if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2) // Si no está AFK ni en Jail OOC
 			{
 				SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") + 1);
-				if(GetPVarInt(playerid, "pPayTime") >= 3600) {
+				if(GetPVarInt(playerid, "pPayTime") >= 3600)
+				{
 					SetPVarInt(playerid, "pPayTime", 0);
 					PayDay(playerid);
 				}
@@ -6781,22 +6649,29 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	    
     }
 
-	if (PlayerInfo[playerid][pTutorial] == 1) {
-		if (PlayerInfo[playerid][pRegStep] == 1) {
-			if(PRESSED(KEY_SPRINT)) {
+	if(PlayerInfo[playerid][pTutorial] == 1)
+	{
+		if (PlayerInfo[playerid][pRegStep] == 1)
+		{
+			if(PRESSED(KEY_SPRINT))
+			{
 			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-				if(PlayerInfo[playerid][pSex] == 1)	{
+				if(PlayerInfo[playerid][pSex] == 1)
+				{
 				    SetPlayerSkin(playerid, SkinRegFemale[0][0]);
 			    	PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: femenino");
 			    	PlayerInfo[playerid][pSex] = 0;
-				} else {
+				}
+				else
+				{
 					SetPlayerSkin(playerid, SkinRegMale[0][0]);
 					PlayerTextDrawSetString(playerid, RegTDGender[playerid], "Genero: masculino");
 					PlayerInfo[playerid][pSex] = 1;
 				}
-			} else if(PRESSED(KEY_SECONDARY_ATTACK)) {
+			}
+			else if(PRESSED(KEY_SECONDARY_ATTACK))
+			{
 			    PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
-
 			    PlayerTextDrawDestroy(playerid, RegTDArrow[playerid]);
 				RegTDArrow[playerid] = CreatePlayerTextDraw(playerid, 501.000000, 133.500000, "~>~");
 				PlayerTextDrawAlignment(playerid, RegTDArrow[playerid], 2);
@@ -6807,28 +6682,37 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 				PlayerTextDrawSetOutline(playerid, RegTDArrow[playerid], 1);
 				PlayerTextDrawSetProportional(playerid, RegTDArrow[playerid], 1);
 				PlayerTextDrawShow(playerid, RegTDArrow[playerid]);
-
 				PlayerInfo[playerid][pRegStep]++;
-				if(PlayerInfo[playerid][pSex] == 1)	{
+				if(PlayerInfo[playerid][pSex] == 1)
+				{
 				    format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
-				} else {
+				}
+				else
+				{
 					format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegFemale));
 				}
-	            PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
+				PlayerTextDrawSetString(playerid, RegTDSkin[playerid], string);
 			}
-		} else if(PlayerInfo[playerid][pRegStep] == 2) {
-		    if(PRESSED(KEY_SPRINT))	{
+		}
+		else if(PlayerInfo[playerid][pRegStep] == 2)
+		{
+		    if(PRESSED(KEY_SPRINT))
+			{
 				RegCounter[playerid]++;
 			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 			    if(PlayerInfo[playerid][pSex] == 1) {
-			        if(RegCounter[playerid] > sizeof(SkinRegMale)) {
+			        if(RegCounter[playerid] > sizeof(SkinRegMale))
+					{
 			            RegCounter[playerid] = 1;
 			        }
 					SetPlayerSkin(playerid, SkinRegMale[RegCounter[playerid] - 1][0]);
 					PlayerInfo[playerid][pSkin] = SkinRegMale[RegCounter[playerid] - 1][0];
 					format(string, sizeof(string), "Apariencia: %d/%d", RegCounter[playerid], sizeof(SkinRegMale));
-				} else {
-				    if(RegCounter[playerid] > sizeof(SkinRegFemale)) {
+				}
+				else
+				{
+				    if(RegCounter[playerid] > sizeof(SkinRegFemale))
+					{
 			            RegCounter[playerid] = 1;
 			        }
 				    SetPlayerSkin(playerid, SkinRegFemale[RegCounter[playerid] - 1][0]);
@@ -6857,7 +6741,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	   			ClearScreen(playerid);
 	   			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Presiona ~k~~PED_SPRINT~ para incrementar el valor y ~k~~SNEAK_ABOUT~ para disminuirlo, ~k~~VEHICLE_ENTER_EXIT~ para finalizar.");
 			}
-		} else if(PlayerInfo[playerid][pRegStep] == 3) {
+		}
+		else if(PlayerInfo[playerid][pRegStep] == 3) {
 		    if(PRESSED(KEY_SPRINT))	{
 				RegCounter[playerid]++;
 			    PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
@@ -7087,14 +6972,8 @@ stock LoadTDs() {
 	TextDrawSetOutline(textdrawVariables[0], 0);
 	TextDrawSetProportional(textdrawVariables[0], 1);
 	TextDrawSetShadow(textdrawVariables[0], 1);
-	
-	textdrawVariables[1] = TextDrawCreate(499.000000, 7.000000, "malosaires.com.ar");
-	TextDrawBackgroundColor(textdrawVariables[1], 255);
-	TextDrawFont(textdrawVariables[1], 1);
-	TextDrawLetterSize(textdrawVariables[1], 0.300000, 1.200000);
-	TextDrawColor(textdrawVariables[1], 929337855);
-	TextDrawSetOutline(textdrawVariables[1], 1);
-	TextDrawSetProportional(textdrawVariables[1], 1);
+    
+    TD_LogotipoCreate();
     
 	RegTDBorder1 = TextDrawCreate(635.000000, 106.000000, " ");
 	TextDrawBackgroundColor(RegTDBorder1, 255);
@@ -7156,6 +7035,51 @@ stock LoadTDs() {
 	return 1;
 }
 
+TD_LogotipoCreate()
+{
+	TD_Logotipo[0] = TextDrawCreate(607.500000, 3.625000, "~b~~h~malo~w~sair~y~e~w~s.co~b~~h~m.ar");
+	TextDrawLetterSize(TD_Logotipo[0], 0.331499, 1.438122);
+	TextDrawAlignment(TD_Logotipo[0], 3);
+	TextDrawColor(TD_Logotipo[0], 580171263);
+	TextDrawSetOutline(TD_Logotipo[0], 1);
+	TextDrawFont(TD_Logotipo[0], 3);
+
+	TD_Logotipo[1] = TextDrawCreate(490.000000, 5.812500, "LD_beat:cring");
+	TextDrawTextSize(TD_Logotipo[1], 10.000000, 10.000000);
+	TextDrawColor(TD_Logotipo[1], 255);
+	TextDrawFont(TD_Logotipo[1], 4);
+
+	TD_Logotipo[2] = TextDrawCreate(607.000000, 5.812500, "LD_beat:cring");
+	TextDrawTextSize(TD_Logotipo[2], 10.000000, 10.000000);
+	TextDrawColor(TD_Logotipo[2], 255);
+	TextDrawFont(TD_Logotipo[2], 4);
+
+	TD_Logotipo[3] = TextDrawCreate(492.500000, 8.437500, "LD_none:light");
+	TextDrawTextSize(TD_Logotipo[3], 5.000000, 5.000000);
+	TextDrawFont(TD_Logotipo[3], 4);
+
+	TD_Logotipo[4] = TextDrawCreate(609.500000, 8.437500, "LD_none:light");
+	TextDrawTextSize(TD_Logotipo[4], 5.000000, 5.000000);
+	TextDrawFont(TD_Logotipo[4], 4);
+}
+
+TD_LogotipoShowForPlayer(playerid)
+{
+	TextDrawShowForPlayer(playerid, TD_Logotipo[0]);
+	TextDrawShowForPlayer(playerid, TD_Logotipo[1]);
+	TextDrawShowForPlayer(playerid, TD_Logotipo[2]);
+	TextDrawShowForPlayer(playerid, TD_Logotipo[3]);
+	TextDrawShowForPlayer(playerid, TD_Logotipo[4]);
+}
+
+TD_LogotipoHideForPlayer(playerid)
+{
+	TextDrawHideForPlayer(playerid, TD_Logotipo[0]);
+	TextDrawHideForPlayer(playerid, TD_Logotipo[1]);
+	TextDrawHideForPlayer(playerid, TD_Logotipo[2]);
+	TextDrawHideForPlayer(playerid, TD_Logotipo[3]);
+	TextDrawHideForPlayer(playerid, TD_Logotipo[4]);
+}
 
 public restartTimer(type) {
 	iGMXTick--;
@@ -8095,17 +8019,17 @@ CMD:saltartuto(playerid, params[])
 
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saltartuto [ID-Jugador]");
-	
+
 	StopAudioStreamForPlayer(playerid);
 	PlayerInfo[playerid][pTutorial] = 1;
-	
+
 	// Cerramos cualquier dialog y textdraw abierto.
-	ShowPlayerDialog(playerid, -1, DIALOG_STYLE_MSGBOX, " ", " ", " ", ""); 
+	ShowPlayerDialog(playerid, -1, DIALOG_STYLE_MSGBOX, " ", " ", " ", "");
 	for(new i = 0; i < 7; i++) {
 	    PlayerTextDrawHide(playerid, TutTD_Text[playerid][i]);
 	}
 	TextDrawHideForPlayer(playerid, TutTDBackground);
-	
+
 	if(PlayerInfo[playerid][pRegStep] != 0) {
 		TextDrawShowForPlayer(playerid, RegTDBorder1);
 		TextDrawShowForPlayer(playerid, RegTDBorder2);
@@ -8119,7 +8043,7 @@ CMD:saltartuto(playerid, params[])
 		PlayerInfo[playerid][pSex] = 1;
 		PlayerInfo[playerid][pSkin] = SkinRegMale[0][0];
 		PlayerInfo[playerid][pRegStep] = 1;
-		
+
 		KillTimer(GetPVarInt(playerid, "tutTimer"));
 
 		SetPlayerInterior(playerid, 14);
@@ -8131,20 +8055,8 @@ CMD:saltartuto(playerid, params[])
 		SetSpawnInfo(playerid, 0, PlayerInfo[playerid][pSkin], PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ], PlayerInfo[playerid][pA], 0, 0, 0, 0, 0, 0);
 	}
 	TogglePlayerSpectating(playerid, false);
-	
+
 	SpawnPlayer(targetID);
-	return 1;
-}
-
-CMD:tutorial(playerid, params[])
-{
-	new targetID;
-
-	if(sscanf(params, "u", targetID))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tutorial [ID-Jugador]");
-
-	PlayerInfo[targetID][pTutorial] = 0;
-	KickPlayer(targetID, GetPlayerNameEx(playerid), "rehacer el tutorial");
 	return 1;
 }
 
