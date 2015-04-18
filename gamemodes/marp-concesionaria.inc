@@ -41,7 +41,7 @@ enum DealershipInfo {
 	Float:dParkingAngle
 }
 static const Dealership[MAX_DEALERSHIPS][DealershipInfo] = {
-	{"Concesionarios Grotti", 542.35, -1292.83, 17.16, 546.86, -1266.70, 16.86, 302.50},
+	{"Concesionarios Grotti", 542.61, -1298.90, 17.24, 546.86, -1266.70, 16.86, 302.50},
 	{"Concesionarios Jefferson", 2131.77, -1150.91, 24.02, 2128.34, -1135.81, 25.16, 355.38},
 	{"Pinar Automotores", 986.23, -1116.85, 27.28, 980.71, -1135.76, 23.46, 90.74},
 	{"Concesionaria Ciudad Moto", 1295.83, -1870.33, 13.54, 1296.01, -1859.91, 13.18, 89.33},
