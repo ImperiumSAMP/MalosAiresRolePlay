@@ -11430,6 +11430,11 @@ CMD:pagar(playerid,params[])
     GetPlayerName(targetID, name, 32);
 	format(string, sizeof(string), "[PAGO] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
   	log(playerid, LOG_MONEY, string);
+  	
+  	GetPlayerName(playerid, name, 32);
+	format(string, sizeof(string), "[RECIBE] $%d de %s (DBID: %d)", amount, name, PlayerInfo[playerid][pID]);
+  	log(targetID, LOG_MONEY, string);
+  	
 	GivePlayerCash(playerid, -amount);
 	GivePlayerCash(targetID, amount);
 	SendFMessage(playerid, COLOR_WHITE, "Le has pagado $%d a %s.", amount, GetPlayerNameEx(targetID));
