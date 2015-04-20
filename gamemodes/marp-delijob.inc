@@ -86,22 +86,22 @@ static const DeliJob_Route[][DeliJob_RouteInfo] = {
 	{1856.6500, -1991.0896, 13.1125, 81},
 	{1804.1267, -2124.2188, 13.5138, 90},
 	{1664.2416, -2115.5017, 13.1070, 98},
-	{2281.0366, -2364.7205, 13.1191, 120},
-	{2649.0771, -2385.0730, 13.1997, 120},
-	{2755.5432, -2382.4824, 13.1989, 120},
-	{2269.7637, -1885.8168, 13.1157, 120},
-	{2353.3743, -1990.4171, 13.1077, 120},
-	{2435.7744, -1924.0054, 13.1136, 120},
-	{2734.7529, -1926.1731, 13.1120, 120},
-	{2653.1238, -1990.8837, 13.3035, 120},
+	{2281.0366, -2364.7205, 13.1191, 111},
+	{2649.0771, -2385.0730, 13.1997, 116},
+	{2755.5432, -2382.4824, 13.1989, 122},
+	{2269.7637, -1885.8168, 13.1157, 92},
+	{2353.3743, -1990.4171, 13.1077, 112},
+	{2435.7744, -1924.0054, 13.1136, 95},
+	{2734.7529, -1926.1731, 13.1120, 118},
+	{2653.1238, -1990.8837, 13.3035, 134},
 	{2508.8572, -2001.8585, 13.1167, 120},
-	{2069.7893, -1903.7882, 13.0720, 120},
-	{2269.1912, -1826.1661, 13.1098, 120},
-	{2481.5491, -1756.4528, 13.1122, 120},
-	{2518.9348, -1678.4635, 14.1900, 120},
-	{2263.8599, -1470.4756, 23.3661, 120},
-	{2233.6533, -1457.7091, 23.5807, 120},
-	{2204.2678, -1412.9717, 23.5416, 120}
+	{2069.7893, -1903.7882, 13.0720, 76},
+	{2269.1912, -1826.1661, 13.1098, 81},
+	{2481.5491, -1756.4528, 13.1122, 90},
+	{2518.9348, -1678.4635, 14.1900, 90},
+	{2263.8599, -1470.4756, 23.3661, 82},
+	{2233.6533, -1457.7091, 23.5807, 87},
+	{2204.2678, -1412.9717, 23.5416, 78}
 };
 
 stock DeliJob_GetVehicleCharge(vehicleid)
@@ -120,7 +120,8 @@ stock DeliJob_GetVehicleCharge(vehicleid)
 DeliJob_StartWork(playerid)
 {
 	new vehicleid = GetPlayerVehicleID(playerid),
-	    destination = random(sizeof(DeliJob_Route));
+	    destination = random(sizeof(DeliJob_Route)),
+	    Float:x, Float:y, Float:z, area[MAX_ZONE_NAME];
 
     if(getVehicleJob(vehicleid) != JOB_DELI)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en una moto de reparto!");
@@ -130,12 +131,16 @@ DeliJob_StartWork(playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
 	if(PlayerInfo[playerid][pCantWork] >= JOB_DELI_MAX_DELIVERYS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya has alcanzado el máximo de entregas posibles por este día de pago.");
+    if(DeliJob_IsVehicleWorking(vehicleid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
 
+    GetPlayerPos(playerid, x, y ,z);
+	GetCoords2DZone(x, y, area, MAX_ZONE_NAME);
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra un paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
-    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. Si llegas tarde, no te pagarán y tu imagen laboral empeorará.", DeliJob_Route[destination][djTime]);
-    SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas la moto en peor estado de como la recibiste, tu imagen laboral disminuirá.");
+	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra el paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. La entrega es en la zona de %s.", DeliJob_Route[destination][djTime], area);
+    SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas la moto en peor estado de como la recibiste o si llegas tarde, tu imagen laboral disminuirá.");
 	jobDuty[playerid] = true;
 	SetEngine(vehicleid, 1);
 	jobVehicle[playerid] = vehicleid;
@@ -144,6 +149,16 @@ DeliJob_StartWork(playerid)
     GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
     CrearCronometro(playerid, JOB_DELI_CRONOMETRO, DeliJob_Route[destination][djTime]);
 	return 1;
+}
+
+DeliJob_IsVehicleWorking(vehicleid)
+{
+	for(new i = 0; i < MAX_PLAYERS; i++)
+	{
+	    if(jobVehicle[i] == vehicleid)
+	        return 1;
+	}
+	return 0;
 }
 
 DeliJob_IsPlayerWorking(playerid, vehicleid)
@@ -214,15 +229,10 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 
 DeliJob_TravelTimeLimit(playerid)
 {
-	new vehicleid = GetPlayerVehicleID(playerid);
-
     PlayerInfo[playerid][pCantWork]++;
     jobDuty[playerid] = false;
-    if(jobVehicle[playerid] == vehicleid)
-	{
-	    SetEngine(vehicleid, 0);
-		SetVehicleToRespawn(vehicleid);
-	}
+    SetEngine(jobVehicle[playerid], 0);
+	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);

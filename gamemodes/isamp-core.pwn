@@ -5735,6 +5735,7 @@ public BanPlayer(playerid, issuerid, reason[], days)
 
 	SendClientMessageToAll(COLOR_ADMINCMD, str);
 	TogglePlayerControllable(playerid, false);
+	SendClientMessage(playerid, COLOR_WHITE, "En el caso de ser un baneo temporal, serás desbaneado automaticamente por el servidor en la fecha límite.");
 	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
