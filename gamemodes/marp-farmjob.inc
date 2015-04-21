@@ -65,6 +65,7 @@ public FarmJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
+    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
@@ -90,6 +91,7 @@ FarmJob_FinishWork(playerid)
 	LastCP[playerid] = -1;
 	FarmJob_Payment(playerid, vehicleid);
 	jobDuty[playerid] = false;
+	jobVehicle[playerid] = 0;
 	CollectedProds[playerid] = 0;
 	RemovePlayerFromVehicle(playerid);
 	SetEngine(vehicleid, 0);

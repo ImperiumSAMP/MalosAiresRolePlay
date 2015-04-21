@@ -38,7 +38,6 @@ TranJob_StartWork(playerid)
 	if(!Cronometro_Crear(playerid, JOB_TRAN_TRAVEL_TIME * 60, "TranJob_TravelTimeLimit"))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
 
-
 	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "Vé al deposito y carga la mercadería en el camión. Luego tendrás que distribuirla a los distintos mercados de la ciudad.");
@@ -64,6 +63,7 @@ public TranJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
+    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
@@ -123,6 +123,7 @@ TranJob_PlayerEnterCheckpoint(playerid)
 		SetVehicleToRespawn(vehicleid);
 	    PlayerInfo[playerid][pCantWork] = 1;
 	    jobDuty[playerid] = false;
+	    jobVehicle[playerid] = 0;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		PlayerActionMessage(playerid, 15.0, "estaciona el camion de transporte en su lugar.");
 		UpdatePlayerJobLastWorked(playerid);

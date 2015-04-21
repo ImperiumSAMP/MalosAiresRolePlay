@@ -121,7 +121,7 @@ DeliJob_StartWork(playerid)
 {
 	new vehicleid = GetPlayerVehicleID(playerid),
 	    destination = random(sizeof(DeliJob_Route)),
-	    Float:x, Float:y, Float:z, area[MAX_ZONE_NAME];
+	    area[MAX_ZONE_NAME];
 
     if(getVehicleJob(vehicleid) != JOB_DELI)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en una moto de reparto!");
@@ -136,8 +136,7 @@ DeliJob_StartWork(playerid)
 	if(!Cronometro_Crear(playerid, DeliJob_Route[destination][djTime], "DeliJob_TravelTimeLimit"))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
 	    
-    GetPlayerPos(playerid, x, y ,z);
-	GetCoords2DZone(x, y, area, MAX_ZONE_NAME);
+	GetCoords2DZone(DeliJob_Route[destination][djX], DeliJob_Route[destination][djY], area, MAX_ZONE_NAME);
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra el paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
@@ -150,16 +149,6 @@ DeliJob_StartWork(playerid)
 	jobRoute[playerid] = destination;
     GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	return 1;
-}
-
-Job_IsVehicleWorking(vehicleid)
-{
-	for(new i = 0; i < MAX_PLAYERS; i++)
-	{
-	    if(jobVehicle[i] == vehicleid)
-	        return 1;
-	}
-	return 0;
 }
 
 DeliJob_IsPlayerWorking(playerid, vehicleid)
@@ -219,6 +208,7 @@ DeliJob_PlayerEnterCheckpoint(playerid)
   		SetEngine(vehicleid, 0);
 		SetVehicleToRespawn(vehicleid);
 	    jobDuty[playerid] = false;
+	    jobVehicle[playerid] = 0;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
 		UpdatePlayerJobLastWorked(playerid);
@@ -233,6 +223,7 @@ public DeliJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork]++;
     jobDuty[playerid] = false;
+    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);

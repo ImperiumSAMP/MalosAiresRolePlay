@@ -148,6 +148,7 @@ public GarbJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
+    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
@@ -175,6 +176,7 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 		SetVehicleToRespawn(vehicleid);
   		PlayerInfo[playerid][pCantWork] = 1;
 	    jobDuty[playerid] = false;
+	    jobVehicle[playerid] = 0;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
 		UpdatePlayerJobLastWorked(playerid);

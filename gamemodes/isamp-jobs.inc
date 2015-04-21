@@ -83,6 +83,16 @@ new bool:jobDuty[MAX_PLAYERS],
     jobCheckpoint[MAX_PLAYERS],
     jobRoute[MAX_PLAYERS];
 
+Job_IsVehicleWorking(vehicleid)
+{
+	foreach(new playerid : Player)
+	{
+	    if(jobVehicle[playerid] == vehicleid)
+	        return 1;
+	}
+	return 0;
+}
+
 stock GetJobChargeName(job, charge)
 {
 	new str[64];
