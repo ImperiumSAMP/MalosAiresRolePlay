@@ -71,6 +71,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-delijob.inc"
 #include "marp-paintball.inc"
 #include "marp-tutorial.inc"
+#include "marp-cronometro.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
@@ -1181,22 +1182,7 @@ public OnPlayerDisconnect(playerid, reason)
 	}
 
 	OnPlayerLeaveRobberyGroup(playerid, 1);
-	
-    if(gPlayerLogged[playerid])
-	{
-		switch(reason)
-		{
-	        case 0,2:
-			{
-				PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
-			}
-			case 1:{
-			    PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: a voluntad).");
-			}
-	    }
-		SaveAccount(playerid);
-	}
-	
+
 	EndPlayerDuty(playerid);
 	
 	deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
@@ -1214,7 +1200,23 @@ public OnPlayerDisconnect(playerid, reason)
 	KillTimer(pSpeedoTimer[playerid]); // Si se desonectó estando arriba del auto, borramos el timer recursivo de la gasolina
 	
 	HideGangZonesToPlayer(playerid);
-	BorrarCronometro(playerid);
+	
+	Cronometro_Borrar(playerid);
+	
+ 	if(gPlayerLogged[playerid])
+	{
+		switch(reason)
+		{
+	        case 0,2:
+			{
+				PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
+			}
+			case 1:{
+			    PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: a voluntad).");
+			}
+	    }
+		SaveAccount(playerid);
+	}
 	return 1;
 }
 

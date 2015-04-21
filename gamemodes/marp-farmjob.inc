@@ -5,6 +5,7 @@
 
 #define JOB_FARM_MAXPRODS       20
 #define JOB_FARM_PRODVALUE      90
+#define JOB_FARM_TRAVEL_TIME    9 // En minutos
 
 new Float:JOB_FARM_POS[][3] = {
 	/* Puntos de recolección */
@@ -31,11 +32,19 @@ new Float:JOB_FARM_POS[][3] = {
 
 FarmJob_StartWork(playerid)
 {
-	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_FARM)
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_FARM)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a una cosechadora!");
+	if(Job_IsVehicleWorking(vehicleid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
+ 	if(!Cronometro_Crear(playerid, JOB_FARM_TRAVEL_TIME * 60, "FarmJob_TravelTimeLimit"))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+
 
 	SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la cosecha y tipear /terminar para descargarla.");
     SendClientMessage(playerid, COLOR_WHITE, "Puedes descargar los materiales cuando quieras, pero te pagarán acorde a la cantidad y no podras volver a trabajar durante este día de pago.");
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde, o con la cosechadora rota, tu imagen laboral empeorará.", JOB_FARM_TRAVEL_TIME);
 	new rCP = -1;
 	while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid])
 	{
@@ -43,14 +52,32 @@ FarmJob_StartWork(playerid)
 	}
 	LastCP[playerid] = rCP;
 	SetPlayerCheckpoint(playerid, JOB_FARM_POS[rCP][0], JOB_FARM_POS[rCP][1], JOB_FARM_POS[rCP][2], 5.4);
+	GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
 	jobDuty[playerid] = true;
+	jobVehicle[playerid] = vehicleid;
+    SetEngine(vehicleid, 1);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
-	SetEngine(GetPlayerVehicleID(playerid), 1);
+	return 1;
+}
+
+forward FarmJob_TravelTimeLimit(playerid);
+public FarmJob_TravelTimeLimit(playerid)
+{
+    PlayerInfo[playerid][pCantWork] = 1;
+    jobDuty[playerid] = false;
+    SetEngine(jobVehicle[playerid], 0);
+	SetVehicleToRespawn(jobVehicle[playerid]);
+	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
+	UpdatePlayerJobLastWorked(playerid);
+	PlayerJobInfo[playerid][pReputation] -= 30;
 	return 1;
 }
 
 FarmJob_FinishWork(playerid)
 {
+	new vehicleid = GetPlayerVehicleID(playerid);
+
 	if(!PlayerToPoint(20.0, playerid, JOB_FARM_POS[17][0], JOB_FARM_POS[17][1], JOB_FARM_POS[17][2]))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ve y descarga los productos en la zona indicada!");
 	if(getVehicleJob(GetPlayerVehicleID(playerid)) != JOB_FARM)
@@ -58,15 +85,44 @@ FarmJob_FinishWork(playerid)
 
 	PlayerActionMessage(playerid, 15.0, "descarga todo el producto y estaciona la cosechadora.");
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
+    PlayerJobInfo[playerid][pWorkingHours]++;
 	PlayerInfo[playerid][pCantWork] = 1;
 	LastCP[playerid] = -1;
-	PlayerJobInfo[playerid][pTotalEarnings] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
-	PlayerJobInfo[playerid][pWorkingHours]++;
-	UpdatePlayerJobLastWorked(playerid);
-	PlayerInfo[playerid][pPayCheck] += CollectedProds[playerid] * JOB_FARM_PRODVALUE;
+	FarmJob_Payment(playerid, vehicleid);
+	jobDuty[playerid] = false;
 	CollectedProds[playerid] = 0;
-	SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+	RemovePlayerFromVehicle(playerid);
+	SetEngine(vehicleid, 0);
+	SetVehicleToRespawn(vehicleid);
+	UpdatePlayerJobLastWorked(playerid);
+	FarmJob_CheckPromotePlayer(playerid);
+	Cronometro_Borrar(playerid);
 	return 1;
+}
+
+FarmJob_Payment(playerid, vehicleid)
+{
+	new paycheck, Float:vHealth, injuriesCost, seniorityBonus, chargeBonus;
+
+    GetVehicleHealth(vehicleid, vHealth);
+    if(vHealth + 30.0 < jobVehicleHealth[playerid])
+    {
+        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
+		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión en mal estado.");
+	}
+	else
+	    PlayerJobInfo[playerid][pReputation]++;
+
+	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
+	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+
+	paycheck = CollectedProds[playerid] * JOB_FARM_PRODVALUE + seniorityBonus + chargeBonus - injuriesCost;
+	PlayerInfo[playerid][pPayCheck] += paycheck;
+	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
+
+	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", CollectedProds[playerid] * JOB_FARM_PRODVALUE, seniorityBonus, chargeBonus, injuriesCost);
 }
 
 FarmJob_IsPlayerWorking(playerid, vehicleid)
@@ -102,3 +158,14 @@ FarmJob_PlayerEnterCheckpoint(playerid)
 	return 1;
 }
 
+FarmJob_CheckPromotePlayer(playerid)
+{
+	if(140 * PlayerJobInfo[playerid][pCharge] >= PlayerJobInfo[playerid][pWorkingHours] && PlayerJobInfo[playerid][pReputation] >= 0 && PlayerJobInfo[playerid][pCharge] < 5) // Minimo de X horas trabajadas (proporcional al siguiente puesto) y de una imágen laboral neutral.
+	{
+	    if(PlayerJobInfo[playerid][pWorkingHours] + PlayerJobInfo[playerid][pReputation] / 10 >= 180 * PlayerJobInfo[playerid][pCharge]) // Para ascender hay que llegar a una cantidad de puntos. Nuestro puntaje se suma entre la reputacion y la antiguedad.
+	    {
+	        PlayerJobInfo[playerid][pCharge]++;
+	        SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has sido promovido a %s, lo que te garantiza una mejora en tu sueldo. ¡Buen trabajo! Sigue así.", GetJobChargeName(JOB_FARM, PlayerJobInfo[playerid][pCharge]));
+		}
+	}
+}

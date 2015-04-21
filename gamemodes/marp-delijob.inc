@@ -131,9 +131,11 @@ DeliJob_StartWork(playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
 	if(PlayerInfo[playerid][pCantWork] >= JOB_DELI_MAX_DELIVERYS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya has alcanzado el máximo de entregas posibles por este día de pago.");
-    if(DeliJob_IsVehicleWorking(vehicleid))
+    if(Job_IsVehicleWorking(vehicleid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
-
+	if(!Cronometro_Crear(playerid, DeliJob_Route[destination][djTime], "DeliJob_TravelTimeLimit"))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+	    
     GetPlayerPos(playerid, x, y ,z);
 	GetCoords2DZone(x, y, area, MAX_ZONE_NAME);
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
@@ -147,11 +149,10 @@ DeliJob_StartWork(playerid)
 	jobCheckpoint[playerid] = 0;
 	jobRoute[playerid] = destination;
     GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
-    CrearCronometro(playerid, JOB_DELI_CRONOMETRO, DeliJob_Route[destination][djTime]);
 	return 1;
 }
 
-DeliJob_IsVehicleWorking(vehicleid)
+Job_IsVehicleWorking(vehicleid)
 {
 	for(new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -222,12 +223,13 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 		PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
 		UpdatePlayerJobLastWorked(playerid);
         DeliJob_CheckPromotePlayer(playerid);
-		BorrarCronometro(playerid);
+		Cronometro_Borrar(playerid);
 	}
 	return 1;
 }
 
-DeliJob_TravelTimeLimit(playerid)
+forward DeliJob_TravelTimeLimit(playerid);
+public DeliJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork]++;
     jobDuty[playerid] = false;
@@ -237,6 +239,7 @@ DeliJob_TravelTimeLimit(playerid)
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);
 	PlayerJobInfo[playerid][pReputation] -= 6;
+	return 1;
 }
 
 DeliJob_Payment(playerid, vehicleid)

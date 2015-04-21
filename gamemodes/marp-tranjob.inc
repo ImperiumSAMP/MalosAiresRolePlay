@@ -33,6 +33,11 @@ TranJob_StartWork(playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión de transporte!");
 	if(PlayerInfo[playerid][pCarLic] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
+   	if(Job_IsVehicleWorking(vehicleid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
+	if(!Cronometro_Crear(playerid, JOB_TRAN_TRAVEL_TIME * 60, "TranJob_TravelTimeLimit"))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+
 
 	SetPlayerCheckpoint(playerid, JOB_TRAN_POS[0][0], JOB_TRAN_POS[0][1], JOB_TRAN_POS[0][2], 5.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
@@ -44,7 +49,6 @@ TranJob_StartWork(playerid)
 	SetEngine(vehicleid, 1);
 	jobVehicle[playerid] = vehicleid;
 	jobCheckpoint[playerid] = 0;
-	CrearCronometro(playerid, JOB_TRAN_CRONOMETRO, JOB_TRAN_TRAVEL_TIME * 60);
 	return 1;
 }
 
@@ -55,21 +59,18 @@ TranJob_IsPlayerWorking(playerid, vehicleid)
 	return 0;
 }
 
-TranJob_TravelTimeLimit(playerid)
+forward TranJob_TravelTimeLimit(playerid);
+public TranJob_TravelTimeLimit(playerid)
 {
-	new vehicleid = GetPlayerVehicleID(playerid);
-	
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
-    if(jobVehicle[playerid] == vehicleid)
-	{
-	    SetEngine(vehicleid, 0);
-		SetVehicleToRespawn(vehicleid);
-	}
+    SetEngine(jobVehicle[playerid], 0);
+	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
 	UpdatePlayerJobLastWorked(playerid);
 	PlayerJobInfo[playerid][pReputation] -= 30;
+	return 1;
 }
 
 forward TranJob_NextCheckpoint(playerid, cp);
@@ -126,7 +127,7 @@ TranJob_PlayerEnterCheckpoint(playerid)
 		PlayerActionMessage(playerid, 15.0, "estaciona el camion de transporte en su lugar.");
 		UpdatePlayerJobLastWorked(playerid);
         TranJob_CheckPromotePlayer(playerid);
-		BorrarCronometro(playerid);
+		Cronometro_Borrar(playerid);
 	}
 	return 1;
 }

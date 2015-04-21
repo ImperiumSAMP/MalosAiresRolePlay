@@ -69,14 +69,17 @@ new Float:JOB_GARB_POS_R1[][3] = {
 
 GarbJob_StartWork(playerid)
 {
-    new vehicleid = GetPlayerVehicleID(playerid);
+    new vehicleid = GetPlayerVehicleID(playerid),
+        route = random(2);
 
 	if(getVehicleType(vehicleid) != VEH_JOB || getVehicleJob(vehicleid) != JOB_GARB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ingresar a un camión recolector!");
 	if(PlayerInfo[playerid][pCarLic] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de conducir. No podrás trabajar sin ella.");
-		
-	new route = random(2);
+   	if(Job_IsVehicleWorking(vehicleid))
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
+	if(!Cronometro_Crear(playerid, JOB_GARB_TRAVEL_TIME * 60, "GarbJob_TravelTimeLimit"))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
 
 	if(route == 0)
 	{
@@ -96,7 +99,6 @@ GarbJob_StartWork(playerid)
 	jobVehicle[playerid] = vehicleid;
 	jobCheckpoint[playerid] = 0;
 	jobRoute[playerid] = route;
-	CrearCronometro(playerid, JOB_GARB_CRONOMETRO, JOB_GARB_TRAVEL_TIME * 60);
 	return 1;
 }
 
@@ -121,7 +123,7 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 		TogglePlayerControllable(playerid, false);
 		GameTextForPlayer(playerid, "Vaciando camión...", 6000, 4);
 		SetTimerEx("GarbJob_LoadingTimer", 6000, false, "ii", playerid, gbCP);
-		BorrarCronometro(playerid);
+		Cronometro_Borrar(playerid);
     }
 	else
 	{
@@ -141,21 +143,18 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 	return 1;
 }
 
-GarbJob_TravelTimeLimit(playerid)
+forward GarbJob_TravelTimeLimit(playerid);
+public GarbJob_TravelTimeLimit(playerid)
 {
-    new vehicleid = GetPlayerVehicleID(playerid);
-    
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
-    if(jobVehicle[playerid] == vehicleid)
-    {
-	    SetEngine(vehicleid, 0);
-		SetVehicleToRespawn(vehicleid);
-	}
+    SetEngine(jobVehicle[playerid], 0);
+	SetVehicleToRespawn(jobVehicle[playerid]);
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
 	UpdatePlayerJobLastWorked(playerid);
 	PlayerJobInfo[playerid][pReputation] -= 30;
+	return 1;
 }
 
 public GarbJob_LoadingTimer(playerid, garbcp)
@@ -180,7 +179,6 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 		PlayerActionMessage(playerid, 15.0, "abre las puertas del depósito y vacía el camión recolector.");
 		UpdatePlayerJobLastWorked(playerid);
         GarbJob_CheckPromotePlayer(playerid);
-        BorrarCronometro(playerid);
   	}
 	return 1;
 }
