@@ -223,9 +223,9 @@ public DeliJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork]++;
     jobDuty[playerid] = false;
-    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
+ 	jobVehicle[playerid] = 0;
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);

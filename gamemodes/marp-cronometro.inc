@@ -12,7 +12,7 @@
 //                                                                            //
 // Al finalizar, se borra automaticamente el cronometro y su timer. También,  //
 // si se lo requiere, se pueden borrar ambas cosas con Cronometro_Borrar en   //
-// cualquier momento de su ejecución.                                         //
+// cualquier momento de su ejecución. Recuerde borrarlo en desconexión.		  //
 //                                                                            //
 // Por ahora solo tiene soporte para un cronometro a la vez por jugador.      //
 //                                                                            //

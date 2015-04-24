@@ -78,7 +78,7 @@ new bool:jobDuty[MAX_PLAYERS],
 	CollectedProds[MAX_PLAYERS],
     LastCP[MAX_PLAYERS];
     
- new Float:jobVehicleHealth[MAX_PLAYERS],
+new Float:jobVehicleHealth[MAX_PLAYERS],
     jobVehicle[MAX_PLAYERS],
     jobCheckpoint[MAX_PLAYERS],
     jobRoute[MAX_PLAYERS];
@@ -91,6 +91,17 @@ Job_IsVehicleWorking(vehicleid)
 	        return 1;
 	}
 	return 0;
+}
+
+stock Job_WorkingPlayerDisconnect(playerid)
+{
+	if(jobDuty[playerid] && jobVehicle[playerid])
+	{
+ 		jobDuty[playerid] = false;
+	    SetEngine(jobVehicle[playerid], 0);
+	    SetVehicleToRespawn(jobVehicle[playerid]);
+	    jobVehicle[playerid] = 0;
+	}
 }
 
 stock GetJobChargeName(job, charge)
@@ -166,7 +177,7 @@ public OnJobDataLoad(id)
         cache_get_field_content(0, "jCharge5", JobInfo[id][jCharge5], 1, 64);
 
 		CreateDynamicPickup(1274, 1, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ], JobInfo[id][jTakeW], JobInfo[id][jTakeI], -1);
-        format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\n/consultarempleo para información detallada", JobInfo[id][jName]);
+        format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\nUsa /consultarempleo para más información.", JobInfo[id][jName]);
         CreateDynamic3DTextLabel(string, COLOR_WHITE, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	}
 	return 1;
@@ -291,8 +302,6 @@ CMD:dejarempleo(playerid,params[])
 	
     if(job == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2,"No tienes ningún empleo.");
-	if(JobInfo[job][jType] != 0)
-		return 1;
   	if(jobDuty[playerid])
 	  	return SendClientMessage(playerid, COLOR_YELLOW2,"¡No puedes hacerlo mientras estás trabajando!");
     if(!PlayerToPoint(1.0, playerid, JobInfo[job][jTakeX],JobInfo[job][jTakeY],JobInfo[job][jTakeZ]))
@@ -301,6 +310,7 @@ CMD:dejarempleo(playerid,params[])
 	if(GetJobType(job) == JOB_TYPE_LEGAL) // Si es legal, lo ponemos como que renunció.
 	{
 	    PlayerJobInfo[playerid][pState] = JOB_STATE_RESIGNED;
+	    PlayerJobInfo[playerid][pWorkingHours] = 0;
 		SavePlayerJobData(playerid); // Guardamos la información del viejo, si fuese legal.
 	}
 	SendFMessage(playerid, COLOR_YELLOW2, "¡Has dejado tu empleo de %s!", JobInfo[job][jName]);

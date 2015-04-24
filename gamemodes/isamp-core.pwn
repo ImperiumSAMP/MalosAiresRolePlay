@@ -1203,6 +1203,8 @@ public OnPlayerDisconnect(playerid, reason)
 	
 	Cronometro_Borrar(playerid);
 	
+	Job_WorkingPlayerDisconnect(playerid);
+	
  	if(gPlayerLogged[playerid])
 	{
 		switch(reason)

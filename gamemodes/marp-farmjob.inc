@@ -65,13 +65,13 @@ public FarmJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
-    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
+ 	jobVehicle[playerid] = 0;
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
 	UpdatePlayerJobLastWorked(playerid);
-	PlayerJobInfo[playerid][pReputation] -= 30;
+	Job_GiveReputation(playerid, -30);
 	return 1;
 }
 
@@ -85,7 +85,7 @@ FarmJob_FinishWork(playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar adentro de una cosechadora!");
 
 	PlayerActionMessage(playerid, 15.0, "descarga todo el producto y estaciona la cosechadora.");
-	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Has recolectado %d toneladas por lo tanto recibirás $%d en el próximo día de pago menos los descuentos por roturas.", CollectedProds[playerid], CollectedProds[playerid] * JOB_FARM_PRODVALUE);
     PlayerJobInfo[playerid][pWorkingHours]++;
 	PlayerInfo[playerid][pCantWork] = 1;
 	LastCP[playerid] = -1;
@@ -109,12 +109,12 @@ FarmJob_Payment(playerid, vehicleid)
     GetVehicleHealth(vehicleid, vHealth);
     if(vHealth + 30.0 < jobVehicleHealth[playerid])
     {
-        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        Job_GiveReputation(playerid, -(floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10)); // La reputación que baja es proporcional al daño del vehículo (un décimo)
         injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
 		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión en mal estado.");
 	}
 	else
-	    PlayerJobInfo[playerid][pReputation]++;
+	    Job_GiveReputation(playerid, 1);
 
 	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
 	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo

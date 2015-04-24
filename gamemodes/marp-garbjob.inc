@@ -148,13 +148,13 @@ public GarbJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork] = 1;
     jobDuty[playerid] = false;
-    jobVehicle[playerid] = 0;
     SetEngine(jobVehicle[playerid], 0);
 	SetVehicleToRespawn(jobVehicle[playerid]);
+ 	jobVehicle[playerid] = 0;
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga el día de hoy.");
 	UpdatePlayerJobLastWorked(playerid);
-	PlayerJobInfo[playerid][pReputation] -= 30;
+	Job_GiveReputation(playerid, -30);
 	return 1;
 }
 
@@ -192,12 +192,12 @@ GarbJob_Payment(playerid, vehicleid)
     GetVehicleHealth(vehicleid, vHealth);
     if(vHealth + 30.0 < jobVehicleHealth[playerid])
     {
-        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        Job_GiveReputation(playerid, -(floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 10)); // La reputación que baja es proporcional al daño del vehículo (un décimo)
         injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil); // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo.
 		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste el camión recolector en mal estado.");
 	}
 	else
-	    PlayerJobInfo[playerid][pReputation]++;
+	    Job_GiveReputation(playerid, 1);
 
 	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
 	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo

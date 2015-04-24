@@ -102,7 +102,7 @@ CMD:setjob(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(job < 0 || job >= 20)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Empleo inválido.");
-
+        
 	SendFMessage(targetid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
 	format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
@@ -145,25 +145,30 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 
 		if(strval(result) == JOB_STATE_FIRED && !admincmd) // Fue despedido y fue mediante /tomarempleo y no mediante /setjob
   		{
-  		    SendFMessage(playerid, COLOR_WHITE, "Empleador: Fuiste despedido de este lugar %s, no te queremos devuelta.", GetPlayerNameEx(playerid));
+  		    SendFMessage(playerid, COLOR_WHITE, "Empleador: Fuiste despedido de este lugar por mal desempeño, %s, y no te queremos devuelta.", GetPlayerNameEx(playerid));
+		}
+		else if(strval(result) == JOB_STATE_FIRED_MISSING && !admincmd)
+		{
+  		    SendFMessage(playerid, COLOR_WHITE, "Empleador: Fuiste despedido de este lugar por faltar demasiado tiempo al trabajo, %s, y no te queremos devuelta.", GetPlayerNameEx(playerid));
 		}
 		else
   		{
   		    PlayerJobInfo[playerid][pState] = JOB_STATE_ACTIVE;
-			PlayerJobInfo[playerid][pWorkingHours] = 0; // Al renunciar, se borra la antiguedad.
-			cache_get_field_content(0, "pCharge", result); 			PlayerJobInfo[playerid][pCharge] = strval(result);
+			cache_get_field_content(0, "pWorkingHours", result); 	PlayerJobInfo[playerid][pWorkingHours] = strval(result);
+   			cache_get_field_content(0, "pCharge", result); 			PlayerJobInfo[playerid][pCharge] = strval(result);
 			cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
 			cache_get_field_content(0, "pTotalEarnings", result);   PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
-			cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 64);
+			UpdatePlayerJobLastWorked(playerid);
 			
 			PlayerInfo[playerid][pJob] = job;
 			PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-			SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /ayuda, seccion [Empleos].", JobInfo[job][jName]);
-			SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
+			SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /ayuda, seccion [Empleo].", JobInfo[job][jName]);
+			SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar otro empleo.", PlayerInfo[playerid][pJobTime]);
 			if(!admincmd)
 			{
 				SendFMessage(playerid, COLOR_WHITE, "Empleador: %s, ¿sos vos?. Es bueno que hayas vuelto. Esperemos que esta vez no renuncies.", GetPlayerNameEx(playerid));
+                SendClientMessage(playerid, COLOR_WHITE, "Recuerda que, ya que habías renunciado, perdiste toda antiguedad acumulada en el trabajo.");
 			}
 		}
 	}
@@ -179,10 +184,12 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		PlayerInfo[playerid][pJob] = job;
 		PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-		SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades!, ahora eres un %s, para ver los comandos disponibles, escribe /ayuda.", JobInfo[job][jName]);
-		SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d PayDay/s antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
+		SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /ayuda, seccion [Empleo].", JobInfo[job][jName]);
+		SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar otro empleo.", PlayerInfo[playerid][pJobTime]);
 		if(!admincmd)
+		{
 			SendFMessage(playerid, COLOR_WHITE, "Empleador: Bienvenido a nuestra empresa, %s. Empezarás como %s. ¡Suerte y a trabajar!", GetPlayerNameEx(playerid), GetJobChargeName(job, PlayerJobInfo[playerid][pCharge]));
+		}
 		format(query, sizeof(query), "INSERT INTO `%s` (`pID`, `pLastWorked`) VALUES ('%d', '%s')", JobInfo[job][jTable], PlayerInfo[playerid][pID], PlayerJobInfo[playerid][pLastWorked]);
 		mysql_function_query(dbHandle, query, false, "", "");
 	}
@@ -251,9 +258,9 @@ stock GetJobReputationString(reputation)
     	format(str, sizeof(str), "{CFFF00}Buena{a9c4e4}"); // Verde amarillo
     else if(reputation >= 0)
     	format(str, sizeof(str), "{FFFF00}Neutral{a9c4e4}"); // Amarillo
-    else if(reputation > -100)
+    else if(reputation > -70)
     	format(str, sizeof(str), "{FFB900}Mala{a9c4e4}"); // Naranja claro
-    else if(reputation > -200)
+    else if(reputation > -140)
     	format(str, sizeof(str), "{FF5900}Muy mala{a9c4e4}"); // Naranja rojizo
     else
     	format(str, sizeof(str), "{FF0000}Horrible{a9c4e4}"); // Rojo
@@ -315,7 +322,7 @@ public OnPlayerInvestJob(playerid, job)
 		totalEarningsResult,
 		lastWorkedResult[64],
 		content[400],
-		auxInformation[128] = "";
+		auxInformation[200] = "";
 
 	cache_get_data(rows, fields);
 
@@ -331,7 +338,9 @@ public OnPlayerInvestJob(playerid, job)
 		switch(stateResult)
 		{
 		    case JOB_STATE_FIRED:
-		        format(auxInformation, sizeof(auxInformation), "Has sido despedido de este lugar y no podrás tomar nuevamente el trabajo.");
+		        format(auxInformation, sizeof(auxInformation), "Has sido despedido de este lugar por mal desempeño y no podrás tomar nuevamente el trabajo.");
+			case JOB_STATE_FIRED_MISSING:
+			    format(auxInformation, sizeof(auxInformation), "Has sido despedido de este lugar por faltar al trabajo y no podrás tomarlo nuevamente.");
 			case JOB_STATE_RESIGNED:
 				format(auxInformation, sizeof(auxInformation), "Como habías renunciado, volverás a entrar con tu último cargo pero perderás toda antiguedad acumulada.");
 		}
@@ -348,7 +357,7 @@ public OnPlayerInvestJob(playerid, job)
 	}
 	else // Nunca lo tuvo
 	{
-	    format(auxInformation, sizeof(auxInformation), "En esta empresa se valora el buen desempeño laboral, como también se castiga el malo.");
+	    format(auxInformation, sizeof(auxInformation), "En esta empresa tendrás la oportunidad de escalar puestos y mejorar tus ganancias\nsi tienes un buen desempeño. Pero también ten en cuenta que te pueden echar si tu desempeño es malo.");
 		format(content, sizeof(content), "Empleo: %s\nCargo en el que comienzas: %s\nGanancias iniciales por trabajo: $%d\n\n%s",
 		    JobInfo[job][jName],
 		    GetJobChargeName(job, 1),
@@ -358,4 +367,17 @@ public OnPlayerInvestJob(playerid, job)
 	}
 	ShowPlayerDialog(playerid, DLG_JOB_INFO_2, DIALOG_STYLE_MSGBOX, "Información del empleo", content, "Cerrar", "");
 	return 1;
+}
+
+Job_GiveReputation(playerid, reputation)
+{
+    PlayerJobInfo[playerid][pReputation] += reputation;
+    
+	if(PlayerJobInfo[playerid][pReputation] < -210)
+	{
+	    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has sido despedido de tu empleo '%s' por mal desempeño en tus tareas laborales.", JobInfo[PlayerInfo[playerid][pJob]][jName]);
+		PlayerJobInfo[playerid][pState] = JOB_STATE_FIRED;
+		SavePlayerJobData(playerid);
+		PlayerInfo[playerid][pJob] = 0;
+	}
 }
