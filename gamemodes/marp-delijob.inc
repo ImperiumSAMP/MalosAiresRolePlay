@@ -229,7 +229,7 @@ public DeliJob_TravelTimeLimit(playerid)
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);
-	PlayerJobInfo[playerid][pReputation] -= 6;
+	Job_GiveReputation(playerid, -6);
 	return 1;
 }
 
@@ -240,12 +240,12 @@ DeliJob_Payment(playerid, vehicleid)
     GetVehicleHealth(vehicleid, vHealth);
     if(vHealth + 30.0 < jobVehicleHealth[playerid])
     {
-        PlayerJobInfo[playerid][pReputation] -= floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 20; // La reputación que baja es proporcional al daño del vehículo (un décimo)
+        Job_GiveReputation(playerid, -(floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 20)); // La reputación que baja es proporcional al daño del vehículo (un décimo)
         injuriesCost = floatround(jobVehicleHealth[playerid] - vHealth, floatround_ceil) / 2; // Se le paga x$$$ menos correspondientes a la diferencia de vida en el vehículo / 2.
 		SendClientMessage(playerid, COLOR_WHITE, "Tu jefe se enojó con vos ya que entregaste la moto en mal estado.");
 	}
 	else
-	    PlayerJobInfo[playerid][pReputation]++;
+	    Job_GiveReputation(playerid, 1);
 
 	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 10; // Extra por antiguedad
 	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 20; // Extra por cargo

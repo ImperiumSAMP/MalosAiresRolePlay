@@ -36,6 +36,9 @@
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
 #define PRICE_GPS   			100
+#define PRICE_VEHICLE_PAINTJOB  10000
+#define PRICE_VEHICLE_MODS      2000
+
 
 //CHOICES
 // Selecciones.
@@ -53,6 +56,7 @@ enum Cars {
 	Float:VehAngle,
 	VehColor1,
 	VehColor2,
+	VehPaintjob,
 	VehFaction,
 	VehJob,
 	VehType,
@@ -585,6 +589,7 @@ resetVehicle(id)
     VehicleInfo[id][VehAngle] 		= 0;
     VehicleInfo[id][VehColor1]		= 0;
     VehicleInfo[id][VehColor2]		= 0;
+    VehicleInfo[id][VehPaintjob]	= 3;
     VehicleInfo[id][VehFaction] 	= 0;
     VehicleInfo[id][VehJob]     	= 0;
     VehicleInfo[id][VehDamage1]		= 0;
@@ -617,7 +622,7 @@ SaveVehicle(id)
 	if(dontsave)
 		return 1;
 
-    new query[1024];
+    new query[1100];
 
     GetVehicleDamageStatus(id, VehicleInfo[id][VehDamage1], VehicleInfo[id][VehDamage2], VehicleInfo[id][VehDamage3], VehicleInfo[id][VehDamage4]);
 	GetVehicleHealth(id, VehicleInfo[id][VehHP]);
@@ -631,7 +636,7 @@ SaveVehicle(id)
  	}
  	VehicleInfo[id][VehEngine] = 0;
 
-	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d,VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
+	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehPaintjob=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d,VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
 		VehicleInfo[id][VehModel],
 	    VehicleInfo[id][VehPosX],
 	    VehicleInfo[id][VehPosY],
@@ -639,6 +644,7 @@ SaveVehicle(id)
 	    VehicleInfo[id][VehAngle],
 	    VehicleInfo[id][VehColor1],
 	    VehicleInfo[id][VehColor2],
+	    VehicleInfo[id][VehPaintjob],
 	    VehicleInfo[id][VehFaction],
 	    VehicleInfo[id][VehJob],
 	    VehicleInfo[id][VehDamage1],
@@ -810,6 +816,8 @@ public OnVehicleSpawn(vehicleid)
  			    	AddVehicleComponent(vehicleid, VehicleInfo[vehicleid][VehCompSlot][i]);
 				}
  			}
+ 			ChangeVehiclePaintjob(vehicleid, VehicleInfo[vehicleid][VehPaintjob]);
+ 			ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
 		}
         case VEH_FACTION:
 		{
@@ -1801,6 +1809,7 @@ CMD:avmodelo(playerid, params[])
 	for(new i = 0; i < 14; i++) {
  	    VehicleInfo[vehicleid][VehCompSlot][i] = 0;
  	}
+	VehicleInfo[vehicleid][VehPaintjob] = 3;
 	DestroyVehicle(vehicleid);
 	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
 	PutPlayerInVehicle(playerid, vehicleid, 0);
@@ -2011,5 +2020,23 @@ CMD:avpatente(playerid, params[])
 	VehicleInfo[vehicleid][VehPlate] = string;
 	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);
     VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/avpatente", params);
+	return 1;
+}
+
+//==============================================================================
+
+public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
+{
+	if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB || VehicleInfo[vehicleid][VehType] != VEH_OWNED)
+	{
+	    SendFMessage(playerid, COLOR_WHITE, "Has seleccionado una pintura customizada/paintjob, pero no se ha guardado ya que no cuentas con $%d o no es un auto personal.", PRICE_VEHICLE_PAINTJOB);
+	}
+	else
+	{
+	    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has seleccionado una pintura customizada/paintjob y las has comprado por un valor de $%d.", PRICE_VEHICLE_PAINTJOB);
+        SendClientMessage(playerid, COLOR_WHITE, "Recuerda que con solo visualizar un paintjob, se interpreta como que quieres comprarlo ((BUG NATIVO DE SAMP)).");
+		VehicleInfo[vehicleid][VehPaintjob] = paintjobid;
+		ChangeVehiclePaintjob(vehicleid, paintjobid);
+	}
 	return 1;
 }

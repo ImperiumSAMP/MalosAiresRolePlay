@@ -219,6 +219,9 @@ public Destuning(playerid)
 		   	VehicleInfo[vehicleid][VehCompSlot][i] = 0;
 		}
 	}
+	VehicleInfo[vehicleid][VehPaintjob] = 3;
+	ChangeVehiclePaintjob(vehicleid, 3);
+	SaveVehicle(vehicleid);
 	SendFMessage(playerid, COLOR_WHITE, "Las partes tuning de su vehículo han sido removidas por %s.", GetPlayerNameEx(RepairOffer[playerid]));
 	SendFMessage(RepairOffer[playerid], COLOR_WHITE, "Has removido las partes tuning del vehículo de %s.", GetPlayerNameEx(playerid));
 	TogglePlayerControllable(playerid, true);

@@ -2658,6 +2658,7 @@ public OnVehicleDataLoad(id)
 		cache_get_field_content(0, "VehModel", result); 				VehicleInfo[id][VehModel] 		= strval(result);
 		cache_get_field_content(0, "VehColor1", result); 				VehicleInfo[id][VehColor1] 		= strval(result);
 		cache_get_field_content(0, "VehColor2", result); 				VehicleInfo[id][VehColor2] 		= strval(result);
+        cache_get_field_content(0, "VehPaintjob", result); 				VehicleInfo[id][VehPaintjob] 	= strval(result);
 		cache_get_field_content(0, "VehFaction", result); 				VehicleInfo[id][VehFaction] 	= strval(result);
 		cache_get_field_content(0, "VehJob", result); 					VehicleInfo[id][VehJob] 		= strval(result);
 		cache_get_field_content(0, "VehDamage1", result); 				VehicleInfo[id][VehDamage1] 	= strval(result);
@@ -3840,11 +3841,11 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 	{
         BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod", 0);
 	}
-	
-	if(GetPlayerCash(playerid) >= 2000)
+
+	if(GetPlayerCash(playerid) >= PRICE_VEHICLE_MODS)
 	{
-	    GivePlayerCash(playerid, -2000);
-	    GiveFactionMoney(FAC_MECH, 2000 / 10);
+	    GivePlayerCash(playerid, -PRICE_VEHICLE_MODS);
+	    GiveFactionMoney(FAC_MECH, PRICE_VEHICLE_MODS / 10);
 	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspensión hidráulica).");
 	}
 	else
@@ -3852,7 +3853,7 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 	    SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4500), las modificaciones no serán almacenadas.");
 		return 1;
 	}
-	
+
 	if(GetVehicleComponentType(componentid) == 5 || // Si es nitro
 	    GetVehicleComponentType(componentid) == 7 || // Si es llantas
 	    GetVehicleComponentType(componentid) == 9) // Si es suspension
@@ -3860,9 +3861,8 @@ public OnVehicleMod(playerid, vehicleid, componentid)
 
     if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
 	{
-        new vID = GetPlayerVehicleID(playerid);
 		VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
-		SaveVehicle(vID);
+		SaveVehicle(vehicleid);
     }
     return 1;
 }
