@@ -39,6 +39,7 @@
 #define PRICE_VEHICLE_PAINTJOB  10000
 #define PRICE_VEHICLE_MODS      2000
 
+#define DLG_CONFIRM_PAINTJOB 	10040
 
 //CHOICES
 // Selecciones.
@@ -91,7 +92,10 @@ enum RCars {
 	rTime,
 	rOwnerSQLID,
 };
+
 new RentCarInfo[MAX_RENTCAR][RCars];
+
+new paintjobSelection[MAX_PLAYERS];
 
 //Forwards
 forward IsAPlane(vehicleid);
@@ -1781,6 +1785,7 @@ CMD:avcolor(playerid, params[])
 	GetVehicleZAngle(vehicleid, angle);
 	DestroyVehicle(vehicleid);
 	CreateVehicle(VehicleInfo[vehicleid][VehModel], VehicleInfo[vehicleid][VehPosX], VehicleInfo[vehicleid][VehPosY], VehicleInfo[vehicleid][VehPosZ], VehicleInfo[vehicleid][VehAngle], VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2], -1);
+    SetVehicleToRespawn(vehicleid);
 	PutPlayerInVehicle(playerid, vehicleid, 0);
 	SetVehiclePos(vehicleid, cx, cy, cz);
 	SetVehicleZAngle(vehicleid, angle);
@@ -2033,10 +2038,9 @@ public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
 	}
 	else
 	{
-	    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has seleccionado una pintura customizada/paintjob y las has comprado por un valor de $%d.", PRICE_VEHICLE_PAINTJOB);
-        SendClientMessage(playerid, COLOR_WHITE, "Recuerda que con solo visualizar un paintjob, se interpreta como que quieres comprarlo ((BUG NATIVO DE SAMP)).");
-		VehicleInfo[vehicleid][VehPaintjob] = paintjobid;
-		ChangeVehiclePaintjob(vehicleid, paintjobid);
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[INFO]: Al visualizar un paintjob, se interpreta como que quieres comprarlo ((BUG NATIVO DE SAMP)). Es por ello que se pide una confirmación.");
+		paintjobSelection[playerid] = paintjobid;
+		ShowPlayerDialog(playerid, DLG_CONFIRM_PAINTJOB, DIALOG_STYLE_MSGBOX, "Confirmación", "¿Confirmas la compra de este paintjob?", "Si", "Cancelar");
 	}
 	return 1;
 }
