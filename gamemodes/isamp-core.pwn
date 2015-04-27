@@ -164,6 +164,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_JOB_INFO_2 		10037
 // #define DLG_CARDEALER5	    10038
 #define DLG_POLICE_FINE	    	10039
+// #define DLG_CONFIRM_PAINTJOB 10040
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -7871,6 +7872,18 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
    			AddVehicleComponent(vID, wheel);
 			VehicleInfo[vID][VehCompSlot][7] = wheel;
 			SaveVehicle(vID);
+  		}
+  		case DLG_CONFIRM_PAINTJOB:
+  		{
+  		    if(response)
+  		    {
+  		        new vehicleid = GetPlayerVehicleID(playerid);
+  		        
+  		        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has seleccionado una pintura customizada/paintjob y las has comprado por un valor de $%d.", PRICE_VEHICLE_PAINTJOB);
+      			VehicleInfo[vehicleid][VehPaintjob] = paintjobSelection[playerid];
+				ChangeVehiclePaintjob(vehicleid, paintjobSelection[playerid]);
+				GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
+  		    }
   		}
   		
 //======================FIN SISTEMA DE TUNING DE MECANICOS======================
