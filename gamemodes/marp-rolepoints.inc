@@ -7,7 +7,7 @@
 
 CMD:darpuntoderol(playerid, params[])
 {
-	new targetid, reason[80], string[128];
+	new targetid, reason[80], string[128], query[300];
 	
 	if(sscanf(params, "us[80]", targetid, reason))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darpuntoderol [ID/Jugador] [Razón] (MAX: 80 caracteres)");
@@ -20,19 +20,20 @@ CMD:darpuntoderol(playerid, params[])
 	SendClientMessage(targetid, COLOR_LIGHTYELLOW2, string);
 	
 	PlayerInfo[targetid][pRolePoints]++;
-	format(string, sizeof(string), "INSERT INTO role_points (pID, pName, Amount, Reason, Date, adminID, adminName) VALUES (%d, '%s', 1, '%s', CURRENT_TIMESTAMP, %d, '%s')",
+	format(query, sizeof(query), "INSERT INTO role_points (pID, pName, Amount, Reason, Date, adminID, adminName) VALUES (%d, '%s', 1, '%s', CURRENT_TIMESTAMP, %d, '%s')",
 	    PlayerInfo[targetid][pID],
 	    PlayerInfo[targetid][pName],
 	    reason,
 	    PlayerInfo[playerid][pID],
 	    PlayerInfo[playerid][pName]
 	);
+	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
 }
 
 CMD:quitarpuntoderol(playerid, params[])
 {
-	new targetid, reason[80], string[128], query[350];
+	new targetid, reason[80], string[128], query[300];
 
 	if(sscanf(params, "us[80]", targetid, reason))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarpuntoderol [ID/Jugador] [Razón] (MAX: 80 caracteres)");
@@ -54,6 +55,7 @@ CMD:quitarpuntoderol(playerid, params[])
 	    PlayerInfo[playerid][pID],
 	    PlayerInfo[playerid][pName]
 	);
+	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
 }
 
@@ -103,7 +105,7 @@ public ShowRolePoints(ofplayerid, toplayerid)
 	else
 	{
         format(string, sizeof(string), "No se encontraron puntos de rol para el personaje %s.", GetPlayerNameEx(ofplayerid));
-        SendClientMessage(toplayerid, COLOR_YELLOW2, result);
+        SendClientMessage(toplayerid, COLOR_YELLOW2, string);
 	}
 	return 1;
 }
