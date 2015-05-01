@@ -72,6 +72,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-paintball.inc"
 #include "marp-tutorial.inc"
 #include "marp-cronometro.inc"
+#include "marp-rolepoints.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
@@ -165,6 +166,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_CARDEALER5	    10038
 #define DLG_POLICE_FINE	    	10039
 // #define DLG_CONFIRM_PAINTJOB 10040
+#define DLG_TUNING_PAINTJOB     10041
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -1059,6 +1061,7 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pSpectating] = INVALID_PLAYER_ID;
 	PlayerInfo[playerid][pRentCarID] = 0;
 	PlayerInfo[playerid][pRentCarRID] = 0;
+	PlayerInfo[playerid][pRolePoints] = 0;
 
     gHeaderTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
     gBackgroundTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
@@ -2335,6 +2338,8 @@ public OnPlayerDataLoad(playerid)
  		
  		cache_get_field_content(0, "HouseKeyIncome", result); 		PlayerInfo[playerid][pHouseKeyIncome] 		= strval(result);
 
+		cache_get_field_content(0, "pRolePoints", result); 		PlayerInfo[playerid][pRolePoints] = strval(result);
+
         gPlayerLogged[playerid] = 1;
 
         loadThiefJobData(playerid,PlayerInfo[playerid][pID]); // Info del job de ladrón
@@ -2833,7 +2838,7 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pHouseKeyIncome]
 		);
 
-		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pCigarettes=%d,pLighter=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d",
+		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pCigarettes=%d,pLighter=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d, pRolePoints=%d",
 		    query,
 			PlayerInfo[playerid][pMuteB],
 			PlayerInfo[playerid][pRentCarID],
@@ -2846,7 +2851,8 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pLighter],
 			PlayerInfo[playerid][pRadio],
 			PlayerInfo[playerid][pFightStyle],
-			PlayerInfo[playerid][pAdictionAbstinence]
+			PlayerInfo[playerid][pAdictionAbstinence],
+			PlayerInfo[playerid][pRolePoints]
 		);
 		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
@@ -5392,11 +5398,13 @@ stock StopMusic(playerid) {
 	PlayerPlaySound(playerid, 1069, 0.0, 0.0, 0.0);
 }
 
-public ShowStats(playerid, targetid, bool:admin) {
-    if(IsPlayerConnected(targetid)) {
-		if(gPlayerLogged[targetid]) {
-			new
-			    location[MAX_ZONE_NAME],
+public ShowStats(playerid, targetid, bool:admin)
+{
+    if(IsPlayerConnected(targetid))
+	{
+		if(gPlayerLogged[targetid])
+		{
+			new location[MAX_ZONE_NAME],
 			    Float:health,
 			    jText[32],
 			    sexText[10],
@@ -5457,7 +5465,7 @@ public ShowStats(playerid, targetid, bool:admin) {
 			SendFMessage(playerid, COLOR_WHITE, "Teléfono: %s | Empresa telefónica: %s | Empleo: %s | Facción: %s | Rango: %s", phoneText, phoneNetwork, jText, pFactionName, fRankT);
 			SendFMessage(playerid, COLOR_WHITE,	"[Licencias] Conducción: %s | Vuelo: %s | Portación de armas: %s", cLicense, fLicense, wLicense);
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[General OOC]===========================");
-			SendFMessage(playerid, COLOR_WHITE, "Salud: %.1f | Nivel: %d | Experiencia: %d/%d | Advertencias: %d", health, PlayerInfo[targetid][pLevel], PlayerInfo[targetid][pExp], (PlayerInfo[targetid][pLevel] + 1) * ServerInfo[svLevelExp], PlayerInfo[targetid][pWarnings]);
+			SendFMessage(playerid, COLOR_WHITE, "Salud: %.1f | Nivel: %d | Experiencia: %d/%d | Advertencias: %d | Puntos de Rol: %d", health, PlayerInfo[targetid][pLevel], PlayerInfo[targetid][pExp], (PlayerInfo[targetid][pLevel] + 1) * ServerInfo[svLevelExp], PlayerInfo[targetid][pWarnings], PlayerInfo[targetid][pRolePoints]);
    			SendFMessage(playerid, COLOR_WHITE,	"Casa: %d | Casa rentada: %d | Negocio: %d | Horas de juego: %d", PlayerInfo[targetid][pHouseKey], PlayerInfo[targetid][pHouseKeyIncome], PlayerInfo[targetid][pBizKey], PlayerInfo[targetid][pPlayingHours]);
 			
 			printCarKeys(playerid,targetid);
@@ -5720,7 +5728,7 @@ public BanPlayer(playerid, issuerid, reason[], days)
 
 	if(days == 0) // Perma ban
 	{
-	    days = 700; // Una fecha lejana
+	    days = 1000; // Una fecha lejana
 		format(str, sizeof(str), "%s ha sido baneado/a permanentemente por %s, razón: %s.", playerName, issuerName, reason);
 	}
 	else
@@ -7136,6 +7144,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			if(inputtext[strPos] == '%')
 				inputtext[strPos] = '\0'; // SA-MP placeholder exploit patch
 
+	new vehicleid = GetPlayerVehicleID(playerid);
+
 	switch(dialogid)
 	{
 		case DLG_CAMARAS_POLICIA:
@@ -7726,72 +7736,123 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		}
 
 //=========================SISTEMA DE TUNING DE MECANICOS=======================
+		case DLG_TUNING_PAINTJOB:
+		{
+		    TogglePlayerControllable(playerid, false);
+	        switch(listitem)
+	        {
+	            case 0:
+	            {
+	                ChangeVehiclePaintjob(vehicleid, 0);
+	                if(response) {}
+	                    // Previsualizar
+					else
+					{
+					    VehicleInfo[vehicleid][VehPaintjob] = 0;
+					    SaveVehicle(vehicleid);
+					}
+				}
+	            case 1:
+	            {
+	                if(GetVehicleModel(vehicleid) == 483) // Camper
+					{
+					    SendClientMessage(playerid, COLOR_YELLOW2, "Ese modelo de vehículo no tiene disponible un segundo vinilo.");
+				    	ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+						return 1;
+					}
+	                ChangeVehiclePaintjob(vehicleid, 1);
+	                if(response) {}
+	                    // Previsualizar
+					else
+					{
+					    VehicleInfo[vehicleid][VehPaintjob] = 1;
+					    SaveVehicle(vehicleid);
+					}
+				}
+	            case 2:
+	            {
+					if(GetVehicleModel(vehicleid) == 483 || GetVehicleModel(vehicleid) == 575) // Camper y Broadway
+					{
+					    SendClientMessage(playerid, COLOR_YELLOW2, "Ese modelo de vehículo no tiene disponible un tercer vinilo.");
+				    	ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+						return 1;
+					}
 
+	                ChangeVehiclePaintjob(vehicleid, 2);
+	                if(response) {}
+	                    // Previsualizar
+					else
+					{
+					    VehicleInfo[vehicleid][VehPaintjob] = 2;
+					    SaveVehicle(vehicleid);
+					}
+				}
+				case 3:
+				{
+				    TogglePlayerControllable(playerid, true);
+				}
+			}
+		}
 		case DLG_TUNING:
 		{
 		    TogglePlayerControllable(playerid, true);
 		    if(response == 0) // Si clickearon cerrar
 		        return 0;
 
-			new title[64];
-			new content[256];
 		    switch(listitem)
 		    {
 		        case 0:
 			    {
-					format(title, sizeof(title), "Color 1");
-					format(content, sizeof(content), "{FFEFD5}Ingrese el ID del color 1 a pintar:");
 					TogglePlayerControllable(playerid, false);
-					ShowPlayerDialog(playerid, DLG_TUNING_COLOR1, DIALOG_STYLE_INPUT, title, content, "Pintar", "Cerrar");
+					ShowPlayerDialog(playerid, DLG_TUNING_COLOR1, DIALOG_STYLE_INPUT, "Color primario", "{FFEFD5}Ingrese la ID del color primario a pintar:", "Pintar", "Cerrar");
 				}
 				case 1:
 				{
-					format(title, sizeof(title), "Color 2");
-					format(content, sizeof(content), "{FFEFD5}Ingrese el ID del color 2 a pintar:");
 					TogglePlayerControllable(playerid, false);
-					ShowPlayerDialog(playerid, DLG_TUNING_COLOR2, DIALOG_STYLE_INPUT, title, content, "Pintar", "Cerrar");
+					ShowPlayerDialog(playerid, DLG_TUNING_COLOR2, DIALOG_STYLE_INPUT, "Color secundario", "{FFEFD5}Ingrese la ID del color secundario a pintar:", "Pintar", "Cerrar");
 				}
 				case 2:
-    			{
-    			    if(GetVehicleType(GetPlayerVehicleID(playerid)) == VTYPE_BIKE)
-            			return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo invalido!");
-
-					format(title, sizeof(title), "Llantas");
-					format(content, sizeof(content), "Offroad\nShadow\nMega\nRimshine\nWires\nClassic\nTwist\nCutter\nSwitch\nGrove\nImport\nDollar\nTrance\nAtomic\nAhab\nVirtual\nAccess");
-					TogglePlayerControllable(playerid, false);
-					ShowPlayerDialog(playerid, DLG_TUNING_LLANTAS, DIALOG_STYLE_LIST, title, content, "Instalar", "Cerrar");
+				{
+				    TogglePlayerControllable(playerid, false);
+				    ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 				}
 				case 3:
-				{
-				    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-				        return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
-				    if(GetVehicleType(GetPlayerVehicleID(playerid)) == VTYPE_BIKE)
-            			return SendClientMessage(playerid, COLOR_WHITE, "Vehículo invalido!");
-					if(GetPlayerCash(playerid) < 4000)
-					    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4000).");
+    			{
+    			    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
+            			return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo inválido.");
 
-                    new vID = GetPlayerVehicleID(playerid);
-				    VehicleInfo[GetPlayerVehicleID(playerid)][VehCompSlot][9] = 1087;
-				    AddVehicleComponent(GetPlayerVehicleID(playerid), 1087);
-					GivePlayerCash(playerid, -4000);
-				    PlayerActionMessage(playerid, 15.0, "comienza a instalar la suspensión hidráulica en el vehículo.");
-				    SaveVehicle(vID);
+					TogglePlayerControllable(playerid, false);
+					ShowPlayerDialog(playerid, DLG_TUNING_LLANTAS, DIALOG_STYLE_LIST, "Llantas disponibles:", "Offroad\nShadow\nMega\nRimshine\nWires\nClassic\nTwist\nCutter\nSwitch\nGrove\nImport\nDollar\nTrance\nAtomic\nAhab\nVirtual\nAccess", "Instalar", "Cerrar");
 				}
 				case 4:
 				{
 				    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 				        return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
-				    if(GetVehicleType(GetPlayerVehicleID(playerid)) == VTYPE_BIKE)
+				    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
+            			return SendClientMessage(playerid, COLOR_WHITE, "Vehículo invalido!");
+					if(GetPlayerCash(playerid) < 4000)
+					    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4000).");
+
+				    VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_HYDRAULICS] = 1087;
+				    AddVehicleComponent(vehicleid, 1087);
+					GivePlayerCash(playerid, -4000);
+				    PlayerActionMessage(playerid, 15.0, "comienza a instalar la suspensión hidráulica en el vehículo.");
+				    SaveVehicle(vehicleid);
+				}
+				case 5:
+				{
+				    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+				        return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+				    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
             			return SendClientMessage(playerid, COLOR_WHITE, "Vehículo invalido!");
 					if(GetPlayerCash(playerid) < 10000)
 					    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($10000).");
 
-                    new vID = GetPlayerVehicleID(playerid);
-				    VehicleInfo[GetPlayerVehicleID(playerid)][VehCompSlot][5] = 1010;
-				    AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
+				    VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_NITRO] = 1010;
+				    AddVehicleComponent(vehicleid, 1010);
 					GivePlayerCash(playerid, -10000);
 				    PlayerActionMessage(playerid, 15.0, "comienza a instalar el óxido nitroso en el vehículo.");
-				    SaveVehicle(vID);
+				    SaveVehicle(vehicleid);
 				}
 			}
 		}
@@ -7804,16 +7865,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
       			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
 			if(GetPlayerCash(playerid) < 1500)
 				return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($1500).");
-			new integerColorValue = strval(inputtext);
-			if(integerColorValue < 0 || integerColorValue > 255)
+			new color = strval(inputtext);
+			if(color < 0 || color > 255)
 			    return SendClientMessage(playerid, COLOR_WHITE, "Ingresa un valor entre 0 y 255");
 
 			PlayerActionMessage(playerid, 15.0, "comienza a pintar el color primario del vehículo.");
-			new vID = GetPlayerVehicleID(playerid);
             GivePlayerCash(playerid, -1500);
-	        VehicleInfo[vID][VehColor1] = integerColorValue;
-	        ChangeVehicleColor(vID, VehicleInfo[vID][VehColor1], VehicleInfo[vID][VehColor2]);
-	        SaveVehicle(vID);
+	        VehicleInfo[vehicleid][VehColor1] = color;
+	        ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
+	        SaveVehicle(vehicleid);
 		}
 		case DLG_TUNING_COLOR2:
 		{
@@ -7824,16 +7884,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
       			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
 			if(GetPlayerCash(playerid) < 1500)
 				return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($1500).");
-			new integerColorValue = strval(inputtext);
-			if(integerColorValue < 0 || integerColorValue > 255)
+			new color = strval(inputtext);
+			if(color < 0 || color > 255)
 			    return SendClientMessage(playerid, COLOR_WHITE, "Ingresa un valor entre 0 y 255.");
 
 			PlayerActionMessage(playerid, 15.0, "comienza a pintar el color secundario del vehículo.");
-   			new vID = GetPlayerVehicleID(playerid);
             GivePlayerCash(playerid, -1500);
-	        VehicleInfo[vID][VehColor2] = integerColorValue;
-	        ChangeVehicleColor(vID, VehicleInfo[vID][VehColor1], VehicleInfo[vID][VehColor2]);
-	        SaveVehicle(vID);
+	        VehicleInfo[vehicleid][VehColor2] = color;
+	        ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
+	        SaveVehicle(vehicleid);
   		}
   		case DLG_TUNING_LLANTAS:
   		{
@@ -7847,8 +7906,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
             PlayerActionMessage(playerid, 15.0, "comienza a instalar las nuevas llantas en el vehículo.");
 			GivePlayerCash(playerid, -4000);
-    		new vID = GetPlayerVehicleID(playerid),
-    		    wheel;
+    		new wheel;
+    		
 			switch(listitem)
 			{
 			    case 0: wheel = OFFROAD_WHEEL_ID;
@@ -7869,16 +7928,14 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			    case 15: wheel = VIRTUAL_WHEEL_ID;
 			    case 16: wheel = ACCESS_WHEEL_ID;
 			}
-   			AddVehicleComponent(vID, wheel);
-			VehicleInfo[vID][VehCompSlot][7] = wheel;
-			SaveVehicle(vID);
+   			AddVehicleComponent(vehicleid, wheel);
+			VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_WHEELS] = wheel;
+			SaveVehicle(vehicleid);
   		}
   		case DLG_CONFIRM_PAINTJOB:
   		{
   		    if(response)
   		    {
-  		        new vehicleid = GetPlayerVehicleID(playerid);
-  		        
   		        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has seleccionado una pintura customizada/paintjob y las has comprado por un valor de $%d.", PRICE_VEHICLE_PAINTJOB);
       			VehicleInfo[vehicleid][VehPaintjob] = paintjobSelection[playerid];
 				ChangeVehiclePaintjob(vehicleid, paintjobSelection[playerid]);

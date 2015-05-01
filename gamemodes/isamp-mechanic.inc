@@ -640,9 +640,7 @@ CMD:mectunear(playerid,params[])
 
 CMD:mectuning(playerid, params[])
 {
-    new clientID = RepairClient[playerid],
-		title[64],
-		content[256];
+    new clientID = RepairClient[playerid];
 
     if(PlayerInfo[playerid][pFaction] != FAC_MECH)
         return 1;
@@ -664,10 +662,8 @@ CMD:mectuning(playerid, params[])
    	if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehiculo invalido.");
 
-	format(title, sizeof(title), "Menú de tuning del Taller Mercury");
-	format(content, sizeof(content), "Color 1 $1500\nColor 2 $1500\nLlantas $4000\nSuspension Hidraulica $4000\nOxido Nitroso $10000");
 	TogglePlayerControllable(playerid, false);
-	ShowPlayerDialog(playerid, DLG_TUNING, DIALOG_STYLE_LIST, title, content, "Seleccionar", "Cerrar");
+	ShowPlayerDialog(playerid, DLG_TUNING, DIALOG_STYLE_LIST, "Menú de tuning:", "Color 1 $1.500\nColor 2 $1.500\nVinilos $10.000\nLlantas $4.000\nSuspension Hidraulica $4.000\nOxido Nitroso $10.000", "Seleccionar", "Cerrar");
 	return 1;
 }
 
