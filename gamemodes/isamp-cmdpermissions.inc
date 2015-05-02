@@ -56,14 +56,17 @@ public OnCmdListRecovered(){
 	return 1;
 }
 
-CMD:nivelcomando(playerid,params[]){
-	new cmdstring[64];
-	new level;
+CMD:nivelcomando(playerid, params[])
+{
+	new cmdstring[64],
+		level;
 
-	if(!sscanf(params,"s[64]i",cmdstring,level) && cmdstring[0]=='/')
-		setCmdPermission(cmdstring,level);
+	if(!sscanf(params, "s[64]i", cmdstring, level) && cmdstring[0] == '/')
+	{
+		setCmdPermission(cmdstring, level);
+		SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} has seteado el nivel del comando '%s' a %d.", cmdstring, level);
+	}
 	else
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /nivelcomando /[comando] [nivel]");
-	
 	return 1;
 }

@@ -6817,7 +6817,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes vender un vehículo que no te pertenece!");
 
 					GivePlayerCash(playerid, price / 2);
-					resetVehicle(vehicleid);
+					ResetVehicle(vehicleid);
                     VehicleInfo[vehicleid][VehType] = VEH_NONE;
 					SetVehicleToRespawn(vehicleid);
 					SaveVehicle(vehicleid);

@@ -565,12 +565,13 @@ new vlocked,
 
 //=============[VEHICLE DAO FUNCTIONS | DYNAMIC CAR SYSTEM]=====================
 
-stock LoadVehicles() {
-	new
-		query[128],
+stock LoadVehicles()
+{
+	new query[128],
 		vehicleID = 1;
 
-	while(vehicleID < MAX_VEH) {
+	while(vehicleID < MAX_VEH)
+	{
 	    format(query, sizeof(query), "SELECT * FROM `vehicles` WHERE `VehSQLID` = %d LIMIT 1", vehicleID);
 		mysql_function_query(dbHandle, query, true, "OnVehicleDataLoad", "i", vehicleID);
 		CarWindowStatus[vehicleID] = 1;
@@ -579,7 +580,7 @@ stock LoadVehicles() {
 	return 1;
 }
 
-resetVehicle(id)
+ResetVehicle(id)
 {
     VehicleInfo[id][VehType]        = 0;
     VehicleInfo[id][VehModel] 		= 411;
@@ -610,7 +611,8 @@ resetVehicle(id)
 	VehicleInfo[id][VehHP]			= 100;
 	VehicleInfo[id][VehPlate]		= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 	VehicleInfo[id][VehOwnerName]	= "XXXXXXXXXXXXXXXXXXXXXXX";
-	for(new i = 0; i < 14; i++) {
+	for(new i = 0; i < 14; i++)
+	{
         VehicleInfo[id][VehCompSlot][i] = 0;
 	}
 	ResetTrunk(id);
@@ -1551,7 +1553,7 @@ CMD:avehiculo(playerid, params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /avrespawnall - /avfuelcars - /avfixcars");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /avtipo - /avmodelo - /avcolor - /avfaccion - /avempleo - /avhp - /avnitro - /avcrear - /avcrearperma");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /avtipo - /avmodelo - /avcolor - /avfaccion - /avempleo - /avhp - /avnitro - /avcrear - /avcrearperma -/avowner");
 		SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{878EE7}[INFO]:{C8C8C8} para 'eliminar' un vehículo utiliza '/avtipo 0', si éste estaba asociado a un personaje el...");
 	 	SendClientMessage(playerid,	COLOR_LIGHTYELLOW2,	"{C8C8C8}...vehículo será eliminado de su cuenta. Si no estas seguro de los tipos, consulta a un scripter y NO uses el comando.");
 	}
@@ -1634,7 +1636,6 @@ CMD:avrespawnall(playerid, params[])
 		{
 		    SetVehicleNumberPlate(i, VehicleInfo[i][VehPlate]);
  			SetVehicleToRespawn(i);
- 			VehicleLog(i, playerid, INVALID_PLAYER_ID, "/avrespawnall", params);
 		}
 	}
 	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos desocupados han sido respawneados por un administrador.");
@@ -1692,7 +1693,6 @@ CMD:avfuelcars(playerid, params[])
 	for(new c = 0; c < MAX_VEH; c++)
 	{
 		VehicleInfo[c][VehFuel] = 100;
-		VehicleLog(c, playerid, INVALID_PLAYER_ID, "/avfuelcars", params);
 	}
 	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido llenados con gasolina por un administrador.");
 	return 1;
@@ -1700,12 +1700,10 @@ CMD:avfuelcars(playerid, params[])
 
 CMD:avfixcars(playerid, params[])
 {
-
 	for(new c = 0; c < MAX_VEH; c++)
 	{
 		RepairVehicle(c);
 		VehicleInfo[c][VehHP] = 100;
-		VehicleLog(c, playerid, INVALID_PLAYER_ID, "/avfixcars", params);
 	}
 	SendClientMessageToAll(COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} todos los vehículos han sido reparados por un administrador.");
 	return 1;
@@ -1878,7 +1876,7 @@ CMD:avtipo(playerid, params[])
 	}
 	else if(type == VEH_NONE)
 	{
-		resetVehicle(vehicleid);
+		ResetVehicle(vehicleid);
 	}
 
     VehicleInfo[vehicleid][VehType] = type;
@@ -2021,5 +2019,50 @@ CMD:avpatente(playerid, params[])
 	VehicleInfo[vehicleid][VehPlate] = string;
 	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);
     VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/avpatente", params);
+	return 1;
+}
+
+CMD:avowner(playerid, params[])
+{
+	new vehicleid = GetPlayerVehicleID(playerid),
+	    ownerid,
+	    ownername[MAX_PLAYER_NAME];
+	    
+	if(!IsPlayerInAnyVehicle(playerid))
+        return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
+	
+	if(getVehicleType(vehicleid) == VEH_OWNED)
+	{
+		if(sscanf(params, "u", ownerid))
+        	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avowner [ID/Jugador]");
+		if(!IsPlayerConnected(ownerid))
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador no conectado.");
+
+		// Borrado de llaves
+		foreach(new i : Player)
+		{
+			if(playerHasCarKey(i, vehicleid))
+				removeKeyFromPlayer(i, vehicleid);
+		}
+		deleteKeysForCar(vehicleid);
+		
+		// Nuevo dueño
+		GetPlayerName(ownerid, VehicleInfo[vehicleid][VehOwnerName], MAX_PLAYER_NAME);
+		VehicleInfo[vehicleid][VehOwnerSQLID] = PlayerInfo[ownerid][pID];
+		addKeyToPlayer(ownerid, vehicleid, ownerid);
+		SaveVehicle(vehicleid);
+		SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} has borrado toda llave existente del vehículo y has hecho a %s dueño del %s (ID %d).", GetPlayerNameEx(ownerid), GetVehicleName(vehicleid), vehicleid);
+		SendFMessage(ownerid, COLOR_WHITE, "[INFO]: El administrador %s te ha hecho dueño del vehículo %d (%s).", GetPlayerNameEx(playerid), vehicleid, GetVehicleName(vehicleid));
+	}
+	else
+	{
+    	if(sscanf(params, "s[24]", ownername))
+        	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avowner [Nombre] (máx 24 caracteres)");
+
+		VehicleInfo[vehicleid][VehOwnerSQLID] = 0;
+        format(VehicleInfo[vehicleid][VehOwnerName], MAX_PLAYER_NAME, "%s", ownername);
+        SaveVehicle(vehicleid);
+		SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} has puesto al vehículo %d (%s) a nombre de %s.", vehicleid, GetVehicleName(vehicleid), ownername);
+	}
 	return 1;
 }
