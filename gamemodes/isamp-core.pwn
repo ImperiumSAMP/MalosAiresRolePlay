@@ -7685,9 +7685,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	                if(response)
 					{
 						PaintjobPreview(playerid, vehicleid, 0);
+						ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 					}
 					else
 					{
+  						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+  						{
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							return 1;
+						}
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 0);
 					    VehicleInfo[vehicleid][VehPaintjob] = 0;
 					    SaveVehicle(vehicleid);
@@ -7706,9 +7714,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	                if(response)
 					{
 						PaintjobPreview(playerid, vehicleid, 1);
+						ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 					}
 					else
 					{
+  						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+  						{
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							return 1;
+						}
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 1);
 					    VehicleInfo[vehicleid][VehPaintjob] = 1;
 					    SaveVehicle(vehicleid);
@@ -7727,9 +7743,17 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	                if(response)
 					{
 						PaintjobPreview(playerid, vehicleid, 2);
+						ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 					}
 					else
 					{
+  						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+  						{
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							return 1;
+						}
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 2);
 					    VehicleInfo[vehicleid][VehPaintjob] = 2;
 					    SaveVehicle(vehicleid);
@@ -11384,6 +11408,8 @@ CMD:fretirar(playerid,params[])
 	format(string, sizeof(string), "Has retirado $%d de la cuenta compartida, nuevo balance: $%d.", amount, GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	SendClientMessage(playerid, COLOR_WHITE, string);
     PlayerActionMessage(playerid, 15.0, "retira una suma de dinero de su cuenta.");
+	format(string, sizeof(string), "[RETIRO FAC] $%d de %s", amount, FactionInfo[PlayerInfo[playerid][pFaction]][fName]);
+	log(playerid, LOG_MONEY, string);
     return 1;
 }
 
