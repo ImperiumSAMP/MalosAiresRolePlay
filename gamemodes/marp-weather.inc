@@ -6,10 +6,11 @@
 #define INTERIOR_WEATHER_ID				1
 
 #define MIN_TIME_WEATHER_CHANGE         5 // En horas
-#define MAX_TIME_WEATHER_CHANGE         20 // En horas
+#define MAX_TIME_WEATHER_CHANGE         10 // En horas
 
 enum WeatherInfo {
 	wWeatherID,
+	wNextWeatherID,
 	wTimerID
 };
 
@@ -18,13 +19,41 @@ new serverWeather[WeatherInfo];
 SetServerWeather()
 {
 	serverWeather[wWeatherID] = random(19);
+	serverWeather[wNextWeatherID] = random(19);
  	serverWeather[wTimerID] = SetTimer("WeatherAutoChange", (MIN_TIME_WEATHER_CHANGE + random(MAX_TIME_WEATHER_CHANGE - MIN_TIME_WEATHER_CHANGE)) * 60 * 60 * 1000, false);
+}
+
+GetNextServerWeather()
+{
+	return serverWeather[wNextWeatherID];
+}
+
+GetWeatherInfo(weatherid)
+{
+	new string[32];
+	
+	switch(weatherid)
+	{
+	    case 4, 7, 12, 15:
+	        format(string, sizeof(string), "%s", "Nublado");
+	    case 8, 16:
+	        format(string, sizeof(string), "%s", "Lluvia");
+	    case 9:
+	        format(string, sizeof(string), "%s", "Niebla");
+		case 17, 18:
+	        format(string, sizeof(string), "%s", "Despejado con eclipse nocturno");
+		default:
+		    format(string, sizeof(string), "%s", "Despejado");
+	}
+	
+	return string;
 }
 
 forward WeatherAutoChange();
 public WeatherAutoChange()
 {
-	serverWeather[wWeatherID] = random(19);
+	serverWeather[wWeatherID] = serverWeather[wNextWeatherID];
+	serverWeather[wNextWeatherID] = random(19);
 	serverWeather[wTimerID] = SetTimer("WeatherAutoChange", (MIN_TIME_WEATHER_CHANGE + random(MAX_TIME_WEATHER_CHANGE - MIN_TIME_WEATHER_CHANGE)) * 60 * 60 * 1000, false);
  	SyncWeatherForAll();
 	return 1;

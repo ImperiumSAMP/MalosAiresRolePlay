@@ -39,8 +39,6 @@
 #define PRICE_VEHICLE_PAINTJOB  10000
 #define PRICE_VEHICLE_MODS      2000
 
-#define DLG_CONFIRM_PAINTJOB 	10040
-
 //CHOICES
 // Selecciones.
 #define CHOICE_NONE     		0
@@ -94,8 +92,6 @@ enum RCars {
 };
 
 new RentCarInfo[MAX_RENTCAR][RCars];
-
-new paintjobSelection[MAX_PLAYERS];
 
 //Forwards
 forward IsAPlane(vehicleid);
@@ -2025,22 +2021,5 @@ CMD:avpatente(playerid, params[])
 	VehicleInfo[vehicleid][VehPlate] = string;
 	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} La patente del vehículo %d ha sido cambiada a %s.", vehicleid, string);
     VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/avpatente", params);
-	return 1;
-}
-
-//==============================================================================
-
-public OnVehiclePaintjob(playerid, vehicleid, paintjobid)
-{
-	if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB || VehicleInfo[vehicleid][VehType] != VEH_OWNED)
-	{
-	    SendFMessage(playerid, COLOR_WHITE, "Has seleccionado una pintura customizada/paintjob, pero no se ha guardado ya que no cuentas con $%d o no es un auto personal.", PRICE_VEHICLE_PAINTJOB);
-	}
-	else
-	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[INFO]: Al visualizar un paintjob, se interpreta como que quieres comprarlo ((BUG NATIVO DE SAMP)). Es por ello que se pide una confirmación.");
-		paintjobSelection[playerid] = paintjobid;
-		ShowPlayerDialog(playerid, DLG_CONFIRM_PAINTJOB, DIALOG_STYLE_MSGBOX, "Confirmación", "¿Confirmas la compra de este paintjob?", "Si", "Cancelar");
-	}
 	return 1;
 }

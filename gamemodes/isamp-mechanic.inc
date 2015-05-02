@@ -862,3 +862,36 @@ CMD:repararvehiculo(playerid, params[])
 	return 1;
 }
 
+//==============================================================================
+
+public OnVehicleMod(playerid, vehicleid, componentid)
+{
+    if(GetPlayerInterior(playerid) == 0)
+    {
+        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod", 0);
+        return 1;
+	}
+	if(VehicleInfo[vehicleid][VehType] != VEH_OWNED)
+	{
+    	SendClientMessage(playerid, COLOR_YELLOW2, "Las modificaciones no se guardarán permanentemente ya que por el momento solo se pueden tunear autos personales.");
+		return 1;
+	}
+	if(GetVehicleComponentType(componentid) == CARMODTYPE_NITRO || GetVehicleComponentType(componentid) == CARMODTYPE_WHEELS || GetVehicleComponentType(componentid) == CARMODTYPE_HYDRAULICS)
+  	{
+ 		SendClientMessage(playerid, COLOR_YELLOW2, "Las modificaciones de llantas, óxido nitroso y suspensión no se guardarán, ya que se hacen en un taller mecánico.");
+		return 1;
+	}
+ 	if(GetPlayerCash(playerid) < PRICE_VEHICLE_MODS)
+  	{
+  	    SendFMessage(playerid, COLOR_YELLOW2, "Las modificación no ha sido guardada permanentemente ya que no tienes el dinero suficiente ($%d).", PRICE_VEHICLE_MODS);
+		return 1;
+	}
+	
+	VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
+	SaveVehicle(vehicleid);
+    GivePlayerCash(playerid, -PRICE_VEHICLE_MODS);
+    GiveFactionMoney(FAC_MECH, PRICE_VEHICLE_MODS / 10);
+    SendFMessage(playerid, COLOR_WHITE, "Las modificación te ha costado un extra de $%d, y ha sido guardada permanentemente.", PRICE_VEHICLE_MODS);
+    return 1;
+}
+

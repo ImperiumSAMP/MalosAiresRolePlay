@@ -166,8 +166,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_JOB_INFO_2 		10037
 // #define DLG_CARDEALER5	    10038
 #define DLG_POLICE_FINE	    	10039
-// #define DLG_CONFIRM_PAINTJOB 10040
-#define DLG_TUNING_PAINTJOB     10041
+#define DLG_TUNING_PAINTJOB     10040
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -3826,38 +3825,6 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 {
     SyncPlayerWeather(playerid);
 	return 1;
-}
-
-public OnVehicleMod(playerid, vehicleid, componentid)
-{
-    if(GetPlayerInterior(playerid) == 0)
-	{
-        BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Vehicle Mod", 0);
-	}
-
-	if(GetPlayerCash(playerid) >= PRICE_VEHICLE_MODS)
-	{
-	    GivePlayerCash(playerid, -PRICE_VEHICLE_MODS);
-	    GiveFactionMoney(FAC_MECH, PRICE_VEHICLE_MODS / 10);
-	    SendClientMessage(playerid, COLOR_WHITE, "Las modificaciones han sido guardadas (excepto nitro, pintura, llantas y suspensión hidráulica).");
-	}
-	else
-	{
-	    SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4500), las modificaciones no serán almacenadas.");
-		return 1;
-	}
-
-	if(GetVehicleComponentType(componentid) == 5 || // Si es nitro
-	    GetVehicleComponentType(componentid) == 7 || // Si es llantas
-	    GetVehicleComponentType(componentid) == 9) // Si es suspension
-  		return 1;
-
-    if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
-	{
-		VehicleInfo[vehicleid][VehCompSlot][GetVehicleComponentType(componentid)] = componentid;
-		SaveVehicle(vehicleid);
-    }
-    return 1;
 }
 
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
@@ -7794,6 +7761,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 				}
 				case 2:
 				{
+				    // Si el auto no puede tener vinilos (dif a los modelos) - retornar mensaje en consola y volver a mostrar dialog original de tuning
 				    TogglePlayerControllable(playerid, false);
 				    ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 				}
@@ -7912,16 +7880,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
    			AddVehicleComponent(vehicleid, wheel);
 			VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_WHEELS] = wheel;
 			SaveVehicle(vehicleid);
-  		}
-  		case DLG_CONFIRM_PAINTJOB:
-  		{
-  		    if(response)
-  		    {
-  		        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has seleccionado una pintura customizada/paintjob y las has comprado por un valor de $%d.", PRICE_VEHICLE_PAINTJOB);
-      			VehicleInfo[vehicleid][VehPaintjob] = paintjobSelection[playerid];
-				ChangeVehiclePaintjob(vehicleid, paintjobSelection[playerid]);
-				GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
-  		    }
   		}
   		
 //======================FIN SISTEMA DE TUNING DE MECANICOS======================
@@ -9044,7 +9002,7 @@ CMD:ayuda(playerid,params[])
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /ayudamec");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar /pronostico");
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
@@ -12741,6 +12699,21 @@ CMD:vercinturon(playerid, params[])
 
 
 //=============================COMANDOS CTR-MAN=================================
+
+CMD:pronostico(playerid, params[])
+{
+    new closestVeh = GetClosestVehicle(playerid, 7.0);
+    
+	if(PlayerInfo[playerid][pFaction] != FAC_MAN)
+		return 1;
+  	if(!IsPlayerInAnyVehicle(playerid) && (closestVeh == INVALID_VEHICLE_ID || VehicleInfo[closestVeh][VehFaction] != FAC_MAN) && GetPlayerBuilding(playerid) != BLD_MAN)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Para ver el pronóstico debes estar cerca de una furgoneta, helicóptero de reportero o en la central de CTR!");
+	if(IsPlayerInAnyVehicle(playerid) && VehicleInfo[GetPlayerVehicleID(playerid)][VehFaction] != FAC_MAN)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Para ver el pronóstico debes estar en algún vehículo de la facción!");
+
+	SendFMessage(playerid, COLOR_WHITE, "[INFO] Desde el centro de control meteorológico nacional anuncian que el tiempo será '%s' en las próximas horas.", GetWeatherInfo(GetNextServerWeather()));
+	return 1;
+}
 
 CMD:n(playerid, params[]) {
 	cmd_noticia(playerid, params);
