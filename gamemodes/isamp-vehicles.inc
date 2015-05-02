@@ -93,6 +93,8 @@ enum RCars {
 
 new RentCarInfo[MAX_RENTCAR][RCars];
 
+new paintjobPreviewTimer[MAX_PLAYERS];
+
 //Forwards
 forward IsAPlane(vehicleid);
 forward IsAHelicopter(vehicleid);
@@ -1824,7 +1826,11 @@ CMD:avtipo(playerid, params[])
 	new vehicleid, type;
 
 	if(sscanf(params, "i", type))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtipo [idtipo]");
+	{
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avtipo [ID tipo]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Tipos]:{C8C8C8} 0:Borrado - 1:Estático - 2:Personal - 3: Facción - 4:Licencia - 5:Creado - 6:Empleo - 7:Renta");
+		return 1;
+	}
     if(!IsPlayerInAnyVehicle(playerid))
         return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} debes estar en un vehículo para utilizar este comando.");
 	if(type < 0 || type > 10)
@@ -1854,6 +1860,8 @@ CMD:avtipo(playerid, params[])
 				removeKeyFromPlayer(i,vehicleid);
 		}
 		deleteKeysForCar(vehicleid);
+		VehicleInfo[vehicleid][VehOwnerSQLID] = 0;
+        format(VehicleInfo[vehicleid][VehOwnerName], MAX_PLAYER_NAME, "%s", "XXXXXXXXX");
 	}
 
 	if(type == VEH_RENT)
@@ -2037,6 +2045,8 @@ CMD:avowner(playerid, params[])
         	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avowner [ID/Jugador]");
 		if(!IsPlayerConnected(ownerid))
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador no conectado.");
+    	if(getPlayerFreeKeySlots(ownerid) < 1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Error: el jugador no tiene más espacio en su llavero para otra llave.");
 
 		// Borrado de llaves
 		foreach(new i : Player)

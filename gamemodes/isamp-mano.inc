@@ -151,7 +151,10 @@ stock SynchronizeWeaponAmmo(playerid, ammo)
 		SetTimerEx("CantSaveSyncTimer", 2000, false, "i", playerid);
 	}
 	if(ammo <= 0) // Se le terminó el arma
+	{
+	    SendFMessage(playerid, COLOR_WHITE, "[OOC] Se te ha borrado el arma ya que llegaste a las %d municiones, y se te han acabado.", ammo);
 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
 }
 
 //==================================COMANDOS====================================

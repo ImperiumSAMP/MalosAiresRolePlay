@@ -895,3 +895,20 @@ public OnVehicleMod(playerid, vehicleid, componentid)
     return 1;
 }
 
+PaintjobPreview(playerid, vehicleid, paintjob)
+{
+	ChangeVehiclePaintjob(vehicleid, paintjob);
+	if(paintjobPreviewTimer[playerid] == 0)
+	{
+	    SendClientMessage(playerid, COLOR_WHITE, "[INFO]: En 60 segundos se restaurará la pintura original del vehículo, ya que estás en modo de pre-visualización.");
+	    paintjobPreviewTimer[playerid] = SetTimerEx("RestoreOriginalPaintjob", 60000, false, "ii", vehicleid, playerid);
+	}
+}
+
+forward RestoreOriginalPaintjob(vehicleid, playerid);
+public RestoreOriginalPaintjob(vehicleid, playerid)
+{
+	ChangeVehiclePaintjob(vehicleid, VehicleInfo[vehicleid][VehPaintjob]);
+    paintjobPreviewTimer[playerid] = 0;
+	return 1;
+}
