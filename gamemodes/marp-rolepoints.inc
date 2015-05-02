@@ -86,8 +86,8 @@ public ShowRolePoints(ofplayerid, toplayerid)
 
     if(rows)
     {
-        format(string, sizeof(string), "[Ultimos %d puntos de rol otorgados/quitados a %s]", rows, GetPlayerNameEx(ofplayerid));
-        SendClientMessage(toplayerid, COLOR_YELLOW2, string);
+        format(string, sizeof(string), "==========[Ultimos %d punto/s de rol otorgados y quitados a %s]==========", rows, GetPlayerNameEx(ofplayerid));
+        SendClientMessage(toplayerid, COLOR_LIGHTYELLOW2, string);
     	while(aux < rows)
 	    {
      		cache_get_field_content(aux, "Amount", result);

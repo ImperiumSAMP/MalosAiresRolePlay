@@ -73,6 +73,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-tutorial.inc"
 #include "marp-cronometro.inc"
 #include "marp-rolepoints.inc"
+#include "marp-weather.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
@@ -260,9 +261,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define VIRTUAL_WHEEL_ID 1097
 #define ACCESS_WHEEL_ID 1098
 
-#define 						INTERIOR_WEATHER_ID						(1)
-#define							MAX_WEATHER_POINTS						(9)
-
 #define SELECTION_ITEMS 	18
 #define ITEMS_PER_LINE  	6
 #define DIALOG_BASE_X   	75.0
@@ -374,7 +372,6 @@ new
     AllowAdv[MAX_PLAYERS],
 	RegCounter[MAX_PLAYERS],
 	gPlayerLogged[MAX_PLAYERS],
-	weatherVariables[2],
 	gTime[3],
 	SpawnAttempts[MAX_PLAYERS],
 	FactionRequest[MAX_PLAYERS],
@@ -543,9 +540,6 @@ public OnGameModeInit()
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
 
-    weatherVariables[0] = validWeatherIDs[random(sizeof(validWeatherIDs))];
-	//SetWeather(weatherVariables[0]);
-
 	//===================================[TIMERS]===============================
 	
 	timersID[0] = SetTimer("accountTimer", 1200000, true); 						// 20 min. 	- Guardado de cuentas.
@@ -560,6 +554,8 @@ public OnGameModeInit()
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
 	timersID[15] = SetTimer("ServerObjectsCleaningTimer", SERVER_OBJECT_UPD_TIME * 60 * 1000, true); // Borrado de objetos con mucho tiempo de vida
 
+	SetServerWeather();
+	
 	//====[MENUS]===============================================================
 
 	new price[32];
@@ -664,8 +660,7 @@ public OnPlayerConnectEx(playerid)
 	format(query, sizeof(query), "SELECT * FROM `accounts` WHERE `Name` = '%s'", name);
  	mysql_function_query(dbHandle, query, true, "OnPlayerNameCheck", "i", playerid);
 
- 	syncPlayerTime(playerid);
-	SetPlayerWeather(playerid, weatherVariables[0]);
+ 	SyncPlayerTimeAndWeather(playerid);
 
 	SetPlayerMapIcon(playerid, 98, 1480.9200,-1772.3136,18.7958, 56, 0, MAPICON_LOCAL); // Ayuntamiento.
 
@@ -3217,17 +3212,12 @@ public accountTimer()
 	}
 }
 
-stock syncPlayerTime(const playerid)
+SyncPlayerTimeAndWeather(playerid)
 {
-	if(GetPVarInt(playerid, "drugEffect") > 0)
-	{ // No se hace nada
-	} else
-		if(GetPlayerInterior(playerid) == 0 && GetPlayerVirtualWorld(playerid) == 0 )
-		{
-			SetPlayerWeather(playerid, weatherVariables[0]);
-		} else
-			SetPlayerWeather(playerid, INTERIOR_WEATHER_ID);
-	return SetPlayerTime(playerid, gTime[0], gTime[1]);
+	if(GetPVarInt(playerid, "drugEffect") <= 0)
+		SyncPlayerWeather(playerid);
+		
+	SetPlayerTime(playerid, gTime[0], gTime[1]);
 }
 
 public BackupClear(playerid, calledbytimer) {
@@ -3415,8 +3405,8 @@ stock CrossArmour(playerid)
 
 public RecoverLastShot(playerid)
 {
-	syncPlayerTime(playerid);
-	SetPlayerDrunkLevel (playerid, 0);
+	SyncPlayerTimeAndWeather(playerid);
+	SetPlayerDrunkLevel(playerid, 0);
 	return 1;
 }
 
@@ -3623,7 +3613,6 @@ public globalUpdate()
 
 	if(gTime[1] >= 59 && gTime[2] >= 59)
 	{
-		weatherVariables[1] += random(3) + 1; // Weather changes aren't regular.
 		SetWorldTime(gTime[0]); // Set the world time to keep the worldtime variable updated (and ensure it syncs instantly for connecting players).
 	}
 	
@@ -3641,7 +3630,7 @@ public globalUpdate()
 		{
 	        SetPVarInt(playerid, "drugEffect", GetPVarInt(playerid, "drugEffect") - 1);
 	        if(GetPVarInt(playerid, "drugEffect") == 0)
-	            syncPlayerTime(playerid);
+	            SyncPlayerTimeAndWeather(playerid);
 	    }
 	    
 	    if(playerCount > ServerInfo[sPlayersRecord])
@@ -3654,7 +3643,7 @@ public globalUpdate()
 		SetPlayerScore(playerid, PlayerInfo[playerid][pLevel]);
 		
 		if(gTime[2] >= 59)
-			syncPlayerTime(playerid);
+			SyncPlayerTimeAndWeather(playerid);
 		
 		if(gPlayerLogged[playerid] && PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
 		{
@@ -3833,12 +3822,9 @@ stock ini_GetValue(line[]) {
 	return valRes;
 }
 
-public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid) {
-	if(newinteriorid == 0) {
-		SetPlayerWeather(playerid, weatherVariables[0]);
-		SetPlayerVirtualWorld(playerid, 0);
-	}
-	else SetPlayerWeather(playerid, INTERIOR_WEATHER_ID);
+public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
+{
+    SyncPlayerWeather(playerid);
 	return 1;
 }
 
@@ -4723,12 +4709,7 @@ public SetPlayerSpawn(playerid)
 
     SetNormalPlayerGunSkills(playerid);
 
-	if(!GetPlayerInterior(playerid))
-		SetPlayerWeather(playerid, weatherVariables[0]);
-	else
-		SetPlayerWeather(playerid, INTERIOR_WEATHER_ID);
-
-	syncPlayerTime(playerid);
+	SyncPlayerTimeAndWeather(playerid);
 
 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 	SetPlayerColor(playerid, 0xFFFFFF00);
@@ -8491,7 +8472,7 @@ CMD:darlider(playerid, params[])
 {
 	new targetid, factionid;
 
-	if(sscanf(params,"ud", targetid, factionid))
+	if(sscanf(params, "ud", targetid, factionid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darlider [ID/Jugador] [IDfacción]");
   	if(targetid == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} jugador inválido.");
@@ -8505,26 +8486,6 @@ CMD:darlider(playerid, params[])
 }
 
 //=========================COMANDOS VARIOS DE ADMIN=============================
-
-CMD:clima(playerid, params[]) {
-
-	if(isnull(params))
-		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no se ha especificado una ID.");
-
-	new
-		weatherID = strval(params);
-
-	if(weatherID >= -500 && weatherID <= 500) {
-		weatherVariables[0] = weatherID;
-		foreach(new i : Player) {
-			if(!GetPlayerInterior(i))
-				SetPlayerWeather(i, weatherVariables[0]);
-		}
-	} else {
-		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} ID inválida (-500 - 500).");
-	}
-	return 1;
-}
 
 CMD:gmx(playerid, params[]) {
 	new
