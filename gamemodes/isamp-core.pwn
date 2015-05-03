@@ -405,7 +405,9 @@ new
 	P_CARPART_SHOP,
 	P_POLICE_CAMERAS,
 	P_INPUTS_SHOP_N,
-	P_INPUTS_SHOP_S;
+	P_INPUTS_SHOP_S,
+	P_CARLIFT1,
+	P_CARLIFT2;
 
 //====[ENUMS]===================================================================
 
@@ -4379,6 +4381,10 @@ stock LoadPickups() {
 	/* Banco de Malos Aires */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
 
+	/* Elevadores del taller */
+	P_CARLIFT1 = CreateDynamicPickup(1239, 1, MEC_LIFT1_X, MEC_LIFT1_Y, MEC_LIFT1_Z, -1);
+	P_CARLIFT2 = CreateDynamicPickup(1239, 1, MEC_LIFT2_X, MEC_LIFT2_Y, MEC_LIFT2_Z, -1);
+
 	/* Armarios de la Policía Metropolitana */
 	P_POLICE_DUTY = CreateDynamicPickup(1242, 1, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z, -1);
 	P_POLICE_ARREST = CreateDynamicPickup(1239, 1, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z, -1);
@@ -4494,6 +4500,16 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
 	} else if(pickupid == P_POLICE_CAMERAS) {
 		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
+		return 1;
+		
+	} else if(pickupid == P_CARLIFT1) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_CARLIFT2) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
 		return 1;
 
 	} else if(pickupid == P_HOSP_HEAL) {
