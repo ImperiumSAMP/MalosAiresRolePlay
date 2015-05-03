@@ -4,7 +4,6 @@
 #include <a_samp>
 #include <a_npc>
 #include <a_mysql>
-#include <a_actor>
 #include <core>
 #include <float>
 #include <time>
@@ -81,7 +80,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define GAMEMODE				"MA:RP v1.1.0"
 #define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Malos Aires RolePlay [0.3z] [ESPAÑOL]"
+#define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
 #define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
