@@ -7675,6 +7675,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		}
 
 //=========================SISTEMA DE TUNING DE MECANICOS=======================
+
 		case DLG_TUNING_PAINTJOB:
 		{
 		    TogglePlayerControllable(playerid, false);
@@ -7691,10 +7692,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
   						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
   						{
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
 							return 1;
 						}
-						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
 						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 0);
 					    VehicleInfo[vehicleid][VehPaintjob] = 0;
@@ -7720,10 +7721,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
   						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
   						{
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
 							return 1;
 						}
-						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
 						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 1);
 					    VehicleInfo[vehicleid][VehPaintjob] = 1;
@@ -7749,10 +7750,10 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
   						if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
   						{
-							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($d).", PRICE_VEHICLE_PAINTJOB);
+							SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
 							return 1;
 						}
-						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $d.", PRICE_VEHICLE_PAINTJOB);
+						SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
 						GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
 					    ChangeVehiclePaintjob(vehicleid, 2);
 					    VehicleInfo[vehicleid][VehPaintjob] = 2;

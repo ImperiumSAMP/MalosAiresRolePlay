@@ -900,8 +900,8 @@ PaintjobPreview(playerid, vehicleid, paintjob)
 	ChangeVehiclePaintjob(vehicleid, paintjob);
 	if(paintjobPreviewTimer[playerid] == 0)
 	{
-	    SendClientMessage(playerid, COLOR_WHITE, "[INFO]: En 60 segundos se restaurará la pintura original del vehículo, ya que estás en modo de pre-visualización.");
-	    paintjobPreviewTimer[playerid] = SetTimerEx("RestoreOriginalPaintjob", 60000, false, "ii", vehicleid, playerid);
+	    SendClientMessage(playerid, COLOR_WHITE, "[INFO]: En 40 segundos se restaurará la pintura original del vehículo, ya que estás en modo de pre-visualización.");
+	    paintjobPreviewTimer[playerid] = SetTimerEx("RestoreOriginalPaintjob", 40000, false, "ii", vehicleid, playerid);
 	}
 }
 

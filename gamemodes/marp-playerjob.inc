@@ -35,6 +35,12 @@ public OnPlayerJobDataLoad(playerid)
 		cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
 		cache_get_field_content(0, "pTotalEarnings", result); 	PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
 		cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 64);
+		
+		if(PlayerJobInfo[playerid][pState] == JOB_STATE_FIRED_MISSING)
+		{
+		    PlayerInfo[playerid][pJob] = 0;
+			SendClientMessage(playerid, COLOR_WHITE, "[INFO]: Te han despedido de tu trabajo por faltar demasiado tiempo seguido.");
+		}
 	}
 	else // Tiene un job legal pero no tiene su correspondiente registro en la DB? (No debería de pasar) Error, reportar. Y le seteamos job NULO, para evitar inconvenientes si quisiese usarlo.
 	{
