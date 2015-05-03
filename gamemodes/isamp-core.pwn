@@ -4,6 +4,7 @@
 #include <a_samp>
 #include <a_npc>
 #include <a_mysql>
+#include <a_actor>
 #include <core>
 #include <float>
 #include <time>
@@ -7702,7 +7703,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	                if(response)
 					{
 						PaintjobPreview(playerid, vehicleid, 0);
-						ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+						ShowPlayerDialog(playerid, DLG_TUNING_PAINTJOB, DIALOG_STYLE_LIST, "Selecciona el vinilo y la opción que deseas:", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
 					}
 					else
 					{
@@ -8058,8 +8059,8 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aobjetoquitartodo /aeditobjeto /ainfoobjetos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /setcoord /setint /setvw /vers /vermascara /vermascaras /vers /avehiculo /teleayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto /setcoord /setint /setvw /vers");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /vers /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /verf /mute /slap /skin");
