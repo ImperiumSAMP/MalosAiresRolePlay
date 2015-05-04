@@ -1785,15 +1785,20 @@ public OnPlayerText(playerid, text[])
 	}
 	else
 	{
-	    if(CarWindowStatus[GetPlayerVehicleID(playerid)] == 1)
-		{
+		new vehicleid = GetPlayerVehicleID(playerid),
+			vehSeat = GetPlayerVehicleSeat(playerid),
+			winState[4];
+			
+        GetVehicleParamsCarWindows(vehicleid, winState[0], winState[1], winState[2], winState[3]);
+	  	if(vehSeat < 0 || vehSeat > 3 || winState[vehSeat] != 0)
+	    {
 	        format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", name, text);
-			ProxDetector(5.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
+			ProxDetector(5.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		}
 		else
 		{
-		    format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
-			ProxDetector(15.0, playerid, string,COLOR_FADE1,COLOR_FADE2,COLOR_FADE3,COLOR_FADE4,COLOR_FADE5);
+			format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
+			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		}
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
@@ -11886,26 +11891,6 @@ CMD:dado(playerid, params[])
     format(string, sizeof(string), "[Dado] %s lanzó un dado y salió el %d.", GetPlayerNameEx(playerid), dice + 1);
     ProxDetector(10.0, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
     return 1;
-}
-
-CMD:ventanillas(playerid, params[])
-{
-	new vehicleid = GetPlayerVehicleID(playerid);
-	    
-	if(!IsPlayerInAnyVehicle(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un vehículo para utilizar este comando!");
-	if(GetVehicleType(vehicleid) != VTYPE_CAR)
-	    return SendClientMessage(playerid, COLOR_YELLOW2,"¡Este vehículo no tiene ventanillas!");
-	    
- 	if(CarWindowStatus[vehicleid] == 1)
-	{
-		PlayerActionMessage(playerid, 15.0, "ha abierto las ventanillas del vehículo.");
-		CarWindowStatus[vehicleid] = 0;
-  	} else {
-		PlayerActionMessage(playerid, 15.0, "ha cerrado las ventanillas del vehículo.");
-		CarWindowStatus[vehicleid] = 1;
-	}
-	return 1;
 }
 
 //=========================NEGOCIOS TIPO CASINO=================================

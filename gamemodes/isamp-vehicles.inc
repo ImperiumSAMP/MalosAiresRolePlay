@@ -562,7 +562,6 @@ new vlocked,
 	VehicleOfferPrice[MAX_PLAYERS],
 	VehicleOffer[MAX_PLAYERS],
 	VehicleOfferID[MAX_PLAYERS],
-	CarWindowStatus[MAX_VEH],
 	bool:startingEngine[MAX_PLAYERS];
 
 //=============[VEHICLE DAO FUNCTIONS | DYNAMIC CAR SYSTEM]=====================
@@ -576,7 +575,6 @@ stock LoadVehicles()
 	{
 	    format(query, sizeof(query), "SELECT * FROM `vehicles` WHERE `VehSQLID` = %d LIMIT 1", vehicleID);
 		mysql_function_query(dbHandle, query, true, "OnVehicleDataLoad", "i", vehicleID);
-		CarWindowStatus[vehicleID] = 1;
 		vehicleID++;
 	}
 	return 1;
@@ -1298,6 +1296,34 @@ CMD:motor(playerid, params[])
 		PlayerActionMessage(playerid, 15.0, "apaga el motor del vehículo.");
 		SetEngine(vehicleid, 0);
 	}
+	return 1;
+}
+
+CMD:ventanillas(playerid, params[])
+{
+	new vehicleid = GetPlayerVehicleID(playerid),
+		vehSeat = GetPlayerVehicleSeat(playerid),
+		winState[4];
+
+	if(!IsPlayerInAnyVehicle(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un vehículo para utilizar este comando.");
+	if(GetVehicleType(vehicleid) != VTYPE_CAR)
+	    return SendClientMessage(playerid, COLOR_YELLOW2,"Este vehículo no tiene ventanillas.");
+	if(vehSeat < 0 || vehSeat > 3)
+	    return SendClientMessage(playerid, COLOR_YELLOW2,"Tu lugar en el vehículo no tiene ventanilla.");
+	    
+	GetVehicleParamsCarWindows(vehicleid, winState[0], winState[1], winState[2], winState[3]);
+    if(winState[vehSeat] == 0)
+    {
+        winState[vehSeat] = 1;
+        PlayerActionMessage(playerid, 15.0, "cierra la ventanilla de su lado del vehículo.");
+	}
+	else
+	{
+	    winState[vehSeat] = 0;
+		PlayerActionMessage(playerid, 15.0, "abre la ventanilla de su lado del vehículo.");
+	}
+	SetVehicleParamsCarWindows(vehicleid, winState[0], winState[1], winState[2], winState[3]);
 	return 1;
 }
 
