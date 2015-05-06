@@ -51,7 +51,7 @@ new Lift[MAX_LIFTS][LiftInfo] = {
 								//  Objects IDS     Tot Curr State		Base ascensor X, Y, Z, RZ						Floor Doors	X, Y      			Open Right OFF X, Y    	Outside Switch X, Y, Z                  Outside Label X, Y              Inside Label X, Y, Z
 /*LS al lado de hospital ID 0*/	{0, 0, 0,		11, 0, 1, 			1181.60986, -1180.54895, 20.93880, 0.0, 			1181.32300, -1180.54895, 		0.0, -1.2601, 			1179.27429, -1183.02173, 20.58120,      1179.21130, -1183.02173,        1179.9489, -1182.4466, 20.5602},
 /*Torre Bracone&Mercier ID 1*/	{0, 0, 0, 		7, 0, 1,			1470.77930, -1356.14099, 51.44730, 0.0, 			1470.66660, -1356.14099,		0.0, -1.2601,			1468.6266, -1353.9854, 51.0897,			1468.56360, -1353.98540,		1469.1183, -1358.0386, 51.0687},
-/*LS frente a glenpark ID 2*/   {0, 0, 0,       20, 0, 1,           1786.67810, -1303.45947, 14.57099, -90.0,          	1786.67110, -1303.15950,        -1.1340, 0.0,           1784.1056, -1301.1211, 13.9158,         1784.1056, -1301.0371,          1784.8063, -1301.7916, 14.0705},
+/*LS frente a glenpark ID 2*/   {0, 0, 0,       20, 0, 1,           1786.67810, -1303.45947, 14.57099, -90.0,          	1786.67110, -1303.15950,        -1.1340, 0.0,           1784.6821, -1301.0900, 13.9158,         1784.6821, -1301.0271,          1784.8063, -1301.7916, 14.0705},
 /*LS Beach - Rodeo ID 3*/       {0, 0, 0,       14, 0, 1,           287.942413, -1609.34106, 18.755348, 80.0,           287.942413, -1609.54410,        1.1970, -0.20696,       290.1046, -1612.0692, 18.2986,          290.0626, -1612.1532,           289.4880, -1611.2905, 18.2566}
 };
 
@@ -92,8 +92,7 @@ Lift_CreateObjects(liftid)
 	Lift[liftid][eRDoorObjectID] = CreateObject(18756, Lift[liftid][eLX] + Lift[liftid][eRODOFFX], Lift[liftid][eLY] + Lift[liftid][eRODOFFY], Lift[liftid][eLZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 0.0, 0.0, Lift[liftid][eLRZ]);
     Lift[liftid][eLDoorObjectID] = CreateObject(18757, Lift[liftid][eLX] - Lift[liftid][eRODOFFX], Lift[liftid][eLY] - Lift[liftid][eRODOFFY], Lift[liftid][eLZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 0.0, 0.0, Lift[liftid][eLRZ]);
 	// Inside label para el interior del ascensor
-    Lift_InsideLabel[liftid] = CreateDynamic3DTextLabel("Presiona 'Y' para\nusar el ascensor", COLOR_YELLOW2, Lift[liftid][eILX], Lift[liftid][eILY], Lift[liftid][eILZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 4.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
-
+	Lift_CreateInsideLabel(liftid);
 	// Varios
 	for(new i = 0; i < Lift[liftid][eTotalFloors]; i++)
 	{
@@ -114,6 +113,13 @@ Lift_CreateObjects(liftid)
 		format(str, sizeof(str), "%s\nPresiona 'Y' para\nllamar al ascensor", Lift_FloorNames[liftid][i]);
 		CreateDynamic3DTextLabel(str, COLOR_YELLOW2, Lift[liftid][eOLX], Lift[liftid][eOLY], Lift[liftid][eOSZ] + Lift_FloorZOffsets[liftid][i], 6.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
 	}
+}
+
+Lift_CreateInsideLabel(liftid)
+{
+	new str[64];
+	format(str, sizeof(str), "%s\nPresiona 'Y' para\nusar el ascensor", Lift[liftid][eCurrentFloor]);
+	Lift_InsideLabel[liftid] = CreateDynamic3DTextLabel(str, COLOR_YELLOW2, Lift[liftid][eILX], Lift[liftid][eILY], Lift[liftid][eILZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 4.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
 }
 
 forward Lift_SetState(liftid, liftstate);
@@ -205,9 +211,13 @@ Lift_OnDialogResponse(playerid, response, listitem)
 	Lift[Lift_PlayerRequested[playerid]][eState] = LIFT_STATE_MOVING;
 	Lift[Lift_PlayerRequested[playerid]][eCurrentFloor] = listitem;
 	SetTimerEx("Lift_MoveToFloor", 2000, false, "ii", Lift_PlayerRequested[playerid], listitem);
+
 	new string[128];
-	format(string, 128, "Has seleccionado ir a '%s'.", Lift_FloorNames[Lift_PlayerRequested[playerid]][listitem]);
+	format(string, sizeof(string), "Has seleccionado ir a %s.", Lift_FloorNames[Lift_PlayerRequested[playerid]][listitem]);
     SendClientMessage(playerid, COLOR_WHITE, string);
+    format(string, sizeof(string), "presiona el boton de %s en el panel del ascensor.", Lift_FloorNames[Lift_PlayerRequested[playerid]][listitem]);
+	PlayerActionMessage(playerid, 15.0, string);
+	
     Lift_PlayerRequested[playerid] = 0;
 	return 1;
 }
@@ -242,6 +252,7 @@ Lift_OnPlayerPressY(playerid)
 				    Lift[i][eCurrentFloor] = f;
 				    SetTimerEx("Lift_MoveToFloor", 2000, false, "ii", i, f);
 				    SendClientMessage(playerid, COLOR_WHITE, "Has llamado al ascensor, aguarda hasta que llegue a tu ubicación.");
+				    PlayerActionMessage(playerid, 15.0, "presiona el botón para llamar al ascensor.");
 					return 1;
 				}
 			}
@@ -256,7 +267,7 @@ Lift_OnObjectMoved(objectid)
  	{
  	    if(objectid == Lift[i][eLiftObjectID])
  	    {
- 	    	Lift_InsideLabel[i] = CreateDynamic3DTextLabel("Presiona 'Y' para\nusar el ascensor", COLOR_YELLOW2, Lift[i][eILX], Lift[i][eILY], Lift[i][eILZ] + Lift_FloorZOffsets[i][Lift[i][eCurrentFloor]], 4.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+ 	        Lift_CreateInsideLabel(i);
 			Lift[i][eState] = LIFT_STATE_WAITING;
    			SetTimerEx("Lift_SetState", 3000, false, "ii", i, LIFT_STATE_IDLE);
 			Lift_OpenLiftDoors(i);
