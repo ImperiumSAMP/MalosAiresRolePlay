@@ -56,15 +56,6 @@ new
     PMBigJail23[2],
     PMBigJail24[2],
     PMBigJail25[2];
-	
-new puertaIzquierdaPiso0,  puertaDerechaPiso0,
-    puertaIzquierdaPiso6,  puertaDerechaPiso6,
-    puertaIzquierdaPiso7,  puertaDerechaPiso7,
-    puertaIzquierdaPiso8,  puertaDerechaPiso8,
-    puertaIzquierdaPiso9,  puertaDerechaPiso9,
-    puertaIzquierdaPiso10, puertaDerechaPiso10,
-    puertaIzquierdaPiso11, puertaDerechaPiso11,
-    ascensor;
 
 new Lift1Obj1, Lift1Obj2, Lift1Obj3, Lift1Obj4,
     Lift2Obj1, Lift2Obj2, Lift2Obj3, Lift2Obj4;
@@ -75,10 +66,13 @@ new
 
 stock removeBuildings(playerid) {
 
-	/*---------------Remove Pizzeria cerca de licencias-----------------------*/
+	//=======================PIZZERIA CERCA DE LICENCIAS========================
+	
 	RemoveBuildingForPlayer(playerid, 6073, 1003.8906, -1598.0391, 17.8438, 0.25);
 	RemoveBuildingForPlayer(playerid, 6036, 1003.8906, -1598.0391, 17.8438, 0.25);
-	/*-------------------------INTERIOR PMA-----------------------------------*/
+	
+	//==========================INTERIOR DE LA PMA==============================
+	
 	RemoveBuildingForPlayer(playerid, 1806, 213.2891, 182.4219, 1002.0234, 0.25);
 	RemoveBuildingForPlayer(playerid, 2185, 213.7578, 181.7813, 1002.0156, 0.25);
 	RemoveBuildingForPlayer(playerid, 2191, 209.2500, 183.5156, 1002.0234, 0.25);
@@ -128,16 +122,19 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 1806, 230.5234, 166.0000, 1002.0156, 0.25);
 	RemoveBuildingForPlayer(playerid, 2208, 231.3984, 166.4609, 1002.0391, 0.25);
 
-	// Cancha de futbol
+	//==========================CANCHA DE FUTBOL================================
+	
 	RemoveBuildingForPlayer(playerid, 946, 2290.6406, -1541.6094, 28.0703, 0.25);
 	RemoveBuildingForPlayer(playerid, 946, 2290.5781, -1514.2734, 28.0469, 0.25);
 	RemoveBuildingForPlayer(playerid, 946, 2316.9375, -1541.6094, 26.5000, 0.25);
 	RemoveBuildingForPlayer(playerid, 946, 2316.9375, -1514.2734, 26.5000, 0.25);
 
-	/* Exterior de la S.I.D.E */
+	//============================EXTERIOR SIDE=================================
+	
 	RemoveBuildingForPlayer(playerid, 1525, 1271.4844, -1662.3203, 20.2500, 0.25);
 
-	// Villa.
+	//===============================VILLA======================================
+	
     RemoveBuildingForPlayer(playerid, 1412, 1658.8359, -2114.9609, 13.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 1413, 1658.8359, -2109.6875, 13.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 3669, 1669.9141, -2126.1563, 15.3359, 0.25);
@@ -145,7 +142,8 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 3634, 1669.9141, -2126.1563, 15.3359, 0.25);
 	RemoveBuildingForPlayer(playerid, 3635, 1668.7266, -2096.1953, 15.1875, 0.25);
 
-	// Barrio La Plazita
+	//===========================BARRIO LA PLAZITA==============================
+	
 	RemoveBuildingForPlayer(playerid, 1408, 2273.3359, -1767.3438, 13.1563, 0.25);
 	RemoveBuildingForPlayer(playerid, 1307, 2232.5156, -1766.0547, 12.7500, 0.25);
 	RemoveBuildingForPlayer(playerid, 3695, 2239.9297, -1790.6953, 17.0078, 0.25);
@@ -203,33 +201,39 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 17518, 2361.9375, -1699.9375, 15.9219, 0.25);
 	RemoveBuildingForPlayer(playerid, 1408, 2265.2969, -1791.0000, 13.1563, 0.25);
 
-	// Concesionaria Pinar
+	//===========================CONCESIONARIA PINAR============================
+	
 	RemoveBuildingForPlayer(playerid, 5873, 1022.5078, -1078.8906, 34.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 5876, 1022.5313, -1096.3672, 34.6250, 0.25);
 	RemoveBuildingForPlayer(playerid, 5963, 982.3672, -1090.9219, 28.9219, 0.25);
 	RemoveBuildingForPlayer(playerid, 1287, 974.2813, -1131.1328, 23.3125, 0.25);
 	RemoveBuildingForPlayer(playerid, 5722, 982.3672, -1090.9219, 28.9219, 0.25);
 	
-	// Concesionaria de utilitarios
+	//========================CONCESIONARIA DE UTILITARIOS======================
+	
 	RemoveBuildingForPlayer(playerid, 3744, 2241.2969, -2183.9766, 15.1016, 0.25);
 	RemoveBuildingForPlayer(playerid, 3744, 2226.3203, -2168.9922, 15.1016, 0.25);
 	RemoveBuildingForPlayer(playerid, 3574, 2226.3203, -2168.9922, 15.1016, 0.25);
 	RemoveBuildingForPlayer(playerid, 3574, 2241.2969, -2183.9766, 15.1016, 0.25);
 	
-	// Concesionaria Grotti
+	//==========================CONCESIONARIA GROTTI============================
+	
 	RemoveBuildingForPlayer(playerid, 6357, 505.0547, -1269.9375, 28.6875, 0.25);
 	
-	// Transfenders y lugares de tuneo.
+	//====================TRANSFENDERS Y LUGARES DE TUNEO=======================
+	
 	RemoveBuildingForPlayer(playerid, 9093, 2386.6563, 1043.6016, 11.5938, 0.25);
 	RemoveBuildingForPlayer(playerid, 11313, -1935.8594, 239.5313, 35.3516, 0.25);
 	RemoveBuildingForPlayer(playerid, 5340, 2644.8594, -2039.2344, 14.0391, 0.25);
 	RemoveBuildingForPlayer(playerid, 5779, 1041.3516, -1025.9297, 32.6719, 0.25);
 	RemoveBuildingForPlayer(playerid, 10575, -2716.3516, 217.4766, 5.3828, 0.25);
 
-	// Bloqueo salida faro.
+	//========================BLOQUEO SALIDA FARO===============================
+	
 	RemoveBuildingForPlayer(playerid, 4504, 56.3828, -1531.4531, 6.7266, 0.25);
 
-	//----------------------REMOVS SHOPPING-------------------------------------
+	//==============================SHOPPING====================================
+	
 	RemoveBuildingForPlayer(playerid, 6130, 1117.5859, -1490.0078, 32.7188, 0.25);
 	RemoveBuildingForPlayer(playerid, 6255, 1117.5859, -1490.0078, 32.7188, 0.25);
 	RemoveBuildingForPlayer(playerid, 792, 1128.7344, -1518.4922, 15.2109, 0.25);
@@ -246,9 +250,9 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 792, 1118.0156, -1434.0703, 15.2109, 0.25);
 	RemoveBuildingForPlayer(playerid, 615, 1110.5469, -1416.7266, 13.9531, 0.25);
 	RemoveBuildingForPlayer(playerid, 615, 1147.6016, -1416.8750, 13.9531, 0.25);
-	//----------------------FIN REMOVE SHOPPING---------------------------------
 
-	//REMOVE CRUCE CON PIEDRAS DE AVENIDA
+	//======================CRUCE CON PIEDRAS DE AVENIDA========================
+	
 	RemoveBuildingForPlayer(playerid, 647, 1407.4375, -1436.5859, 14.3594, 0.25);
 	RemoveBuildingForPlayer(playerid, 673, 1405.7656, -1424.2500, 13.1797, 0.25);
 	RemoveBuildingForPlayer(playerid, 647, 1406.6797, -1405.3984, 14.5000, 0.25);
@@ -260,40 +264,54 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 673, 1411.5703, -1416.5391, 12.9063, 0.25);
 	RemoveBuildingForPlayer(playerid, 647, 1409.1875, -1410.3281, 14.6250, 0.25);
 
-	// WORLD OF COQ
+	//===========================FIX WORLD OF COQ===============================
+	
 	RemoveBuildingForPlayer(playerid, 18017, 449.2109, -16.9688, 1000.4375, 0.25);
 	RemoveBuildingForPlayer(playerid, 18016, 451.2578, -10.6250, 1001.9766, 0.25);
 
-	// CASINO EXTERIOR 1
+	//=============================CASINO EXTERIOR 1============================
+	
 	RemoveBuildingForPlayer(playerid, 4747, 1671.5078, -1343.3359, 87.5391, 0.25);
 
-	//REMOVE VIEJA REJA CHINA
+	//=============================VIEJA REJA CHINA=============================
+	
 	RemoveBuildingForPlayer(playerid, 13862, 359.2500, -1125.8281, 80.8516, 0.25);
-	//REMOVE POSTE DE LUZ MOLESTO TANA
+	
+	//======================POSTE DE LUZ MANSION MAD DOG========================
+	
 	RemoveBuildingForPlayer(playerid, 1294, 1378.5938, -869.6953, 43.6250, 0.25);
 	RemoveBuildingForPlayer(playerid, 1294, 1378.5938, -869.6953, 43.6250, 0.25);
 
-	// ESTACION DE SERVICIO PIG PEN
+	//==========================GASOLINERA PIG PEN==============================
+	
 	RemoveBuildingForPlayer(playerid, 17535, 2364.0547, -1391.5313, 41.3516, 0.25);
 	RemoveBuildingForPlayer(playerid, 17965, 2322.2813, -1355.1953, 25.4063, 0.25);
 	RemoveBuildingForPlayer(playerid, 1266, 2317.5859, -1355.8281, 37.2188, 0.25);
 	RemoveBuildingForPlayer(playerid, 17970, 2364.0547, -1391.5313, 41.3516, 0.25);
 	RemoveBuildingForPlayer(playerid, 17543, 2322.2813, -1355.1953, 25.4063, 0.25);
 	RemoveBuildingForPlayer(playerid, 1260, 2317.5938, -1355.8203, 37.2266, 0.25);
-	// ESTACION DE SERVICIO FARO
+	
+	//=========================ESTACION DE SERVICIO FARO========================
+	
 	RemoveBuildingForPlayer(playerid, 1215, 616.7656, -1495.7734, 14.3203, 0.25);
-	// ESTACION DE SERVICIO PUERTO
+	
+	//========================ESTACION DE SERVICIO PUERTO=======================
+	
 	RemoveBuildingForPlayer(playerid, 3744, 2264.0703, -2451.9844, 14.8125, 0.25);
 	RemoveBuildingForPlayer(playerid, 3574, 2264.0703, -2451.9844, 14.8125, 0.25);
-	// ESTACION DE SERVICIO AYUNTA
+	
+	//=======================ESTACION DE SERVICIO AYUNTA========================
+	
 	RemoveBuildingForPlayer(playerid, 4051, 1371.8203, -1754.8203, 19.0469, 0.25);
 	RemoveBuildingForPlayer(playerid, 4021, 1371.8203, -1754.8203, 19.0469, 0.25);
 
-	// PASILLO DE LA MERCA
+	//==========================PASILLO DE LA MERCA=============================
+	
 	RemoveBuildingForPlayer(playerid, 5524, 2025.3750, -1773.9531, 16.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 5628, 2025.3750, -1773.9531, 16.6797, 0.25);
 
-	// Taller mecanico mercury
+	//=============================TALLER MERCURY===============================
+	
 	RemoveBuildingForPlayer(playerid, 4124, 1653.4844, -1826.6406, 23.9219, 0.25);
 	RemoveBuildingForPlayer(playerid, 4212, 1661.8047, -1826.7188, 24.8281, 0.25);
 	RemoveBuildingForPlayer(playerid, 4214, 1589.4531, -1817.5625, 22.2109, 0.25);
@@ -304,13 +322,15 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 4085, 1622.6250, -1824.7891, 17.4922, 0.25);
 	RemoveBuildingForPlayer(playerid, 4098, 1622.6250, -1824.7891, 17.4922, 0.25);
 
-	// Forza.
+	//=================================FORZA====================================
+	
 	RemoveBuildingForPlayer(playerid, 620, 241.1953, -1395.0313, 51.4922, 0.25);
 	RemoveBuildingForPlayer(playerid, 673, 244.0313, -1387.2109, 51.7969, 0.25);
 	RemoveBuildingForPlayer(playerid, 673, 230.2266, -1379.2109, 51.5469, 0.25);
 	RemoveBuildingForPlayer(playerid, 673, 228.4375, -1368.7500, 51.8594, 0.25);
 
-	// Transportistas.
+	//============================TRANSPORTISTAS================================
+	
 	RemoveBuildingForPlayer(playerid, 3744, 2193.2578, -2286.2891, 14.8125, 0.25);
 	RemoveBuildingForPlayer(playerid, 5305, 2198.8516, -2213.9219, 14.8828, 0.25);
 	RemoveBuildingForPlayer(playerid, 3747, 2234.3906, -2244.8281, 14.9375, 0.25);
@@ -337,10 +357,12 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 3276, -34.9297, 131.5469, 2.9531, 0.25);
 	RemoveBuildingForPlayer(playerid, 3276, -51.7188, 145.9609, 2.9531, 0.25);
 
- 	// Exterior del hospital
+ 	//=============================EXTERIOR HOSPITAL============================
+ 	
     RemoveBuildingForPlayer(playerid, 1440, 1141.9844, -1346.1094, 13.2656, 0.25);
 
-	//Aeropuerto
+	//===============================AEROPUERTO=================================
+	
 	RemoveBuildingForPlayer(playerid, 4990, 1646.1953, -2414.0703, 17.9297, 0.25);
 	RemoveBuildingForPlayer(playerid, 5010, 1646.1953, -2414.0703, 17.9297, 0.25);
 	RemoveBuildingForPlayer(playerid, 5011, 1874.2109, -2286.5313, 17.9297, 0.25);
@@ -422,10 +444,12 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 1290, 1525.0078, -2439.9766, 18.4766, 0.25);
 	RemoveBuildingForPlayer(playerid, 3663, 1580.0938, -2433.8281, 14.5703, 0.25);
 
-	// Interior Ayuntamiento
+	//=========================INTERIOR DE AYUNTAMIENTO=========================
+	
 	RemoveBuildingForPlayer(playerid, 1502, 365.7969, 189.6172, 1007.3750, 0.25);
 
-	// Cartel del exterior LSPD.
+	//========================CARTEL DEL EXTERIOR DE LSPD=======================
+	
 	RemoveBuildingForPlayer(playerid, 1266, 1538.5234, -1609.8047, 19.8438, 0.25);
 	RemoveBuildingForPlayer(playerid, 4229, 1597.9063, -1699.7500, 30.2109, 0.25);
 	RemoveBuildingForPlayer(playerid, 4230, 1597.9063, -1699.7500, 30.2109, 0.25);
@@ -435,16 +459,19 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 620, 1541.4531, -1642.0313, 13.0469, 0.25);
 	RemoveBuildingForPlayer(playerid, 1260, 1538.5234, -1609.8047, 19.8438, 0.25);
 
-	// Eliminamos algunos Ã¡rboles que aparecen en interiores.
+	//========================VARIOS ARBOLES EN INTERIORES======================
+	
 	RemoveBuildingForPlayer(playerid, 762, 1175.3594, -1420.1875, 19.8828, 0.25);
 	RemoveBuildingForPlayer(playerid, 615, 1166.3516, -1417.6953, 13.9531, 0.25);
 
-	//Removes casa avenida norte fea
+	//===========================CASA FEA DEL NORTE=============================
+	
 	RemoveBuildingForPlayer(playerid, 5894, 1123.0547, -988.1953, 45.2266, 0.25);
 	RemoveBuildingForPlayer(playerid, 5892, 1123.0547, -988.1953, 45.2266, 0.25);
 	RemoveBuildingForPlayer(playerid, 5893, 1123.3047, -982.6953, 39.2344, 0.25);
 	
-	//Remove plaza y bar Willowfield
+	//=========================PLAZA Y BAR WILLOWFIELD==========================
+	
     RemoveBuildingForPlayer(playerid, 5230, 2489.2344, -1962.0156, 19.0391, 0.25);
     RemoveBuildingForPlayer(playerid, 3591, 2465.2891, -1991.8359, 15.0859, 0.25);
     RemoveBuildingForPlayer(playerid, 708, 2528.4141, -1975.0156, 12.5547, 0.25);
@@ -471,11 +498,13 @@ stock removeBuildings(playerid) {
     RemoveBuildingForPlayer(playerid, 671, 2536.7344, -1968.2500, 12.8828, 0.25);
     RemoveBuildingForPlayer(playerid, 671, 2536.1172, -1947.9766, 12.8828, 0.25);
     
-    //=========================BOLICHE FRENTE A LA PLAYA========================
+    //===========================BOLICHE VERONA BEACH===========================
+    
 	RemoveBuildingForPlayer(playerid, 6076, 836.5859, -1743.2969, 19.6094, 0.25);
 	RemoveBuildingForPlayer(playerid, 6098, 836.5859, -1743.2969, 19.6094, 0.25);
 	
-	//=======================FIX CASA CON CAÑON=================================
+	//===========================FIX CASA CON CAÑON=============================
+	
 	RemoveBuildingForPlayer(playerid, 2046, 2806.2266, -1174.5703, 1026.3594, 0.25);
 	RemoveBuildingForPlayer(playerid, 2049, 2805.2109, -1173.4922, 1026.5234, 0.25);
 	RemoveBuildingForPlayer(playerid, 2060, 2810.3047, -1172.8516, 1025.2109, 0.25);
@@ -509,24 +538,7 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 2157, 2820.6328, -1167.3125, 1024.5703, 0.25);
 	
 	//=============================VILLA SOTELO=================================
-	/*RemoveBuildingForPlayer(playerid, 1412, 1658.8359, -2114.9609, 13.6797, 0.25);
-	RemoveBuildingForPlayer(playerid, 1413, 1658.8359, -2109.6875, 13.6797, 0.25);
-	RemoveBuildingForPlayer(playerid, 5134, 2045.4922, -1903.6172, 16.1875, 0.25);
-	RemoveBuildingForPlayer(playerid, 1525, 2065.4375, -1897.2344, 13.6094, 0.25);
-	RemoveBuildingForPlayer(playerid, 5321, 2045.4922, -1903.6172, 16.1875, 0.25);
-	RemoveBuildingForPlayer(playerid, 620, 1983.1953, -1943.5781, 10.8047, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2035.9063, -1928.1406, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 5374, 2085.2813, -1909.7109, 23.0000, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2077.2500, -1894.4531, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 955, 2060.1172, -1897.6406, 12.9297, 0.25);
-	RemoveBuildingForPlayer(playerid, 1315, 2084.5313, -1905.4922, 15.8125, 0.25);
-	RemoveBuildingForPlayer(playerid, 1315, 2092.9141, -1891.3750, 15.8125, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2114.3203, -1890.3672, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2101.2578, -1900.1797, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2134.6016, -1900.4063, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 1226, 2155.2344, -1890.3672, 16.3906, 0.25);
-	RemoveBuildingForPlayer(playerid, 1315, 2078.6328, -1883.3281, 15.8125, 0.25);
-	RemoveBuildingForPlayer(playerid, 1224, 2127.0234, -1845.6641, 3.5938, 0.25);*/
+
 	RemoveBuildingForPlayer(playerid, 1412, 1658.8359, -2114.9609, 13.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 1413, 1658.8359, -2109.6875, 13.6797, 0.25);
 	RemoveBuildingForPlayer(playerid, 5134, 2045.4922, -1903.6172, 16.1875, 0.25);
@@ -548,9 +560,11 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 1224, 2127.0234, -1845.6641, 3.5938, 0.25);
 	
 	//================================CLOACAS===================================
+	
 	RemoveBuildingForPlayer(playerid, 1224, 1900.1641, -1824.1250, 3.5938, 0.25);
     
-    //=====================CRICELAN CARCEL INTERIOR=========================
+    //=========================CRICELAN CARCEL INTERIOR=========================
+    
     RemoveBuildingForPlayer(playerid, 1499, 2522.3516, -1303.4063, 1047.2734, 0.25);
     RemoveBuildingForPlayer(playerid, 1499, 2522.3359, -1300.3984, 1047.2734, 0.25);
     RemoveBuildingForPlayer(playerid, 14437, 2526.9844, -1316.3047, 1032.4141, 0.25);
@@ -641,7 +655,8 @@ stock removeBuildings(playerid) {
     RemoveBuildingForPlayer(playerid, 922, 2573.0313, -1280.5000, 1031.3125, 0.25);
     RemoveBuildingForPlayer(playerid, 931, 2576.7109, -1281.1797, 1031.4766, 0.25);
     
-    // =====================HQ CRESPO===========================
+    //==============================HQ RIEDEL===================================
+    
 	RemoveBuildingForPlayer(playerid, 1308, 9.0234, 15.1563, -5.7109, 0.25);
 	RemoveBuildingForPlayer(playerid, 13063, 321.8516, -34.5234, 4.8984, 0.25);
 	RemoveBuildingForPlayer(playerid, 1468, 307.8984, -59.1484, 3.8984, 0.25);
@@ -651,6 +666,17 @@ stock removeBuildings(playerid) {
 	RemoveBuildingForPlayer(playerid, 1440, 308.7891, -54.6875, 1.0625, 0.25);
 	RemoveBuildingForPlayer(playerid, 1684, 317.6953, -42.2344, 2.0156, 0.25);
 	RemoveBuildingForPlayer(playerid, 13061, 321.8516, -34.5234, 4.8984, 0.25);
+
+	//===============EDIFICIO Y GARAGE INT-EXT CERCA DE HOSPITAL================
+
+	RemoveBuildingForPlayer(playerid, 5767, 1160.9609, -1180.5781, 70.4141, 0.25);
+	RemoveBuildingForPlayer(playerid, 5964, 1160.9609, -1180.5781, 70.4141, 0.25);
+	RemoveBuildingForPlayer(playerid, 5766, 1175.1797, -1180.5469, 58.0938, 0.25);
+	
+	//==============EDIFICIO Y GARAGE INT-EXT CERCA DE FARO/RODEO===============
+	
+	RemoveBuildingForPlayer(playerid, 1226, 265.4219, -1580.6172, 36.0781, 0.25);
+	RemoveBuildingForPlayer(playerid, 6518, 280.297, -1606.2, 72.3984, 250.0);
 }
 
 stock LoadMap() {
@@ -5691,24 +5717,6 @@ stock LoadMap() {
 
 	//=======================PASILLOS ASCENSOR DEPTOS===========================
 
-	ascensor = CreateObject(18755, 1470.77930, -1356.14099, 51.44730,   0.00000, 0.00000, 0.00000);
-
-	puertaIzquierdaPiso0 = CreateObject(18757, 1470.65369, -1354.41602, 51.46690,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso6  = CreateObject(18757, 1470.65369, -1356.13599, 106.70910,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso7  = CreateObject(18757, 1470.65369, -1356.13599, 116.50160,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso8  = CreateObject(18757, 1470.65369, -1356.13599, 126.29410,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso9  = CreateObject(18757, 1470.65369, -1356.13599, 136.08659,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso10 = CreateObject(18757, 1470.65369, -1356.13599, 145.87910,   0.00000, 0.00000, 0.00000);
-	puertaIzquierdaPiso11 = CreateObject(18757, 1470.65369, -1356.13599, 155.67160,   0.00000, 0.00000, 0.00000);
-
-	puertaDerechaPiso0 = CreateObject(18756, 1470.65369, -1357.8719, 51.46690,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso6  = CreateObject(18756, 1470.65369, -1356.13000, 106.70910,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso7  = CreateObject(18756, 1470.65369, -1356.13000, 116.50160,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso8  = CreateObject(18756, 1470.65369, -1356.13000, 126.29410,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso9  = CreateObject(18756, 1470.65369, -1356.13000, 136.08659,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso10 = CreateObject(18756, 1470.65369, -1356.13000, 145.87910,   0.00000, 0.00000, 0.00000);
-	puertaDerechaPiso11 = CreateObject(18756, 1470.65369, -1356.13000, 155.67160,   0.00000, 0.00000, 0.00000);
-
 	new InscripcionPiso;
 
 	InscripcionPiso = CreateDynamicObject(19464, 1463.01172, -1354.81116, 21.66200,   0.00000, 0.00000, 0.00000);
@@ -5849,10 +5857,6 @@ stock LoadMap() {
 	CreateDynamicObject(19454, 1465.81897, -1355.73499, 156.69411,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(19462, 1465.81897, -1355.73730, 153.70970,   0.00000, 90.00000, 0.00000);
 	CreateDynamicObject(1506, 1465.65515, -1350.94812, 153.79250,   0.00000, 0.00000, 0.00000);
-
-	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
-	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
-	//----------------------------FIN MAPEO PASILLO DEPTOS--------------------------
 
 	//=========================BOLICHE FRENTE A LA PLAYA============================
 	Textura = CreateDynamicObject(6098, 836.58588, -1743.29688, 19.60940,   0.00000, 0.00000, 0.00000);
@@ -8927,6 +8931,16 @@ stock LoadMap() {
 	SetDynamicObjectMaterialText(Textura, 0, "Moto", 140, "Arial", 115, 1, 0xFFFFFFFF, 0, 1);
 	Textura = CreateDynamicObject(18762, 1305.45129, -1866.82800, 17.17690,   0.00000, 90.00000, 90.00000);
 	SetDynamicObjectMaterial(Textura, 0, 2164, "cj_office", "white32", 0xFF020202);
-	//==========================================================================
+	
+	//===============EDIFICIO Y GARAGE INT-EXT CERCA DE HOSPITAL================
+	
+	CreateObject(19595, 1160.96094, -1180.57813, 70.41410,   0.00000, 0.00000, 0.00000);
+	CreateObject(19798, 1160.95996, -1180.57996, 20.41410,   0.00000, 0.00000, 0.00000);
+
+	//==============EDIFICIO Y GARAGE INT-EXT CERCA DE FARO/RODEO===============
+	
+	CreateObject(19597, 280.29691, -1606.20313, 72.39840,   0.00000, 0.00000, 0.00000);
+	CreateObject(19800, 280.29691, -1606.19507, 22.40130,   0.00000, 0.00000, 0.00000);
+
 	return 1;
 }

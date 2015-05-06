@@ -48,7 +48,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
-#include "isamp-ascensor.inc" 			//sistema de ascensores del mapeo de departamentos
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
 #include "isamp-carthief.inc"          	//Robo de autos.
@@ -75,6 +74,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-rolepoints.inc"
 #include "marp-weather.inc"
 #include "marp-same.inc"
+#include "marp-lifts.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
@@ -579,6 +579,7 @@ public OnGameModeInit()
 	//==========================================================================
 	SetNameTagDrawDistance(30.0);
 	ResetServerRacesVariables();
+	Lift_CreateAll();
 	return 1;
 }
 
@@ -4238,6 +4239,8 @@ public OnPlayerLeaveRaceCheckpoint(playerid)
 
 public OnObjectMoved(objectid)
 {
+    if(Lift_OnObjectMoved(objectid))
+	    return 1;
 	return 1;
 }
 
@@ -4371,10 +4374,6 @@ stock LoadPickups() {
 
 	// Robo de autos
 	P_CAR_DEMOLITION = CreateDynamicPickup(1239, 1, POS_CAR_DEMOLITION_X, POS_CAR_DEMOLITION_Y, POS_CAR_DEMOLITION_Z, -1);
-
-	// Departamentos Bracone y Mercier
-	CreateDynamicPickup(1239, 1, 1467.4867, -1356.0726, 50.5117, -1);
-	CreateDynamic3DTextLabel("/ascensor para llamar al ascensor \n/piso dentro del mismo para usarlo.", COLOR_WHITE, 1467.4867, -1356.0726, 50.5117 + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 
 	// Auto reparacion
 	for(new i = 0; i < 3; i++)
@@ -6517,9 +6516,9 @@ TIMER:CloseSIDEGate() {
     return 1;
 }
 
-public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
-	new
-		string[128];
+public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
+{
+	new string[128];
 
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
@@ -6857,6 +6856,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
 	{
 	    if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 	        cmd_motor(playerid, "");
+     	if(Lift_OnPlayerPressY(playerid))
+	        return 1;
 	    return 1;
     }
 	
@@ -7694,6 +7695,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                 tutorial(playerid, 1);
             }
 		}
+		case DLG_LIFT:
+		    Lift_OnDialogResponse(playerid, response, listitem);
 
 //=========================SISTEMA DE TUNING DE MECANICOS=======================
 
