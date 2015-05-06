@@ -83,6 +83,8 @@ Lift_CreateAll()
 
 Lift_CreateObjects(liftid)
 {
+	new str[64];
+	
 	// Ascensor
     Lift[liftid][eLiftObjectID] = CreateObject(18755, Lift[liftid][eLX], Lift[liftid][eLY], Lift[liftid][eLZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 0.0, 0.0, Lift[liftid][eLRZ]);
 
@@ -109,7 +111,8 @@ Lift_CreateObjects(liftid)
 		// Interruptor de cada piso
 		CreateDynamicObject(19826, Lift[liftid][eOSX], Lift[liftid][eOSY], Lift[liftid][eOSZ] + Lift_FloorZOffsets[liftid][i], 0.0, 0.0, Lift[liftid][eLRZ] - 90.0);
 		// Outside label de cada piso
-		CreateDynamic3DTextLabel("Presiona 'Y' para\nllamar al ascensor", COLOR_YELLOW2, Lift[liftid][eOLX], Lift[liftid][eOLY], Lift[liftid][eOSZ] + Lift_FloorZOffsets[liftid][i], 6.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
+		format(str, sizeof(str), "%s\nPresiona 'Y' para\nllamar al ascensor", Lift_FloorNames[liftid][i]);
+		CreateDynamic3DTextLabel(str, COLOR_YELLOW2, Lift[liftid][eOLX], Lift[liftid][eOLY], Lift[liftid][eOSZ] + Lift_FloorZOffsets[liftid][i], 6.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
 	}
 }
 
@@ -188,7 +191,7 @@ Lift_CloseFloorDoors(liftid, floor)
 
 Lift_OnDialogResponse(playerid, response, listitem)
 {
-	if(response)
+	if(!response)
 	    return 1;
 	if(!Lift_PlayerRequested[playerid])
 	    return 1;
