@@ -51,7 +51,7 @@ new Lift[MAX_LIFTS][LiftInfo] = {
 								//  Objects IDS     Tot Curr State		Base ascensor X, Y, Z, RZ						Floor Doors	X, Y      			Open Right OFF X, Y    	Outside Switch X, Y, Z                  Outside Label X, Y              Inside Label X, Y, Z
 /*LS al lado de hospital ID 0*/	{0, 0, 0,		11, 0, 1, 			1181.60986, -1180.54895, 20.93880, 0.0, 			1181.32300, -1180.54895, 		0.0, -1.2601, 			1179.27429, -1183.02173, 20.58120,      1179.21130, -1183.02173,        1179.9489, -1182.4466, 20.5602},
 /*Torre Bracone&Mercier ID 1*/	{0, 0, 0, 		7, 0, 1,			1470.77930, -1356.14099, 51.44730, 0.0, 			1470.66660, -1356.14099,		0.0, -1.2601,			1468.6266, -1353.9854, 51.0897,			1468.56360, -1353.98540,		1469.1183, -1358.0386, 51.0687},
-/*LS frente a glenpark ID 2*/   {0, 0, 0,       20, 0, 1,           1786.67810, -1303.45947, 14.57099, -90.0,          	1786.67110, -1303.15950,        -1.1340, 0.0,           1784.6821, -1301.0900, 13.9158,         1784.6821, -1301.0271,          1784.8063, -1301.7916, 14.0705},
+/*LS frente a glenpark ID 2*/   {0, 0, 0,       20, 0, 1,           1786.67810, -1303.45947, 14.57099, -90.0,          	1786.67110, -1303.15950,        -1.1340, 0.0,           1784.6821, -1301.0502, 13.9158,         1784.6821, -1301.0082,          1784.8063, -1301.7916, 14.0705},
 /*LS Beach - Rodeo ID 3*/       {0, 0, 0,       14, 0, 1,           287.942413, -1609.34106, 18.755348, 80.0,           287.942413, -1609.54410,        1.1970, -0.20696,       290.1046, -1612.0692, 18.2986,          290.0626, -1612.1532,           289.4880, -1611.2905, 18.2566}
 };
 
@@ -118,7 +118,7 @@ Lift_CreateObjects(liftid)
 Lift_CreateInsideLabel(liftid)
 {
 	new str[64];
-	format(str, sizeof(str), "%s\nPresiona 'Y' para\nusar el ascensor", Lift[liftid][eCurrentFloor]);
+	format(str, sizeof(str), "%s\nPresiona 'Y' para\nusar el ascensor", Lift_FloorNames[liftid][Lift[liftid][eCurrentFloor]]);
 	Lift_InsideLabel[liftid] = CreateDynamic3DTextLabel(str, COLOR_YELLOW2, Lift[liftid][eILX], Lift[liftid][eILY], Lift[liftid][eILZ] + Lift_FloorZOffsets[liftid][Lift[liftid][eCurrentFloor]], 4.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1);
 }
 
