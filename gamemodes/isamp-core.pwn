@@ -2,6 +2,10 @@
 #define _isamp_debug 0 //Esta linea activa algunos mensajes de log para debug. Debe ser comentada para versiones productivas.
 
 #include <a_samp>
+
+#undef MAX_PLAYERS
+#define MAX_PLAYERS 75  // Redefinimos MAX_PLAYERS DE 500 A 75
+
 #include <a_npc>
 #include <a_mysql>
 #include <core>
@@ -78,11 +82,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.0"
-#define GAMEMODE_USE_VERSION	"No"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
-#define VERSION					"BETA" 											// Versión.
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
@@ -491,6 +493,12 @@ main() {
 
 public OnGameModeInit()
 {
+	if(GetMaxPlayers() > MAX_PLAYERS)
+    {
+        SendRconCommand("password gh57vq5");
+        printf("[ERROR]: 'maxplayers' (%i) excede MAX_PLAYERS (%i). Arreglar.", GetMaxPlayers(), MAX_PLAYERS);
+    }
+    
 	print("HELP");
     loadMySQLcfg();
 	print("HELP");
@@ -509,8 +517,7 @@ public OnGameModeInit()
 	ManualVehicleEngineAndLights();
 	new sendcmd[128];
 
-	if (!strcmp("Yes", GAMEMODE_USE_VERSION, true)) { format(sendcmd, sizeof(sendcmd), "%s - %s", GAMEMODE,VERSION); SetGameModeText(sendcmd); }
-	else { SetGameModeText(GAMEMODE); }
+	SetGameModeText(GAMEMODE);
 	format(sendcmd, sizeof(sendcmd), "hostname %s", SERVER_NAME);
 	SendRconCommand(sendcmd);
 	format(sendcmd, sizeof(sendcmd), "mapname %s", MAP_NAME);
