@@ -90,6 +90,11 @@
 #define COLOR_FADE3 			0xAAAAAAAA
 #define COLOR_FADE4 			0x8C8C8C8C
 #define COLOR_FADE5 			0x6E6E6E6E
+#define COLOR_FADEG1 			0xE60000E6
+#define COLOR_FADEG2 			0xD20000D2
+#define COLOR_FADEG3 			0xBE0000BE
+#define COLOR_FADEG4 			0xAA0000AA
+#define COLOR_FADEG5 			0x96000096
 #define COLOR_PURPLE 			0xC2A2DAAA
 #define COLOR_DBLUE 			0x2641FEAA
 #define COLOR_ALLDEPT 			0xFF8282AA
@@ -117,10 +122,6 @@
 #define LOG_ADMIN            	1
 #define LOG_MONEY            	2
 #define LOG_CHAT                3
-
-new validWeatherIDs[2] = {
-	1,2/*,-3,4,5,6,7,9,10,11,12,13,14,15,17,18,20-*/
-};
 
 new SkinRegMale[18][1] = {
 	{3},{6},{4},{7},{15},{19},{20},{22},{23},{26},{30},{32},{35},{36},{37},{38},{43},{44}

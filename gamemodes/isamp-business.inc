@@ -659,10 +659,10 @@ TIMER:CancelBusinessTransfer(playerid, reason)
 
 CMD:anegocios(playerid, params[])
 {
-  		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA NEGOCIOS]==============================");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aninfo - /antele");
+  	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA NEGOCIOS]==============================");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aninfo - /antele");
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /annombre - /anproductos");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /annombre - /anproductos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aninsert - /anremove - /angetid - /anprecio - /antipo - /anradio");

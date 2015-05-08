@@ -80,6 +80,7 @@ enum pInfo {
 	pTakeInputs,
 	
 	pHouseKeyIncome,
+	pRolePoints,
 };
 
 new PlayerInfo[MAX_PLAYERS][pInfo];
