@@ -2089,6 +2089,7 @@ CMD:avowner(playerid, params[])
 		SaveVehicle(vehicleid);
 		SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} has borrado toda llave existente del vehículo y has hecho a %s dueño del %s (ID %d).", GetPlayerNameEx(ownerid), GetVehicleName(vehicleid), vehicleid);
 		SendFMessage(ownerid, COLOR_WHITE, "[INFO]: El administrador %s te ha hecho dueño del vehículo %d (%s).", GetPlayerNameEx(playerid), vehicleid, GetVehicleName(vehicleid));
+        VehicleLog(vehicleid, playerid, ownerid, "/avowner", "");
 	}
 	else
 	{
@@ -2099,6 +2100,7 @@ CMD:avowner(playerid, params[])
         format(VehicleInfo[vehicleid][VehOwnerName], MAX_PLAYER_NAME, "%s", ownername);
         SaveVehicle(vehicleid);
 		SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} has puesto al vehículo %d (%s) a nombre de %s.", vehicleid, GetVehicleName(vehicleid), ownername);
+        VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/avowner", ownername);
 	}
 	return 1;
 }

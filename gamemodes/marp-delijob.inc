@@ -133,7 +133,7 @@ DeliJob_StartWork(playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya has alcanzado el máximo de entregas posibles por este día de pago.");
     if(Job_IsVehicleWorking(vehicleid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
-	if(!Cronometro_Crear(playerid, DeliJob_Route[destination][djTime], "DeliJob_TravelTimeLimit"))
+	if(!Cronometro_Crear(playerid, DeliJob_Route[destination][djTime] + 7, "DeliJob_TravelTimeLimit"))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
 	    
 	GetCoords2DZone(DeliJob_Route[destination][djX], DeliJob_Route[destination][djY], area, MAX_ZONE_NAME);
@@ -187,19 +187,19 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 	new actualCP = jobCheckpoint[playerid],
 	    vehicleid = GetPlayerVehicleID(playerid);
 	    
-	if(actualCP == 0)
+	if(actualCP == 0) // A cargar el paquete
 	{
 		GameTextForPlayer(playerid, "Guardando paquete...", 4000, 4);
 		TogglePlayerControllable(playerid, false);
 		SetTimerEx("DeliJob_NextCheckpoint", 4000, false, "ii", playerid, actualCP + 1);
 	}
-	else if(actualCP == 1)
+	else if(actualCP == 1) // Yendo a entregar
 	{
 	    GameTextForPlayer(playerid, "Entregando paquete...", 4000, 4);
 	    TogglePlayerControllable(playerid, false);
 	    SetTimerEx("DeliJob_NextCheckpoint", 4000, false, "ii", playerid, actualCP + 1);
 	}
-	else if(actualCP == 2)
+	else if(actualCP == 2) // Volviendo
 	{
 	    PlayerInfo[playerid][pCantWork]++;
  		PlayerJobInfo[playerid][pWorkingHours]++;
@@ -215,6 +215,28 @@ DeliJob_PlayerEnterCheckpoint(playerid)
         DeliJob_CheckPromotePlayer(playerid);
 		Cronometro_Borrar(playerid);
 	}
+	else if(actualCP == 3) // Se le acabó el tiempo inicial y tiene que devolver la moto a la central en el tiempo secundario sin paga
+	{
+		jobDuty[playerid] = false;
+		SetEngine(jobVehicle[playerid], 0);
+		SetVehicleToRespawn(jobVehicle[playerid]);
+	 	jobVehicle[playerid] = 0;
+	 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	 	Cronometro_Borrar(playerid);
+	 	PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
+	}
+	else if(actualCP == 4) // Se le acabó el tiempo inicial y tiene que devolver la moto a la central en el tiempo secundario con paga a medias
+	{
+		jobDuty[playerid] = false;
+		SetEngine(jobVehicle[playerid], 0);
+		SetVehicleToRespawn(jobVehicle[playerid]);
+	 	jobVehicle[playerid] = 0;
+	 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	 	Cronometro_Borrar(playerid);
+	 	PlayerInfo[playerid][pPayCheck] += GetJobBaseSalary(JOB_DELI) / 2;
+	 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has devuelto la moto a la central, y recibes la mitad del pago base (%d) a fin del día, sin ningún tipo de bonus.", GetJobBaseSalary(JOB_DELI) / 2);
+	 	PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
+	}
 	return 1;
 }
 
@@ -222,17 +244,52 @@ forward DeliJob_TravelTimeLimit(playerid);
 public DeliJob_TravelTimeLimit(playerid)
 {
     PlayerInfo[playerid][pCantWork]++;
-    jobDuty[playerid] = false;
-    SetEngine(jobVehicle[playerid], 0);
-	SetVehicleToRespawn(jobVehicle[playerid]);
- 	jobVehicle[playerid] = 0;
-	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-	SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por la entrega fallida.");
 	UpdatePlayerJobLastWorked(playerid);
 	Job_GiveReputation(playerid, -6);
+	
+	// Le damos 1 minuto para que vuelva a la central y deje la moto
+	if(!Cronometro_Crear(playerid, 60, "DeliJob_ReturnTimeLimit")) // Si falló la creación del cronometro
+	{
+	    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+        jobDuty[playerid] = false;
+		SetEngine(jobVehicle[playerid], 0);
+		SetVehicleToRespawn(jobVehicle[playerid]);
+	 	jobVehicle[playerid] = 0;
+	 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+	}
+	else // Se pudo crear el cronometro
+	{
+		if(jobCheckpoint[playerid] == 0 || jobCheckpoint[playerid] == 1) // No llegó ni a entregarlo a destino
+		{
+			SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y además no recibirás ninguna paga por fallar la entrega.");
+            SendClientMessage(playerid, COLOR_WHITE, "Tienes un minuto para devolver la moto a la central. Si no lo haces, tu reputación empeorará aún más.");
+			jobCheckpoint[playerid] = 3;
+		}
+		else if(jobCheckpoint[playerid] == 2) // Ya estaba volviendo para la central
+		{
+			SendClientMessage(playerid, COLOR_WHITE, "Te has pasado del tiempo límite: tu jefe se ha enojado y solo recibirás la mitad de la paga.");
+	    	SendClientMessage(playerid, COLOR_WHITE, "Tienes un minuto para devolver la moto a la central. Si no lo haces, no tendrás paga alguna.");
+            jobCheckpoint[playerid] = 4;
+		}
+	    DisablePlayerCheckpoint(playerid);
+	    SetPlayerCheckpoint(playerid, VehicleInfo[jobVehicle[playerid]][VehPosX], VehicleInfo[jobVehicle[playerid]][VehPosY], VehicleInfo[jobVehicle[playerid]][VehPosZ], 2.0);
+	}
 	return 1;
 }
 
+forward DeliJob_ReturnTimeLimit(playerid);
+public DeliJob_ReturnTimeLimit(playerid)
+{
+    jobDuty[playerid] = false;
+	SetEngine(jobVehicle[playerid], 0);
+	SetVehicleToRespawn(jobVehicle[playerid]);
+ 	jobVehicle[playerid] = 0;
+ 	SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+ 	Job_GiveReputation(playerid, -4);
+ 	SendClientMessage(playerid, COLOR_WHITE, "[INFO]: No has logrado devolver la moto a la central en el tiempo estipulado. Tu reputación baja unos puntos");
+ 	return 1;
+}
+ 	
 DeliJob_Payment(playerid, vehicleid)
 {
 	new paycheck, Float:vHealth, injuriesCost, seniorityBonus, chargeBonus;
