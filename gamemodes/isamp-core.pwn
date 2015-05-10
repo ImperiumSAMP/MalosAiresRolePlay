@@ -10875,9 +10875,10 @@ CMD:mequipo(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros MED _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Paramédico Junior    4: Sub Director");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Paramédico Senior    5: Director");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Médico               6: Civil");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Paramédico Junior    5: Sub Director");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Paramédico Senior    6: Director");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Paramédica           7: Civil");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Médico");
 		return 1;
 	}
 	switch(equipo)
@@ -10896,23 +10897,29 @@ CMD:mequipo(playerid, params[])
         }
         case 3:
 		{
-            if(PlayerInfo[playerid][pRank] > 5)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-        	SetPlayerSkin(playerid, 274); // Médico
+            if(PlayerInfo[playerid][pRank] > 8)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
+        	SetPlayerSkin(playerid, 308); // Paramédica
         }
         case 4:
 		{
             if(PlayerInfo[playerid][pRank] > 3)
                 return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-        	SetPlayerSkin(playerid, 70); // Sub Director
+        	SetPlayerSkin(playerid, 274); // Médico
         }
         case 5:
+		{
+            if(PlayerInfo[playerid][pRank] > 2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
+        	SetPlayerSkin(playerid, 70); // Sub Director
+        }
+        case 6:
 		{
             if(PlayerInfo[playerid][pRank] > 1)
                 return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
         	SetPlayerSkin(playerid, 187); // Director
         }
-        case 6:
+        case 7:
 		{
 			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]); // Civil
         }
@@ -12872,8 +12879,8 @@ CMD:skin(playerid, params[])
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /skin [ID/Jugador] [ID skin]");
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(skin < 1 || skin > 299)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de skin incorrecto.");
+	if(skin < 1 || skin > 311)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de skin incorrecto. Utiliza un ID del 1 al 311.");
 
     SetPlayerSkin(targetid, skin);
     PlayerInfo[targetid][pSkin] = skin;
