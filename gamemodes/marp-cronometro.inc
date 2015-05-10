@@ -76,11 +76,11 @@ public Cronometro(playerid)
 	}
 	else
 	{
+	    Cronometro_Borrar(playerid);
  	    if(pCronometroFunction[playerid][0]) // Chequear que no esté vacio
  	    {
 	 		CallLocalFunction(pCronometroFunction[playerid], "i", playerid);
 	 	}
-	    Cronometro_Borrar(playerid);
 	}
 	return 1;
 }

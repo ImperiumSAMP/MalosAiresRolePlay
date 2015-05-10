@@ -140,7 +140,7 @@ DeliJob_StartWork(playerid)
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra el paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
-    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. La entrega es en la zona de %s.", DeliJob_Route[destination][djTime], area);
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. La entrega es en la zona de %s.", DeliJob_Route[destination][djTime] + 7, area);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas la moto en peor estado de como la recibiste o si llegas tarde, tu imagen laboral disminuirá.");
 	jobDuty[playerid] = true;
 	SetEngine(vehicleid, 1);
