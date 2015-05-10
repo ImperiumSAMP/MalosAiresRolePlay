@@ -118,7 +118,7 @@ GarbJob_PlayerEnterCheckpoint(playerid)
 	{
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el camión de transporte con el que empezaste a trabajar!");
 	}
-    if(gbCP == 26)
+    if(gbCP == 25)
 	{
 		TogglePlayerControllable(playerid, false);
 		GameTextForPlayer(playerid, "Vaciando camión...", 6000, 4);
@@ -163,11 +163,11 @@ public GarbJob_LoadingTimer(playerid, garbcp)
 	new vehicleid = GetPlayerVehicleID(playerid);
 	
     TogglePlayerControllable(playerid, true);
-    if(garbcp == 25)
+    if(garbcp == 24)
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Vuelve y vacía el camión en el depósito.");
   	}
-  	else if(garbcp == 26)
+  	else if(garbcp == 25)
 	{
 	    PlayerJobInfo[playerid][pWorkingHours]++;
 	    GarbJob_Payment(playerid, vehicleid);
