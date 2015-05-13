@@ -190,11 +190,11 @@ CMD:agregarmodelo(playerid, params[])
 	new dealership, modelid;
 
 	if(sscanf(params, "ii", dealership, modelid))
-	    {
-			SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo]");
-			SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0 - Grotti | 1 - Jefferson | 2 - Pinar | 3 - Ciudad moto | 4 - Freddi | 5 - Gabott | 6 - RS Haul");
-			return 1;
-		}
+	{
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo]");
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0 - Grotti | 1 - Jefferson | 2 - Pinar | 3 - Ciudad moto | 4 - Freddi | 5 - Gabott | 6 - RS Haul");
+		return 1;
+	}
 	if(GetNearestDealership(playerid, 1.0) == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
@@ -231,7 +231,11 @@ CMD:borrarmodelo(playerid, params[])
 	new dealership, modelid;
 
 	if(sscanf(params, "ii", dealership, modelid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [modelo] (IDs Grotti:0 - Jefferson:1)");
+	{
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [ID del modelo]");
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0 - Grotti | 1 - Jefferson | 2 - Pinar | 3 - Ciudad moto | 4 - Freddi | 5 - Gabott | 6 - RS Haul");
+		return 1;
+	}
 	if(GetNearestDealership(playerid, 1.0) == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
