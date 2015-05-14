@@ -10783,11 +10783,11 @@ CMD:propero(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /propero [ID del equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete					12: Comisario");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2,3,4,5,6,7,8: Oficial		13: Operaciones Especiales Metropolitanas (DOEM)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento					14: División de Investigaciones Metropolitanas");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente				15: Civil");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario			");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete						12: Comisario");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2-8: Oficial					13: Operaciones Especiales Metropolitanas (DOEM)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento						14: División de Investigaciones Metropolitanas");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente					15: Civil");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario				");
 		return 1;
 	}
 
@@ -10835,7 +10835,7 @@ CMD:propero(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
-			SetPlayerSkin(playerid, 305); // Skin de oficial mujer 1
+			SetPlayerSkin(playerid, 306); // Skin de oficial mujer 1
 		}
 		case 8: // Oficial
 		{
@@ -10843,7 +10843,7 @@ CMD:propero(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
-			SetPlayerSkin(playerid, 306); // Skin de oficial mujer 2
+			SetPlayerSkin(playerid, 307); // Skin de oficial mujer 2
 		}
 		case 9: // Sargento
 		{
