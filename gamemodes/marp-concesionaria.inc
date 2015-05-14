@@ -452,6 +452,8 @@ OnCarDealer5DialogResponse(playerid, response)
 
 		addKeyToPlayer(playerid, newveh, playerid);
 		SaveVehicle(newveh);
+		SetVehicleNumberPlate(newveh, VehicleInfo[newveh][VehPlate]);
+		SetVehicleToRespawn(newveh);
 		format(str, sizeof(str), "Mod:%d C1:%d C2:%d", carModelSelection[playerid], carColor1Selection[playerid], carColor2Selection[playerid]);
 		VehicleLog(newveh, playerid, INVALID_PLAYER_ID, "/vehcomprar", str);
 	}
