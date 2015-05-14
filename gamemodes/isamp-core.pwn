@@ -9868,7 +9868,7 @@ CMD:ayudap(playerid, params[])
     if(PlayerInfo[playerid][pRank] <= 3)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos /verinsumos");
 	if(PlayerInfo[playerid][pRank] <= 4)
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /doem");
 	return 1;
 }
 
@@ -10689,7 +10689,7 @@ CMD:vercargos(playerid, params[])
 	return 1;
 }
 
-CMD:geof(playerid, params[])
+CMD:doem(playerid, params[])
 {
 	new string[128], toggle;
 
@@ -10698,25 +10698,25 @@ CMD:geof(playerid, params[])
 	if(PlayerInfo[playerid][pRank] > 4 || !CopDuty[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio como policía y tener el rango suficiente.");
 	if(sscanf(params, "i", toggle)) {
- 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /geof [0-1]");
-   		switch(GEOF) {
-			case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado G.E.O.F.: {D40000}desautorizado");
-		    case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado G.E.O.F.: {00D41C}autorizado");
+ 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /doem [0-1]");
+   		switch(DOEM) {
+			case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado D.O.E.M.: {D40000}desautorizado");
+		    case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado D.O.E.M.: {00D41C}autorizado");
    		}
    		return 1;
 	}
 	if(toggle < 0 || toggle > 1)
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /geof [0-1]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /doem [0-1]");
 
-	if(toggle == 1 && GEOF != 1) {
- 		format(string, sizeof(string), "¡Atención a todas las unidades! el G.E.O.F. ha sido autorizado por %s.", GetPlayerNameEx(playerid));
+	if(toggle == 1 && DOEM != 1) {
+ 		format(string, sizeof(string), "¡Atención a todas las unidades! el D.O.E.M ha sido autorizado por %s.", GetPlayerNameEx(playerid));
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-        GEOF = 1;
+        DOEM = 1;
 	} else
-		if(toggle == 0 && GEOF != 0) {
-  			format(string, sizeof(string), "¡Atención a todas las unidades! el G.E.O.F. ha sido desautorizado por %s.", GetPlayerNameEx(playerid));
+		if(toggle == 0 && DOEM != 0) {
+  			format(string, sizeof(string), "¡Atención a todas las unidades! el D.O.E.M ha sido desautorizado por %s.", GetPlayerNameEx(playerid));
 			SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-	        GEOF = 0;
+	        DOEM = 0;
 		}
 	return 1;
 }
@@ -10783,11 +10783,11 @@ CMD:propero(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /propero [ID del equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete						12: Comisario");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2-8: Oficial					13: Operaciones Especiales Metropolitanas (DOEM)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento						14: División de Investigaciones Metropolitanas");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente					15: Civil");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario				");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete                   12: Comisario");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2-8: Oficial                13: Operaciones Especiales Metropolitanas (DOEM)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento                 14: División de Investigaciones Metropolitanas");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente                15: Civil");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario			");
 		return 1;
 	}
 
@@ -10871,8 +10871,8 @@ CMD:propero(playerid, params[])
 		}
 		case 13: // DOEM
 		{
-			if(PlayerInfo[playerid][pRank] > 6 || GEOF != 1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o G.E.O.F. no está autorizado.");
+			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o D.O.E.M no está autorizado.");
 			SetPlayerSkin(playerid, 285);
 		}
 		case 14: // DIM

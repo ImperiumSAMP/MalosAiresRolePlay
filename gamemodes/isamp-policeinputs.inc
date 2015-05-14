@@ -66,7 +66,7 @@
 #define SIDE_WAREHOUSE_Z            13.4521
 
 
-new GEOF = 0,
+new DOEM = 0,
  	STARS = 0
 ;
 
@@ -184,7 +184,7 @@ CMD:sequipo(playerid, params[])
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
             SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
             SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
-			SetPlayerSkin(playerid, 285); // Geof
+			SetPlayerSkin(playerid, 285); // STARS
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE3, "EQUIPO 3");
 		}
 		case 4:
@@ -198,7 +198,7 @@ CMD:sequipo(playerid, params[])
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
             SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
             SetBackItemAndParam(playerid, WEAPON_M4, 250);
-			SetPlayerSkin(playerid, 285); // Geof
+			SetPlayerSkin(playerid, 285); // STARS
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE4, "EQUIPO 4");
 		}
 		case 5:
@@ -232,10 +232,10 @@ CMD:pequipo(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /pequipo [equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							 6: Macana - Tazer - Granada de humo - Deagle - Escopeta (GEOF 1)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)                    7: Macana - Tazer - Granada de humo - Deagle - MP5 (GEOF. 2)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Oficial Mayor)	 8: Macana - Tazer - Granada de humo - Deagle - Fusil M4 (GEOF 3)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Subinspector) 9: Macana - Tazer - Granada de humo - Deagle - Rifle francotirador (GEOF 4)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							 6: Tazer - Granada de humo - Deagle - Escopeta (DOEM 1)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)					 7: Tazer - Granada de humo - Deagle - MP5 (DOEM 2)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Oficial Mayor)	 8: Tazer - Granada de humo - Deagle - Fusil M4 (DOEM 3)");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Subinspector) 9: Tazer - Granada de humo - Deagle - Rifle francotirador (DOEM 4)");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 5: Macana - Tazer - Deagle - Rifle (Inspector)		 10: Macana - Tazer - Deagle - MP5 (D.I.)");
 		return 1;
 	}
@@ -309,8 +309,8 @@ CMD:pequipo(playerid, params[])
         }
         case 6:
 		{
-        	if(PlayerInfo[playerid][pRank] > 6 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
+        	if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE6)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 
@@ -322,8 +322,8 @@ CMD:pequipo(playerid, params[])
         }
         case 7:
 		{
-			if(PlayerInfo[playerid][pRank] > 5 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
+			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 				
@@ -335,8 +335,8 @@ CMD:pequipo(playerid, params[])
         }
         case 8:
 		{
-			if(PlayerInfo[playerid][pRank] > 4 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
+			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 
@@ -348,8 +348,8 @@ CMD:pequipo(playerid, params[])
         }
         case 9:
 		{
-			if(PlayerInfo[playerid][pRank] > 4 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o G.E.O.F. no está autorizado.");
+			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE9)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 				
