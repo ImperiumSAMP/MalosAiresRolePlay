@@ -192,7 +192,7 @@ CMD:agregarmodelo(playerid, params[])
 	if(sscanf(params, "ii", dealership, modelid))
 	{
 		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /agregarmodelo [ID concesionaria] [modelo]");
-		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0 - Grotti | 1 - Jefferson | 2 - Pinar | 3 - Ciudad moto | 4 - Freddi | 5 - Gabott | 6 - RS Haul");
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0.Grotti | 1.Jefferson | 2.Pinar | 3.Ciudad moto | 4.Freddi | 5.Gabott | 6.RS Haul");
 		return 1;
 	}
 	if(GetNearestDealership(playerid, 1.0) == -1)
@@ -233,7 +233,7 @@ CMD:borrarmodelo(playerid, params[])
 	if(sscanf(params, "ii", dealership, modelid))
 	{
 		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /borrarmodelo [ID concesionaria] [ID del modelo]");
-		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0 - Grotti | 1 - Jefferson | 2 - Pinar | 3 - Ciudad moto | 4 - Freddi | 5 - Gabott | 6 - RS Haul");
+		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0.Grotti | 1.Jefferson | 2.Pinar | 3.Ciudad moto | 4.Freddi | 5.Gabott | 6.RS Haul");
 		return 1;
 	}
 	if(GetNearestDealership(playerid, 1.0) == -1)

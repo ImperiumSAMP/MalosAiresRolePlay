@@ -10781,80 +10781,107 @@ CMD:propero(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
 	if(sscanf(params, "i", ropa))
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
+		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /propero [ID del equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete      	        7: Comisionado Mayor");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial         	    8: Comisionado General");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Oficial Mayor        9: Operaciones Especiales (GEOF)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Subinspector         10: D.I.");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Inspector  		    11: Civil");
-		SendClientMessage(playerid, COLOR_GRAD4, "| 6: Comisionado");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete					12: Comisario");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2,3,4,5,6,7,8: Oficial		13: Operaciones Especiales Metropolitanas (DOEM)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento					14: División de Investigaciones Metropolitanas");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente				15: Civil");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario			");
 		return 1;
 	}
 
 	switch(ropa)
 	{
-		case 1:
+		case 1: // Cadete
 		{
   			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 71); // Cadete
+		    SetPlayerSkin(playerid, 71);
       	}
-       	case 2:
+       	case 2: // Oficial
 		{
     		if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 266); // Oficial
+		    SetPlayerSkin(playerid, 280); // Skin de oficial 1
 		}
-  		case 3:
+  		case 3: // Oficial
   		{
-    		if(PlayerInfo[playerid][pRank] > 6)
+    		if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 280); // Cabo
+		    SetPlayerSkin(playerid, 265); // Tenpenny
       	}
-       	case 4:
+       	case 4: // Oficial
 	   	{
-	   		if(PlayerInfo[playerid][pRank] > 5)
+	   		if(PlayerInfo[playerid][pRank] > 7)
             	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 284); // Sargento
+        	SetPlayerSkin(playerid, 266); // Pulaski
    		}
-        case 5:
+        case 5: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 4)
+            if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 281); // Sargento Mayor
+        	SetPlayerSkin(playerid, 267); // Hernandez
         }
-        case 6:
+        case 6: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 3)
+            if(PlayerInfo[playerid][pRank] > 7)
                 return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 283); // Teniente
+        	SetPlayerSkin(playerid, 281); // Skin de oficial 2
         }
-        case 7:
+        case 7: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 2)
+            if(PlayerInfo[playerid][pRank] > 7)
                 return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 288); // Sub Comisario
+			if(PlayerInfo[playerid][pSex] != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.")
+        	SetPlayerSkin(playerid, 305); // Skin de oficial mujer 1
         }
-        case 8:
+        case 8: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 1)
+            if(PlayerInfo[playerid][pRank] > 7)
                 return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 282); // Comisario
+			if(PlayerInfo[playerid][pSex] != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
+        	SetPlayerSkin(playerid, 306); // Skin de oficial mujer 2
         }
-        case 9:
+        case 9: // Sargento
+		{
+        	if(PlayerInfo[playerid][pRank] > 5)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+        	SetPlayerSkin(playerid, 284);
+        }
+        case 10: // Teniente
+		{
+			if(PlayerInfo[playerid][pRank] > 3)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+            SetPlayerSkin(playerid, 283);
+        }
+        case 11: // Sub Comisario
+		{
+			if(PlayerInfo[playerid][pRank] > 2)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+            SetPlayerSkin(playerid, 288);
+        }
+        case 12: // Comisario
+		{
+			if(PlayerInfo[playerid][pRank] > 1)
+        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+            SetPlayerSkin(playerid, 282);
+        }
+        case 13: // DOEM
 		{
         	if(PlayerInfo[playerid][pRank] > 6 || GEOF != 1)
         	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o G.E.O.F. no está autorizado.");
-        	SetPlayerSkin(playerid, 285); // Geof
+        	SetPlayerSkin(playerid, 285);
         }
-        case 10:
+        case 14: // DIM
 		{
 			if(PlayerInfo[playerid][pRank] > 4)
         	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-            SetPlayerSkin(playerid, 286); // Fbi
+            SetPlayerSkin(playerid, 286);
         }
-        case 11:
+        case 15: // Civil
 			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]); // Civil
         default:
             return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de vestimenta válida.");
