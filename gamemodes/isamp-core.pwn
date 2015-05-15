@@ -9059,7 +9059,7 @@ CMD:ayuda(playerid,params[])
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero /telefono");
@@ -13595,13 +13595,13 @@ CMD:quitarmascara(playerid, params[])
 	new target, string[128];
 	if(sscanf(params, "u", target))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarmascara [ID/Jugador]");
-	if(targetid == INVALID_PLAYER_ID)
+	if(target == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(!ProxDetectorS(3.0, playerid, target))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 	if(IsPlayerInAnyVehicle(target))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo si el jugador está en un vehículo!");
-	if(GetPlayerHealth(target) > 25)
+	if(GetPVarInt(target, "disabled") != DISABLE_DEATHBED && GetPVarInt(target, "disabled") != DISABLE_DYING)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes hacerlo si el jugador está incapacitado!");
 
 	format(string, sizeof(string), "le quita la máscara a %s tomando provecho de su incapacidad.", GetPlayerNameEx(target));
