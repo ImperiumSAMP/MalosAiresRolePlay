@@ -13590,6 +13590,34 @@ CMD:llenar(playerid, params[])
 	return 1;
 }
 
+CMD:quitarmascara(playerid, params[])
+{
+	new target, string[128];
+	if(sscanf(params, "u", target))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarmascara [ID/Jugador]");
+	if(targetid == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(!ProxDetector(3.0, playerid, target))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
+	if(IsPlayerInAnyVehicle(target))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo si el jugador está en un vehículo!");
+	if(GetPlayerHealth(target) > 25)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes hacerlo si el jugador está incapacitado!");
+
+	format(string, sizeof(string), "le quita la máscara a %s tomando provecho de su incapacidad.", GetPlayerNameEx(target));
+	PlayerActionMessage(playerid, 15.0, string);
+	RemovePlayerAttachedObject(target, INDEX_ID_MASK);
+	usingMask[target] = false;
+	DestroyDynamic3DTextLabel(maskLabel[target]);
+	ResetMaskVariables(target);
+	foreach(new i : Player)
+	{
+		if(NicksEnabled[i])
+		ShowPlayerNameTagForPlayer(i, target, true);
+	}
+	return 1;
+}
+
 CMD:animhablar(playerid, params[])
 {
 	if(!TalkAnimEnabled[playerid])
@@ -13608,6 +13636,8 @@ public EndAnim(playerid)
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
+
+//===================================GOBIERNO=======================================
 
 CMD:liberar(playerid, params[])
 {
