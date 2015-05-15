@@ -13597,6 +13597,8 @@ CMD:quitarmascara(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarmascara [ID/Jugador]");
 	if(target == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(target == playerid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando /mascara.");
 	if(!ProxDetectorS(3.0, playerid, target))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 	if(IsPlayerInAnyVehicle(target))
