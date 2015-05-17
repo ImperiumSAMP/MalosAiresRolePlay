@@ -79,7 +79,7 @@ GarbJob_StartWork(playerid)
    	if(Job_IsVehicleWorking(vehicleid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
 	if(!Cronometro_Crear(playerid, JOB_GARB_TRAVEL_TIME * 60, "GarbJob_TravelTimeLimit"))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronómetro asociado al trabajo. Reportar a un administrador.");
 
 	if(route == 0)
 	{
@@ -207,7 +207,7 @@ GarbJob_Payment(playerid, vehicleid)
 	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
 
 	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
-	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antigüedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_TRAN), seniorityBonus, chargeBonus, injuriesCost);
 }
 
 GarbJob_CheckPromotePlayer(playerid)
