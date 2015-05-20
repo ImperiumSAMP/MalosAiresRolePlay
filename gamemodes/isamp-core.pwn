@@ -9995,14 +9995,14 @@ CMD:apuerta(playerid,params[]) {
 				MoveObject(PMBigJail7[1], 2010.00537, 1992.62985, 1992.64893, 1.00, 0.00, 0.00, 270.00);
 				MoveObject(PMBigJail8[1], 2010.00537, 1990.90375, 1992.64893, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1970.32315, 1977.47827, 1994.01514)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2002.87430, 2008.06934, 1994.01514)) {
             // PM Cárcel Shisu 7
 			if(PMBigJail9[0] == 0) {
 				PMBigJail9[0] = 1;
-			 	MoveObject(PMBigJail9[1], 1968.98315, 1977.47827, 1994.01514, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMBigJail9[1], 2001.53430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail9[0] = 0;
-				MoveObject(PMBigJail9[1], 1970.32315, 1977.47827, 1994.01514, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMBigJail9[1], 2002.87430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
 		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1976.85721, 2008.06934, 1994.01514)) {
             // PM Cárcel Shisu 8
@@ -10174,15 +10174,6 @@ CMD:apuerta(playerid,params[]) {
 			} else {
 				PMBigJail28[0] = 0;
 				MoveObject(PMBigJail28[1], 2002.76224, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
-			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2002.87430, 2008.06934, 1994.01514)) {
-            // PM Cárcel Shisu 27
-			if(PMBigJail29[0] == 0) {
-				PMBigJail29[0] = 1;
-			 	MoveObject(PMBigJail29[1], 2001.53430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
-			} else {
-				PMBigJail29[0] = 0;
-				MoveObject(PMBigJail29[1], 2002.87430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
 		}
 	}
