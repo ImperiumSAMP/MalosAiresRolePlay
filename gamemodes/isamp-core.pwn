@@ -9975,7 +9975,7 @@ CMD:apuerta(playerid,params[]) {
 				PMBigJail5[0] = 1;
 				PMBigJail6[0] = 1;
 			 	MoveObject(PMBigJail5[1], 1973.50720, 2001.73389, 1992.64893, 1.00, 0.00, 0.00, -90.00);
-			 	MoveObject(PMBigJail6[1], 1973.50720, 2001.73389, 1992.64893, 1.00, 0.00, 0.00, -90.00);
+			 	MoveObject(PMBigJail6[1], 1973.50720, 1997.82544, 1992.64893, 1.00, 0.00, 0.00, -90.00);
 			} else {
 				PMBigJail5[0] = 0;
 				PMBigJail6[0] = 0;
@@ -9988,12 +9988,12 @@ CMD:apuerta(playerid,params[]) {
 				PMBigJail7[0] = 1;
 				PMBigJail8[0] = 1;
 			 	MoveObject(PMBigJail7[1], 2010.00537, 1993.76975, 1992.64893, 1.00, 0.00, 0.00, 270.00);
-			 	MoveObject(PMBigJail8[1], 2010.00537, 1989.76365, 1992.64893, 1.00, 0.00, 0.00, 270.00);
+			 	MoveObject(PMBigJail8[1], 2010.00537, 1989.76365, 1992.64893, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail7[0] = 0;
 				PMBigJail8[0] = 0;
 				MoveObject(PMBigJail7[1], 2010.00537, 1992.62985, 1992.64893, 1.00, 0.00, 0.00, 270.00);
-				MoveObject(PMBigJail8[1], 2010.00537, 1990.90375, 1992.64893, 1.00, 0.00, 0.00, 270.00);
+				MoveObject(PMBigJail8[1], 2010.00537, 1990.90375, 1992.64893, 1.00, 0.00, 0.00, 90.00);
 			}
 		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1970.32315, 1977.47827, 1994.01514)) {
             // PM Cárcel Shisu 7
