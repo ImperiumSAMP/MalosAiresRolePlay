@@ -9955,10 +9955,10 @@ CMD:apuerta(playerid,params[]) {
             // PM Cárcel Shisu 3 | Sala de visitas
 			if(PMBigJail3[0] == 0) {
 				PMBigJail3[0] = 1;
-			 	MoveObject(PMBigJail3[1], 124.09375, 123.42383, 2335.10156, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail3[1], 124.09375, 123.42383, 2335.10156, 1.00, 0.00, 0.00, 270.00);
 			} else {
 				PMBigJail3[0] = 0;
-				MoveObject(PMBigJail3[1], 124.09375, 121.88383, 2335.10156, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail3[1], 124.09375, 121.88383, 2335.10156, 1.00, 0.00, 0.00, 270.00);
 			}
 		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1970.36325, 1977.47827, 1994.01514)) {
             // PM Cárcel Shisu 4 | Sector Cárcel
