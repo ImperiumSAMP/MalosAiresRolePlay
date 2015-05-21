@@ -199,8 +199,6 @@ Lift_OnDialogResponse(playerid, response, listitem)
 {
 	if(!response)
 	    return 1;
-	if(!Lift_PlayerRequested[playerid])
-	    return 1;
 	if(Lift[Lift_PlayerRequested[playerid]][eCurrentFloor] == listitem)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El ascensor se encuentra actualmente en ese piso o en viaje hacia el mismo.");
 	if(Lift[Lift_PlayerRequested[playerid]][eState] != LIFT_STATE_IDLE)
@@ -217,8 +215,6 @@ Lift_OnDialogResponse(playerid, response, listitem)
     SendClientMessage(playerid, COLOR_WHITE, string);
     format(string, sizeof(string), "presiona el boton de %s en el panel del ascensor.", Lift_FloorNames[Lift_PlayerRequested[playerid]][listitem]);
 	PlayerActionMessage(playerid, 15.0, string);
-	
-    Lift_PlayerRequested[playerid] = 0;
 	return 1;
 }
 

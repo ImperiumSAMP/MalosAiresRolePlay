@@ -9059,7 +9059,7 @@ CMD:ayuda(playerid,params[])
     SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero /telefono");
@@ -9868,7 +9868,7 @@ CMD:ayudap(playerid, params[])
     if(PlayerInfo[playerid][pRank] <= 3)
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos /verinsumos");
 	if(PlayerInfo[playerid][pRank] <= 4)
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /geof");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Inspector]: /doem");
 	return 1;
 }
 
@@ -9933,209 +9933,247 @@ CMD:apuerta(playerid,params[]) {
 				PMJail3[0] = 0;
 				MoveObject(PMJail3[1], 188.70599, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2541.14380, -1316.36438, 1031.68628)) {
-            // PM Big Cárcel 001
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 109.81641, 130.01992, 2336.44946)) {
+            // PM Cárcel Shisu 1 | Sala de visitas
 			if(PMBigJail1[0] == 0) {
 				PMBigJail1[0] = 1;
-			 	MoveObject(PMBigJail1[1], 2543.86380, -1316.36438, 1031.68628, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail1[1], 109.81641, 131.41992, 2336.44946, 1.00, 0.00, 0.00, 0.00);
 			} else {
 				PMBigJail1[0] = 0;
-				MoveObject(PMBigJail1[1], 2542.14380, -1316.36438, 1031.68628, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail1[1], 109.81641, 130.01992, 2336.44946, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2528.12061, -1316.32617, 1031.72595)) {
-            // PM Big Cárcel 002
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 123.17094, 124.51172, 2335.10156)) {
+            // PM Cárcel Shisu 2 | Sala de visitas
 			if(PMBigJail2[0] == 0) {
 				PMBigJail2[0] = 1;
-			 	MoveObject(PMBigJail2[1], 2526.38061, -1316.32617, 1031.72595, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail2[1], 121.71094, 124.51172, 2335.10156, 1.00, 0.00, 0.00, 0.00);
 			} else {
 				PMBigJail2[0] = 0;
-				MoveObject(PMBigJail2[1], 2528.12061, -1316.32617, 1031.72595, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail2[1], 123.17094, 124.51172, 2335.10156, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2528.09570, -1300.04114, 1031.73108)) {
-            // PM Big Cárcel 003
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 124.09375, 121.88383, 2335.10156)) {
+            // PM Cárcel Shisu 3 | Sala de visitas
 			if(PMBigJail3[0] == 0) {
 				PMBigJail3[0] = 1;
-			 	MoveObject(PMBigJail3[1], 2526.37570, -1300.04114, 1031.73108, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail3[1], 124.09375, 123.42383, 2335.10156, 1.00, 0.00, 0.00, 270.00);
 			} else {
 				PMBigJail3[0] = 0;
-				MoveObject(PMBigJail3[1], 2528.09570, -1300.04114, 1031.73108, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail3[1], 124.09375, 121.88383, 2335.10156, 1.00, 0.00, 0.00, 270.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.74414, -1301.25818, 1031.62891)) {
-            // PM Big Cárcel 004
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1970.36325, 1977.47827, 1994.01514)) {
+            // PM Cárcel Shisu 4 | Sector Cárcel
 			if(PMBigJail4[0] == 0) {
 				PMBigJail4[0] = 1;
-			 	MoveObject(PMBigJail4[1], 2563.74414, -1302.99828, 1031.62891, 1.00, 0.00, 0.00, 90.00);
+			 	MoveObject(PMBigJail4[1], 1968.98315, 1977.47827, 1994.01514, 1.00, 0.00, 0.00, 91.00);
 			} else {
 				PMBigJail4[0] = 0;
-				MoveObject(PMBigJail4[1], 2563.74414, -1301.25818, 1031.62891, 1.00, 0.00, 0.00, 90.00);
+				MoveObject(PMBigJail4[1], 1970.36325, 1977.47827, 1994.01514, 1.00, 0.00, 0.00, 91.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2569.73291, -1280.75586, 1031.70044)) {
-            // PM Big Cárcel 005
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1973.50720, 2000.65385, 1992.64893)) {
+            // PM Cárcel Shisu 5 | Sector Cárcel - Puerta doble 1
 			if(PMBigJail5[0] == 0) {
 				PMBigJail5[0] = 1;
-			 	MoveObject(PMBigJail5[1], 2569.73291, -1282.49596, 1031.70044, 1.00, 0.00, 0.00, 90.00);
+				PMBigJail6[0] = 1;
+			 	MoveObject(PMBigJail5[1], 1973.50720, 2001.73389, 1992.64893, 1.00, 0.00, 0.00, -90.00);
+			 	MoveObject(PMBigJail6[1], 1973.50720, 1997.82544, 1992.64893, 1.00, 0.00, 0.00, -90.00);
 			} else {
 				PMBigJail5[0] = 0;
-				MoveObject(PMBigJail5[1], 2569.73291, -1280.75586, 1031.70044, 1.00, 0.00, 0.00, 90.00);
-			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2573.31030, -1287.04639, 1031.66443)) {
-            // PM Big Cárcel 006
-			if(PMBigJail6[0] == 0) {
-				PMBigJail6[0] = 1;
-			 	MoveObject(PMBigJail6[1], 2573.31030, -1285.30649, 1031.66443, 1.00, 0.00, 0.00, 270.00);
-			} else {
 				PMBigJail6[0] = 0;
-				MoveObject(PMBigJail6[1], 2573.31030, -1287.04639, 1031.66443, 1.00, 0.00, 0.00, 270.00);
+				MoveObject(PMBigJail5[1], 1973.50720, 2000.65385, 1992.64893, 1.00, 0.00, 0.00, -90.00);
+				MoveObject(PMBigJail6[1], 1973.50720, 1998.90545, 1992.64893, 1.00, 0.00, 0.00, -90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2570.37134, -1300.18420, 1038.00903)) {
-            // PM Big Cárcel 007
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2010.00537, 1992.62985, 1992.64893)) {
+            // PM Cárcel Shisu 6 | Sector Cárcel - Puerta doble 2
 			if(PMBigJail7[0] == 0) {
 				PMBigJail7[0] = 1;
-			 	MoveObject(PMBigJail7[1], 2572.13134, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 180.00);
-			 	MoveObject(PMBigJail23[1], 2566.83948, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 0.00);
+				PMBigJail8[0] = 1;
+			 	MoveObject(PMBigJail7[1], 2010.00537, 1993.76975, 1992.64893, 1.00, 0.00, 0.00, 270.00);
+			 	MoveObject(PMBigJail8[1], 2010.00537, 1989.76365, 1992.64893, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail7[0] = 0;
-				MoveObject(PMBigJail7[1], 2570.37134, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 180.00);
-				MoveObject(PMBigJail23[1], 2568.61938, -1300.18420, 1038.00903, 1.00, 0.00, 0.00, 0.00);
-			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2573.71509, -1288.36536, 1044.39682)) {
-            // PM Big Cárcel 008
-			if(PMBigJail8[0] == 0) {
-				PMBigJail8[0] = 1;
-			 	MoveObject(PMBigJail8[1], 2575.45519, -1288.36536, 1044.39682, 1.00, 0.00, 0.00, 180.00);
-			} else {
 				PMBigJail8[0] = 0;
-				MoveObject(PMBigJail8[1], 2573.71509, -1288.36536, 1044.39682, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail7[1], 2010.00537, 1992.62985, 1992.64893, 1.00, 0.00, 0.00, 270.00);
+				MoveObject(PMBigJail8[1], 2010.00537, 1990.90375, 1992.64893, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2539.63940, -1291.89478, 1044.38550)) {
-            // PM Big Cárcel 009
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2002.87430, 2008.06934, 1994.01514)) {
+            // PM Cárcel Shisu 7
 			if(PMBigJail9[0] == 0) {
 				PMBigJail9[0] = 1;
-			 	MoveObject(PMBigJail9[1], 2537.89940, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 0.00);
-			 	MoveObject(PMBigJail24[1], 2543.09949, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail9[1], 2001.53430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail9[0] = 0;
-				MoveObject(PMBigJail9[1], 2539.63940, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 0.00);
-				MoveObject(PMBigJail24[1], 2541.37939, -1291.89478, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail9[1], 2002.87430, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2538.59131, -1299.19592, 1044.37817)) {
-            // PM Big Cárcel 010
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1976.85721, 2008.06934, 1994.01514)) {
+            // PM Cárcel Shisu 8
 			if(PMBigJail10[0] == 0) {
 				PMBigJail10[0] = 1;
-			 	MoveObject(PMBigJail10[1], 2536.83131, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 0.00);
-			 	MoveObject(PMBigJail25[1], 2542.07130, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail10[1], 1975.51721, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail10[0] = 0;
-				MoveObject(PMBigJail10[1], 2538.59131, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 0.00);
-				MoveObject(PMBigJail25[1], 2540.33130, -1299.19592, 1044.37817, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail10[1], 1976.85721, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2540.99341, -1303.98450, 1044.37817)) {
-            // PM Big Cárcel 011
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1976.85721, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 9
 			if(PMBigJail11[0] == 0) {
 				PMBigJail11[0] = 1;
-			 	MoveObject(PMBigJail11[1], 2539.23341, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail11[1], 1975.51721, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail11[0] = 0;
-				MoveObject(PMBigJail11[1], 2540.99341, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail11[1], 1976.85721, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2545.52930, -1303.98450, 1044.37817)) {
-            // PM Big Cárcel 012
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1976.89200, 1992.02344, 1994.01514)) {
+            // PM Cárcel Shisu 10
 			if(PMBigJail12[0] == 0) {
 				PMBigJail12[0] = 1;
-			 	MoveObject(PMBigJail12[1], 2543.76930, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail12[1], 1975.55200, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail12[0] = 0;
-				MoveObject(PMBigJail12[1], 2545.52930, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail12[1], 1976.89200, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2548.30688, -1303.97729, 1044.38550)) {
-            // PM Big Cárcel 013
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1976.89200, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 11
 			if(PMBigJail13[0] == 0) {
 				PMBigJail13[0] = 1;
-			 	MoveObject(PMBigJail13[1], 2550.06698, -1303.97729, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail13[1], 1975.55200, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail13[0] = 0;
-				MoveObject(PMBigJail13[1], 2548.30688, -1303.97729, 1044.38550, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail13[1], 1976.89200, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2554.60107, -1303.98450, 1044.37817)) {
-            // PM Big Cárcel 014
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1981.24320, 2008.06934, 1994.01514)) {
+            // PM Cárcel Shisu 12
 			if(PMBigJail14[0] == 0) {
 				PMBigJail14[0] = 1;
-			 	MoveObject(PMBigJail14[1], 2552.84117, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail14[1], 1979.90320, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail14[0] = 0;
-				MoveObject(PMBigJail14[1], 2554.60107, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail14[1], 1981.24320, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2559.13696, -1303.98450, 1044.37817)) {
-            // PM Big Cárcel 015
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1981.24320, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 13
 			if(PMBigJail15[0] == 0) {
 				PMBigJail15[0] = 1;
-			 	MoveObject(PMBigJail15[1], 2557.39706, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail15[1], 1979.90320, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail15[0] = 0;
-				MoveObject(PMBigJail15[1], 2559.13696, -1303.98450, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail15[1], 1981.24320, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.66821, -1303.96692, 1044.37817)) {
-            // PM Big Cárcel 016
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1981.28409, 1992.02344, 1994.01514)) {
+            // PM Cárcel Shisu 14
 			if(PMBigJail16[0] == 0) {
 				PMBigJail16[0] = 1;
-			 	MoveObject(PMBigJail16[1], 2561.90821, -1303.96692, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail16[1], 1979.94409, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail16[0] = 0;
-				MoveObject(PMBigJail16[1], 2563.66821, -1303.96692, 1044.37817, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail16[1], 1981.28409, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2563.69531, -1303.98621, 1048.52222)) {
-            // PM Big Cárcel 017
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1981.35611, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 15
 			if(PMBigJail17[0] == 0) {
 				PMBigJail17[0] = 1;
-			 	MoveObject(PMBigJail17[1], 2561.93531, -1303.98621, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail17[1], 1980.01611, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail17[0] = 0;
-				MoveObject(PMBigJail17[1], 2563.69531, -1303.98621, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail17[1], 1981.35611, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2559.16675, -1303.95361, 1048.52222)) {
-            // PM Big Cárcel 018
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1985.67618, 1992.02344, 1994.01514)) {
+            // PM Cárcel Shisu 16
 			if(PMBigJail18[0] == 0) {
 				PMBigJail18[0] = 1;
-			 	MoveObject(PMBigJail18[1], 2557.40675, -1303.95361, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail18[1], 1984.33618, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail18[0] = 0;
-				MoveObject(PMBigJail18[1], 2559.16675, -1303.95361, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail18[1], 1985.67618, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2554.60669, -1303.95032, 1048.52222)) {
-            // PM Big Cárcel 019
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1985.67618, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 17
 			if(PMBigJail19[0] == 0) {
 				PMBigJail19[0] = 1;
-			 	MoveObject(PMBigJail19[1], 2552.86679, -1303.95032, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail19[1], 1984.33618, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail19[0] = 0;
-				MoveObject(PMBigJail19[1], 2554.60669, -1303.95032, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail19[1], 1985.67618, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2548.31885, -1303.96375, 1048.52954)) {
-            // PM Big Cárcel 020
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1985.83316, 2008.06934, 1994.01514)) {
+            // PM Cárcel Shisu 18
 			if(PMBigJail20[0] == 0) {
 				PMBigJail20[0] = 1;
-			 	MoveObject(PMBigJail20[1], 2550.07885, -1303.96375, 1048.52954, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail20[1], 1984.49316, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail20[0] = 0;
-				MoveObject(PMBigJail20[1], 2548.31885, -1303.96375, 1048.52954, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail20[1], 1985.83316, 2008.06934, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2543.79272, -1303.95728, 1048.52222)) {
-            // PM Big Cárcel 021
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1985.83316, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 19
 			if(PMBigJail21[0] == 0) {
 				PMBigJail21[0] = 1;
-			 	MoveObject(PMBigJail21[1], 2545.55272, -1303.95728, 1048.52222, 1.00, 0.00, 0.00, 180.00);
+			 	MoveObject(PMBigJail21[1], 1984.49316, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail21[0] = 0;
-				MoveObject(PMBigJail21[1], 2543.79272, -1303.95728, 1048.52222, 1.00, 0.00, 0.00, 180.00);
+				MoveObject(PMBigJail21[1], 1985.83316, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2541.02222, -1303.99585, 1048.52222)) {
-            // PM Big Cárcel 022
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1989.99625, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 20
 			if(PMBigJail22[0] == 0) {
 				PMBigJail22[0] = 1;
-			 	MoveObject(PMBigJail22[1], 2539.26222, -1303.99585, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+			 	MoveObject(PMBigJail22[1], 1988.65625, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
 			} else {
 				PMBigJail22[0] = 0;
-				MoveObject(PMBigJail22[1], 2541.02222, -1303.99585, 1048.52222, 1.00, 0.00, 0.00, 0.00);
+				MoveObject(PMBigJail22[1], 1989.99625, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1990.01517, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 21
+			if(PMBigJail23[0] == 0) {
+				PMBigJail23[0] = 1;
+			 	MoveObject(PMBigJail23[1], 1988.67517, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail23[0] = 0;
+				MoveObject(PMBigJail23[1], 1990.01517, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1994.70719, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 22
+			if(PMBigJail24[0] == 0) {
+				PMBigJail24[0] = 1;
+			 	MoveObject(PMBigJail24[1], 1993.36719, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail24[0] = 0;
+				MoveObject(PMBigJail24[1], 1994.70719, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1994.89225, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 23
+			if(PMBigJail25[0] == 0) {
+				PMBigJail25[0] = 1;
+			 	MoveObject(PMBigJail25[1], 1993.55225, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail25[0] = 0;
+				MoveObject(PMBigJail25[1], 1994.89225, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1999.14054, 1992.02344, 1998.04712)) {
+            // PM Cárcel Shisu 24
+			if(PMBigJail26[0] == 0) {
+				PMBigJail26[0] = 1;
+			 	MoveObject(PMBigJail26[1], 1997.80054, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail26[0] = 0;
+				MoveObject(PMBigJail26[1], 1999.14054, 1992.02344, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1999.19522, 2008.06934, 1998.04712)) {
+            // PM Cárcel Shisu 25
+			if(PMBigJail27[0] == 0) {
+				PMBigJail27[0] = 1;
+			 	MoveObject(PMBigJail27[1], 1997.85522, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail27[0] = 0;
+				MoveObject(PMBigJail27[1], 1999.19522, 2008.06934, 1998.04712, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2002.76224, 1992.02344, 1994.01514)) {
+            // PM Cárcel Shisu 26
+			if(PMBigJail28[0] == 0) {
+				PMBigJail28[0] = 1;
+			 	MoveObject(PMBigJail28[1], 2001.42224, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail28[0] = 0;
+				MoveObject(PMBigJail28[1], 2002.76224, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
 		}
 	}
@@ -10689,7 +10727,7 @@ CMD:vercargos(playerid, params[])
 	return 1;
 }
 
-CMD:geof(playerid, params[])
+CMD:doem(playerid, params[])
 {
 	new string[128], toggle;
 
@@ -10698,25 +10736,25 @@ CMD:geof(playerid, params[])
 	if(PlayerInfo[playerid][pRank] > 4 || !CopDuty[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio como policía y tener el rango suficiente.");
 	if(sscanf(params, "i", toggle)) {
- 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /geof [0-1]");
-   		switch(GEOF) {
-			case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado G.E.O.F.: {D40000}desautorizado");
-		    case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado G.E.O.F.: {00D41C}autorizado");
+ 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /doem [0-1]");
+   		switch(DOEM) {
+			case 0: SendClientMessage(playerid, COLOR_WHITE, "Estado D.O.E.M.: {D40000}desautorizado");
+		    case 1: SendClientMessage(playerid, COLOR_WHITE, "Estado D.O.E.M.: {00D41C}autorizado");
    		}
    		return 1;
 	}
 	if(toggle < 0 || toggle > 1)
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /geof [0-1]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /doem [0-1]");
 
-	if(toggle == 1 && GEOF != 1) {
- 		format(string, sizeof(string), "¡Atención a todas las unidades! el G.E.O.F. ha sido autorizado por %s.", GetPlayerNameEx(playerid));
+	if(toggle == 1 && DOEM != 1) {
+ 		format(string, sizeof(string), "¡Atención a todas las unidades! el D.O.E.M ha sido autorizado por %s.", GetPlayerNameEx(playerid));
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-        GEOF = 1;
+        DOEM = 1;
 	} else
-		if(toggle == 0 && GEOF != 0) {
-  			format(string, sizeof(string), "¡Atención a todas las unidades! el G.E.O.F. ha sido desautorizado por %s.", GetPlayerNameEx(playerid));
+		if(toggle == 0 && DOEM != 0) {
+  			format(string, sizeof(string), "¡Atención a todas las unidades! el D.O.E.M ha sido desautorizado por %s.", GetPlayerNameEx(playerid));
 			SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-	        GEOF = 0;
+	        DOEM = 0;
 		}
 	return 1;
 }
@@ -10781,83 +10819,110 @@ CMD:propero(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
 	if(sscanf(params, "i", ropa))
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
+		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /propero [ID del equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete      	        7: Comisionado Mayor");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Oficial         	    8: Comisionado General");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Oficial Mayor        9: Operaciones Especiales (GEOF)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Subinspector         10: D.I.");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Inspector  		    11: Civil");
-		SendClientMessage(playerid, COLOR_GRAD4, "| 6: Comisionado");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete                   12: Comisario");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2-8: Oficial                13: Operaciones Especiales Metropolitanas (DOEM)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento                 14: División de Investigaciones Metropolitanas");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente                15: Civil");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario			");
 		return 1;
 	}
 
 	switch(ropa)
 	{
-		case 1:
+		case 1: // Cadete
 		{
-  			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 71); // Cadete
-      	}
-       	case 2:
-		{
-    		if(PlayerInfo[playerid][pRank] > 7)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 266); // Oficial
+			SetPlayerSkin(playerid, 71);
 		}
-  		case 3:
-  		{
-    		if(PlayerInfo[playerid][pRank] > 6)
+		case 2: // Oficial
+		{
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-		    SetPlayerSkin(playerid, 280); // Cabo
-      	}
-       	case 4:
-	   	{
-	   		if(PlayerInfo[playerid][pRank] > 5)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 284); // Sargento
-   		}
-        case 5:
+			SetPlayerSkin(playerid, 280); // Skin de oficial 1
+		}
+		case 3: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 4)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 281); // Sargento Mayor
-        }
-        case 6:
+			SetPlayerSkin(playerid, 265); // Tenpenny
+		}
+		case 4: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 3)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 283); // Teniente
-        }
-        case 7:
+			if(PlayerInfo[playerid][pRank] > 7)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 266); // Pulaski
+		}
+		case 5: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 288); // Sub Comisario
-        }
-        case 8:
+			if(PlayerInfo[playerid][pRank] > 7)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 267); // Hernandez
+		}
+		case 6: // Oficial
 		{
-            if(PlayerInfo[playerid][pRank] > 1)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-        	SetPlayerSkin(playerid, 282); // Comisario
-        }
-        case 9:
+			if(PlayerInfo[playerid][pRank] > 7)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 281); // Skin de oficial 2
+		}
+		case 7: // Oficial
 		{
-        	if(PlayerInfo[playerid][pRank] > 6 || GEOF != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o G.E.O.F. no está autorizado.");
-        	SetPlayerSkin(playerid, 285); // Geof
-        }
-        case 10:
+			if(PlayerInfo[playerid][pRank] > 7)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			if(PlayerInfo[playerid][pSex] != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
+			SetPlayerSkin(playerid, 306); // Skin de oficial mujer 1
+		}
+		case 8: // Oficial
+		{
+			if(PlayerInfo[playerid][pRank] > 7)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			if(PlayerInfo[playerid][pSex] != 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
+			SetPlayerSkin(playerid, 307); // Skin de oficial mujer 2
+		}
+		case 9: // Sargento
+		{
+			if(PlayerInfo[playerid][pRank] > 5)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 284);
+		}
+		case 10: // Teniente
+		{
+			if(PlayerInfo[playerid][pRank] > 3)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 283);
+		}
+		case 11: // Sub Comisario
+		{
+			if(PlayerInfo[playerid][pRank] > 2)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 288);
+		}
+		case 12: // Comisario
+		{
+			if(PlayerInfo[playerid][pRank] > 1)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 282);
+		}
+		case 13: // DOEM
+		{
+			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o D.O.E.M no está autorizado.");
+			SetPlayerSkin(playerid, 285);
+		}
+		case 14: // DIM
 		{
 			if(PlayerInfo[playerid][pRank] > 4)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-            SetPlayerSkin(playerid, 286); // Fbi
-        }
-        case 11:
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+			SetPlayerSkin(playerid, 286);
+		}
+		case 15: // Civil
 			SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]); // Civil
-        default:
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de vestimenta válida.");
+		default:
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de vestimenta válida.");
 	}
 	PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 	return 1;
@@ -13563,6 +13628,36 @@ CMD:llenar(playerid, params[])
 	return 1;
 }
 
+CMD:quitarmascara(playerid, params[])
+{
+	new target, string[128];
+	if(sscanf(params, "u", target))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarmascara [ID/Jugador]");
+	if(target == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(target == playerid)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando /mascara.");
+	if(!ProxDetectorS(3.0, playerid, target))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
+	if(IsPlayerInAnyVehicle(target))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo si el jugador está en un vehículo!");
+	if(GetPVarInt(target, "disabled") != DISABLE_DEATHBED && GetPVarInt(target, "disabled") != DISABLE_DYING)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes hacerlo si el jugador está incapacitado!");
+
+	format(string, sizeof(string), "le quita la máscara a %s tomando provecho de su incapacidad.", GetPlayerNameEx(target));
+	PlayerActionMessage(playerid, 15.0, string);
+	RemovePlayerAttachedObject(target, INDEX_ID_MASK);
+	usingMask[target] = false;
+	DestroyDynamic3DTextLabel(maskLabel[target]);
+	ResetMaskVariables(target);
+	foreach(new i : Player)
+	{
+		if(NicksEnabled[i])
+		ShowPlayerNameTagForPlayer(i, target, true);
+	}
+	return 1;
+}
+
 CMD:animhablar(playerid, params[])
 {
 	if(!TalkAnimEnabled[playerid])
@@ -13581,6 +13676,8 @@ public EndAnim(playerid)
 	ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
+
+//===================================GOBIERNO=======================================
 
 CMD:liberar(playerid, params[])
 {

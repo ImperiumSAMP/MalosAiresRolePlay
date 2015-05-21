@@ -140,7 +140,7 @@ DeliJob_StartWork(playerid)
 	SetPlayerCheckpoint(playerid, JOB_DELI_STOREPLACE_X, JOB_DELI_STOREPLACE_Y, JOB_DELI_STOREPLACE_Z, 2.0);
 	PlayerActionMessage(playerid, 15.0, "ha encendido el motor del vehículo.");
 	SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Vé al fondo y agarra el paquete para entregar. Luego tendrás que viajar a la velocidad de un rayo y entregarlo lo antes posible.");
-    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segs para ir, entregar el paquete, y volver a la central. La entrega es en la zona de %s.", DeliJob_Route[destination][djTime] + 7, area);
+    SendFMessage(playerid, COLOR_WHITE, "Tienes %d segundos para ir, entregar el paquete, y volver a la central. La entrega es en la zona de %s.", DeliJob_Route[destination][djTime] + 7, area);
     SendClientMessage(playerid, COLOR_WHITE, "Recuerda también que si entregas la moto en peor estado de como la recibiste o si llegas tarde, tu imagen laboral disminuirá.");
 	jobDuty[playerid] = true;
 	SetEngine(vehicleid, 1);
@@ -165,7 +165,7 @@ public DeliJob_NextCheckpoint(playerid, cp)
     jobCheckpoint[playerid]++;
     if(cp == 1)
     {
-        SendClientMessage(playerid, COLOR_WHITE, "¡Rapido! Entrega el paquete en la dirección indicada.");
+        SendClientMessage(playerid, COLOR_WHITE, "¡Rápido! Entrega el paquete en la dirección indicada.");
         SetPlayerCheckpoint(playerid, DeliJob_Route[jobRoute[playerid]][djX], DeliJob_Route[jobRoute[playerid]][djY], DeliJob_Route[jobRoute[playerid]][djZ], 2.0);
     }
     else if(cp == 2)
@@ -250,7 +250,7 @@ public DeliJob_TravelTimeLimit(playerid)
 	// Le damos 1 minuto para que vuelva a la central y deje la moto
 	if(!Cronometro_Crear(playerid, 60, "DeliJob_ReturnTimeLimit")) // Si falló la creación del cronometro
 	{
-	    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+	    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronómetro asociado al trabajo. Reportar a un administrador.");
         jobDuty[playerid] = false;
 		SetEngine(jobVehicle[playerid], 0);
 		SetVehicleToRespawn(jobVehicle[playerid]);
@@ -312,7 +312,7 @@ DeliJob_Payment(playerid, vehicleid)
 	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
 
 	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado la entrega a tiempo y recibirás $%d adicionales en el próximo payday. Puedes hacer %d entrega/s más el día de hoy.", paycheck, JOB_DELI_MAX_DELIVERYS - PlayerInfo[playerid][pCantWork]);
-	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Pago base por entrega: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_DELI), seniorityBonus, chargeBonus, injuriesCost);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Pago base por entrega: $%d - Bonus por antigüedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", GetJobBaseSalary(JOB_DELI), seniorityBonus, chargeBonus, injuriesCost);
 }
 
 DeliJob_CheckPromotePlayer(playerid)

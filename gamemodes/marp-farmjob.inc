@@ -39,7 +39,7 @@ FarmJob_StartWork(playerid)
 	if(Job_IsVehicleWorking(vehicleid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ese vehículo actualmente esta siendo usado para trabajar por otro empleado.");
  	if(!Cronometro_Crear(playerid, JOB_FARM_TRAVEL_TIME * 60, "FarmJob_TravelTimeLimit"))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronometro asociado al trabajo. Reportar a un administrador.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: No se pudo crear el cronómetro asociado al trabajo. Reportar a un administrador.");
 
 
 	SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la cosecha y tipear /terminar para descargarla.");
@@ -124,7 +124,7 @@ FarmJob_Payment(playerid, vehicleid)
 	PlayerJobInfo[playerid][pTotalEarnings] += paycheck;
 
 	SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has finalizado tu trabajo y recibirás $%d en el próximo payday.", paycheck);
-	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antiguedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", CollectedProds[playerid] * JOB_FARM_PRODVALUE, seniorityBonus, chargeBonus, injuriesCost);
+	SendFMessage(playerid, COLOR_WHITE, "[Detalles]: Salario base: $%d - Bonus por antigüedad: $%d - Bonus por cargo: $%d - Descuento por roturas: ${FF0000}%d", CollectedProds[playerid] * JOB_FARM_PRODVALUE, seniorityBonus, chargeBonus, injuriesCost);
 }
 
 FarmJob_IsPlayerWorking(playerid, vehicleid)
