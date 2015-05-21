@@ -119,7 +119,6 @@ CMD:afacciones(playerid, params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA FACCIONES]==============================");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afexpulsar /afvehiculos /afallowjob /afinfo - /aftipo - /afnombre - /afrangos");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision");
-	}
 	return 1;
 }
 
