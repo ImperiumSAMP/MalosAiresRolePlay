@@ -148,6 +148,8 @@ DeliJob_StartWork(playerid)
 	jobCheckpoint[playerid] = 0;
 	jobRoute[playerid] = destination;
     GetVehicleHealth(vehicleid, jobVehicleHealth[playerid]);
+    UpdatePlayerJobLastWorked(playerid);
+    PlayerInfo[playerid][pCantWork]++;
 	return 1;
 }
 
@@ -201,7 +203,6 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 	}
 	else if(actualCP == 2) // Volviendo
 	{
-	    PlayerInfo[playerid][pCantWork]++;
  		PlayerJobInfo[playerid][pWorkingHours]++;
 		DeliJob_Payment(playerid, vehicleid);
 		RemovePlayerFromVehicle(playerid);
@@ -211,7 +212,6 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 	    jobVehicle[playerid] = 0;
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
 		PlayerActionMessage(playerid, 15.0, "estaciona la moto en su lugar.");
-		UpdatePlayerJobLastWorked(playerid);
         DeliJob_CheckPromotePlayer(playerid);
 		Cronometro_Borrar(playerid);
 	}
@@ -227,6 +227,7 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 	}
 	else if(actualCP == 4) // Se le acabó el tiempo inicial y tiene que devolver la moto a la central en el tiempo secundario con paga a medias
 	{
+	    PlayerJobInfo[playerid][pWorkingHours]++;
 		jobDuty[playerid] = false;
 		SetEngine(jobVehicle[playerid], 0);
 		SetVehicleToRespawn(jobVehicle[playerid]);
@@ -243,8 +244,6 @@ DeliJob_PlayerEnterCheckpoint(playerid)
 forward DeliJob_TravelTimeLimit(playerid);
 public DeliJob_TravelTimeLimit(playerid)
 {
-    PlayerInfo[playerid][pCantWork]++;
-	UpdatePlayerJobLastWorked(playerid);
 	Job_GiveReputation(playerid, -6);
 	
 	// Le damos 1 minuto para que vuelva a la central y deje la moto
@@ -305,7 +304,7 @@ DeliJob_Payment(playerid, vehicleid)
 	    Job_GiveReputation(playerid, 1);
 
 	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 10; // Extra por antiguedad
-	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 20; // Extra por cargo
+	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
 
 	paycheck = GetJobBaseSalary(JOB_DELI) + seniorityBonus + chargeBonus - injuriesCost;
 	PlayerInfo[playerid][pPayCheck] += paycheck;
@@ -317,12 +316,12 @@ DeliJob_Payment(playerid, vehicleid)
 
 DeliJob_CheckPromotePlayer(playerid)
 {
-	if(140 * PlayerJobInfo[playerid][pCharge] >= PlayerJobInfo[playerid][pWorkingHours] && PlayerJobInfo[playerid][pReputation] >= 0 && PlayerJobInfo[playerid][pCharge] < 5) // Minimo de X horas trabajadas (proporcional al siguiente puesto) y de una imágen laboral neutral.
+	if(400 * PlayerJobInfo[playerid][pCharge] <= PlayerJobInfo[playerid][pWorkingHours] && PlayerJobInfo[playerid][pReputation] >= 0 && PlayerJobInfo[playerid][pCharge] < 5) // Minimo de X horas trabajadas (proporcional al siguiente puesto) y de una imágen laboral neutral.
 	{
-	    if(PlayerJobInfo[playerid][pWorkingHours] + PlayerJobInfo[playerid][pReputation] / 10 >= 180 * PlayerJobInfo[playerid][pCharge]) // Para ascender hay que llegar a una cantidad de puntos. Nuestro puntaje se suma entre la reputacion y la antiguedad.
+	    if(PlayerJobInfo[playerid][pWorkingHours] + PlayerJobInfo[playerid][pReputation] / 5 >= 500 * PlayerJobInfo[playerid][pCharge]) // Para ascender hay que llegar a una cantidad de puntos. Nuestro puntaje se suma entre la reputacion y la antiguedad.
 	    {
 	        PlayerJobInfo[playerid][pCharge]++;
-	        SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has sido promovido a %s, lo que te garantiza una mejora en tu sueldo. ¡Buen trabajo! Sigue así.", GetJobChargeName(JOB_TRAN, PlayerJobInfo[playerid][pCharge]));
+	        SendFMessage(playerid, COLOR_WHITE, "¡Enhorabuena! has sido promovido a %s, lo que te garantiza una mejora en tu sueldo. ¡Buen trabajo! Sigue así.", GetJobChargeName(JOB_DELI, PlayerJobInfo[playerid][pCharge]));
 		}
 	}
 }
