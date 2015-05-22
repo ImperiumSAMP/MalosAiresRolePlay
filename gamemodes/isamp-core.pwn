@@ -81,7 +81,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-lifts.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.0b"
+#define GAMEMODE				"MA:RP v1.1.0c"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
