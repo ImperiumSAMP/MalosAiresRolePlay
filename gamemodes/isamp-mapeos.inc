@@ -8537,18 +8537,18 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(18762, 973.16467, -1130.34827, 30.29900,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	//Pisos y techos
-	Textura = CreateDynamicObject(19380, 978.87250, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 989.36987, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 989.36987, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 987.34009, -1115.47510, 26.20400,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 978.87250, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(18981, 984.70538, -1119.10376, 22.32720,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 978.87250, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 989.36987, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 989.36987, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 987.34009, -1115.47510, 26.20400,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 978.87250, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(18981, 984.70538, -1119.10376, 22.32720,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
 	//Vidrios
 	CreateDynamicObject(3858, 984.64172, -1130.66467, 25.71500,   0.00000, 0.00000, -134.16010);
 	CreateDynamicObject(3859, 972.67029, -1113.04810, 25.54560,   0.00000, 0.00000, -162.95999);
@@ -8752,16 +8752,16 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(1251, 542.01862, -1294.32544, 19.82030,   0.00000, 0.00000, 89.94000);
 	SetDynamicObjectMaterial(Textura, 0, 2774, "airp_prop", "CJ_GALVANISED", -1);
 	// Piso
-	Textura = CreateDynamicObject(19379, 561.18457, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 550.68341, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 540.18329, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 529.68732, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 523.39539, -1299.14465, 16.15410,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 561.18457, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 550.68341, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 540.18329, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 529.68732, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 523.39539, -1299.14465, 16.15410,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
 	// Cuadros
 	Textura = CreateDynamicObject(19172, 557.40881, -1303.72681, 19.68690,   0.00000, 0.00000, 180.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10249, "ottos2_sfw", "ottos_pics_sfe", -1);
