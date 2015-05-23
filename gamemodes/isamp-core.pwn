@@ -103,13 +103,13 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BANK_I              1
 #define POS_BANK_W              1000
 
-#define POS_POLICE_ARREST_X 	196.4749
-#define POS_POLICE_ARREST_Y     168.1084
-#define POS_POLICE_ARREST_Z     1002.9252
+#define POS_POLICE_ARREST_X		196.4749
+#define POS_POLICE_ARREST_Y		168.1084
+#define POS_POLICE_ARREST_Z		1002.9252
 
-#define POS_POLICE_ARREST2_X 	2551.4516
-#define POS_POLICE_ARREST2_Y    -1303.5604
-#define POS_POLICE_ARREST2_Z    1046
+#define POS_POLICE_ARREST2_X	2008.5144
+#define POS_POLICE_ARREST2_Y	1995.3251
+#define POS_POLICE_ARREST2_Z	1992.4028
 
 #define POS_BM1_X               2659.6992
 #define POS_BM1_Y               -2056.4814
@@ -391,6 +391,7 @@ new
 	P_LICENSE_CENTER,
 	P_HOSP_DUTY,
 	P_POLICE_ARREST,
+	P_POLICE_ARREST2,
 	P_POLICE_DUTY,
 	P_SIDE_DUTY,
 	P_JOB_CENTER,
@@ -4399,6 +4400,9 @@ stock LoadPickups() {
 	/* Armarios de la Policía Metropolitana */
 	P_POLICE_DUTY = CreateDynamicPickup(1242, 1, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z, -1);
 	P_POLICE_ARREST = CreateDynamicPickup(1239, 1, POS_POLICE_ARREST_X, POS_POLICE_ARREST_Y, POS_POLICE_ARREST_Z, -1);
+	
+	/* Cárcel de la Policía Metropolitana */
+	P_POLICE_ARREST2 = CreateDynamicPickup(1239, 1, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z, -1);
 
 	/* Armarios de la S.I.D.E */
 	P_SIDE_DUTY = CreateDynamicPickup(1242, 1, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z, -1);
@@ -4486,6 +4490,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		return 1;
 
 	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {
+		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_POLICE_ARREST2 && PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
 		return 1;
 
@@ -9933,7 +9941,7 @@ CMD:apuerta(playerid,params[]) {
 				PMJail3[0] = 0;
 				MoveObject(PMJail3[1], 188.70599, 177.02150, 1003.27448, 1.00, 0.00, 0.00, 0.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 109.81641, 130.01992, 2336.44946)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 4.0, 109.81641, 130.01992, 2336.44946)) {
             // PM Cárcel Shisu 1 | Sala de visitas
 			if(PMBigJail1[0] == 0) {
 				PMBigJail1[0] = 1;
@@ -9960,7 +9968,7 @@ CMD:apuerta(playerid,params[]) {
 				PMBigJail3[0] = 0;
 				MoveObject(PMBigJail3[1], 124.09375, 121.88383, 2335.10156, 1.00, 0.00, 0.00, 270.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1970.36325, 1977.47827, 1994.01514)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1970.36325, 1977.47827, 1994.01514)) {
             // PM Cárcel Shisu 4 | Sector Cárcel
 			if(PMBigJail4[0] == 0) {
 				PMBigJail4[0] = 1;
@@ -9969,7 +9977,7 @@ CMD:apuerta(playerid,params[]) {
 				PMBigJail4[0] = 0;
 				MoveObject(PMBigJail4[1], 1970.36325, 1977.47827, 1994.01514, 1.00, 0.00, 0.00, 91.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 1973.50720, 2000.65385, 1992.64893)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1973.50720, 2000.65385, 1992.64893)) {
             // PM Cárcel Shisu 5 | Sector Cárcel - Puerta doble 1
 			if(PMBigJail5[0] == 0) {
 				PMBigJail5[0] = 1;
@@ -9982,7 +9990,7 @@ CMD:apuerta(playerid,params[]) {
 				MoveObject(PMBigJail5[1], 1973.50720, 2000.65385, 1992.64893, 1.00, 0.00, 0.00, -90.00);
 				MoveObject(PMBigJail6[1], 1973.50720, 1998.90545, 1992.64893, 1.00, 0.00, 0.00, -90.00);
 			}
-		} else if(IsPlayerInRangeOfPoint(playerid, 2.0, 2010.00537, 1992.62985, 1992.64893)) {
+		} else if(IsPlayerInRangeOfPoint(playerid, 5.0, 2010.00537, 1992.62985, 1992.64893)) {
             // PM Cárcel Shisu 6 | Sector Cárcel - Puerta doble 2
 			if(PMBigJail7[0] == 0) {
 				PMBigJail7[0] = 1;
