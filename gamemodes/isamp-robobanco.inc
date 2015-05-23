@@ -129,9 +129,9 @@ stock UpdateBankRobberyCooldown()
 		bankRobberyCooldown--;
 		if(bankRobberyCooldown == ((BANK_ROBBERY_COOLDOWN - 1) * 60 * 60)) // A la hora del robo, se crean devuelta las puertas.
 		{
-			if(!IsValidDynamicObject(BANK_ACCESS_DOOR))
+			if(!BANK_ACCESS_DOOR)
 				BANK_ACCESS_DOOR = CreateDynamicObject(1495, 1488.47302, -1151.01318, 1014.42529,   0.00000, 0.00000, 0.00000);
-            if(!IsValidDynamicObject(BANK_SAFE_DOOR))
+            if(!BANK_SAFE_DOOR)
 				BANK_SAFE_DOOR = CreateDynamicObject(2634, 1485.59802, -1128.59485, 1003.51611,   0.00000, 0.00000, 180.00000);
 		}
 	}
@@ -599,6 +599,7 @@ public DetonarPuerta(playerid)
 	        RobberyGroup[RobberyStageProgress] = 0;
 	        PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y destruye la puerta principal, abriendo un hueco");
 			DestroyDynamicObject(BANK_ACCESS_DOOR);
+			BANK_ACCESS_DOOR = 0;
 		} else
 			PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y daña la puerta principal");
 	}
@@ -640,6 +641,7 @@ public DetonarBoveda(playerid)
 		    RobberyGroup[RobberyStageProgress] = 0;
 			PlayerDoMessage(playerid, 15.0, "La carga de C4 explota y la bóveda cede, pudiendose apreciar una gran cantidad de dinero dentro");
 			DestroyDynamicObject(BANK_SAFE_DOOR);
+			BANK_SAFE_DOOR = 0;
 		} else
 		    PlayerDoMessage(playerid, 15.0, "La carga de C4 explota fuertemente y daña la parte delantera de la bóveda");
 	}
