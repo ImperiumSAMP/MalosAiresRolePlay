@@ -13697,7 +13697,7 @@ CMD:liberar(playerid, params[])
         return 1;
     if(PlayerInfo[playerid][pRank] > 2)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
-	if(PlayerInfo[targetID][pJailed] != 1 || PlayerInfo[targetID][pJailed] != 3)
+	if(PlayerInfo[targetID][pJailed] != 1 && PlayerInfo[targetID][pJailed] != 3)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene ninguna condena.");
     
 	PlayerInfo[targetID][pJailed] = 0;
