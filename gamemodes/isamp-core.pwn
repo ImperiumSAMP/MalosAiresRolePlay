@@ -10183,6 +10183,24 @@ CMD:apuerta(playerid,params[]) {
 				PMBigJail28[0] = 0;
 				MoveObject(PMBigJail28[1], 2002.76224, 1992.02344, 1994.01514, 1.00, 0.00, 0.00, 90.00);
 			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1759.97607, -1561.59741, 11.19786)) {
+            // PM Cárcel Shisu Exterior 1
+			if(PMBigJail29[0] == 0) {
+				PMBigJail29[0] = 1;
+			 	MoveObject(PMBigJail29[1], 1758.3961, -1561.5974, 11.1979, 1.00, 0.00, 0.00, 90.00);
+			} else {
+				PMBigJail29[0] = 0;
+				MoveObject(PMBigJail29[1], 1759.97607, -1561.59741, 11.19786, 1.00, 0.00, 0.00, 90.00);
+			}
+		} else if(IsPlayerInRangeOfPoint(playerid, 5.0, 1781.08728, -1537.96899, 11.49700)) {
+            // PM Cárcel Shisu Exterior 2
+			if(PMBigJail30[0] == 0) {
+				PMBigJail30[0] = 1;
+			 	MoveObject(PMBigJail30[1], 1781.2738, -1539.5226, 11.4970, 1.00, 0.00, 0.00, 7.00);
+			} else {
+				PMBigJail30[0] = 0;
+				MoveObject(PMBigJail30[1], 1781.08728, -1537.96899, 11.49700, 1.00, 0.00, 0.00, 7.00);
+			}
 		}
 	}
 }

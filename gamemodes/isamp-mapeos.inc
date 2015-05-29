@@ -58,7 +58,9 @@ new
     PMBigJail25[2],
     PMBigJail26[2],
     PMBigJail27[2],
-    PMBigJail28[2];
+    PMBigJail28[2],
+    PMBigJail29[2],
+    PMBigJail30[2];
 
 new Lift1Obj1, Lift1Obj2, Lift1Obj3, Lift1Obj4,
     Lift2Obj1, Lift2Obj2, Lift2Obj3, Lift2Obj4;
@@ -7117,6 +7119,9 @@ stock LoadMap() {
 	PMBigJail26[1] = CreateObject(2930, 1999.14054, 1992.02344, 1998.04712,   0.00000, 0.00000, 90.00000); //
 	PMBigJail27[1] = CreateObject(2930, 1999.19522, 2008.06934, 1998.04712,   0.00000, 0.00000, 90.00000); //
 	PMBigJail28[1] = CreateObject(2930, 2002.76224, 1992.02344, 1994.01514,   0.00000, 0.00000, 90.00000); //
+	/* Exterior */
+	PMBigJail29[1] = CreateObject(2930, 1759.97607, -1561.59741, 11.19786,   0.00000, 0.00000, 90.00000); //
+	PMBigJail30[1] = CreateObject(2930, 1781.08728, -1537.96899, 11.49700,   0.00000, 0.00000, 7.00000); //
 
 	/* Cárcel */
 	CreateObject(14408, 2000.04895, 1999.99683, 2000.74658,   0.00000, 0.00000, 0.00000); // El piso como CreateObject
