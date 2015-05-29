@@ -20,6 +20,7 @@ new
 	*/
 	FORZGate,
 	PMGate,
+	PMPrisonGate,
 	PMBarrier,
 	PMHallDoor[3],
 	PMWindow[2],
@@ -7122,6 +7123,7 @@ stock LoadMap() {
 	/* Exterior */
 	PMBigJail29[1] = CreateObject(2930, 1759.97607, -1561.59741, 11.19786,   0.00000, 0.00000, 90.00000); //
 	PMBigJail30[1] = CreateObject(2930, 1781.08728, -1537.96899, 11.49700,   0.00000, 0.00000, 7.00000); //
+	PMPrisonGate = CreateObject(989, 1754.26965, -1582.74438, 13.27080,   0.00000, 0.00000, -86.00000);
 
 	/* Cárcel */
 	CreateObject(14408, 2000.04895, 1999.99683, 2000.74658,   0.00000, 0.00000, 0.00000); // El piso como CreateObject
