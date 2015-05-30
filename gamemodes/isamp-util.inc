@@ -105,7 +105,7 @@
 
 //SKINS
 #define SKINS_M_1    129
-#define SKINS_M_2    66
+#define SKINS_M_2    69
 #define SKINS_F_1    55
 #define SKINS_F_2    25
 

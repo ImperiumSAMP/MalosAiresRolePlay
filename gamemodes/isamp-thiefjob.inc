@@ -27,7 +27,7 @@ new policeCallTime[MAX_PLAYERS],
 // Sistema de mascaras
 new bool:usingMask[MAX_PLAYERS];
 
-stock resetThiefVariables(playerid)
+stock ResetThiefVariables(playerid)
 {
 	ThiefJobInfo[playerid][pFelonExp] = 0;
 	ThiefJobInfo[playerid][pFelonLevel] = 0;
@@ -48,82 +48,121 @@ stock resetThiefVariables(playerid)
 	policeCallTime[playerid] = 0;
 }
 
-stock loadThiefJobData(playerid,MysqlID){
-	new		
-		query[256];
+LoadThiefJobData(playerid)
+{
+	new	query[128];
 
-	#if defined _isamp_debug
-		printf("\nLoading thiefJobData for player id: %d sqlid: %d\n",playerid,MysqlID);
-	#endif
-    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE accountid=%d", MysqlID);
+    format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE accountid = %d", PlayerInfo[playerid][pID]);
 	mysql_function_query(dbHandle, query, true, "OnThiefJobDataLoad", "i", playerid);
 	return 1;
 }
 
 forward OnThiefJobDataLoad(playerid);
-public OnThiefJobDataLoad(playerid) {
-	new
-		rows,
+public OnThiefJobDataLoad(playerid)
+{
+	new rows,
 		fields,
 		result[32];
 	
 	cache_get_data(rows, fields);
+	
 	if(rows)
 	{	
-		cache_get_field_content(0, "pFelonExp", result); 		ThiefJobInfo[playerid][pFelonExp] 		= strval(result);
-		cache_get_field_content(0, "pFelonLevel", result); 		ThiefJobInfo[playerid][pFelonLevel] 		= strval(result);
-		cache_get_field_content(0, "pRobPersonLimit", result);	ThiefJobInfo[playerid][pRobPersonLimit] 	= strval(result);
-		cache_get_field_content(0, "pRobLastVictimPID", result);ThiefJobInfo[playerid][pRobLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftLastVictimPID", result);ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftPersonLimit", result);ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
-		cache_get_field_content(0, "pRobHouseLimit", result); 	ThiefJobInfo[playerid][pRobHouseLimit] 	= strval(result);
-		cache_get_field_content(0, "pRob2HouseLimit", result); 	ThiefJobInfo[playerid][pRob2HouseLimit] 	= strval(result);
-		cache_get_field_content(0, "pRob247Limit", result); 	ThiefJobInfo[playerid][pRob247Limit] 		= strval(result);
-		cache_get_field_content(0, "pTheft247Limit", result); 	ThiefJobInfo[playerid][pTheft247Limit] 	= strval(result);
-		cache_get_field_content(0, "pForceDoorLimit", result);	ThiefJobInfo[playerid][pForceDoorLimit] 	= strval(result);
-		cache_get_field_content(0, "pForceEngineLimit", result);ThiefJobInfo[playerid][pForceEngineLimit] 	= strval(result);
-		cache_get_field_content(0, "pDesarmCarLimit", result);	ThiefJobInfo[playerid][pDesarmCarLimit] 	= strval(result);
+		cache_get_field_content(0, "pFelonExp", result); 			ThiefJobInfo[playerid][pFelonExp] = strval(result);
+		cache_get_field_content(0, "pFelonLevel", result); 			ThiefJobInfo[playerid][pFelonLevel] = strval(result);
+		cache_get_field_content(0, "pRobPersonLimit", result);		ThiefJobInfo[playerid][pRobPersonLimit] = strval(result);
+		cache_get_field_content(0, "pRobLastVictimPID", result);	ThiefJobInfo[playerid][pRobLastVictimPID] = strval(result);
+		cache_get_field_content(0, "pTheftLastVictimPID", result);	ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
+		cache_get_field_content(0, "pTheftPersonLimit", result);	ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
+		cache_get_field_content(0, "pRobHouseLimit", result); 		ThiefJobInfo[playerid][pRobHouseLimit] = strval(result);
+		cache_get_field_content(0, "pRob2HouseLimit", result); 		ThiefJobInfo[playerid][pRob2HouseLimit] = strval(result);
+		cache_get_field_content(0, "pRob247Limit", result); 		ThiefJobInfo[playerid][pRob247Limit] = strval(result);
+		cache_get_field_content(0, "pTheft247Limit", result); 		ThiefJobInfo[playerid][pTheft247Limit] = strval(result);
+		cache_get_field_content(0, "pForceDoorLimit", result);		ThiefJobInfo[playerid][pForceDoorLimit] = strval(result);
+		cache_get_field_content(0, "pForceEngineLimit", result);	ThiefJobInfo[playerid][pForceEngineLimit] = strval(result);
+		cache_get_field_content(0, "pDesarmCarLimit", result);		ThiefJobInfo[playerid][pDesarmCarLimit] = strval(result);
 	}
-}
-
-stock createThiefJob(playerid)
-{
-	new query[128];
-	
-	if(ThiefJobInfo[playerid][pFelonLevel] == 0) // Si nunca tuvo el job, le seteamos el primer nivel y creamos el registro. Si ya alguna vez lo tuvo (!= 0), no seteamos nada porque ya lo pre-cargó cuando se conectó.
+	else
 	{
-		ThiefJobInfo[playerid][pFelonLevel] = 1;
-		format(query,sizeof(query),"INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", PlayerInfo[playerid][pID]);
-		#if defined _isamp_debug
-		printf("\nCreating thiefJob for player sqlid=%d", PlayerInfo[playerid][pID]);
-		printf("\nQuery is: %s",query);
-		#endif
-		mysql_function_query(dbHandle, query, false, "", "");
+	    SendFMessage(playerid, COLOR_YELLOW2, "[ERROR]: Error al cargar la información del empleo ID %d desde la base de datos. Reportar a un administrador.", PlayerInfo[playerid][pJob]);
+        PlayerInfo[playerid][pJob] = 0;
 	}
+	return 1;
 }
 
-forward saveThiefJob(playerid);
-public saveThiefJob(playerid)
+SaveThiefJobData(playerid)
 {
 	new query[512];
-	
-	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d,pRob2HouseLimit=%d,pForceDoorLimit=%d,pForceEngineLimit=%d,pDesarmCarLimit=%d WHERE `accountid`=%d",
-            ThiefJobInfo[playerid][pFelonExp],
-			ThiefJobInfo[playerid][pFelonLevel],
-			ThiefJobInfo[playerid][pRobPersonLimit],
-			ThiefJobInfo[playerid][pRobLastVictimPID],
-			ThiefJobInfo[playerid][pTheftLastVictimPID],
-			ThiefJobInfo[playerid][pTheftPersonLimit],
-			ThiefJobInfo[playerid][pRob247Limit],
-			ThiefJobInfo[playerid][pTheft247Limit],
-			ThiefJobInfo[playerid][pRobHouseLimit],
-			ThiefJobInfo[playerid][pRob2HouseLimit],
-			ThiefJobInfo[playerid][pForceDoorLimit],
-			ThiefJobInfo[playerid][pForceEngineLimit],
-			ThiefJobInfo[playerid][pDesarmCarLimit],
-			getPlayerMysqlId(playerid));
 
+	format(query,sizeof(query), "UPDATE thief_job set pFelonExp=%d,pFelonLevel=%d,pRobPersonLimit=%d,pRobLastVictimPID=%d,pTheftLastVictimPID=%d,pTheftPersonLimit=%d,pRob247Limit=%d,pTheft247Limit=%d,pRobHouseLimit=%d,pRob2HouseLimit=%d,pForceDoorLimit=%d,pForceEngineLimit=%d,pDesarmCarLimit=%d WHERE `accountid`=%d",
+ 		ThiefJobInfo[playerid][pFelonExp],
+		ThiefJobInfo[playerid][pFelonLevel],
+		ThiefJobInfo[playerid][pRobPersonLimit],
+		ThiefJobInfo[playerid][pRobLastVictimPID],
+		ThiefJobInfo[playerid][pTheftLastVictimPID],
+		ThiefJobInfo[playerid][pTheftPersonLimit],
+		ThiefJobInfo[playerid][pRob247Limit],
+		ThiefJobInfo[playerid][pTheft247Limit],
+		ThiefJobInfo[playerid][pRobHouseLimit],
+		ThiefJobInfo[playerid][pRob2HouseLimit],
+		ThiefJobInfo[playerid][pForceDoorLimit],
+		ThiefJobInfo[playerid][pForceEngineLimit],
+		ThiefJobInfo[playerid][pDesarmCarLimit],
+		getPlayerMysqlId(playerid)
+	);
+	
 	mysql_function_query(dbHandle, query, false, "", "");
+}
+
+SetThiefJobForPlayer(playerid)
+{
+	new query[128];
+
+	format(query, sizeof(query), "SELECT * FROM `thief_job` WHERE accountid = %d", PlayerInfo[playerid][pID]);
+	mysql_function_query(dbHandle, query, true, "OnPlayerThiefJobCheck", "i", playerid);
+}
+
+forward OnPlayerThiefJobCheck(playerid);
+public OnPlayerThiefJobCheck(playerid)
+{
+	new rows,
+		fields,
+		result[32];
+		
+	cache_get_data(rows, fields);
+	
+	if(rows) // Alguna vez lo tuvo, por ende encontró un registro en DB.
+	{
+		cache_get_field_content(0, "pFelonExp", result); 			ThiefJobInfo[playerid][pFelonExp] = strval(result);
+		cache_get_field_content(0, "pFelonLevel", result); 			ThiefJobInfo[playerid][pFelonLevel] = strval(result);
+		cache_get_field_content(0, "pRobPersonLimit", result);		ThiefJobInfo[playerid][pRobPersonLimit] = strval(result);
+		cache_get_field_content(0, "pRobLastVictimPID", result);	ThiefJobInfo[playerid][pRobLastVictimPID] = strval(result);
+		cache_get_field_content(0, "pTheftLastVictimPID", result);	ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
+		cache_get_field_content(0, "pTheftPersonLimit", result);	ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
+		cache_get_field_content(0, "pRobHouseLimit", result); 		ThiefJobInfo[playerid][pRobHouseLimit] = strval(result);
+		cache_get_field_content(0, "pRob2HouseLimit", result); 		ThiefJobInfo[playerid][pRob2HouseLimit] = strval(result);
+		cache_get_field_content(0, "pRob247Limit", result); 		ThiefJobInfo[playerid][pRob247Limit] = strval(result);
+		cache_get_field_content(0, "pTheft247Limit", result); 		ThiefJobInfo[playerid][pTheft247Limit] = strval(result);
+		cache_get_field_content(0, "pForceDoorLimit", result);		ThiefJobInfo[playerid][pForceDoorLimit] = strval(result);
+		cache_get_field_content(0, "pForceEngineLimit", result);	ThiefJobInfo[playerid][pForceEngineLimit] = strval(result);
+		cache_get_field_content(0, "pDesarmCarLimit", result);		ThiefJobInfo[playerid][pDesarmCarLimit] = strval(result);
+
+	}
+	else // Primera vez que lo tiene
+	{
+	    new query[128];
+	    
+		ThiefJobInfo[playerid][pFelonLevel] = 1;
+		
+		format(query, sizeof(query), "INSERT INTO `thief_job` (`accountid`) VALUES ('%d')", PlayerInfo[playerid][pID]);
+		mysql_function_query(dbHandle, query, false, "", "");
+	}
+
+	PlayerInfo[playerid][pJob] = JOB_FELON;
+	PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
+	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+	SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /delincuenteayuda y en /ayuda.", JobInfo[JOB_FELON][jName]);
+	SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar otro empleo.", PlayerInfo[playerid][pJobTime]);
 	return 1;
 }
 
@@ -332,7 +371,7 @@ stock GetJobExpNeeded(playerid, job)
 	return 0;
 }
 
-stock updateThiefCounters(playerid)
+stock UpdateThiefCounters(playerid)
 {
 	if(ThiefJobInfo[playerid][pRobPersonLimit] > 0)
 		ThiefJobInfo[playerid][pRobPersonLimit]--;
@@ -724,20 +763,19 @@ CMD:hurtar(playerid, params[])
 
 CMD:verexp(playerid, params[])
 {
-	if(ThiefJobInfo[playerid][pFelonLevel] > 0)
-	{
-	    SendClientMessage(playerid, COLOR_WHITE, "Experiencia:");
-		SendFMessage(playerid, COLOR_WHITE, "* Delincuente - nivel: %d exp: %d/%d", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp], GetJobExpNeeded(playerid, JOB_FELON));
-	}
+	if(PlayerInfo[playerid][pJob] == JOB_FELON)
+		SendFMessage(playerid, COLOR_WHITE, "[*Empleo de delincuente*] Nivel: %d Exp: %d/%d", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp], GetJobExpNeeded(playerid, JOB_FELON));
 	return 1;
 }
 
-CMD:delincuenteayuda(playerid, params[]) {
-	if(PlayerInfo[playerid][pJob] != JOB_FELON)
-	    return 1;
-	SendClientMessage(playerid, COLOR_WHITE, "[Ladron]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp");
-	SendClientMessage(playerid, COLOR_WHITE, "[Ladron de bancos]: /grupoayuda");
-    SendClientMessage(playerid, COLOR_WHITE, "[Ladron de vehículos]: /barreta /puente /desarmar");
-	SendClientMessage(playerid, COLOR_WHITE, "Info: al robar con un comando de tu nivel obtendrás experiencia para subir de nivel y desbloquear nuevos comandos.");
+CMD:delincuenteayuda(playerid, params[])
+{
+	if(PlayerInfo[playerid][pJob] == JOB_FELON)
+	{
+		SendClientMessage(playerid, COLOR_WHITE, "[Ladron]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp");
+		SendClientMessage(playerid, COLOR_WHITE, "[Ladron de bancos]: /grupoayuda");
+	    SendClientMessage(playerid, COLOR_WHITE, "[Ladron de vehículos]: /barreta /puente /desarmar");
+		SendClientMessage(playerid, COLOR_WHITE, "Info: al robar con un comando de tu nivel obtendrás experiencia para subir de nivel y desbloquear nuevos comandos.");
+	}
 	return 1;
 }

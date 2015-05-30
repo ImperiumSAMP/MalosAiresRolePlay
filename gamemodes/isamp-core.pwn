@@ -66,7 +66,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
 #include "marp-concesionaria.inc"     	//Concesionarias
-#include "marp-playerjob.inc"
 #include "marp-garbjob.inc"
 #include "marp-tranjob.inc"
 #include "marp-farmjob.inc"
@@ -81,7 +80,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-lifts.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.0c"
+#define GAMEMODE				"MA:RP v1.1.1"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -1004,8 +1003,6 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pFightStyle] = 0;
 	PlayerInfo[playerid][pMuteB] = 0;
 
-	resetThiefVariables(playerid);
-
 	PlayerInfo[playerid][pID] = 0;
 	PlayerInfo[playerid][pCantWork] = 0;
 	PlayerInfo[playerid][pWantedLevel] = 0;
@@ -1059,6 +1056,8 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pRentCarID] = 0;
 	PlayerInfo[playerid][pRentCarRID] = 0;
 	PlayerInfo[playerid][pRolePoints] = 0;
+	
+ 	ResetJobVariables(playerid);
 
     gHeaderTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
     gBackgroundTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
@@ -2344,14 +2343,15 @@ public OnPlayerDataLoad(playerid)
 
         gPlayerLogged[playerid] = 1;
 
-        loadThiefJobData(playerid,PlayerInfo[playerid][pID]); // Info del job de ladrón
 		loadPlayerCarKeys(playerid); // Llavero del usuario
 		LoadInvInfo(playerid); // Info de su inventario
 		LoadHandsInfo(playerid); // Info de lo que tiene en las manos
 		LoadToysInfo(playerid); // Toys
 		LoadBackInfo(playerid); // Info de espalda
 		LoadNotebookContacts(playerid); // Carga la agenda del jugador
-		LoadPlayerJobData(playerid); // Carga la info del job, si fuese legal.
+		
+		LoadPlayerJobData(playerid); // Info del job
+		
        	CreatePlayerBasicNeeds(playerid);
        	
        	if(PlayerInfo[playerid][pFaction] != 0)
@@ -2905,10 +2905,7 @@ public SaveAccount(playerid)
 			    
 		mysql_function_query(dbHandle, query, false, "", "");
 
-		if(ThiefJobInfo[playerid][pFelonLevel] >= 1) // Si fue o es delincuente (si tiene una tabla asociada)
-		    saveThiefJob(playerid);
-
-		SavePlayerJobData(playerid);
+		SavePlayerJobData(playerid); // Info del job
 	}
 	return 1;
 }
@@ -3680,7 +3677,7 @@ public globalUpdate()
 					PayDay(playerid);
 				}
 				
-				updateThiefCounters(playerid);
+				UpdateThiefCounters(playerid);
 				
 				if(PlayerInfo[playerid][pMuteB] > 0)
 				    PlayerInfo[playerid][pMuteB]--;
@@ -6387,9 +6384,9 @@ SetPlayerFaction(targetid, factionid, rank)
 		if(FactionInfo[factionid][fAllowJob] == 0)
 		{
 			PlayerInfo[targetid][pJobAllowed] = 0;
-			if(GetJobType(PlayerInfo[targetid][pJob]) == JOB_TYPE_LEGAL)
-			    PlayerJobInfo[targetid][pState] = JOB_STATE_RESIGNED;
-			PlayerInfo[targetid][pJob] = 0;
+			SavePlayerJobData(targetid, 1); // Guardamos el viejo
+			ResetJobVariables(targetid); // Reseteamos todo a cero
+			SetPlayerJob(targetid, 0); // Seteamos job nulo
 		}
 			
 		if(FactionInfo[factionid][fType] == FAC_TYPE_GANG)
