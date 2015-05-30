@@ -38,11 +38,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-houses.inc" 			//Sistema de casas
 #include "isamp-buildings.inc"          //Sistema de edificios
 #include "isamp-factions.inc" 			//Sistema de facciones
-#include "isamp-jobs.inc" 				//Definiciones y funciones para los JOBS
+#include "marp-jobs.inc" 				//Definiciones y funciones para los JOBS
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
-#include "isamp-thiefjob.inc" 			//Sistema del job de ladron
+#include "marp-thiefjob.inc"
 #include "isamp-tazer.inc" 				//Sistema del tazer
 #include "isamp-animations.inc" 		//Sistema de animaciones
 #include "isamp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
@@ -65,7 +65,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
-#include "marp-concesionaria.inc"     	//Concesionarias
+#include "marp-concesionaria.inc"
 #include "marp-garbjob.inc"
 #include "marp-tranjob.inc"
 #include "marp-farmjob.inc"

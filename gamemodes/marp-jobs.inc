@@ -1,7 +1,7 @@
-#if defined _isamp_jobs_included
+#if defined _marp_jobs_included
 	#endinput
 #endif
-#define _isamp_jobs_included
+#define _marp_jobs_included
 
 //====[EMPLEOS]=================================================================
 
@@ -287,20 +287,6 @@ CMD:trabajar(playerid,params[])
 
 //==============================================================================
 
-stock GetDateString()
-{
-	new year, month, day, hour, minute, second, str[64];
-
-	getdate(year, month, day);
-	gettime(hour, minute, second);
-	
-	format(str, sizeof(str), "%02d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
-	
-	return str;
-}
-
-//==============================================================================
-
 CMD:terminar(playerid,params[])
 {
     if(PlayerInfo[playerid][pJob] == 0)
@@ -486,7 +472,7 @@ SetPlayerJob(playerid, job, admincmd=0)
 		new query[128];
 
 		format(query, sizeof(query), "SELECT * FROM `%s` WHERE pID = %d", JobInfo[job][jTable], PlayerInfo[playerid][pID]);
-		mysql_function_query(dbHandle, query, true, "OnPlayerJobDataCheck", "iii", playerid, job, admincmd);
+		mysql_function_query(dbHandle, query, true, "OnLegalJobDataCheck", "iii", playerid, job, admincmd);
 	}
 	else if(job == 0)
 	{
@@ -530,8 +516,8 @@ CMD:setjob(playerid, params[])
 
 //==============================================================================
 
-forward OnPlayerJobDataCheck(playerid, job, admincmd);
-public OnPlayerJobDataCheck(playerid, job, admincmd)
+forward OnLegalJobDataCheck(playerid, job, admincmd);
+public OnLegalJobDataCheck(playerid, job, admincmd)
 {
 	new rows,
 		fields,
@@ -593,11 +579,26 @@ public OnPlayerJobDataCheck(playerid, job, admincmd)
 		format(query, sizeof(query), "INSERT INTO `%s` (`pID`, `pLastWorked`) VALUES ('%d', '%s')", JobInfo[job][jTable], PlayerInfo[playerid][pID], PlayerJobInfo[playerid][pLastWorked]);
 		mysql_function_query(dbHandle, query, false, "", "");
 	}
+	return 1;
 }
 
 //==============================================================================
 
-stock UpdatePlayerJobLastWorked(playerid)
+GetDateString()
+{
+	new year, month, day, hour, minute, second, str[64];
+
+	getdate(year, month, day);
+	gettime(hour, minute, second);
+
+	format(str, sizeof(str), "%02d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+
+	return str;
+}
+
+//==============================================================================
+
+UpdatePlayerJobLastWorked(playerid)
 {
 	new str[64];
 	format(str, sizeof(str), "%s", GetDateString());
@@ -768,6 +769,7 @@ Job_GiveReputation(playerid, reputation)
 	    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Has sido despedido de tu empleo '%s' por mal desempeño en tus tareas laborales.", JobInfo[PlayerInfo[playerid][pJob]][jName]);
 		PlayerJobInfo[playerid][pState] = JOB_STATE_FIRED;
 		SavePlayerJobData(playerid);
-		PlayerInfo[playerid][pJob] = 0;
+		ResetJobVariables(playerid);
+		SetPlayerJob(playerid, 0);
 	}
 }

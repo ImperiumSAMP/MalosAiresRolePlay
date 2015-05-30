@@ -1,7 +1,7 @@
-#if defined _isamp_thiefjob_included
+#if defined _marp_thiefjob_included
 	#endinput
 #endif
-#define _isamp_thiefjob_included
+#define _marp_thiefjob_included
 
 enum tThiefJob {
 	pFelonExp,
