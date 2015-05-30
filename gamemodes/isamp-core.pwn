@@ -6278,7 +6278,7 @@ public JailTimer()
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
-				if(!IsPlayerAfk(i) && (PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] != 3))
+				if(!IsPlayerAfk(i) && (PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] == 3))
 				{
 					PlayerInfo[i][pJailTime]--;
 					format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
