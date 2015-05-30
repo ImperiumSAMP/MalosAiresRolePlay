@@ -61,7 +61,11 @@ new
     PMBigJail27[2],
     PMBigJail28[2],
     PMBigJail29[2],
-    PMBigJail30[2];
+    PMBigJail30[2],
+    PMBigJailGarajeDoors1[2],
+    PMBigJailGarajeDoors2[2],
+    PMBigJailGarajeDoors3[2],
+    PMBigJailGarajeDoors4[2];
 
 new Lift1Obj1, Lift1Obj2, Lift1Obj3, Lift1Obj4,
     Lift2Obj1, Lift2Obj2, Lift2Obj3, Lift2Obj4;
@@ -7124,6 +7128,10 @@ stock LoadMap() {
 	PMBigJail29[1] = CreateObject(2930, 1759.97607, -1561.59741, 11.19786,   0.00000, 0.00000, 90.00000); //
 	PMBigJail30[1] = CreateObject(2930, 1781.08728, -1537.96899, 11.49700,   0.00000, 0.00000, 7.00000); //
 	PMPrisonGate = CreateObject(989, 1754.26965, -1582.74438, 13.27080,   0.00000, 0.00000, -86.00000);
+	PMBigJailGarajeDoors1[1] = CreateObject(19795, 1824.38635, -1534.71680, 14.28240,   0.00000, 0.00000, -17.00000);
+	PMBigJailGarajeDoors2[1] = CreateObject(19795, 1822.48608, -1540.93701, 14.28240,   0.00000, 0.00000, -197.00000);
+	PMBigJailGarajeDoors3[1] = CreateObject(19796, 1752.00281, -1591.24292, 14.29420,   0.00000, 0.00000, 76.00000);
+	PMBigJailGarajeDoors4[1] = CreateObject(19796, 1756.89319, -1592.47815, 14.29420,   0.00000, 0.00000, 256.00000);
 
 	/* Cárcel */
 	CreateObject(14408, 2000.04895, 1999.99683, 2000.74658,   0.00000, 0.00000, 0.00000); // El piso como CreateObject
