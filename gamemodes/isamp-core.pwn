@@ -107,8 +107,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_POLICE_ARREST_Y		168.1084
 #define POS_POLICE_ARREST_Z		1002.9252
 
-#define POS_POLICE_ARREST2_X	2008.5144
-#define POS_POLICE_ARREST2_Y	1995.3251
+#define POS_POLICE_ARREST2_X	1970.1681
+#define POS_POLICE_ARREST2_Y	2005.0393
 #define POS_POLICE_ARREST2_Z	1992.4028
 
 #define POS_BM1_X               2659.6992
@@ -9113,7 +9113,7 @@ CMD:ayuda(playerid,params[])
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
-			if(PlayerInfo[playerid][pRank] == 2) {
+			if(PlayerInfo[playerid][pRank] <= 2) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Juez]:{C8C8C8} /liberar /ppreventiva");
 			} if(PlayerInfo[playerid][pRank] == 1) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno");
@@ -13781,7 +13781,7 @@ CMD:ppreventiva(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
 	if(PlayerInfo[targetID][pJailed] != 0 && (PlayerInfo[targetID][pJailed] == 1 || PlayerInfo[targetID][pJailed] == 3))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene actualmente una condena.");
-	if(PlayerToPoint(15.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
+	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el pabellón de la cárcel!");
 	if(GetDistanceBetweenPlayers(playerid, targetID) > 5)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
