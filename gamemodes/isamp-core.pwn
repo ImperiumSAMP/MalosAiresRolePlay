@@ -9893,23 +9893,23 @@ CMD:apcarcel(playerid, params[]) {
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1824.38635, -1534.71680, 14.28240)) { // Portón de la calle de Alhambra
 			if(PMBigJailGarajeDoors1[0] == 0) {
 			    PMBigJailGarajeDoors1[0] = 1;
-				MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 1.00, 0.00, 0.00, -107.00);
-            	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 1.00, 0.00, 0.00, -107.00);
+				MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 0.0004, 0.00, 0.00, -107.00);
+            	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -107.00);
 			} else {
 			    PMBigJailGarajeDoors1[0] = 0;
-			    MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 1.00, 0.00, 0.00, -17.00);
-            	MoveObject(PMBigJailGarajeDoors1[1], 1822.48608, -1540.93701, 14.28240, 1.00, 0.00, 0.00, -107.00);//
+			    MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 0.0004, 0.00, 0.00, -17.00);
+            	MoveObject(PMBigJailGarajeDoors1[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -197.00);//
 			}
-			if(IsPlayerInRangeOfPoint(playerid, 10.0, 1752.00281, -1591.24292, 14.29420)) { // Portón de la otra calle
-				if(PMBigJailGarajeDoors3[0] == 0) {
-			    	PMBigJailGarajeDoors3[0] = 1;
-					MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 1.00, 0.00, 0.00, 185.00);
-            		MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 1.00, 0.00, 0.00, 185.00);
-					} else {
-			    	PMBigJailGarajeDoors3[0] = 0;
-			    	MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 1.00, 0.00, 0.00, 76.00);
-            		MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 1.00, 0.00, 0.00, 256.00);//
-				}
+		}
+		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1752.00281, -1591.24292, 14.29420)) { // Portón de la otra calle
+			if(PMBigJailGarajeDoors3[0] == 0) {
+				PMBigJailGarajeDoors3[0] = 1;
+				MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 0.0004, 0.00, 0.00, 185.00);
+ 				MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 0.0004, 0.00, 0.00, 185.00);
+			} else {
+				PMBigJailGarajeDoors3[0] = 0;
+				MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 0.0004, 0.00, 0.00, 76.00);
+				MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 0.0004, 0.00, 0.00, 256.00);//
 			}
 		}
 	}
