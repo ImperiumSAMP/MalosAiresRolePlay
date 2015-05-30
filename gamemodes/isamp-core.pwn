@@ -13820,8 +13820,8 @@ CMD:carcelcomer(playerid, params[])
 	format(string, sizeof(string), "El cocinero llena la bandeja de %s con la comida del día y unos cubiertos de plástico.", GetPlayerNameEx(playerid));
 	PlayerDoMessage(playerid, 15.0, string);
 	PlayerActionMessage(playerid, 15.0, "toma su bandeja con ambas manos.");
-	PlayerInfo[playerid][pThirst] = 100
-	PlayerInfo[playerid][pHunger] = 100
+	PlayerInfo[playerid][pThirst] = 100;
+	PlayerInfo[playerid][pHunger] = 100;
 	return 1;
 }
 
