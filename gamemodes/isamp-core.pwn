@@ -6272,7 +6272,7 @@ public JailTimer()
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
-				if(!IsPlayerAfk(i))
+				if(!IsPlayerAfk(i) && (PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] != 3))
 				{
 					PlayerInfo[i][pJailTime]--;
 					format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
@@ -8659,7 +8659,11 @@ CMD:verjail(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no tiene ninguna condena.");
 
 	if(PlayerInfo[targetid][pJailed] == 1 || PlayerInfo[targetid][pJailed] == 3) {
-    	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+		if(PlayerInfo[targetid][pJailTime] == 9999) {
+			SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} Prisión preventiva (no tiene tiempo).");
+		} else {
+    		SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+		}
 	} else {
 	    SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[OOC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
 	}
@@ -9109,8 +9113,10 @@ CMD:ayuda(playerid,params[])
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
-			if(PlayerInfo[playerid][pRank] == 1) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno /liberar");
+			if(PlayerInfo[playerid][pRank] == 2) {
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Juez]:{C8C8C8} /liberar /ppreventiva");
+			} if(PlayerInfo[playerid][pRank] == 1) {
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno");
 			}
 
 		} else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG) {
@@ -9898,7 +9904,7 @@ CMD:apcarcel(playerid, params[]) {
 			} else {
 			    PMBigJailGarajeDoors1[0] = 0;
 			    MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 0.0004, 0.00, 0.00, -17.00);
-            	MoveObject(PMBigJailGarajeDoors1[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -197.00);//
+            	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -197.00);//
 			}
 		}
 		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1752.00281, -1591.24292, 14.29420)) { // Portón de la otra calle
@@ -13761,9 +13767,34 @@ CMD:liberar(playerid, params[])
 	SetPlayerFacingAngle(targetID, 270.0000);
 	TogglePlayerControllable(targetID, true);
 	return 1;
-}	
-		
-		
+}
+
+CMD:ppreventiva(playerid, params[])
+{
+    new targetID, str[128], reason[128];
+
+    if(sscanf(params, "us", targetID, reason))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ppreventiva [ID/Jugador] [razón (cargos que se le acusan)]");
+    if(PlayerInfo[playerid][pFaction] != FAC_GOB)
+        return 1;
+    if(PlayerInfo[playerid][pRank] > 2)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
+	if(PlayerInfo[targetID][pJailed] != 0 && (PlayerInfo[targetID][pJailed] == 1 || PlayerInfo[targetID][pJailed] == 3))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene actualmente una condena.");
+	if(PlayerToPoint(15.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el pabellón de la cárcel!");
+	if(GetDistanceBetweenPlayers(playerid, targetID) > 5)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
+
+	PlayerInfo[targetID][pJailed] = 3;
+	PlayerInfo[targetID][pJailTime] = 9999; // Un valor superior al permitido en el /arrestar, para tomarlo como referencia al momento de evitar que le reste el tiempo
+    SendFMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} fuiste ingresado en prisión preventiva por el Juez %s", GetPlayerNameEx(playerid));
+    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}INFO:{C8C8C8} La prisión preventiva no tiene un tiempo definido, tu situación depende de la decisión de un juez en un futuro.");
+ 	format(str, sizeof(str), "[PREVENTIVA] %s", reason);
+	AntecedentesLog(playerid, targetID, str);
+	return 1;
+}
+
 CMD:verpresos(playerid, params[])
 {
 	new string[128], count = 0;
