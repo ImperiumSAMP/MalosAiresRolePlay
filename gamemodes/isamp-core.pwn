@@ -393,6 +393,7 @@ new
 	P_POLICE_ARREST,
 	P_POLICE_ARREST2,
 	P_POLICE_DUTY,
+	P_JAIL_EAT,
 	P_SIDE_DUTY,
 	P_JOB_CENTER,
 	P_GUIDE[2],
@@ -4403,7 +4404,8 @@ stock LoadPickups() {
 	
 	/* Cárcel de la Policía Metropolitana */
 	P_POLICE_ARREST2 = CreateDynamicPickup(1239, 1, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z, -1);
-
+	P_JAIL_EAT = CreateDynamicPickup(1239, 1, 1997.7754, 2011.4634, 1992.4028, -1);
+	
 	/* Armarios de la S.I.D.E */
 	P_SIDE_DUTY = CreateDynamicPickup(1242, 1, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z, -1);
 
@@ -4499,6 +4501,10 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 
 	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
 		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
+		return 1;
+		
+	} else if(pickupid == P_JAIL_EAT) {
+		GameTextForPlayer(playerid, "~w~Usa /carcelcomer para recibir tu bandeja con alimentos.", 2000, 4);
 		return 1;
 
 	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
@@ -13771,14 +13777,16 @@ CMD:liberar(playerid, params[])
 
 CMD:ppreventiva(playerid, params[])
 {
-    new targetID, str[128], reason[128];
+    new targetID, str[128], string[128], reason[128];
 
-    if(sscanf(params, "us", targetID, reason))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ppreventiva [ID/Jugador] [razón (cargos que se le acusan)]");
     if(PlayerInfo[playerid][pFaction] != FAC_GOB)
         return 1;
     if(PlayerInfo[playerid][pRank] > 2)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
+    if(sscanf(params, "us", targetID, reason))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ppreventiva [ID/Jugador] [razón (cargos que se le acusan)]");
+   	if(targetID == INVALID_PLAYER_ID || targetID == playerid)
+   	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(PlayerInfo[targetID][pJailed] != 0 && (PlayerInfo[targetID][pJailed] == 1 || PlayerInfo[targetID][pJailed] == 3))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene actualmente una condena.");
 	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
@@ -13790,8 +13798,30 @@ CMD:ppreventiva(playerid, params[])
 	PlayerInfo[targetID][pJailTime] = 9999; // Un valor superior al permitido en el /arrestar, para tomarlo como referencia al momento de evitar que le reste el tiempo
     SendFMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} fuiste ingresado en prisión preventiva por el Juez %s", GetPlayerNameEx(playerid));
     SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}INFO:{C8C8C8} La prisión preventiva no tiene un tiempo definido, tu situación depende de la decisión de un juez en un futuro.");
+    SendFMessage(playerid, COLOR_LIGHTYELLOW2,"{878EE7}[INFO]{C8C8C8} Pusiste a %s en prisión preventiva. Razón: %s", GetPlayerNameEx(targetID), reason);
+	format(string, sizeof(string), "[Dpto. de policía]: %s fue puesto en prisión preventiva por el Juez %s.", GetPlayerNameEx(targetID), GetPlayerNameEx(playerid));
+	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
  	format(str, sizeof(str), "[PREVENTIVA] %s", reason);
 	AntecedentesLog(playerid, targetID, str);
+	return 1;
+}
+
+CMD:carcelcomer(playerid, params[])
+{
+	new string[128];
+	
+	if(!PlayerToPoint(5.0, playerid, 1997.7754, 2011.4634, 1992.4028))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el comedor de la cárcel!");
+	if(PlayerInfo[playerid][pJailed] != 3)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una condena en la cárcel!");
+	if(PlayerInfo[playerid][pHunger] > 20 && PlayerInfo[playerid][pThirst] > 20)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo puedes comer en los horarios asignados! (( Cuando tengas menos de 20 de hambre/sed ))");
+
+	format(string, sizeof(string), "El cocinero llena la bandeja de %s con la comida del día y unos cubiertos de plástico.", GetPlayerNameEx(playerid));
+	PlayerDoMessage(playerid, 15.0, string);
+	PlayerActionMessage(playerid, 15.0, "toma su bandeja con ambas manos.");
+	PlayerInfo[playerid][pThirst] = 100
+	PlayerInfo[playerid][pHunger] = 100
 	return 1;
 }
 
