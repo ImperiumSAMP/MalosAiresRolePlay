@@ -6275,11 +6275,14 @@ public JailTimer()
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
-				if(!IsPlayerAfk(i) && (PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] == 3))
+			    if(PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] != 3) // Si no está en prisión preventiva
 				{
-					PlayerInfo[i][pJailTime]--;
-					format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
-					GameTextForPlayer(i, string, 999, 3);
+					if(!IsPlayerAfk(i))
+					{
+						PlayerInfo[i][pJailTime]--;
+						format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
+						GameTextForPlayer(i, string, 999, 3);
+					}
 				}
 			}
 			if(PlayerInfo[i][pJailTime] == 0)
