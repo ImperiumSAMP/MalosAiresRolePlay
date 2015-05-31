@@ -117,7 +117,7 @@ public MissionEvent(playerid)
 	// Creamos el timer que llamará a la próxima misión.
 	pMissionEventTimer[playerid] = SetTimerEx("MissionEvent", 60 * 1000 * (MISSION_EVENT_TIME + random(MISSION_EVENT_EXTRATIME)), false, "i", playerid);
 
-	if(PlayerInfo[playerid][pJailed] != 0 || random(2) == 0 || pMissionEvent[playerid] != MISSION_NONE)
+	if(PlayerInfo[playerid][pJailed] != JAIL_NONE || random(2) == 0 || pMissionEvent[playerid] != MISSION_NONE)
 	    return 1;
 
 	if(factionID > 0 && FactionInfo[factionID][fType] == FAC_TYPE_ILLEGAL)

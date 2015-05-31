@@ -415,7 +415,7 @@ CMD:asaltar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
 	if(ThiefJobInfo[playerid][pFelonLevel] < 3)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para poder asaltar.");
-    if(isPlayerJailed(playerid) > 0)
+    if(PlayerInfo[playerid][pJailed] != JAIL_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo estando encarcelado.");
 	if(sscanf(params, "u", target)) {
         SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /asaltar [IDJugador/ParteDelNombre]");
@@ -705,7 +705,7 @@ CMD:hurtar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
  	if(ThiefJobInfo[playerid][pFelonLevel] < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "[BUG] Tendrías que empezar el job con nivel 1 de delincuente, repórtalo a un administrador.");
-    if(PlayerInfo[playerid][pJailed] > 0)
+    if(PlayerInfo[playerid][pJailed] != JAIL_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo estando encarcelado.");
 	if(IsPlayerInAnyVehicle(playerid) && GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_BIKE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo desde un vehículo.");

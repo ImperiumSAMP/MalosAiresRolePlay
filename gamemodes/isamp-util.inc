@@ -118,6 +118,13 @@
 #define DISABLE_DEATHBED        5
 #define DISABLE_HEALING         6
 
+// Jails
+#define JAIL_NONE           	0
+#define JAIL_IC_PMA         	1
+#define JAIL_OOC            	2
+#define JAIL_IC_PRISON     		3
+#define JAIL_IC_GOB         	4
+
 //====[TIPOS DE LOGS]===========================================================
 #define LOG_ADMIN            	1
 #define LOG_MONEY            	2

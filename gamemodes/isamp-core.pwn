@@ -1041,7 +1041,7 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pPhoneNumber] = 0;
 	PlayerInfo[playerid][pPhoneC] = 255;
 	PlayerInfo[playerid][pListNumber] = 1;
-	PlayerInfo[playerid][pJailed] = 0;
+	PlayerInfo[playerid][pJailed] = JAIL_NONE;
 	PlayerInfo[playerid][pJailTime] = 0;
 	PlayerInfo[playerid][pX] = 1481.2136;
 	PlayerInfo[playerid][pY] = -1751.6758;
@@ -1557,14 +1557,13 @@ public OnPlayerDeath(playerid, killerid, reason)
     LastDeath[playerid] = time;
     PlayerInfo[playerid][pArmour] = 0;
 
-    if(PlayerInfo[playerid][pJailed] == 1)
+    if(PlayerInfo[playerid][pJailed] == JAIL_IC_PMA)
 	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 		SetPlayerVirtualWorld(playerid, Building[2][blInsideWorld]);
  		SetPlayerInterior(playerid, 3);
     }
-    
-    if(PlayerInfo[playerid][pJailed] == 3)
+    else if(PlayerInfo[playerid][pJailed] == JAIL_IC_PRISON || PlayerInfo[playerid][pJailed] == JAIL_IC_GOB)
 	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 		SetPlayerVirtualWorld(playerid, 38000);
@@ -1578,7 +1577,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	if(IsPlayerConnected(killerid) && killerid != INVALID_PLAYER_ID)
 	{
-	    if(PlayerInfo[killerid][pJailed] == 2)
+	    if(PlayerInfo[killerid][pJailed] == JAIL_OOC)
 		{
 	        format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} tu condena ha sido aumentada en %d segundos, razón: DM.", DM_JAILTIME);
 		    SendClientMessage(killerid,COLOR_LIGHTYELLOW2, string);
@@ -1593,7 +1592,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has sido reducido y arrestado por miembros de la policía perdiendo todas las armas y drogas en el inventario.");
 				format(string, sizeof(string), "[PMA]: %s ha reducido y arrestado al criminal %s (%d minutos).", GetPlayerNameEx(killerid), GetPlayerNameEx(playerid), PlayerInfo[playerid][pJailTime] / 60);
 				SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-				PlayerInfo[playerid][pJailed] = 1;
+				PlayerInfo[playerid][pJailed] = JAIL_IC_PMA;
 				PlayerInfo[playerid][pX] = 193.5868;
 				PlayerInfo[playerid][pY] = 175.3084;
 				PlayerInfo[playerid][pZ] = 1003.1221;
@@ -1607,7 +1606,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	    }
  	}
  	
-	if(PlayerInfo[playerid][pJailed] == 0)
+	if(PlayerInfo[playerid][pJailed] == JAIL_NONE)
 		PlayerInfo[playerid][pHospitalized] = 1;
 
 	// Los policias en servicio que mueren no pierden las armas (no se las confiscan en el hospital)
@@ -1736,7 +1735,7 @@ public OnPlayerText(playerid, text[])
 	{
 	    foreach(new i : Player)
 		{
-	        if(PlayerInfo[i][pFaction] == FAC_MECH && PlayerInfo[i][pJailed] == 0 && jobDuty[i])
+	        if(PlayerInfo[i][pFaction] == FAC_MECH && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
 			{
 	            SendFMessage(i, COLOR_GREEN, "Nuevo mensaje del %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
 				SendClientMessage(i, COLOR_WHITE, "Use /aceptar mecanico para aceptar la llamada.");
@@ -1754,7 +1753,7 @@ public OnPlayerText(playerid, text[])
 	{
 	    foreach(new i : Player)
 		{
-	        if(PlayerInfo[i][pJob] == JOB_TAXI && PlayerInfo[i][pJailed] == 0 && jobDuty[i])
+	        if(PlayerInfo[i][pJob] == JOB_TAXI && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
 			{
 	            SendClientMessage(i,COLOR_GREEN,"Se ha recibido un mensaje:");
 				format(string,sizeof(string),"Voz al telefono: %s", text);
@@ -3158,7 +3157,7 @@ public PayDay(playerid)
 
 		//=============================EMPLEO===================================
 		
-		if(PlayerInfo[playerid][pCantWork] > 0 && PlayerInfo[playerid][pJailed] == 0)
+		if(PlayerInfo[playerid][pCantWork] > 0 && PlayerInfo[playerid][pJailed] == JAIL_NONE)
 		    PlayerInfo[playerid][pCantWork] = 0;
 		SetPVarInt(playerid, "pJobLimitCounter", 0);
 		
@@ -3668,7 +3667,7 @@ public globalUpdate()
 				}
 			}
 			
-			if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2) // Si no está AFK ni en Jail OOC
+			if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != JAIL_OOC) // Si no está AFK ni en Jail OOC
 			{
 				SetPVarInt(playerid, "pPayTime", GetPVarInt(playerid, "pPayTime") + 1);
 				if(GetPVarInt(playerid, "pPayTime") >= 3600)
@@ -3694,7 +3693,7 @@ public globalUpdate()
 					SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(PlayerInfo[playerid][pSpectating]));
 			}
 			
-			if(PlayerInfo[playerid][pHospitalized] == 0 && PlayerInfo[playerid][pJailed] != 2)
+			if(PlayerInfo[playerid][pHospitalized] == 0 && PlayerInfo[playerid][pJailed] != JAIL_OOC)
 			{
                 //=====Camara normal si se curó o si esta arriba de un auto=====
                 
@@ -4719,10 +4718,9 @@ public SetPlayerSpawn(playerid)
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
 
  	switch(PlayerInfo[playerid][pJailed])
-	 {
-   		case 1:
-		   {
-   		    // Jail IC.
+	{
+   		case JAIL_IC_PMA:
+  		{
    		    TogglePlayerControllable(playerid, 0);
    		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
    		    SetPlayerVirtualWorld(playerid, Building[2][blInsideWorld]);
@@ -4733,9 +4731,8 @@ public SetPlayerSpawn(playerid)
 		    SetCameraBehindPlayer(playerid);
 		    return 1;
 		}
-		case 2:
+		case JAIL_OOC:
 		{
-		    // Jail OOC.
 		    SetPlayerVirtualWorld(playerid, 0);
 		    TogglePlayerControllable(playerid, 0);
 		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
@@ -4745,9 +4742,8 @@ public SetPlayerSpawn(playerid)
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Castigo OOC]:{C8C8C8} todavía no ha finalizado tu castigo.");
 			return 1;
 		}
-		case 3:
-		   {
-   		    // Jail IC Carcel.
+		case JAIL_IC_PRISON, JAIL_IC_GOB:
+  		{
    		    TogglePlayerControllable(playerid, 0);
    		    SetTimerEx("Unfreeze", 4000, false, "i", playerid);
 			SetPlayerVirtualWorld(playerid, 38000);
@@ -6271,38 +6267,35 @@ public JailTimer()
 
 	foreach(new i : Player)
 	{
-	    if(PlayerInfo[i][pJailed] > 0)
+	    if(PlayerInfo[i][pJailed] != JAIL_NONE && PlayerInfo[i][pJailed] != JAIL_IC_GOB)
 		{
 	    	if(PlayerInfo[i][pJailTime] != 0)
 			{
-			    if(PlayerInfo[i][pJailTime] != 9999 && PlayerInfo[i][pJailed] != 3) // Si no está en prisión preventiva
+				if(!IsPlayerAfk(i))
 				{
-					if(!IsPlayerAfk(i))
-					{
-						PlayerInfo[i][pJailTime]--;
-						format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
-						GameTextForPlayer(i, string, 999, 3);
-					}
+					PlayerInfo[i][pJailTime]--;
+					format(string, sizeof(string), "~n~~n~~n~~n~~n~~n~~n~~w~Tiempo restante: ~g~%d segundos.",PlayerInfo[i][pJailTime]);
+					GameTextForPlayer(i, string, 999, 3);
 				}
 			}
 			if(PlayerInfo[i][pJailTime] == 0)
 			{
 			    switch(PlayerInfo[i][pJailed])
 				{
-			        case 1:
+			        case JAIL_IC_PMA:
 					{
-			            PlayerInfo[i][pJailed] = 0;
-						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
+			            PlayerInfo[i][pJailed] = JAIL_NONE;
+						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Detención]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, Building[2][blInsideWorld]);
 					    SetPlayerInterior(i, 3);
 						SetPlayerPos(i, 229.01, 151.30, 1003.02);
 						SetPlayerFacingAngle(i, 270.0000);
 						TogglePlayerControllable(i, true);
 		  			}
-			        case 2:
+			        case JAIL_OOC:
 					{
 			            SetPlayerVirtualWorld(i, 0);
-			            PlayerInfo[i][pJailed] = 0;
+			            PlayerInfo[i][pJailed] = JAIL_NONE;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Castigo OOC]:{C8C8C8} has finalizado tu castigo, puedes irte ahora.");
 					    SetPlayerInterior(i, 0);
 					    PlayerInfo[i][pA] = 176.6281;
@@ -6314,9 +6307,9 @@ public JailTimer()
 						SetPlayerHealthEx(i, 100.0);
 						TogglePlayerControllable(i, true);
 			        }
-			        case 3:
+			        case JAIL_IC_PRISON:
 					{
-			            PlayerInfo[i][pJailed] = 0;
+			            PlayerInfo[i][pJailed] = JAIL_NONE;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
 						SetPlayerVirtualWorld(i, 38000);
 					    SetPlayerInterior(i, 2);
@@ -8226,7 +8219,7 @@ CMD:ajail(playerid, params[])
 	SendClientMessageToAll(COLOR_ADMINCMD, string);
 	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar castigado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
 	ResetPlayerWeapons(targetID);
-	PlayerInfo[targetID][pJailed] = 2;
+	PlayerInfo[targetID][pJailed] = JAIL_OOC;
 	PlayerInfo[targetID][pJailTime] = minutes * 60;
 	SetPlayerInterior(targetID, 6);
 	SetPlayerPos(targetID, 1412.01, -2.59, 1001.47);
@@ -8661,17 +8654,27 @@ CMD:verjail(playerid, params[])
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /verjail [ID/Jugador]");
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(PlayerInfo[targetid][pJailed] == 0)
+	if(PlayerInfo[targetid][pJailed] == JAIL_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no tiene ninguna condena.");
 
-	if(PlayerInfo[targetid][pJailed] == 1 || PlayerInfo[targetid][pJailed] == 3) {
-		if(PlayerInfo[targetid][pJailTime] == 9999) {
-			SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} Prisión preventiva (no tiene tiempo).");
-		} else {
-    		SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[IC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+	switch(PlayerInfo[targetid][pJailed])
+	{
+	    case JAIL_IC_PMA:
+	    {
+	    	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DETENIDO EN COMISARIA]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
 		}
-	} else {
-	    SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[OOC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+		case JAIL_IC_PRISON:
+		{
+			SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[ENCARCELADO EN PRISION]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+		}
+		case JAIL_OOC:
+		{
+		    SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[CASTIGO OOC]:{C8C8C8} %d segundos.", PlayerInfo[targetid][pJailTime]);
+		}
+		case JAIL_IC_GOB:
+		{
+			SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[ENCARCELADO EN PRISION]:{C8C8C8} Prisión preventiva (no tiene tiempo).");
+		}
 	}
     return 1;
 }
@@ -10501,12 +10504,12 @@ CMD:arrestar(playerid, params[])
 	SendClientMessage(targetID, COLOR_LIGHTYELLOW2, "Recuerda que al estar arrestado no se reseteará el tiempo para volver a trabajar hasta el proximo PayDay en libertad.");
 	format(string, sizeof(string), "[Dpto. de policía]: %s ha arrestado al criminal %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetID));
 	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
+	
 	if(PlayerToPoint(25.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
-	{
-		PlayerInfo[targetID][pJailed] = 3;
-	} else {
-		PlayerInfo[targetID][pJailed] = 1;
-	}
+		PlayerInfo[targetID][pJailed] = JAIL_IC_PRISON;
+	else
+		PlayerInfo[targetID][pJailed] = JAIL_IC_PMA;
+		
 	ResetPlayerWantedLevelEx(targetID);
 	GiveFactionMoney(FAC_GOB, PlayerInfo[targetID][pJailTime]);
 	format(str, sizeof(str), "%s", reason);
@@ -11325,7 +11328,7 @@ public UpdatePlayerBasicNeeds()
 
     foreach(new playerid : Player)
     {
-        if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != 2 && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
+        if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != JAIL_OOC && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
 		{
 			if(PlayerInfo[playerid][pThirst] > 0)
 			{
@@ -13761,10 +13764,10 @@ CMD:liberar(playerid, params[])
         return 1;
     if(PlayerInfo[playerid][pRank] > 2)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
-	if(PlayerInfo[targetID][pJailed] != 1 && PlayerInfo[targetID][pJailed] != 3)
+	if(PlayerInfo[targetID][pJailed] != JAIL_IC_PMA && PlayerInfo[targetID][pJailed] != JAIL_IC_PRISON && PlayerInfo[targetID][pJailed] != JAIL_IC_GOB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no tiene ninguna condena.");
     
-	PlayerInfo[targetID][pJailed] = 0;
+	PlayerInfo[targetID][pJailed] = JAIL_NONE;
 	PlayerInfo[targetID][pJailTime] = 0;
     SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} por orden de un juez quedas en libertad.");
 	SetPlayerVirtualWorld(targetID, Building[2][blInsideWorld]);
@@ -13787,15 +13790,14 @@ CMD:ppreventiva(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ppreventiva [ID/Jugador] [razón (cargos que se le acusan)]");
    	if(targetID == INVALID_PLAYER_ID || targetID == playerid)
    	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
-	if(PlayerInfo[targetID][pJailed] != 0 && (PlayerInfo[targetID][pJailed] == 1 || PlayerInfo[targetID][pJailed] == 3))
+	if(PlayerInfo[targetID][pJailed] != JAIL_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene actualmente una condena.");
 	if(!PlayerToPoint(15.0, playerid, POS_POLICE_ARREST2_X, POS_POLICE_ARREST2_Y, POS_POLICE_ARREST2_Z))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el pabellón de la cárcel!");
 	if(GetDistanceBetweenPlayers(playerid, targetID) > 5)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
 
-	PlayerInfo[targetID][pJailed] = 3;
-	PlayerInfo[targetID][pJailTime] = 9999; // Un valor superior al permitido en el /arrestar, para tomarlo como referencia al momento de evitar que le reste el tiempo
+	PlayerInfo[targetID][pJailed] = JAIL_IC_GOB;
     SendFMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} fuiste ingresado en prisión preventiva por el Juez %s", GetPlayerNameEx(playerid));
     SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}INFO:{C8C8C8} La prisión preventiva no tiene un tiempo definido, tu situación depende de la decisión de un juez en un futuro.");
     SendFMessage(playerid, COLOR_LIGHTYELLOW2,"{878EE7}[INFO]{C8C8C8} Pusiste a %s en prisión preventiva. Razón: %s", GetPlayerNameEx(targetID), reason);
@@ -13812,7 +13814,7 @@ CMD:carcelcomer(playerid, params[])
 	
 	if(!PlayerToPoint(5.0, playerid, 1997.7754, 2011.4634, 1992.4028))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en el comedor de la cárcel!");
-	if(PlayerInfo[playerid][pJailed] != 3)
+	if(PlayerInfo[playerid][pJailed] != JAIL_IC_PRISON && PlayerInfo[playerid][pJailed] != JAIL_IC_GOB)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una condena en la cárcel!");
 	if(PlayerInfo[playerid][pHunger] > 20 && PlayerInfo[playerid][pThirst] > 20)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo puedes comer en los horarios asignados! (( Cuando tengas menos de 20 de hambre/sed ))");
@@ -13835,14 +13837,17 @@ CMD:verpresos(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
 		
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[PRESOS]===================");
-	foreach(new i : Player) {
-	    if(PlayerInfo[i][pJailed] == 1 || PlayerInfo[i][pJailed] == 3) {
+	foreach(new i : Player)
+	{
+	    if(PlayerInfo[i][pJailed] == JAIL_IC_PMA || PlayerInfo[i][pJailed] == JAIL_IC_PRISON || PlayerInfo[i][pJailed] == JAIL_IC_GOB)
+		{
 			format(string, 256, "%s", GetPlayerNameEx(i));
 			SendClientMessage(playerid, COLOR_WHITE, string);
 			count++;
 		}
 	}
-	if(count == 0){
+	if(count == 0)
+	{
 	    SendClientMessage(playerid, COLOR_WHITE, "No hay ninguna persona presa actualmente");
 	}
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "===============================================");

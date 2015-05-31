@@ -91,7 +91,3 @@ new antiCheatImmunity[MAX_PLAYERS];
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];
 }
-
-stock isPlayerJailed(playerid){
-	return PlayerInfo[playerid][pJailed];
-}
