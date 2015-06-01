@@ -105,7 +105,7 @@
 
 //SKINS
 #define SKINS_M_1    129
-#define SKINS_M_2    66
+#define SKINS_M_2    69
 #define SKINS_F_1    55
 #define SKINS_F_2    25
 
@@ -117,6 +117,13 @@
 #define DISABLE_STEALING        4
 #define DISABLE_DEATHBED        5
 #define DISABLE_HEALING         6
+
+// Jails
+#define JAIL_NONE           	0
+#define JAIL_IC_PMA         	1
+#define JAIL_OOC            	2
+#define JAIL_IC_PRISON     		3
+#define JAIL_IC_GOB         	4
 
 //====[TIPOS DE LOGS]===========================================================
 #define LOG_ADMIN            	1
@@ -148,7 +155,7 @@ new maleSkins2[SKINS_M_2] = {
 	147,153,163,164,165,166,171,177,184,185,
 	186,187,189,203,204,208,217,221,223,227,
 	228,240,247,248,249,253,254,255,258,259,
-	272,290,294,295,296,299
+	272,290,294,295,296,299,303,304,305
 };
 
 new femaleSkins1[SKINS_F_1] = {

@@ -20,6 +20,7 @@ new
 	*/
 	FORZGate,
 	PMGate,
+	PMPrisonGate,
 	PMBarrier,
 	PMHallDoor[3],
 	PMWindow[2],
@@ -58,7 +59,13 @@ new
     PMBigJail25[2],
     PMBigJail26[2],
     PMBigJail27[2],
-    PMBigJail28[2];
+    PMBigJail28[2],
+    PMBigJail29[2],
+    PMBigJail30[2],
+    PMBigJailGarajeDoors1[2],
+    PMBigJailGarajeDoors2[2],
+    PMBigJailGarajeDoors3[2],
+    PMBigJailGarajeDoors4[2];
 
 new Lift1Obj1, Lift1Obj2, Lift1Obj3, Lift1Obj4,
     Lift2Obj1, Lift2Obj2, Lift2Obj3, Lift2Obj4;
@@ -7117,6 +7124,14 @@ stock LoadMap() {
 	PMBigJail26[1] = CreateObject(2930, 1999.14054, 1992.02344, 1998.04712,   0.00000, 0.00000, 90.00000); //
 	PMBigJail27[1] = CreateObject(2930, 1999.19522, 2008.06934, 1998.04712,   0.00000, 0.00000, 90.00000); //
 	PMBigJail28[1] = CreateObject(2930, 2002.76224, 1992.02344, 1994.01514,   0.00000, 0.00000, 90.00000); //
+	/* Exterior */
+	PMBigJail29[1] = CreateObject(2930, 1759.97607, -1561.59741, 11.19786,   0.00000, 0.00000, 90.00000); //
+	PMBigJail30[1] = CreateObject(2930, 1781.08728, -1537.96899, 11.49700,   0.00000, 0.00000, 7.00000); //
+	PMPrisonGate = CreateObject(989, 1754.26965, -1582.74438, 13.27080,   0.00000, 0.00000, -86.00000);
+	PMBigJailGarajeDoors1[1] = CreateObject(19795, 1824.38635, -1534.71680, 14.28240,   0.00000, 0.00000, -17.00000);
+	PMBigJailGarajeDoors2[1] = CreateObject(19795, 1822.48608, -1540.93701, 14.28240,   0.00000, 0.00000, -197.00000);
+	PMBigJailGarajeDoors3[1] = CreateObject(19796, 1752.00281, -1591.24292, 14.29420,   0.00000, 0.00000, 76.00000);
+	PMBigJailGarajeDoors4[1] = CreateObject(19796, 1756.89319, -1592.47815, 14.29420,   0.00000, 0.00000, 256.00000);
 
 	/* Cárcel */
 	CreateObject(14408, 2000.04895, 1999.99683, 2000.74658,   0.00000, 0.00000, 0.00000); // El piso como CreateObject
@@ -7693,17 +7708,15 @@ stock LoadMap() {
 	CreateDynamicObject(19377, 2013.33606, 1018.89587, 2007.33325,   0.00000, 90.00000, 0.00000);
 	
 	//==========================MAPEO SHISU CÁRCEL PATIO EXTERIOR===============================
+    CreateObject(19794, 1787.1328, -1565.6797, 11.9688,   0.00000, 0.00000, 0.00000); // Piso de la cárcel
 	CreateDynamicObject(2629, 1757.97131, -1560.43298, 8.67483,   0.00000, 0.00000, -180.60001);
 	CreateDynamicObject(2631, 1755.46277, -1559.69568, 8.60220,   0.12000, 1.68000, 89.00000);
 	CreateDynamicObject(2632, 1757.91992, -1559.74744, 8.60220,   0.12000, 1.68000, 89.00000);
 	CreateDynamicObject(1216, 1777.04980, -1539.95190, 9.10120,   0.00000, 0.00000, -139.00000);
 	CreateDynamicObject(946, 1780.28894, -1533.90576, 10.63670,   0.00000, 1.00000, 88.00000);
-	CreateDynamicObject(2930, 1781.08728, -1537.96899, 11.49700,   0.00000, 0.00000, 7.00000);
 	CreateDynamicObject(1368, 1772.63818, -1543.48279, 9.11432,   0.00000, 0.00000, -139.00000);
 	CreateDynamicObject(1432, 1752.52563, -1535.98523, 8.49900,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(985, 1781.17505, -1532.34985, 8.33080,   0.00000, 270.00000, 88.00000);
-	CreateDynamicObject(2930, 1759.97607, -1561.59741, 11.19786,   0.00000, 0.00000, 90.00000);
-	CreateDynamicObject(989, 1754.26965, -1582.74438, 13.27080,   0.00000, 0.00000, -86.00000);
 	CreateDynamicObject(1216, 1776.19775, -1540.64990, 9.10120,   0.00000, 0.00000, -139.00000);
 	CreateDynamicObject(1216, 1775.38965, -1541.36584, 9.10120,   0.00000, 0.00000, -139.00000);
 	CreateDynamicObject(1368, 1766.58875, -1548.67310, 9.11432,   0.00000, 0.00000, -139.00000);
@@ -7737,19 +7750,7 @@ stock LoadMap() {
 	CreateDynamicObject(1946, 1781.05469, -1530.61975, 17.20708,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1442, 1768.06812, -1547.16797, 8.93419,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1442, 1750.34692, -1531.82458, 8.93419,   0.00000, 0.00000, 0.00000);
-	CreateDynamicObject(4100, 1756.83801, -1561.67700, 18.59810,   0.00000, 0.00000, -41.00000);
-	CreateDynamicObject(4100, 1749.67676, -1554.37476, 18.59810,   0.00000, 0.00000, 50.00000);
-	CreateDynamicObject(4100, 1749.72864, -1540.71130, 18.59810,   0.00000, 0.00000, 50.00000);
-	CreateDynamicObject(4100, 1749.78357, -1532.41895, 12.61113,   -40.00000, 90.00000, 90.00000);
-	CreateDynamicObject(4100, 1766.58008, -1529.96375, 18.59810,   0.00000, 0.00000, 139.00000);
-	CreateDynamicObject(8674, 1754.87842, -1530.56995, 18.33960,   0.00000, 0.00000, 8.00000);
-	CreateDynamicObject(4100, 1780.32800, -1530.50940, 18.59810,   0.00000, 0.00000, 137.00000);
-	CreateDynamicObject(4100, 1794.07861, -1531.41223, 18.59810,   0.00000, 0.00000, 136.00000);
-	CreateDynamicObject(4100, 1807.83582, -1532.41382, 18.59810,   0.00000, 0.00000, 136.00000);
-	CreateDynamicObject(8674, 1819.76929, -1533.18481, 18.33960,   0.00000, 0.00000, -3.00000);
-	CreateDynamicObject(8674, 1823.44360, -1538.34497, 18.33960,   0.00000, 0.00000, -106.00000);
-	CreateDynamicObject(8674, 1821.80432, -1543.92664, 14.64420,   0.00000, -91.00000, 72.00000);
-	CreateDynamicObject(8674, 1816.17236, -1545.04211, 18.33960,   0.00000, 0.00000, -3.00000);
+
 	
 	//==========================MAPEO SALA DE INTERROGATORIOS SHISU=============================
 	CreateDynamicObject(1569, 206.07750, 181.19341, 1002.01569,   0.00000, 0.00000, -1.00000); // PUERTA COMISARÍA
@@ -8217,6 +8218,7 @@ stock LoadMap() {
 	// ===================HQ CRESPO=================
 	
 	RIEDELGate = CreateObject(968, 317.70630, -61.57970, 1.34230,   0.00000, 270.00000, 0.00000);
+    CreateDynamicObject(2946, 318.02179, -40.52670, 0.57060,   0.00000, 0.00000, 0.00000);
 	CreateDynamicObject(1412,307.9224900,-58.9908000,2.7865000,0.0000000,0.0000000,-90.0000000); //
 	CreateDynamicObject(1412,309.1543000,-61.6849000,1.3575000,0.0000000,90.0000000,0.0000000); //
 	CreateDynamicObject(1412,307.9224900,-53.8045000,2.7865000,0.0000000,0.0000000,-90.0000000); //
@@ -8296,7 +8298,6 @@ stock LoadMap() {
 	CreateDynamicObject(19439,317.3132900,-42.9258000,3.9121000,0.0000000,90.0000000,90.0000000); //
 	CreateDynamicObject(19439,308.8239100,-42.9345000,3.9121000,0.0000000,90.0000000,90.0000000); //
 	CreateDynamicObject(19439,308.9346900,-39.9291000,3.9125000,0.0000000,90.0000000,86.2800000); //
-	CreateDynamicObject(1502,318.0264900,-40.4623000,0.5368000,0.0000000,0.0000000,90.0000000); //
 	CreateDynamicObject(2894,310.3446400,-40.3212500,1.4587600,0.0000000,0.0000000,-94.6200100); //
 	CreateDynamicObject(1742,308.0516100,-42.7935000,0.6542000,0.0000000,0.0000000,90.0000000); //
 	CreateDynamicObject(3378,334.5573100,-50.6331700,1.7160800,0.0000000,0.0000000,0.7200000); //
@@ -8537,18 +8538,18 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(18762, 973.16467, -1130.34827, 30.29900,   0.00000, 0.00000, 0.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10948, "skyscrapper_sfs", "ws_tunnelwall2", 0xFF747374);
 	//Pisos y techos
-	Textura = CreateDynamicObject(19380, 978.87250, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 989.36987, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 989.36987, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 987.34009, -1115.47510, 26.20400,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19380, 978.87250, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(18981, 984.70538, -1119.10376, 22.32720,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 978.87250, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 989.36987, -1115.39685, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 989.36987, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 987.34009, -1115.47510, 26.20400,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19380, 978.87250, -1125.03223, 31.89020,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(18981, 984.70538, -1119.10376, 22.32720,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
 	//Vidrios
 	CreateDynamicObject(3858, 984.64172, -1130.66467, 25.71500,   0.00000, 0.00000, -134.16010);
 	CreateDynamicObject(3859, 972.67029, -1113.04810, 25.54560,   0.00000, 0.00000, -162.95999);
@@ -8752,16 +8753,16 @@ stock LoadMap() {
 	Textura = CreateDynamicObject(1251, 542.01862, -1294.32544, 19.82030,   0.00000, 0.00000, 89.94000);
 	SetDynamicObjectMaterial(Textura, 0, 2774, "airp_prop", "CJ_GALVANISED", -1);
 	// Piso
-	Textura = CreateDynamicObject(19379, 561.18457, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 550.68341, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 540.18329, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 529.68732, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
-	Textura = CreateDynamicObject(19379, 523.39539, -1299.14465, 16.15410,   0.00000, 90.00000, 0.00000);
-	SetDynamicObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 561.18457, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 550.68341, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 540.18329, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 529.68732, -1299.14465, 16.15710,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
+	Textura = CreateObject(19379, 523.39539, -1299.14465, 16.15410,   0.00000, 90.00000, 0.00000);
+	SetObjectMaterial(Textura, 0, 9953, "ottos_sfw", "sfe_arch10", -1);
 	// Cuadros
 	Textura = CreateDynamicObject(19172, 557.40881, -1303.72681, 19.68690,   0.00000, 0.00000, 180.00000);
 	SetDynamicObjectMaterial(Textura, 0, 10249, "ottos2_sfw", "ottos_pics_sfe", -1);
@@ -8881,13 +8882,7 @@ stock LoadMap() {
 	CreateDynamicObject(968, 1444.09351, -1465.12585, 12.75970, 0.00000, 0.00000, 82.38000);
 	CreateDynamicObject(966, 1444.09644, -1465.10925, 12.15499, 0.00000, 0.00000, 82.38002);
 	
-	//========================PRISION FRENTE ALHAMBRA===========================
-
-	CreateObject(19794, 1787.13000, -1565.68005, 11.96880, 0.00000, 0.00000, 0.00000);
-	CreateObject(19795, 1824.31848, -1534.73120, 14.29688,   0.00000, 0.00000, 343.00000);
-	CreateObject(19795, 1822.40759, -1540.94995, 14.29688,   0.00000, 0.00000, 163.00000);
-	CreateObject(19796, 1752.00415, -1591.18652, 14.26719,   0.00000, 0.00000, 77.00000);
-	CreateObject(19796, 1756.91406, -1592.31628, 14.26719,   0.00000, 0.00000, 257.00000);
+	//========================REJAS PRISION FRENTE ALHAMBRA=====================
 	CreateDynamicObject(19868, 1823.14063, -1539.18994, 17.12310,   0.00000, 0.00000, 73.98000);
 	CreateDynamicObject(19868, 1818.87756, -1544.99548, 17.12310,   0.00000, 0.00000, -3.00000);
 	CreateDynamicObject(19868, 1824.09119, -1535.84802, 17.12310,   0.00000, 0.00000, 73.98000);
@@ -8930,6 +8925,23 @@ stock LoadMap() {
 	CreateDynamicObject(19868, 1757.32397, -1561.55493, 17.12310,   0.00000, 0.00000, 359.33948);
 	CreateDynamicObject(19868, 1752.34558, -1582.27112, 16.08210,   0.00000, 0.00000, 346.62003);
 	CreateDynamicObject(19868, 1757.41113, -1583.48413, 16.08210,   0.00000, 0.00000, 346.62003);
+	
+	//===========================REJAS VARIAS ALCANTARILLAS=====================
+	CreateDynamicObject(982, 1845.49561, -1826.07666, 13.53940,   0.00000, 0.00000, 73.50000);
+	CreateDynamicObject(982, 1870.06055, -1833.34875, 13.51840,   0.00000, 0.00000, 73.50000);
+	CreateDynamicObject(984, 1888.47339, -1838.82764, 13.47640,   0.00000, 0.00000, 73.50000);
+	CreateDynamicObject(984, 1900.85034, -1842.05566, 13.45540,   0.00000, 0.00000, 77.28000);
+	CreateDynamicObject(982, 1919.57397, -1846.37793, 13.51840,   0.00000, 0.00000, 76.86000);
+	CreateDynamicObject(982, 1939.83777, -1851.09863, 13.51840,   0.00000, 0.00000, 76.92000);
+	CreateDynamicObject(982, 1845.65393, -1804.50366, 13.23230,   0.00000, 0.00000, 76.44000);
+	CreateDynamicObject(982, 1870.53931, -1810.55164, 13.23230,   0.00000, 0.00000, 76.26000);
+	CreateDynamicObject(982, 1889.18591, -1815.10510, 13.23230,   0.00000, 0.00000, 76.38600);
+	CreateDynamicObject(982, 1914.28967, -1820.08789, 13.23230,   0.00000, 0.00000, 81.15900);
+	CreateDynamicObject(982, 1939.42383, -1824.89441, 13.23230,   0.00000, 0.00000, 77.15399);
+	CreateDynamicObject(8674, 1359.35083, -1722.04907, 14.12250,   0.00000, 0.00000, -0.18000);
+	CreateDynamicObject(8674, 1580.06714, -1751.69104, 14.17542,   0.00000, 0.00000, 89.70000);
+	CreateDynamicObject(8674, 1580.05396, -1756.83020, 14.17540,   0.00000, 0.00000, 89.70000);
+	CreateDynamicObject(8674, 1401.76355, -1450.53418, 14.10530,   0.00000, 0.00000, 0.00000);
 
 	return 1;
 }
