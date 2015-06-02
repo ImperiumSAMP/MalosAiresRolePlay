@@ -304,7 +304,7 @@ DeliJob_Payment(playerid, vehicleid)
 	    Job_GiveReputation(playerid, 1);
 
 	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 10; // Extra por antiguedad
-	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 30; // Extra por cargo
 
 	paycheck = GetJobBaseSalary(JOB_DELI) + seniorityBonus + chargeBonus - injuriesCost;
 	PlayerInfo[playerid][pPayCheck] += paycheck;
