@@ -44,7 +44,10 @@ enum HouseSystem {
 	LSD,
 	Ecstasy,
 	Cocaine,
-	Radio
+	Radio,
+	
+	ContainerSQLID,
+	ContainerID
 };
 
 new House[MAX_HOUSES][HouseSystem];
@@ -62,6 +65,28 @@ forward bool:EnterHouse(playerid);
 forward bool:LeaveHouse(playerid);
 
 //========================IMPLEMENTACION DE FUNCIONES===========================
+
+GetHouseLockerSpace(houseid)
+{
+	if(houseid == 0 || houseid >= MAX_HOUSES)
+		return 0;
+
+	new hprice = House[houseid][HousePrice];
+
+	if(hprice < 100000) return 800;
+	if(hprice < 200000) return 1000;
+	if(hprice < 300000) return 1200;
+	if(hprice < 400000) return 1400;
+	if(hprice < 500000) return 1600;
+	if(hprice < 600000) return 1700;
+	if(hprice < 700000) return 1800;
+	if(hprice < 800000) return 1900;
+	if(hprice < 900000) return 2000;
+	if(hprice < 1000000) return 2100;
+	if(hprice >= 1000000) return 2200;
+
+	return 0;
+}
 
 stock LoadHouses()
 {
@@ -122,7 +147,14 @@ public OnHouseDataLoad(id)
 		cache_get_field_content(0, "IncomePrice", result); 			House[id][IncomePrice] 			= strval(result);
 		cache_get_field_content(0, "IncomePriceAdd", result); 		House[id][IncomePriceAdd] 		= strval(result);
 
-        House[id][Created] = 1;
+		cache_get_field_content(0, "ContainerSQLID", result); 		House[id][ContainerSQLID] 		= strval(result);
+
+		if(House[id][ContainerSQLID] > 0)
+		    House[id][ContainerID] = Container_Load(House[id][ContainerSQLID]);
+		else
+		    Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
+		    
+		House[id][Created] = 1;
 		House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 		House[id][hInsideLabel] = CreateDynamic3DTextLabel("-", 0x008080FF, House[id][InsideX], House[id][InsideY], House[id][InsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][InsideInterior], -1, 100.0);
         ReloadHouseIcon(id);
@@ -197,6 +229,8 @@ stock CreateHouse(id)
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
 
+    Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
+    
 	House[id][Created] = 1;
 	House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	House[id][hInsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][InsideX], House[id][InsideY], House[id][InsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][InsideInterior], -1, 100.0);
@@ -248,6 +282,9 @@ stock DeleteHouse(id)
 	House[id][Ecstasy] = 0;
 	House[id][Cocaine] = 0;
 	House[id][Radio] = 0;
+	if(House[id][ContainerSQLID] > 0)
+	    Container_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
+	House[id][ContainerSQLID] = 0;
 	return 1;
 }
 
@@ -269,7 +306,7 @@ SaveHouses()
 
 stock SaveHouse(id)
 {
-	new query[1512];
+	new query[1550];
 
     if(dontsave || House[id][Created] == 0)
 		return 1;
@@ -299,7 +336,7 @@ stock SaveHouse(id)
 		House[id][Marijuana],
 		House[id][LSD]
 	);
-	format(query, sizeof(query), "%s, `Cocaine`=%d, `Ecstasy`=%d, `Radio`=%d, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d WHERE `Id`=%d",
+	format(query, sizeof(query), "%s, `Cocaine`=%d, `Ecstasy`=%d, `Radio`=%d, `Tenant`='%s', `IncomeAccept`=%d, `Income`=%d, `IncomePrice`=%d, `IncomePriceAdd`=%d, `ContainerSQLID`=%d WHERE `Id`=%d",
 		query,
 		House[id][Cocaine],
 		House[id][Ecstasy],
@@ -309,6 +346,7 @@ stock SaveHouse(id)
 		House[id][Income],
 		House[id][IncomePrice],
 		House[id][IncomePriceAdd],
+		House[id][ContainerSQLID],
 		id
 	);
 
