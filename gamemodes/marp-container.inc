@@ -139,7 +139,7 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 		format(query, sizeof(query), "INSERT INTO containers (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
 		mysql_function_query(dbHandle, query, false, "", "");
 
-		container_sqlid = cache_insert_id();
+		container_sqlid = cache_insert_id(dbHandle);
 		SendFMessage(0, -1, "[DEBUG] referenced container_sqlid = %d", container_sqlid);
 
 		container_id = vector_create();
@@ -191,6 +191,12 @@ Container_AddUsedSpace(id, space)
 	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 		vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) + space);
+		
+		new query[128];
+
+		format(query, sizeof(query), "UPDATE containers SET UsedSpace = %d WHERE container = %d", Container_GetUsedSpace(id), Container_GetSQLID(id));
+		mysql_function_query(dbHandle, query, false, "", "");
+		
 		return 1;
 	}
 
@@ -418,12 +424,13 @@ CMD:containerdebug(playerid, params[])
 {
 	new hid;
 	
-	if(sscanf(params, "i", hid))
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /containerdebug [houseid[");
+	if(sscanf(params, "I(1)", hid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /containerdebug [houseid[");
 
 	SendFMessage(playerid, -1, "House[ContainerID] = %d, House[ContainerSQLID] = %d", House[hid][ContainerID], House[hid][ContainerSQLID]);
 	SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", vector_get(House[hid][ContainerID], CONTAINER_INDEX_TOTAL_SPACE), vector_get(House[hid][ContainerID], CONTAINER_INDEX_USED_SPACE));
     SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", vector_get(House[hid][ContainerID], CONTAINER_INDEX_SQLID), vector_get(House[hid][ContainerID], CONTAINER_INDEX_MIN_ITEM_SPACE));
+	SendFMessage(playerid, -1, "last sqlid: %d", cache_insert_id(dbHandle));
 	return 1;
 }
 
