@@ -137,16 +137,15 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 		new query[128];
 
 		format(query, sizeof(query), "INSERT INTO containers (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
-		mysql_function_query(dbHandle, query, false, "", "");
+		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "d");
 
-		container_sqlid = cache_insert_id(dbHandle);
-		SendFMessage(0, -1, "[DEBUG] referenced container_sqlid = %d", container_sqlid);
+		new sqlid_address = GetVariableAddress(container_sqlid);
 
 		container_id = vector_create();
 
 		SendFMessage(0, -1, "[DEBUG] referenced container_id = %d", container_id);
 
-  		vector_push_back(container_id, container_sqlid); // Su propia sqlid
+  		vector_push_back(container_id, 0); // Reservado para su SQLID
 		vector_push_back(container_id, min_item_space); // Minimo espacio por item que permite
 		vector_push_back(container_id, total_space); // Espacio total
 		vector_push_back(container_id, 0); // Espacio usado
@@ -154,6 +153,13 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 	}
 
 	return 0;
+}
+
+forward GetContainerInsertedId(address);
+public GetContainerInsertedId(address)
+{
+    @ptr[address] = cache_insert_id(dbHandle);
+    return 1;
 }
 
 //==============================================================================

@@ -19,6 +19,7 @@
 #include <Dini>
 #include <cstl>
 #include <anti_flood>
+#include <pointers>
 #include <easyDialog>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
