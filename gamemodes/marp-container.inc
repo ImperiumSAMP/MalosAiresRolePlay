@@ -136,7 +136,7 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 	{
 		new query[128];
 
-		format(query, sizeof(query), "INSERT INTO `containers` (`MinItemSpace`, `TotalSpace`) VALUES ('%d')", min_item_space, total_space);
+		format(query, sizeof(query), "INSERT INTO containers (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
 		mysql_function_query(dbHandle, query, false, "", "");
 
 		container_sqlid = cache_insert_id();
