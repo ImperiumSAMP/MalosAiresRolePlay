@@ -19,6 +19,7 @@
 #include <Dini>
 #include <cstl>
 #include <anti_flood>
+#include <easyDialog>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
@@ -78,6 +79,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-weather.inc"
 #include "marp-same.inc"
 #include "marp-lifts.inc"
+#include "marp-container.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.1"
@@ -1058,6 +1060,8 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pRolePoints] = 0;
 	
  	ResetJobVariables(playerid);
+ 	
+ 	ResetContainerSelection(playerid);
 
     gHeaderTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
     gBackgroundTextDrawId[playerid] = PlayerText:INVALID_TEXT_DRAW;
