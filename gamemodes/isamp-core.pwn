@@ -9757,7 +9757,7 @@ CMD:cla(playerid, params[])
 
 CMD:clasificado(playerid,params[])
 {
-	new text[128], string[128], adminstring[128];
+	new text[128], string[128];
 
 	if(gPlayerLogged[playerid] != 1)
 		return 1;
@@ -9778,13 +9778,14 @@ CMD:clasificado(playerid,params[])
 	GameTextForPlayer(playerid, string, 1400, 5);
 	SetTimerEx("AllowAd", 60000, false, "i", playerid);
 	AllowAdv[playerid] = 0;
-	format(adminstring, sizeof(adminstring), "[%d] Publicidad: %s", playerid, text);
 	format(string, sizeof(string), "Publicidad: %s", text);
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pAdmin] >= 2)
-			SendClientMessage(i, COLOR_ADVERTISMENT, adminstring);
-		else
+		{
+			SendClientMessage(i, COLOR_ADVERTISMENT, string);
+			SendFMessage(i, COLOR_LIGHTYELLOW2, "[STAFF] Anuncio enviado por %s (ID %d)", GetPlayerNameEx(playerid), playerid);
+		} else
 			SendClientMessage(i, COLOR_ADVERTISMENT, string);
 	}
 	GiveFactionMoney(FAC_MAN, PRICE_ADVERTISE);
