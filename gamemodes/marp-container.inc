@@ -136,14 +136,12 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 	{
 		new query[128];
 
-        new sqlid_address = GetVariableAddress(container_sqlid);
+        new sqlid_address = GetVariableAddress(container_sqlid); // Guarda la dirección de memoria de la variable donde hay que guardar la SQLID creada con la query INSERT.
+
+        container_id = vector_create();
         
 		format(query, sizeof(query), "INSERT INTO containers (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
-		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "d", sqlid_address);
-
-		container_id = vector_create();
-
-		SendFMessage(0, -1, "[DEBUG] referenced container_id = %d", container_id);
+		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "dd", container_id, sqlid_address);
 
   		vector_push_back(container_id, 0); // Reservado para su SQLID
 		vector_push_back(container_id, min_item_space); // Minimo espacio por item que permite
@@ -155,10 +153,12 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 	return 0;
 }
 
-forward GetContainerInsertedId(address);
-public GetContainerInsertedId(address)
+forward GetContainerInsertedId(container_id, address);
+public GetContainerInsertedId(container_id, address)
 {
-    @ptr[address] = cache_insert_id(dbHandle);
+	new last_id = cache_insert_id(dbHandle);
+    @ptr[address] = last_id;
+    vector_set(container_id, CONTAINER_INDEX_SQLID, last_id);
     return 1;
 }
 
@@ -173,17 +173,11 @@ Container_Destroy(id, container_sqlid)
 	    format(query, sizeof(query), "DELETE FROM `containers` WHERE `container` = %d", container_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 
-	    SendFMessage(0, -1, "[DEBUG] Borrando id %d con sqlid %d de containers", id, container_sqlid);
-
 	    format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `container` = %d", container_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 
-	    SendFMessage(0, -1, "[DEBUG] Borrando id %d con sqlid %d de slots_info", id, container_sqlid);
-
 		vector_destroy(id);
-
-		SendFMessage(0, -1, "[DEBUG] Borrando vector id %d", id);
-
+		
 		return 1;
 	}
 
