@@ -664,8 +664,11 @@ ResetVehicle(id)
 	}
 	
 	if(VehicleHasContainer(id))
+	{
 	    Container_Empty(VehicleInfo[id][VehContainerID]);
-	    
+        Container_SetTotalSpace(VehicleInfo[id][VehContainerID], GetVehicleModelTrunkSpace(VehicleInfo[id][VehModel]));
+	}
+ 
 	ResetTrunk(id);
 	return 1;
 }
@@ -1168,7 +1171,7 @@ CMD:maletero2(playerid, params[])
 		if(itemid == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 		if(!Container_AddItemAndParam(VehicleInfo[vehicleid][VehContainerID], itemid, itemparam))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay más espacio en el maletero.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el maletero.");
 
     	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
 
@@ -2119,7 +2122,15 @@ CMD:avmodelo(playerid, params[])
     SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} el modelo del vehículo %d ha sido cambiado a %d.", vehicleid, modelid);
 	GetVehiclePos(vehicleid, cx, cy, cz);
 	GetVehicleZAngle(vehicleid, angle);
+
+	if(VehicleHasContainer(vehicleid))
+	{
+	    Container_Empty(VehicleInfo[vehicleid][VehContainerID]);
+        Container_SetTotalSpace(VehicleInfo[vehicleid][VehContainerID], GetVehicleModelTrunkSpace(modelid));
+	}
+
 	ResetTrunk(vehicleid);
+
 	for(new i = 0; i < 14; i++) {
  	    VehicleInfo[vehicleid][VehCompSlot][i] = 0;
  	}
@@ -2269,6 +2280,13 @@ CMD:avcrear(playerid, params[])
 			PutPlayerInVehicle(playerid, id, 0);
 			LastVeh[playerid] = id;
 			SetEngine(id, 1);
+
+			if(VehicleHasContainer(id))
+			{
+			    Container_Empty(VehicleInfo[id][VehContainerID]);
+		        Container_SetTotalSpace(VehicleInfo[id][VehContainerID], GetVehicleModelTrunkSpace(modelid));
+			}
+			
 			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (desaparecerá luego de 5 minutos sin utilizar).");
             VehicleLog(id, playerid, INVALID_PLAYER_ID, "/avcrear", params);
 			return 1;
@@ -2302,6 +2320,13 @@ CMD:avcrearperma(playerid, params[])
 			PutPlayerInVehicle(playerid, id, 0);
 			LastVeh[playerid] = id;
 			SetEngine(id, 1);
+			
+ 			if(VehicleHasContainer(id))
+			{
+			    Container_Empty(VehicleInfo[id][VehContainerID]);
+		        Container_SetTotalSpace(VehicleInfo[id][VehContainerID], GetVehicleModelTrunkSpace(modelid));
+			}
+			
 			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (no desaparecerá hasta que sea eliminado o reinicie el servidor).");
             SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} Recuerda que siempre primero hay que setearle el tipo, y luego estacionarlo.");
 			VehicleLog(id, playerid, INVALID_PLAYER_ID, "/avcrearperma", params);

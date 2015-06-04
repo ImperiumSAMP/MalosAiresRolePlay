@@ -66,10 +66,10 @@ Container_Load(container_sqlid)
 	vector_push_back(container_id, 0); // Inicializamos donde se va a guardar el espacio total del contenedor.
 	vector_push_back(container_id, 0); // Inicializamos donde se va a guardar el espacio usado del contenedor.
 
- 	format(query, sizeof(query), "SELECT * FROM `containers` WHERE container = %d LIMIT 1", container_sqlid);
+ 	format(query, sizeof(query), "SELECT * FROM containers_info WHERE container = %d LIMIT 1", container_sqlid);
 	mysql_function_query(dbHandle, query, true, "OnContainerDataLoad", "i", container_id);
 
- 	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE container = %d", container_sqlid);
+ 	format(query, sizeof(query), "SELECT * FROM containers_slots WHERE container = %d", container_sqlid);
 	mysql_function_query(dbHandle, query, true, "OnContainerSlotsLoad", "i", container_id);
 
 	return container_id;
@@ -111,7 +111,7 @@ public OnContainerSlotsLoad(container_id)
 	    for(new i = 0; i < rows; i++)
 	    {
 			cache_get_field_content(i, "Item", result); 	vector_push_back(container_id, strval(result));
-			cache_get_field_content(i, "Amount", result); 	vector_push_back(container_id, strval(result));
+			cache_get_field_content(i, "Param", result); 	vector_push_back(container_id, strval(result));
 		}
 	}
 	return 1;
@@ -129,7 +129,7 @@ Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 
         container_id = vector_create();
         
-		format(query, sizeof(query), "INSERT INTO containers (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
+		format(query, sizeof(query), "INSERT INTO containers_info (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
 		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "dd", container_id, sqlid_address);
 
   		vector_push_back(container_id, 0); // Reservado para su SQLID
@@ -159,10 +159,10 @@ Container_Destroy(id, container_sqlid)
 	{
 	    new query[128];
 
-	    format(query, sizeof(query), "DELETE FROM `containers` WHERE `container` = %d", container_sqlid);
+	    format(query, sizeof(query), "DELETE FROM containers_info WHERE container = %d", container_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 
-	    format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `container` = %d", container_sqlid);
+	    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d", container_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 
 		vector_destroy(id);
@@ -183,7 +183,7 @@ Container_AddUsedSpace(id, space)
 		
 		new query[128];
 
-		format(query, sizeof(query), "UPDATE containers SET UsedSpace = %d WHERE container = %d", Container_GetUsedSpace(id), Container_GetSQLID(id));
+		format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = %d WHERE container = %d", Container_GetUsedSpace(id), Container_GetSQLID(id));
 		mysql_function_query(dbHandle, query, false, "", "");
 		
 		return 1;
@@ -204,15 +204,15 @@ Container_GetTotalSpace(id)
 
 //==============================================================================
 
-stock Container_SetTotalSpace(id, total_space)
+Container_SetTotalSpace(id, total_space)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
-	    vector_set(id, CONTAINER_INDEX_TOTALSPACE, total_space);
+	    vector_set(id, CONTAINER_INDEX_TOTAL_SPACE, total_space);
 
 		new query[128];
 
-		format(query, sizeof(query), "UPDATE containers SET TotalSpace = %d WHERE container = %d", total_space, Container_GetSQLID(id));
+		format(query, sizeof(query), "UPDATE containers_info SET TotalSpace = %d WHERE container = %d", total_space, Container_GetSQLID(id));
 		mysql_function_query(dbHandle, query, false, "", "");
 
 		return 1;
@@ -314,10 +314,10 @@ Container_Empty(id)
 		new vec_min_item_space = vector_get(id, CONTAINER_INDEX_MIN_ITEM_SPACE);
 		new vec_total_space = vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
 		
-	    format(query, sizeof(query), "UPDATE containers SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
+	    format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
 		mysql_function_query(dbHandle, query, false, "", "");
 
-	    format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `container` = %d", vec_sqlid);
+	    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d", vec_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 	    
 		vector_clear(id);
@@ -351,7 +351,7 @@ Container_AddItemAndParam(id, item, param)
 
  		new query[150];
 
-		format(query, sizeof(query), "INSERT INTO slots_info (container, Item, Amount) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, param);
+		format(query, sizeof(query), "INSERT INTO containers_slots (container, Item, Param) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, param);
 		mysql_function_query(dbHandle, query, false, "", "");
 		return 1;
 	}
@@ -382,7 +382,7 @@ Container_TakeItem(id, slot, &item, &param)
 
  		new query[150];
 
-		format(query, sizeof(query), "DELETE FROM slots_info WHERE container = %d AND Item = %d AND Amount = %d LIMIT 1", Container_GetSQLID(id), item, param);
+		format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", Container_GetSQLID(id), item, param);
 		mysql_function_query(dbHandle, query, false, "", "");
 		return 1;
 	}

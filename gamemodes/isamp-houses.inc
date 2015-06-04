@@ -282,9 +282,13 @@ stock DeleteHouse(id)
 	House[id][Ecstasy] = 0;
 	House[id][Cocaine] = 0;
 	House[id][Radio] = 0;
-	if(House[id][ContainerSQLID] > 0)
+	
+	if(HouseHasContainer(id))
+	{
 	    Container_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
-	House[id][ContainerSQLID] = 0;
+	    House[id][ContainerID] = 0;
+	    House[id][ContainerSQLID] = 0;
+	}
 	return 1;
 }
 
@@ -507,6 +511,13 @@ PrintPlayerHouseAddress(playerid, targetid)
 	}
 	else
 		SendClientMessage(targetid, COLOR_WHITE, "Domicilio: No tiene");
+}
+
+stock HouseHasContainer(houseid)
+{
+	if(House[houseid][ContainerSQLID] > 0 && House[houseid][ContainerID] > 0)
+	    return 1;
+	return 0;
 }
 
 //=============================COMANDOS DE CASA=================================
@@ -1365,7 +1376,15 @@ CMD:acprecio(playerid, params[])
 	House[houseid][HousePrice] = price;
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de la casa %d ha sido ajustado a $%d.", houseid, price);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+
 	ResetLocker(houseid); // Al cambiar el precio se cambian los slots de armario, por ende reseteamos todo para evitar bugs.
+
+	if(HouseHasContainer(houseid))
+	{
+	    Container_Empty(House[houseid][ContainerID]);
+	    Container_SetTotalSpace(House[houseid][ContainerID], GetHouseLockerSpace(houseid));
+	}
+	    
 	SaveHouse(houseid);
 	return 1;
 }
@@ -1411,6 +1430,10 @@ CMD:acvender(playerid, params[])
 	House[houseid][Income] = 0;
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	ResetLocker(houseid);
+	
+	if(HouseHasContainer(houseid))
+	    Container_Empty(House[houseid][ContainerID]);
+
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido vendida.", houseid);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
