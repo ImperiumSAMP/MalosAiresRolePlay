@@ -702,10 +702,14 @@ CMD:armario2(playerid, params[])
 
 Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 {
+	new houseid = Container_Selection[playerid][csOriginalId],
+ 		container_id = Container_Selection[playerid][csId];
+
+	ResetContainerSelection(playerid);
+	
    	if(response)
 	{
-        new houseid = Container_Selection[playerid][csOriginalId],
-            itemid,
+        new itemid,
             itemparam,
             str[128];
 
@@ -720,9 +724,9 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 		if(GetHandItem(playerid, HAND_RIGHT) != 0)
     		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
 
-		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", Container_Selection[playerid][csId], Container_Selection[playerid][csOriginalId], listitem);
+		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", container_id, houseid, listitem);
 
-		if(Container_TakeItem(Container_Selection[playerid][csId], listitem, itemid, itemparam))
+		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
 			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
 
@@ -739,7 +743,6 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 	        SendClientMessage(playerid, COLOR_YELLOW2, "Armario vacio o el slot es inválido.");
 		}
 	}
-	ResetContainerSelection(playerid);
 	return 1;
 }
 

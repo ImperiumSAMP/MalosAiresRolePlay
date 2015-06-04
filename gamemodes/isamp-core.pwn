@@ -3524,8 +3524,11 @@ public AntiCheatTimer()
 							}
 							ResetPlayerWeapons(playerid);
 		    				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+		    				{
 		    			    	GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
- 					 	}
+                                SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+							}
+					  	}
 					}
 					else
 					{

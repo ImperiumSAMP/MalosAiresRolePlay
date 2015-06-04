@@ -364,6 +364,7 @@ stock LoadHandItem(playerid, hand)
 	      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
 	      		//==================================================================
 			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			    SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
 			}
 		}
 		else

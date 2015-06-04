@@ -121,7 +121,7 @@ public OnContainerSlotsLoad(container_id)
 
 Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 {
-	if(total_space > 0) // Espacio válido
+	if(total_space >= 0) // Espacio válido
 	{
 		new query[128];
 
@@ -421,7 +421,7 @@ Container_Show(origid, type, id, playerid)
 
 			for(new i=4; i<vsize; i+=2)
 			{
-			    format(string2, sizeof(string2), "%s%d - Item: %d\tParam: %d\n", string2, slot, vector_get(id, i), vector_get(id, i+1));
+			    format(string2, sizeof(string2), "%s%d - Item: %s\t%s: %d\n", string2, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1));
 	            slot++;
 			}
 			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
