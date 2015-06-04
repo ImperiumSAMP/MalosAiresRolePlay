@@ -119,17 +119,6 @@ public OnContainerSlotsLoad(container_id)
 
 //==============================================================================
 
-stock Item_GetOccupiedSpace(item, param = 0)
-{
-	// if(space depende de parametro && param != 0)
-	// 		return Items[itemid][iSpace] * param
-	// else
-	//      return Items[itemid][iSpace]
-	return 65;
-}
-
-//==============================================================================
-
 Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 {
 	if(total_space > 0) // Espacio válido
@@ -166,7 +155,7 @@ public GetContainerInsertedId(container_id, address)
 
 Container_Destroy(id, container_sqlid)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 	    new query[128];
 
@@ -188,7 +177,7 @@ Container_Destroy(id, container_sqlid)
 
 Container_AddUsedSpace(id, space)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 		vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) + space);
 		
@@ -207,9 +196,27 @@ Container_AddUsedSpace(id, space)
 
 Container_GetTotalSpace(id)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
-	    return vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+     return vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
 
+	return 0;
+}
+
+//==============================================================================
+
+stock Container_SetTotalSpace(id, total_space)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+	    vector_set(id, CONTAINER_INDEX_TOTALSPACE, total_space);
+
+		new query[128];
+
+		format(query, sizeof(query), "UPDATE containers SET TotalSpace = %d WHERE container = %d", total_space, Container_GetSQLID(id));
+		mysql_function_query(dbHandle, query, false, "", "");
+
+		return 1;
+	}
 	return 0;
 }
 
@@ -217,7 +224,7 @@ Container_GetTotalSpace(id)
 
 Container_GetUsedSpace(id)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return vector_get(id, CONTAINER_INDEX_USED_SPACE);
 
 	return 99999;
@@ -227,7 +234,7 @@ Container_GetUsedSpace(id)
 
 Container_GetElementsAmount(id)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return (vector_size(id) - 4) / 2;
 
 	return 99999;
@@ -237,8 +244,18 @@ Container_GetElementsAmount(id)
 
 Container_GetSQLID(id)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return vector_get(id, CONTAINER_INDEX_SQLID);
+
+	return 0;
+}
+
+//==============================================================================
+
+Container_GetMinItemSpace(id)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	    return vector_get(id, CONTAINER_INDEX_MIN_ITEM_SPACE);
 
 	return 0;
 }
@@ -259,17 +276,48 @@ stock Container_VecIndexToSlot(vec_index)
 
 //==============================================================================
 
+Container_Empty(id)
+{
+    if(id > 0 && vector_size(id) > 3)
+    {
+  		new query[128];
+
+        new vec_sqlid = vector_get(id, CONTAINER_INDEX_SQLID);
+		new vec_min_item_space = vector_get(id, CONTAINER_INDEX_MIN_ITEM_SPACE);
+		new vec_total_space = vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
+		
+	    format(query, sizeof(query), "UPDATE containers SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
+		mysql_function_query(dbHandle, query, false, "", "");
+
+	    format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `container` = %d", vec_sqlid);
+	    mysql_function_query(dbHandle, query, false, "", "");
+	    
+		vector_clear(id);
+		
+		vector_push_back(id, vec_sqlid);
+		vector_push_back(id, vec_min_item_space);
+		vector_push_back(id, vec_total_space);
+		vector_push_back(id, 0);
+		
+		return 1;
+	}
+
+	return 0;
+}
+
+//==============================================================================
+
 Container_AddItemAndParam(id, item, param)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
-		if(Container_GetUsedSpace(id) + Item_GetOccupiedSpace(item, param) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
+		if(Container_GetUsedSpace(id) + GetItemSpace(item, param) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
 		    return 0;
 
 		vector_push_back(id, item);
 		vector_push_back(id, param);
 
-		Container_AddUsedSpace(id, Item_GetOccupiedSpace(item, param));
+		Container_AddUsedSpace(id, GetItemSpace(item, param));
 
 		Container_UpdateOpenedDialogs(id);
 
@@ -287,7 +335,7 @@ Container_AddItemAndParam(id, item, param)
 
 Container_TakeItem(id, slot, &item, &param)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 	    if(slot < 0 || slot >= Container_GetElementsAmount(id)) // Slot inválido
 	        return 0;
@@ -300,7 +348,7 @@ Container_TakeItem(id, slot, &item, &param)
 		vector_remove(id, vec_index);
 		vector_remove(id, vec_index);
 
-		Container_AddUsedSpace(id, -Item_GetOccupiedSpace(item, param));
+		Container_AddUsedSpace(id, -GetItemSpace(item, param));
 
 		Container_UpdateOpenedDialogs(id);
 
@@ -332,7 +380,7 @@ Container_UpdateOpenedDialogs(id)
 
 Container_Show(origid, type, id, playerid)
 {
-	if(vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 		new string1[128],
 		    string2[3500] = "";
@@ -387,7 +435,7 @@ CMD:arm2(playerid, params[])
 	    slot;
 
 	new houseid = GetPlayerHouse(playerid);
-	
+
 	if(sscanf(params, "s[32]I(-1)", cmd, slot))
 	    return SendClientMessage(playerid, COLOR_WHITE, "/arm [cmd]   - cmds: tomar, guardar , ver");
 
@@ -422,15 +470,23 @@ CMD:arm2(playerid, params[])
 
 CMD:containerdebug(playerid, params[])
 {
-	new hid;
+	new id;
+	new type;
 	
-	if(sscanf(params, "I(1)", hid))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /containerdebug [houseid[");
+	if(sscanf(params, "iI(1)", type, id))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /containerdebug [tipo] [houseid/vehicleid]");
 
-	SendFMessage(playerid, -1, "House[ContainerID] = %d, House[ContainerSQLID] = %d", House[hid][ContainerID], House[hid][ContainerSQLID]);
-	SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", vector_get(House[hid][ContainerID], CONTAINER_INDEX_TOTAL_SPACE), vector_get(House[hid][ContainerID], CONTAINER_INDEX_USED_SPACE));
-    SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", vector_get(House[hid][ContainerID], CONTAINER_INDEX_SQLID), vector_get(House[hid][ContainerID], CONTAINER_INDEX_MIN_ITEM_SPACE));
-	SendFMessage(playerid, -1, "last sqlid: %d", cache_insert_id(dbHandle));
+	if(type == 1)
+	{
+		SendFMessage(playerid, -1, "Veh[ContainerID] = %d, Veh[ContainerSQLID] = %d", VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
+		SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", Container_GetTotalSpace(VehicleInfo[id][VehContainerID]), Container_GetUsedSpace(VehicleInfo[id][VehContainerID]));
+	    SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", Container_GetSQLID(VehicleInfo[id][VehContainerID]), Container_GetMinItemSpace(VehicleInfo[id][VehContainerID]));
+	}
+	else if(type == 4)
+	{
+		SendFMessage(playerid, -1, "House[ContainerID] = %d, House[ContainerSQLID] = %d", House[id][ContainerID], House[id][ContainerSQLID]);
+		SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", Container_GetTotalSpace(House[id][ContainerID]), Container_GetUsedSpace(House[id][ContainerID]));
+	    SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", Container_GetSQLID(House[id][ContainerID]), Container_GetMinItemSpace(House[id][ContainerID]));
+	}
 	return 1;
 }
-

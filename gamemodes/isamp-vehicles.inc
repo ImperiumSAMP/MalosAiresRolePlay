@@ -80,6 +80,8 @@ enum Cars {
 	VehLSD,
 	VehEcstasy,
 	VehCocaine,
+	VehContainerSQLID,
+	VehContainerID,
 	VehRadio
 };
 new VehicleInfo[MAX_VEH][Cars];
@@ -224,225 +226,255 @@ enum CarModelInfo {
 	mName[32],
 	mType,
 	mPrice,
- 	mTrunkSlots
+ 	mTrunkSlots,
+ 	mTrunkSpace
 };
 
 static const CarModels[][CarModelInfo] = {
 
-/*400*/	{"Landstalker", VTYPE_CAR, 70000, 4},
-/*401*/	{"Bravura", VTYPE_CAR, 31000, 2},
-/*402*/	{"Buffalo", VTYPE_CAR, 500000, 2},
-/*403*/	{"Linerunner", VTYPE_CAR, 455800, 4},
-/*404*/	{"Perenniel", VTYPE_CAR, 28900, 4},
-/*405*/	{"Sentinel", VTYPE_CAR, 68300, 4},
-/*406*/	{"Dumper", VTYPE_MONSTER, 853700, 0},
-/*407*/	{"Firetruck", VTYPE_HEAVY, 311800, 0},
-/*408*/	{"Trashmaster", VTYPE_HEAVY, 280000, 0},
-/*409*/	{"Stretch", VTYPE_CAR, 550000, 4},
-/*410*/	{"Manana", VTYPE_CAR, 26300, 2},
-/*411*/	{"Infernus", VTYPE_CAR, 990500, 2},
-/*412*/	{"Voodoo", VTYPE_CAR, 69100, 4},
-/*413*/	{"Pony", VTYPE_CAR, 105100, 6},
-/*414*/	{"Mule", VTYPE_HEAVY, 98200, 8},
-/*415*/	{"Cheetah", VTYPE_CAR, 750400, 2},
-/*416*/	{"Ambulance", VTYPE_CAR, 550100, 4},
-/*417*/	{"Leviathan", VTYPE_HELI, 910000, 6},
-/*418*/	{"Moonbeam", VTYPE_CAR, 80400, 4},
-/*419*/	{"Esperanto", VTYPE_CAR, 58000, 2},
-/*420*/	{"Taxi", VTYPE_CAR, 86000, 4},
-/*421*/	{"Washington", VTYPE_CAR, 75100, 4},
-/*422*/	{"Bobcat", VTYPE_CAR, 35800, 6},
-/*423*/	{"Mr Whoopee", VTYPE_CAR, 98800, 0},
-/*424*/	{"BF Injection", VTYPE_CAR, 65100, 0},
-/*425*/	{"Hunter", VTYPE_HELI, 10000000, 0},
-/*426*/	{"Premier", VTYPE_CAR, 80500, 4},
-/*427*/	{"Enforcer", VTYPE_CAR, 400000, 8},
-/*428*/	{"Securicar", VTYPE_CAR, 400000, 8},
-/*429*/	{"Banshee", VTYPE_CAR, 595000, 2},
-/*430*/	{"Predator", VTYPE_SEA, 1000000, 2},
-/*431*/	{"Bus", VTYPE_CAR, 592000, 0},
-/*432*/	{"Rhino", VTYPE_HEAVY, 10000000, 0},
-/*433*/	{"Barracks", VTYPE_HEAVY, 400000, 8},
-/*434*/	{"Hotknife", VTYPE_CAR, 384000, 0},
-/*435*/	{"Article Trailer", VTYPE_TRAILER, 150000, 10},
-/*436*/	{"Previon", VTYPE_CAR, 39000, 2},
-/*437*/	{"Coach", VTYPE_HEAVY, 599000, 0},
-/*438*/	{"Cabbie", VTYPE_CAR, 79000, 4},
-/*439*/	{"Stallion", VTYPE_CAR, 65000, 2},
-/*440*/ {"Rumpo", VTYPE_CAR, 95000, 6},
-/*441*/	{"RC Bandit", VTYPE_CAR, 500000, 0},
-/*442*/	{"Romero", VTYPE_CAR, 105000, 4},
-/*443*/	{"Packer", VTYPE_HEAVY, 428000, 0},
-/*444*/	{"Monster", VTYPE_MONSTER, 675000, 0},
-/*445*/	{"Admiral", VTYPE_CAR, 61000, 4},
-/*446*/	{"Squallo", VTYPE_SEA, 775000, 2},
-/*447*/	{"Seasparrow", VTYPE_HELI, 2000000, 0},
-/*448*/	{"Pizzaboy", VTYPE_BIKE, 25000, 0},
-/*449*/	{"Tram", VTYPE_TRAIN, 500000, 0},
-/*450*/	{"Article Trailer 2", VTYPE_TRAILER, 150000, 10},
-/*451*/	{"Turismo", VTYPE_CAR, 1050000, 2},
-/*452*/	{"Speeder", VTYPE_SEA, 755000, 2},
-/*453*/	{"Reefer", VTYPE_SEA, 480000, 8},
-/*454*/	{"Tropic", VTYPE_SEA, 830000, 6},
-/*455*/	{"Flatbed", VTYPE_CAR, 180000, 8},
-/*456*/	{"Yankee", VTYPE_CAR, 155000, 8},
-/*457*/	{"Caddy", VTYPE_CAR, 85000, 0},
-/*458*/	{"Solair", VTYPE_CAR, 80000, 4},
-/*459*/	{"Berkley's RC Van", VTYPE_CAR, 90000, 6},
-/*460*/	{"Skimmer", VTYPE_PLANE, 405000, 0},
-/*461*/	{"PCJ-600", VTYPE_BIKE, 75000, 0},
-/*462*/	{"Faggio", VTYPE_BIKE, 9000, 0},
-/*463*/	{"Freeway", VTYPE_BIKE, 70000, 0},
-/*464*/	{"RC Baron", VTYPE_PLANE, 500000, 0},
-/*465*/	{"RC Raider", VTYPE_HELI, 500000, 0},
-/*466*/	{"Glendale", VTYPE_CAR, 45000, 4},
-/*467*/	{"Oceanic", VTYPE_CAR, 41000, 4},
-/*468*/	{"Sanchez", VTYPE_BIKE, 55000, 0},
-/*469*/	{"Sparrow", VTYPE_HELI, 415000, 0},
-/*470*/	{"Patriot", VTYPE_CAR, 315000, 4},
-/*471*/	{"Quad", VTYPE_QUAD, 30000, 0},
-/*472*/	{"Coastguard", VTYPE_SEA, 150000, 2},
-/*473*/	{"Dinghy", VTYPE_SEA, 55000, 0},
-/*474*/	{"Hermes", VTYPE_CAR, 61000, 2},
-/*475*/	{"Sabre", VTYPE_CAR, 90000, 2},
-/*476*/	{"Rustler", VTYPE_PLANE, 1500000, 0},
-/*477*/	{"ZR-350", VTYPE_CAR, 625000, 2},
-/*478*/	{"Walton", VTYPE_CAR, 25000, 4},
-/*479*/	{"Regina", VTYPE_CAR, 65000, 4},
-/*480*/	{"Comet", VTYPE_CAR, 400000, 2},
-/*481*/	{"BMX", VTYPE_BMX, 7000, 0},
-/*482*/	{"Burrito", VTYPE_CAR, 95000, 6},
-/*483*/	{"Camper", VTYPE_CAR, 50000, 4},
-/*484*/	{"Marquis", VTYPE_SEA, 485000, 4},
-/*485*/	{"Baggage", VTYPE_CAR, 40000, 0},
-/*486*/	{"Dozer", VTYPE_CAR, 500000, 0},
-/*487*/	{"Maverick", VTYPE_HELI, 1200000, 4},
-/*488*/	{"SAN News Maverick", VTYPE_HELI, 1200000, 2},
-/*489*/	{"Rancher", VTYPE_CAR, 105000, 4},
-/*490*/	{"FBI Rancher", VTYPE_CAR, 150000, 4},
-/*491*/	{"Virgo", VTYPE_CAR, 55000, 2},
-/*492*/	{"Greenwood", VTYPE_CAR, 60000, 4},
-/*493*/	{"Jetmax", VTYPE_SEA, 770000, 2},
-/*494*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
-/*495*/	{"Sandking", VTYPE_CAR, 1000000, 4},
-/*496*/	{"Blista Compact", VTYPE_CAR, 100500, 2},
-/*497*/	{"Police Maverick", VTYPE_HELI, 1500000, 4},
-/*498*/	{"Boxville", VTYPE_CAR, 80000, 8},
-/*499*/	{"Benson", VTYPE_CAR, 70000, 8},
-/*500*/	{"Mesa", VTYPE_CAR, 60000, 2},
-/*501*/	{"RC Goblin", VTYPE_HELI, 500000, 0},
-/*502*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
-/*503*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0},
-/*504*/	{"Bloodring Banger", VTYPE_CAR, 200000, 0},
-/*505*/	{"Rancher", VTYPE_CAR, 105000, 4},
-/*506*/	{"Super GT", VTYPE_CAR, 700000, 2},
-/*507*/	{"Elegant", VTYPE_CAR, 80000, 4},
-/*508*/	{"Journey", VTYPE_CAR, 180000, 6},
-/*509*/ {"Bike", VTYPE_BMX, 2500, 0},
-/*510*/	{"Mountain Bike", VTYPE_BMX, 10000, 0},
-/*511*/	{"Beagle", VTYPE_PLANE, 415000, 4},
-/*512*/	{"Cropduster", VTYPE_PLANE, 400000, 0},
-/*513*/	{"Stuntplane", VTYPE_PLANE, 420000, 0},
-/*514*/	{"Tanker", VTYPE_CAR, 440000, 4},
-/*515*/	{"Roadtrain", VTYPE_CAR, 485000, 4},
-/*516*/	{"Nebula", VTYPE_CAR, 47500, 4},
-/*517*/	{"Majestic", VTYPE_CAR, 60000, 2},
-/*518*/	{"Buccaneer", VTYPE_CAR, 45000, 2},
-/*519*/	{"Shamal", VTYPE_PLANE, 1500000, 6},
-/*520*/	{"Hydra", VTYPE_PLANE, 10000000, 0},
-/*521*/	{"FCR-900", VTYPE_BIKE, 110000, 0},
-/*522*/	{"NRG-500", VTYPE_BIKE, 775000, 0},
-/*523*/	{"HPV1000", VTYPE_BIKE, 100000, 0},
-/*524*/	{"Cement Truck", VTYPE_CAR, 130000, 0},
-/*525*/	{"Towtruck", VTYPE_HEAVY, 90000, 0},
-/*526*/	{"Fortune", VTYPE_CAR, 55000, 2},
-/*527*/	{"Cadrona", VTYPE_CAR, 41000, 2},
-/*528*/	{"FBI Truck", VTYPE_CAR, 250000, 2},
-/*529*/	{"Willard", VTYPE_CAR, 50000, 4},
-/*530*/	{"Forklift", VTYPE_CAR, 90000, 0},
-/*531*/	{"Tractor", VTYPE_HEAVY, 40000, 0},
-/*532*/	{"Combine Harvester", VTYPE_HEAVY, 600000, 0},
-/*533*/	{"Feltzer", VTYPE_CAR, 110000, 2},
-/*534*/	{"Remington", VTYPE_CAR, 86000, 4},
-/*535*/	{"Slamvan", VTYPE_CAR, 90000, 4},
-/*536*/	{"Blade", VTYPE_CAR, 95000, 2},
-/*537*/	{"Freight", VTYPE_TRAIN, 2000000, 0},
-/*538*/	{"Brownstreak", VTYPE_TRAIN, 2000000, 0},
-/*539*/	{"Vortex", VTYPE_SEA, 1550000, 0},
-/*540*/	{"Vincent", VTYPE_CAR, 60000, 4},
-/*541*/	{"Bullet", VTYPE_CAR, 850000, 2},
-/*542*/	{"Clover", VTYPE_CAR, 40000, 2},
-/*543*/	{"Sadler", VTYPE_CAR, 30000, 6},
-/*544*/	{"Firetruck LA", VTYPE_CAR, 400000, 0},
-/*545*/	{"Hustler", VTYPE_CAR, 325000, 2},
-/*546*/	{"Intruder", VTYPE_CAR, 65000, 4},
-/*547*/	{"Primo", VTYPE_CAR, 50000, 4},
-/*548*/	{"Cargobob", VTYPE_HELI, 1600000, 6},
-/*549*/	{"Tampa", VTYPE_CAR, 50000, 4},
-/*550*/	{"Sunrise", VTYPE_CAR, 85000, 4},
-/*551*/	{"Merit", VTYPE_CAR, 110000, 4},
-/*552*/	{"Utility Van", VTYPE_CAR, 230000, 4},
-/*553*/	{"Nevada", VTYPE_PLANE, 1250000, 6},
-/*554*/	{"Yosemite", VTYPE_CAR, 90000, 6},
-/*555*/	{"Windsor", VTYPE_CAR, 150000, 2},
-/*556*/	{"Monster A", VTYPE_MONSTER, 700000, 0},
-/*557*/	{"Monster B", VTYPE_MONSTER, 700000, 0},
-/*558*/	{"Uranus", VTYPE_CAR, 350000, 2},
-/*559*/	{"Jester", VTYPE_CAR, 500000, 2},
-/*560*/	{"Sultan", VTYPE_CAR, 575000, 4},
-/*561*/	{"Stratum", VTYPE_CAR, 200000, 4},
-/*562*/	{"Elegy", VTYPE_CAR, 495000, 2},
-/*563*/	{"Raindance", VTYPE_HELI, 1350000, 4},
-/*564*/	{"RC Tiger", VTYPE_CAR, 500000, 0},
-/*565*/	{"Flash", VTYPE_CAR, 375000, 2},
-/*566*/	{"Tahoma", VTYPE_CAR, 90000, 4},
-/*567*/	{"Savanna", VTYPE_CAR, 85000, 4},
-/*568*/	{"Bandito", VTYPE_CAR, 40000, 0},
-/*569*/	{"Freight Flat Trailer", VTYPE_TRAIN, 500000, 0},
-/*570*/	{"Streak Trailer", VTYPE_TRAIN, 1000000, 0},
-/*571*/	{"Kart", VTYPE_CAR, 25000, 0},
-/*572*/	{"Mower", VTYPE_CAR, 15000, 0},
-/*573*/	{"Dune", VTYPE_MONSTER, 1000000, 6},
-/*574*/	{"Sweeper", VTYPE_CAR, 50000, 0},
-/*575*/	{"Broadway", VTYPE_CAR, 85000, 2},
-/*576*/	{"Tornado", VTYPE_CAR, 68000, 2},
-/*577*/	{"AT400", VTYPE_PLANE, 3500000, 6},
-/*578*/	{"DFT-30", VTYPE_CAR, 190000, 2},
-/*579*/	{"Huntley", VTYPE_CAR, 250000, 4},
-/*580*/	{"Stafford", VTYPE_CAR, 95000, 4},
-/*581*/	{"BF-400", VTYPE_BIKE, 60000, 0},
-/*582*/	{"Newsvan", VTYPE_CAR, 125000, 4},
-/*583*/	{"Tug", VTYPE_CAR, 25000, 0},
-/*584*/	{"Petrol Trailer", VTYPE_TRAILER, 300000, 0},
-/*585*/	{"Emperor", VTYPE_CAR, 45000, 4},
-/*586*/	{"Wayfarer", VTYPE_BIKE, 50000, 0},
-/*587*/	{"Euros", VTYPE_CAR, 400000, 2},
-/*588*/	{"Hotdog", VTYPE_HEAVY, 90000, 0},
-/*589*/	{"Club", VTYPE_CAR, 150000, 2},
-/*590*/	{"Freight Box Trailer", VTYPE_TRAIN, 350000, 0},
-/*591*/	{"Article Trailer 3", VTYPE_TRAILER, 200000, 10},
-/*592*/	{"Andromada", VTYPE_PLANE, 3500000, 10},
-/*593*/	{"Dodo", VTYPE_PLANE, 525000, 2},
-/*594*/	{"RC Cam", VTYPE_CAR, 500000, 0},
-/*595*/	{"Launch", VTYPE_SEA, 725000, 2},
-/*596*/	{"Police Car (LSPD)", VTYPE_CAR, 100000, 4},
-/*597*/	{"Police Car (SFPD)", VTYPE_CAR, 100000, 4},
-/*598*/	{"Police Car (LVPD)", VTYPE_CAR, 100000, 4},
-/*599*/	{"Police Ranger", VTYPE_CAR, 135000, 4},
-/*600*/	{"Picador", VTYPE_CAR, 40000, 4},
-/*601*/	{"S.W.A.T.", VTYPE_CAR, 450000, 0},
-/*602*/	{"Alpha", VTYPE_CAR, 350000, 2},
-/*603*/	{"Phoenix", VTYPE_CAR, 500000, 2},
-/*604*/	{"Glendale Shit", VTYPE_CAR, 22000, 4},
-/*605*/	{"Sadler Shit", VTYPE_CAR, 19000, 4},
-/*606*/	{"Baggage Trailer A", VTYPE_TRAILER, 50000, 0},
-/*607*/	{"Baggage Trailer B", VTYPE_TRAILER, 50000, 0},
-/*608*/	{"Tug Stairs Trailer", VTYPE_TRAILER, 50000, 0},
-/*609*/	{"Boxville", VTYPE_CAR, 85000, 8},
-/*610*/	{"Farm Trailer", VTYPE_TRAILER, 75000, 0},
-/*611*/	{"Utility Trailer", VTYPE_TRAILER, 75000, 0}
+/*400*/	{"Landstalker", VTYPE_CAR, 70000, 4, 400},
+/*401*/	{"Bravura", VTYPE_CAR, 31000, 2, 200},
+/*402*/	{"Buffalo", VTYPE_CAR, 500000, 2, 200},
+/*403*/	{"Linerunner", VTYPE_CAR, 455800, 4, 400},
+/*404*/	{"Perenniel", VTYPE_CAR, 28900, 4, 400},
+/*405*/	{"Sentinel", VTYPE_CAR, 68300, 4, 400},
+/*406*/	{"Dumper", VTYPE_MONSTER, 853700, 0, 0},
+/*407*/	{"Firetruck", VTYPE_HEAVY, 311800, 0, 0},
+/*408*/	{"Trashmaster", VTYPE_HEAVY, 280000, 0, 0},
+/*409*/	{"Stretch", VTYPE_CAR, 550000, 4, 400},
+/*410*/	{"Manana", VTYPE_CAR, 26300, 2, 200},
+/*411*/	{"Infernus", VTYPE_CAR, 990500, 2, 200},
+/*412*/	{"Voodoo", VTYPE_CAR, 69100, 4, 400},
+/*413*/	{"Pony", VTYPE_CAR, 105100, 6, 600},
+/*414*/	{"Mule", VTYPE_HEAVY, 98200, 8, 800},
+/*415*/	{"Cheetah", VTYPE_CAR, 750400, 2, 200},
+/*416*/	{"Ambulance", VTYPE_CAR, 550100, 4, 400},
+/*417*/	{"Leviathan", VTYPE_HELI, 910000, 6, 600},
+/*418*/	{"Moonbeam", VTYPE_CAR, 80400, 4, 400},
+/*419*/	{"Esperanto", VTYPE_CAR, 58000, 2, 200},
+/*420*/	{"Taxi", VTYPE_CAR, 86000, 4, 400},
+/*421*/	{"Washington", VTYPE_CAR, 75100, 4, 400},
+/*422*/	{"Bobcat", VTYPE_CAR, 35800, 6, 600},
+/*423*/	{"Mr Whoopee", VTYPE_CAR, 98800, 0, 0},
+/*424*/	{"BF Injection", VTYPE_CAR, 65100, 0, 0},
+/*425*/	{"Hunter", VTYPE_HELI, 10000000, 0, 0},
+/*426*/	{"Premier", VTYPE_CAR, 80500, 4, 400},
+/*427*/	{"Enforcer", VTYPE_CAR, 400000, 8, 800},
+/*428*/	{"Securicar", VTYPE_CAR, 400000, 8, 800},
+/*429*/	{"Banshee", VTYPE_CAR, 595000, 2, 200},
+/*430*/	{"Predator", VTYPE_SEA, 1000000, 2, 200},
+/*431*/	{"Bus", VTYPE_CAR, 592000, 0, 0},
+/*432*/	{"Rhino", VTYPE_HEAVY, 10000000, 0, 0},
+/*433*/	{"Barracks", VTYPE_HEAVY, 400000, 8, 800},
+/*434*/	{"Hotknife", VTYPE_CAR, 384000, 0, 0},
+/*435*/	{"Article Trailer", VTYPE_TRAILER, 150000, 10, 1000},
+/*436*/	{"Previon", VTYPE_CAR, 39000, 2, 200},
+/*437*/	{"Coach", VTYPE_HEAVY, 599000, 0, 0},
+/*438*/	{"Cabbie", VTYPE_CAR, 79000, 4, 400},
+/*439*/	{"Stallion", VTYPE_CAR, 65000, 2, 200},
+/*440*/ {"Rumpo", VTYPE_CAR, 95000, 6, 600},
+/*441*/	{"RC Bandit", VTYPE_CAR, 500000, 0, 0},
+/*442*/	{"Romero", VTYPE_CAR, 105000, 4, 400},
+/*443*/	{"Packer", VTYPE_HEAVY, 428000, 0, 0},
+/*444*/	{"Monster", VTYPE_MONSTER, 675000, 0, 0},
+/*445*/	{"Admiral", VTYPE_CAR, 61000, 4, 400},
+/*446*/	{"Squallo", VTYPE_SEA, 775000, 2, 200},
+/*447*/	{"Seasparrow", VTYPE_HELI, 2000000, 0, 0},
+/*448*/	{"Pizzaboy", VTYPE_BIKE, 25000, 0, 0},
+/*449*/	{"Tram", VTYPE_TRAIN, 500000, 0, 0},
+/*450*/	{"Article Trailer 2", VTYPE_TRAILER, 150000, 10, 1000},
+/*451*/	{"Turismo", VTYPE_CAR, 1050000, 2, 200},
+/*452*/	{"Speeder", VTYPE_SEA, 755000, 2, 200},
+/*453*/	{"Reefer", VTYPE_SEA, 480000, 8, 800},
+/*454*/	{"Tropic", VTYPE_SEA, 830000, 6, 600},
+/*455*/	{"Flatbed", VTYPE_CAR, 180000, 8, 800},
+/*456*/	{"Yankee", VTYPE_CAR, 155000, 8, 800},
+/*457*/	{"Caddy", VTYPE_CAR, 85000, 0, 0},
+/*458*/	{"Solair", VTYPE_CAR, 80000, 4, 400},
+/*459*/	{"Berkley's RC Van", VTYPE_CAR, 90000, 6, 600},
+/*460*/	{"Skimmer", VTYPE_PLANE, 405000, 0, 0},
+/*461*/	{"PCJ-600", VTYPE_BIKE, 75000, 0, 0},
+/*462*/	{"Faggio", VTYPE_BIKE, 9000, 0, 0},
+/*463*/	{"Freeway", VTYPE_BIKE, 70000, 0, 0},
+/*464*/	{"RC Baron", VTYPE_PLANE, 500000, 0, 0},
+/*465*/	{"RC Raider", VTYPE_HELI, 500000, 0, 0},
+/*466*/	{"Glendale", VTYPE_CAR, 45000, 4, 400},
+/*467*/	{"Oceanic", VTYPE_CAR, 41000, 4, 400},
+/*468*/	{"Sanchez", VTYPE_BIKE, 55000, 0, 0},
+/*469*/	{"Sparrow", VTYPE_HELI, 415000, 0, 0},
+/*470*/	{"Patriot", VTYPE_CAR, 315000, 4, 400},
+/*471*/	{"Quad", VTYPE_QUAD, 30000, 0, 0},
+/*472*/	{"Coastguard", VTYPE_SEA, 150000, 2, 200},
+/*473*/	{"Dinghy", VTYPE_SEA, 55000, 0, 0},
+/*474*/	{"Hermes", VTYPE_CAR, 61000, 2, 200},
+/*475*/	{"Sabre", VTYPE_CAR, 90000, 2, 200},
+/*476*/	{"Rustler", VTYPE_PLANE, 1500000, 0, 0},
+/*477*/	{"ZR-350", VTYPE_CAR, 625000, 2, 200},
+/*478*/	{"Walton", VTYPE_CAR, 25000, 4, 400},
+/*479*/	{"Regina", VTYPE_CAR, 65000, 4, 400},
+/*480*/	{"Comet", VTYPE_CAR, 400000, 2, 200},
+/*481*/	{"BMX", VTYPE_BMX, 7000, 0, 0},
+/*482*/	{"Burrito", VTYPE_CAR, 95000, 6, 600},
+/*483*/	{"Camper", VTYPE_CAR, 50000, 4, 400},
+/*484*/	{"Marquis", VTYPE_SEA, 485000, 4, 400},
+/*485*/	{"Baggage", VTYPE_CAR, 40000, 0, 0},
+/*486*/	{"Dozer", VTYPE_CAR, 500000, 0, 0},
+/*487*/	{"Maverick", VTYPE_HELI, 1200000, 4, 400},
+/*488*/	{"SAN News Maverick", VTYPE_HELI, 1200000, 2, 200},
+/*489*/	{"Rancher", VTYPE_CAR, 105000, 4, 400},
+/*490*/	{"FBI Rancher", VTYPE_CAR, 150000, 4, 400},
+/*491*/	{"Virgo", VTYPE_CAR, 55000, 2, 200},
+/*492*/	{"Greenwood", VTYPE_CAR, 60000, 4, 400},
+/*493*/	{"Jetmax", VTYPE_SEA, 770000, 2, 200},
+/*494*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0, 0},
+/*495*/	{"Sandking", VTYPE_CAR, 1000000, 4, 400},
+/*496*/	{"Blista Compact", VTYPE_CAR, 100500, 2, 200},
+/*497*/	{"Police Maverick", VTYPE_HELI, 1500000, 4, 400},
+/*498*/	{"Boxville", VTYPE_CAR, 80000, 8, 800},
+/*499*/	{"Benson", VTYPE_CAR, 70000, 8, 800},
+/*500*/	{"Mesa", VTYPE_CAR, 60000, 2, 200},
+/*501*/	{"RC Goblin", VTYPE_HELI, 500000, 0, 0},
+/*502*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0, 0},
+/*503*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0, 0},
+/*504*/	{"Bloodring Banger", VTYPE_CAR, 200000, 0, 0},
+/*505*/	{"Rancher", VTYPE_CAR, 105000, 4, 400},
+/*506*/	{"Super GT", VTYPE_CAR, 700000, 2, 200},
+/*507*/	{"Elegant", VTYPE_CAR, 80000, 4, 400},
+/*508*/	{"Journey", VTYPE_CAR, 180000, 6, 600},
+/*509*/ {"Bike", VTYPE_BMX, 2500, 0, 0},
+/*510*/	{"Mountain Bike", VTYPE_BMX, 10000, 0, 0},
+/*511*/	{"Beagle", VTYPE_PLANE, 415000, 4, 400},
+/*512*/	{"Cropduster", VTYPE_PLANE, 400000, 0, 0},
+/*513*/	{"Stuntplane", VTYPE_PLANE, 420000, 0, 0},
+/*514*/	{"Tanker", VTYPE_CAR, 440000, 4, 400},
+/*515*/	{"Roadtrain", VTYPE_CAR, 485000, 4, 400},
+/*516*/	{"Nebula", VTYPE_CAR, 47500, 4, 400},
+/*517*/	{"Majestic", VTYPE_CAR, 60000, 2, 200},
+/*518*/	{"Buccaneer", VTYPE_CAR, 45000, 2, 200},
+/*519*/	{"Shamal", VTYPE_PLANE, 1500000, 6, 600},
+/*520*/	{"Hydra", VTYPE_PLANE, 10000000, 0, 0},
+/*521*/	{"FCR-900", VTYPE_BIKE, 110000, 0, 0},
+/*522*/	{"NRG-500", VTYPE_BIKE, 775000, 0, 0},
+/*523*/	{"HPV1000", VTYPE_BIKE, 100000, 0, 0},
+/*524*/	{"Cement Truck", VTYPE_CAR, 130000, 0, 0},
+/*525*/	{"Towtruck", VTYPE_HEAVY, 90000, 0, 0},
+/*526*/	{"Fortune", VTYPE_CAR, 55000, 2, 200},
+/*527*/	{"Cadrona", VTYPE_CAR, 41000, 2, 200},
+/*528*/	{"FBI Truck", VTYPE_CAR, 250000, 2, 200},
+/*529*/	{"Willard", VTYPE_CAR, 50000, 4, 400},
+/*530*/	{"Forklift", VTYPE_CAR, 90000, 0, 0},
+/*531*/	{"Tractor", VTYPE_HEAVY, 40000, 0, 0},
+/*532*/	{"Combine Harvester", VTYPE_HEAVY, 600000, 0, 0},
+/*533*/	{"Feltzer", VTYPE_CAR, 110000, 2, 200},
+/*534*/	{"Remington", VTYPE_CAR, 86000, 4, 400},
+/*535*/	{"Slamvan", VTYPE_CAR, 90000, 4, 400},
+/*536*/	{"Blade", VTYPE_CAR, 95000, 2, 200},
+/*537*/	{"Freight", VTYPE_TRAIN, 2000000, 0, 0},
+/*538*/	{"Brownstreak", VTYPE_TRAIN, 2000000, 0, 0},
+/*539*/	{"Vortex", VTYPE_SEA, 1550000, 0, 0},
+/*540*/	{"Vincent", VTYPE_CAR, 60000, 4, 400},
+/*541*/	{"Bullet", VTYPE_CAR, 850000, 2, 200},
+/*542*/	{"Clover", VTYPE_CAR, 40000, 2, 200},
+/*543*/	{"Sadler", VTYPE_CAR, 30000, 6, 600},
+/*544*/	{"Firetruck LA", VTYPE_CAR, 400000, 0, 0},
+/*545*/	{"Hustler", VTYPE_CAR, 325000, 2, 200},
+/*546*/	{"Intruder", VTYPE_CAR, 65000, 4, 400},
+/*547*/	{"Primo", VTYPE_CAR, 50000, 4, 400},
+/*548*/	{"Cargobob", VTYPE_HELI, 1600000, 6, 600},
+/*549*/	{"Tampa", VTYPE_CAR, 50000, 4, 400},
+/*550*/	{"Sunrise", VTYPE_CAR, 85000, 4, 400},
+/*551*/	{"Merit", VTYPE_CAR, 110000, 4, 400},
+/*552*/	{"Utility Van", VTYPE_CAR, 230000, 4, 400},
+/*553*/	{"Nevada", VTYPE_PLANE, 1250000, 6, 600},
+/*554*/	{"Yosemite", VTYPE_CAR, 90000, 6, 600},
+/*555*/	{"Windsor", VTYPE_CAR, 150000, 2, 200},
+/*556*/	{"Monster A", VTYPE_MONSTER, 700000, 0, 0},
+/*557*/	{"Monster B", VTYPE_MONSTER, 700000, 0, 0},
+/*558*/	{"Uranus", VTYPE_CAR, 350000, 2, 200},
+/*559*/	{"Jester", VTYPE_CAR, 500000, 2, 200},
+/*560*/	{"Sultan", VTYPE_CAR, 575000, 4, 400},
+/*561*/	{"Stratum", VTYPE_CAR, 200000, 4, 400},
+/*562*/	{"Elegy", VTYPE_CAR, 495000, 2, 200},
+/*563*/	{"Raindance", VTYPE_HELI, 1350000, 4, 400},
+/*564*/	{"RC Tiger", VTYPE_CAR, 500000, 0, 0},
+/*565*/	{"Flash", VTYPE_CAR, 375000, 2, 200},
+/*566*/	{"Tahoma", VTYPE_CAR, 90000, 4, 400},
+/*567*/	{"Savanna", VTYPE_CAR, 85000, 4, 400},
+/*568*/	{"Bandito", VTYPE_CAR, 40000, 0, 0},
+/*569*/	{"Freight Flat Trailer", VTYPE_TRAIN, 500000, 0, 0},
+/*570*/	{"Streak Trailer", VTYPE_TRAIN, 1000000, 0, 0},
+/*571*/	{"Kart", VTYPE_CAR, 25000, 0, 0},
+/*572*/	{"Mower", VTYPE_CAR, 15000, 0, 0},
+/*573*/	{"Dune", VTYPE_MONSTER, 1000000, 6, 600},
+/*574*/	{"Sweeper", VTYPE_CAR, 50000, 0, 0},
+/*575*/	{"Broadway", VTYPE_CAR, 85000, 2, 200},
+/*576*/	{"Tornado", VTYPE_CAR, 68000, 2, 200},
+/*577*/	{"AT400", VTYPE_PLANE, 3500000, 6, 600},
+/*578*/	{"DFT-30", VTYPE_CAR, 190000, 2, 200},
+/*579*/	{"Huntley", VTYPE_CAR, 250000, 4, 400},
+/*580*/	{"Stafford", VTYPE_CAR, 95000, 4, 400},
+/*581*/	{"BF-400", VTYPE_BIKE, 60000, 0, 0},
+/*582*/	{"Newsvan", VTYPE_CAR, 125000, 4, 400},
+/*583*/	{"Tug", VTYPE_CAR, 25000, 0, 0},
+/*584*/	{"Petrol Trailer", VTYPE_TRAILER, 300000, 0, 0},
+/*585*/	{"Emperor", VTYPE_CAR, 45000, 4, 400},
+/*586*/	{"Wayfarer", VTYPE_BIKE, 50000, 0, 0},
+/*587*/	{"Euros", VTYPE_CAR, 400000, 2, 200},
+/*588*/	{"Hotdog", VTYPE_HEAVY, 90000, 0, 0},
+/*589*/	{"Club", VTYPE_CAR, 150000, 2, 200},
+/*590*/	{"Freight Box Trailer", VTYPE_TRAIN, 350000, 0, 0},
+/*591*/	{"Article Trailer 3", VTYPE_TRAILER, 200000, 10, 1000},
+/*592*/	{"Andromada", VTYPE_PLANE, 3500000, 10, 1000},
+/*593*/	{"Dodo", VTYPE_PLANE, 525000, 2, 200},
+/*594*/	{"RC Cam", VTYPE_CAR, 500000, 0, 0},
+/*595*/	{"Launch", VTYPE_SEA, 725000, 2, 200},
+/*596*/	{"Police Car (LSPD)", VTYPE_CAR, 100000, 4, 400},
+/*597*/	{"Police Car (SFPD)", VTYPE_CAR, 100000, 4, 400},
+/*598*/	{"Police Car (LVPD)", VTYPE_CAR, 100000, 4, 400},
+/*599*/	{"Police Ranger", VTYPE_CAR, 135000, 4, 400},
+/*600*/	{"Picador", VTYPE_CAR, 40000, 4, 400},
+/*601*/	{"S.W.A.T.", VTYPE_CAR, 450000, 0, 0},
+/*602*/	{"Alpha", VTYPE_CAR, 350000, 2, 200},
+/*603*/	{"Phoenix", VTYPE_CAR, 500000, 2, 200},
+/*604*/	{"Glendale Shit", VTYPE_CAR, 22000, 4, 400},
+/*605*/	{"Sadler Shit", VTYPE_CAR, 19000, 4, 400},
+/*606*/	{"Baggage Trailer A", VTYPE_TRAILER, 50000, 0, 0},
+/*607*/	{"Baggage Trailer B", VTYPE_TRAILER, 50000, 0, 0},
+/*608*/	{"Tug Stairs Trailer", VTYPE_TRAILER, 50000, 0, 0},
+/*609*/	{"Boxville", VTYPE_CAR, 85000, 8, 800},
+/*610*/	{"Farm Trailer", VTYPE_TRAILER, 75000, 0, 0},
+/*611*/	{"Utility Trailer", VTYPE_TRAILER, 75000, 0, 0}
 
 };
+
+//==============================================================================
+
+stock GetVehicleTrunkSpace(vehicleid)
+{
+	new modelid = GetVehicleModel(vehicleid);
+
+	if(modelid == 0)
+		return 0;
+
+	return CarModels[modelid-400][mTrunkSpace];
+}
+
+stock GetVehicleModelTrunkSpace(modelid)
+{
+	if(modelid < 400 || modelid > 611)
+		return 0;
+
+	return CarModels[modelid-400][mTrunkSpace];
+}
+
+stock VehicleHasContainer(vehicleid)
+{
+	if(VehicleInfo[vehicleid][VehContainerSQLID] > 0 && VehicleInfo[vehicleid][VehContainerID] > 0)
+	    return 1;
+	return 0;
+}
+
+//==============================================================================
 
 GetVehicleMaxTrunkSlots(vehicleid)
 {
@@ -461,6 +493,8 @@ GetVehicleModelTrunkSlots(modelid)
 
 	return CarModels[modelid-400][mTrunkSlots];
 }
+
+//==============================================================================
 
 GetVehicleName(vehicleid)
 {
@@ -484,6 +518,8 @@ GetVehicleModelName(modelid)
 	return name;
 }
 
+//==============================================================================
+
 GetVehiclePrice(vehicleid, priceperc)
 {
 	new modelid = GetVehicleModel(vehicleid);
@@ -502,6 +538,8 @@ GetVehicleModelPrice(modelid, priceperc)
 	return (CarModels[modelid-400][mPrice] / 100 * priceperc);
 }
 
+//==============================================================================
+
 GetVehicleType(vehicleid)
 {
 	new modelid = GetVehicleModel(vehicleid);
@@ -511,6 +549,8 @@ GetVehicleType(vehicleid)
 
 	return CarModels[modelid-400][mType];
 }
+
+//==============================================================================
 
 VehTypeName(type)
 {
@@ -615,6 +655,10 @@ ResetVehicle(id)
 	{
         VehicleInfo[id][VehCompSlot][i] = 0;
 	}
+	
+	if(VehicleHasContainer(id))
+	    Container_Empty(VehicleInfo[id][VehContainerID]);
+	    
 	ResetTrunk(id);
 	return 1;
 }
@@ -624,7 +668,7 @@ SaveVehicle(id)
 	if(dontsave)
 		return 1;
 
-    new query[1100];
+    new query[1150];
 
     GetVehicleDamageStatus(id, VehicleInfo[id][VehDamage1], VehicleInfo[id][VehDamage2], VehicleInfo[id][VehDamage3], VehicleInfo[id][VehDamage4]);
 	GetVehicleHealth(id, VehicleInfo[id][VehHP]);
@@ -666,7 +710,7 @@ SaveVehicle(id)
 		VehicleInfo[id][VehOwnerName]
 	);
 	
-	format(query,sizeof(query),"%s,VehCompSlot0=%d,VehCompSlot1=%d,VehCompSlot2=%d,VehCompSlot3=%d,VehCompSlot4=%d,VehCompSlot5=%d,VehCompSlot6=%d,VehCompSlot7=%d,VehCompSlot8=%d,VehCompSlot9=%d,VehCompSlot10=%d,VehCompSlot11=%d,VehCompSlot12=%d,VehCompSlot13=%d,VehMarijuana=%d,VehLSD=%d,VehEcstasy=%d,VehCocaine=%d WHERE `VehSQLID` = %d",
+	format(query,sizeof(query),"%s,VehCompSlot0=%d,VehCompSlot1=%d,VehCompSlot2=%d,VehCompSlot3=%d,VehCompSlot4=%d,VehCompSlot5=%d,VehCompSlot6=%d,VehCompSlot7=%d,VehCompSlot8=%d,VehCompSlot9=%d,VehCompSlot10=%d,VehCompSlot11=%d,VehCompSlot12=%d,VehCompSlot13=%d,VehMarijuana=%d,VehLSD=%d,VehEcstasy=%d,VehCocaine=%d, VehContainerSQLID=%d WHERE `VehSQLID` = %d",
 		query,
 		VehicleInfo[id][VehCompSlot][0],
 		VehicleInfo[id][VehCompSlot][1],
@@ -686,6 +730,7 @@ SaveVehicle(id)
 		VehicleInfo[id][VehLSD],
 		VehicleInfo[id][VehEcstasy],
 		VehicleInfo[id][VehCocaine],
+		VehicleInfo[id][VehContainerSQLID],
 		VehicleInfo[id][VehSQLID]
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
@@ -703,7 +748,8 @@ SaveVehicles() {
 	return 1;
 }
 
-//====[VEHICLE CHECK FUNCTIONS]=================================================
+//==========================[VEHICLE CHECK FUNCTIONS]===========================
+
 public IsVehicleOccupied(vehicleid)
 {
 	foreach(new i : Player)
@@ -712,32 +758,8 @@ public IsVehicleOccupied(vehicleid)
 	}
 	return 0;
 }
-public IsAPlane(vehicleid)
-{   new model = GetVehicleModel(vehicleid);
-	if(model == 592 || model == 577 || model == 511 || model == 512 || model == 593 || model == 520 || model == 553 || model == 476 || model == 519 || model == 460 || model == 513)
-	{
-		return 1;
-	}
-	return 0;
-}
-public IsAHelicopter(vehicleid)
-{   new model = GetVehicleModel(vehicleid);
-	if(model == 548 || model == 417 || model == 487 || model == 488 || model == 497 || model == 563 || model == 447 || model == 469)
-	{
-		return 1;
-	}
-	return 0;
-}
-public IsABike(vehicleid)
-{   new model = GetVehicleModel(vehicleid);
-	if(model == 581 || model == 509 || model == 481 || model == 462 || model == 521 || model == 463 || model == 510 || model == 522 || model == 461 || model == 448 || model == 471 || model == 468 || model == 586)
-	{
-		return 1;
-	}
-	return 0;
-}
 
-//===========================[VEHICLE BUSINESS LOGIC]===========================
+//==========================[VEHICLE BUSINESS LOGIC]============================
 
 SetEngine(vehicleid, status)
 {
@@ -949,12 +971,217 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 	return 1;
 }
 
+CMD:mal2(playerid, params[])
+{
+ 	cmd_maletero2(playerid, params);
+	return 1;
+}
+
+CMD:maletero2(playerid, params[])
+{
+	new vehicleid = GetClosestVehicle(playerid, 5.0),
+		returnstr[32],
+		returnid2,
+		cmd[32];
+
+    if(IsPlayerInAnyVehicle(playerid))
+       	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes salir del vehículo primero!");
+    if(vehicleid == INVALID_VEHICLE_ID)
+       	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
+    if(GetVehicleTrunkSpace(vehicleid) == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no tiene maletero!");
+	if(VehicleInfo[vehicleid][VehBoot] != 1 && !AdminDuty[playerid])
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero está cerrado!");
+
+    if(sscanf(params, "s[32]S(-1)[32]I(-1)", cmd, returnstr, returnid2))
+	{
+		if(!VehicleHasContainer(vehicleid) || !Container_Show(vehicleid, 1, VehicleInfo[vehicleid][VehContainerID], playerid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: El maletero no tiene una ID de contenedor asociada. Reportar a un administador.");
+			
+	    SendClientMessage(playerid, COLOR_WHITE, "========================[MALETERO]======================");
+		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
+		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
+		}
+		if(VehicleInfo[vehicleid][VehLSD] > 0) {
+		    SendFMessage(playerid, COLOR_WHITE, " - LSD: %d dosis.", VehicleInfo[vehicleid][VehLSD]);
+		}
+		if(VehicleInfo[vehicleid][VehEcstasy] > 0) {
+		    SendFMessage(playerid, COLOR_WHITE, " - Éxtasis: %d dosis.", VehicleInfo[vehicleid][VehEcstasy]);
+		}
+		if(VehicleInfo[vehicleid][VehCocaine] > 0) {
+		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", VehicleInfo[vehicleid][VehCocaine]);
+		}
+       	SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
+       	return 1;
+	}
+	else if(strcmp(cmd, "guardardroga", true) == 0)
+	{
+        if(strcmp(returnstr, "marihuana", true) == 0)
+		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+            if(PlayerInfo[playerid][pMarijuana] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pMarijuana] -= returnid2;
+            VehicleInfo[vehicleid][VehMarijuana] += returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "lsd", true) == 0)
+		{
+			if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(PlayerInfo[playerid][pLSD] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pLSD] -= returnid2;
+         	VehicleInfo[vehicleid][VehLSD] += returnid2;
+         	SaveVehicle(vehicleid);
+         	PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
+         	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "extasis", true) == 0)
+		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(PlayerInfo[playerid][pEcstasy] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pEcstasy] -= returnid2;
+            VehicleInfo[vehicleid][VehEcstasy] += returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "cocaina", true) == 0)
+		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(PlayerInfo[playerid][pCocaine] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pCocaine] -= returnid2;
+            VehicleInfo[vehicleid][VehCocaine] += returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else
+		{
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero guardardroga [tipo] [cantidad]");
+       		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
+        }
+    }
+	else if(strcmp(cmd, "tomardroga", true) == 0)
+	{
+       	if(strcmp(returnstr, "marihuana", true) == 0)
+ 		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+            if(VehicleInfo[vehicleid][VehMarijuana] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pMarijuana] += returnid2;
+            VehicleInfo[vehicleid][VehMarijuana] -= returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "lsd", true) == 0)
+		{
+			if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(VehicleInfo[vehicleid][VehLSD] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pLSD] += returnid2;
+         	VehicleInfo[vehicleid][VehLSD] -= returnid2;
+         	SaveVehicle(vehicleid);
+         	PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
+         	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "extasis", true) == 0)
+		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(VehicleInfo[vehicleid][VehEcstasy] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pEcstasy] += returnid2;
+            VehicleInfo[vehicleid][VehEcstasy] -= returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else if(strcmp(returnstr, "cocaina", true) == 0)
+		{
+            if(returnid2 <= 0 || returnid2 > 5000)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
+        	if(VehicleInfo[vehicleid][VehCocaine] < returnid2)
+                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
+
+			PlayerInfo[playerid][pCocaine] += returnid2;
+            VehicleInfo[vehicleid][VehCocaine] -= returnid2;
+            SaveVehicle(vehicleid);
+            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
+            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+        }
+		else
+		{
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero tomardroga [tipo] [cantidad]");
+       		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
+        }
+	}
+	else if(strcmp(cmd, "guardardinero", true) == 0)
+	{
+		if(PlayerInfo[playerid][pHealth] < 25)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+	    new amount = strval(returnstr);
+	    if(amount < 1 || amount > 250000)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar menos de $1 ni más de $250.000 por slot.");
+		if(GetPlayerCash(playerid) < amount)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad de efectivo.");
+
+		new validslot = SearchTrunkFreeSlot(vehicleid);
+		if(validslot == -1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
+
+		SetPVarInt(playerid, "cantSaveItems", 1);
+		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+		SetTrunkItemAndParam(vehicleid, validslot, 51, amount);
+		GivePlayerCash(playerid, -amount);
+		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+	}
+	else if(strcmp(cmd, "tomardinero", true) == 0)
+	{
+
+		new slot = strval(returnstr);
+        if(GetTrunkItem(vehicleid, slot) != 51)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+
+		GivePlayerCash(playerid, GetTrunkParam(vehicleid, slot));
+		SetTrunkItemAndParam(vehicleid, slot, 0, 0);
+		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
+    }
+	else if(strcmp(cmd, "guardar", true) == 0)
+	{
+		SaveItemOnTrunk(playerid, HAND_RIGHT, vehicleid, strval(returnstr));
+    }
+	else if(strcmp(cmd, "guardari", true) == 0)
+	{
+		SaveItemOnTrunk(playerid, HAND_LEFT, vehicleid, strval(returnstr));
+    }
+	return 1;
+}
+
 CMD:mal(playerid, params[])
 {
  	cmd_maletero(playerid, params);
 	return 1;
 }
-        
+
 CMD:maletero(playerid, params[])
 {
 	new vehicleid = GetClosestVehicle(playerid, 5.0),

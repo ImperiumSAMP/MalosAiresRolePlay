@@ -47,20 +47,20 @@ new VECTOR_SYSTEM = 0,
 
 stock vector_create()
 {
-	new aux;
+	new vecid;
 
 	if(vector_size(VECTOR_SYSTEM))
 	{
-		aux = vector_get(VECTOR_SYSTEM, 0);
+		vecid = vector_get(VECTOR_SYSTEM, 0);
 		vector_remove(VECTOR_SYSTEM, 0);
 	}
 	else
 	{
-	    aux = VECTORS_ID_COUNT;
+	    vecid = VECTORS_ID_COUNT;
 	    VECTORS_ID_COUNT++;
 	}
 
-	return aux;
+	return vecid;
 }
 
 stock vector_destroy(vecid)

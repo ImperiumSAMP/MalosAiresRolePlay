@@ -2715,6 +2715,13 @@ public OnVehicleDataLoad(id)
 		    cache_get_field_content(0, "VehCompSlot13", result); 		VehicleInfo[id][VehCompSlot][13] = strval(result);
 		}
 
+        cache_get_field_content(0, "VehContainerSQLID", result); 	VehicleInfo[id][VehContainerSQLID] = strval(result);
+        
+        if(VehicleInfo[id][VehContainerSQLID] > 0)
+            VehicleInfo[id][VehContainerID] = Container_Load(VehicleInfo[id][VehContainerSQLID]);
+		else
+		    Container_Create(GetVehicleModelTrunkSpace(VehicleInfo[id][VehModel]), 5, VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
+		
 		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
  			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
 
@@ -3868,7 +3875,6 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
 	new	string[128],
-		Float:pos[3],
 		vehicleid,
 	 	vehicleModelType;
 	
@@ -4022,6 +4028,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			{
 	            if(vehicleModelType == VTYPE_BMX && VehicleInfo[vehicleid][VehOwnerSQLID] != PlayerInfo[playerid][pID])
 				{
+  					new Float:pos[3];
 					SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta bicicleta no te pertenece!");
 					RemovePlayerFromVehicle(playerid);
 					GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
@@ -4082,7 +4089,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				}
 			}
 		}
-		if(IsAPlane(vehicleid) || IsAHelicopter(vehicleid))
+		if(GetVehicleType(vehicleid) == VTYPE_PLANE || GetVehicleType(vehicleid) == VTYPE_HELI)
 		{
 	  		if(PlayerInfo[playerid][pFlyLic] == 0)
 			  {

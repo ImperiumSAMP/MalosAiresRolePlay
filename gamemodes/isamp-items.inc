@@ -318,6 +318,15 @@ stock GetItemAttachBone(itemid)
 	return ServerItems[itemid][AttachBone];
 }
 
+stock GetItemSpace(item, param = 0)
+{
+	// if(space depende de parametro && param != 0)
+	// 		return Items[itemid][iSpace] * param
+	// else
+	//      return Items[itemid][iSpace]
+	return 65;
+}
+
 stock GetItemName(itemid)
 {
 	new str[40];
