@@ -339,6 +339,8 @@ Container_AddItemAndParam(id, item, param)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
+	    if(GetItemSpace(item, param) < Container_GetMinItemSpace(id))
+	        return 0;
 		if(Container_GetUsedSpace(id) + GetItemSpace(item, param) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
 		    return 0;
 

@@ -1171,7 +1171,7 @@ CMD:maletero2(playerid, params[])
 		if(itemid == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 		if(!Container_AddItemAndParam(VehicleInfo[vehicleid][VehContainerID], itemid, itemparam))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el maletero.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el maletero / El ítem es demasiado chico para guardarse en un maletero.");
 
     	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
 
