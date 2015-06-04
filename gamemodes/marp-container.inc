@@ -45,6 +45,8 @@ enum ContainerSelectionInfo {
 
 new Container_Selection[MAX_PLAYERS][ContainerSelectionInfo];
 
+new Container_DlgInfoStr[4096];
+
 //==============================================================================
 
 ResetContainerSelection(playerid)
@@ -351,10 +353,11 @@ Container_AddItemAndParam(id, item, param)
 
 		Container_UpdateOpenedDialogs(id);
 
- 		new query[150];
+ 		new query[128];
 
 		format(query, sizeof(query), "INSERT INTO containers_slots (container, Item, Param) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, param);
 		mysql_function_query(dbHandle, query, false, "", "");
+		
 		return 1;
 	}
 
@@ -382,10 +385,11 @@ Container_TakeItem(id, slot, &item, &param)
 
 		Container_UpdateOpenedDialogs(id);
 
- 		new query[150];
+ 		new query[128];
 
 		format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", Container_GetSQLID(id), item, param);
 		mysql_function_query(dbHandle, query, false, "", "");
+		
 		return 1;
 	}
 
@@ -412,18 +416,18 @@ Container_Show(origid, type, id, playerid)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
-	    new string1[128];
+	    new string1[64];
 	    
 	    if(Container_GetElementsAmount(id) > 0)
 	    {
-			new string2[3500] = "";
-
+			format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s", "");
+			
 			new vsize = vector_size(id),
 			    slot = 0;
 
 			for(new i=4; i<vsize; i+=2)
 			{
-			    format(string2, sizeof(string2), "%s%d - Item: %s\t%s: %d\n", string2, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1));
+			    format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\t%s: %d\n", Container_DlgInfoStr, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1));
 	            slot++;
 			}
 			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
@@ -431,15 +435,15 @@ Container_Show(origid, type, id, playerid)
 			switch(type)
 			{
 			    case CONTAINER_TYPE_TRUNK:
-			        Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+			        Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
 			    case CONTAINER_TYPE_INV:
-			    	Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+			    	Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
 		        case CONTAINER_TYPE_POCKET:
-		            Dialog_Show(playerid, Dlg_Show_Pocket_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		            Dialog_Show(playerid, Dlg_Show_Pocket_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
 		        case CONTAINER_TYPE_HOUSE:
-		            Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		            Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
 		        case CONTAINER_TYPE_ITEM:
-		            Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		            Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
 				default:
 					return 0;
 			}
@@ -449,7 +453,7 @@ Container_Show(origid, type, id, playerid)
 		}
 		else
 		{
-			format(string1, sizeof(string1), "Vacio* Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			format(string1, sizeof(string1), "Vacio * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "Contenedor", string1, "Cerrar", "");
 		}
 		return 1;
