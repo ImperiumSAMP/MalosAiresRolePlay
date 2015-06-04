@@ -237,7 +237,7 @@ Container_GetElementsAmount(id)
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return (vector_size(id) - 4) / 2;
 
-	return 99999;
+	return 0;
 }
 
 //==============================================================================
@@ -272,6 +272,34 @@ stock Container_SlotToVecIndex(container_slot)
 stock Container_VecIndexToSlot(vec_index)
 {
 	return (vec_index - 4) / 2;
+}
+
+//==============================================================================
+
+stock Container_GetItem(id, slot)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+		if(slot < 0 || slot >= Container_GetElementsAmount(id)) // Slot inválido
+	        return 0;
+
+		return vector_get(id, Container_SlotToVecIndex(slot));
+	}
+	
+	return 0;
+}
+
+stock Container_GetParam(id, slot)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+		if(slot < 0 || slot >= Container_GetElementsAmount(id)) // Slot inválido
+	        return 0;
+
+		return vector_get(id, Container_SlotToVecIndex(slot));
+	}
+
+	return 0;
 }
 
 //==============================================================================
@@ -397,105 +425,33 @@ Container_Show(origid, type, id, playerid)
 	            slot++;
 			}
 			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-			Dialog_Show(playerid, DLG_SHOW_CONTAINER, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
 
+			switch(type)
+			{
+			    case CONTAINER_TYPE_TRUNK:
+			        Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+			    case CONTAINER_TYPE_INV:
+			    	Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		        case CONTAINER_TYPE_POCKET:
+		            Dialog_Show(playerid, Dlg_Show_Pocket_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		        case CONTAINER_TYPE_HOUSE:
+		            Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+		        case CONTAINER_TYPE_ITEM:
+		            Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+				default:
+					return 0;
+			}
 			Container_Selection[playerid][csId] = id;
-			Container_Selection[playerid][csType] = type; // Para saber si es casa, etc, y saber luego comprobar distancias, q esté abierto, etc
-			Container_Selection[playerid][csOriginalId] = origid; // Para saber sobre cual id de casa, auto, etc hay que comprobar
-			// para saber después que item agarró, te fiajs con el slot (listitem), y no hace falta mas quilombo porque siempre va a estar actualizado gracias a updateopeneddialogs
+			Container_Selection[playerid][csOriginalId] = origid;
+			Container_Selection[playerid][csType] = type;
 		}
 		else
 		{
-			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, string1, "Vacio", "Cerrar", "");
+			format(string1, sizeof(string1), "Vacio* Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "Contenedor", string1, "Cerrar", "");
 		}
 		return 1;
 	}
 
 	return 0;
-}
-
-//==============================================================================
-
-Dialog:DLG_SHOW_CONTAINER(playerid, response, listitem, inputtext[])
-{
-	if(response)
-	{
-	    SendFMessage(playerid, COLOR_WHITE, "Vector ID %d, Tipo %d e id original es %d", Container_Selection[playerid][csId], Container_Selection[playerid][csType], Container_Selection[playerid][csOriginalId]);
-        SendFMessage(playerid, COLOR_WHITE, "Seleccionó del slot %d el item: %d, param: %d", listitem, vector_get(Container_Selection[playerid][csId], Container_SlotToVecIndex(listitem)), vector_get(Container_Selection[playerid][csId], Container_SlotToVecIndex(listitem)+1));
-        new item, param;
-		if(!Container_TakeItem(Container_Selection[playerid][csId], listitem, item, param))
-	        SendClientMessage(playerid, COLOR_WHITE, "Vacio / slot inválido");
-		SendFMessage(playerid, -1, "response con item %d y param %d", item, param);
-	}
-	else
-	{
-		SendClientMessage(playerid, -1, "no response");
-	}
-	ResetContainerSelection(playerid);
-	return 1;
-}
-
-//==============================================================================
-
-CMD:arm2(playerid, params[])
-{
-	new cmd[32],
-	    slot;
-
-	new houseid = GetPlayerHouse(playerid);
-
-	if(sscanf(params, "s[32]I(-1)", cmd, slot))
-	    return SendClientMessage(playerid, COLOR_WHITE, "/arm [cmd]   - cmds: tomar, guardar , ver");
-
-	if(!strcmp("guardar", cmd, true))
-	{
-	    new item = 1+random(500),
-	        param = 1+random(4000);
-
-	    if(!Container_AddItemAndParam(House[houseid][ContainerID], item, param))
-	        return SendClientMessage(playerid, COLOR_WHITE, "Máximo de espacio alcanzado");
-
-	    SendFMessage(playerid, COLOR_WHITE, "Guardando item %d, param %d", item, param);
-	}
-	else if(!strcmp("tomar", cmd, true))
-	{
-	    new item, param;
-	    if(!Container_TakeItem(House[houseid][ContainerID], slot, item, param))
-	        return SendClientMessage(playerid, COLOR_WHITE, "Vacio / slot inválido");
-
-        SendFMessage(playerid, COLOR_WHITE, "Tomando item %d, param %d", item, param);
-	}
-	else if(!strcmp("ver", cmd, true))
-	{
-	    if(!Container_Show(houseid, CONTAINER_TYPE_HOUSE, House[houseid][ContainerID], playerid))
-	        return SendClientMessage(playerid, COLOR_WHITE, "Vacio");
-	    SendClientMessage(playerid, COLOR_WHITE, "Mostrando");
-	}
-	return 1;
-}
-
-//==============================================================================
-
-CMD:containerdebug(playerid, params[])
-{
-	new id;
-	new type;
-	
-	if(sscanf(params, "iI(1)", type, id))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /containerdebug [tipo] [houseid/vehicleid]");
-
-	if(type == 1)
-	{
-		SendFMessage(playerid, -1, "Veh[ContainerID] = %d, Veh[ContainerSQLID] = %d", VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
-		SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", Container_GetTotalSpace(VehicleInfo[id][VehContainerID]), Container_GetUsedSpace(VehicleInfo[id][VehContainerID]));
-	    SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", Container_GetSQLID(VehicleInfo[id][VehContainerID]), Container_GetMinItemSpace(VehicleInfo[id][VehContainerID]));
-	}
-	else if(type == 4)
-	{
-		SendFMessage(playerid, -1, "House[ContainerID] = %d, House[ContainerSQLID] = %d", House[id][ContainerID], House[id][ContainerSQLID]);
-		SendFMessage(playerid, -1, "container inicializo con total: %d, used: %d", Container_GetTotalSpace(House[id][ContainerID]), Container_GetUsedSpace(House[id][ContainerID]));
-	    SendFMessage(playerid, -1, "container inicializo con sqlid: %d, minimo item space: %d", Container_GetSQLID(House[id][ContainerID]), Container_GetMinItemSpace(House[id][ContainerID]));
-	}
-	return 1;
 }

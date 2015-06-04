@@ -34,6 +34,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
+#include "marp-container.inc"
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-business.inc" 			//Sistema de negocios
@@ -80,7 +81,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-weather.inc"
 #include "marp-same.inc"
 #include "marp-lifts.inc"
-#include "marp-container.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.1"

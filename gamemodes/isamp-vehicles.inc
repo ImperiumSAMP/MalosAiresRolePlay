@@ -594,6 +594,13 @@ public respawnVeh(vehicleid)
 	return 1;
 }
 
+stock Float:GetDistanceFromVehicle(playerid, vehicleid)
+{
+	new Float:pos[3];
+	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+	return GetVehicleDistanceFromPoint(vehicleid, pos[0], pos[1], pos[2]);
+}
+
 //========================[VEHICLE GLOBAL VARIABLES]============================
 
 new vlocked,
@@ -971,6 +978,9 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 	return 1;
 }
 
+
+//==============================[EXPERIMENTAL]==================================
+
 CMD:mal2(playerid, params[])
 {
  	cmd_maletero2(playerid, params);
@@ -988,15 +998,18 @@ CMD:maletero2(playerid, params[])
        	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes salir del vehículo primero!");
     if(vehicleid == INVALID_VEHICLE_ID)
        	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
-    if(GetVehicleTrunkSpace(vehicleid) == 0)
+    if(GetVehicleTrunkSpace(vehicleid) == 0 || !VehicleHasContainer(vehicleid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no tiene maletero!");
 	if(VehicleInfo[vehicleid][VehBoot] != 1 && !AdminDuty[playerid])
 	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero está cerrado!");
 
     if(sscanf(params, "s[32]S(-1)[32]I(-1)", cmd, returnstr, returnid2))
 	{
-		if(!VehicleHasContainer(vehicleid) || !Container_Show(vehicleid, 1, VehicleInfo[vehicleid][VehContainerID], playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: El maletero no tiene una ID de contenedor asociada. Reportar a un administador.");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} guardar - guardardroga [tipo] [cant] - tomardroga [tipo] [cant]");
+
+		if(!Container_Show(vehicleid, CONTAINER_TYPE_TRUNK, VehicleInfo[vehicleid][VehContainerID], playerid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del maletero. Reportar a un administador.");
 			
 	    SendClientMessage(playerid, COLOR_WHITE, "========================[MALETERO]======================");
 		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
@@ -1156,16 +1169,72 @@ CMD:maletero2(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 		if(!Container_AddItemAndParam(VehicleInfo[vehicleid][VehContainerID], itemid, itemparam))
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay más espacio en el maletero.");
-		    
+
+    	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico.
+
+		SetPVarInt(playerid, "cantSaveItems", 1);
+		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+		
 		format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
 		PlayerActionMessage(playerid, 15.0, str);
-	  	SetPVarInt(playerid, "cantSaveItems", 1);
-		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+		
 		format(str, sizeof(str), "guardar %d %s", itemparam, GetItemName(itemid));
 		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
     }
 	return 1;
 }
+
+Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
+{
+   	if(response)
+	{
+        new vehicleid = Container_Selection[playerid][csOriginalId],
+            itemid,
+            itemparam,
+            str[128];
+
+    	if(IsPlayerInAnyVehicle(playerid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Debes salir del vehículo primero.");
+	 	if(GetDistanceFromVehicle(playerid, vehicleid) > 5.0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no está cerca tuyo.");
+	    if(GetVehicleTrunkSpace(vehicleid) == 0 || !VehicleHasContainer(vehicleid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene maletero.");
+		if(VehicleInfo[vehicleid][VehBoot] != 1 && !AdminDuty[playerid])
+		   	return SendClientMessage(playerid, COLOR_YELLOW2, "El maletero está cerrado.");
+    	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+		if(PlayerInfo[playerid][pHealth] < 25)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+		if(GetHandItem(playerid, HAND_RIGHT) != 0)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
+
+		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", Container_Selection[playerid][csId], Container_Selection[playerid][csOriginalId], listitem);
+
+		if(Container_TakeItem(Container_Selection[playerid][csId], listitem, itemid, itemparam))
+		{
+			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
+
+			SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+
+            SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+			
+			format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
+
+			format(str, sizeof(str), "tomar %d %s", itemparam, GetItemName(itemid));
+			VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
+		}
+		else
+		{
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Maletero vacio o el slot es inválido.");
+		}
+	}
+	ResetContainerSelection(playerid);
+	return 1;
+}
+
+//============================[FIN EXPERIMENTAL]================================
 
 CMD:mal(playerid, params[])
 {
