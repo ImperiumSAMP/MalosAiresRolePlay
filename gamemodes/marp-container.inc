@@ -366,12 +366,12 @@ Container_TakeItem(id, slot, &item, &param)
 
 Container_UpdateOpenedDialogs(id)
 {
-	foreach(new i : Player)
+	foreach(new playerid : Player)
 	{
-	    if(Container_Selection[i][csId] == id && Dialog_Opened(i)) // Si tiene abierto el dialog de ese contenedor
+	    if(Container_Selection[playerid][csId] == id && Dialog_Opened(playerid)) // Si tiene abierto el dialog de ese contenedor
 	    {
-	        Dialog_Close(i);
-	        Container_Show(Container_Selection[i][csOriginalId], Container_Selection[i][csType], id, i);
+	        Dialog_Close(playerid);
+		    Container_Show(Container_Selection[playerid][csOriginalId], Container_Selection[playerid][csType], id, playerid);
 		}
 	}
 }
@@ -382,24 +382,33 @@ Container_Show(origid, type, id, playerid)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
-		new string1[128],
-		    string2[3500] = "";
+	    new string1[128];
+	    
+	    if(Container_GetElementsAmount(id) > 0)
+	    {
+			new string2[3500] = "";
 
-		new vsize = vector_size(id),
-		    slot = 0;
+			new vsize = vector_size(id),
+			    slot = 0;
 
-		for(new i=4; i<vsize; i+=2)
-		{
-		    format(string2, sizeof(string2), "%s%d - Item: %d\tParam: %d\n", string2, slot, vector_get(id, i), vector_get(id, i+1));
-            slot++;
+			for(new i=4; i<vsize; i+=2)
+			{
+			    format(string2, sizeof(string2), "%s%d - Item: %d\tParam: %d\n", string2, slot, vector_get(id, i), vector_get(id, i+1));
+	            slot++;
+			}
+			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			Dialog_Show(playerid, DLG_SHOW_CONTAINER, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
+
+			Container_Selection[playerid][csId] = id;
+			Container_Selection[playerid][csType] = type; // Para saber si es casa, etc, y saber luego comprobar distancias, q esté abierto, etc
+			Container_Selection[playerid][csOriginalId] = origid; // Para saber sobre cual id de casa, auto, etc hay que comprobar
+			// para saber después que item agarró, te fiajs con el slot (listitem), y no hace falta mas quilombo porque siempre va a estar actualizado gracias a updateopeneddialogs
 		}
-		format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-		Dialog_Show(playerid, DLG_SHOW_CONTAINERS, DIALOG_STYLE_TABLIST, string1, string2, "Tomar", "Cerrar");
-
-		Container_Selection[playerid][csId] = id;
-		Container_Selection[playerid][csType] = type; // Para saber si es casa, etc, y saber luego comprobar distancias, q esté abierto, etc
-		Container_Selection[playerid][csOriginalId] = origid; // Para saber sobre cual id de casa, auto, etc hay que comprobar
-		// para saber después que item agarró, te fiajs con el slot (listitem), y no hace falta mas quilombo porque siempre va a estar actualizado gracias a updateopeneddialogs
+		else
+		{
+			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, string1, "Vacio", "Cerrar", "");
+		}
 		return 1;
 	}
 
@@ -408,7 +417,7 @@ Container_Show(origid, type, id, playerid)
 
 //==============================================================================
 
-Dialog:DLG_SHOW_CONTAINERS(playerid, response, listitem, inputtext[])
+Dialog:DLG_SHOW_CONTAINER(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
