@@ -3868,6 +3868,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
 	new	string[128],
+		Float:pos[3],
 		vehicleid,
 	 	vehicleModelType;
 	
@@ -4023,6 +4024,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				{
 					SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta bicicleta no te pertenece!");
 					RemovePlayerFromVehicle(playerid);
+					GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+					SetPlayerPos(playerid, pos[0], pos[1], pos[2] + 1);
 				}
 				else if(VehicleInfo[vehicleid][VehLocked] == 1)
 				{
