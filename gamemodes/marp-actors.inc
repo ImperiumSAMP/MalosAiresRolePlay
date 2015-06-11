@@ -64,7 +64,7 @@ public OnActorDataLoad()
 			cache_get_field_content(i, "description", description, 1, 128);
 			    
 		    if(strcmp(description, "none", true) != 0)
-				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
 		}
 	}
 	return 1;
@@ -102,8 +102,10 @@ CMD:aacrear(playerid, params[])
 	SetActorInvulnerable(actorid, 1);
 
 	if(strcmp(description, "none", true) != 0)
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
-
+	{
+		format(description, sizeof(description), "%s", description);
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+	}
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: actor id %d creado correctamente en el mundo virtual %d.", actorid, vworld);
 
 	new query[256];
