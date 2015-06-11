@@ -31,7 +31,7 @@ public OnActorDataLoad()
 			vworld,
 			skin,
 			actorid,
-			desc[128],
+			description[128],
 			animname[32],
 			animlib[32];
 
@@ -61,10 +61,10 @@ public OnActorDataLoad()
 		        ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
 			}
 
-			cache_get_field_content(i, "desc", desc, 1, 128);
+			cache_get_field_content(i, "description", description, 1, 128);
 			    
-		    if(strcmp(desc, "none", true) != 0)
-				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(desc, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+		    if(strcmp(description, "none", true) != 0)
+				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
 		}
 	}
 	return 1;
@@ -72,12 +72,12 @@ public OnActorDataLoad()
 
 CMD:aacrear(playerid, params[])
 {
-	new skin, desc[128];
+	new skin, description[128];
 
-	if(sscanf(params, "iS(none)[128]", skin, desc))
+	if(sscanf(params, "iS(none)[128]", skin, description))
 	{
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [skin] [nombre y descripción (opcional)] (\n es bajada de linea)");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Ejemplo]:{C8C8C8} /aactor 280 Lopez - PMA\nGarito de estacionamiento");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [skin] [nombre y descripción (opcional)] ('\n' es bajada de linea, sin comillas)");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Ejemplo]:{C8C8C8} /aactor 280 Lopez - PMA'\n'Garito de estacionamiento");
 		return 1;
 	}
 	if(skin < 1 || skin > 311)
@@ -101,14 +101,14 @@ CMD:aacrear(playerid, params[])
 	SetActorHealth(actorid, 100.0);
 	SetActorInvulnerable(actorid, 1);
 
-	if(strcmp(desc, "none", true) != 0)
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(desc, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+	if(strcmp(description, "none", true) != 0)
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 0.75, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
 
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: actor id %d creado correctamente en el mundo virtual %d.", actorid, vworld);
 
 	new query[256];
 
-	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, desc, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, '%s', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld, desc);
+	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, '%s', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld, description);
 	mysql_function_query(dbHandle, query, true, "GetInsertedActorId", "d", GetVariableAddress(ServerActor[actorid][eSQLID]));
 
 	return 1;
@@ -119,7 +119,7 @@ CMD:aaanim(playerid, params[])
 	new animlib[32],
 		animname[32],
 		actorid;
-	    
+
 	if(sscanf(params, "is[32] s[32]", actorid, animlib, animname))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [librería de anim] [nombre de anim] (se buscan en https://wiki.sa-mp.com/wiki/Animations)");
 
