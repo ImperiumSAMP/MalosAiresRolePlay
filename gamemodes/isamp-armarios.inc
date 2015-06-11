@@ -447,7 +447,7 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 
 CMD:arm2(playerid, params[])
 {
- 	cmd_armario(playerid, params);
+ 	cmd_armario2(playerid, params);
 	return 1;
 }
 
@@ -473,7 +473,7 @@ CMD:armario2(playerid, params[])
 		if(!Container_Show(houseid, CONTAINER_TYPE_HOUSE, House[houseid][ContainerID], playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del armario. Reportar a un administador.");
 
-		SendClientMessage(playerid, COLOR_WHITE, "========================[ARMARIO]=======================");
+		SendClientMessage(playerid, COLOR_WHITE, "======================[ARMARIO]======================");
         if(House[houseid][Money] > 0) {
         	SendFMessage(playerid, COLOR_WHITE, " - Dinero en efectivo: $%d", House[houseid][Money]);
 		}

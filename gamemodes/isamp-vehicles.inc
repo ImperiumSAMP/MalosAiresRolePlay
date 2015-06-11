@@ -1014,7 +1014,7 @@ CMD:maletero2(playerid, params[])
 		if(!Container_Show(vehicleid, CONTAINER_TYPE_TRUNK, VehicleInfo[vehicleid][VehContainerID], playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del maletero. Reportar a un administador.");
 			
-	    SendClientMessage(playerid, COLOR_WHITE, "========================[MALETERO]======================");
+	    SendClientMessage(playerid, COLOR_WHITE, "======================[MALETERO]=====================");
 		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
 		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
 		}

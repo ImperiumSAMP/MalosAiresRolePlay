@@ -81,6 +81,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-weather.inc"
 #include "marp-same.inc"
 #include "marp-lifts.inc"
+#include "marp-actors.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.1"
@@ -278,7 +279,6 @@ new
 	timersID[24],
 	pSpeedoTimer[MAX_PLAYERS],
 	// Menus.
-	Menu:phoneMenu,
 	Menu:licenseMenu,
 	// Textdraws.
 	Text:TD_Logotipo[5],
@@ -542,6 +542,7 @@ public OnGameModeInit()
 	LoadLockersSlotsInfo();
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
+	LoadServerActors();
 
 	//===================================[TIMERS]===============================
 	
@@ -562,17 +563,6 @@ public OnGameModeInit()
 	//====[MENUS]===============================================================
 
 	new price[32];
-
-	// Negocio de teléfonos
-	phoneMenu = CreateMenu("Telefonos", 2, 200.0, 100.0, 150.0, 150.0);
-
-	AddMenuItem(phoneMenu, 0, "Telefono");
-	AddMenuItem(phoneMenu, 0, "Telefono (sin listar)");
-
-	format(price, sizeof(price), "$%d", PRICE_PHONE);
-	AddMenuItem(phoneMenu, 1, price);
-	format(price, sizeof(price), "$%d", PRICE_UNLISTEDPHONE);
-	AddMenuItem(phoneMenu, 1, price);
 
 	// Centro de licencias
 	licenseMenu = CreateMenu("Licencias", 2, 200.0, 100.0, 150.0, 150.0);
@@ -4603,61 +4593,16 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	return 1;
 }
 
-public OnPlayerSelectedMenuRow(playerid, row) {
-    new
-        business = GetPlayerBusiness(playerid),
-		Menu:currentMenu = GetPlayerMenu(playerid);
+public OnPlayerSelectedMenuRow(playerid, row)
+{
+    new Menu:currentMenu = GetPlayerMenu(playerid);
 
- 	if(currentMenu == phoneMenu) {
-	    switch(row) {
-	        case 0: {
-	            new
-	                phoneNumber = 40000 + random(999999); // Min: 40000, Max: 999999
-
-				if(Business[business][bProducts] <= 0 && Business[business][bOwnerSQLID] != -1) {
-		            SendClientMessage(playerid, COLOR_YELLOW2, "Parece que no disponen de stock, intenta volviendo más tarde.");
-		        } else if(GetPlayerCash(playerid) >= PRICE_PHONE) {
-					SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
-					GivePlayerCash(playerid, -PRICE_PHONE);
-					PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
-					PlayerInfo[playerid][pPhoneNumber] = phoneNumber;
-					PlayerInfo[playerid][pPhoneC] = business;
-					PlayerInfo[playerid][pListNumber] = 1;
-					if(Business[business][bOwnerSQLID] != -1) {
-					   	Business[business][bTill] += PRICE_PHONE / 2;
-	        			Business[business][bProducts]--;
-	        			saveBusiness(business);
-					}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-				}
-			}
-			case 1: {
-	            new
-	                phoneNumber = 40000 + random(999999); // Min: 40000, Max: 999999
-
-				if(Business[business][bProducts] <= 0 && Business[business][bOwnerSQLID] != -1) {
-		            SendClientMessage(playerid, COLOR_YELLOW2, "Parece que no disponen de stock, intenta volviendo más tarde.");
-		        } else if(GetPlayerCash(playerid) >= PRICE_UNLISTEDPHONE) {
-					SendFMessage(playerid, COLOR_YELLOW2, "¡Felicidades! has comprado un teléfono celular no listado en la guía ($%d) utiliza  /ayuda para ver los comandos disponibles.", PRICE_UNLISTEDPHONE);
-					GivePlayerCash(playerid, -PRICE_UNLISTEDPHONE);
-					PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
-					PlayerInfo[playerid][pPhoneNumber] = phoneNumber;
-					PlayerInfo[playerid][pPhoneC] = business;
-					PlayerInfo[playerid][pListNumber] = 0;
-					if(Business[business][bOwnerSQLID] != -1) {
-					   	Business[business][bTill] += PRICE_UNLISTEDPHONE / 2;
-	        			Business[business][bProducts]--;
-	        			saveBusiness(business);
-					}
-				} else {
-				    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-				}
-	        }
-		}
-	} else if(currentMenu == licenseMenu) {
-		switch(row) {
-	   		case 0: {
+ 	if(currentMenu == licenseMenu)
+	 {
+		switch(row)
+		{
+	   		case 0:
+  			{
 	   		    if(playerLicense[playerid][lDTaking] == 1) {
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás tomando una licencia!");
 	   		    } else if(GetPlayerCash(playerid) >= PRICE_LIC_DRIVING) {
@@ -4671,10 +4616,12 @@ public OnPlayerSelectedMenuRow(playerid, row) {
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
 	   		    }
 	   		}
-	   		case 1: {
+	   		case 1:
+	   		{
                 SendClientMessage(playerid, COLOR_YELLOW2, "Esta licencia no se encuentra disponible actualmente.");
 	   		}
-	   		case 2: {
+	   		case 2:
+			{
 	   		    if(PlayerInfo[playerid][pFlyLic] == 0) {
 		   		    if(GetPlayerCash(playerid) >= PRICE_LIC_FLYING) {
 			   			PlayerInfo[playerid][pFlyLic] = 1;
@@ -9523,11 +9470,6 @@ CMD:comprar(playerid, params[])
 			{
 		        OnPlayerBuyHard(playerid, business);
 		        return 1;
-			}
-			case BIZ_PHON:
-			{
-			    TogglePlayerControllable(playerid, false);
-				ShowMenuForPlayer(phoneMenu, playerid);
 			}
 		}
 		
