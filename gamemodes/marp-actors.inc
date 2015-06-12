@@ -50,7 +50,9 @@ public OnActorDataLoad()
 			
 			if(actorid == INVALID_ACTOR_ID)
 			    return 1;
-			    
+
+            cache_get_field_content(i, "id", result); 	ServerActor[actorid][eSQLID] = strval(result);
+            
 	        cache_get_field_content(i, "vworld", result); 	vworld = strval(result);
 			SetActorVirtualWorld(actorid, vworld);
 			
