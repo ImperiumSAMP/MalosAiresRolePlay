@@ -182,7 +182,7 @@ CMD:aacrear(playerid, params[])
 
 	new query[256];
 	
-	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, nick, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, '%s', 'none', 'none', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld);
+	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, nick, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, 'none', 'none', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld);
 	mysql_function_query(dbHandle, query, true, "GetInsertedActorId", "d", GetVariableAddress(ServerActor[actorid][eSQLID]));
 	return 1;
 }
