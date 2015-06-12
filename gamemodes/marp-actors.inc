@@ -5,6 +5,9 @@
 
 enum e_ServerActor {
 	eSQLID,
+	eName[64],
+	eDescription[64],
+	eUsesLabel,
 	Text3D:eLabelID
 };
 
@@ -31,9 +34,9 @@ public OnActorDataLoad()
 			vworld,
 			skin,
 			actorid,
-			description[128],
 			animname[32],
-			animlib[32];
+			animlib[32],
+			str[128];
 
 		for(new i = 0; i < rows; i++)
 	    {
@@ -61,28 +64,100 @@ public OnActorDataLoad()
 		        ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
 			}
 
-			cache_get_field_content(i, "description", description, 1, 128);
-			    
-		    if(strcmp(description, "none", true) != 0)
-				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+			cache_get_field_content(i, "nick", ServerActor[actorid][eName], 1, 64);
+            cache_get_field_content(i, "description", ServerActor[actorid][eDescription], 1, 64);
+            
+		    if(strcmp(ServerActor[actorid][eName], "none", true) != 0 || strcmp(ServerActor[actorid][eDescription], "none", true) != 0)
+		    {
+		        if(strcmp(ServerActor[actorid][eName], "none", true) == 0)
+		            format(ServerActor[actorid][eName], 64, "%s", "");
+		            
+		        if(strcmp(ServerActor[actorid][eDescription], "none", true) == 0)
+		            format(ServerActor[actorid][eDescription], 64, "%s", "");
+		            
+		        format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
+				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+				ServerActor[actorid][eUsesLabel] = 1;
+			}
 		}
 	}
 	return 1;
 }
 
+CMD:aanombre(playerid, params[])
+{
+	new actorid,
+	    actorname[64];
+
+	if(sscanf(params, "is[64]", actorid, actorname))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [nombre]");
+	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
+
+	format(ServerActor[actorid][eName], 64, "%s", actorname);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado el nombre del actor %d a %s.", actorid, actorname);
+
+	new str[128];
+	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
+	
+	if(ServerActor[actorid][eUsesLabel] && IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
+	{
+		UpdateDynamic3DTextLabelText(ServerActor[actorid][eLabelID], COLOR_WHITE, str);
+	}
+	else
+	{
+	    new Float:pos[3];
+	    GetActorPos(actorid, pos[0], pos[1], pos[2]);
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
+		ServerActor[actorid][eUsesLabel] = 1;
+	}
+	
+	format(str, sizeof(str), "UPDATE actors SET nick = '%s' WHERE id = %d", actorname, ServerActor[actorid][eSQLID]);
+	mysql_function_query(dbHandle, str, false, "", "");
+	return 1;
+}
+
+CMD:aadesc(playerid, params[])
+{
+	new actorid,
+	    actordesc[64];
+
+	if(sscanf(params, "is[64]", actorid, actordesc))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [descripción]");
+	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
+
+	format(ServerActor[actorid][eDescription], 64, "%s", actordesc);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la descripción del actor %d a %s.", actorid, actordesc);
+
+	new str[128];
+	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
+
+	if(ServerActor[actorid][eUsesLabel] && IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
+	{
+		UpdateDynamic3DTextLabelText(ServerActor[actorid][eLabelID], COLOR_WHITE, str);
+	}
+	else
+	{
+	    new Float:pos[3];
+	    GetActorPos(actorid, pos[0], pos[1], pos[2]);
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
+		ServerActor[actorid][eUsesLabel] = 1;
+	}
+
+	format(str, sizeof(str), "UPDATE actors SET description = '%s' WHERE id = %d", actordesc, ServerActor[actorid][eSQLID]);
+	mysql_function_query(dbHandle, str, false, "", "");
+	return 1;
+}
+
 CMD:aacrear(playerid, params[])
 {
-	new skin, description[128];
+	new skin;
 
-	if(sscanf(params, "iS(none)[128]", skin, description))
-	{
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [skin] [nombre y descripción (opcional)] ('\n' es bajada de linea, sin comillas)");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Ejemplo]:{C8C8C8} /aactor 280 Lopez - PMA'\n'Garito de estacionamiento");
-		return 1;
-	}
+	if(sscanf(params, "i", skin))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [skin]");
 	if(skin < 1 || skin > 311)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una ID de skin válida (1-311).");
-
 
 	new Float:pos[3],
 	    Float:angle,
@@ -100,20 +175,23 @@ CMD:aacrear(playerid, params[])
 	SetActorVirtualWorld(actorid, vworld);
 	SetActorHealth(actorid, 100.0);
 	SetActorInvulnerable(actorid, 1);
-
-	if(strcmp(description, "none", true) != 0)
-	{
-		format(description, sizeof(description), "%s", description);
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(description, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
-	}
+	
+	SetPlayerPos(playerid, pos[0] + 0.7, pos[1], pos[2]);
+	
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: actor id %d creado correctamente en el mundo virtual %d.", actorid, vworld);
 
 	new query[256];
-
-	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, '%s', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld, description);
+	
+	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, nick, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, '%s', 'none', 'none', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld);
 	mysql_function_query(dbHandle, query, true, "GetInsertedActorId", "d", GetVariableAddress(ServerActor[actorid][eSQLID]));
-
 	return 1;
+}
+
+forward GetInsertedActorId(store_in_address);
+public GetInsertedActorId(store_in_address)
+{
+    @ptr[store_in_address] = cache_insert_id(dbHandle);
+    return 1;
 }
 
 CMD:aaanim(playerid, params[])
@@ -124,31 +202,18 @@ CMD:aaanim(playerid, params[])
 
 	if(sscanf(params, "is[32] s[32]", actorid, animlib, animname))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [librería de anim] [nombre de anim] (se buscan en https://wiki.sa-mp.com/wiki/Animations)");
-
-	new actorpool = GetActorPoolSize();
-	
-	if(actorid < 0 || actorid > actorpool || !IsValidActor(actorid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
-	if(ServerActor[actorid][eSQLID] == 0)
+	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 	    
 	ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
 	
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la de la librería %d, de nombre %d.", actorid, animlib, animname);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la de la librería %s, de nombre %s.", actorid, animlib, animname);
 
 	new query[128];
 	
 	format(query, sizeof(query), "UPDATE actors SET animlib = '%s', animname = '%s' WHERE id = %d", animlib, animname, ServerActor[actorid][eSQLID]);
 	mysql_function_query(dbHandle, query, false, "", "");
-
 	return 1;
-}
-
-forward GetInsertedActorId(store_in_address);
-public GetInsertedActorId(store_in_address)
-{
-    @ptr[store_in_address] = cache_insert_id(dbHandle);
-    return 1;
 }
 
 CMD:aagetid(playerid, params[])
@@ -173,32 +238,45 @@ CMD:aagetid(playerid, params[])
 	return 1;
 }
 
+CMD:aatele(playerid, params[])
+{
+	new actorid,
+	    Float:pos[3];
+	
+	if(sscanf(params, "i", actorid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aatele [id de actor]");
+	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
+	
+	GetActorPos(actorid, pos[0], pos[1], pos[2]);
+	SetPlayerPos(playerid, pos[0] + 0.7, pos[1], pos[2]);
+	return 1;
+}
+
 CMD:aaborrar(playerid, params[])
 {
 	new actorid;
 
 	if(sscanf(params, "i", actorid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaborrar [id de actor]");
-
-	new actorpool = GetActorPoolSize();
-
-	if(actorid < 0 || actorid > actorpool || !IsValidActor(actorid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
-	if(ServerActor[actorid][eSQLID] == 0)
+	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
 	DestroyActor(actorid);
 
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has borrado el actor %d.", actorid);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has borrado el actor %d correctamente.", actorid);
     
 	new query[128];
 
 	format(query, sizeof(query), "DELETE FROM actors WHERE id = %d", ServerActor[actorid][eSQLID]);
 	mysql_function_query(dbHandle, query, false, "", "");
 
-	if(IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
+	if(ServerActor[actorid][eUsesLabel] && IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
 		DestroyDynamic3DTextLabel(ServerActor[actorid][eLabelID]);
 
+    ServerActor[actorid][eUsesLabel] = 0;
     ServerActor[actorid][eSQLID] = 0;
+    format(ServerActor[actorid][eName], 64, "%s", "");
+    format(ServerActor[actorid][eDescription], 64, "%s", "");
 	return 1;
 }
