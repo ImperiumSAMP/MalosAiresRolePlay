@@ -3318,6 +3318,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 			    {
 				    SetPlayerPos(playerid, 2308, -1610, 490);
 				    SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+					amount = 0;
 			    }
 			}
 		}
