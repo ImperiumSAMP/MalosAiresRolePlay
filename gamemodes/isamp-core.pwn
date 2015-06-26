@@ -3310,7 +3310,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
 
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0 || GetPVarInt(issuerid, "GrupoPaintball") != 0)
 		{
 			if(PaintballStart == 1)
 		    {
