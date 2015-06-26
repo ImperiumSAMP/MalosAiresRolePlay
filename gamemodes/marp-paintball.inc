@@ -79,12 +79,14 @@ CMD:pbinvitar(playerid, params[]) {
 	        SetPVarInt(target, "GrupoPaintball", 2);
 	        BlueTeamPlayers += 1;
 	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo azul de Paintball.", GetPlayerNameEx(target));
+			SendFMessage(target, COLOR_WHITE, "El administrador %s te agregó al equipo azul de Paintball.", GetPlayerNameEx(playerid));
 		} else { SendClientMessage(playerid, COLOR_WHITE, "¡El equipo azul está lleno! Podés modificar el límite de jugadores con /pbmaxplayers."); }
 	} else if(strcmp(equipo, "rojo", true) == 0) {
 	    if(RedTeamPlayers < RedTeamMaxPlayers) {
 	        SetPVarInt(target, "GrupoPaintball", 1);
 	        RedTeamPlayers += 1;
 	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo rojo de Paintball.", GetPlayerNameEx(target));
+			SendFMessage(target, COLOR_WHITE, "El administrador %s te agregó al equipo rojo de Paintball.", GetPlayerNameEx(playerid));
 		} else { SendClientMessage(playerid, COLOR_WHITE, "¡El equipo rojo está lleno! Podés modificar el límite de jugadores con /pbmaxplayers."); }
 	} else {
 		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
