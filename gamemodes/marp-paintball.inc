@@ -80,7 +80,7 @@ CMD:comenzarpaintball(playerid, params[])
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
-			GameTextForPlayer(playerid, "YA!!!", 500, 3);
+			GameTextForPlayer(playerid, "YA!!!", 5000, 3);
 			PaintballStart = 1;
 		}
 	}
