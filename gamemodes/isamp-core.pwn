@@ -3316,9 +3316,18 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		    {
 			    if(weaponid == WEAPON_SILENCED)
 			    {
-				    SetPlayerPos(playerid, 2308, -1610, 490);
-				    SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
-					amount = 0;
+				    if(GetPVarInt(playerid, "GrupoPaintball") == 1)
+					{
+				        SetPlayerPos(playerid, 187, 2500, 24);
+				        SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+					    amount = 0;
+					}
+					if(GetPVarInt(playerid, "GrupoPaintball") == 2)
+					{
+					    SetPlayerPos(playerid, 116, 2500, 24);
+				        SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+					    amount = 0;
+					}
 			    }
 			}
 		}
