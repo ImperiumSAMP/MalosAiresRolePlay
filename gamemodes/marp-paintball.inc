@@ -4,9 +4,9 @@
 #define _marp_paintball_included
 
 // DEFINES
-#define POS_PAINTBALL_X     	2576.2273
-#define POS_PAINTBALL_Y     	2805.7642
-#define POS_PAINTBALL_Z     	10.8203
+#define POS_PAINTBALL_X     	142 
+#define POS_PAINTBALL_Y     	2501 
+#define POS_PAINTBALL_Z     	16
 
 #define POS_DISQUALIFIED_X  	2575.6660
 #define POS_DISQUALIFIED_Y  	2834.5100
@@ -32,41 +32,6 @@ CMD:empezarpaintball(playerid,params[])
 	return 1;
 }
 
-CMD:creargruporojo(playerid, params[])
-{
-	new player1, player2, player3, player4, player5;
-
-	if(PaintballPlay != 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de crear los grupos debes iniciar el Paintball. (/empezarpaintball)");
-	if(sscanf(params, "uuuuu", player1, player2, player3, player4, player5))
-	   	return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /creargruporojo  [ID/Jugador1] [ID/Jugador2] [ID/Jugador3] [ID/Jugador4] [ID/Jugador5]");
-	
-	SetPVarInt(player1, "GrupoPaintball", 1);
-	SetPVarInt(player2, "GrupoPaintball", 1);
-	SetPVarInt(player3, "GrupoPaintball", 1);
-	SetPVarInt(player4, "GrupoPaintball", 1);
-	SetPVarInt(player5, "GrupoPaintball", 1);
-	SendFMessage(playerid, -1, "Haz invitado a %s, %s, %s, %s y %s al grupo rojo de Paintball.", GetPlayerNameEx(player1), GetPlayerNameEx(player2), GetPlayerNameEx(player3), GetPlayerNameEx(player4), GetPlayerNameEx(player5));
-	return 1;
-}
-
-CMD:creargrupoazul(playerid, params[])
-{
-	new player1, player2, player3, player4, player5;
-
-	if(PaintballPlay != 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de crear los grupos debes iniciar el Paintball. (/empezarpaintball)");
-	if(sscanf(params, "uuuuu", player1, player2, player3, player4, player5))
-	   	return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /creargrupoazul  [ID/Jugador1] [ID/Jugador2] [ID/Jugador3] [ID/Jugador4] [ID/Jugador5]");
-	
-	SetPVarInt(player1, "GrupoPaintball", 2);
-	SetPVarInt(player2, "GrupoPaintball", 2);
-	SetPVarInt(player3, "GrupoPaintball", 2);
-	SetPVarInt(player4, "GrupoPaintball", 2);
-	SetPVarInt(player5, "GrupoPaintball", 2);
-	SendFMessage(playerid, -1, "Haz invitado a %s, %s, %s, %s y %s al grupo azul de Paintball.", GetPlayerNameEx(player1), GetPlayerNameEx(player2), GetPlayerNameEx(player3), GetPlayerNameEx(player4), GetPlayerNameEx(player5));
-	return 1;
-}
 
 CMD:comenzarpaintball(playerid, params[])
 {
@@ -80,7 +45,7 @@ CMD:comenzarpaintball(playerid, params[])
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
-			GameTextForPlayer(playerid, "YA!!!", 5000, 3);
+			GameTextForPlayer(i, "YA!!!", 7000, 3);
 			PaintballStart = 1;
 		}
 	}
@@ -141,3 +106,14 @@ CMD:resetpaintball(playerid, params[])
 	}
     return 1;
 }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+

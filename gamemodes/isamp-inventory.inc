@@ -172,6 +172,8 @@ stock SaveItemOnInv(playerid, playerhand, invslot)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	if(PlayerInfo[playerid][pHealth] < 25.0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
+	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
