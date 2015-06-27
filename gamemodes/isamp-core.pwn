@@ -3304,7 +3304,7 @@ stock chargeTaxis()
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
-	new Float:armour;
+	new Float:armour, string[128];
 
     GetPlayerArmour(playerid, armour);
 
@@ -3324,13 +3324,19 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 				    if(GetPVarInt(playerid, "GrupoPaintball") == 1)
 					{
 				        SetPlayerPos(playerid, 187, 2500, 24);
-				        SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(issuerid));
+						AdministratorMessage(COLOR_ADMINCMD, string, 2);
+						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 					    amount = 0;
 					}
 					if(GetPVarInt(playerid, "GrupoPaintball") == 2)
 					{
 					    SetPlayerPos(playerid, 116, 2500, 24);
-				        SendClientMessage(playerid, -1, "Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(issuerid));
+						AdministratorMessage(COLOR_ADMINCMD, string, 2);
+						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 					    amount = 0;
 					}
 			    }

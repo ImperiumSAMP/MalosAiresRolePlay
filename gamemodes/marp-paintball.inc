@@ -24,9 +24,9 @@ new PaintballPlay = 0,
 CMD:pbcrear(playerid,params[])
 { 
 	if(PaintballPlay == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya hay un evento de paintball en curso.");
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Ya hay un evento de paintball en curso.");
 	if(!IsPlayerInRangeOfPoint(playerid, 25.0, POS_PAINTBALL_X, POS_PAINTBALL_Y, POS_PAINTBALL_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes encontrarte en la zona donde se realizan los paintballs.");
+	    return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Debes encontrarte en la zona donde se realizan los paintballs.");
 	
 	PaintballPlay = 1;
 	return 1;
@@ -36,17 +36,19 @@ CMD:pbcrear(playerid,params[])
 CMD:pbcomenzar(playerid, params[])
 {
 	if(PaintballPlay != 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de comenzar el juego debes crear el Paintball y configurar los equipos.");
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Antes de comenzar el juego debes crear el Paintball y configurar los equipos.");
 	if(PaintballStart == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El juego est· en proceso, no puedes volver a iniciarlo ahora. (Usa /pbreset para terminarlo/reiniciarlo)");
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} El juego est· en proceso, no puedes volver a iniciarlo ahora. (Usa /pbreset para terminarlo/reiniciarlo)");
 	
-    SendClientMessage(playerid, -1, "Has comenzado el juego.");
+    SendClientMessage(playerid, -1, "{878EE7}[INFO]{C8C8C8} Has comenzado el paintball.");
 	foreach(new i : Player) 
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
 			GameTextForPlayer(i, "YA!!!", 7000, 3);
 			PaintballStart = 1;
+			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
+			PhoneHand[i] = 0;
 			GivePlayerGun(i, 23, 100);
 			if(GetPVarInt(i, "GrupoPaintball") == 1) {
 			    SetPlayerSkin(i, 16); }
@@ -61,15 +63,15 @@ CMD:pbmaxplayers(playerid, params[]) {
 	new equipo[4], maxplayers;
 
 	if(sscanf(params, "si", equipo, maxplayers)) {
-		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbmaxplayers [equipo: azul - rojo] [m√°ximo de jugadores]");
+		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbmaxplayers [equipo: azul - rojo] [m·ximo de jugadores]");
 	} else if(strcmp(equipo, "azul", true) == 0) {
 		BlueTeamMaxPlayers = maxplayers;
-		SendFMessage(playerid, COLOR_WHITE, "Configuraste el l√≠mite de jugadores del equipo azul a %d.", maxplayers);
+		SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Configuraste el lÌmite de jugadores del equipo azul a %d.", maxplayers);
 	} else if(strcmp(equipo, "rojo", true) == 0) {
 		RedTeamMaxPlayers = maxplayers;
-		SendFMessage(playerid, COLOR_WHITE, "Configuraste el l√≠mite de jugadores del equipo rojo a %d.", maxplayers);
+		SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Configuraste el lÌmite de jugadores del equipo rojo a %d.", maxplayers);
 	} else {
-		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
+		SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Los posibles equipos son rojo y azul.");
 	}
 	return 1;
 }
@@ -83,18 +85,18 @@ CMD:pbinvitar(playerid, params[]) {
 	    if(BlueTeamPlayers < BlueTeamMaxPlayers) {
 	        SetPVarInt(target, "GrupoPaintball", 2);
 	        BlueTeamPlayers += 1;
-	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo azul de Paintball.", GetPlayerNameEx(target));
-			SendFMessage(target, COLOR_WHITE, "El administrador %s te agreg√≥ al equipo azul de Paintball.", GetPlayerNameEx(playerid));
-		} else { SendClientMessage(playerid, COLOR_WHITE, "¬°El equipo azul est√° lleno! Pod√©s modificar el l√≠mite de jugadores con /pbmaxplayers."); }
+	        SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8}  Invitaste a %s al equipo azul de Paintball.", GetPlayerNameEx(target));
+			SendFMessage(target, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El administrador %s te agregÛ al equipo azul de Paintball.", GetPlayerNameEx(playerid));
+		} else { SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} °El equipo azul est· lleno! PodÈs modificar el lÌmite de jugadores con /pbmaxplayers."); }
 	} else if(strcmp(equipo, "rojo", true) == 0) {
 	    if(RedTeamPlayers < RedTeamMaxPlayers) {
 	        SetPVarInt(target, "GrupoPaintball", 1);
 	        RedTeamPlayers += 1;
-	        SendFMessage(playerid, COLOR_WHITE, "Invitaste a %s al equipo rojo de Paintball.", GetPlayerNameEx(target));
-			SendFMessage(target, COLOR_WHITE, "El administrador %s te agreg√≥ al equipo rojo de Paintball.", GetPlayerNameEx(playerid));
-		} else { SendClientMessage(playerid, COLOR_WHITE, "¬°El equipo rojo est√° lleno! Pod√©s modificar el l√≠mite de jugadores con /pbmaxplayers."); }
+	        SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8}  Invitaste a %s al equipo rojo de Paintball.", GetPlayerNameEx(target));
+			SendFMessage(target, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El administrador %s te agregÛ al equipo rojo de Paintball.", GetPlayerNameEx(playerid));
+		} else { SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} °El equipo rojo est· lleno! PodÈs modificar el lÌmite de jugadores con /pbmaxplayers."); }
 	} else {
-		SendClientMessage(playerid, COLOR_WHITE, "Los posibles equipos son rojo y azul.");
+		SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Los posibles equipos son rojo y azul.");
 	}
 	return 1;
 }
@@ -107,6 +109,7 @@ CMD:pbreset(playerid, params[])
 	RedTeamPlayers = 0,
     BlueTeamMaxPlayers = 0,
     RedTeamMaxPlayers = 0;
+    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El paintball fue reiniciado.");
 	foreach(new i : Player)	
 	{
 		if(GetPVarInt(i, "GrupoPaintball") != 0)
@@ -114,6 +117,7 @@ CMD:pbreset(playerid, params[])
 	    	SetPVarInt(i, "GrupoPaintball", 0);
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
+			SetPlayerSkin(i, PlayerInfo[i][pSkin]);
 		}
 	}
     return 1;
@@ -134,7 +138,7 @@ CMD:pbinfo(playerid, params[])
 {
 	
 	if(PaintballPlay == 0)
-	    return SendClientMessage(playerid, COLOR_WHITE, "No hay un paintball creado.");
+	    return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} No hay un paintball creado.");
 
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}---{C8C8C8} InformaciÛn del Paintball {878EE7}---");
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}LÌmite de jugadores equipo {0004FF}azul{878EE7}: {C8C8C8} %d", BlueTeamMaxPlayers);
@@ -151,7 +155,7 @@ CMD:pbplayers(playerid, params[])
 	new string[128], count = 0;
 
 	if(PaintballPlay == 0)
-		return SendClientMessage(playerid, COLOR_WHITE, "No hay un paintball creado.");
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} No hay un paintball creado.");
 
 	SendClientMessage(playerid, COLOR_LIGHTGREEN, "{878EE7}[Paintball] {C8C8C8}Lista de jugadores equipo {FF0000}rojo{C8C8C8}:");
 	foreach(new i : Player)
