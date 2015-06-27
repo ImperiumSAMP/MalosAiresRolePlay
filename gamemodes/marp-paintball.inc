@@ -144,9 +144,10 @@ CMD:pbinfo(playerid, params[])
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {0004FF}azul{878EE7}: {C8C8C8} %d", BlueTeamMaxPlayers);
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {FF0000}rojo{878EE7}: {C8C8C8} %d", RedTeamMaxPlayers);
 	if(PaintballStart == 0) {
-	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} No."); }
-	if(PaintballStart == 1) {
-	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} Sí."); }
+		SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} No.");
+	} else {
+		SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} Sí.");
+	}
 	return 1;
 }
 
