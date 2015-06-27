@@ -85,6 +85,10 @@ CMD:pbinvitar(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbinvitar [equipo: azul - rojo] [ID/Nombre del jugador a invitar]");
 	} else if(strcmp(equipo, "azul", true) == 0) {
 	    if(BlueTeamPlayers < BlueTeamMaxPlayers && target != INVALID_PLAYER_ID) {
+			if(GetPVarInt(target, "GrupoPaintball") == 1)
+				RedTeamPlayers -= 1;
+			if(GetPVarInt(target, "GrupoPaintball") == 2)
+				BlueTeamPlayers -= 1;
 	        SetPVarInt(target, "GrupoPaintball", 2);
 	        BlueTeamPlayers += 1;
 	        SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Agregaste a %s al equipo azul de Paintball.", GetPlayerNameEx(target));
@@ -92,6 +96,10 @@ CMD:pbinvitar(playerid, params[]) {
 		} else { SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡El equipo azul está lleno! Podés modificar el límite de jugadores con /pbmaxplayers."); }
 	} else if(strcmp(equipo, "rojo", true) == 0) {
 	    if(RedTeamPlayers < RedTeamMaxPlayers && target != INVALID_PLAYER_ID) {
+			if(GetPVarInt(target, "GrupoPaintball") == 1)
+				RedTeamPlayers -= 1;
+			if(GetPVarInt(target, "GrupoPaintball") == 2)
+				BlueTeamPlayers -= 1;
 	        SetPVarInt(target, "GrupoPaintball", 1);
 	        RedTeamPlayers += 1;
 	        SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Agregaste a %s al equipo rojo de Paintball.", GetPlayerNameEx(target));
@@ -105,7 +113,7 @@ CMD:pbinvitar(playerid, params[]) {
 
 CMD:pbreset(playerid, params[])
 {
-	new Float:pos[3]
+	new Float:pos[3];
     PaintballPlay = 0,
     PaintballStart = 0,
     BlueTeamPlayers = 0,
@@ -121,10 +129,10 @@ CMD:pbreset(playerid, params[])
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
 			SetPlayerSkin(i, PlayerInfo[i][pSkin]);
-			if(GetPVarInt(i, "Descalificado" != 0)
+			if(GetPVarInt(i, "Descalificado") != 0)
 			{
 				GetPlayerPos(i, pos[0], pos[1], pos[2]);
-				SetPlayerPos(i, pos[0], pos[1], pos[2] - 3);
+				SetPlayerPos(i, pos[0], pos[1], pos[2] - 4);
 				SetPVarInt(i, "Descalificado", 0);
 			}
 		}
@@ -150,8 +158,8 @@ CMD:pbinfo(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} No hay un paintball creado.");
 
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}---{C8C8C8} Información del Paintball {878EE7}---");
-	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {0004FF}azul{878EE7}: {C8C8C8} %d", BlueTeamMaxPlayers);
-	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {FF0000}rojo{878EE7}: {C8C8C8} %d", RedTeamMaxPlayers);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Jugadores en el equipo {0004FF}azul{878EE7}: {C8C8C8} %d{878EE7}/{C8C8C8}%d", BlueTeamPlayers, BlueTeamMaxPlayers);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Jugadores en el equipo {FF0000}rojo{878EE7}: {C8C8C8} %d{878EE7}/{C8C8C8}%d", RedTeamPlayers, RedTeamMaxPlayers);
 	if(PaintballStart == 0) {
 		SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} No.");
 	} else {
