@@ -1070,12 +1070,17 @@ public ResetStats(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new string[64];
+	new string[64], string2[128];
 	
 	if(PhoneHand[playerid] == 1)
 	{
 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 		PhoneHand[playerid] = 0;
+	}
+	
+	if(GetPVarInt(playerid, "GrupoPaintball" != 0)
+	{
+		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	}
 	
 	if(InEnforcer[playerid] == 1)
@@ -3310,7 +3315,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
 
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0 || GetPVarInt(issuerid, "GrupoPaintball") != 0)
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0)
 		{
 			if(PaintballStart == 1)
 		    {

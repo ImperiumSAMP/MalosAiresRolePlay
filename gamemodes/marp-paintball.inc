@@ -21,10 +21,10 @@ new PaintballPlay = 0,
 
 
 // COMANDOS
-CMD:empezarpaintball(playerid,params[])
+CMD:pbcrear(playerid,params[])
 { 
 	if(PaintballPlay == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El paintball ya fuÃ© iniciado.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya hay un evento de paintball en curso.");
 	if(!IsPlayerInRangeOfPoint(playerid, 25.0, POS_PAINTBALL_X, POS_PAINTBALL_Y, POS_PAINTBALL_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes encontrarte en la zona donde se realizan los paintballs.");
 	
@@ -33,12 +33,12 @@ CMD:empezarpaintball(playerid,params[])
 }
 
 
-CMD:comenzarpaintball(playerid, params[])
+CMD:pbcomenzar(playerid, params[])
 {
 	if(PaintballPlay != 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de empezar el conteo debes iniciar el Paintball y crear los grupos. (/empezarpaintball)");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Antes de comenzar el juego debes crear el Paintball y configurar los equipos.");
 	if(PaintballStart == 1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El juego estÃ¡ en proceso, no puedes iniciar un conteo ahora.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El juego está en proceso, no puedes volver a iniciarlo ahora. (Usa /pbreset para terminarlo/reiniciarlo)");
 	
     SendClientMessage(playerid, -1, "Has comenzado el juego.");
 	foreach(new i : Player) 
@@ -47,6 +47,11 @@ CMD:comenzarpaintball(playerid, params[])
 		{
 			GameTextForPlayer(i, "YA!!!", 7000, 3);
 			PaintballStart = 1;
+			GivePlayerGun(i, 23, 100);
+			if(GetPVarInt(i, "GrupoPaintball") == 1) {
+			    SetPlayerSkin(i, 16); }
+			if(GetPVarInt(i, "GrupoPaintball") == 2) {
+			    SetPlayerSkin(i, 260); }
 		}
 	}
 	return 1;
@@ -94,7 +99,7 @@ CMD:pbinvitar(playerid, params[]) {
 	return 1;
 }
 
-CMD:resetpaintball(playerid, params[]) 
+CMD:pbreset(playerid, params[])
 {
     PaintballPlay = 0,
     PaintballStart = 0,
@@ -104,11 +109,81 @@ CMD:resetpaintball(playerid, params[])
     RedTeamMaxPlayers = 0;
 	foreach(new i : Player)	
 	{
-	    SetPVarInt(i, "GrupoPaintball", 0);
+		if(GetPVarInt(i, "GrupoPaintball") != 0)
+		{
+	    	SetPVarInt(i, "GrupoPaintball", 0);
+			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
+			PhoneHand[i] = 0;
+		}
 	}
     return 1;
 }
+
+CMD:pbayuda(playerid, params[])
+{
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[LVL 20]{C8C8C8} /pbcrear - /pbmaxplayers - /pbinvitar - /pbcomenzar - /pbinfo - /pbplayers - /pbreset");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para iniciar un evento de Paintball deberás, por empezar, crearlo con el comando /pbcrear");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Una vez creado el evento, configura la cantidad máxima de jugadores por equipo e invita a los usuarios.");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para comenzar con el evento, usa el comando /pbcomenzar. El evento permanecerá activo hasta que lo termines con /pbreset.");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para información detallada sobre el evento creado usa los comandos /pbinfo y /pbplayers.");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Ante cualquier problema con el sistema, reinicia el paintball con /pbreset y vuelve a crearlo.");
+	return 1;
+}
+
+CMD:pbinfo(playerid, params[])
+{
 	
+	if(PaintballPlay == 0)
+	    return SendClientMessage(playerid, COLOR_WHITE, "No hay un paintball creado.");
+
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}---{C8C8C8} Información del Paintball {878EE7}---");
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {0004FF}azul{878EE7}: {C8C8C8} %d", BlueTeamMaxPlayers);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Límite de jugadores equipo {FF0000}rojo{878EE7}: {C8C8C8} %d", RedTeamMaxPlayers);
+	if(PaintballStart == 0) {
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} No."); }
+	if(PaintballStart == 1) {
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} Sí."); }
+	return 1;
+}
+
+CMD:pbplayers(playerid, params[])
+{
+	new string[128], count = 0;
+
+	if(PaintballPlay == 0)
+		return SendClientMessage(playerid, COLOR_WHITE, "No hay un paintball creado.");
+
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "{878EE7}[Paintball] {C8C8C8}Lista de jugadores equipo {FF0000}rojo{C8C8C8}:");
+	foreach(new i : Player)
+	{
+	    if(GetPVarInt(i, "GrupoPaintball") == 1)
+		{
+			format(string, sizeof(string), "%s", GetPlayerNameEx(i));
+			SendClientMessage(playerid, COLOR_WHITE, string);
+			count++;
+		}
+	}
+	if(count == 0)
+	{
+	    SendClientMessage(playerid, COLOR_WHITE, "No hay ningún jugador en el equipo rojo.");
+	}
+	
+	SendClientMessage(playerid, COLOR_LIGHTGREEN, "{878EE7}[Paintball] {C8C8C8}Lista de jugadores equipo {0004FF}azul{C8C8C8}:");
+	foreach(new i : Player)
+	{
+	    if(GetPVarInt(i, "GrupoPaintball") == 2)
+		{
+			format(string, sizeof(string), "%s", GetPlayerNameEx(i));
+			SendClientMessage(playerid, COLOR_WHITE, string);
+			count++;
+		}
+	}
+	if(count == 0)
+	{
+	    SendClientMessage(playerid, COLOR_WHITE, "No hay ningún jugador en el equipo azul.");
+	}
+	return 1;
+}
 	
 	
 	
