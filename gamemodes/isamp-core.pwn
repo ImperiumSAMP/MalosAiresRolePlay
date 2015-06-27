@@ -3315,7 +3315,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
 
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0)
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1)
 		{
 			if(PaintballStart == 1)
 		    {
@@ -3325,8 +3325,9 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 					{
 				        SetPlayerPos(playerid, 187, 2500, 24);
 				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
-						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(issuerid));
+						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
 						AdministratorMessage(COLOR_ADMINCMD, string, 2);
+						SetPVarInt(playerid, "Descalificado", 1);
 						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 					    amount = 0;
 					}
@@ -3334,8 +3335,9 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 					{
 					    SetPlayerPos(playerid, 116, 2500, 24);
 				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
-						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(issuerid));
+						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
 						AdministratorMessage(COLOR_ADMINCMD, string, 2);
+						SetPVarInt(playerid, "Descalificado", 1);
 						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 					    amount = 0;
 					}

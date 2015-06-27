@@ -16,8 +16,8 @@ new PaintballPlay = 0,
     PaintballStart = 0,
     BlueTeamPlayers = 0,
 	RedTeamPlayers = 0,
-    BlueTeamMaxPlayers = 0,
-    RedTeamMaxPlayers = 0;
+    BlueTeamMaxPlayers = 3,
+    RedTeamMaxPlayers = 3;
 
 
 // COMANDOS
@@ -42,12 +42,12 @@ CMD:pbcomenzar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} El juego está en proceso, no puedes volver a iniciarlo ahora. (Usa /pbreset para terminarlo/reiniciarlo)");
 	
     SendClientMessage(playerid, -1, "{878EE7}[INFO]{C8C8C8} Has comenzado el paintball.");
+	PaintballStart = 1;
 	foreach(new i : Player) 
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
 			GameTextForPlayer(i, "YA!!!", 7000, 3);
-			PaintballStart = 1;
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
 			SetPlayerHealthEx(i, 100);
@@ -105,12 +105,13 @@ CMD:pbinvitar(playerid, params[]) {
 
 CMD:pbreset(playerid, params[])
 {
+	new Float:pos[3]
     PaintballPlay = 0,
     PaintballStart = 0,
     BlueTeamPlayers = 0,
 	RedTeamPlayers = 0,
-    BlueTeamMaxPlayers = 0,
-    RedTeamMaxPlayers = 0;
+    BlueTeamMaxPlayers = 3,
+    RedTeamMaxPlayers = 3;
     SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El paintball fue reiniciado.");
 	foreach(new i : Player)	
 	{
@@ -120,6 +121,12 @@ CMD:pbreset(playerid, params[])
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
 			SetPlayerSkin(i, PlayerInfo[i][pSkin]);
+			if(GetPVarInt(i, "Descalificado" != 0)
+			{
+				GetPlayerPos(i, pos[0], pos[1], pos[2]);
+				SetPlayerPos(i, pos[0], pos[1], pos[2] - 3);
+				SetPVarInt(i, "Descalificado", 0);
+			}
 		}
 	}
     return 1;

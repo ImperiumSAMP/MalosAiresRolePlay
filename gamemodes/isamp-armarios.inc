@@ -407,6 +407,8 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
 	if(GetHandItem(playerid, playerhand) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(GetHandItem(playerid, playerhand) == ITEM_ID_TELEFONO_CELULAR)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono.");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
