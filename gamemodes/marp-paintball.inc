@@ -8,16 +8,24 @@
 #define POS_PAINTBALL_Y     	2501 
 #define POS_PAINTBALL_Z     	16
 
-#define POS_DISQUALIFIED_X  	2575.6660
-#define POS_DISQUALIFIED_Y  	2834.5100
-#define POS_DISQUALIFIED_Z  	19.9922
+#define POS_PBREDTEAMHQ_X		114
+#define POS_PBREDTEAMHQ_Y		2501
+#define POS_PBREDTEAMHQ_Z		16
+
+#define POS_PBBLUETEAMHQ_X		187
+#define POS_PBBLUETEAMHQ_Y		2501
+#define POS_PBBLUETEAMHQ_Z		16
 
 new PaintballPlay = 0,
     PaintballStart = 0,
     BlueTeamPlayers = 0,
 	RedTeamPlayers = 0,
     BlueTeamMaxPlayers = 3,
-    RedTeamMaxPlayers = 3;
+    RedTeamMaxPlayers = 3,
+    BlueTeamDeads = 0,
+	RedTeamDeads = 0,
+	BlueTeamSkin = 0,
+	RedTeamSkin = 0;
 
 
 // COMANDOS
@@ -40,6 +48,8 @@ CMD:pbcomenzar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Antes de comenzar el juego debes crear el Paintball y configurar los equipos.");
 	if(PaintballStart == 1)
 		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} El juego está en proceso, no puedes volver a iniciarlo ahora. (Usa /pbreset para terminarlo/reiniciarlo)");
+	if(RedTeamSkin == 0 || BlueTeamSkin == 0)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡Uno de los equipos no tiene un skin configurado!");
 	
     SendClientMessage(playerid, -1, "{878EE7}[INFO]{C8C8C8} Has comenzado el paintball.");
 	PaintballStart = 1;
@@ -48,14 +58,15 @@ CMD:pbcomenzar(playerid, params[])
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
 			GameTextForPlayer(i, "YA!!!", 7000, 3);
+			SendClientMessage(playerid, COLOR_RED, "{878EE7}[INFO]{C8C8C8} ¡El paintball comenzó! En caso de que te descalifiquen deberás regresar a tu base y volver a tomar tu arma.");
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
 			SetPlayerHealthEx(i, 100);
 			GivePlayerGun(i, 23, 100);
 			if(GetPVarInt(i, "GrupoPaintball") == 1) {
-			    SetPlayerSkin(i, 16); }
+			    SetPlayerSkin(i, RedTeamSkin); }
 			if(GetPVarInt(i, "GrupoPaintball") == 2) {
-			    SetPlayerSkin(i, 260); }
+			    SetPlayerSkin(i, BlueTeamSkin); }
 		}
 	}
 	return 1;
@@ -63,6 +74,11 @@ CMD:pbcomenzar(playerid, params[])
 
 CMD:pbmaxplayers(playerid, params[]) {
 	new equipo[4], maxplayers;
+
+	if(PaintballPlay != 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡No hay ningún paintball creado!");
+	if(PaintballStart == 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡El juego ya está en proceso! Usa /pbreset para reiniciarlo y reconfigurar lo que necesites.");
 
 	if(sscanf(params, "si", equipo, maxplayers)) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbmaxplayers [equipo: azul - rojo] [máximo de jugadores]");
@@ -78,8 +94,35 @@ CMD:pbmaxplayers(playerid, params[]) {
 	return 1;
 }
 
+CMD:pbskin(playerid, params[]) {
+	new equipo[4], skin;
+
+	if(PaintballPlay != 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡No hay ningún paintball creado!");
+	if(PaintballStart == 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡El juego ya está en proceso! Usa /pbreset para reiniciarlo y reconfigurar lo que necesites.");
+
+	if(sscanf(params, "si", equipo, skin)) {
+		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbskin [equipo: azul - rojo] [skin de los jugadores]");
+	} else if(strcmp(equipo, "azul", true) == 0) {
+		BlueTeamSkin = skin;
+		SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Configuraste el skin de los jugadores del equipo azul a %d.", skin);
+	} else if(strcmp(equipo, "rojo", true) == 0) {
+		RedTeamSkin = skin;
+		SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Configuraste el skin de los jugadores del equipo rojo a %d.", skin);
+	} else {
+		SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} Los posibles equipos son rojo y azul.");
+	}
+	return 1;
+}
+
 CMD:pbinvitar(playerid, params[]) {
 	new equipo[4], target;
+
+	if(PaintballPlay != 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡No hay ningún paintball creado!");
+	if(PaintballStart == 1)
+		return SendClientMessage(playerid, COLOR_RED, "[ERROR]{C8C8C8} ¡El juego ya está en proceso! Usa /pbreset para reiniciarlo y reconfigurar lo que necesites.");
 
 	if(sscanf(params, "su", equipo, target)) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pbinvitar [equipo: azul - rojo] [ID/Nombre del jugador a invitar]");
@@ -113,13 +156,14 @@ CMD:pbinvitar(playerid, params[]) {
 
 CMD:pbreset(playerid, params[])
 {
-	new Float:pos[3];
     PaintballPlay = 0,
     PaintballStart = 0,
     BlueTeamPlayers = 0,
 	RedTeamPlayers = 0,
     BlueTeamMaxPlayers = 3,
-    RedTeamMaxPlayers = 3;
+    RedTeamMaxPlayers = 3,
+	BlueTeamDeads = 0,
+	RedTeamDeads = 0;
     SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El paintball fue reiniciado.");
 	foreach(new i : Player)	
 	{
@@ -131,8 +175,6 @@ CMD:pbreset(playerid, params[])
 			SetPlayerSkin(i, PlayerInfo[i][pSkin]);
 			if(GetPVarInt(i, "Descalificado") != 0)
 			{
-				GetPlayerPos(i, pos[0], pos[1], pos[2]);
-				SetPlayerPos(i, pos[0], pos[1], pos[2] - 4);
 				SetPVarInt(i, "Descalificado", 0);
 			}
 		}
@@ -142,7 +184,7 @@ CMD:pbreset(playerid, params[])
 
 CMD:pbayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[LVL 20]{C8C8C8} /pbcrear - /pbmaxplayers - /pbinvitar - /pbcomenzar - /pbinfo - /pbplayers - /pbreset - /gotopb");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[LVL 20]{C8C8C8} /pbcrear - /pbmaxplayers - /pbinvitar - /pbcomenzar - /pbinfo - /pbplayers - /pbreset - /pbskin - /gotopb");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para iniciar un evento de Paintball deberás, por empezar, crearlo con el comando /pbcrear");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Una vez creado el evento, configura la cantidad máxima de jugadores por equipo e invita a los usuarios.");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para comenzar con el evento, usa el comando /pbcomenzar. El evento permanecerá activo hasta que lo termines con /pbreset.");
@@ -165,6 +207,10 @@ CMD:pbinfo(playerid, params[])
 	} else {
 		SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Evento iniciado: {C8C8C8} Sí.");
 	}
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Jugadores descalificados por el equipo {0004FF}azul{878EE7}: {C8C8C8} %d", RedTeamDeads);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Jugadores descalificados por el equipo {FF0000}rojo{878EE7}: {C8C8C8} %d", BlueTeamDeads);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Skin del equipo {0004FF}azul{878EE7}: {C8C8C8} %d", RedTeamSkin);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}Skin del equipo {FF0000}rojo{878EE7}: {C8C8C8} %d", BlueTeamSkin);
 	return 1;
 }
 

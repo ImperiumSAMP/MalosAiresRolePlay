@@ -3306,7 +3306,7 @@ stock chargeTaxis()
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
-	new Float:armour;
+	new Float:armour, string[128];
 
     GetPlayerArmour(playerid, armour);
 
@@ -3317,32 +3317,32 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
 
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1)
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1 && GetPVarInt(playerid, "GrupoPaintball") != GetPVarInt(issuerid, "GrupoPaintball"))
 		{
 			if(PaintballStart == 1)
 		    {
 			    if(weaponid == WEAPON_SILENCED)
 			    {
-			        new string[128];
-			        
 				    if(GetPVarInt(playerid, "GrupoPaintball") == 1)
 					{
-				        SetPlayerPos(playerid, 187, 2500, 24);
-				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+				        SetPlayerSkin(playerid, 264);
+				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, regresa a tu base y presiona la F para buscar tus armas y volver a participar.");
 						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
 						AdministratorMessage(COLOR_ADMINCMD, string, 2);
 						SetPVarInt(playerid, "Descalificado", 1);
 						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+						RedTeamDeads += 1;
 					    amount = 0;
 					}
 					if(GetPVarInt(playerid, "GrupoPaintball") == 2)
 					{
-					    SetPlayerPos(playerid, 116, 2500, 24);
-				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda hasta ver si tu equipo gana o pierde.");
+				        SetPlayerSkin(playerid, 264);
+				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, regresa a tu base y presiona la F para buscar tus armas y volver a participar.");
 						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
 						AdministratorMessage(COLOR_ADMINCMD, string, 2);
 						SetPVarInt(playerid, "Descalificado", 1);
 						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+						BlueTeamDeads += 1;
 					    amount = 0;
 					}
 			    }
@@ -6633,7 +6633,25 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	        }
 	    }
 	    */
-	    
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && PaintballStart != 0 && GetPVarInt(playerid, "Descalificado") != 0)
+		{
+		    if(GetPVarInt(playerid, "GrupoPaintball") == 1 && PlayerToPoint(25.0, playerid, POS_PBREDTEAMHQ_X, POS_PBREDTEAMHQ_Y, POS_PBREDTEAMHQ_Z))
+		    {
+		        SetPVarInt(playerid, "Descalificado", 0);
+				SetPlayerHealthEx(playerid, 100);
+				GivePlayerGun(playerid, 23, 100);
+				SetPlayerSkin(playerid, RedTeamSkin);
+				SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Recuperaste tu arma y puedes seguir jugando.");
+			}
+		    if(GetPVarInt(playerid, "GrupoPaintball") == 2 && PlayerToPoint(25.0, playerid, POS_PBBLUETEAMHQ_X, POS_PBBLUETEAMHQ_Y, POS_PBBLUETEAMHQ_Z))
+		    {
+		        SetPVarInt(playerid, "Descalificado", 0);
+				SetPlayerHealthEx(playerid, 100);
+				GivePlayerGun(playerid, 23, 100);
+				SetPlayerSkin(playerid, BlueTeamSkin);
+				SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Recuperaste tu arma y puedes seguir jugando.");
+			}
+		}
     }
 
 	if(PlayerInfo[playerid][pTutorial] == 1)
