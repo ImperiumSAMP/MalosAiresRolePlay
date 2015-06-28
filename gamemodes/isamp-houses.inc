@@ -66,7 +66,7 @@ forward bool:LeaveHouse(playerid);
 
 //========================IMPLEMENTACION DE FUNCIONES===========================
 
-GetHouseLockerSpace(houseid)
+stock GetHouseLockerSpace(houseid)
 {
 	if(houseid == 0 || houseid >= MAX_HOUSES)
 		return 0;
@@ -149,11 +149,13 @@ public OnHouseDataLoad(id)
 
 		cache_get_field_content(0, "ContainerSQLID", result); 		House[id][ContainerSQLID] 		= strval(result);
 
+		/*
 		if(House[id][ContainerSQLID] > 0)
 		    House[id][ContainerID] = Container_Load(House[id][ContainerSQLID]);
 		else
 		    Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
-		    
+		*/
+		
 		House[id][Created] = 1;
 		House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 		House[id][hInsideLabel] = CreateDynamic3DTextLabel("-", 0x008080FF, House[id][InsideX], House[id][InsideY], House[id][InsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][InsideInterior], -1, 100.0);
@@ -229,7 +231,9 @@ stock CreateHouse(id)
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
 
+	/*
     Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
+    */
     
 	House[id][Created] = 1;
 	House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
@@ -283,12 +287,15 @@ stock DeleteHouse(id)
 	House[id][Cocaine] = 0;
 	House[id][Radio] = 0;
 	
+	/*
 	if(HouseHasContainer(id))
 	{
 	    Container_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
 	    House[id][ContainerID] = 0;
 	    House[id][ContainerSQLID] = 0;
 	}
+	*/
+	
 	return 1;
 }
 
@@ -1379,11 +1386,13 @@ CMD:acprecio(playerid, params[])
 
 	ResetLocker(houseid); // Al cambiar el precio se cambian los slots de armario, por ende reseteamos todo para evitar bugs.
 
+	/*
 	if(HouseHasContainer(houseid))
 	{
 	    Container_Empty(House[houseid][ContainerID]);
 	    Container_SetTotalSpace(House[houseid][ContainerID], GetHouseLockerSpace(houseid));
 	}
+	*/
 	    
 	SaveHouse(houseid);
 	return 1;
@@ -1431,9 +1440,11 @@ CMD:acvender(playerid, params[])
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	ResetLocker(houseid);
 	
+	/*
 	if(HouseHasContainer(houseid))
 	    Container_Empty(House[houseid][ContainerID]);
-
+	*/
+	
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido vendida.", houseid);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);

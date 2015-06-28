@@ -1070,7 +1070,7 @@ public ResetStats(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new string[64], string2[128];
+	new string[64];
 	
 	if(PhoneHand[playerid] == 1)
 	{
@@ -2712,10 +2712,12 @@ public OnVehicleDataLoad(id)
 
         cache_get_field_content(0, "VehContainerSQLID", result); 	VehicleInfo[id][VehContainerSQLID] = strval(result);
         
+        /*
         if(VehicleInfo[id][VehContainerSQLID] > 0)
             VehicleInfo[id][VehContainerID] = Container_Load(VehicleInfo[id][VehContainerSQLID]);
 		else
 		    Container_Create(GetVehicleModelTrunkSpace(VehicleInfo[id][VehModel]), 5, VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
+		*/
 		
 		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
  			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
@@ -3304,7 +3306,7 @@ stock chargeTaxis()
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
-	new Float:armour, string[128];
+	new Float:armour;
 
     GetPlayerArmour(playerid, armour);
 
@@ -3321,6 +3323,8 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		    {
 			    if(weaponid == WEAPON_SILENCED)
 			    {
+			        new string[128];
+			        
 				    if(GetPVarInt(playerid, "GrupoPaintball") == 1)
 					{
 				        SetPlayerPos(playerid, 187, 2500, 24);
@@ -4856,26 +4860,26 @@ strtok(string[],&idx,seperator = ' ')
 
 //=====================================================[SERVERSIDE WEAPON FUNCTIONS]===========================================
 
-stock bool:GivePlayerGun(playerid, weapon, ammo)
+stock GivePlayerGun(playerid, weapon, ammo)
 {
 	if(GetHandItem(playerid, HAND_RIGHT) == 0)
  		SetHandItemAndParam(playerid, HAND_RIGHT, weapon, ammo);
 	else if(GetHandItem(playerid, HAND_LEFT) == 0)
 	    SetHandItemAndParam(playerid, HAND_LEFT, weapon, ammo);
 	else
- 		return false; // No se pudo entregar el arma por tener las manos ocupadas
-	return true; // Se pudo entregar el arma
+ 		return 0; // No se pudo entregar el arma por tener las manos ocupadas
+	return 1; // Se pudo entregar el arma
 }
 
-stock bool:RemovePlayerGun(playerid, weapon)
+stock RemovePlayerGun(playerid, weapon)
 {
 	if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
  		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	else if(GetItemType(GetHandItem(playerid, HAND_LEFT)) == ITEM_WEAPON)
 	    SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
 	else
- 		return false; // No tenia un arma
-	return true; // Se sacó el arma, en orden mano derecha - mano izquierda
+ 		return 0; // No tenia un arma
+	return 1; // Se sacó el arma, en orden mano derecha - mano izquierda
 }
 
 //=====================================================[SERVERSIDE CASH FUNCTIONS]=============================================

@@ -58,7 +58,7 @@ ResetContainerSelection(playerid)
 
 //==============================================================================
 
-Container_Load(container_sqlid)
+stock Container_Load(container_sqlid)
 {
 	new query[128];
 	new container_id = vector_create();
@@ -121,7 +121,7 @@ public OnContainerSlotsLoad(container_id)
 
 //==============================================================================
 
-Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
+stock Container_Create(total_space, min_item_space, &container_id, &container_sqlid)
 {
 	if(total_space >= 0) // Espacio válido
 	{
@@ -155,7 +155,7 @@ public GetContainerInsertedId(container_id, address)
 
 //==============================================================================
 
-Container_Destroy(id, container_sqlid)
+stock Container_Destroy(id, container_sqlid)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -177,7 +177,7 @@ Container_Destroy(id, container_sqlid)
 
 //==============================================================================
 
-Container_AddUsedSpace(id, space)
+stock Container_AddUsedSpace(id, space)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -196,7 +196,7 @@ Container_AddUsedSpace(id, space)
 
 //==============================================================================
 
-Container_GetTotalSpace(id)
+stock Container_GetTotalSpace(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
      return vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
@@ -206,7 +206,7 @@ Container_GetTotalSpace(id)
 
 //==============================================================================
 
-Container_SetTotalSpace(id, total_space)
+stock Container_SetTotalSpace(id, total_space)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -224,7 +224,7 @@ Container_SetTotalSpace(id, total_space)
 
 //==============================================================================
 
-Container_GetUsedSpace(id)
+stock Container_GetUsedSpace(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return vector_get(id, CONTAINER_INDEX_USED_SPACE);
@@ -234,7 +234,7 @@ Container_GetUsedSpace(id)
 
 //==============================================================================
 
-Container_GetElementsAmount(id)
+stock Container_GetElementsAmount(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return (vector_size(id) - 4) / 2;
@@ -244,7 +244,7 @@ Container_GetElementsAmount(id)
 
 //==============================================================================
 
-Container_GetSQLID(id)
+stock Container_GetSQLID(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return vector_get(id, CONTAINER_INDEX_SQLID);
@@ -254,7 +254,7 @@ Container_GetSQLID(id)
 
 //==============================================================================
 
-Container_GetMinItemSpace(id)
+stock Container_GetMinItemSpace(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	    return vector_get(id, CONTAINER_INDEX_MIN_ITEM_SPACE);
@@ -306,7 +306,7 @@ stock Container_GetParam(id, slot)
 
 //==============================================================================
 
-Container_Empty(id)
+stock Container_Empty(id)
 {
     if(id > 0 && vector_size(id) > 3)
     {
@@ -337,7 +337,7 @@ Container_Empty(id)
 
 //==============================================================================
 
-Container_AddItemAndParam(id, item, param)
+stock Container_AddItemAndParam(id, item, param)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -366,7 +366,7 @@ Container_AddItemAndParam(id, item, param)
 
 //==============================================================================
 
-Container_TakeItem(id, slot, &item, &param)
+stock Container_TakeItem(id, slot, &item, &param)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -398,7 +398,7 @@ Container_TakeItem(id, slot, &item, &param)
 
 //==============================================================================
 
-Container_UpdateOpenedDialogs(id)
+stock Container_UpdateOpenedDialogs(id)
 {
 	foreach(new playerid : Player)
 	{
@@ -412,7 +412,7 @@ Container_UpdateOpenedDialogs(id)
 
 //==============================================================================
 
-Container_Show(origid, type, id, playerid)
+stock Container_Show(origid, type, id, playerid)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{

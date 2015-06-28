@@ -983,6 +983,7 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 	return 1;
 }
 
+/*
 
 //==============================[EXPERIMENTAL]==================================
 
@@ -1243,6 +1244,8 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
 }
 
 //============================[FIN EXPERIMENTAL]================================
+
+*/
 
 CMD:mal(playerid, params[])
 {

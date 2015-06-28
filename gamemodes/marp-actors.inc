@@ -97,7 +97,7 @@ CMD:aanombre(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
 	format(ServerActor[actorid][eName], 64, "%s", actorname);
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado el nombre del actor %d a %s.", actorid, actorname);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado el nombre del actor %d a '%s'.", actorid, actorname);
 
 	new str[128];
 	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
@@ -130,7 +130,7 @@ CMD:aadesc(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
 	format(ServerActor[actorid][eDescription], 64, "%s", actordesc);
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la descripción del actor %d a %s.", actorid, actordesc);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la descripción del actor %d a '%s'.", actorid, actordesc);
 
 	new str[128];
 	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
@@ -209,7 +209,7 @@ CMD:aaanim(playerid, params[])
 	    
 	ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
 	
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la de la librería %s, de nombre %s.", actorid, animlib, animname);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la '%s' de la librería '%s'.", actorid, animname, animlib);
 
 	new query[128];
 	
