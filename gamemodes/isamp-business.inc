@@ -1313,7 +1313,6 @@ CMD:guardarproductos(playerid, params[])
 	new hand = SearchHandsForItem(playerid, ITEM_ID_PRODUCTOS),
 	    amount;
 
-
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(hand == -1)
@@ -1335,4 +1334,3 @@ CMD:guardarproductos(playerid, params[])
 	}
  	return 1;
 }
-

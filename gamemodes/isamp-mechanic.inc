@@ -151,7 +151,7 @@ stock GetRepairMaterialCost(vehicleid)
  	if(vhp < 750.0)
  	{
 		repuestos = floatround(((750.0 - vhp) / 125), floatround_ceil);
-        if(IsABike(vehicleid))
+        if(GetVehicleType(vehicleid) == VTYPE_BIKE)
             repuestos --; // las motos piden 1 repuesto menos
 		return repuestos;
 	}

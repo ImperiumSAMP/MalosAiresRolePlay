@@ -171,6 +171,8 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(itemid == ITEM_ID_TELEFONO_CELULAR)
@@ -232,6 +234,8 @@ CMD:mano(playerid, params[])
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
 			if(rightitem == ITEM_ID_TELEFONO_CELULAR)
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono celular.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
             if(GetPVarInt(playerid, "cantSaveItems") == 1)
  				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 	    		
@@ -252,6 +256,8 @@ CMD:mano(playerid, params[])
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
 			if(rightitem == 0 || leftitem == 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 			if(GetItemType(rightitem) != ITEM_WEAPON || GetItemType(leftitem) != ITEM_WEAPON)
             	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
 			if(rightitem != leftitem)

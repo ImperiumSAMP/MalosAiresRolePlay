@@ -40,6 +40,42 @@ native vector_is_globalized(vecid); // is vector ID globalized
 
 native vector_index_exists(vecid, index); // does index exist
 
+//===========================INJERTO BY HUEVO===================================
+
+new VECTOR_SYSTEM = 0,
+	VECTORS_ID_COUNT = 1;
+
+stock vector_create()
+{
+	new vecid;
+
+	if(vector_size(VECTOR_SYSTEM))
+	{
+		vecid = vector_get(VECTOR_SYSTEM, 0);
+		vector_remove(VECTOR_SYSTEM, 0);
+	}
+	else
+	{
+	    vecid = VECTORS_ID_COUNT;
+	    VECTORS_ID_COUNT++;
+	}
+
+	return vecid;
+}
+
+stock vector_destroy(vecid)
+{
+	if(vecid > 0)
+	{
+		if(vector_size(vecid))
+		    vector_clear(vecid);
+
+		vector_push_back(VECTOR_SYSTEM, vecid);
+	}
+}
+
+//==============================================================================
+
 // MAP
 
 native map_insert(mapid, key[], value);

@@ -318,6 +318,15 @@ stock GetItemAttachBone(itemid)
 	return ServerItems[itemid][AttachBone];
 }
 
+stock GetItemSpace(item, param = 0)
+{
+	// if(space depende de parametro && param != 0)
+	// 		return Items[itemid][iSpace] * param
+	// else
+	//      return Items[itemid][iSpace]
+	return 65;
+}
+
 stock GetItemName(itemid)
 {
 	new str[40];
@@ -355,6 +364,7 @@ stock LoadHandItem(playerid, hand)
 	      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
 	      		//==================================================================
 			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			    SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
 			}
 		}
 		else
