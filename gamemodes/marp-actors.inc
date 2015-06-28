@@ -78,7 +78,7 @@ public OnActorDataLoad()
 		            format(ServerActor[actorid][eDescription], 64, "%s", "");
 		            
 		        format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
-				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
 				ServerActor[actorid][eUsesLabel] = 1;
 			}
 		}
@@ -110,7 +110,7 @@ CMD:aanombre(playerid, params[])
 	{
 	    new Float:pos[3];
 	    GetActorPos(actorid, pos[0], pos[1], pos[2]);
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
 		ServerActor[actorid][eUsesLabel] = 1;
 	}
 	
@@ -143,7 +143,7 @@ CMD:aadesc(playerid, params[])
 	{
 	    new Float:pos[3];
 	    GetActorPos(actorid, pos[0], pos[1], pos[2]);
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 15.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
+		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
 		ServerActor[actorid][eUsesLabel] = 1;
 	}
 
@@ -196,6 +196,12 @@ public GetInsertedActorId(store_in_address)
     return 1;
 }
 
+// SETEAR LOOP O NO
+// SETEAR LOOP O NO
+// SETEAR LOOP O NO
+// SETEAR LOOP O NO
+// SETEAR LOOP O NO
+
 CMD:aaanim(playerid, params[])
 {
 	new animlib[32],
@@ -228,15 +234,18 @@ CMD:aagetid(playerid, params[])
 		if(IsValidActor(i) && ServerActor[i][eSQLID] > 0)
 		{
 		    GetActorPos(i, apos[0], apos[1], apos[2]);
-		    if(IsPlayerInRangeOfPoint(playerid, 2.0, apos[0], apos[1], apos[2]))
+		    if(GetPlayerVirtualWorld(playerid) == GetActorVirtualWorld(i))
 		    {
-		        SendFMessage(playerid, COLOR_WHITE, "La id del actor cercano es %d.", i);
-		        return 1;
+			    if(IsPlayerInRangeOfPoint(playerid, 1.0, apos[0], apos[1], apos[2]))
+			    {
+			        SendFMessage(playerid, COLOR_WHITE, "La id del actor cercano es %d.", i);
+			        return 1;
+				}
 			}
 		}
 	}
 	
-	SendClientMessage(playerid, COLOR_WHITE, "No se ha encontrado ningún actor válido cerca tuyo (2.0 unidades SAMP de cercanía).");
+	SendClientMessage(playerid, COLOR_WHITE, "No se ha encontrado ningún actor válido cerca tuyo (1.0 unidades SAMP de cercanía).");
 	return 1;
 }
 
