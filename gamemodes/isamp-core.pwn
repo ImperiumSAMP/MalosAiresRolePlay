@@ -8710,6 +8710,27 @@ CMD:resetabstinencia(playerid, params[])
     return 1;
 }
 
+CMD:darobjeto(playerid, params[])
+{
+	new targetid, item, amount, targetfreehand;
+
+    if(sscanf(params, "uii", targetid, item, amount))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darobjeto [ID/Jugador] [ID de objeto] [cantidad]");
+    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+	if(item < 1 || item > 99)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de objeto inválida.");
+	targetfreehand = SearchFreeHand(targetid);
+	if(targetfreehand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
+
+	SetHandItemAndParam(targetid, targetfreehand, item, amount);
+	SendFMessage(playerid, COLOR_YELLOW2, "Le diste %d cantidad de objetos ID %d al jugador %s.", amount, item, GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_YELLOW2, "El administrador %s te dió %d cantidad de objetos ID %d.", GetPlayerNameEx(targetid), amount, item);
+
+    return 1;
+}
+
 CMD:quitarobjeto(playerid, params[])
 {
 	new string[128],
