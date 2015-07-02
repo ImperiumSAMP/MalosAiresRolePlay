@@ -951,7 +951,10 @@ CMD:casacontrato(playerid, params[])
 CMD:acasas(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA CASAS]==============================");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /acinfo - /actele");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /actele");
+	if(PlayerInfo[playerid][pAdmin] >= 4) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /acinfo");
+	}
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
 	}

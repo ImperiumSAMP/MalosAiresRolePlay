@@ -8108,25 +8108,25 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aeditobjeto /ainfoobjetos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto /setcoord /setint /setvw /vers");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto /setcoord /setint /setvw /kick");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /verf /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /vers /verf /mute /slap /skin");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /agregarmodelo /borrarmodelo /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /clima /darlider /desbanear /givegun /resetabstinencia");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 10) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /money /afacciones");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /afacciones");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /exit /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /resetcars /setadmin /tod /unknowngametext /pbayuda /debugayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /exit /money /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /resetcars /setadmin /tod /unknowngametext /agregarmodelo /borrarmodelo /pbayuda /debugayuda");
 	}
 	return 1;
 }
@@ -8372,7 +8372,7 @@ CMD:descongelar(playerid, params[])
     new string[128],
 		targetid;
 
-	if(sscanf(params, "i", targetid))
+	if(sscanf(params, "u", targetid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /descongelar [ID/Jugador]");
 	if(!IsPlayerConnected(targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
@@ -8390,7 +8390,7 @@ CMD:congelar(playerid, params[])
     new string[128],
 		targetid;
 
-	if(sscanf(params, "i", targetid))
+	if(sscanf(params, "u", targetid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /congelar [ID/Jugador]");
 	if(!IsPlayerConnected(targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
