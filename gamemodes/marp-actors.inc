@@ -5,8 +5,9 @@
 
 enum e_ServerActor {
 	eSQLID,
-	eName[64],
-	eDescription[64],
+	eNick[128],
+	eDescription[128],
+	eInt,
 	eUsesLabel,
 	Text3D:eLabelID
 };
@@ -35,8 +36,7 @@ public OnActorDataLoad()
 			skin,
 			actorid,
 			animname[32],
-			animlib[32],
-			str[128];
+			animlib[32];
 
 		for(new i = 0; i < rows; i++)
 	    {
@@ -49,36 +49,38 @@ public OnActorDataLoad()
 			actorid = CreateActor(skin, pos[0], pos[1], pos[2], angle);
 			
 			if(actorid == INVALID_ACTOR_ID)
+			{
+			    printf("[ERROR DE CARGA DE ACTORES]: interrumpida la carga por alcanzar el límite de actores creados en el row %i de %i.", i, rows);
 			    return 1;
-
-            cache_get_field_content(i, "id", result); 	ServerActor[actorid][eSQLID] = strval(result);
-            
-	        cache_get_field_content(i, "vworld", result); 	vworld = strval(result);
-			SetActorVirtualWorld(actorid, vworld);
+			}
 			
 			SetActorHealth(actorid, 100.0);
 			SetActorInvulnerable(actorid, 1);
+			
+            cache_get_field_content(i, "id", result);
+			ServerActor[actorid][eSQLID] = strval(result);
+            
+			cache_get_field_content(i, "interior", result);
+			ServerActor[actorid][eInt] = strval(result);
+			
+	        cache_get_field_content(i, "vworld", result);
+			vworld = strval(result);
+			SetActorVirtualWorld(actorid, vworld);
+
+			cache_get_field_content(i, "description", ServerActor[actorid][eDescription], 1, 128);
 
 			cache_get_field_content(i, "animlib", animlib, 1, 32);
 			if(strcmp(animlib, "none", true) != 0)
 		    {
 		        cache_get_field_content(i, "animname", animname, 1, 32);
-		        ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
+		        cache_get_field_content(i, "animloop", result);
+		        ApplyActorAnimation(actorid, animlib, animname, 4.1, strval(result), 0, 0, 1, 0);
 			}
 
-			cache_get_field_content(i, "nick", ServerActor[actorid][eName], 1, 64);
-            cache_get_field_content(i, "description", ServerActor[actorid][eDescription], 1, 64);
-            
-		    if(strcmp(ServerActor[actorid][eName], "none", true) != 0 || strcmp(ServerActor[actorid][eDescription], "none", true) != 0)
+			cache_get_field_content(i, "nick", ServerActor[actorid][eNick], 1, 128);
+		    if(strcmp(ServerActor[actorid][eNick], "none", true) != 0)
 		    {
-		        if(strcmp(ServerActor[actorid][eName], "none", true) == 0)
-		            format(ServerActor[actorid][eName], 64, "%s", "");
-		            
-		        if(strcmp(ServerActor[actorid][eDescription], "none", true) == 0)
-		            format(ServerActor[actorid][eDescription], 64, "%s", "");
-		            
-		        format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
-				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
+				ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(ServerActor[actorid][eNick], COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, vworld);
 				ServerActor[actorid][eUsesLabel] = 1;
 			}
 		}
@@ -89,18 +91,20 @@ public OnActorDataLoad()
 CMD:aanombre(playerid, params[])
 {
 	new actorid,
-	    actorname[64];
+	    str[128],
+		charpos;
 
-	if(sscanf(params, "is[64]", actorid, actorname))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [nombre]");
+	if(sscanf(params, "is[128]", actorid, str))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [nombre]. El caracter '_' (guión bajo) se usa para la bajada de linea. Solo se permite una vez.");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
-	format(ServerActor[actorid][eName], 64, "%s", actorname);
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado el nombre del actor %d a '%s'.", actorid, actorname);
-
-	new str[128];
-	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
+	charpos = strfind(str, "_", true);
+	if(charpos != -1)
+	    str[charpos] = 10; // Codigo decimal para el caracter 'bajada de linea' en el codigo ASCII.
+	
+	format(ServerActor[actorid][eNick], 128, "%s", str);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado el nombre del actor %d a '%s'.", actorid, str);
 	
 	if(ServerActor[actorid][eUsesLabel] && IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
 	{
@@ -114,7 +118,7 @@ CMD:aanombre(playerid, params[])
 		ServerActor[actorid][eUsesLabel] = 1;
 	}
 	
-	format(str, sizeof(str), "UPDATE actors SET nick = '%s' WHERE id = %d", actorname, ServerActor[actorid][eSQLID]);
+	format(str, sizeof(str), "UPDATE actors SET nick = '%s' WHERE id = %d", ServerActor[actorid][eNick], ServerActor[actorid][eSQLID]);
 	mysql_function_query(dbHandle, str, false, "", "");
 	return 1;
 }
@@ -122,48 +126,39 @@ CMD:aanombre(playerid, params[])
 CMD:aadesc(playerid, params[])
 {
 	new actorid,
-	    actordesc[64];
+	    str[128];
 
-	if(sscanf(params, "is[64]", actorid, actordesc))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [descripción]");
+	if(sscanf(params, "is[128]", actorid, str))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [descripción ooc]");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
-	format(ServerActor[actorid][eDescription], 64, "%s", actordesc);
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la descripción del actor %d a '%s'.", actorid, actordesc);
+	format(ServerActor[actorid][eDescription], 128, "%s", str);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la descripción OOC del actor %d a '%s'.", actorid, str);
 
-	new str[128];
-	format(str, sizeof(str), "%s\n%s", ServerActor[actorid][eName], ServerActor[actorid][eDescription]);
-
-	if(ServerActor[actorid][eUsesLabel] && IsValidDynamic3DTextLabel(ServerActor[actorid][eLabelID]))
-	{
-		UpdateDynamic3DTextLabelText(ServerActor[actorid][eLabelID], COLOR_WHITE, str);
-	}
-	else
-	{
-	    new Float:pos[3];
-	    GetActorPos(actorid, pos[0], pos[1], pos[2]);
-		ServerActor[actorid][eLabelID] = CreateDynamic3DTextLabel(str, COLOR_WHITE, pos[0], pos[1], pos[2] + 1.0, 10.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, GetActorVirtualWorld(actorid));
-		ServerActor[actorid][eUsesLabel] = 1;
-	}
-
-	format(str, sizeof(str), "UPDATE actors SET description = '%s' WHERE id = %d", actordesc, ServerActor[actorid][eSQLID]);
+	format(str, sizeof(str), "UPDATE actors SET description = '%s' WHERE id = %d", ServerActor[actorid][eDescription], ServerActor[actorid][eSQLID]);
 	mysql_function_query(dbHandle, str, false, "", "");
 	return 1;
 }
 
 CMD:aacrear(playerid, params[])
 {
-	new skin;
+	new skin,
+		desc[128];
 
-	if(sscanf(params, "i", skin))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [skin]");
+	if(sscanf(params, "is[128]", skin, desc))
+	{
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [id skin] [descripción OOC] (hasta 128 caracteres)");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "La descripción OOC sirve unicamente para identificar al actor en la DB, y no se mostrará in-game. Ej: 'NPC PMA en escaleras del exterior de la comisaría'.");
+		return 1;
+	}
 	if(skin < 1 || skin > 311)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa una ID de skin válida (1-311).");
 
 	new Float:pos[3],
 	    Float:angle,
 	    vworld = GetPlayerVirtualWorld(playerid),
+	    interior = GetPlayerInterior(playerid),
 	    actorid;
 
 	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
@@ -172,54 +167,54 @@ CMD:aacrear(playerid, params[])
 	actorid = CreateActor(skin, pos[0], pos[1], pos[2], angle);
 
 	if(actorid == INVALID_ACTOR_ID)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "[ERROR]: máximo de actores en el servidor alcanzado (1000). Reportar a la administración");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "[ERROR]: máximo de actores en el servidor alcanzado (1000). Reportar a un scripter.");
 
 	SetActorVirtualWorld(actorid, vworld);
 	SetActorHealth(actorid, 100.0);
 	SetActorInvulnerable(actorid, 1);
 	
+	ServerActor[actorid][eInt] = interior;
+	
 	SetPlayerPos(playerid, pos[0] + 0.7, pos[1], pos[2]);
 	
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: actor id %d creado correctamente en el mundo virtual %d.", actorid, vworld);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: la descripción OOC es '%s'.", desc);
 
-	new query[256];
+	new query[350];
 	
-	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, nick, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, 'none', 'none', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld);
-	mysql_function_query(dbHandle, query, true, "GetInsertedActorId", "d", GetVariableAddress(ServerActor[actorid][eSQLID]));
+	format(query, sizeof(query), "INSERT INTO actors (skin, x, y, z, angle, vworld, interior, nick, description, animlib, animname) VALUES (%d, %f, %f, %f, %f, %d, %d, 'none', '%s', 'none', 'none')", skin, pos[0], pos[1], pos[2], angle, vworld, interior, desc);
+	mysql_function_query(dbHandle, query, true, "GetInsertedActorSqlid", "i", actorid);
 	return 1;
 }
 
-forward GetInsertedActorId(store_in_address);
-public GetInsertedActorId(store_in_address)
+forward GetInsertedActorSqlid(actorid);
+public GetInsertedActorSqlid(actorid)
 {
-    @ptr[store_in_address] = cache_insert_id(dbHandle);
+    ServerActor[actorid][eSQLID] = cache_insert_id(dbHandle);
     return 1;
 }
-
-// SETEAR LOOP O NO
-// SETEAR LOOP O NO
-// SETEAR LOOP O NO
-// SETEAR LOOP O NO
-// SETEAR LOOP O NO
 
 CMD:aaanim(playerid, params[])
 {
 	new animlib[32],
 		animname[32],
+		animloop,
 		actorid;
 
-	if(sscanf(params, "is[32] s[32]", actorid, animlib, animname))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [librería de anim] [nombre de anim] (se buscan en https://wiki.sa-mp.com/wiki/Animations)");
+	if(sscanf(params, "iis[32] s[32]", actorid, animloop, animlib, animname))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [loop de anim (1/0)] [librería de anim] [nombre de anim] (se buscan en https://wiki.sa-mp.com/wiki/Animations)");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
+	if(animloop < 0 || animloop > 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "En el campo 'loop de anim' elija el valor 1 o 0.");
 	    
-	ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 0, 0);
+	ApplyActorAnimation(actorid, animlib, animname, 4.1, animloop, 0, 0, 1, 0);
 	
-	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la '%s' de la librería '%s'.", actorid, animname, animlib);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la '%s' de la librería '%s' con loop en %d.", actorid, animname, animlib, animloop);
 
 	new query[128];
 	
-	format(query, sizeof(query), "UPDATE actors SET animlib = '%s', animname = '%s' WHERE id = %d", animlib, animname, ServerActor[actorid][eSQLID]);
+	format(query, sizeof(query), "UPDATE actors SET animlib = '%s', animname = '%s', animloop = %d WHERE id = %d", animlib, animname, animloop, ServerActor[actorid][eSQLID]);
 	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;
 }
@@ -260,6 +255,8 @@ CMD:aatele(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 	
 	GetActorPos(actorid, pos[0], pos[1], pos[2]);
+	SetPlayerVirtualWorld(playerid, GetActorVirtualWorld(actorid));
+	SetPlayerInterior(playerid, ServerActor[actorid][eInt]);
 	SetPlayerPos(playerid, pos[0] + 0.7, pos[1], pos[2]);
 	return 1;
 }
@@ -287,7 +284,8 @@ CMD:aaborrar(playerid, params[])
 
     ServerActor[actorid][eUsesLabel] = 0;
     ServerActor[actorid][eSQLID] = 0;
-    format(ServerActor[actorid][eName], 64, "%s", "");
-    format(ServerActor[actorid][eDescription], 64, "%s", "");
+    ServerActor[actorid][eInt] = 0;
+    format(ServerActor[actorid][eNick], 128, "%s", "");
+    format(ServerActor[actorid][eDescription], 128, "%s", "");
 	return 1;
 }

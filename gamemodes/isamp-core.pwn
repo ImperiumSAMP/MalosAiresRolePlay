@@ -89,7 +89,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
 #define PASSWORD				"" 												// Contraseña del servidor.
-#define SECPASS 	            "ELIMINADO"                                     // Contraseña para resetear los vehículos personales del servidor, seteandolos en tipo NONE.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
@@ -8042,32 +8041,6 @@ CMD:pos(playerid, params[])
 	interior = GetPlayerInterior(playerid);
 	format(string, sizeof(string), "[DEBUG]: xPos:%f yPos:%f zPos:%f Angulo:%f Mundo:%d Int:%d", posX, posY, posZ, posAngle, virtualWorld, interior);
 	SendClientMessage(playerid, COLOR_WHITE, string);
-	return 1;
-}
-
-CMD:resetcars(playerid, params[])
-{
-	new pass[128],
- 		id = 1;
-
-	if(sscanf(params, "s[128]", pass))
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /resetcars [contraseña de seguridad]");
-	else if(!strcmp(pass,SECPASS,false))
-	{
-		while(id < MAX_VEH)
-		{
-			if(VehicleInfo[id][VehType] == VEH_OWNED)
-			{
-				VehicleInfo[id][VehType] = VEH_NONE;
-				SetVehicleToRespawn(id);
-			}
-			id++;
-		}
-		printf("[RESET]: los vehículos han sido reseteados por %s.",GetPlayerNameEx(playerid));
-        SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has reseteado todos los vehículos del servidor.");
-	}
-	else
-	    SendClientMessage(playerid, COLOR_LIGHTBLUE, "{FF4600}[Error]:{C8C8C8} contraseña de seguridad incorrecta");
 	return 1;
 }
 
