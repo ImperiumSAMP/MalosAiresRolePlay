@@ -8092,14 +8092,14 @@ CMD:admincmds(playerid, params[]) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /clima /darlider /desbanear /givegun /resetabstinencia");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /clima /darlider /desbanear /resetabstinencia");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 10) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /afacciones");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /exit /money /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /resetcars /setadmin /tod /unknowngametext /agregarmodelo /borrarmodelo /pbayuda /debugayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /darobjeto /setadmin /tod /unknowngametext /agregarmodelo /borrarmodelo /pbayuda /debugayuda");
 	}
 	return 1;
 }
@@ -12984,36 +12984,6 @@ CMD:setarmour(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
 	SetPlayerArmour(targetid, armour);
-	return 1;
-}
-
-CMD:givegun(playerid, params[])
-{
-	new targetid, weapon, ammo, string[128];
-
-	if(sscanf(params, "uii", targetid, weapon, ammo))
-	{
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /givegun [ID/Jugador] [arma] [municiones]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "3(Club) 4(knife) 5(bat) 6(Shovel) 7(Cue) 8(Katana) 10-13(Dildo) 14(Flowers) 16(Grenades) 18(Molotovs) 22(Pistol) 23(SPistol)");
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "24(Eagle) 25(shotgun) 29(MP5) 30(AK47) 31(M4) 33(Rifle) 34(Sniper) 37(Flamethrower) 41(spray) 42(exting) 43(Camera) 46(Parachute)");
-	}
-	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(ammo < 1 || ammo > 999)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La munición debe ser 1-999.");
-	if(weapon < 1 || weapon > 46)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El ID de arma debe ser 1-46.");
-    if(GivePlayerGun(targetid, weapon, ammo))
-    {
-		format(string, sizeof(string), "El administrador %s te ha seteado el arma %s con %d de munición.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo);
-		SendClientMessage(targetid, COLOR_WHITE, string);
-		format(string, sizeof(string), "El administrador %s le ha seteado el arma %s con %d de munición a %s.", GetPlayerNameEx(playerid), GetItemName(weapon), ammo, GetPlayerNameEx(targetid));
-        AdministratorMessage(COLOR_ADMINCMD, string, 2);
-   		format(string, sizeof(string), "[GUN] %d - %d a %s (DBID: %d)", weapon, ammo, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
-		log(playerid, LOG_ADMIN, string);
-	}
-	else
-        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El usuario no tiene ninguna mano libre para agarrar el arma.");
 	return 1;
 }
 
