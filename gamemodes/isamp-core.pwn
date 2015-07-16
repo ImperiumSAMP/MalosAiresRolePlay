@@ -2485,7 +2485,7 @@ public OnUnbanDataLoad(playerid, type, target[32])
 	{
 	    if(rows)
 		{
-			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
+			format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
 			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pName` = '%s'", target);
 		}
 		else
@@ -2498,7 +2498,7 @@ public OnUnbanDataLoad(playerid, type, target[32])
 	{
 		if(rows)
 		{
-			format(string, sizeof(string), "[Staff] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
+			format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
 			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pIP` = '%s'", target);
 		}
 		else
@@ -3670,7 +3670,7 @@ public globalUpdate()
 	    if(playerCount > ServerInfo[sPlayersRecord])
 		{
 	        ServerInfo[sPlayersRecord] = playerCount;
-	       	format(string, sizeof(string), "[Staff]: ¡hemos superado el récord de usuarios online! (%d jugadores)", playerCount);
+	       	format(string, sizeof(string), "[STAFF] ¡hemos superado el récord de usuarios online! (%d jugadores)", playerCount);
 			AdministratorMessage(COLOR_LIGHTORANGE, string, 2);
 		}
 		
@@ -8353,7 +8353,7 @@ CMD:descongelar(playerid, params[])
 	TogglePlayerControllable(targetid, true);
 	SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} has sido descongelado por %s.", GetPlayerNameEx(playerid));
-	format(string, sizeof(string), "[Staff]: %s ha descongelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "[STAFF] El administrador %s ha descongelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	return 1;
 }
@@ -8371,7 +8371,7 @@ CMD:congelar(playerid, params[])
 	TogglePlayerControllable(targetid, false);
 	SetPVarInt(targetid, "disabled", DISABLE_FREEZE);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} has sido congelado por %s.", GetPlayerNameEx(playerid));
-	format(string, sizeof(string), "[Staff]: %s ha congelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "[STAFF] El administrador %s ha congelado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	return 1;
 }
@@ -8676,7 +8676,7 @@ CMD:resetabstinencia(playerid, params[])
     
     format(string, sizeof(string), "El administrador %s te ha reseteado la abstinencia.", GetPlayerNameEx(playerid));
 	SendClientMessage(targetid, COLOR_WHITE, string);
-	format(string, sizeof(string), "El administrador %s le ha reseteado la abstinencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "[STAFF] El administrador %s le ha reseteado la abstinencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
     AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	format(string, sizeof(string), "[ABSTINENCE] Reset abstinence a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
@@ -8685,10 +8685,14 @@ CMD:resetabstinencia(playerid, params[])
 
 CMD:darobjeto(playerid, params[])
 {
-	new targetid, item, amount, targetfreehand;
+	new targetid, item, amount, targetfreehand, string[128];
 
     if(sscanf(params, "uii", targetid, item, amount))
-    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darobjeto [ID/Jugador] [ID de objeto] [cantidad]");
+    {
+		SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /darobjeto [ID/Jugador] [ID de objeto] [cantidad]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "3(Palo de golf) 4(Cuchillo) 5(Bate) 6(Pala) 7(Macana) 8(Katana) 10-13(Dildo) 14(Flores) 16(Granada) 18(Molotov) 22(9mm) 23(9mm silenciada)");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "24(Deagle) 25(Escopeta) 29(MP5) 30(AK47) 31(M4) 33(Rifle) 34(Sniper) 37(Lanzallamas) 41(Aerosol) 42(Extintor) 43(Cámara) 46(Paracaídas)");
+	}
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 	if(item < 1 || item > 99)
@@ -8698,9 +8702,11 @@ CMD:darobjeto(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
 
 	SetHandItemAndParam(targetid, targetfreehand, item, amount);
-	SendFMessage(playerid, COLOR_YELLOW2, "Le diste %d cantidad de objetos ID %d al jugador %s.", amount, item, GetPlayerNameEx(targetid));
-	SendFMessage(targetid, COLOR_YELLOW2, "El administrador %s te dió %d cantidad de objetos ID %d.", GetPlayerNameEx(targetid), amount, item);
-
+	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d cantidad de objetos %s al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
+    AdministratorMessage(COLOR_ADMINCMD, string, 2);
+	SendFMessage(targetid, COLOR_LIGHTBLUE2, "El administrador %s te dió %d cantidad de objetos %s.", GetPlayerNameEx(targetid), amount, GetItemName(item));
+	format(string, sizeof(string), "[ITEM] %d cantidad de objetos %s al jugador %s (DBID: %d)", amount, GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	log(playerid, LOG_ADMIN, string);
     return 1;
 }
 
@@ -8723,32 +8729,32 @@ CMD:quitarobjeto(playerid, params[])
 
 		switch(slot) {
 		    case 1: { // Mano derecha
-   				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+   				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano derecha.", GetPlayerNameEx(playerid));
 				SetHandItemAndParam(target, HAND_RIGHT, 0, 0);
 				PhoneHand[target] = 0;
 		    }
 		    case 2: { // Mano izquierda
-   				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+   				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto de la mano izquierda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
 				SetHandItemAndParam(target, HAND_LEFT, 0, 0);
 		    }
 		    case 3: { // Slot 0 del inventario
-  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto del inventario 0.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+  				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto del inventario 0.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 0 del inventario.", GetPlayerNameEx(playerid));
 				SetInvItemAndParam(target, 0, 0, 0);
 		    }
 		    case 4: { // Slot 1 del inventario
-  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto del inventario 1.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+  				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto del inventario 1.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 1 del inventario.", GetPlayerNameEx(playerid));
 				SetInvItemAndParam(target, 1, 0, 0);
 		    }
 		    case 5: { // Espalda
-  				format(string, sizeof(string), "[Staff] el administrador %s le ha retirado a %s el objeto de la espalda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+  				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto de la espalda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la espalda.", GetPlayerNameEx(playerid));
 				SetBackItemAndParam(target, 0, 0);
@@ -9055,7 +9061,7 @@ CMD:muteb(playerid, params[])
 	    if(minutes > 30 || minutes < 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes mutear por menos de 0 minutos o más de 30.");
 			
-	    format(string, sizeof(string), "[Staff] el administrador %s ha muteado el canal '/b' de %s por %d minutos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), minutes);
+	    format(string, sizeof(string), "[STAFF] el administrador %s ha muteado el canal '/b' de %s por %d minutos.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), minutes);
 	   	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		PlayerInfo[target][pMuteB] = 60 * minutes;
 	}
@@ -12795,7 +12801,7 @@ CMD:cambiarnombre(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 
 	format(PlayerInfo[target][pName], 24, "%s", name);
-	format(string, sizeof(string), "[Staff] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
+	format(string, sizeof(string), "[STAFF] el administrador %s le ha cambiado el nombre a %s a '%s'.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), name);
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	SetPlayerName(target, PlayerInfo[target][pName]);
 
@@ -12850,7 +12856,7 @@ public CheckNameAvailable(playerid, accountName[])
  	mysql_real_escape_string(password, password, 1, sizeof(password));
 	format(query, sizeof(query), "INSERT INTO `accounts` (`Name`, `Password`) VALUES ('%s', MD5('%s'))", accountName, password);
 	mysql_function_query(dbHandle, query, false, "", "");
-	format(string, sizeof(string), "[Staff] el administrador/certificador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
+	format(string, sizeof(string), "[STAFF] el administrador/certificador %s ha creado la cuenta '%s'.", GetPlayerNameEx(playerid), accountName);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 	SendFMessage(playerid, COLOR_WHITE, "La contraseña de la cuenta que deberás informar al usuario es '%s' (sin las comillas).", password);
 	format(string, sizeof(string), "[CREA LA CUENTA] a %s", accountName);
@@ -12925,7 +12931,7 @@ CMD:money(playerid, params[])
 
 	format(string, sizeof(string), "El administrador %s ha seteado tu dinero en efectivo en $%d.", GetPlayerNameEx(playerid), money);
 	SendClientMessage(targetid, COLOR_WHITE, string);
-	format(string, sizeof(string), "El administrador %s ha seteado el dinero en efectivo de %s en $%d.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), money);
+	format(string, sizeof(string), "[STAFF] El administrador %s ha seteado el dinero en efectivo de %s en $%d.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), money);
     AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	format(string, sizeof(string), "[MONEY] $%d a %s (DBID: %d)", money, GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
@@ -13335,12 +13341,12 @@ CMD:set(playerid, params[]) {
 	} else if(strcmp(param, "sexo", true) == 0) {
 	    if(strval(value) == 0) {
 	        SendFMessage(target, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el sexo a femenino.", GetPlayerNameEx(playerid));
-			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a femenino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			format(string, sizeof(string), "[STAFF] %s ha seteado el sexo de %s a femenino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pSex] = 0;
 	    } else if(strval(value) == 1) {
 	        SendFMessage(target, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el sexo a masculino.", GetPlayerNameEx(playerid));
-			format(string, sizeof(string), "[Staff]: %s ha seteado el sexo de %s a masculino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+			format(string, sizeof(string), "[STAFF] %s ha seteado el sexo de %s a masculino.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pSex] = 1;
 	    } else {
@@ -13349,7 +13355,7 @@ CMD:set(playerid, params[]) {
 	} else if(strcmp(param, "edad", true) == 0) {
 	    if(strval(value) >= 1 && strval(value) <= 100) {
 	        SendFMessage(target,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} %s te ha seteado la edad a %d años.", GetPlayerNameEx(playerid), strval(value));
-			format(string, sizeof(string), "[Staff]: %s ha seteado la edad de %s a %d años.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), strval(value));
+			format(string, sizeof(string), "[STAFF] %s ha seteado la edad de %s a %d años.", GetPlayerNameEx(playerid), GetPlayerNameEx(target), strval(value));
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	        PlayerInfo[target][pAge] = strval(value);
 	    } else {
@@ -13648,7 +13654,7 @@ CMD:exp10de(playerid, params[]) {
 	if(sscanf(params, "u", target)) {
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /exp10de [IDJugador/ParteDelNombre]");
 	} else {
-		format(string, sizeof(string), "[Staff]: %s ha explotado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+		format(string, sizeof(string), "[STAFF] %s ha explotado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		SetPlayerHealth(target, 10);
 		GetPlayerPos(target, boom[0], boom[1], boom[2]);
