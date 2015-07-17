@@ -95,7 +95,7 @@ CMD:aanombre(playerid, params[])
 		charpos;
 
 	if(sscanf(params, "is[128]", actorid, str))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [nombre]. El caracter '_' (guión bajo) se usa para la bajada de linea. Solo se permite una vez.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [nombre]. El caracter '_' (guión bajo) es bajada de linea, solo una vez.");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
@@ -129,7 +129,7 @@ CMD:aadesc(playerid, params[])
 	    str[128];
 
 	if(sscanf(params, "is[128]", actorid, str))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aanombre [id de actor] [descripción ooc]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aadesc [id de actor] [descripción ooc]");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 
@@ -148,7 +148,7 @@ CMD:aacrear(playerid, params[])
 
 	if(sscanf(params, "is[128]", skin, desc))
 	{
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aactor [id skin] [descripción OOC] (hasta 128 caracteres)");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aacrear [id skin] [descripción OOC] (hasta 128 caracteres)");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "La descripción OOC sirve unicamente para identificar al actor en la DB, y no se mostrará in-game. Ej: 'NPC PMA en escaleras del exterior de la comisaría'.");
 		return 1;
 	}
