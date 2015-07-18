@@ -2085,18 +2085,18 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				{
 				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 1)
 					{
-						format(string, 256, "Admin n. %d: %s | Mensajes administrativos deshabilitados.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
+						format(string, 256, "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {FF0000}deshabilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 						SendClientMessage(playerid, COLOR_WHITE, string);
 						count++;
 					}
 				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 0)
 					{
-						format(string, 256, "Admin n. %d: %s | Mensajes administrativos habilitados.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
+						format(string, 256, "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {3CB371}habilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 						SendClientMessage(playerid, COLOR_WHITE, string);
 						count++;
 					}
 				}
-				SendClientMessage(playerid, COLOR_LIGHTGREEN, "===================================================================");
+				SendClientMessage(playerid, COLOR_LIGHTGREEN, "======================================================================");
 		    }
 			return 1;
 		}
