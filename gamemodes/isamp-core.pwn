@@ -13037,8 +13037,27 @@ CMD:advertir(playerid, params[])
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} has sido advertido por %s, razón: %s.", GetPlayerNameEx(playerid), reason);
 	SendClientMessage(targetid, COLOR_LIGHTYELLOW2, string);
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "A las 5 advertencias serás baneado del servidor, ahora tienes %d.", PlayerInfo[targetid][pWarnings]);
+	format(string, sizeof(string), "[ADVERTENCIA] a %s (DBID: %d), Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID], reason);
+	log(playerid, LOG_ADMIN, string);
 	if(PlayerInfo[targetid][pWarnings] >= 5)
 		BanPlayer(targetid, playerid, "Acumulación de advertencias", 7);
+	return 1;
+}
+
+CMD:quitaradv(playerid, params[])
+{
+    new targetid, reason[128], string[128];
+
+    if(sscanf(params, "us[128]", targetid, reason))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitaradv [ID/Jugador] [razón del retiro de la advertencia]");
+    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+
+	PlayerInfo[targetid][pWarnings] -= 1;
+	format(string, sizeof(string), "[STAFF] el administrador %s le quitó una advertencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
+	format(string, sizeof(string), "[ADVERTENCIA] retirada advertencia a %s (DBID: %d), Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID], reason);
+	log(playerid, LOG_ADMIN, string);
 	return 1;
 }
 
