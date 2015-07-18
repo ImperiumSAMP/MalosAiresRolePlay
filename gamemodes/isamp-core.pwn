@@ -1978,12 +1978,12 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			{
 				if(GetPVarInt(playerid, "adminmsgs") == 1)
 				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos.");
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos.");
 		            SetPVarInt(playerid, "adminmsgs", 0);
 				}
 				else
 				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos.");
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos.");
 				    SetPVarInt(playerid, "adminmsgs", 1);
 				}
 			}
@@ -2060,7 +2060,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 		}
 		if(strcmp(cmd, "/admins", true) == 0)
 		{
-	        if(IsPlayerConnected(playerid))
+	        if(IsPlayerConnected(playerid) && PlayerInfo[playerid][pAdmin] < 2)
 		    {
 		        new count = 0;
 				SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES EN SERVICIO]===================");
@@ -2077,6 +2077,27 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				}
             	SendClientMessage(playerid, COLOR_LIGHTGREEN, "===================================================================");
 			}
+			if(IsPlayerConnected(playerid) && PlayerInfo[playerid][pAdmin] > 1)
+		    {
+		        new count = 0;
+				SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES CONECTADOS]===================");
+				foreach(new i : Player)
+				{
+				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 1)
+					{
+						format(string, 256, "Admin n. %d: %s | Mensajes administrativos deshabilitados.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
+						SendClientMessage(playerid, COLOR_WHITE, string);
+						count++;
+					}
+				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 0)
+					{
+						format(string, 256, "Admin n. %d: %s | Mensajes administrativos habilitados.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
+						SendClientMessage(playerid, COLOR_WHITE, string);
+						count++;
+					}
+				}
+				SendClientMessage(playerid, COLOR_LIGHTGREEN, "===================================================================");
+		    }
 			return 1;
 		}
 	 	if(strcmp(cmd, "/changepass", true) == 0)
@@ -6167,7 +6188,7 @@ stock AdministratorMessage(color, const string[], level)
 {
 	foreach(new i : Player)
 	{
-		if(PlayerInfo[i][pAdmin] >= level && GetPVarInt(i, "adminmsgs") != 0)
+		if(PlayerInfo[i][pAdmin] >= level && GetPVarInt(i, "adminmsgs") != 1)
 			SendClientMessage(i, color, string);
 	}
 	print(string);
