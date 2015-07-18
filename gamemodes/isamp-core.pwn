@@ -1584,6 +1584,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 	    }
 		else if(killerid != playerid)
 		{
+			format(string, sizeof(string), "[STAFF] %s mató a %s.", GetPlayerNameEx(killerid), GetPlayerNameEx(playerid));
+			AdministratorMessage(COLOR_ADMINCMD, string, 2);
             if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
 			{
 				SendFMessage(killerid, COLOR_WHITE, "Has reducido a %s y ha sido arrestado por miembros del departamento de policía.", GetPlayerNameEx(playerid));
@@ -1864,7 +1866,10 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 			x_info = strtok(cmdtext, idx);
 			if(!strlen(x_info))
 			{
-				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
+				if(PlayerInfo[playerid][pAdmin] < 2)
+					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
+				else
+					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs]");
 				return 1;
 			}
 	  		else if(strcmp(x_info,"mps",true) == 0)
@@ -1967,6 +1972,19 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				{
 					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
 				    PhoneEnabled[playerid] = true;
+				}
+			}
+	  		else if(strcmp(x_info,"adminmsgs",true) == 0 && PlayerInfo[playerid][pAdmin] > 1)
+			{
+				if(GetPVarInt(playerid, "adminmsgs") == 1)
+				{
+				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos.");
+		            SetPVarInt(playerid, "adminmsgs", 0);
+				}
+				else
+				{
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos.");
+				    SetPVarInt(playerid, "adminmsgs", 1);
 				}
 			}
 		}
@@ -6149,7 +6167,7 @@ stock AdministratorMessage(color, const string[], level)
 {
 	foreach(new i : Player)
 	{
-		if(PlayerInfo[i][pAdmin] >= level)
+		if(PlayerInfo[i][pAdmin] >= level && GetPVarInt(i, "adminmsgs") != 0)
 			SendClientMessage(i, color, string);
 	}
 	print(string);
@@ -8702,10 +8720,10 @@ CMD:darobjeto(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
 
 	SetHandItemAndParam(targetid, targetfreehand, item, amount);
-	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d cantidad de objetos %s al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d objetos %s al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
     AdministratorMessage(COLOR_ADMINCMD, string, 2);
-	SendFMessage(targetid, COLOR_LIGHTBLUE2, "El administrador %s te dió %d cantidad de objetos %s.", GetPlayerNameEx(targetid), amount, GetItemName(item));
-	format(string, sizeof(string), "[ITEM] %d cantidad de objetos %s al jugador %s (DBID: %d)", amount, GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió %d objetos %s.", GetPlayerNameEx(playerid), amount, GetItemName(item));
+	format(string, sizeof(string), "[ITEM] %d objetos %s al jugador %s (DBID: %d)", amount, GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
 }
