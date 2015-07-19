@@ -373,7 +373,10 @@ new
 	StartedCall[MAX_PLAYERS],
 	OOCStatus = 0,
 	TicketOffer[MAX_PLAYERS],
-	TicketMoney[MAX_PLAYERS];
+	TicketMoney[MAX_PLAYERS],
+	
+	// Estado del canal /f de la facción
+	FactionChannel[MAX_FACTIONS];
 
 new Float:GUIDE_POS[][3] = {
 	{1675.1625,-2245.8516,13.5655},
@@ -8712,7 +8715,7 @@ CMD:verip(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 
 	GetPlayerIp(targetid, IP, 20);
-	SendFMessage(playerid, COLOR_WHITE, "[INFO] IP de %s: %s", GetPlayerNameEx(targetid), IP);
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} IP de %s: %s", GetPlayerNameEx(targetid), IP);
     return 1;
 }
 
@@ -8929,7 +8932,7 @@ CMD:faccion(playerid, params[])
 		if(FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL)
 		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos extra: materiales");
 		if(PlayerInfo[playerid][pRank] == 1) {
-		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos de líder: invitar | expulsar | rango | vehiculos");
+		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos de líder: invitar | expulsar | rango | vehiculos | cerrar");
             SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Recuerda que al ser el líder puedes estacionar los vehículos, y gestionar la cuenta bancaria de la facción.");
 		}
 		    
@@ -9000,7 +9003,7 @@ CMD:faccion(playerid, params[])
 		SetPlayerFaction(targetid, factionid, rank);
 		SendFMessage(targetid, COLOR_LIGHTBLUE, "{878EE7}[INFO]:{C8C8C8} tu rango ha sido cambiado por %s, ahora eres %s.", GetPlayerNameEx(playerid), GetRankName(factionid, rank));
 		SendFMessage(playerid, COLOR_YELLOW, "{878EE7}[INFO]:{C8C8C8} le has cambiado el rango de %s a %s.", GetPlayerNameEx(targetid), GetRankName(factionid, rank));
-		format(string, sizeof(string), "[Facción]: %s es ahora %s.", GetPlayerNameEx(targetid), GetRankName(factionid, rank));
+		format(string, sizeof(string), "[Facción] %s es ahora %s.", GetPlayerNameEx(targetid), GetRankName(factionid, rank));
 		SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
 		return 1;
 		
@@ -9015,6 +9018,24 @@ CMD:faccion(playerid, params[])
 		        SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} Vehículo ID %d - Modelo %s", i, GetVehicleName(i));
 		}
 		SendClientMessage(playerid, COLOR_YELLOW, "====================================================================");
+	} else if(strcmp(text,"cerrarf",true) == 0) {
+		if(PlayerInfo[playerid][pRank] != 1)
+			return 1;
+
+		if(FactionChannel[factionid] == 1)
+		{
+			FactionChannel[factionid] = 0;
+			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO] Abriste el canal /f de la facción. Ahora todos los miembros podrán utilizarlo.");
+			format(string, sizeof(string), "[Facción] El canal /f fue abierto por el líder.");
+			SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
+		}
+		else
+		{
+			FactionChannel[factionid] = 1;
+			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO] Cerraste el canal /f de la facción. Únicamente el líder podrá utilizarlo.");
+			format(string, sizeof(string), "[Facción] El canal /f fue cerrado por el líder.");
+			SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
+		}
 	}
 	return 1;
 }
@@ -9063,6 +9084,8 @@ CMD:f(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /f [texto]");
 	if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} te encuentras silenciado.");
+	if(FactionChannel[faction] == 1 && rank != 1)
+	    return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} El canal /f de tu facción se encuentra cerrado por el líder.");
 	if(PlayerInfo[playerid][pFaction] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No perteneces a ninguna facción.");
 	if(!FactionEnabled[playerid])
