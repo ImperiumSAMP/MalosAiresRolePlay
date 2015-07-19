@@ -1869,7 +1869,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				if(PlayerInfo[playerid][pAdmin] < 2)
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
 				else
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs]");
+					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - admin]");
 				return 1;
 			}
 	  		else if(strcmp(x_info,"mps",true) == 0)
@@ -1983,7 +1983,8 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success) {
 				}
 				else
 				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos.");
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Siempre recuerda volver a activarlo, por la vital importancia de estos mensajes.");
 				    SetPVarInt(playerid, "adminmsgs", 1);
 				}
 			}
@@ -8124,7 +8125,7 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /vers /verf /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /vers /verf /verip /vertlf /mute /slap /skin");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
@@ -8698,6 +8699,38 @@ CMD:verjail(playerid, params[])
 			SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[ENCARCELADO EN PRISION]:{C8C8C8} Prisión preventiva (no tiene tiempo).");
 		}
 	}
+    return 1;
+}
+
+CMD:verip(playerid, params[])
+{
+	new targetid, IP[20];
+
+    if(sscanf(params, "u", targetid))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /verip [ID/Jugador]");
+    if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+
+	GetPlayerIp(targetid, IP, 20);
+	SendFMessage(playerid, COLOR_WHITE, "[INFO] IP de %s: %s", GetPlayerNameEx(targetid), IP);
+    return 1;
+}
+
+CMD:vertlf(playerid, params[])
+{
+	new phone, count;
+
+    if(sscanf(params, "i", phone))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vertlf [número de teléfono]");
+
+	foreach(new i : Player)
+	{
+	count++;
+	if(PlayerInfo[i][pPhoneNumber] == phone)
+	    SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El número de teléfono %d pertenece a %s.", phone, GetPlayerNameEx(i));
+	}
+	if(count == 0)
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El número de teléfono no pertenece a ningún usuario conectado.");
     return 1;
 }
 
@@ -13091,10 +13124,13 @@ CMD:quitaradv(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitaradv [ID/Jugador] [razón del retiro de la advertencia]");
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
+	if(PlayerInfo[targetid][pWarnings] == 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} El usuario no tiene advertencias.");
 
 	PlayerInfo[targetid][pWarnings] -= 1;
 	format(string, sizeof(string), "[STAFF] el administrador %s le quitó una advertencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Le retiraste una advertencia a %s (Ahora tiene %d) Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pWarnings], reason);
 	format(string, sizeof(string), "[ADVERTENCIA] retirada advertencia a %s (DBID: %d), Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID], reason);
 	log(playerid, LOG_ADMIN, string);
 	return 1;
