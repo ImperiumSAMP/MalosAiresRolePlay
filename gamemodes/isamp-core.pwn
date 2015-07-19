@@ -8741,7 +8741,7 @@ CMD:vertlf(playerid, params[])
 
 CMD:setpvarint(playerid, params[])
 {
-	new targetid, varint, value;
+	new targetid, varint[64], value;
 
     if(sscanf(params, "usi", targetid, varint, value))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setpvarint [ID/Jugador] [Variable] [Valor]");
@@ -8753,7 +8753,7 @@ CMD:setpvarint(playerid, params[])
 
 CMD:getpvarint(playerid, params[])
 {
-	new targetid, varint, value;
+	new targetid, varint[64], value;
 
     if(sscanf(params, "us", targetid, varint))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getpvarint [ID/Jugador] [Variable]");
