@@ -8728,12 +8728,38 @@ CMD:vertlf(playerid, params[])
 
 	foreach(new i : Player)
 	{
-	count++;
-	if(PlayerInfo[i][pPhoneNumber] == phone)
-	    SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El número de teléfono %d pertenece a %s.", phone, GetPlayerNameEx(i));
+		if(PlayerInfo[i][pPhoneNumber] == phone)
+		{
+			SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El número de teléfono %d pertenece a %s.", phone, GetPlayerNameEx(i));
+			count++;
+		}
 	}
 	if(count == 0)
 	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} El número de teléfono no pertenece a ningún usuario conectado.");
+    return 1;
+}
+
+CMD:setpvarint(playerid, params[])
+{
+	new targetid, varint, value;
+
+    if(sscanf(params, "usi", targetid, varint, value))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setpvarint [ID/Jugador] [Variable] [Valor]");
+
+	SetPVarInt(targetid, varint, value);
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} Ejecutaste 'SetPVarInt(%s, %s, %d)'.", GetPlayerNameEx(targetid), varint, value);
+    return 1;
+}
+
+CMD:getpvarint(playerid, params[])
+{
+	new targetid, varint, value;
+
+    if(sscanf(params, "us", targetid, varint))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getpvarint [ID/Jugador] [Variable]");
+
+	value = GetPVarInt(targetid, varint);
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} La variable '%s' del jugador '%s' equivale a '%d'.", varint, GetPlayerNameEx(targetid), value);
     return 1;
 }
 
@@ -8777,9 +8803,9 @@ CMD:darobjeto(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
 
 	SetHandItemAndParam(targetid, targetfreehand, item, amount);
-	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d objetos %s al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
+	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d objetos '%s' al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
     AdministratorMessage(COLOR_ADMINCMD, string, 2);
-	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió %d objetos %s.", GetPlayerNameEx(playerid), amount, GetItemName(item));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió %d objetos '%s'.", GetPlayerNameEx(playerid), amount, GetItemName(item));
 	format(string, sizeof(string), "[ITEM] %d objetos %s al jugador %s (DBID: %d)", amount, GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
@@ -8932,7 +8958,7 @@ CMD:faccion(playerid, params[])
 		if(FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL)
 		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos extra: materiales");
 		if(PlayerInfo[playerid][pRank] == 1) {
-		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos de líder: invitar | expulsar | rango | vehiculos | cerrar");
+		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos de líder: invitar | expulsar | rango | vehiculos | cerrarf");
             SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Recuerda que al ser el líder puedes estacionar los vehículos, y gestionar la cuenta bancaria de la facción.");
 		}
 		    
@@ -9025,14 +9051,14 @@ CMD:faccion(playerid, params[])
 		if(FactionChannel[factionid] == 1)
 		{
 			FactionChannel[factionid] = 0;
-			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO] Abriste el canal /f de la facción. Ahora todos los miembros podrán utilizarlo.");
+			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]{C8C8C8} Abriste el canal /f de la facción. Ahora todos los miembros podrán utilizarlo.");
 			format(string, sizeof(string), "[Facción] El canal /f fue abierto por el líder.");
 			SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
 		}
 		else
 		{
 			FactionChannel[factionid] = 1;
-			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO] Cerraste el canal /f de la facción. Únicamente el líder podrá utilizarlo.");
+			SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]{C8C8C8} Cerraste el canal /f de la facción. Únicamente el líder podrá utilizarlo.");
 			format(string, sizeof(string), "[Facción] El canal /f fue cerrado por el líder.");
 			SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
 		}
@@ -13153,7 +13179,7 @@ CMD:quitaradv(playerid, params[])
 	PlayerInfo[targetid][pWarnings] -= 1;
 	format(string, sizeof(string), "[STAFF] el administrador %s le quitó una advertencia a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
-	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Le retiraste una advertencia a %s (Ahora tiene %d) Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pWarnings], reason);
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Le retiraste una advertencia a %s. Razón: %s", GetPlayerNameEx(targetid), reason);
 	format(string, sizeof(string), "[ADVERTENCIA] retirada advertencia a %s (DBID: %d), Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID], reason);
 	log(playerid, LOG_ADMIN, string);
 	return 1;
