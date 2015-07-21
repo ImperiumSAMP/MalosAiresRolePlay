@@ -202,7 +202,7 @@ CMD:aaanim(playerid, params[])
 		actorid;
 
 	if(sscanf(params, "iis[32] s[32]", actorid, animloop, animlib, animname))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [loop de anim (1/0)] [librería de anim] [nombre de anim] (se buscan en https://wiki.sa-mp.com/wiki/Animations)");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aaanim [id de actor] [loop de anim] [librería de anim] [nombre de anim] (ver en 'wiki.sa-mp.com/wiki/Animations')");
 	if(!IsValidActor(actorid) || ServerActor[actorid][eSQLID] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 	if(animloop < 0 || animloop > 1)
