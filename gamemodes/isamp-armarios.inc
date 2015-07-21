@@ -444,8 +444,6 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 	return 1;
 }
 
-/*
-
 //============================[EXPERIMENTAL]====================================
 
 CMD:arm2(playerid, params[])
@@ -773,5 +771,3 @@ CMD:containerdebug(playerid, params[])
 }
 
 //==============================[FIN EXPERIMENTAL]==============================
-
-*/

@@ -2936,10 +2936,6 @@ public SaveAccount(playerid)
 			second,
 			PlayerInfo[playerid][pAccusedOf],
 			PlayerInfo[playerid][pAccusedBy]);
-
-		// Si está agonizando le seteamos la vida a 24 para que al relogear no le permita andar libremente como si estuviera curado.
-		if(PlayerInfo[playerid][pHealth] == 25 || GetPVarInt(playerid, "disabled") == DISABLE_DYING)
-		    PlayerInfo[playerid][pHealth] = 24;
 		    
 		// Float.
 		format(query,sizeof(query),"%s, `pX`='%f', `pY`='%f', `pZ`='%f', `pA`='%f', `pAdictionPercent`='%f', `pHealth`='%f', `pArmour`='%f' WHERE `Id` = %d",
@@ -8743,7 +8739,7 @@ CMD:setpvarint(playerid, params[])
 {
 	new targetid, varint[64], value;
 
-    if(sscanf(params, "usi", targetid, varint, value))
+    if(sscanf(params, "us[64]i", targetid, varint, value))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /setpvarint [ID/Jugador] [Variable] [Valor]");
 
 	SetPVarInt(targetid, varint, value);
@@ -8755,7 +8751,7 @@ CMD:getpvarint(playerid, params[])
 {
 	new targetid, varint[64], value;
 
-    if(sscanf(params, "us", targetid, varint))
+    if(sscanf(params, "us[64]", targetid, varint))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getpvarint [ID/Jugador] [Variable]");
 
 	value = GetPVarInt(targetid, varint);

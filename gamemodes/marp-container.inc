@@ -341,15 +341,15 @@ stock Container_AddItemAndParam(id, item, param)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
-	    if(GetItemSpace(item, param) < Container_GetMinItemSpace(id))
+	    if(GetItemSpace(item) < Container_GetMinItemSpace(id))
 	        return 0;
-		if(Container_GetUsedSpace(id) + GetItemSpace(item, param) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
+		if(Container_GetUsedSpace(id) + GetItemSpace(item) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
 		    return 0;
 
 		vector_push_back(id, item);
 		vector_push_back(id, param);
 
-		Container_AddUsedSpace(id, GetItemSpace(item, param));
+		Container_AddUsedSpace(id, GetItemSpace(item));
 
 		Container_UpdateOpenedDialogs(id);
 
@@ -381,7 +381,7 @@ stock Container_TakeItem(id, slot, &item, &param)
 		vector_remove(id, vec_index);
 		vector_remove(id, vec_index);
 
-		Container_AddUsedSpace(id, -GetItemSpace(item, param));
+		Container_AddUsedSpace(id, -GetItemSpace(item));
 
 		Container_UpdateOpenedDialogs(id);
 
