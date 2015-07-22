@@ -207,9 +207,12 @@ CMD:aaanim(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Actor inválido o no existe.");
 	if(animloop < 0 || animloop > 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "En el campo 'loop de anim' elija el valor 1 o 0.");
+
+	if(animloop)
+		ApplyActorAnimation(actorid, animlib, animname, 4.1, 1, 0, 0, 1, 0);
+	else
+	    ApplyActorAnimation(actorid, animlib, animname, 4.1, 0, 0, 0, 1, 1);
 	    
-	ApplyActorAnimation(actorid, animlib, animname, 4.1, animloop, 0, 0, 1, 0);
-	
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: has seteado la animación del actor %d a la '%s' de la librería '%s' con loop en %d.", actorid, animname, animlib, animloop);
 
 	new query[128];
