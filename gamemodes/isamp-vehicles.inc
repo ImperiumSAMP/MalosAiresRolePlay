@@ -80,9 +80,11 @@ enum Cars {
 	VehLSD,
 	VehEcstasy,
 	VehCocaine,
+	VehRadio,
+
 	VehContainerSQLID,
-	VehContainerID,
-	VehRadio
+	VehContainerID
+	
 };
 new VehicleInfo[MAX_VEH][Cars];
 

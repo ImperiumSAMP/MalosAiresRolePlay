@@ -314,6 +314,16 @@ CMD:inventario2(playerid, params[])
 	return 1;
 }
 
+stock DeletePlayerInventory(playerid)
+{
+	if(PlayerInfo[playerid][pContainerSQLID] > 0 && PlayerInfo[playerid][pContainerID] > 0)
+	{
+		Container_Destroy(PlayerInfo[playerid][pContainerID]);
+  		PlayerInfo[playerid][pContainerID] = 0;
+	}
+	return 1;
+}
+
 Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
 {
 	new pid = Container_Selection[playerid][csOriginalId],

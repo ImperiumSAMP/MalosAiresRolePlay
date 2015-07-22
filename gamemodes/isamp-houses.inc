@@ -295,7 +295,7 @@ stock DeleteHouse(id)
 	
 	if(HouseHasContainer(id))
 	{
-	    Container_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
+	    Container_Fully_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
 	    House[id][ContainerID] = 0;
 	    House[id][ContainerSQLID] = 0;
 	}

@@ -1051,6 +1051,7 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pRentCarID] = 0;
 	PlayerInfo[playerid][pRentCarRID] = 0;
 	PlayerInfo[playerid][pRolePoints] = 0;
+	PlayerInfo[playerid][pContainerSQLID] = 0;
 	
  	ResetJobVariables(playerid);
  	
@@ -1221,6 +1222,8 @@ public OnPlayerDisconnect(playerid, reason)
 	    }
 		SaveAccount(playerid);
 	}
+	
+	DeletePlayerInventory(playerid);
 	return 1;
 }
 
@@ -2833,7 +2836,7 @@ public SaveAccount(playerid)
 	if(gPlayerLogged[playerid] && !cheater[playerid])
 	{
 		new name[MAX_PLAYER_NAME],
-			query[1536],
+			query[1600],
 			day,
 			month,
 			year,
@@ -2904,7 +2907,7 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pHouseKeyIncome]
 		);
 
-		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pCigarettes=%d,pLighter=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d, pRolePoints=%d",
+		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pCigarettes=%d,pLighter=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d, pRolePoints=%d, pContainerSQLID=%d",
 		    query,
 			PlayerInfo[playerid][pMuteB],
 			PlayerInfo[playerid][pRentCarID],
@@ -2918,7 +2921,8 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pRadio],
 			PlayerInfo[playerid][pFightStyle],
 			PlayerInfo[playerid][pAdictionAbstinence],
-			PlayerInfo[playerid][pRolePoints]
+			PlayerInfo[playerid][pRolePoints],
+			PlayerInfo[playerid][pContainerSQLID]
 		);
 		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,

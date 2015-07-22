@@ -155,7 +155,7 @@ public GetContainerInsertedId(container_id, address)
 
 //==============================================================================
 
-stock Container_Destroy(id, container_sqlid)
+stock Container_Fully_Destroy(id, container_sqlid)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -169,6 +169,19 @@ stock Container_Destroy(id, container_sqlid)
 
 		vector_destroy(id);
 		
+		return 1;
+	}
+
+	return 0;
+}
+
+//==============================================================================
+
+stock Container_Destroy(id)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+		vector_destroy(id);
 		return 1;
 	}
 
