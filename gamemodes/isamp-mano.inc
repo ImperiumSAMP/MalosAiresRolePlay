@@ -18,6 +18,11 @@
 
 //============================VARIABLES INTERNAS================================
 
+enum SlotInfo {
+	Item,
+	Amount,
+};
+
 new HandInfo[MAX_PLAYERS][2][SlotInfo];
 
 //===============================FUNCIONES======================================

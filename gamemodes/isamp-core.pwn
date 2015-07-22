@@ -30,11 +30,11 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "isamp-items.inc" 				//Sistema de items
-#include "isamp-inventory.inc" 			//Sistema de inventario y maletero
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
 #include "marp-container.inc"
+#include "isamp-inventory.inc" 			//Sistema de inventario
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-business.inc" 			//Sistema de negocios
@@ -2376,11 +2376,13 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "pArmour", result); 			PlayerInfo[playerid][pArmour] 			= floatstr(result);
  		cache_get_field_content(0, "pAdictionPercent", result); 	PlayerInfo[playerid][pAdictionPercent] 			= floatstr(result);
  		
- 		cache_get_field_content(0, "pTakeInputs", result); 			PlayerInfo[playerid][pTakeInputs] 			= strval(result);
+ 		cache_get_field_content(0, "pTakeInputs", result); 		PlayerInfo[playerid][pTakeInputs] 			= strval(result);
  		
- 		cache_get_field_content(0, "HouseKeyIncome", result); 		PlayerInfo[playerid][pHouseKeyIncome] 		= strval(result);
+ 		cache_get_field_content(0, "HouseKeyIncome", result); 	PlayerInfo[playerid][pHouseKeyIncome] 		= strval(result);
 
 		cache_get_field_content(0, "pRolePoints", result); 		PlayerInfo[playerid][pRolePoints] = strval(result);
+		
+		cache_get_field_content(0, "pContainerSQLID", result); 	PlayerInfo[playerid][pContainerSQLID] = strval(result);
 
         gPlayerLogged[playerid] = 1;
 
@@ -2390,7 +2392,7 @@ public OnPlayerDataLoad(playerid)
 		LoadToysInfo(playerid); // Toys
 		LoadBackInfo(playerid); // Info de espalda
 		LoadNotebookContacts(playerid); // Carga la agenda del jugador
-		
+
 		LoadPlayerJobData(playerid); // Info del job
 		
        	CreatePlayerBasicNeeds(playerid);
@@ -2400,6 +2402,16 @@ public OnPlayerDataLoad(playerid)
        		if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG)
        		    ShowGangZonesToPlayer(playerid);
 		}
+
+		//===========================CARGA DE CONTENEDOR========================
+
+		if(PlayerInfo[playerid][pContainerSQLID] > 0)
+		    PlayerInfo[playerid][pContainerID] = Container_Load(PlayerInfo[playerid][pContainerSQLID]);
+		else
+		    Container_Create(CONTAINER_INV_SPACE, 1, PlayerInfo[playerid][pContainerID], PlayerInfo[playerid][pContainerSQLID]);
+
+		//======================================================================
+
 
 		GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 

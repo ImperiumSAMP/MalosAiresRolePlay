@@ -81,6 +81,9 @@ enum pInfo {
 	
 	pHouseKeyIncome,
 	pRolePoints,
+	
+	pContainerSQLID,
+	pContainerID,
 };
 
 new PlayerInfo[MAX_PLAYERS][pInfo];

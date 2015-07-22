@@ -427,7 +427,7 @@ stock Container_Show(origid, type, id, playerid)
 
 			for(new i=4; i<vsize; i+=2)
 			{
-			    format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\t%s: %d\n", Container_DlgInfoStr, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1));
+			    format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\t%s: %d\tEspacio: %d\n", Container_DlgInfoStr, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1), GetItemSpace(vector_get(id, i)));
 	            slot++;
 			}
 			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
