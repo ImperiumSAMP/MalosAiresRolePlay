@@ -61,8 +61,6 @@ enum pInfo {
  	pMuteB,
 	pRentCarID,
 	pRentCarRID,
-	pCigarettes,
-	pLighter,
 	pFightStyle,
 	pMask,
 	pRadio,

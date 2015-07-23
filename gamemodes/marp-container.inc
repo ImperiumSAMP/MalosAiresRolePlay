@@ -125,19 +125,20 @@ stock Container_Create(total_space, min_item_space, &container_id, &container_sq
 {
 	if(total_space >= 0) // Espacio válido
 	{
-		new query[128];
-
         new sqlid_address = GetVariableAddress(container_sqlid); // Guarda la dirección de memoria de la variable donde hay que guardar la SQLID creada con la query INSERT.
 
         container_id = vector_create();
-        
-		format(query, sizeof(query), "INSERT INTO containers_info (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
-		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "dd", container_id, sqlid_address);
 
   		vector_push_back(container_id, 0); // Reservado para su SQLID
 		vector_push_back(container_id, min_item_space); // Minimo espacio por item que permite
 		vector_push_back(container_id, total_space); // Espacio total
 		vector_push_back(container_id, 0); // Espacio usado
+
+		new query[128];
+		
+		format(query, sizeof(query), "INSERT INTO containers_info (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
+		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "dd", container_id, sqlid_address);
+
 		return 1;
 	}
 
@@ -232,6 +233,7 @@ stock Container_SetTotalSpace(id, total_space)
 
 		return 1;
 	}
+	
 	return 0;
 }
 
@@ -304,6 +306,8 @@ stock Container_GetItem(id, slot)
 	return 0;
 }
 
+//==============================================================================
+
 stock Container_GetParam(id, slot)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
@@ -315,6 +319,24 @@ stock Container_GetParam(id, slot)
 	}
 
 	return 0;
+}
+
+//==============================================================================
+
+stock Container_SearchItem(id, itemid)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+	    new aux = Container_GetElementsAmount(id);
+	    
+	    for(new i = 0; i < aux; i++)
+	    {
+	    	if(vector_get(id, Container_SlotToVecIndex(i)) == itemid)
+	    	    return i;
+		}
+	}
+
+	return -1;
 }
 
 //==============================================================================

@@ -68,6 +68,7 @@
 #define ITEM_ID_TELEFONO_CELULAR        99
 #define ITEM_ID_ENCENDEDOR		        100
 #define ITEM_ID_CIGARRILLOS             101
+#define ITEM_ID_RADIO		            102
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -209,8 +210,9 @@ static const ServerItems[][ItemInfo] = {
 /*97*/  {"Gorra simple azul", "Cantidad", ITEM_TOY, 150, false, 18942, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 15},
 /*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 150, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 15},
 /*99*/  {"Telefono celular", "Cantidad", ITEM_OTHER, 1, false, 18868, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.097,0.031,-0.017,87.8,-177.3,-3.5, 0, 4},
-/*100*/ {"Encendedor", "Usos", ITEM_OTHER, 5, true, 19998, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
-/*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 3}
+/*100*/ {"Encendedor", "Usos", ITEM_OTHER, 15, true, 19998, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
+/*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 3},
+/*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4}
 
 };
 

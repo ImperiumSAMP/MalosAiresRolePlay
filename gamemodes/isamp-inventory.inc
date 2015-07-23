@@ -268,8 +268,7 @@ CMD:inventario2(playerid, params[])
 
     if(sscanf(params, "s[32]", cmd, returnid))
 	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} guardar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} guardar");
 
 		if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
@@ -308,7 +307,7 @@ CMD:inventario2(playerid, params[])
 	    }
 		else
 		{
-		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} guardar");
+		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} guardar");
 		}
 	}
 	return 1;
