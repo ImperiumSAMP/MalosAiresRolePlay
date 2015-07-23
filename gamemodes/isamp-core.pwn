@@ -84,7 +84,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-actors.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.2"
+#define GAMEMODE				"MA:RP v1.1.3"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -183,8 +183,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // Combustible.
 #define PRICE_FULLTANK          300
 // 24-7
-#define PRICE_CIGARETTES        20
-#define PRICE_LIGHTER         	5
 #define PRICE_PHONE             500
 #define PRICE_ASPIRIN           15
 
@@ -7321,29 +7319,35 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					}
 			        case 1:
 					{
-				        if(GetPlayerCash(playerid) < PRICE_CIGARETTES)
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CIGARRILLOS))
 				            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-            			if(PlayerInfo[playerid][pCigarettes] > 20)
-               				return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes demasiados cigarrillos.");
-						GivePlayerCash(playerid, -PRICE_CIGARETTES);
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos y se lo guarda en el bolsillo.");
-						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (20 unidades) por $%d, puedes utilizar /fumar.", PRICE_CIGARETTES);
-						PlayerInfo[playerid][pCigarettes] += 20;
-						Business[business][bTill] += PRICE_CIGARETTES;
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_CIGARRILLOS, 10);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CIGARRILLOS));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos.");
+						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de cigarrillos (20 unidades) por $%d, puedes utilizar /fumar.", GetItemPrice(ITEM_ID_CIGARRILLOS));
+						Business[business][bTill] += GetItemPrice(ITEM_ID_CIGARRILLOS);
 				        Business[business][bProducts]--;
 				        saveBusiness(business);
 			        }
 			        case 2:
 					{
-				        if(GetPlayerCash(playerid) < PRICE_LIGHTER)
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_ENCENDEDOR))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-       					if(PlayerInfo[playerid][pLighter])
-            				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un encendedor.");
-						GivePlayerCash(playerid, -PRICE_LIGHTER);
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_ENCENDEDOR, 50);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_ENCENDEDOR));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un encendedor y se lo guarda en el bolsillo.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un encendedor por $%d!", PRICE_LIGHTER);
-						PlayerInfo[playerid][pLighter] = 1;
-		   				Business[business][bTill] += PRICE_LIGHTER;
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un encendedor por $%d!", GetItemPrice(ITEM_ID_ENCENDEDOR));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_ENCENDEDOR);
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
@@ -9617,8 +9621,8 @@ CMD:comprar(playerid, params[])
 				format(title, sizeof(title), "%s", Business[business][bName]);
 				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Cigarrillos 20u. {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
 		            PRICE_ASPIRIN,
-					PRICE_CIGARETTES,
-					PRICE_LIGHTER,
+					GetItemPrice(ITEM_ID_CIGARRILLOS),
+					GetItemPrice(ITEM_ID_ENCENDEDOR),
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON),
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
@@ -13556,39 +13560,64 @@ CMD:bidon(playerid, params[]) {
 
 CMD:fumar(playerid, params[])
 {
-    if(GetPlayerState(playerid) != 1)
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Solo puedes utilizarlo estando parado.");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	if(smoking[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya estás fumando, utiliza /apagarcigarro para terminar.");
-	if(!PlayerInfo[playerid][pLighter])
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas un encendedor, intenta conseguir uno.");
-	if(PlayerInfo[playerid][pCigarettes] <= 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes más cigarrillos, vé y compra un paquete.");
  	if(PlayerCuffed[playerid] == 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes fumar estando esposado.");
-	
-    PlayerActionMessage(playerid, 15.0, "saca un encendedor y un cigarrillo de su bolsillo, lo enciende y comienza a fumar.");
-	smoking[playerid] = true;
-	PlayerInfo[playerid][pCigarettes]--;
+
+	new hand_cig = SearchHandsForItem(playerid, ITEM_ID_CIGARRILLOS),
+	    hand_lig = SearchHandsForItem(playerid, ITEM_ID_ENCENDEDOR);
+
+	if(hand_cig == -1 || hand_lig == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener en una mano un encendedor y en la otra los cigarrillos.");
+
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
+	PlayerActionMessage(playerid, 15.0, "saca un encendedor y un cigarrillo, lo enciende y comienza a fumar.");
+	smoking[playerid] = true;
+	
+	if(GetHandParam(playerid, hand_cig) == 1)
+	{
+	    SetHandItemAndParam(playerid, hand_cig, 0, 0);
+	    SendClientMessage(playerid, COLOR_YELLOW2, "Ese fue el último cigarrillo del paquete: se te han acabado.");
+	}
+	else
+		SetHandItemAndParam(playerid, hand_cig, ITEM_ID_CIGARRILLOS, GetHandParam(playerid, hand_cig) - 1);
+
+	if(GetHandParam(playerid, hand_lig) == 1)
+	{
+	    SetHandItemAndParam(playerid, hand_lig, 0, 0);
+	    SendClientMessage(playerid, COLOR_YELLOW2, "El encendedor se ha quedado sin gas y no sirve más.");
+	}
+	else
+		SetHandItemAndParam(playerid, hand_lig, ITEM_ID_ENCENDEDOR, GetHandParam(playerid, hand_lig) - 1);
+		
 	return 1;
 }
 
-CMD:apagarcigarro(playerid, params[]) {
+CMD:apagarcigarro(playerid, params[])
+{
 	if(!smoking[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar fumando...");
 
-	if(GetPVarInt(playerid, "disabled") == DISABLE_NONE && GetPlayerState(playerid) == 1) {
-		if(GetPlayerInterior(playerid) > 0) {
+	if(GetPVarInt(playerid, "disabled") == DISABLE_NONE && GetPlayerState(playerid) == 1)
+	{
+		if(GetPlayerInterior(playerid) > 0)
+		{
 		    PlayerActionMessage(playerid, 15.0, "apaga el cigarrillo y lo arroja al cenicero.");
-		} else {
+		}
+		else
+		{
 	 		PlayerActionMessage(playerid, 15.0, "apaga el cigarrillo y lo arroja al suelo.");
 		}
 		smoking[playerid] = false;
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
-	} else {
+	}
+	else
+	{
 		SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	}
 	return 1;
