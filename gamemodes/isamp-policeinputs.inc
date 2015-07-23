@@ -490,8 +490,8 @@ CMD:pautorizar(playerid, params[])
         return 1;
 	if(PlayerInfo[playerid][pRank] > 3)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tu rango no tiene acceso a este comando.");
-    if(PlayerInfo[playerid][pRadio] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio, vé y compra una en algún 24-7.");
+    if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
     if(sscanf(params, "u", targetid))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pautorizar [ID/Jugador]");
     if(!IsPlayerConnected(targetid))
@@ -520,8 +520,8 @@ CMD:sautorizar(playerid, params[])
         return 1;
 	if(PlayerInfo[playerid][pRank] > 2)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tu rango no tiene acceso a este comando.");
-    if(PlayerInfo[playerid][pRadio] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio, vé y compra una en algún 24-7.");
+    if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
     if(sscanf(params, "u", targetid))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /sautorizar [ID/Jugador]");
     if(!IsPlayerConnected(targetid))

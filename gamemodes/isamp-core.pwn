@@ -1013,7 +1013,6 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pBank] = 0;
 	PlayerInfo[playerid][pSkin] = 0;
 	PlayerInfo[playerid][pMask] = 0;
-	PlayerInfo[playerid][pRadio] = 0;
 	PlayerInfo[playerid][pJob] = 0;
 	PlayerInfo[playerid][pJobTime] = 0;
 	PlayerInfo[playerid][pJobAllowed] = 1;
@@ -2354,7 +2353,6 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "pLSD", result); 			PlayerInfo[playerid][pLSD] 				= strval(result);
 		cache_get_field_content(0, "pEcstasy", result); 			PlayerInfo[playerid][pEcstasy] 			= strval(result);
 		cache_get_field_content(0, "pCocaine", result); 		PlayerInfo[playerid][pCocaine] 			= strval(result);
-		cache_get_field_content(0, "pRadio", result); 			PlayerInfo[playerid][pRadio] 			= strval(result);
     	cache_get_field_content(0, "pMask", result); 			PlayerInfo[playerid][pMask] 			= strval(result);
 		cache_get_field_content(0, "pFightStyle", result); 		PlayerInfo[playerid][pFightStyle] 		= strval(result);
         cache_get_field_content(0, "pAdictionAbstinence", result); 		PlayerInfo[playerid][pAdictionAbstinence] 		= strval(result);
@@ -2900,7 +2898,7 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pHouseKeyIncome]
 		);
 
-		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pRadio=%d,pFightStyle=%d,pAdictionAbstinence=%d, pRolePoints=%d, pContainerSQLID=%d",
+		format(query,sizeof(query),"%s,pMuteB=%d,pRentCarID=%d,pRentCarRID=%d,pMarijuana=%d,pLSD=%d,pEcstasy=%d,pCocaine=%d,pFightStyle=%d,pAdictionAbstinence=%d, pRolePoints=%d, pContainerSQLID=%d",
 		    query,
 			PlayerInfo[playerid][pMuteB],
 			PlayerInfo[playerid][pRentCarID],
@@ -2909,7 +2907,6 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pLSD],
 			PlayerInfo[playerid][pEcstasy],
 			PlayerInfo[playerid][pCocaine],
-			PlayerInfo[playerid][pRadio],
 			PlayerInfo[playerid][pFightStyle],
 			PlayerInfo[playerid][pAdictionAbstinence],
 			PlayerInfo[playerid][pRolePoints],
@@ -8508,24 +8505,31 @@ CMD:departamento(playerid, params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes permiso para hablar por esta frecuencia.");
 	if(sscanf(params, "s[128]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/d)epartamento [texto]");
-	if(PlayerInfo[playerid][pRadio] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio, vé y compra una en algún 24-7.");
+	if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
 	if(!RadioEnabled[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tu radio apagada.");
     if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
+	
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
  		format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
+ 		
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
- 	foreach(new i : Player) {
-		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i] && PlayerInfo[i][pRadio] != 0) {
-			if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
-				SendClientMessage(i, COLOR_LIGHTGREEN, string);
+ 	foreach(new i : Player)
+ 	{
+		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i])
+		{
+			if(SearchHandsForItem(i, ITEM_ID_RADIO) != -1 || Container_SearchItem(PlayerInfo[i][pContainerID], ITEM_ID_RADIO) != -1)
+			{
+				if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
+					SendClientMessage(i, COLOR_LIGHTGREEN, string);
+			}
 		}
   	}
 	return 1;
@@ -8934,6 +8938,8 @@ CMD:radio(playerid, params[])
 	    return 1;
 	if(sscanf(params, "s[128]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/r)adio [mensaje]");
+	if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
 	if(!RadioEnabled[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes tu radio apagada.");
 	if(Muted[playerid])
@@ -11261,8 +11267,6 @@ CMD:bolsillo(playerid, params[])
 stock ShowPocket(playerid, targetid)
 {
 	SendClientMessage(playerid, COLOR_WHITE, "=======================[Bolsillo]=======================");
-	if(PlayerInfo[targetid][pRadio])
-	    SendClientMessage(playerid, COLOR_WHITE, "- Radio Walkie Talkie.");
     if(PlayerInfo[targetid][pMask] > 0)
         SendClientMessage(playerid, COLOR_WHITE, "- Pañuelo.");
     if(PlayerInfo[targetid][pPhoneNumber] > 0)

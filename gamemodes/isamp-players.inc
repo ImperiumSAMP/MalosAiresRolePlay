@@ -63,7 +63,6 @@ enum pInfo {
 	pRentCarRID,
 	pFightStyle,
 	pMask,
-	pRadio,
 	
 	pThirst,
 	pHunger,
