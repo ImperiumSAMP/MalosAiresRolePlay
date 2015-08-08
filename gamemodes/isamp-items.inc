@@ -11,6 +11,7 @@
 #define ITEM_WEAPON             1
 #define ITEM_OTHER              2
 #define ITEM_TOY                3
+#define ITEM_CONTAINER          4
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -69,6 +70,7 @@
 #define ITEM_ID_ENCENDEDOR		        100
 #define ITEM_ID_CIGARRILLOS             101
 #define ITEM_ID_RADIO		            102
+#define ITEM_ID_VALIJA		            103
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -212,8 +214,8 @@ static const ServerItems[][ItemInfo] = {
 /*99*/  {"Telefono celular", "Cantidad", ITEM_OTHER, 1, false, 18868, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.097,0.031,-0.017,87.8,-177.3,-3.5, 0, 4},
 /*100*/ {"Encendedor", "Usos", ITEM_OTHER, 15, true, 19998, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
 /*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 3},
-/*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4}
-
+/*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4},
+/*103*/ {"Valija", "Espacio", ITEM_CONTAINER, 400, false, 19624, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0, 75}
 };
 
 //==============================FUNCIONES=======================================

@@ -30,10 +30,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "isamp-items.inc" 				//Sistema de items
+#include "marp-container.inc"
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
-#include "marp-container.inc"
 #include "isamp-inventory.inc" 			//Sistema de inventario
 #include "isamp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
@@ -305,7 +305,7 @@ new
 	firstSpawn[MAX_PLAYERS],
 	cheater[MAX_PLAYERS],
 	
-	bool:smoking[MAX_PLAYERS],
+	smoking[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
 	
 	// Sistema de streams de radios
@@ -856,7 +856,7 @@ public ResetStats(playerid)
 	BlowingPipette[playerid] = 0;
     OfferingPipette[playerid] = 0;
 	
-	smoking[playerid] = false;
+	smoking[playerid] = 0;
 	LastVeh[playerid] = 0;
 	AllowAdv[playerid] = 1;
 	
@@ -7451,7 +7451,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					
+			        case 10:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_VALIJA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_VALIJA, 0);
+						Container_Create(75, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_VALIJA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una valija.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una valija por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendola con la mano derecha!", GetItemPrice(ITEM_ID_VALIJA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_VALIJA);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
 				}
 			}
 			return 1;
@@ -9620,7 +9637,7 @@ CMD:vender(playerid, params[])
 
 CMD:comprar(playerid, params[])
 {
-	new title[64], content[600], business = GetPlayerBusiness(playerid);
+	new title[64], content[650], business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
@@ -9634,7 +9651,7 @@ CMD:comprar(playerid, params[])
 			    if(Business[business][bProducts] <= 0)
 		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Paquete de cigarrillos {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d",
+				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Paquete de cigarrillos {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d\n{FFEFD5}Valija {556B2F}$%d",
 		            PRICE_ASPIRIN,
 					GetItemPrice(ITEM_ID_CIGARRILLOS),
 					GetItemPrice(ITEM_ID_ENCENDEDOR),
@@ -9644,8 +9661,8 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
 					GetItemPrice(ITEM_ID_MALETIN),
-					GetItemPrice(ITEM_ID_RADIO)
-
+					GetItemPrice(ITEM_ID_RADIO),
+					GetItemPrice(ITEM_ID_VALIJA)
 				);
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
@@ -13625,7 +13642,7 @@ CMD:fumar(playerid, params[])
 
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
 	PlayerActionMessage(playerid, 15.0, "saca un encendedor y un cigarrillo, lo enciende y comienza a fumar.");
-	smoking[playerid] = true;
+	smoking[playerid] = 1;
 	
 	if(GetHandParam(playerid, hand_cig) == 1)
 	{
@@ -13661,7 +13678,7 @@ CMD:apagarcigarro(playerid, params[])
 		{
 	 		PlayerActionMessage(playerid, 15.0, "apaga el cigarrillo y lo arroja al suelo.");
 		}
-		smoking[playerid] = false;
+		smoking[playerid] = 0;
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
 	}
 	else

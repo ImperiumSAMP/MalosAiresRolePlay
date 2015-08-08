@@ -44,7 +44,7 @@ public ServerObjectsCleaningTimer()
 	        if(ServerObject[i][sTimeLeft] > 0)
 	            ServerObject[i][sTimeLeft] -= SERVER_OBJECT_UPD_TIME;
 			else
-			    ResetObject(i);
+			    DestroyServerObject(i);
 		}
 	}
 	return 1;
@@ -130,6 +130,27 @@ stock TakeObject(playerid, playerhand)
 	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[object][sItemID]));
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	ResetObject(object);
+	return 1;
+}
+
+stock DestroyServerObject(pos)
+{
+	if(GetItemType(ServerObject[pos][sItemID]) == ITEM_CONTAINER)
+	{
+		Container_Fully_Destroy(ServerObject[pos][sAmount], Container_GetSQLID(ServerObject[pos][sAmount]));
+	}
+    ServerObject[pos][sItemID] = 0;
+    ServerObject[pos][sAmount] = 0;
+    ServerObject[pos][sX] = 0.0;
+    ServerObject[pos][sY] = 0.0;
+    ServerObject[pos][sZ] = 0.0;
+    ServerObject[pos][sTimeLeft] = 0;
+    strmid(ServerObject[pos][sLastPlayerName], "NULL", 0, strlen("NULL"), MAX_PLAYER_NAME);
+	if(ServerObject[pos][sRealObject] > 0)
+	{
+		DestroyDynamicObject(ServerObject[pos][sRealObject]);
+		ServerObject[pos][sRealObject] = 0;
+	}
 	return 1;
 }
 	

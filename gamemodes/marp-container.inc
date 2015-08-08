@@ -28,9 +28,8 @@
 
 #define CONTAINER_TYPE_TRUNK     		1
 #define CONTAINER_TYPE_INV  	   		2
-#define CONTAINER_TYPE_POCKET    		3
-#define CONTAINER_TYPE_HOUSE    		4
-#define CONTAINER_TYPE_ITEM      		5
+#define CONTAINER_TYPE_HOUSE      		3
+#define CONTAINER_TYPE_ITEM        		4
 
 #define CONTAINER_INDEX_SQLID			0
 #define CONTAINER_INDEX_MIN_ITEM_SPACE  1
@@ -112,8 +111,19 @@ public OnContainerSlotsLoad(container_id)
 	{
 	    for(new i = 0; i < rows; i++)
 	    {
-			cache_get_field_content(i, "Item", result); 	vector_push_back(container_id, strval(result));
-			cache_get_field_content(i, "Param", result); 	vector_push_back(container_id, strval(result));
+			cache_get_field_content(i, "Item", result);
+        	vector_push_back(container_id, strval(result));
+        	
+			if(GetItemType(strval(result)) == ITEM_CONTAINER)
+			{
+				cache_get_field_content(i, "Param", result);
+				vector_push_back(container_id, Container_Load(strval(result)));
+			}
+			else
+			{
+				cache_get_field_content(i, "Param", result);
+				vector_push_back(container_id, strval(result));
+			}
 		}
 	}
 	return 1;
@@ -161,7 +171,16 @@ stock Container_Fully_Destroy(id, container_sqlid)
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 	    new query[128];
+		new vec_size = vector_size(id);
 
+		for(new i = 4; i < vec_size; i += 2) // Para todos los items almacenados en el vector que simula el contenedor
+		{
+		    if(GetItemType(vector_get(id, i)) == ITEM_CONTAINER) // Como "i" cae en los items, obtenemos el valor en posicion "i" y nos fijamos
+			{
+			    Container_Fully_Destroy(vector_get(id, i+1), Container_GetSQLID(vector_get(id, i+1))); // Los items CONTAINER, en su parametro guardan la id del vector real de ejecucion de su contenedor
+			}
+		}
+		
 	    format(query, sizeof(query), "DELETE FROM containers_info WHERE container = %d", container_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
 
@@ -350,6 +369,15 @@ stock Container_Empty(id)
         new vec_sqlid = vector_get(id, CONTAINER_INDEX_SQLID);
 		new vec_min_item_space = vector_get(id, CONTAINER_INDEX_MIN_ITEM_SPACE);
 		new vec_total_space = vector_get(id, CONTAINER_INDEX_TOTAL_SPACE);
+		new vec_size = vector_size(id);
+		
+		for(new i = 4; i < vec_size; i += 2) // Para todos los items almacenados en el vector que simula el contenedor
+		{
+		    if(GetItemType(vector_get(id, i)) == ITEM_CONTAINER) // Como "i" cae en los items, obtenemos el valor en posicion "i" y nos fijamos
+			{
+			    Container_Fully_Destroy(vector_get(id, i+1), Container_GetSQLID(vector_get(id, i+1))); // Los items CONTAINER, en su parametro guardan la id del vector real de ejecucion de su contenedor
+			}
+		}
 		
 	    format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
 		mysql_function_query(dbHandle, query, false, "", "");
@@ -390,7 +418,14 @@ stock Container_AddItemAndParam(id, item, param)
 
  		new query[128];
 
-		format(query, sizeof(query), "INSERT INTO containers_slots (container, Item, Param) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, param);
+		if(GetItemType(item) == ITEM_CONTAINER)
+  		{
+			format(query, sizeof(query), "INSERT INTO containers_slots (container, Item, Param) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, Container_GetSQLID(param));
+		}
+		else
+		{
+		    format(query, sizeof(query), "INSERT INTO containers_slots (container, Item, Param) VALUES (%d, %d, %d)", Container_GetSQLID(id), item, param);
+		}
 		mysql_function_query(dbHandle, query, false, "", "");
 		
 		return 1;
@@ -458,27 +493,47 @@ stock Container_Show(origid, type, id, playerid)
 			format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s", "");
 			
 			new vsize = vector_size(id),
-			    slot = 0;
+			    slot = 0,
+			    item,
+			    param;
 
 			for(new i=4; i<vsize; i+=2)
 			{
-			    format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\t%s: %d\tEspacio: %d\n", Container_DlgInfoStr, slot, GetItemName(vector_get(id, i)), GetItemParamName(vector_get(id, i)), vector_get(id, i+1), GetItemSpace(vector_get(id, i)));
+			    item = vector_get(id, i);
+			    param = vector_get(id, i+1);
+			    if(GetItemType(item) == ITEM_CONTAINER)
+			    {
+			        format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\tUsado: %d/%d\tOcupa: %d\n", Container_DlgInfoStr, slot, GetItemName(item), Container_GetUsedSpace(param), Container_GetTotalSpace(param), GetItemSpace(item));
+			    }
+			    else
+			    {
+			    	format(Container_DlgInfoStr, sizeof(Container_DlgInfoStr), "%s%d - Item: %s\t%s: %d\tOcupa: %d\n", Container_DlgInfoStr, slot, GetItemName(item), GetItemParamName(item), param, GetItemSpace(item));
+			    }
 	            slot++;
 			}
-			format(string1, sizeof(string1), "Contenedor * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 
 			switch(type)
 			{
 			    case CONTAINER_TYPE_TRUNK:
+			    {
+			        format(string1, sizeof(string1), "[Maletero] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 			        Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
-			    case CONTAINER_TYPE_INV:
+				}
+				case CONTAINER_TYPE_INV:
+				{
+				    format(string1, sizeof(string1), "[Inventario] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 			    	Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
-		        case CONTAINER_TYPE_POCKET:
-		            Dialog_Show(playerid, Dlg_Show_Pocket_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
-		        case CONTAINER_TYPE_HOUSE:
+				}
+				case CONTAINER_TYPE_HOUSE:
+				{
+				    format(string1, sizeof(string1), "[Armario] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 		            Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
-		        case CONTAINER_TYPE_ITEM:
+				}
+				case CONTAINER_TYPE_ITEM:
+				{
+				    format(string1, sizeof(string1), "[Item] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
 		            Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+				}
 				default:
 					return 0;
 			}
@@ -488,8 +543,8 @@ stock Container_Show(origid, type, id, playerid)
 		}
 		else
 		{
-			format(string1, sizeof(string1), "Vacio * Espacio: usado %du - libre %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "Contenedor", string1, "Cerrar", "");
+			format(string1, sizeof(string1), "No hay items guardados. Espacio libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "[Vacio]", string1, "Cerrar", "");
 		}
 		return 1;
 	}

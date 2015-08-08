@@ -225,7 +225,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[128]", command, targetid))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - ver - guardar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
@@ -289,6 +289,43 @@ CMD:mano(playerid, params[])
 
 			TakeObject(playerid, HAND_LEFT);
 			
+		} else if(strcmp(command, "ver", true) == 0) {
+
+			new item = GetHandItem(playerid, HAND_RIGHT),
+			    param = GetHandParam(playerid, HAND_RIGHT);
+			    
+			if(GetItemType(item) != ITEM_CONTAINER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano derecha del tipo contenedor.");
+			if(!Container_Show(playerid, CONTAINER_TYPE_ITEM, param, playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del item. Reportar a un administador.");
+
+		} else if(strcmp(command, "guardar", true) == 0) {
+
+			new left_item = GetHandItem(playerid, HAND_LEFT),
+			    left_param = GetHandParam(playerid, HAND_LEFT);
+
+			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) != ITEM_CONTAINER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano derecha del tipo contenedor.");
+			if(left_item == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano izquierda para guardar.");
+			if(left_item == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+			if(PlayerInfo[playerid][pHealth] < 25.0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
+			if(!Container_AddItemAndParam(GetHandParam(playerid, HAND_RIGHT), left_item, left_param))
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el contenedor.");
+
+			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico de la mano.
+
+			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en el contenedor que tienes en la mano derecha.", GetItemName(left_item));
+
+			SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+				
 		} else if(strcmp(command, "usar", true) == 0) {
 
 			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
@@ -318,4 +355,41 @@ CMD:mano(playerid, params[])
 	}
 	return 1;
 }
-			
+
+Dialog:Dlg_Show_Item_Container(playerid, response, listitem, inputtext[])
+{
+	new pid = Container_Selection[playerid][csOriginalId],
+ 		container_id = Container_Selection[playerid][csId];
+
+	ResetContainerSelection(playerid);
+
+	if(response)
+	{
+        new itemid,
+            itemparam,
+            str[128];
+
+		if(GetHandItem(playerid, HAND_LEFT) != 0)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano izquierda ocupada.");
+
+		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", container_id, pid, listitem);
+
+		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
+		{
+			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
+
+			SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
+
+            SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+
+			format(str, sizeof(str), "toma un/a %s de la valija.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
+		}
+		else
+		{
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Valija vacio o el slot es inválido.");
+		}
+	}
+	return 1;
+}
