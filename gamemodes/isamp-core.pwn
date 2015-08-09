@@ -7453,11 +7453,65 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
                         SetHandItemAndParam(playerid, freehand, ITEM_ID_VALIJA, 0);
-						Container_Create(75, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						Container_Create(70, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_VALIJA));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una valija.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una valija por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendola con la mano derecha!", GetItemPrice(ITEM_ID_VALIJA));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_VALIJA);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					case 11:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_BOLSO))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_BOLSO, 0);
+						Container_Create(60, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_BOLSO));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un bolso deportivo.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un bolso por $%d. Para interactuar con éste usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_BOLSO));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_BOLSO);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					case 12:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILAGRANDE))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILAGRANDE, 0);
+						Container_Create(50, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILAGRANDE));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila grande.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILAGRANDE));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILAGRANDE);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					case 13:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILA, 0);
+						Container_Create(30, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILA);
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
@@ -9629,7 +9683,7 @@ CMD:vender(playerid, params[])
 
 CMD:comprar(playerid, params[])
 {
-	new title[64], content[650], business = GetPlayerBusiness(playerid);
+	new title[64], content[750], business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
@@ -9655,6 +9709,12 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_MALETIN),
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_VALIJA)
+				);
+				format(content, sizeof(content), "%s\n{FFEFD5}Bolso deportivo {556B2F}$%d\n{FFEFD5}Mochila grande {556B2F}$%d\n{FFEFD5}Mochila {556B2F}$%d",
+					content,
+					GetItemPrice(ITEM_ID_BOLSO),
+					GetItemPrice(ITEM_ID_MOCHILAGRANDE),
+					GetItemPrice(ITEM_ID_MOCHILA)
 				);
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
@@ -10830,6 +10890,8 @@ CMD:pipeta(playerid,params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(OfferingPipette[playerid] == 1)
 	    return SendClientMessage(playerid,COLOR_YELLOW2,"Ya has ofrecido una pipeta para que soplen.");
+ 	if(GetDistanceBetweenPlayers(playerid, targetid) > 2)
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
 	
 	SendFMessage (playerid, COLOR_LIGHTYELLOW2, "Le diste una pipeta para que sople a %s, debes esperar que el sujeto responda.", GetPlayerNameEx(targetid));
     SendFMessage (targetid, COLOR_LIGHTYELLOW2, "%s te dío una pipeta de alcoholemia para que soples. (Utilizá /soplarpipeta)", GetPlayerNameEx (playerid));

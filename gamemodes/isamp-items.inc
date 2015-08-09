@@ -71,6 +71,10 @@
 #define ITEM_ID_CIGARRILLOS             101
 #define ITEM_ID_RADIO		            102
 #define ITEM_ID_VALIJA		            103
+#define ITEM_ID_MEDICCASE	            104
+#define ITEM_ID_BOLSO		            105
+#define ITEM_ID_MOCHILAGRANDE           106
+#define ITEM_ID_MOCHILA		            107
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -215,7 +219,11 @@ static const ServerItems[][ItemInfo] = {
 /*100*/ {"Encendedor", "Usos", ITEM_OTHER, 15, true, 19998, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
 /*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 3},
 /*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4},
-/*103*/ {"Valija", "Espacio", ITEM_CONTAINER, 400, false, 19624, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0, 75}
+/*103*/ {"Valija", "Espacio", ITEM_CONTAINER, 400, false, 19624, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0.301999, 0.082999, -0.012, 0.0, -90.599975, -0.9999, 0, 70},
+/*104*/ {"Botiquín médico", "Usos restantes", ITEM_OTHER, 400, false, 11738, 0.268, 0.022, -0.007, 0.000, -94.700, 12.699, 0.270, 0.022, 0.036, 0.000, -97.899, 0.000, 0, 45},
+/*105*/ {"Bolso deportivo", "Espacio", ITEM_CONTAINER, 300, false, 11745, 0.198, -0.056, 0.055, 0.000, -99.399, -46.499, 0.214, -0.066, 0.014, 0.000, -99.799, 87.300, 0, 60},
+/*106*/ {"Mochila grande", "Espacio", ITEM_CONTAINER, 550, false, 19559, 0.412, 0.066, 0.000, 0.000, -97.000, 24.599, 0.400, 0.049, 0.066, 0.000, -96.600, 0.000, 0, 50},
+/*107*/ {"Mochila", "Espacio", ITEM_CONTAINER, 300, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 30}
 };
 
 //==============================FUNCIONES=======================================
