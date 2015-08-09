@@ -6540,8 +6540,6 @@ public CloseGate(gateID) {
 	    MoveObject(PMGate, 1589.73499, -1638.32410, 14.27130, 2.0, 0.00000, 0.00000, 90.00000);
 	} else if(gateID == PMPrisonGate) {
 	    MoveObject(PMPrisonGate, 1754.26965, -1582.74438, 13.27080, 2.0, 0.00000, 0.00000, -86.00000);
-	} else if(gateID == RIEDELGate) {
-	    MoveObject(RIEDELGate, 317.70630, -61.57970, 1.34230, 0.004, 0.00000, 270.00000, 0.00000);
 	} else if(gateID == GOBGate) {
 	    MoveObject(GOBGate, 1534.54236, -1451.39893, 14.45500, 3.0, 0.00000, 0.00000, 0.00000);
 	} else if(gateID == FORZGate) {
@@ -6649,12 +6647,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	        if(PlayerToPoint(10.0, playerid, 1143.42, -1384.82, 13.79)) {
 	            MoveObject(HOSPGate,  1147.03149, -1384.87317, 13.46000, 0.0001, 0.00000, 0.00000, 0.00000);
 	            SetTimerEx("CloseGate", 4000, false, "i", HOSPGate);
-	        }
-	    } else
-	    if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_4) {
-	        if(PlayerToPoint(15.0, playerid, 313.85, -62.28, 0.8)) {
-	            MoveObject(RIEDELGate, 317.70630, -61.57970, 1.34230, 0.004, 0.00000, 0.00000, 0.00000);
-	            SetTimerEx("CloseGate", 6000, false, "i", RIEDELGate);
 	        }
 	    } else
 		if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_1) {
