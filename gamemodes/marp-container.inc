@@ -457,7 +457,14 @@ stock Container_TakeItem(id, slot, &item, &param)
 
  		new query[128];
 
-		format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", Container_GetSQLID(id), item, param);
+		if(GetItemType(item) == ITEM_CONTAINER)
+		{
+			format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", Container_GetSQLID(id), item, Container_GetSQLID(param));
+		}
+		else
+		{
+			format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", Container_GetSQLID(id), item, param);
+  		}
 		mysql_function_query(dbHandle, query, false, "", "");
 		
 		return 1;
@@ -543,7 +550,7 @@ stock Container_Show(origid, type, id, playerid)
 		}
 		else
 		{
-			format(string1, sizeof(string1), "No hay items guardados. Espacio libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
+			format(string1, sizeof(string1), "No hay items guardados. Espacio libre: %du", Container_GetTotalSpace(id));
 			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "[Vacio]", string1, "Cerrar", "");
 		}
 		return 1;
