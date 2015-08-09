@@ -420,6 +420,8 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 
 	if(itemid == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+	if(GetItemType(itemid) == ITEM_CONTAINER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este tipo de items solo está disponible para el sistema experimental '/arm2'.");
 		
 	if(lockerslot == -1) // Si no eligió donde guardarlo
 	{

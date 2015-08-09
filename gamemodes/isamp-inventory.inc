@@ -183,6 +183,8 @@ stock SaveItemOnInv(playerid, playerhand, invslot)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(!HasItemInvPermission(itemid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
+	if(GetItemType(itemid) == ITEM_CONTAINER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este tipo de items solo está disponible para el sistema experimental '/inv2'.");
 
 	if(invslot == -1)
 	{
@@ -214,7 +216,7 @@ CMD:inventario(playerid, params[])
     if(sscanf(params, "s[32]I(-1)", cmd, returnid))
 	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot] - guardar/guardari [slot (opcional)] - desechar [slot]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot] - guardar/guardari [slot (opcional)]");
 		PrintInvForPlayer(playerid, playerid);
     }
 	else
@@ -235,20 +237,6 @@ CMD:inventario(playerid, params[])
 		{
 			SaveItemOnInv(playerid, HAND_LEFT, returnid);
 	    }
-		else if(strcmp(cmd, "desechar", true) == 0)
-		{
-			new itemid = GetInvItem(playerid, returnid),
-				string[128];
-			
-	        if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
-	        if(itemid <= 0)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	            
-      		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
-            PlayerActionMessage(playerid, 8.0, string);
-			SetInvItemAndParam(playerid, returnid, 0, 0);
-		}
 	}
 	return 1;
 }

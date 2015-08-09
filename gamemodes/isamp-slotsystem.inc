@@ -141,13 +141,26 @@ stock SaveSlotInfo(type, id, slot, option = 0)
 			} else
 			if(HandInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
 		 	{
-				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
-					type,
-					PlayerInfo[id][pID],
-					slot,
-					HandInfo[id][slot][Item],
-					HandInfo[id][slot][Amount]
-				);
+		 	    if(GetItemType(HandInfo[id][slot][Item]) == ITEM_CONTAINER)
+		 	    {
+					format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
+						type,
+						PlayerInfo[id][pID],
+						slot,
+						HandInfo[id][slot][Item],
+						Container_GetSQLID(HandInfo[id][slot][Amount])
+					);
+				}
+				else
+				{
+					format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
+						type,
+						PlayerInfo[id][pID],
+						slot,
+						HandInfo[id][slot][Item],
+						HandInfo[id][slot][Amount]
+					);
+				}
 			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
 			    {
 		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
