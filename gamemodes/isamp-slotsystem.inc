@@ -63,7 +63,14 @@ public OnSlotsInfoDataLoad(type, id) {
 				while(aux < rows) {
 					cache_get_field_content(aux, "Slot", result); slot = strval(result);
 					cache_get_field_content(aux, "Item", result); HandInfo[id][slot][Item] = strval(result);
-					cache_get_field_content(aux, "Amount", result); HandInfo[id][slot][Amount] = strval(result);
+					if(GetItemType(HandInfo[id][slot][Item]) == ITEM_CONTAINER)
+					{
+					    cache_get_field_content(aux, "Amount", result); HandInfo[id][slot][Amount] = Container_Load(strval(result));
+					}
+					else
+					{
+						cache_get_field_content(aux, "Amount", result); HandInfo[id][slot][Amount] = strval(result);
+					}
 					aux ++;
 				}
 			}
