@@ -9704,7 +9704,7 @@ CMD:vender(playerid, params[])
 
 CMD:comprar(playerid, params[])
 {
-	new title[64], content[800], business = GetPlayerBusiness(playerid);
+	new title[64], content[450], business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
@@ -9718,7 +9718,7 @@ CMD:comprar(playerid, params[])
 			    if(Business[business][bProducts] <= 0)
 		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Paquete de cigarrillos {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d\n{FFEFD5}Valija {556B2F}$%d",
+				format(content, sizeof(content), "Aspirina\t$%d\nPaquete de cigarrillos\t$%d\nEncendedor\t$%d\nTeléfono celular\t$%d\nBidón de combustible vacío\t$%d\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nValija\t$%d",
 		            PRICE_ASPIRIN,
 					GetItemPrice(ITEM_ID_CIGARRILLOS),
 					GetItemPrice(ITEM_ID_ENCENDEDOR),
@@ -9730,7 +9730,7 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_VALIJA)
 				);
-				format(content, sizeof(content), "%s\n{FFEFD5}Bolso deportivo {556B2F}$%d\n{FFEFD5}Mochila grande {556B2F}$%d\n{FFEFD5}Mochila Chica {556B2F}$%d\n{FFEFD5}Mochila Mediana {556B2F}$%d\n{FFEFD5}Maletín multiuso {556B2F}$%d",
+				format(content, sizeof(content), "%s\nBolso deportivo\t$%d\nMochila grande\t$%d\nMochila Chica\t$%d\nMochila Mediana\t$%d\nMaletín multiuso\t$%d",
 					content,
 					GetItemPrice(ITEM_ID_BOLSO),
 					GetItemPrice(ITEM_ID_MOCHILAGRANDE),
@@ -9739,7 +9739,7 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_MALETIN)
 				);
 		        TogglePlayerControllable(playerid, false);
-		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_TABLIST, title, content, "Comprar", "Cerrar");
 			}
 			case BIZ_ACCESS:
 			{

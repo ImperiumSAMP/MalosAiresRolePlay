@@ -260,7 +260,7 @@ CMD:borrarmodelo(playerid, params[])
 
 CMD:vercatalogo(playerid, params[])
 {
-	new string[2000] = "Modelo_____Precio_____Maletero",
+	new string[2000] = "Modelo\tPrecio\tMaletero",
 	    dealership = GetNearestDealership(playerid, 1.0),
 	    modelid;
 
@@ -273,12 +273,12 @@ CMD:vercatalogo(playerid, params[])
 	    if(modelid != 0)
 	    {
             if(GetVehicleModelTrunkSlots(modelid) > 0)
-        		format(string, sizeof(string), "%s\n%s_____$%d_____Slots: %d", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
+        		format(string, sizeof(string), "%s\n%s\t$%d\tSlots: %d", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
 			else
-			    format(string, sizeof(string), "%s\n%s_____$%d_____No tiene", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
+			    format(string, sizeof(string), "%s\n%s\t$%d\tNo tiene", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
 		}
 	}
-	ShowPlayerDialog(playerid, DLG_CARDEALER1, DIALOG_STYLE_LIST, "Catálogo de vehículos en venta", string, "Ver", "Cerrar");
+	ShowPlayerDialog(playerid, DLG_CARDEALER1, DIALOG_STYLE_TABLIST, "Catálogo de vehículos en venta", string, "Ver", "Cerrar");
 	return 1;
 }
 	
