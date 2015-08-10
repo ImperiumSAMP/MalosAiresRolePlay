@@ -23,7 +23,8 @@ static const BackWeapons[] =
 {
 	WEAPON_KATANA, WEAPON_SHOTGUN,
 	WEAPON_MP5, WEAPON_AK47, WEAPON_M4,
-	WEAPON_RIFLE, WEAPON_SNIPER
+	WEAPON_RIFLE, WEAPON_SNIPER,
+	ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILA
 };
 
 stock bool:HasBackPermission(itemid)
@@ -77,16 +78,33 @@ stock SetBackItemAndParam(playerid, itemid, param)
 	{
 		BackInfo[playerid][Item] = itemid;
 		BackInfo[playerid][Amount] = param;
-		format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, param);
-        mysql_function_query(dbHandle, query, false, "", "");
+		if(GetItemType(itemid) == ITEM_CONTAINER)
+		{
+			format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, Container_GetSQLID(param));
+		}
+		else
+		{
+			format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, param);
+		}
+		mysql_function_query(dbHandle, query, false, "", "");
 		AttachBackItem(playerid);
 	}
 }
 
 stock AttachBackItem(playerid)
 {
-	if(GetItemObjectModel(GetBackItem(playerid)) != 0)
-		SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(GetBackItem(playerid)), BONE_ID_SPINE, -0.18, -0.18, -0.15, -36.0, 5.0, 5.0);
+	if(GetItemObjectModel(BackInfo[playerid][Item]) != 0)
+	{
+	    switch(BackInfo[playerid][Item])
+	    {
+	        case ITEM_ID_MOCHILAGRANDE:
+	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, 0.000, 0.000, 0.000, 0.000, 86.999, 0.000);
+	        case ITEM_ID_MOCHILA:
+	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.151, -0.063, -0.013, 0.000, 0.000, 0.000);
+	        default:
+				SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.18, -0.18, -0.15, -36.0, 5.0, 5.0);
+		}
+	}
 }
 
 stock DetachBackItem(playerid)
@@ -97,10 +115,10 @@ stock DetachBackItem(playerid)
 stock ResetAndSaveBack(playerid)
 {
 	new query[128];
-	
+
 	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
 	{
-	    DetachBackItem(playerid);
+     	DetachBackItem(playerid);
 		ResetBackInfo(playerid);
 		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
 	    mysql_function_query(dbHandle, query, false, "", "");
@@ -135,8 +153,19 @@ public OnBackDataLoad(playerid)
 	
 	if(rows)
 	{
-		cache_get_field_content(0, "Item", result);     BackInfo[playerid][Item] = strval(result);
-		cache_get_field_content(0, "Amount", result);   BackInfo[playerid][Amount] = strval(result);
+		cache_get_field_content(0, "Item", result);
+		BackInfo[playerid][Item] = strval(result);
+		
+		if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
+		{
+		    cache_get_field_content(0, "Amount", result);
+			BackInfo[playerid][Amount] = Container_Load(strval(result));
+		}
+		else
+		{
+			cache_get_field_content(0, "Amount", result);
+			BackInfo[playerid][Amount] = strval(result);
+		}
 	}
 	return 1;
 }

@@ -1614,7 +1614,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	if(!isPlayerCopOnDuty(playerid))
 	{
 	    ResetAndSaveHands(playerid);
-		ResetAndSaveBack(playerid);
+  		ResetAndSaveBack(playerid);
 	}
 	EndPlayerDuty(playerid);
 	
