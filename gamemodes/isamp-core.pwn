@@ -9718,12 +9718,15 @@ CMD:comprar(playerid, params[])
 			    if(Business[business][bProducts] <= 0)
 		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "Aspirina\t$%d\nPaquete de cigarrillos\t$%d\nEncendedor\t$%d\nTeléfono celular\t$%d\nBidón de combustible vacío\t$%d\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nValija\t$%d",
+				format(content, sizeof(content), "Aspirina\t$%d\nPaquete de cigarrillos\t$%d\nEncendedor\t$%d\nTeléfono celular\t$%d\nBidón de combustible vacío\t$%d",
 		            PRICE_ASPIRIN,
 					GetItemPrice(ITEM_ID_CIGARRILLOS),
 					GetItemPrice(ITEM_ID_ENCENDEDOR),
 					PRICE_PHONE,
-					GetItemPrice(ITEM_ID_BIDON),
+					GetItemPrice(ITEM_ID_BIDON)
+				);
+				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nValija\t$%d",
+				    content,
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
