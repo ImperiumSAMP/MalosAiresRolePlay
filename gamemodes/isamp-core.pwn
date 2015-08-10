@@ -7413,23 +7413,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					}
 					case 8:
 					{
-				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MALETIN))
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-							
- 						new freehand = SearchFreeHand(playerid);
-						if(freehand == -1)
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
-
-						SetHandItemAndParam(playerid, freehand, ITEM_ID_MALETIN, 0);
-						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletín y lo agarra con su mano.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletín por $%d! Lo tienes en la mano. Usa /maletin para más información.", GetItemPrice(ITEM_ID_MALETIN));
-		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MALETIN);
-			        	Business[business][bProducts]--;
-			        	saveBusiness(business);
-					}
-					case 9:
-					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_RADIO))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
@@ -7445,7 +7428,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-			        case 10:
+			        case 9:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_VALIJA))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7463,7 +7446,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
-					case 11:
+					case 10:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_BOLSO))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7481,7 +7464,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
-					case 12:
+					case 11:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILAGRANDE))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7493,27 +7476,63 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                         SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILAGRANDE, 0);
 						Container_Create(50, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILAGRANDE));
-						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila grande.");
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILAGRANDE));
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILAGRANDE);
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
-					case 13:
+					case 12:
 					{
-				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILA))
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILACHICA))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
 						new freehand = SearchFreeHand(playerid);
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILA, 0);
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILACHICA, 0);
 						Container_Create(30, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
-						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILA));
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILACHICA));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila.");
-						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILA));
-		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILA);
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILACHICA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILACHICA);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					case 13:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MOCHILAMEDIANA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MOCHILAMEDIANA, 0);
+						Container_Create(40, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MOCHILAMEDIANA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una mochila.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una mochila por $%d. Para interactuar con ésta usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MOCHILAMEDIANA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MOCHILAMEDIANA);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					case 14:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_MALETIN))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_MALETIN, 0);
+						Container_Create(40, 1, HandInfo[playerid][freehand][Amount], smoking[playerid]); // necesitaba donde guardarlo
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_MALETIN));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un maletín.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un maletín por $%d. Para interactuar con éste usa /mano [ver] - [guardar] sosteniendolo con la mano derecha!", GetItemPrice(ITEM_ID_MALETIN));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_MALETIN);
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
@@ -9685,7 +9704,7 @@ CMD:vender(playerid, params[])
 
 CMD:comprar(playerid, params[])
 {
-	new title[64], content[750], business = GetPlayerBusiness(playerid);
+	new title[64], content[800], business = GetPlayerBusiness(playerid);
 
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
@@ -9699,7 +9718,7 @@ CMD:comprar(playerid, params[])
 			    if(Business[business][bProducts] <= 0)
 		     		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo mas tarde.");
 				format(title, sizeof(title), "%s", Business[business][bName]);
-				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Paquete de cigarrillos {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Maletín {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d\n{FFEFD5}Valija {556B2F}$%d",
+				format(content, sizeof(content), "{FFEFD5}Aspirina {556B2F}$%d\n{FFEFD5}Paquete de cigarrillos {556B2F}$%d\n{FFEFD5}Encendedor {556B2F}$%d\n{FFEFD5}Teléfono {556B2F}$%d\n{FFEFD5}Bidón de combustible vacío {556B2F}$%d\n{FFEFD5}Cámara (35 fotos) {556B2F}$%d\n{FFEFD5}Sándwich {556B2F}$%d\n{FFEFD5}Agua Mineral {556B2F}$%d\n{FFEFD5}Radio Walkie Talkie {556B2F}$%d\n{FFEFD5}Valija {556B2F}$%d",
 		            PRICE_ASPIRIN,
 					GetItemPrice(ITEM_ID_CIGARRILLOS),
 					GetItemPrice(ITEM_ID_ENCENDEDOR),
@@ -9708,15 +9727,16 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
-					GetItemPrice(ITEM_ID_MALETIN),
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_VALIJA)
 				);
-				format(content, sizeof(content), "%s\n{FFEFD5}Bolso deportivo {556B2F}$%d\n{FFEFD5}Mochila grande {556B2F}$%d\n{FFEFD5}Mochila {556B2F}$%d",
+				format(content, sizeof(content), "%s\n{FFEFD5}Bolso deportivo {556B2F}$%d\n{FFEFD5}Mochila grande {556B2F}$%d\n{FFEFD5}Mochila Chica {556B2F}$%d\n{FFEFD5}Mochila Mediana {556B2F}$%d\n{FFEFD5}Maletín multiuso {556B2F}$%d",
 					content,
 					GetItemPrice(ITEM_ID_BOLSO),
 					GetItemPrice(ITEM_ID_MOCHILAGRANDE),
-					GetItemPrice(ITEM_ID_MOCHILA)
+					GetItemPrice(ITEM_ID_MOCHILACHICA),
+					GetItemPrice(ITEM_ID_MOCHILAMEDIANA),
+					GetItemPrice(ITEM_ID_MALETIN)
 				);
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");

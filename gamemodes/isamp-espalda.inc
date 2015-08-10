@@ -24,7 +24,8 @@ static const BackWeapons[] =
 	WEAPON_KATANA, WEAPON_SHOTGUN,
 	WEAPON_MP5, WEAPON_AK47, WEAPON_M4,
 	WEAPON_RIFLE, WEAPON_SNIPER,
-	ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILA
+	ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILACHICA,
+	ITEM_ID_MOCHILAMEDIANA
 };
 
 stock bool:HasBackPermission(itemid)
@@ -99,9 +100,11 @@ stock AttachBackItem(playerid)
 	    {
 	        case ITEM_ID_MOCHILAGRANDE:
 	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, 0.000, 0.000, 0.000, 0.000, 86.999, 0.000);
-	        case ITEM_ID_MOCHILA:
+	        case ITEM_ID_MOCHILACHICA:
 	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.151, -0.063, -0.013, 0.000, 0.000, 0.000);
-	        default:
+			case ITEM_ID_MOCHILAMEDIANA:
+                SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, 0.000, -0.127, -0.006, 0.000, 88.099, 0.000);
+			default:
 				SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.18, -0.18, -0.15, -36.0, 5.0, 5.0);
 		}
 	}
