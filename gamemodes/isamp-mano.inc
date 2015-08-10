@@ -232,10 +232,9 @@ CMD:dari(playerid, params[])
 
 CMD:mano(playerid, params[])
 {
-	new command[128],
-		targetid;
+	new command[32];
 	    
-	if(sscanf(params, "s[128]", command, targetid))
+	if(sscanf(params, "s[32]", command))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - ver - guardar");

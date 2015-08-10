@@ -273,7 +273,7 @@ CMD:vercatalogo(playerid, params[])
 	    if(modelid != 0)
 	    {
             if(GetVehicleModelTrunkSlots(modelid) > 0)
-        		format(string, sizeof(string), "%s\n%s\t$%d\tSlots: %d", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
+        		format(string, sizeof(string), "%s\n%s\t$%d\t%d slots", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
 			else
 			    format(string, sizeof(string), "%s\n%s\t$%d\tNo tiene", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
 		}
