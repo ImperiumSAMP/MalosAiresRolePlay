@@ -170,6 +170,15 @@ public OnBackDataLoad(playerid)
 	return 1;
 }
 
+DeletePlayerBack(playerid)
+{
+	if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
+	{
+	    Container_Destroy(BackInfo[playerid][Amount]);
+	}
+	return 1;
+}
+
 //==================================COMANDOS====================================
 
 CMD:esp(playerid, params[]) {

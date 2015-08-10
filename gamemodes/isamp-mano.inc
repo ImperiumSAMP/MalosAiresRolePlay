@@ -135,6 +135,19 @@ stock LoadHandsInfo(playerid)
 	return 1;
 }
 
+DeletePlayerHands(playerid)
+{
+    if(GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_CONTAINER)
+	{
+	    Container_Destroy(HandInfo[playerid][HAND_RIGHT][Amount]);
+	}
+    if(GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_CONTAINER)
+	{
+	    Container_Destroy(HandInfo[playerid][HAND_LEFT][Amount]);
+	}
+	return 1;
+}
+
 //==========[Sincronizacion del arma en mano con las balas gastadas]============
 
 new bool:cantSaveSync[MAX_PLAYERS];

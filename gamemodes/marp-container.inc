@@ -201,6 +201,15 @@ stock Container_Destroy(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
+	    new vec_size = vector_size(id);
+	    
+		for(new i = 4; i < vec_size; i += 2) // Para todos los items almacenados en el vector que simula el contenedor
+		{
+		    if(GetItemType(vector_get(id, i)) == ITEM_CONTAINER) // Como "i" cae en los items, obtenemos el valor en posicion "i" y nos fijamos
+			{
+			    Container_Destroy(vector_get(id, i+1)); // Los items CONTAINER, en su parametro guardan la id del vector real de ejecucion de su contenedor
+			}
+		}
 		vector_destroy(id);
 		return 1;
 	}

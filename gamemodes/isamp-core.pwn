@@ -1218,6 +1218,8 @@ public OnPlayerDisconnect(playerid, reason)
 	}
 	
 	DeletePlayerInventory(playerid);
+	DeletePlayerHands(playerid);
+	DeletePlayerBack(playerid);
 	return 1;
 }
 
