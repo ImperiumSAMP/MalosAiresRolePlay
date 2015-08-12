@@ -195,3 +195,6 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:FactionEnabled[MAX_PLAYERS],
 	bool:TalkAnimEnabled[MAX_PLAYERS],
 	bool:HudEnabled[MAX_PLAYERS];
+	
+	// Sistema de streams de radios
+new bool:hearingRadioStream[MAX_PLAYERS];

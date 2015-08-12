@@ -82,6 +82,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-same.inc"
 #include "marp-lifts.inc"
 #include "marp-actors.inc"
+#include "marp-parlantes.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.3"
@@ -307,9 +308,6 @@ new
 	
 	smoking[MAX_PLAYERS],
 	bool:dyingCamera[MAX_PLAYERS],
-	
-	// Sistema de streams de radios
-	bool:hearingRadioStream[MAX_PLAYERS],
 	
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
@@ -580,6 +578,7 @@ public OnGameModeInit()
 	SetNameTagDrawDistance(30.0);
 	ResetServerRacesVariables();
 	Lift_CreateAll();
+	InitializeServerSpeakers();
 	return 1;
 }
 
@@ -9733,7 +9732,7 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_VALIJA)
 				);
-				format(content, sizeof(content), "%s\nBolso deportivo\t$%d\nMochila grande\t$%d\nMochila Chica\t$%d\nMochila Mediana\t$%d\nMaletín multiuso\t$%d",
+				format(content, sizeof(content), "%s\nBolso deportivo\t$%d\nMochila grande\t$%d\nMochila chica\t$%d\nMochila mediana\t$%d\nMaletín multiuso\t$%d",
 					content,
 					GetItemPrice(ITEM_ID_BOLSO),
 					GetItemPrice(ITEM_ID_MOCHILAGRANDE),

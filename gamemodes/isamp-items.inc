@@ -12,6 +12,7 @@
 #define ITEM_OTHER              2
 #define ITEM_TOY                3
 #define ITEM_CONTAINER          4
+#define ITEM_SPEAKER	        5
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -77,6 +78,7 @@
 #define ITEM_ID_MOCHILACHICA		    107
 #define ITEM_ID_MOCHILAMEDIANA		    108
 #define ITEM_ID_MALETIN				    109
+#define ITEM_ID_PARLANTE			    110
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -227,7 +229,8 @@ static const ServerItems[][ItemInfo] = {
 /*106*/ {"Mochila grande", "Espacio", ITEM_CONTAINER, 550, false, 19559, 0.412, 0.066, 0.000, 0.000, -97.000, 24.599, 0.400, 0.049, 0.066, 0.000, -96.600, 0.000, 0, 55},
 /*107*/ {"Mochila chica", "Espacio", ITEM_CONTAINER, 300, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 35},
 /*108*/ {"Mochila mediana", "Espacio", ITEM_CONTAINER, 425, false, 371, 0.377, 0.022, 0.049, 0.000, -104.999, 26.500, 0.340, -0.004, 0.074, 0.000, -99.700, 0.000, 0, 45},
-/*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 400, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45}
+/*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 400, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45},
+/*110*/ {"Parlante", "Cantidad", ITEM_SPEAKER, 500, false, 1840, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30}
 
 };
 

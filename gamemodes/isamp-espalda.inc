@@ -209,7 +209,7 @@ stock SaveItemOnBack(playerid, playerhand)
 
 	SetBackItemAndParam(playerid, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico de la mano.
-	SendFMessage(playerid, COLOR_WHITE, "Has colgado un/a %s en tu hombro.", GetItemName(itemid));
+	SendFMessage(playerid, COLOR_WHITE, "Has colgado un/a %s en tu espalda.", GetItemName(itemid));
   	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
@@ -222,7 +222,7 @@ stock TakeItemFromBack(playerid, playerhand)
 		str[128];
 
 	if(itemid <= 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada colgado de tu hombro.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada colgado en tu espalda.");
 	if(GetHandItem(playerid, playerhand) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
 
