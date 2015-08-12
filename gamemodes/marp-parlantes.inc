@@ -56,7 +56,7 @@ CreateSpeaker(Float:x, Float:y, Float:z, Float:angle, vworld, modelid, radio, vo
 
  	vector_push_back(id, VEC_TYPE_SPEAKER);
 	vector_push_back(id, CreateDynamicSphere(x, y, z, volume, vworld));
-	vector_push_back(id, CreateDynamicObject(modelid, x, y, z, 0.0, 0.0, angle, vworld));
+	vector_push_back(id, CreateDynamicObject(modelid, x, y, z - 1, 0.0, 0.0, angle + 180, vworld));
 	vector_push_back_float(id, x);
 	vector_push_back_float(id, y);
 	vector_push_back_float(id, z);
@@ -160,11 +160,11 @@ CMD:parlante(playerid, params[])
 	new radio;
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /parlante [radio] (1-16). Se ubicará el parlante en el piso, reproduciendo la radio elegida.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /parlante [radio] (1-16). Se ubicará el equipo en el piso, reproduciendo la radio elegida.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_PARLANTE)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un parlante en condiciones en tu mano derecha.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un equipo de música portátil en condiciones en tu mano derecha.");
 	if(radio < 1 || radio > 16)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
 
@@ -173,16 +173,16 @@ CMD:parlante(playerid, params[])
 	for(new i = 0; i < vsize; i++)
 	{
 	    if(IsPlayerInDynamicArea(playerid, vector_get(vector_get(SERVER_SPEAKERS, i), VEC_INDEX_AREA)))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: Hay otro parlante activo en la cercanía, aléjate más o busca otro lugar");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: Hay otro equipo de música activo en la cercanía, aléjate más o busca otro lugar");
 	}
 
 	new Float:px, Float:py, Float:pz, Float:pangle;
 	GetPlayerPos(playerid, px, py, pz);
 	GetPlayerFacingAngle(playerid, pangle);
 
-	PlayerDoMessage(playerid, 15.0, "apoya un parlante en el piso y reproduce música.");
+	PlayerDoMessage(playerid, 15.0, "apoya un equipo portátil de música en el piso y lo prende.");
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
-	SendClientMessage(playerid, COLOR_WHITE, "[INFO]: Has puesto un parlante en el piso reproduciendo música. Para levantarlo utiliza /tomarparlante.");
+	SendClientMessage(playerid, COLOR_WHITE, "[INFO]: Has puesto un equipo de música prendido en el piso. Para levantarlo utiliza /tomarparlante.");
 	CreateSpeaker(px, py, pz, pangle, GetPlayerVirtualWorld(playerid), GetItemObjectModel(GetHandItem(playerid, HAND_RIGHT)), radio);
 	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	return 1;
@@ -202,17 +202,17 @@ CMD:tomarparlante(playerid, params[])
 	    speaker_id = vector_get(SERVER_SPEAKERS, i);
 	    if(GetPlayerVirtualWorld(playerid) == vector_get(speaker_id, VEC_INDEX_VWORLD))
 	    {
-		    if(IsPlayerInRangeOfPoint(playerid, 1.0, vector_get(speaker_id, VEC_INDEX_X), vector_get(speaker_id, VEC_INDEX_Y), vector_get(speaker_id, VEC_INDEX_Z)))
+		    if(IsPlayerInRangeOfPoint(playerid, 2.0, vector_get(speaker_id, VEC_INDEX_X), vector_get(speaker_id, VEC_INDEX_Y), vector_get(speaker_id, VEC_INDEX_Z)))
 		    {
 				DestroySpeaker(speaker_id);
-				PlayerDoMessage(playerid, 15.0, "agarra el parlante y lo desconecta de la música.");
+				PlayerDoMessage(playerid, 15.0, "apaga el equipo de música y lo agarra.");
 				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 				SetHandItemAndParam(playerid, freehand, ITEM_ID_PARLANTE, 1);
 				return 1;
 			}
 		}
 	}
-	SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún parlante activo cerca tuyo.");
+	SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún equipo de música activo cerca tuyo.");
 	return 1;
 }
 
