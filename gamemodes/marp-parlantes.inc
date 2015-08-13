@@ -168,12 +168,14 @@ CMD:parlante(playerid, params[])
 	if(radio < 1 || radio > 16)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
 
-	new vsize = vector_size(SERVER_SPEAKERS);
+	new vsize = vector_size(SERVER_SPEAKERS),
+	    speaker_id;
 
 	for(new i = 0; i < vsize; i++)
 	{
-	    if(IsPlayerInDynamicArea(playerid, vector_get(vector_get(SERVER_SPEAKERS, i), VEC_INDEX_AREA)))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: Hay otro equipo de música activo en la cercanía, aléjate más o busca otro lugar");
+	    speaker_id = vector_get(SERVER_SPEAKERS, i);
+	    if(IsPlayerInRangeOfPoint(playerid, vector_get(speaker_id, VEC_INDEX_VOLUME) * 2 + 20, vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z)))
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "[OOC]: Hay otro equipo de música activo en la cercanía, aléjate más o busca otro lugar");
 	}
 
 	new Float:px, Float:py, Float:pz, Float:pangle;
@@ -202,10 +204,10 @@ CMD:tomarparlante(playerid, params[])
 	    speaker_id = vector_get(SERVER_SPEAKERS, i);
 	    if(GetPlayerVirtualWorld(playerid) == vector_get(speaker_id, VEC_INDEX_VWORLD))
 	    {
-		    if(IsPlayerInRangeOfPoint(playerid, 2.0, vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z)))
+		    if(IsPlayerInRangeOfPoint(playerid, 1.5, vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z)))
 		    {
 				DestroySpeaker(speaker_id);
-				PlayerDoMessage(playerid, 15.0, "apaga el equipo de música y lo agarra.");
+				PlayerActionMessage(playerid, 15.0, "apaga el equipo de música y lo agarra.");
 				ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 				SetHandItemAndParam(playerid, freehand, ITEM_ID_PARLANTE, 1);
 				return 1;

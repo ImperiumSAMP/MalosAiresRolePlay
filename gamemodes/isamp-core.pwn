@@ -12849,7 +12849,10 @@ CMD:emisoraoff(playerid, params[])
 		{
 			SendFMessage(i, COLOR_ACT1, "%s apaga la radio sintonizada en el estéreo del auto.", GetPlayerNameEx(playerid));
 		    if(hearingRadioStream[i])
+		    {
 		        StopAudioStreamForPlayer(i);
+		        hearingRadioStream[playerid] = false;
+			}
 		}
 	}
 	VehicleInfo[vehicleid][VehRadio] = 0;
