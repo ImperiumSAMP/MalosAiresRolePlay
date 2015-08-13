@@ -23,9 +23,6 @@ new ThiefJobInfo[MAX_PLAYERS][tThiefJob];
 new policeCallTime[MAX_PLAYERS],
 	theftTime[MAX_PLAYERS],
 	felon[MAX_PLAYERS];
-	
-// Sistema de mascaras
-new bool:usingMask[MAX_PLAYERS];
 
 stock ResetThiefVariables(playerid)
 {

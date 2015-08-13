@@ -180,7 +180,7 @@ CMD:parlante(playerid, params[])
 	GetPlayerPos(playerid, px, py, pz);
 	GetPlayerFacingAngle(playerid, pangle);
 
-	PlayerDoMessage(playerid, 15.0, "apoya un equipo portátil de música en el piso y lo prende.");
+	PlayerActionMessage(playerid, 15.0, "apoya un equipo portátil de música en el piso y lo prende.");
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	SendClientMessage(playerid, COLOR_WHITE, "[INFO]: Has puesto un equipo de música prendido en el piso. Para levantarlo utiliza /tomarparlante.");
 	CreateSpeaker(px, py, pz, pangle, GetPlayerVirtualWorld(playerid), GetItemObjectModel(GetHandItem(playerid, HAND_RIGHT)), radio);
@@ -202,7 +202,7 @@ CMD:tomarparlante(playerid, params[])
 	    speaker_id = vector_get(SERVER_SPEAKERS, i);
 	    if(GetPlayerVirtualWorld(playerid) == vector_get(speaker_id, VEC_INDEX_VWORLD))
 	    {
-		    if(IsPlayerInRangeOfPoint(playerid, 2.0, vector_get(speaker_id, VEC_INDEX_X), vector_get(speaker_id, VEC_INDEX_Y), vector_get(speaker_id, VEC_INDEX_Z)))
+		    if(IsPlayerInRangeOfPoint(playerid, 2.0, vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z)))
 		    {
 				DestroySpeaker(speaker_id);
 				PlayerDoMessage(playerid, 15.0, "apaga el equipo de música y lo agarra.");
