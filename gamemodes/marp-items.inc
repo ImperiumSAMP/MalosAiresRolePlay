@@ -1,7 +1,7 @@
-#if defined _isamp_items_included
+#if defined _marp_items_included
 	#endinput
 #endif
-#define _isamp_items_included
+#define _marp_items_included
 
 //==============================ITEM SYSTEM=====================================
 

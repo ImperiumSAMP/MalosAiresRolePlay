@@ -29,7 +29,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
-#include "isamp-items.inc" 				//Sistema de items
+#include "marp-items.inc" 				//Sistema de items
 #include "marp-container.inc"
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
@@ -7535,6 +7535,23 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
+					case 15:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_PARLANTE))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_PARLANTE, 1);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_PARLANTE));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado y compra un equipo de música portátil.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un equipo de música por $%d. Usa /parlante y /tomarparlante para usarlo!", GetItemPrice(ITEM_ID_PARLANTE));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_PARLANTE);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
 				}
 			}
 			return 1;
@@ -7631,31 +7648,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		case DLG_NOTEBOOK_3:
 		{
 		    OnNotebook3DialogResponse(playerid, response, inputtext);
-		    return 1;
-		}
-		case DLG_CARDEALER1:
-		{
-		    OnCarDealerDialogResponse(playerid, response, listitem);
-		    return 1;
-		}
-		case DLG_CARDEALER2:
-		{
-		    OnCarDealer2DialogResponse(playerid, response, inputtext);
-		    return 1;
-		}
-		case DLG_CARDEALER3:
-		{
-      		OnCarDealer3DialogResponse(playerid, response, inputtext);
-		    return 1;
-		}
-		case DLG_CARDEALER4:
-		{
-		    OnCarDealer4DialogResponse(playerid, response, listitem);
-		    return 1;
-		}
-		case DLG_CARDEALER5:
-		{
-		    OnCarDealer5DialogResponse(playerid, response);
 		    return 1;
 		}
 	    case DLG_GUIDE: {
@@ -9732,13 +9724,14 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_VALIJA)
 				);
-				format(content, sizeof(content), "%s\nBolso deportivo\t$%d\nMochila grande\t$%d\nMochila chica\t$%d\nMochila mediana\t$%d\nMaletín multiuso\t$%d",
+				format(content, sizeof(content), "%s\nBolso deportivo\t$%d\nMochila grande\t$%d\nMochila chica\t$%d\nMochila mediana\t$%d\nMaletín multiuso\t$%d\nReproductor de música\t$%d",
 					content,
 					GetItemPrice(ITEM_ID_BOLSO),
 					GetItemPrice(ITEM_ID_MOCHILAGRANDE),
 					GetItemPrice(ITEM_ID_MOCHILACHICA),
 					GetItemPrice(ITEM_ID_MOCHILAMEDIANA),
-					GetItemPrice(ITEM_ID_MALETIN)
+					GetItemPrice(ITEM_ID_MALETIN),
+					GetItemPrice(ITEM_ID_PARLANTE)
 				);
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_TABLIST, title, content, "Comprar", "Cerrar");

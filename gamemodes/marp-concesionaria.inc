@@ -195,12 +195,12 @@ CMD:agregarmodelo(playerid, params[])
 		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0.Grotti | 1.Jefferson | 2.Pinar | 3.Ciudad moto | 4.Freddi | 5.Gabott | 6.RS Haul");
 		return 1;
 	}
-	if(GetNearestDealership(playerid, 1.0) == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
 	if(modelid < 400 || modelid > 611)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de modelo inválida.");
+	if(GetNearestDealership(playerid, 1.0) != dealership)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la concesionaria.");
 
 	for(new i = 0; i < MAX_DEALERSHIP_VEHICLES; i++)
 	{
@@ -236,12 +236,13 @@ CMD:borrarmodelo(playerid, params[])
 		SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[INFO]{C8C8C8} IDS de concesionarias: {ffffff}0.Grotti | 1.Jefferson | 2.Pinar | 3.Ciudad moto | 4.Freddi | 5.Gabott | 6.RS Haul");
 		return 1;
 	}
-	if(GetNearestDealership(playerid, 1.0) == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en una concesionaria.");
+	
 	if(dealership < 0 || dealership >= MAX_DEALERSHIPS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de concesionaria inválida.");
 	if(modelid < 400 || modelid > 611)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de modelo inválida.");
+	if(GetNearestDealership(playerid, 1.0) != dealership)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes estar en la concesionaria.");
 
 	for(new i = 0; i < MAX_DEALERSHIP_VEHICLES; i++)
 	{
@@ -254,7 +255,7 @@ CMD:borrarmodelo(playerid, params[])
 		}
 	}
 
-	SendFMessage(playerid, COLOR_YELLOW2, "Error: el modelo %d (%s) no se encuentra a la venta en la concesionaria ID %d (%s).", modelid, GetVehicleModelName(modelid), dealership, Dealership[dealership][dName]);
+	SendFMessage(playerid, COLOR_YELLOW2, "[Error]: el modelo %d (%s) no se encuentra a la venta en la concesionaria ID %d (%s).", modelid, GetVehicleModelName(modelid), dealership, Dealership[dealership][dName]);
 	return 1;
 }
 
@@ -273,16 +274,20 @@ CMD:vercatalogo(playerid, params[])
 	    if(modelid != 0)
 	    {
             if(GetVehicleModelTrunkSlots(modelid) > 0)
+            {
         		format(string, sizeof(string), "%s\n%s\t$%d\t%d slots", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
+			}
 			else
+			{
 			    format(string, sizeof(string), "%s\n%s\t$%d\tNo tiene", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
+			}
 		}
 	}
-	ShowPlayerDialog(playerid, DLG_CARDEALER1, DIALOG_STYLE_TABLIST, "Catálogo de vehículos en venta", string, "Ver", "Cerrar");
+	Dialog_Show(playerid, Car_Dealer_Step_1, DIALOG_STYLE_TABLIST, "Catálogo de vehículos en venta", string, "Ver", "Cerrar");
 	return 1;
 }
-	
-OnCarDealerDialogResponse(playerid, response, listitem)
+
+Dialog:Car_Dealer_Step_1(playerid, response, listitem, inputtext[])
 {
 	new dealership = GetNearestDealership(playerid, 1.0),
 	    aux = 0;
@@ -306,14 +311,14 @@ OnCarDealerDialogResponse(playerid, response, listitem)
                     break;
 				}
 			}
-			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el número de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+			Dialog_Show(playerid, Car_Dealer_Step_2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el número de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
 			Dealership_CreatePreviewModel(playerid, carModelSelection[playerid], 3, 3);
 		}
 	}
  	return 1;
 }
 
-OnCarDealer2DialogResponse(playerid, response, inputtext[])
+Dialog:Car_Dealer_Step_2(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
@@ -321,13 +326,13 @@ OnCarDealer2DialogResponse(playerid, response, inputtext[])
 		
 		if(color1 < 0 || color1 > 255)
 		{
-			ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+			Dialog_Show(playerid, Car_Dealer_Step_2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de color válido (0-255).");
 		}
 		
 		carColor1Selection[playerid] = color1;
         Dealership_SetPreviewModelColor(playerid, carColor1Selection[playerid], 3);
-		ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el número de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+		Dialog_Show(playerid, Car_Dealer_Step_3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el número de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
 	}
 	else
  	{
@@ -337,7 +342,7 @@ OnCarDealer2DialogResponse(playerid, response, inputtext[])
  	return 1;
 }
 
-OnCarDealer3DialogResponse(playerid, response, inputtext[])
+Dialog:Car_Dealer_Step_3(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
@@ -348,20 +353,22 @@ OnCarDealer3DialogResponse(playerid, response, inputtext[])
      		return SendClientMessage(playerid, COLOR_YELLOW2, "Error: debes estar en una concesionaria.");
 		if(color2 < 0 || color2 > 255)
 		{
-			ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el numero de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+			Dialog_Show(playerid, Car_Dealer_Step_3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el numero de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de color válido (0-255).");
 		}
 
         carColor2Selection[playerid] = color2;
 		Dealership_SetPreviewModelColor(playerid, carColor1Selection[playerid], carColor2Selection[playerid]);
-		ShowPlayerDialog(playerid, DLG_CARDEALER4, DIALOG_STYLE_LIST, "Selecciona la forma de pago que usarás", "Con efectivo\nTransferencia bancaria (recargo del 3%)", "Continuar", "Volver");
+		Dialog_Show(playerid, Car_Dealer_Step_4, DIALOG_STYLE_LIST, "Selecciona la forma de pago que usarás", "Con efectivo\nTransferencia bancaria (recargo del 3%)", "Continuar", "Volver");
 	}
 	else
-	    ShowPlayerDialog(playerid, DLG_CARDEALER2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+	{
+	    Dialog_Show(playerid, Car_Dealer_Step_2, DIALOG_STYLE_INPUT, "Selección de color primario", "Ingrese a continuación el numero de color {00FF00}primario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+	}
  	return 1;
 }
 
-OnCarDealer4DialogResponse(playerid, response, listitem)
+Dialog:Car_Dealer_Step_4(playerid, response, listitem, inputtext[])
 {
 	new dealership = GetNearestDealership(playerid, 1.0),
 	    str[150];
@@ -381,17 +388,20 @@ OnCarDealer4DialogResponse(playerid, response, listitem)
   		    carPaymentSelection[playerid] = DEALERSHIP_PAYMENT_BANK;
   		    format(str, sizeof(str), "Detalles del pedido:\n\n\tModelo: %s\n\tColor primario: %d\n\tColor secundario: %d\n\tPrecio: $%d + 3%%\n\tForma de pago: Transferencia bancaria", GetVehicleModelName(carModelSelection[playerid]), carColor1Selection[playerid], carColor2Selection[playerid], GetVehicleModelPrice(carModelSelection[playerid], 100));
 		}
-		ShowPlayerDialog(playerid, DLG_CARDEALER5, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
+		Dialog_Show(playerid, Car_Dealer_Step_5, DIALOG_STYLE_MSGBOX, "Confirmación de la compra", str, "Comprar", "Cancelar");
 	}
 	else
-	    ShowPlayerDialog(playerid, DLG_CARDEALER3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el numero de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+	{
+	    Dialog_Show(playerid, Car_Dealer_Step_3, DIALOG_STYLE_INPUT, "Selección de color secundario", "Ingrese a continuación el numero de color {00FF00}secundario{a9c4e4} que desea.\n\nColores básicos:\n\t0 - Negro\n\t1 - Blanco\n\t2 - Azul\n\t3 - Rojo\n\t6 - Amarillo\n\t16 - Verde\n\nPara ver una lista mas amplia de colores, visite nuestro catálogo online:\n\thttp://wiki.sa-mp.com/wiki/Vehicle_Color_IDs", "Continuar", "Volver");
+	}
 	return 1;
 }
 
 
-OnCarDealer5DialogResponse(playerid, response)
+Dialog:Car_Dealer_Step_5(playerid, response, listitem, inputtext[])
 {
     Dealership_DestroyPreviewModel(playerid);
+    
 	if(response)
 	{
 		new dealership = GetNearestDealership(playerid, 1.0),
