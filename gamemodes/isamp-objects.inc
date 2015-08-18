@@ -50,6 +50,21 @@ public ServerObjectsCleaningTimer()
 	return 1;
 }
 
+ServerObjects_OnServerShutDown()
+{
+	for(new i = 0; i < MAX_SERVER_OBJECTS; i++)
+	{
+	    if(ServerObject[i][sItemID] > 0)
+	    {
+	    	if(GetItemType(ServerObject[i][sItemID]) == ITEM_CONTAINER)
+			{
+				Container_Fully_Destroy(ServerObject[i][sAmount], Container_GetSQLID(ServerObject[i][sAmount]));
+			}
+		}
+	}
+	return 1;
+}
+
 stock DropObject(playerid, playerhand)
 {
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)

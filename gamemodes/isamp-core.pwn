@@ -609,6 +609,7 @@ public OnGameModeExit() {
 	DestroyAllDynamicPickups();
 	DestroyAllDynamicObjects();
 	DestroyGangZones();
+	ServerObjects_OnServerShutDown();
 	//mysql_close();
 	return 1;
 }
