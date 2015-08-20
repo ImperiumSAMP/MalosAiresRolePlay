@@ -1314,13 +1314,13 @@ CMD:mecpuerta(playerid, params[])
 	{
 	    if(BoxDoorState[0] == 0) // La puerta está cerrada
 	    {
-			MoveObject(TMBoxDoor[0], 2501.51221, -1545.00256, 26.45690, 5, 85.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[0], 2501.51221, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[0] = 1;
 	    }
 	    else // La puerta está abierta
 	    {
-			MoveObject(TMBoxDoor[0], 2501.51221, -1541.55261, 26.25690, 5, 0.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[0], 2501.51221, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[0] = 0;
 	    }
@@ -1330,13 +1330,13 @@ CMD:mecpuerta(playerid, params[])
 	{
 	    if(BoxDoorState[1] == 0) // La puerta está cerrada
 	    {
-			MoveObject(TMBoxDoor[1], 2519.52393, -1545.00256, 26.45690, 5, 85.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[1], 2510.52441, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[1] = 1;
 	    }
 	    else // La puerta está abierta
 	    {
-			MoveObject(TMBoxDoor[1], 2510.52441, -1541.55261, 26.25690, 5, 0.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[1], 2510.52441, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[1] = 0;
 	    }
@@ -1346,13 +1346,13 @@ CMD:mecpuerta(playerid, params[])
 	{
 	    if(BoxDoorState[2] == 0) // La puerta está cerrada
 	    {
-			MoveObject(TMBoxDoor[2], 2519.52393, -1545.00256, 26.45690, 5, 85.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[2], 2519.52393, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[2] = 1;
 	    }
 	    else // La puerta está abierta
 	    {
-			MoveObject(TMBoxDoor[2], 2519.52393, -1541.55261, 26.25690, 5, 0.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[2], 2519.52393, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[2] = 0;
 	    }
@@ -1362,13 +1362,13 @@ CMD:mecpuerta(playerid, params[])
 	{
 	    if(BoxDoorState[3] == 0) // La puerta está cerrada
 	    {
-			MoveObject(TMBoxDoor[3], 2528.50708, -1545.00256, 26.45690, 5, 85.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[3], 2528.50708, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[3] = 1;
 	    }
 	    else // La puerta está abierta
 	    {
-			MoveObject(TMBoxDoor[3], 2528.50708, -1541.55261, 26.25690, 5, 0.00000, 0.00000, 0.00000);
+			MoveObject(TMBoxDoor[3], 2528.50708, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
 			PlayerActionMessage(playerid, 15.0, "presiona un botón en el control de la puerta.");
 	        BoxDoorState[3] = 0;
 	    }
@@ -1378,12 +1378,12 @@ CMD:mecpuerta(playerid, params[])
 	{
 	    if(BoxDoorState[4] == 0) // La puerta está cerrada
 	    {
-			MoveObject(TMBoxDoor[4], 2500.53320, -1578.65002, 25.66030, 5, -85.00000, 0.00000, 90.00000);
+			MoveObject(TMBoxDoor[4], 2500.53320, -1578.65002, 25.66030, 1, -85.00000, 0.00000, 90.00000);
 	        BoxDoorState[4] = 1;
 	    }
 	    else // La puerta está abierta
 	    {
-			MoveObject(TMBoxDoor[4], 2503.08521, -1578.65002, 25.42830, 5, 0.00000, 0.00000, 90.00000);
+			MoveObject(TMBoxDoor[4], 2503.08521, -1578.65002, 25.42830, 1, 0.00000, 0.00000, 90.00000);
 	        BoxDoorState[4] = 0;
 	    }
 	}
