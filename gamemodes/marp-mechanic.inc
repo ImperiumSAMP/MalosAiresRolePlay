@@ -1,11 +1,11 @@
-#if defined _isamp_mechanic_included
+#if defined _marp_mechanic_included
 	#endinput
 #endif
-#define _isamp_mechanic_included
+#define _marp_mechanic_included
 
 //=====================SISTEMA Y COMANDOS DE MECANICO===========================
 
-new LiftState[3] = 0;
+new CarLiftState[4] = 0, BoxDoorState[5] = 0;
 
 //================================CONSTANTES====================================
 
@@ -13,29 +13,59 @@ new LiftState[3] = 0;
 
 #define JOB_MECH_MAXPRICE       	1000
 
-#define MEC_OFFICE_X				1584.54
-#define MEC_OFFICE_Y        		-1819.68
-#define MEC_OFFICE_Z        		13.34
+#define MEC_OFFICE_X				2514.9958
+#define MEC_OFFICE_Y        		-1538.2114
+#define MEC_OFFICE_Z        		1001.0859
 
-#define MEC_TUNING_PLACE_X      	1595.92
-#define MEC_TUNING_PLACE_Y      	-1840.69
-#define MEC_TUNING_PLACE_Z      	13.48
+#define MEC_TUNING_PLACE_X      	2514.4778
+#define MEC_TUNING_PLACE_Y      	-1553.4338
+#define MEC_TUNING_PLACE_Z      	24.0215
 
-#define MEC_REPAIR_PLACE_X      	1594.65
-#define MEC_REPAIR_PLACE_Y      	-1797.73
-#define MEC_REPAIR_PLACE_Z      	13.34
+#define MEC_REPAIR_PLACE_X      	2514.4778
+#define MEC_REPAIR_PLACE_Y      	-1553.4338
+#define MEC_REPAIR_PLACE_Z      	24.0215
+
+#define MEC_REPAIR_RANGE            30.0
 
 #define MEC_CARPART_SHOP_X      	976.1300
 #define MEC_CARPART_SHOP_Y   		-1254.8500
 #define MEC_CARPART_SHOP_Z      	16.9400
 
-#define MEC_LIFT1_X			1594.8607
-#define MEC_LIFT1_Y			-1784.7874
-#define MEC_LIFT1_Z			13.2948
+#define MEC_LIFT1_X			2498.9763
+#define MEC_LIFT1_Y			-1552.2126
+#define MEC_LIFT1_Z			24.0215
 
-#define MEC_LIFT2_X			1599.4659
-#define MEC_LIFT2_Y			-1784.8083
-#define MEC_LIFT2_Z			13.2948
+#define MEC_LIFT2_X			2507.9758
+#define MEC_LIFT2_Y			-1552.2126
+#define MEC_LIFT2_Z			24.0215
+
+#define MEC_LIFT3_X			2516.9712
+#define MEC_LIFT3_Y			-1552.2126
+#define MEC_LIFT3_Z			24.0215
+
+#define MEC_LIFT4_X			2525.9624
+#define MEC_LIFT4_Y			-1552.2126
+#define MEC_LIFT4_Z			24.0215
+
+#define MEC_BOX1_X			2505.0798
+#define MEC_BOX1_Y			-1542.4404
+#define MEC_BOX1_Z			24.0215
+
+#define MEC_BOX2_X			2514.0881
+#define MEC_BOX2_Y			-1542.4404
+#define MEC_BOX2_Z			24.0215
+
+#define MEC_BOX3_X			2523.0923
+#define MEC_BOX3_Y			-1542.4404
+#define MEC_BOX3_Z			24.0215
+
+#define MEC_BOX4_X			2532.0781
+#define MEC_BOX4_Y			-1542.4404
+#define MEC_BOX4_Z			24.0215
+
+#define MEC_BOX5_X			2503.08521
+#define MEC_BOX5_Y			-1578.65002
+#define MEC_BOX5_Z			25.42830
 
 #define MEC_OFFER_REPARACION    	1
 #define MEC_OFFER_CERRADURA     	2
@@ -446,7 +476,7 @@ CMD:mecreparar(playerid,params[])
 	    }
 		if(GetVehicleType(vehicleid) == VTYPE_CAR) // Se puede remolcar.
 		{
-	 		if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+	 		if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
     		{
 		        SendFMessage(playerid, COLOR_YELLOW2, "El vehículo está muy dañado y necesita de %d nuevos repuestos.", repuestos);
 		        SendClientMessage(playerid, COLOR_YELLOW2, "Para repararlo, debes estar en el galpón de repuestos del taller y que haya stock.");
@@ -938,27 +968,39 @@ CMD:mecelevador(playerid, params[]) {
 		if(PlayerToPoint(2.0, playerid, MEC_LIFT1_X, MEC_LIFT1_Y, MEC_LIFT1_Z)) // Primer elevador
 		{
 
-			if(LiftState[1] == 0) // En el piso
+			if(CarLiftState[0] == 0) // En el piso
 			{
-				MoveObject(Lift1Obj1, 1591.87659, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj2, 1591.87061, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj3, 1594.02466, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj4, 1594.02466, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][0], 2502.91235, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][1], 2502.91235, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][2], 2502.91235, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][3], 2500.90503, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][4], 2500.90503, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][5], 2500.90503, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][6], 2503.02930, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][7], 2503.02930, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][8], 2500.05005, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][9], 2500.05005, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[1] = 1; // Pasa a la altura intermedia
+				CarLiftState[0] = 1; // Pasa a la altura intermedia
 				return 1;
 			}
-			if(LiftState[1] == 1) // Altura intermedia
+			if(CarLiftState[0] == 1) // Altura intermedia
 			{
-				MoveObject(Lift1Obj1, 1591.87659, -1785.47095, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj2, 1591.87061, -1787.90881, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj3, 1594.02466, -1787.90881, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj4, 1594.02466, -1785.47095, 15.1779, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][0], 2502.91235, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][1], 2502.91235, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][2], 2502.91235, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][3], 2500.90503, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][4], 2500.90503, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][5], 2500.90503, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][6], 2503.02930, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][7], 2503.02930, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][8], 2500.05005, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][9], 2500.05005, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[1] = 2; // Pasa a la altura máxima
+				CarLiftState[0] = 2; // Pasa a la altura máxima
 				return 1;
 			}
-			if(LiftState[1] == 2) // Altura máxima
+			if(CarLiftState[0] == 2) // Altura máxima
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura máxima!");
 				return 1;
@@ -967,27 +1009,121 @@ CMD:mecelevador(playerid, params[]) {
 		if(PlayerToPoint(2.0, playerid, MEC_LIFT2_X, MEC_LIFT2_Y, MEC_LIFT2_Z))  // Segundo elevador
 		{
 
-			if(LiftState[2] == 0) // En el piso
+			if(CarLiftState[1] == 0) // En el piso
 			{
-				MoveObject(Lift2Obj1, 1596.46655, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj2, 1596.46655, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj3, 1598.60718, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj4, 1598.60718, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][0], 2511.90991, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][1], 2511.90991, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][2], 2511.90991, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][3], 2509.90259, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][4], 2509.90259, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][5], 2509.90259, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][6], 2512.02856, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][7], 2512.02856, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][8], 2509.04932, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][9], 2509.04932, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[2] = 1; // Pasa a la altura intermedia
+				CarLiftState[1] = 1; // Pasa a la altura intermedia
 				return 1;
 			}
-			if(LiftState[2] == 1) // Altura intermedia
+			if(CarLiftState[1] == 1) // Altura intermedia
 			{
-				MoveObject(Lift2Obj1, 1596.46655, -1785.47095, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj2, 1596.46655, -1787.90881, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj3, 1598.60718, -1787.90881, 15.1779, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj4, 1598.60718, -1785.47095, 15.1779, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][0], 2511.90991, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][1], 2511.90991, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][2], 2511.90991, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][3], 2509.90259, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][4], 2509.90259, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][5], 2509.90259, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][6], 2512.02856, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][7], 2512.02856, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][8], 2509.04932, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][9], 2509.04932, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[2] = 2; // Pasa a la altura máxima
+				CarLiftState[1] = 2; // Pasa a la altura máxima
 				return 1;
 			}
-			if(LiftState[2] == 2) // Altura máxima
+			if(CarLiftState[1] == 2) // Altura máxima
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura máxima!");
+				return 1;
+			}
+		}
+		if(PlayerToPoint(2.0, playerid, MEC_LIFT3_X, MEC_LIFT3_Y, MEC_LIFT3_Z))  // Tercer elevador
+		{
+
+			if(CarLiftState[2] == 0) // En el piso
+			{
+				MoveObject(CarLift[2][0], 2520.90747, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][1], 2520.90747, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][2], 2520.90747, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][3], 2518.90015, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][4], 2518.90015, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][5], 2518.90015, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][6], 2521.02759, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][7], 2521.02759, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][8], 2518.04834, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][9], 2518.04834, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[2] = 1; // Pasa a la altura intermedia
+				return 1;
+			}
+			if(CarLiftState[2] == 1) // Altura intermedia
+			{
+				MoveObject(CarLift[2][0], 2520.90747, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][1], 2520.90747, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][2], 2520.90747, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][3], 2518.90015, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][4], 2518.90015, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][5], 2518.90015, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][6], 2521.02759, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][7], 2521.02759, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][8], 2518.04834, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][9], 2518.04834, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[2] = 2; // Pasa a la altura máxima
+				return 1;
+			}
+			if(CarLiftState[2] == 2) // Altura máxima
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura máxima!");
+				return 1;
+			}
+		}
+		if(PlayerToPoint(2.0, playerid, MEC_LIFT4_X, MEC_LIFT4_Y, MEC_LIFT4_Z))  // Cuarto elevador
+		{
+
+			if(CarLiftState[3] == 0) // En el piso
+			{
+				MoveObject(CarLift[3][0], 2529.90479, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][1], 2529.90552, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][2], 2529.90479, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][3], 2527.89795, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][4], 2527.89795, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][5], 2527.89795, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][6], 2530.02686, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][7], 2530.02686, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][8], 2527.04761, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][9], 2527.04761, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[3] = 1; // Pasa a la altura intermedia
+				return 1;
+			}
+			if(CarLiftState[3] == 1) // Altura intermedia
+			{
+				MoveObject(CarLift[3][0], 2529.90479, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][1], 2529.90552, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][2], 2529.90479, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][3], 2527.89795, -1551.49353, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][4], 2527.89795, -1549.05115, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][5], 2527.89795, -1547.87915, 25.7421, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][6], 2530.02686, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][7], 2530.02686, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][8], 2527.04761, -1552.22412, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][9], 2527.04761, -1547.87463, 25.2021, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[3] = 2; // Pasa a la altura máxima
+				return 1;
+			}
+			if(CarLiftState[3] == 2) // Altura máxima
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura máxima!");
 				return 1;
@@ -998,59 +1134,165 @@ CMD:mecelevador(playerid, params[]) {
 	{
 		if(PlayerToPoint(2.0, playerid, MEC_LIFT1_X, MEC_LIFT1_Y, MEC_LIFT1_Z)) // Primer elevador
 		{
-			if(LiftState[1] == 0) // En el piso
+			if(CarLiftState[0] == 0) // En el piso
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura mínima!");
 				return 1;
 			}
 
-			if(LiftState[1] == 1) // Altura intermedia
+			if(CarLiftState[0] == 1) // Altura intermedia
 			{
-				MoveObject(Lift1Obj1, 1591.87659, -1785.47095, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj2, 1591.87061, -1787.90881, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj3, 1594.02466, -1787.90881, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj4, 1594.02466, -1785.47095, 12.4369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][0], 2502.91235, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][1], 2502.91235, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][2], 2502.91235, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][3], 2500.90503, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][4], 2500.90503, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][5], 2500.90503, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][6], 2503.02930, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][7], 2503.02930, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][8], 2500.05005, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][9], 2500.05005, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[1] = 0; // Pasa a la altura mínima
+				CarLiftState[0] = 0; // Pasa a la altura mínima
 				return 1;
 			}
-			if(LiftState[1] == 2) // Altura máxima
+			if(CarLiftState[0] == 2) // Altura máxima
 			{
-				MoveObject(Lift1Obj1, 1591.87659, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj2, 1591.87061, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj3, 1594.02466, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift1Obj4, 1594.02466, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][0], 2502.91235, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][1], 2502.91235, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][2], 2502.91235, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][3], 2500.90503, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][4], 2500.90503, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][5], 2500.90503, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][6], 2503.02930, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][7], 2503.02930, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][8], 2500.05005, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[0][9], 2500.05005, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[1] = 1; // Pasa al nivel intermedio
+				CarLiftState[0] = 1; // Pasa al nivel intermedio
 				return 1;
 			}
 		}
-		if(PlayerToPoint(2.0, playerid, MEC_LIFT2_X, MEC_LIFT2_Y, MEC_LIFT2_Z)) 
+		if(PlayerToPoint(2.0, playerid, MEC_LIFT2_X, MEC_LIFT2_Y, MEC_LIFT2_Z)) // Segundo elevador
 		{
 
-			if(LiftState[2] == 0) // En el piso
+			if(CarLiftState[1] == 0) // En el piso
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura mínima!");
 				return 1;
 			}
-			if(LiftState[2] == 1) // Altura intermedia
+			if(CarLiftState[1] == 1) // Altura intermedia
 			{
-				MoveObject(Lift2Obj1, 1596.46655, -1785.47095, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj2, 1596.46655, -1787.90881, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj3, 1598.60718, -1787.90881, 12.4369, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj4, 1598.60718, -1785.47095, 12.4369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][0], 2511.90991, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][1], 2511.90991, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][2], 2511.90991, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][3], 2509.90259, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][4], 2509.90259, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][5], 2509.90259, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][6], 2512.02856, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][7], 2512.02856, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][8], 2509.04932, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][9], 2509.04932, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[2] = 0; // Pasa a la altura mínima
+				CarLiftState[1] = 0; // Pasa a la altura mínima
 				return 1;
 			}
-			if(LiftState[2] == 2) // Altura máxima
+			if(CarLiftState[1] == 2) // Altura máxima
 			{
-				MoveObject(Lift2Obj1, 1596.46655, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj2, 1596.46655, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj3, 1598.60718, -1787.90881, 14.1567, 1, 90.00000, 0.00000, 0.00000);
-				MoveObject(Lift2Obj4, 1598.60718, -1785.47095, 14.1567, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][0], 2511.90991, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][1], 2511.90991, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][2], 2511.90991, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][3], 2509.90259, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][4], 2509.90259, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][5], 2509.90259, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][6], 2512.02856, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][7], 2512.02856, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][8], 2509.04932, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[1][9], 2509.04932, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
 				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
-				LiftState[2] = 1; // Pasa a la altura intermedia
+				CarLiftState[1] = 1; // Pasa a la altura intermedia
+				return 1;
+			}
+		}
+		if(PlayerToPoint(2.0, playerid, MEC_LIFT3_X, MEC_LIFT3_Y, MEC_LIFT3_Z)) // Tercer elevador
+		{
+
+			if(CarLiftState[2] == 0) // En el piso
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura mínima!");
+				return 1;
+			}
+			if(CarLiftState[2] == 1) // Altura intermedia
+			{
+				MoveObject(CarLift[2][0], 2520.90747, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][1], 2520.90747, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][2], 2520.90747, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][3], 2518.90015, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][4], 2518.90015, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][5], 2518.90015, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][6], 2521.02759, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][7], 2521.02759, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][8], 2518.04834, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][9], 2518.04834, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[2] = 0; // Pasa a la altura mínima
+				return 1;
+			}
+			if(CarLiftState[2] == 2) // Altura máxima
+			{
+				MoveObject(CarLift[2][0], 2520.90747, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][1], 2520.90747, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][2], 2520.90747, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][3], 2518.90015, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][4], 2518.90015, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][5], 2518.90015, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][6], 2521.02759, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][7], 2521.02759, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][8], 2518.04834, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[2][9], 2518.04834, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[2] = 1; // Pasa a la altura intermedia
+				return 1;
+			}
+		}
+		if(PlayerToPoint(2.0, playerid, MEC_LIFT4_X, MEC_LIFT4_Y, MEC_LIFT4_Z)) // Cuarto elevador
+		{
+
+			if(CarLiftState[3] == 0) // En el piso
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "¡El elevador ya está en su altura mínima!");
+				return 1;
+			}
+			if(CarLiftState[3] == 1) // Altura intermedia
+			{
+				MoveObject(CarLift[3][0], 2529.90479, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][1], 2529.90552, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][2], 2529.90479, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][3], 2527.89795, -1551.49353, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][4], 2527.89795, -1549.05115, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][5], 2527.89795, -1547.87915, 23.00110, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][6], 2530.02686, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][7], 2530.02686, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][8], 2527.04761, -1552.22412, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][9], 2527.04761, -1547.87463, 22.48530, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[3] = 0; // Pasa a la altura mínima
+				return 1;
+			}
+			if(CarLiftState[3] == 2) // Altura máxima
+			{
+				MoveObject(CarLift[3][0], 2529.90479, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][1], 2529.90552, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][2], 2529.90479, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][3], 2527.89795, -1551.49353, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][4], 2527.89795, -1549.05115, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][5], 2527.89795, -1547.87915, 24.6369, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][6], 2530.02686, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][7], 2530.02686, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][8], 2527.04761, -1552.22412, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				MoveObject(CarLift[3][9], 2527.04761, -1547.87463, 24.1069, 1, 90.00000, 0.00000, 0.00000);
+				PlayerActionMessage(playerid, 15.0, "presiona un botón en el tablero del elevador.");
+				CarLiftState[3] = 1; // Pasa a la altura intermedia
 				return 1;
 			}
 		}
@@ -1058,6 +1300,83 @@ CMD:mecelevador(playerid, params[]) {
 	else
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "¡Elige una opción válida!");
+	}
+	return 1;
+}
+
+CMD:mecpuerta(playerid, params[])
+{
+	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
+		return 1;
+
+	if(PlayerToPoint(2.0, playerid, MEC_BOX1_X, MEC_BOX1_Y, MEC_BOX1_Z))
+	{
+	    if(BoxDoorState[0] == 0) // La puerta está cerrada
+	    {
+			MoveObject(TMBoxDoor[0], 2501.51221, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
+	        BoxDoorState[0] = 1;
+	    }
+	    if(BoxDoorState[0] == 1) // La puerta está abierta
+	    {
+			MoveObject(TMBoxDoor[0], 2501.51221, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
+	        BoxDoorState[0] = 0;
+	    }
+	}
+	
+	if(PlayerToPoint(2.0, playerid, MEC_BOX2_X, MEC_BOX2_Y, MEC_BOX2_Z))
+	{
+	    if(BoxDoorState[1] == 0) // La puerta está cerrada
+	    {
+			MoveObject(TMBoxDoor[1], 2510.52441, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
+	        BoxDoorState[1] = 1;
+	    }
+	    if(BoxDoorState[1] == 1) // La puerta está abierta
+	    {
+			MoveObject(TMBoxDoor[1], 2510.52441, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
+	        BoxDoorState[1] = 0;
+	    }
+	}
+	
+	if(PlayerToPoint(2.0, playerid, MEC_BOX3_X, MEC_BOX3_Y, MEC_BOX3_Z))
+	{
+	    if(BoxDoorState[2] == 0) // La puerta está cerrada
+	    {
+			MoveObject(TMBoxDoor[2], 2519.52393, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
+	        BoxDoorState[2] = 1;
+	    }
+	    if(BoxDoorState[2] == 1) // La puerta está abierta
+	    {
+			MoveObject(TMBoxDoor[2], 2503.08521, -1578.65002, 25.42830, 1, 0.00000, 0.00000, 90.00000);
+	        BoxDoorState[2] = 0;
+	    }
+	}
+	
+	if(PlayerToPoint(2.0, playerid, MEC_BOX4_X, MEC_BOX4_Y, MEC_BOX4_Z))
+	{
+	    if(BoxDoorState[3] == 0) // La puerta está cerrada
+	    {
+			MoveObject(TMBoxDoor[3], 2528.50708, -1545.00256, 26.45690, 1, 85.00000, 0.00000, 0.00000);
+	        BoxDoorState[3] = 1;
+	    }
+	    if(BoxDoorState[3] == 1) // La puerta está abierta
+	    {
+			MoveObject(TMBoxDoor[3], 2528.50708, -1541.55261, 26.25690, 1, 0.00000, 0.00000, 0.00000);
+	        BoxDoorState[3] = 0;
+	    }
+	}
+
+	if(PlayerToPoint(5.0, playerid, MEC_BOX5_X, MEC_BOX5_Y, MEC_BOX5_Z))
+	{
+	    if(BoxDoorState[4] == 0) // La puerta está cerrada
+	    {
+			MoveObject(TMBoxDoor[4], 2500.53320, -1578.65002, 25.66030, 1, -85.00000, 0.00000, 90.00000);
+	        BoxDoorState[4] = 1;
+	    }
+	    if(BoxDoorState[4] == 1) // La puerta está abierta
+	    {
+			MoveObject(TMBoxDoor[4], 2503.08521, -1578.65002, 25.42830, 1, 0.00000, 0.00000, 90.00000);
+	        BoxDoorState[4] = 0;
+	    }
 	}
 	return 1;
 }

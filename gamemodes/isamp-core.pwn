@@ -51,14 +51,14 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
 #include "isamp-sprintrace.inc"			//Sistema de picadas (carreras)
 #include "isamp-gangzones.inc"  		//Sistema de control de barrios
-#include "isamp-mapeos.inc"  			//Mapeos del GM
+#include "marp-mapeos.inc"  			//Mapeos del GM
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
 #include "isamp-robobanco.inc"          //Robo a banco.
 #include "isamp-carthief.inc"          	//Robo de autos.
-#include "isamp-mechanic.inc"          	//Sistemas y comandos de mecanicos
+#include "marp-mechanic.inc"          	//Sistemas y comandos de mecanicos
 #include "isamp-missions.inc"          	//Sistemas de misiones automaticas
 #include "isamp-racesystem.inc"         //Sistema de carreras
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
@@ -410,7 +410,13 @@ new
 	P_INPUTS_SHOP_N,
 	P_INPUTS_SHOP_S,
 	P_CARLIFT1,
-	P_CARLIFT2;
+	P_CARLIFT2,
+	P_CARLIFT3,
+	P_CARLIFT4,
+	P_MECBOX1,
+	P_MECBOX2,
+	P_MECBOX3,
+	P_MECBOX4;
 
 //====[ENUMS]===================================================================
 
@@ -4474,6 +4480,14 @@ stock LoadPickups() {
 	/* Elevadores del taller */
 	P_CARLIFT1 = CreateDynamicPickup(1239, 1, MEC_LIFT1_X, MEC_LIFT1_Y, MEC_LIFT1_Z, -1);
 	P_CARLIFT2 = CreateDynamicPickup(1239, 1, MEC_LIFT2_X, MEC_LIFT2_Y, MEC_LIFT2_Z, -1);
+	P_CARLIFT3 = CreateDynamicPickup(1239, 1, MEC_LIFT3_X, MEC_LIFT3_Y, MEC_LIFT3_Z, -1);
+	P_CARLIFT4 = CreateDynamicPickup(1239, 1, MEC_LIFT4_X, MEC_LIFT4_Y, MEC_LIFT4_Z, -1);
+	
+	/* Boxes del taller */
+	P_MECBOX1 = CreateDynamicPickup(1239, 1, MEC_BOX1_X, MEC_BOX1_Y, MEC_BOX1_Z, -1);
+	P_MECBOX2 = CreateDynamicPickup(1239, 1, MEC_BOX2_X, MEC_BOX2_Y, MEC_BOX2_Z, -1);
+	P_MECBOX3 = CreateDynamicPickup(1239, 1, MEC_BOX3_X, MEC_BOX3_Y, MEC_BOX3_Z, -1);
+	P_MECBOX4 = CreateDynamicPickup(1239, 1, MEC_BOX4_X, MEC_BOX4_Y, MEC_BOX4_Z, -1);
 
 	/* Armarios de la Policía Metropolitana */
 	P_POLICE_DUTY = CreateDynamicPickup(1242, 1, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z, -1);
@@ -4612,6 +4626,34 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	} else if(pickupid == P_CARLIFT2) {
 	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
 		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+	} else if(pickupid == P_CARLIFT3) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_CARLIFT4) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+		
+	} else if(pickupid == P_MECBOX1) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_MECBOX2) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+	} else if(pickupid == P_MECBOX3) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_MECBOX4) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
 		return 1;
 
 	} else if(pickupid == P_HOSP_HEAL) {
@@ -6533,7 +6575,7 @@ public CloseGate(gateID) {
 	if(gateID == PMBarrier) {
 		MoveObject(PMBarrier,  1544.68, -1631.00, 13.19, 0.004, 0.00, 90.00, 90.00);
 	} else if(gateID == TMMAGate) {
-	   	MoveObject(TMMAGate, 1623.01730, -1862.1691, 12.00760, 3.0, 0.00, 0.00, 180.00);
+	   	MoveObject(TMMAGate, 2498.66357, -1514.45837, 23.01290, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
@@ -6620,8 +6662,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	        }
 	    } else
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    	if(PlayerToPoint(10.0, playerid, 1623.01730, -1862.1691, 13.55)) {
-	            MoveObject(TMMAGate, 1612.2173, -1862.1691, 12.0076, 3.0, 0.00, 0.00, 180.00);
+	    	if(PlayerToPoint(10.0, playerid, 2498.66357, -1514.45837, 23.01290)) {
+	            MoveObject(TMMAGate, 2507.5136, -1514.4584, 23.0129, 3.0, 0.00, 0.00, 0.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate);
 	        }
 	    } else
