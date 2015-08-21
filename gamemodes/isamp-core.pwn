@@ -6577,7 +6577,7 @@ public CloseGate(gateID) {
 	} else if(gateID == TMMAGate) {
 	   	MoveObject(TMMAGate, 2498.66357, -1514.45837, 23.01290, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == TMMAGate2) {
-	   	MoveObject(TMMAGate2, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
+	   	MoveObject(TMMAGate2, 2539.61060, -2514.25854, 12.66460, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
