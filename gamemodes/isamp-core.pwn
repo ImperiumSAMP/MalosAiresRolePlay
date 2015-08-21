@@ -6576,6 +6576,8 @@ public CloseGate(gateID) {
 		MoveObject(PMBarrier,  1544.68, -1631.00, 13.19, 0.004, 0.00, 90.00, 90.00);
 	} else if(gateID == TMMAGate) {
 	   	MoveObject(TMMAGate, 2498.66357, -1514.45837, 23.01290, 3.0, 0.00, 0.00, 0.00);
+	} else if(gateID == TMMAGate2) {
+	   	MoveObject(TMMAGate2, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
@@ -6665,6 +6667,12 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    	if(PlayerToPoint(10.0, playerid, 2498.66357, -1514.45837, 23.01290)) {
 	            MoveObject(TMMAGate, 2507.5136, -1514.4584, 23.0129, 3.0, 0.00, 0.00, 0.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate);
+	        }
+	    } else
+		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+	    	if(PlayerToPoint(10.0, playerid, 2539.61060, -2514.25854, 12.66460)) {
+	            MoveObject(TMMAGate2, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
+	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate2);
 	        }
 	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
