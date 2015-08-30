@@ -14339,10 +14339,10 @@ CMD:ckearplayer(playerid,params[])
 		i,
 		vehicleid,
 		vehicleprice,
-		house = PlayerInfo[targetid][pHouseKey],
-		houseincome = PlayerInfo[targetid][pHouseKeyIncome],
-		bizID = PlayerInfo[targetid][pBizKey],
-		carkeys = playerKeyCount[targetid];
+		house,
+		houseincome,
+		bizID,
+		carkeys;
 
     if(sscanf(params, "usii", targetid, newname, newage, newsex)) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Masculino | 1 = Femenino)]");
@@ -14369,6 +14369,11 @@ CMD:ckearplayer(playerid,params[])
 	
 	if(GetPVarInt(playerid, "ckeandoplayer") == PlayerInfo[targetid][pID])
 	{
+		house = PlayerInfo[targetid][pHouseKey];
+		houseincome = PlayerInfo[targetid][pHouseKeyIncome];
+		bizID = PlayerInfo[targetid][pBizKey];
+		carkeys = playerKeyCount[targetid];
+		
 		if(house != 0) // Si tiene casa propia
 		{
 			if(House[house][Income] >= 1)
@@ -14481,6 +14486,10 @@ CMD:ckearplayer(playerid,params[])
     	SetPlayerCash(targetid, newmoney);
 
     	SetPVarInt(playerid, "ckeandoplayer", 0);
+		house = 0;
+		houseincome = 0;
+		bizID = 0;
+		carkeys = 0;
     	return 1;
 	}
 	return 1;
