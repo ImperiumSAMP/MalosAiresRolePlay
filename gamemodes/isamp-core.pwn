@@ -14331,6 +14331,7 @@ public OnLogAntecedentesLoad(playerid, targetname[])
 CMD:ckearplayer(playerid,params[])
 {
 	new targetid,
+		string[128],
 		newname[24],
 		newage,
 		newsex,
@@ -14358,6 +14359,7 @@ CMD:ckearplayer(playerid,params[])
 	{
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============{C8C8C8} CKear al jugador %s {878EE7}============", GetPlayerNameEx(targetid));
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d", GetPlayerNameEx(targetid), newage, newsex);
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120}| {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d", house, houseincome, bizID);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============================================================");
 		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
@@ -14377,6 +14379,7 @@ CMD:ckearplayer(playerid,params[])
 			PlayerInfo[targetid][pHouseKey] = 0;
 			GivePlayerCash(targetid, House[house][HousePrice] / 3 * 2); // 66 % del valor original.
 			SaveHouse(house);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendida la casa ID %d.", house);
 		}
 
 		if(houseincome != 0) // Si tiene casa alquilada
@@ -14388,6 +14391,7 @@ CMD:ckearplayer(playerid,params[])
 			strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 			PlayerInfo[targetid][pHouseKeyIncome] = 0;
 			SaveHouse(house);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Desalquilada la casa ID %d.", houseincome);
 		}
 
 		if(bizID != 0) // Si tiene negocio
@@ -14398,6 +14402,7 @@ CMD:ckearplayer(playerid,params[])
 			GivePlayerCash(targetid, Business[bizID][bPrice] / 10 * 7); // 70 % del valor original.
 			PlayerInfo[targetid][pBizKey] = 0;
 			saveBusiness(bizID);
+			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el negocio ID %d.", bizID);
 		}
 
 		if(carkeys != 0) // Si tiene autos
@@ -14415,6 +14420,7 @@ CMD:ckearplayer(playerid,params[])
 				removeKeyFromPlayer(targetid, vehicleid);
 				deleteExtraKeysForCar(vehicleid);
 				VehicleLog(vehicleid, targetid, INVALID_PLAYER_ID, "Vendido por CK", "");
+				SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el vehiculo %s ID %d.", GetVehicleModelName(vehicleid), vehicleid);
 			}
 		}
 
@@ -14460,7 +14466,10 @@ CMD:ckearplayer(playerid,params[])
 		PlayerInfo[targetid][pEcstasy] = 0;
 
 		PlayerInfo[targetid][pMask] = 0;
-
+		
+		format(string, sizeof(string), "[STAFF] el administrador %s ha CKeado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+		AdministratorMessage(COLOR_ADMINCMD, string, 2);
+		
 		format(PlayerInfo[targetid][pName], 24, "%s", newname);
 		SetPlayerName(targetid, PlayerInfo[targetid][pName]);
     	updateCarOwnerName(targetid);
