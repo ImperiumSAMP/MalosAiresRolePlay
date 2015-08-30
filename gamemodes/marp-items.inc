@@ -14,6 +14,8 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 
+#define MAX_ITEMS               110
+
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
 #define ITEM_ID_BIDON		    		48

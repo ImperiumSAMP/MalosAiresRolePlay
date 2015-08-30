@@ -6576,8 +6576,8 @@ public CloseGate(gateID) {
 		MoveObject(PMBarrier,  1544.68, -1631.00, 13.19, 0.004, 0.00, 90.00, 90.00);
 	} else if(gateID == TMMAGate) {
 	   	MoveObject(TMMAGate, 2498.66357, -1514.45837, 23.01290, 3.0, 0.00, 0.00, 0.00);
-	} else if(gateID == TMMAGate2) {
-	   	MoveObject(TMMAGate2, 2539.61060, -2514.25854, 12.66460, 3.0, 0.00, 0.00, 0.00);
+	} else if(gateID == TMMACarDepotGate) {
+	   	MoveObject(TMMACarDepotGate, 2539.61060, -2514.25854, 12.66460, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
@@ -6670,9 +6670,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	        }
 	    } else
 		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    	if(PlayerToPoint(10.0, playerid, 2539.61060, -2514.25854, 12.66460)) {
-	            MoveObject(TMMAGate2, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
-	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate2);
+	    	if(PlayerToPoint(10.0, playerid, 2543.24, -2513.85, 13.66)) {
+	            MoveObject(TMMACarDepotGate, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
+	            SetTimerEx("CloseGate", 4000, false, "i", TMMACarDepotGate);
 	        }
 	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
@@ -8941,7 +8941,7 @@ CMD:darobjeto(playerid, params[])
 	}
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(item < 1 || item > 99)
+	if(item < 1 || item > MAX_ITEMS)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de objeto inválida.");
 	targetfreehand = SearchFreeHand(targetid);
 	if(targetfreehand == -1)
@@ -12944,7 +12944,7 @@ CMD:vercinturon(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercinturon [ID/Jugador]");
 	if(targetid == INVALID_PLAYER_ID)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
-	if(!ProxDetectorS(5.0, playerid, targetid))
+	if(!ProxDetectorS(5.0, playerid, targetid) && AdminDuty[playerid] != 1)
   	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
     new vehicleid = GetPlayerVehicleID(targetid),
 		vType = GetVehicleType(vehicleid);
@@ -14325,6 +14325,151 @@ public OnLogAntecedentesLoad(playerid, targetname[])
 	}
 	else
 		SendClientMessage(playerid, COLOR_YELLOW2, "El usuario no posee ningún registro de antecedentes.");
+	return 1;
+}
+
+CMD:ckearplayer(playerid,params[])
+{
+	new targetid,
+		newname[24],
+		newage,
+		newsex,
+		i,
+		vehicleid,
+		vehicleprice,
+		house = PlayerInfo[targetid][pHouseKey],
+		houseincome = PlayerInfo[targetid][pHouseKeyIncome],
+		bizID = PlayerInfo[targetid][pBizKey],
+		carkeys = playerKeyCount[targetid];
+
+    if(sscanf(params, "usii", targetid, newname, newage, newsex)) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Masculino | 1 = Femenino)]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El comando solicitará una confirmación tras completar los parámetros.");
+		return 1;
+		}
+   	if(targetid == INVALID_PLAYER_ID || targetid == playerid)
+   	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+	if(newsex < 0 || newsex > 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Masculino | 1 = Femenino)!");
+	if(newage < 1 || newage > 100)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 0 a 100 años!");
+
+	if(GetPVarInt(playerid, "ckeandoplayer") == 0)
+	{
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============{C8C8C8} CKear al jugador %s {878EE7}============", GetPlayerNameEx(targetid));
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d", GetPlayerNameEx(targetid), newage, newsex);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============================================================");
+		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
+		return 1;
+	}
+	
+	if(GetPVarInt(playerid, "ckeandoplayer") == PlayerInfo[targetid][pID])
+	{
+		if(house != 0) // Si tiene casa propia
+		{
+			if(House[house][Income] >= 1)
+			    House[house][IncomePrice] = House[house][HousePrice] / 100;
+			House[house][Owned] = 0;
+			House[house][OwnerSQLID] = 0;
+			strmid(House[house][OwnerName], "Ninguno", 0, strlen("Ninguno"), 255);
+			House[house][Locked] = 1;
+			PlayerInfo[targetid][pHouseKey] = 0;
+			GivePlayerCash(targetid, House[house][HousePrice] / 3 * 2); // 66 % del valor original.
+			SaveHouse(house);
+		}
+
+		if(houseincome != 0) // Si tiene casa alquilada
+		{
+	    	if(House[house][Owned] == 0)
+			    House[house][IncomePrice] = House[house][HousePrice] / 100;
+			House[house][Locked] = 1;
+			House[house][Income] = 0;
+			strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+			PlayerInfo[targetid][pHouseKeyIncome] = 0;
+			SaveHouse(house);
+		}
+
+		if(bizID != 0) // Si tiene negocio
+		{
+			Business[bizID][bLocked] = 0;
+			Business[bizID][bOwnerSQLID] = -1;
+			strmid(Business[bizID][bOwner], "Ninguno", 0, strlen("Ninguno"), 255);
+			GivePlayerCash(targetid, Business[bizID][bPrice] / 10 * 7); // 70 % del valor original.
+			PlayerInfo[targetid][pBizKey] = 0;
+			saveBusiness(bizID);
+		}
+
+		if(carkeys != 0) // Si tiene autos
+		{
+			for(i=0;i<playerKeyCount[targetid];i++)
+			{
+				vehicleid = playerKeys[targetid][i][ckCarSqlId],
+				vehicleprice = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]),
+
+				GivePlayerCash(targetid, vehicleprice / 2); // 50% del valor original.
+				ResetVehicle(vehicleid);
+				VehicleInfo[vehicleid][VehType] = VEH_NONE;
+				SetVehicleToRespawn(vehicleid);
+				SaveVehicle(vehicleid);
+				removeKeyFromPlayer(targetid, vehicleid);
+				deleteExtraKeysForCar(vehicleid);
+				VehicleLog(vehicleid, targetid, INVALID_PLAYER_ID, "Vendido por CK", "");
+			}
+		}
+
+		if(PlayerInfo[targetid][pPhoneNumber] != 0) // Si tiene teléfono celular.
+		{
+			for(i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
+			{
+			    if(playerNotebook[targetid][i][cNumber] == 0)
+			    {
+					playerNotebook[targetid][i][cNumber] = 0;
+					strmid(playerNotebook[targetid][i][cName], " ", 0, strlen(" "));
+					SaveNotebookContact(targetid, i, CONTACT_DELETE);
+			    }
+			}
+			PlayerInfo[targetid][pPhoneNumber] = 1500000000 + random(99999999); // Le damos otro
+		}
+
+		GivePlayerCash(targetid, PlayerInfo[targetid][pBank]);
+		PlayerInfo[targetid][pBank] = 0;
+
+		SetPlayerFaction(targetid, 0, 0);
+		SpawnPlayer(targetid);
+
+		SavePlayerJobData(targetid, 1, 1);
+		ResetJobVariables(targetid);
+		SetPlayerJob(targetid, 0);
+		ResetThiefVariables(targetid);
+
+		PhoneHand[targetid] = 0;
+		SetHandItemAndParam(targetid, HAND_RIGHT, 0, 0);
+		SetHandItemAndParam(targetid, HAND_LEFT, 0, 0);
+		SetInvItemAndParam(targetid, 0, 0, 0);
+		SetInvItemAndParam(targetid, 1, 0, 0);
+		SetBackItemAndParam(targetid, 0, 0);
+
+		PlayerInfo[targetid][pJailed] = JAIL_NONE;
+		PlayerInfo[targetid][pJailTime] = 0;
+		ResetPlayerWantedLevelEx(targetid);
+
+		PlayerInfo[targetid][pMarijuana] = 0;
+		PlayerInfo[targetid][pCocaine] = 0;
+		PlayerInfo[targetid][pLSD] = 0;
+		PlayerInfo[targetid][pEcstasy] = 0;
+
+		PlayerInfo[targetid][pMask] = 0;
+
+		format(PlayerInfo[targetid][pName], 24, "%s", newname);
+		SetPlayerName(targetid, PlayerInfo[targetid][pName]);
+    	updateCarOwnerName(targetid);
+    	PlayerInfo[targetid][pSex] = newsex;
+    	PlayerInfo[targetid][pAge] = newage;
+
+    	SetPVarInt(playerid, "ckeandoplayer", 0);
+    	return 1;
+	}
 	return 1;
 }
 

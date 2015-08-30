@@ -9,7 +9,7 @@ new
 	SIDEGate[7],
 	MANGate,
 	TMMAGate,
-	TMMAGate2,
+	TMMACarDepotGate,
 	HOSPGate,
 	GOBGate,
 	/*
@@ -3728,8 +3728,8 @@ stock LoadMap() {
 //==============================TALLER MECANICO MERCURY=========================
 	new BoxTaller;
 	TMMAGate = CreateObject(969, 2498.66357, -1514.45837, 23.01290, 0.00000, 0.00000, 0.00000);
-	TMMAGate2 = CreateObject(976, 2539.61060, -2514.25854, 12.66460,   0.00000, 0.00000, 0.00000);
-	SetObjectMaterial(TMMAGate2, 0, 2660, "cj_banner", "CJ_MERC_LOGO", -1);
+	TMMACarDepotGate = CreateObject(976, 2539.61060, -2514.25854, 12.66460,   0.00000, 0.00000, 0.00000);
+	SetObjectMaterial(TMMACarDepotGate, 0, 2660, "cj_banner", "CJ_MERC_LOGO", -1);
 
 	TMBoxDoor[0] = CreateObject(19906, 2501.51221, -1541.55261, 26.25690,   0.00000, 0.00000, 0.00000);
 	TMBoxDoor[1] = CreateObject(19906, 2510.52441, -1541.55261, 26.25690,   0.00000, 0.00000, 0.00000);
