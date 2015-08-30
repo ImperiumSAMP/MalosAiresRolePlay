@@ -14335,6 +14335,7 @@ CMD:ckearplayer(playerid,params[])
 		newname[24],
 		newage,
 		newsex,
+		newmoney,
 		i,
 		vehicleid,
 		vehicleprice,
@@ -14384,13 +14385,13 @@ CMD:ckearplayer(playerid,params[])
 
 		if(houseincome != 0) // Si tiene casa alquilada
 		{
-	    	if(House[house][Owned] == 0)
-			    House[house][IncomePrice] = House[house][HousePrice] / 100;
-			House[house][Locked] = 1;
-			House[house][Income] = 0;
-			strmid(House[house][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
+	    	if(House[houseincome][Owned] == 0)
+			    House[houseincome][IncomePrice] = House[houseincome][HousePrice] / 100;
+			House[houseincome][Locked] = 1;
+			House[houseincome][Income] = 0;
+			strmid(House[houseincome][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 			PlayerInfo[targetid][pHouseKeyIncome] = 0;
-			SaveHouse(house);
+			SaveHouse(houseincome);
 			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Desalquilada la casa ID %d.", houseincome);
 		}
 
@@ -14475,6 +14476,9 @@ CMD:ckearplayer(playerid,params[])
     	updateCarOwnerName(targetid);
     	PlayerInfo[targetid][pSex] = newsex;
     	PlayerInfo[targetid][pAge] = newage;
+    	
+    	newmoney = GetPlayerMoney(targetid) / 4;
+    	SetPlayerCash(targetid, newmoney);
 
     	SetPVarInt(playerid, "ckeandoplayer", 0);
     	return 1;
