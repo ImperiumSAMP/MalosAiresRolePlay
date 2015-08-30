@@ -14082,19 +14082,25 @@ CMD:ckearplayer(playerid,params[])
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El comando solicitará una confirmación tras completar los parámetros.");
 		return 1;
 		}
-   	if(targetid == INVALID_PLAYER_ID || targetid == playerid)
+   	if(targetid == INVALID_PLAYER_ID)
    	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(newsex < 0 || newsex > 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Masculino | 1 = Femenino)!");
 	if(newage < 1 || newage > 100)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 0 a 100 años!");
 
+	house = PlayerInfo[targetid][pHouseKey];
+	houseincome = PlayerInfo[targetid][pHouseKeyIncome];
+	bizID = PlayerInfo[targetid][pBizKey];
+	carkeys = playerKeyCount[targetid];
+
 	if(GetPVarInt(playerid, "ckeandoplayer") == 0)
 	{
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============{C8C8C8} CKear al jugador %s {878EE7}============", GetPlayerNameEx(targetid));
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d", GetPlayerNameEx(targetid), newage, newsex);
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120}| {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d", house, houseincome, bizID);
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120} | {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d.", house, houseincome, bizID);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %s ckeandoplayer 0'{C8C8C8}.");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============================================================");
 		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
 		return 1;
@@ -14102,11 +14108,6 @@ CMD:ckearplayer(playerid,params[])
 	
 	if(GetPVarInt(playerid, "ckeandoplayer") == PlayerInfo[targetid][pID])
 	{
-		house = PlayerInfo[targetid][pHouseKey];
-		houseincome = PlayerInfo[targetid][pHouseKeyIncome];
-		bizID = PlayerInfo[targetid][pBizKey];
-		carkeys = playerKeyCount[targetid];
-		
 		if(house != 0) // Si tiene casa propia
 		{
 			if(House[house][Income] >= 1)
@@ -14159,7 +14160,7 @@ CMD:ckearplayer(playerid,params[])
 				removeKeyFromPlayer(targetid, vehicleid);
 				deleteExtraKeysForCar(vehicleid);
 				VehicleLog(vehicleid, targetid, INVALID_PLAYER_ID, "Vendido por CK", "");
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el vehiculo %s ID %d.", GetVehicleModelName(vehicleid), vehicleid);
+				SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el vehiculo %s ID %d.", GetVehicleName(vehicleid), vehicleid);
 			}
 		}
 
@@ -14206,23 +14207,22 @@ CMD:ckearplayer(playerid,params[])
 
 		PlayerInfo[targetid][pMask] = 0;
 		
-		format(string, sizeof(string), "[STAFF] el administrador %s ha CKeado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
+		newmoney = GetPlayerMoney(targetid) / 4;
+    	PlayerInfo[targetid][pBank] = newmoney;
+    	SetPlayerCash(targetid, 0);
+    	
+		format(string, sizeof(string), "[STAFF] el administrador %s ha CKeado a %s. (Nuevo nombre: %s)", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), newname);
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);
-		
+		SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El administrador %s ha CKeado tu cuenta. Tu nuevo nombre es %s.", GetPlayerNameEx(playerid), newname);
+		SendClientMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El CK incluye la venta de todos tus bienes económicos (casa, negocio, autos), y la conservación de 1/4 del valor total de ellos.");
+		SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Tu nuevo balance bancario es de $%d. También conservas tu nivel, experiencia, y horas jugadas.", newmoney);
+
 		format(PlayerInfo[targetid][pName], 24, "%s", newname);
 		SetPlayerName(targetid, PlayerInfo[targetid][pName]);
-    	updateCarOwnerName(targetid);
     	PlayerInfo[targetid][pSex] = newsex;
     	PlayerInfo[targetid][pAge] = newage;
-    	
-    	newmoney = GetPlayerMoney(targetid) / 4;
-    	SetPlayerCash(targetid, newmoney);
 
     	SetPVarInt(playerid, "ckeandoplayer", 0);
-		house = 0;
-		houseincome = 0;
-		bizID = 0;
-		carkeys = 0;
     	return 1;
 	}
 	return 1;
