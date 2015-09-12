@@ -430,7 +430,6 @@ new playerLicense[MAX_PLAYERS][pLicInfo];
 
 // Timers
 forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
-forward theftTimer(playerid, type, biz);
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -760,7 +759,7 @@ public OnPlayerNameCheck(playerid)
 	{
 		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en los foros de nuestra web: www.malosaires.com.ar");
         SendClientMessage(playerid, COLOR_YELLOW2, "Dentro de la página haz click en el botón de 'Registrar Cuenta' y se te direccionará automáticamente a la página de registro.");
-        SendClientMessage(playerid, COLOR_YELLOW2, "En la página encontrarás toda la información y los pasos para registrar tu personaje (Necesitarás también una cuenta en el foro).");
+        SendClientMessage(playerid, COLOR_YELLOW2, "En esa página encontrarás toda la información y los pasos para registrar tu personaje (necesitarás también tener una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
 	}
 	else
@@ -1105,11 +1104,11 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
     KillTimer(GetPVarInt(playerid, "tutTimer"));
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
-    KillTimer(GetPVarInt(playerid, "theftTimer"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
 	DestroyAfkTimer(playerid);
 	KillMissionEventTimer(playerid);
+	ResetThiefCrime(playerid);
 	
 	if(GetPlayerSpecialAction(Mobile[playerid] == SPECIAL_ACTION_USECELLPHONE && !IsPlayerInAnyVehicle(Mobile[playerid]))) {
 		SetPlayerSpecialAction(Mobile[playerid], SPECIAL_ACTION_STOPUSECELLPHONE);
@@ -1625,7 +1624,7 @@ public OnPlayerDeath(playerid, killerid, reason)
   		ResetAndSaveBack(playerid);
 	}
 	EndPlayerDuty(playerid);
-	
+	ResetThiefCrime(playerid);
 	if(hearingRadioStream[playerid])
 		StopAudioStreamForPlayer(playerid);
 		
@@ -2510,6 +2509,8 @@ public OnBanDataLoad(playerid)
    	new issuerName[MAX_PLAYER_NAME],
    	    banReason[128],
    	    banEndDate[32],
+   	    result[32],
+   	    banEndUnix,
 		rows,
 		fields;
 
@@ -2520,10 +2521,30 @@ public OnBanDataLoad(playerid)
 		cache_get_field_content(0, "banIssuerName", issuerName, 1, MAX_PLAYER_NAME);
 	    cache_get_field_content(0, "banReason", banReason, 1, 128);
 	    cache_get_field_content(0, "banEnd", banEndDate, 1, 32);
+	    cache_get_field_content(0, "banEndUnix", result);   banEndUnix = strval(result);
+	    
 	    ClearScreen(playerid);
-	    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a hasta el %s por %s, razón: %s", banEndDate, issuerName, banReason);
-	    SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
-		SetTimerEx("kickTimer", 1000, false, "d", playerid);
+	    
+	    if(gettime() > banEndUnix)
+	    {
+		    SendFMessage(playerid, COLOR_ADMINCMD, "[FUISTE DESBANEADO]: el baneo temporal aplicado por %s ha expirado el %s.", issuerName, banEndDate);
+
+		    new query[128];
+		    
+	        format(query, sizeof(query), "UPDATE bans SET banActive = 0 WHERE (pID = %d OR pIP = '%s') AND banActive = 1 LIMIT 1",
+				PlayerInfo[playerid][pID],
+				PlayerInfo[playerid][pIP]
+			);
+			
+	        mysql_function_query(dbHandle, query, false, "", "");
+		}
+		else
+		{
+		    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a hasta el %s por %s, razón: %s", banEndDate, issuerName, banReason);
+		    SendClientMessage(playerid, COLOR_ADMINCMD, "Al llegar a la fecha de finalización del baneo, serás desbaneado automáticamente por el servidor.");
+		    SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.malosaires.com.ar");
+			SetTimerEx("kickTimer", 1000, false, "d", playerid);
+		}
 	}
 	return 1;
 }
@@ -5759,7 +5780,12 @@ public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
 
 public BanPlayer(playerid, issuerid, reason[], days)
 {
-	new	issuerSQLID, issuerName[24], playerName[24], playerIP[16], query[512], str[128];
+	new	issuerSQLID,
+		issuerName[24],
+		playerName[24],
+		playerIP[16],
+		query[512],
+		str[128];
 	
 	if(issuerid == INVALID_PLAYER_ID)
 	{
@@ -5781,16 +5807,17 @@ public BanPlayer(playerid, issuerid, reason[], days)
 
 	if(days == 0) // Perma ban
 	{
-	    days = 1000; // Una fecha lejana
+	    days = 2000; // Una fecha lejana
 		format(str, sizeof(str), "%s ha sido baneado/a permanentemente por %s, razón: %s.", playerName, issuerName, reason);
 	}
 	else
         format(str, sizeof(str), "%s ha sido baneado/a %d días por %s, razón: %s.", playerName, days, issuerName, reason);
     	    
-	format(query, sizeof(query), "INSERT INTO `bans` (pID, pName, pIP, banDate, banEnd, banReason, banIssuerID, banIssuerName, banActive) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, TIMESTAMPADD(DAY, %d, CURRENT_TIMESTAMP), '%s', %d, '%s', 1)",
+	format(query, sizeof(query), "INSERT INTO `bans` (pID, pName, pIP, banDate, banEnd, banEndUnix, banReason, banIssuerID, banIssuerName, banActive) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, TIMESTAMPADD(DAY, %d, CURRENT_TIMESTAMP), %d, '%s', %d, '%s', 1)",
 		PlayerInfo[playerid][pID],
 		playerName,
 		playerIP,
+		gettime() + 86400 * days,
 		days,
 		reason,
 		issuerSQLID,
@@ -13330,7 +13357,7 @@ CMD:advertir(playerid, params[])
 	format(string, sizeof(string), "[ADVERTENCIA] a %s (DBID: %d), Razón: %s", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID], reason);
 	log(playerid, LOG_ADMIN, string);
 	if(PlayerInfo[targetid][pWarnings] >= 5)
-		BanPlayer(targetid, playerid, "Acumulación de advertencias", 7);
+		BanPlayer(targetid, INVALID_PLAYER_ID, "Acumulación de advertencias", 7);
 	return 1;
 }
 
