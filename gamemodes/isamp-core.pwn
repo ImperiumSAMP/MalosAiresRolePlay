@@ -2527,7 +2527,7 @@ public OnBanDataLoad(playerid)
 	    
 	    if(gettime() > banEndUnix)
 	    {
-		    SendFMessage(playerid, COLOR_ADMINCMD, "[FUISTE DESBANEADO]: el baneo temporal aplicado por %s ha expirado el %s.", issuerName, banEndDate);
+		    SendFMessage(playerid, COLOR_ADMINCMD, "[SERVIDOR]: has sido desbaneado ya que el baneo temporal aplicado por %s finalizó el %s.", issuerName, banEndDate);
 
 		    new query[128];
 		    
@@ -2541,7 +2541,7 @@ public OnBanDataLoad(playerid)
 		else
 		{
 		    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a hasta el %s por %s, razón: %s", banEndDate, issuerName, banReason);
-		    SendClientMessage(playerid, COLOR_ADMINCMD, "Al llegar a la fecha de finalización del baneo, serás desbaneado automáticamente por el servidor.");
+		    SendClientMessage(playerid, COLOR_ADMINCMD, "Serás desbaneado automáticamente por el servidor en el momento de finalización del baneo.");
 		    SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.malosaires.com.ar");
 			SetTimerEx("kickTimer", 1000, false, "d", playerid);
 		}
@@ -5817,8 +5817,8 @@ public BanPlayer(playerid, issuerid, reason[], days)
 		PlayerInfo[playerid][pID],
 		playerName,
 		playerIP,
-		gettime() + 86400 * days,
 		days,
+		gettime() + 86400 * days,
 		reason,
 		issuerSQLID,
 		issuerName
@@ -5829,7 +5829,7 @@ public BanPlayer(playerid, issuerid, reason[], days)
 	SendClientMessageToAll(COLOR_ADMINCMD, str);
 	TogglePlayerControllable(playerid, false);
 	SendClientMessage(playerid, COLOR_WHITE, "En el caso de ser un baneo temporal, serás desbaneado automaticamente por el servidor en la fecha límite.");
-	SendClientMessage(playerid, COLOR_WHITE, "Para más información pasa por nuestros foros en www.malosaires.com.ar");
+	SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.malosaires.com.ar");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -13208,8 +13208,8 @@ CMD:banear(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/ban)ear [ID/Jugador] [días (0 = permaban)] [razón]");
    	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(days < 0 ||days > 1000)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La cantidad de días de duración debe estar entre (0 - 1000).");
+	if(days < 0 || days > 300)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} La cantidad de días de duración debe estar entre (0 - 300).");
     if(IsPlayerNPC(targetid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la ID corresponde a un NPC.");
 	    
