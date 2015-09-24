@@ -16,12 +16,6 @@
 #define DEALERSHIP_GABOTT     	5
 #define DEALERSHIP_HAUL      	6
 
-#define DLG_CARDEALER1	    	10031
-#define DLG_CARDEALER2	    	10032
-#define DLG_CARDEALER3	    	10033
-#define DLG_CARDEALER4	    	10034
-#define DLG_CARDEALER5 			10038
-
 #define MODEL_CREATE            1
 #define MODEL_DELETE            2
 

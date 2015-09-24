@@ -10,9 +10,25 @@ new CarLiftState[4] = 0,
 
 //================================CONSTANTES====================================
 
-#define DLG_TUNING              	10020
-
 #define JOB_MECH_MAXPRICE       	1000
+
+#define OFFROAD_WHEEL_ID 			1025
+#define SHADOW_WHEEL_ID 			1073
+#define MEGA_WHEEL_ID 				1074
+#define RIMSHINE_WHEEL_ID 			1075
+#define WIRES_WHEEL_ID 				1076
+#define CLASSIC_WHEEL_ID 			1077
+#define TWIST_WHEEL_ID 				1078
+#define CUTTER_WHEEL_ID 			1079
+#define SWITCH_WHEEL_ID 			1080
+#define GROVE_WHEEL_ID 				1081
+#define IMPORT_WHEEL_ID 			1082
+#define DOLLAR_WHEEL_ID 			1083
+#define TRANCE_WHEEL_ID 			1084
+#define ATOMIC_WHEEL_ID 			1085
+#define AHAB_WHEEL_ID 				1096
+#define VIRTUAL_WHEEL_ID 			1097
+#define ACCESS_WHEEL_ID 			1098
 
 #define MEC_OFFICE_X				2514.9958
 #define MEC_OFFICE_Y        		-1538.2114
@@ -704,7 +720,279 @@ CMD:mectuning(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehiculo invalido.");
 
 	TogglePlayerControllable(playerid, false);
-	ShowPlayerDialog(playerid, DLG_TUNING, DIALOG_STYLE_LIST, "Menú de tuning:", "Color 1 $1.500\nColor 2 $1.500\nVinilos $10.000\nLlantas $4.000\nSuspension Hidraulica $4.000\nOxido Nitroso $10.000", "Seleccionar", "Cerrar");
+	Dialog_Show(playerid, Tuning_Main_Menu, DIALOG_STYLE_TABLIST, "Menú de tuning", "Color primario\t$1.500\nColor secundario\t$1.500\nVinilos\t$10.000\nLlantas\t$4.000\nSuspensión hidraulica\t$4.000\nÓxido nitroso\t$10.000", "Seleccionar", "Cerrar");
+	return 1;
+}
+
+Dialog:Tuning_Main_Menu(playerid, response, listitem, inputtext[])
+{
+    TogglePlayerControllable(playerid, true);
+    
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+    if(response)
+	{
+	    switch(listitem)
+	    {
+	        case 0:
+		    {
+				TogglePlayerControllable(playerid, false);
+				Dialog_Show(playerid, Tuning_Color1, DIALOG_STYLE_INPUT, "Color primario", "{FFEFD5}Ingrese la ID del color primario a pintar:", "Pintar", "Cerrar");
+			}
+			case 1:
+			{
+				TogglePlayerControllable(playerid, false);
+				Dialog_Show(playerid, Tuning_Color2, DIALOG_STYLE_INPUT, "Color secundario", "{FFEFD5}Ingrese la ID del color secundario a pintar:", "Pintar", "Cerrar");
+			}
+			case 2:
+			{
+				new vehmodel = GetVehicleModel(vehicleid);
+
+				if(vehmodel == 561 || vehmodel == 560 || vehmodel == 559 || vehmodel == 558 || vehmodel == 562 ||
+				    vehmodel == 565 || vehmodel == 483 || vehmodel == 575 || vehmodel == 576 || vehmodel == 567 ||
+				    vehmodel == 536 || vehmodel == 535 || vehmodel == 534)
+				{
+				    TogglePlayerControllable(playerid, false);
+				    Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+				}
+				else
+				{
+				    SendClientMessage(playerid, COLOR_YELLOW2, "Ese modelo de vehículo no tiene acceso a vinilos o capas de pintura.");
+					TogglePlayerControllable(playerid, false);
+					Dialog_Show(playerid, Tuning_Main_Menu, DIALOG_STYLE_TABLIST, "Menú de tuning", "Color primario\t$1.500\nColor secundario\t$1.500\nVinilos\t$10.000\nLlantas\t$4.000\nSuspensión hidraulica\t$4.000\nÓxido nitroso\t$10.000", "Seleccionar", "Cerrar");
+				}
+			}
+			case 3:
+			{
+			    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
+	    			return SendClientMessage(playerid, COLOR_WHITE, "Vehiculo inválido.");
+
+				TogglePlayerControllable(playerid, false);
+				Dialog_Show(playerid, Tuning_Wheels_Menu, DIALOG_STYLE_LIST, "Llantas disponibles", "Offroad\nShadow\nMega\nRimshine\nWires\nClassic\nTwist\nCutter\nSwitch\nGrove\nImport\nDollar\nTrance\nAtomic\nAhab\nVirtual\nAccess", "Instalar", "Cerrar");
+			}
+			case 4:
+			{
+			    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			        return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+			    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
+	    			return SendClientMessage(playerid, COLOR_WHITE, "Vehículo invalido!");
+				if(GetPlayerCash(playerid) < 4000)
+				    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4000).");
+
+			    VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_HYDRAULICS] = 1087;
+			    AddVehicleComponent(vehicleid, 1087);
+				GivePlayerCash(playerid, -4000);
+			    PlayerActionMessage(playerid, 15.0, "comienza a instalar la suspensión hidráulica en el vehículo.");
+			    SaveVehicle(vehicleid);
+			}
+			case 5:
+			{
+			    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			        return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+			    if(GetVehicleType(vehicleid) == VTYPE_BIKE)
+	    			return SendClientMessage(playerid, COLOR_WHITE, "Vehículo invalido!");
+				if(GetPlayerCash(playerid) < 10000)
+				    return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($10000).");
+
+			    VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_NITRO] = 1010;
+			    AddVehicleComponent(vehicleid, 1010);
+				GivePlayerCash(playerid, -10000);
+			    PlayerActionMessage(playerid, 15.0, "comienza a instalar el óxido nitroso en el vehículo.");
+			    SaveVehicle(vehicleid);
+			}
+		}
+	}
+	return 1;
+}
+
+Dialog:Tuning_Paintjob_Menu(playerid, response, listitem, inputtext[])
+{
+    TogglePlayerControllable(playerid, false);
+
+    new vehicleid = GetPlayerVehicleID(playerid);
+
+    switch(listitem)
+    {
+        case 0:
+        {
+            if(response)
+			{
+				PaintjobPreview(playerid, vehicleid, 0);
+				Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+			}
+			else
+			{
+				if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+				{
+					SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
+					return 1;
+				}
+				SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
+				GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
+			    ChangeVehiclePaintjob(vehicleid, 0);
+			    VehicleInfo[vehicleid][VehPaintjob] = 0;
+			    SaveVehicle(vehicleid);
+			    TogglePlayerControllable(playerid, true);
+			}
+		}
+        case 1:
+        {
+            if(GetVehicleModel(vehicleid) == 483) // Camper
+			{
+			    SendClientMessage(playerid, COLOR_YELLOW2, "Ese modelo de vehículo no tiene disponible un segundo vinilo.");
+		    	Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+				return 1;
+			}
+
+            if(response)
+			{
+				PaintjobPreview(playerid, vehicleid, 1);
+				Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+			}
+			else
+			{
+				if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+				{
+					SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
+					return 1;
+				}
+				SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
+				GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
+			    ChangeVehiclePaintjob(vehicleid, 1);
+			    VehicleInfo[vehicleid][VehPaintjob] = 1;
+			    SaveVehicle(vehicleid);
+			    TogglePlayerControllable(playerid, true);
+			}
+		}
+        case 2:
+        {
+			if(GetVehicleModel(vehicleid) == 483 || GetVehicleModel(vehicleid) == 575) // Camper y Broadway
+			{
+			    SendClientMessage(playerid, COLOR_YELLOW2, "Ese modelo de vehículo no tiene disponible un tercer vinilo.");
+		    	Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+				return 1;
+			}
+
+            if(response)
+			{
+				PaintjobPreview(playerid, vehicleid, 2);
+				Dialog_Show(playerid, Tuning_Paintjob_Menu, DIALOG_STYLE_LIST, "Selecciona el vinilo que quieras visualizar o pintar", "Vinilo 1\nVinilo 2\nVinilo 3\nCerrar", "Visualizar", "Pintar");
+			}
+			else
+			{
+				if(GetPlayerCash(playerid) < PRICE_VEHICLE_PAINTJOB)
+				{
+					SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente ($%d).", PRICE_VEHICLE_PAINTJOB);
+					return 1;
+				}
+				SendFMessage(playerid, COLOR_WHITE, "Has pintado el vehículo con el vinilo seleccionado por $%d.", PRICE_VEHICLE_PAINTJOB);
+				GivePlayerCash(playerid, -PRICE_VEHICLE_PAINTJOB);
+			    ChangeVehiclePaintjob(vehicleid, 2);
+			    VehicleInfo[vehicleid][VehPaintjob] = 2;
+			    SaveVehicle(vehicleid);
+			    TogglePlayerControllable(playerid, true);
+			}
+		}
+		case 3:
+		{
+		    TogglePlayerControllable(playerid, true);
+		}
+	}
+	return 1;
+}
+
+Dialog:Tuning_Color1(playerid, response, listitem, inputtext[])
+{
+    TogglePlayerControllable(playerid, true);
+    
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+    if(response)
+    {
+	    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+		if(GetPlayerCash(playerid) < 1500)
+			return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($1500).");
+		new color = strval(inputtext);
+		if(color < 0 || color > 255)
+		    return SendClientMessage(playerid, COLOR_WHITE, "Ingresa un valor entre 0 y 255");
+
+		PlayerActionMessage(playerid, 15.0, "comienza a pintar el color primario del vehículo.");
+	    GivePlayerCash(playerid, -1500);
+	    VehicleInfo[vehicleid][VehColor1] = color;
+	    ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
+	    SaveVehicle(vehicleid);
+	}
+	return 1;
+}
+
+Dialog:Tuning_Color2(playerid, response, listitem, inputtext[])
+{
+    TogglePlayerControllable(playerid, true);
+
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+    if(response)
+    {
+	    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+		if(GetPlayerCash(playerid) < 1500)
+			return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($1500).");
+		new color = strval(inputtext);
+		if(color < 0 || color > 255)
+		    return SendClientMessage(playerid, COLOR_WHITE, "Ingresa un valor entre 0 y 255.");
+
+		PlayerActionMessage(playerid, 15.0, "comienza a pintar el color secundario del vehículo.");
+	    GivePlayerCash(playerid, -1500);
+	    VehicleInfo[vehicleid][VehColor2] = color;
+	    ChangeVehicleColor(vehicleid, VehicleInfo[vehicleid][VehColor1], VehicleInfo[vehicleid][VehColor2]);
+	    SaveVehicle(vehicleid);
+    }
+    return 1;
+}
+
+Dialog:Tuning_Wheels_Menu(playerid, response, listitem, inputtext[])
+{
+    TogglePlayerControllable(playerid, true);
+    
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+    if(response)
+    {
+	    if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			return SendClientMessage(playerid, COLOR_WHITE, "Debes estar de conductor!");
+		if(GetPlayerCash(playerid) < 4000)
+			return SendClientMessage(playerid, COLOR_WHITE, "No tienes el dinero suficiente ($4000).");
+
+	    PlayerActionMessage(playerid, 15.0, "comienza a instalar las nuevas llantas en el vehículo.");
+		GivePlayerCash(playerid, -4000);
+		
+		new wheel;
+
+		switch(listitem)
+		{
+		    case 0: wheel = OFFROAD_WHEEL_ID;
+		    case 1: wheel = SHADOW_WHEEL_ID;
+		    case 2: wheel = MEGA_WHEEL_ID;
+		    case 3: wheel = RIMSHINE_WHEEL_ID;
+		    case 4: wheel = WIRES_WHEEL_ID;
+		    case 5: wheel = CLASSIC_WHEEL_ID;
+		    case 6: wheel = TWIST_WHEEL_ID;
+		    case 7: wheel = CUTTER_WHEEL_ID;
+		    case 8: wheel = SWITCH_WHEEL_ID;
+		    case 9: wheel = GROVE_WHEEL_ID;
+		    case 10: wheel = IMPORT_WHEEL_ID;
+		    case 11: wheel = DOLLAR_WHEEL_ID;
+		    case 12: wheel = TRANCE_WHEEL_ID;
+		    case 13: wheel = ATOMIC_WHEEL_ID;
+		    case 14: wheel = AHAB_WHEEL_ID;
+		    case 15: wheel = VIRTUAL_WHEEL_ID;
+		    case 16: wheel = ACCESS_WHEEL_ID;
+		}
+		AddVehicleComponent(vehicleid, wheel);
+		VehicleInfo[vehicleid][VehCompSlot][CARMODTYPE_WHEELS] = wheel;
+		SaveVehicle(vehicleid);
+	}
 	return 1;
 }
 

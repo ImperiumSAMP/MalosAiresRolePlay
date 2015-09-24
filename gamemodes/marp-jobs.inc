@@ -38,9 +38,6 @@
 #define JOB_TYPE_LEGAL        	1
 #define JOB_TYPE_ILLEGAL        2
 
-#define DLG_JOB_INFO_1 			10036
-#define DLG_JOB_INFO_2 			10037
-
 //===============================DATA STORAGE===================================
 
 enum e_job_info {
@@ -604,8 +601,8 @@ CMD:verempleo(playerid, params[])
 			GetJobReputationString(PlayerJobInfo[playerid][pReputation]),
    			GetJobStateString(PlayerJobInfo[playerid][pState])
 		);
-
-	    ShowPlayerDialog(playerid, DLG_JOB_INFO_1, DIALOG_STYLE_MSGBOX, "Información de tu empleo", content, "Cerrar", "");
+		
+        Dialog_Show(playerid, Job_Info, DIALOG_STYLE_MSGBOX, "Información de tu empleo", content, "Cerrar", "");
 	}
 	return 1;
 }
@@ -736,7 +733,7 @@ public OnPlayerInvestJob(playerid, job)
 	  		auxInformation
 		);
 	}
-	ShowPlayerDialog(playerid, DLG_JOB_INFO_2, DIALOG_STYLE_MSGBOX, "Información del empleo", content, "Cerrar", "");
+	Dialog_Show(playerid, Job_Info_Invest, DIALOG_STYLE_MSGBOX, "Información del empleo", content, "Cerrar", "");
 	return 1;
 }
 
