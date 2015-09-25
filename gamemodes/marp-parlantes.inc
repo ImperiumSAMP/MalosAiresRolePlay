@@ -50,7 +50,7 @@ InitializeServerSpeakers()
 	SERVER_SPEAKERS = vector_create();
 }
 
-CreateSpeaker(Float:x, Float:y, Float:z, Float:angle, vworld, modelid, radio, volume = 30)
+CreateSpeaker(Float:x, Float:y, Float:z, Float:angle, vworld, modelid, radio, volume = 45)
 {
 	new id = vector_create();
 

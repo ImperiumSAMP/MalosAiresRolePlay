@@ -6,6 +6,41 @@
 #undef MAX_PLAYERS
 #define MAX_PLAYERS 75  // Redefinimos MAX_PLAYERS DE 500 A 75
 
+//==============================================================================
+
+stock SendClientMessageEx(playerid, color, const message[])
+{
+	if(strlen(message) > 130)
+	{
+	    new str1[130],
+	        str2[130];
+
+		strmid(str1, message, 0, 127);
+		strins(str1, "...", 127, 3);
+		
+		strmid(str2, message, 127, 250);
+		strins(str2, "...", 0, 3);
+		
+		SendClientMessage(playerid, color, str1);
+		SendClientMessage(playerid, color, str2);
+	}
+	else
+	{
+	    SendClientMessage(playerid, color, message);
+	}
+	return 1;
+}
+
+#if defined _ALS_SendClientMessage
+	#undef SendClientMessage
+#else
+#define _ALS_SendClientMessage
+#endif
+
+#define SendClientMessage SendClientMessageEx
+
+//==============================================================================
+
 #include <a_npc>
 #include <a_mysql>
 #include <core>
@@ -6112,7 +6147,7 @@ stock IsAtJail(playerid)
 //====[ACTION MESSAGES]=========================================================
 PlayerLocalMessage(playerid,Float:radius,message[])
 {
-	new string[128];
+	new string[256];
 	format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
 	ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 	format(string, sizeof(string), "[OOC-LOCAL] %s", string);
@@ -6122,19 +6157,19 @@ PlayerLocalMessage(playerid,Float:radius,message[])
 
 PlayerActionMessage(playerid,Float:radius,message[])
 {
-	new string[128];
+	new string[256];
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), message);
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], message);
-	ProxDetectorLong(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;
 }
 
 PlayerDoMessage(playerid,Float:radius,message[])
 {
-	new string[128];
+	new string[256];
 	if(!usingMask[playerid])
 		format(string, sizeof(string), "* %s (( %s ))", message, GetPlayerNameEx(playerid));
 	else
@@ -6146,7 +6181,7 @@ PlayerDoMessage(playerid,Float:radius,message[])
 
 PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 {
-	new string[128];
+	new string[256];
 
 	if(!usingMask[playerid])
 	{
@@ -13313,9 +13348,9 @@ CMD:vers(playerid, params[]) {
 
 CMD:me(playerid, params[])
 {
-	new text[128], string[128];
+	new text[256], string[256];
 
-	if(sscanf(params, "s[128]", text))
+	if(sscanf(params, "s[256]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /me [acción]");
 
 	format(string, sizeof(string), "%s", text);
@@ -13367,9 +13402,9 @@ CMD:vb(playerid, params[])
 
 CMD:b(playerid, params[])
 {
-	new text[128], string[128];
+	new text[256], string[256];
 
-	if(sscanf(params, "s[128]", text))
+	if(sscanf(params, "s[256]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /b [mensaje]");
     if(PlayerInfo[playerid][pMuteB] > 0)
 	{
