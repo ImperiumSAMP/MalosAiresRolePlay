@@ -6,41 +6,6 @@
 #undef MAX_PLAYERS
 #define MAX_PLAYERS 75  // Redefinimos MAX_PLAYERS DE 500 A 75
 
-//==============================================================================
-
-stock SendClientMessageEx(playerid, color, const message[])
-{
-	if(strlen(message) > 130)
-	{
-	    new str1[130],
-	        str2[130];
-
-		strmid(str1, message, 0, 127);
-		strins(str1, "...", 127, 3);
-		
-		strmid(str2, message, 127, 250);
-		strins(str2, "...", 0, 3);
-		
-		SendClientMessage(playerid, color, str1);
-		SendClientMessage(playerid, color, str2);
-	}
-	else
-	{
-	    SendClientMessage(playerid, color, message);
-	}
-	return 1;
-}
-
-#if defined _ALS_SendClientMessage
-	#undef SendClientMessage
-#else
-#define _ALS_SendClientMessage
-#endif
-
-#define SendClientMessage SendClientMessageEx
-
-//==============================================================================
-
 #include <a_npc>
 #include <a_mysql>
 #include <core>
@@ -4904,7 +4869,7 @@ public ProxDetectorS(Float:radi, playerid, targetid)
 	return 0;
 }
 
-stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5, showSelf = 1)
+stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5, show_self = 1)
 {
 	new Float:posx, Float:posy, Float:posz;
 	new Float:oldposx, Float:oldposy, Float:oldposz;
@@ -4914,37 +4879,42 @@ stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5,
 	
 	foreach(new i : Player)
 	{
-	    if(showSelf == 0 && i == playerid)
+	    if(i == playerid)
 		{
-			continue;
+		    if(show_self)
+			{
+			    SendClientLongMessage(i, col1, string);
+			}
 		}
+		else
+		{
+			if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
+	  		{
+				GetPlayerPos(i, posx, posy, posz);
+				tempposx = (oldposx -posx);
+				tempposy = (oldposy -posy);
+				tempposz = (oldposz -posz);
 
-		if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
-  		{
-			GetPlayerPos(i, posx, posy, posz);
-			tempposx = (oldposx -posx);
-			tempposy = (oldposy -posy);
-			tempposz = (oldposz -posz);
-
-			if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
-			{
-				SendClientMessage(i, col1, string);
-			}
-			else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
-			{
-				SendClientMessage(i, col2, string);
-			}
-			else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
-			{
-				SendClientMessage(i, col3, string);
-			}
-			else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
-			{
-				SendClientMessage(i, col4, string);
-			}
-			else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
-			{
-				SendClientMessage(i, col5, string);
+				if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
+				{
+					SendClientLongMessage(i, col1, string);
+				}
+				else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
+				{
+					SendClientLongMessage(i, col2, string);
+				}
+				else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
+				{
+					SendClientLongMessage(i, col3, string);
+				}
+				else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
+				{
+					SendClientLongMessage(i, col4, string);
+				}
+				else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
+				{
+					SendClientLongMessage(i, col5, string);
+				}
 			}
 		}
 	}
@@ -4970,7 +4940,7 @@ stock ProxDetector2(Float:radi, playerid, string[], col1, col2, col3, col4, col5
 		{
 		    if(show_self)
 		    {
-    			SendClientMessage(i, col1, str_to_show);
+    			SendClientLongMessage(i, col1, str_to_show);
 		    }
 		}
 		else
@@ -4986,27 +4956,27 @@ stock ProxDetector2(Float:radi, playerid, string[], col1, col2, col3, col4, col5
 				if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
 				{
     				strins(str_to_show, "[Muy cerca] ", 0, 12);
-		        	SendClientMessage(i, col1, str_to_show);
+		        	SendClientLongMessage(i, col1, str_to_show);
 				}
 				else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
 				{
     				strins(str_to_show, "[Cerca] ", 0, 8);
-		        	SendClientMessage(i, col2, str_to_show);
+		        	SendClientLongMessage(i, col2, str_to_show);
 				}
 				else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
 				{
     				strins(str_to_show, "[Distante] ", 0, 11);
-		        	SendClientMessage(i, col3, str_to_show);
+		        	SendClientLongMessage(i, col3, str_to_show);
 				}
 				else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
 				{
     				strins(str_to_show, "[Lejos] ", 0, 8);
-		        	SendClientMessage(i, col4, str_to_show);
+		        	SendClientLongMessage(i, col4, str_to_show);
 				}
 				else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
 				{
     				strins(str_to_show, "[Muy lejos] ", 0, 12);
-		        	SendClientMessage(i, col5, str_to_show);
+		        	SendClientLongMessage(i, col5, str_to_show);
 				}
 			}
 		}
@@ -6090,6 +6060,52 @@ stock IsAtJail(playerid)
 
 //==============================PLAYER MESSAGES=================================
 
+stock SendClientLongMessage(playerid, color, const message[])
+{
+	if(strlen(message) > 130)
+	{
+	    new str1[130],
+	        str2[130];
+
+		strmid(str1, message, 0, 127);
+		strins(str1, "...", 127, 3);
+
+		strmid(str2, message, 127, 250);
+		strins(str2, "...", 0, 3);
+
+		SendClientMessage(playerid, color, str1);
+		SendClientMessage(playerid, color, str2);
+	}
+	else
+	{
+	    SendClientMessage(playerid, color, message);
+	}
+	return 1;
+}
+
+stock SendClientLongMessageToAll(color, const message[])
+{
+	if(strlen(message) > 130)
+	{
+	    new str1[130],
+	        str2[130];
+
+		strmid(str1, message, 0, 127);
+		strins(str1, "...", 127, 3);
+
+		strmid(str2, message, 127, 250);
+		strins(str2, "...", 0, 3);
+
+		SendClientMessageToAll(color, str1);
+		SendClientMessageToAll(color, str2);
+	}
+	else
+	{
+	    SendClientMessageToAll(color, message);
+	}
+	return 1;
+}
+
 PlayerLocalMessage(playerid, Float:radius, message[])
 {
 	new string[256];
@@ -6107,7 +6123,7 @@ PlayerActionMessage(playerid,Float:radius,message[])
 		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), message);
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], message);
-	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	ProxDetector2(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 	PlayerActionLog(string);
 	return 1;
 }
@@ -6119,7 +6135,7 @@ PlayerDoMessage(playerid,Float:radius,message[])
 		format(string, sizeof(string), "* %s (( %s ))", message, GetPlayerNameEx(playerid));
 	else
 	    format(string, sizeof(string), "* %s (( Enmascarado %d ))", message, maskNumber[playerid]);
-	ProxDetector2(radius, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	ProxDetector(radius, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
 	PlayerActionLog(string);
 	return 1;
 }
@@ -6323,6 +6339,7 @@ public OOCLog(string[]) {
 	fwrite(hFile, entry);
 	fclose(hFile);
 }
+
 //============================================================================================================================
 
 stock AdministratorMessage(color, const string[], level)
@@ -6330,9 +6347,8 @@ stock AdministratorMessage(color, const string[], level)
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pAdmin] >= level && GetPVarInt(i, "adminmsgs") != 1)
-			SendClientMessage(i, color, string);
+			SendClientLongMessage(i, color, string);
 	}
-	print(string);
 	return 1;
 }
 
@@ -8482,23 +8498,24 @@ CMD:departamento(playerid, params[])
 			if(SearchHandsForItem(i, ITEM_ID_RADIO) != -1 || Container_SearchItem(PlayerInfo[i][pContainerID], ITEM_ID_RADIO) != -1)
 			{
 				if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
-					SendClientMessage(i, COLOR_LIGHTGREEN, text);
+					SendClientLongMessage(i, COLOR_LIGHTGREEN, text);
 			}
 		}
   	}
 	return 1;
 }
 
-CMD:gob(playerid, params[]) {
+CMD:gob(playerid, params[])
+{
 	cmd_gobierno(playerid, params);
 	return 1;
 }
 
 CMD:gobierno(playerid, params[])
 {
-	new string[128];
+	new string[256];
 
-	if(sscanf(params, "s[128]", string))
+	if(sscanf(params, "s[256]", string))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/gob)ierno [texto]");
 	if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_GOV || PlayerInfo[playerid][pRank] != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} No tienes permiso para hablar por esta frecuencia.");
@@ -8521,8 +8538,9 @@ CMD:gobierno(playerid, params[])
 	{
 		format(string, sizeof(string), "Gobierno de Malos Aires: %s", string);
 	}
+	SendClientLongMessageToAll(COLOR_YELLOW2, string);
+	format(string, sizeof(string), "%s %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid));
 	SendClientMessageToAll(COLOR_YELLOW2, string);
-	SendFMessageToAll(COLOR_YELLOW2, "%s %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid));
 	SendClientMessageToAll(COLOR_YELLOW2, "======================================================================");
 	return 1;
 }
@@ -8916,7 +8934,7 @@ CMD:radio(playerid, params[])
 				if(SearchHandsForItem(i, ITEM_ID_RADIO) != -1 || Container_SearchItem(PlayerInfo[i][pContainerID], ITEM_ID_RADIO) != -1)
 				{
 					if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
-						SendClientMessage(i, COLOR_PMA, text);
+						SendClientLongMessage(i, COLOR_PMA, text);
 				}
 			}
 		}
@@ -12793,7 +12811,8 @@ CMD:pronostico(playerid, params[])
 	return 1;
 }
 
-CMD:n(playerid, params[]) {
+CMD:n(playerid, params[])
+{
 	cmd_noticia(playerid, params);
 	return 1;
 }
@@ -12818,7 +12837,7 @@ CMD:noticia(playerid, params[])
 	foreach(new i : Player)
 	{
 	    if(NewsEnabled[i])
-	        SendClientMessage(i, COLOR_LIGHTGREEN, text);
+	        SendClientLongMessage(i, COLOR_LIGHTGREEN, text);
 	}
 	return 1;
 }
@@ -13252,14 +13271,19 @@ CMD:susurrar(playerid, params[])
 		format(text, sizeof(text), "%s susurra: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(text, sizeof(text), "Enmascarado %d susurra: %s", maskNumber[playerid], text);
-	    
-    foreach(new i : Player)	{
-		if(GetPVarInt(i, "vers") == 1)
-			SendFMessage(i, 0x00C800DC, "[SUSURRO] ID %d a ID %d: %s", playerid, targetid, text);
-	}
-	SendClientMessage(targetid, COLOR_YELLOW, text);
-	SendClientMessage(playerid, COLOR_YELLOW, text);
+
+	SendClientLongMessage(targetid, COLOR_YELLOW, text);
+	SendClientLongMessage(playerid, COLOR_YELLOW, text);
 	PlayerPlayerActionMessage(playerid, targetid, 5.0, "ha susurrado algo al oído de");
+	
+	format(text, sizeof(text), "[SUSURRO] ID %d a ID %d: %s", playerid, targetid, text);
+    foreach(new i : Player)
+	{
+		if(GetPVarInt(i, "vers") == 1)
+		{
+			SendClientLongMessage(i, 0x00C800DC, text);
+		}
+	}
 	return 1;
 }
 
@@ -13280,12 +13304,11 @@ CMD:vers(playerid, params[]) {
 
 CMD:me(playerid, params[])
 {
-	new text[256], string[256];
+	new text[256];
 
 	if(sscanf(params, "s[256]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /me [acción]");
 
-	format(string, sizeof(string), "%s", text);
 	PlayerActionMessage(playerid, 15.0, text);
 	return 1;
 }
@@ -13300,6 +13323,21 @@ CMD:cme(playerid, params[])
     format(str, sizeof(str), "%s", text);
 	PlayerCmeMessage(playerid, 15.0, 5000, str);
     return 1;
+}
+
+CMD:local(playerid, params[])
+{
+	new text[256];
+
+	if(sscanf(params, "s[256]", text))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /local [mensaje]");
+
+	if(!usingMask[playerid])
+		format(text, sizeof(text), "%s dice: %s", GetPlayerNameEx(playerid), text);
+	else
+	    format(text, sizeof(text), "Enmascarado %d dice: %s", maskNumber[playerid], text);
+	ProxDetector2(15.0, playerid, text, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+	return 1;
 }
 
 CMD:vb(playerid, params[])
@@ -13491,11 +13529,11 @@ CMD:admin(playerid, params[])
 	}
 	else
 	{
-		format(string, sizeof(string), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), text);
-		if(strlen(string) > 128)
+		format(text, sizeof(text), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), text);
+		if(strlen(text) > 128)
 		{
-		    strmid(string2, string, 128, 256);
-		    strdel(string, 128, 256);
+  			strmid(string, text, 0, 127);
+		    strmid(string2, text, 127, 255);
 		    AdministratorMessage(COLOR_ACHAT, string, 2);
 		    AdministratorMessage(COLOR_ACHAT, string2, 2);
 		}
@@ -13509,9 +13547,7 @@ CMD:admin(playerid, params[])
 
 CMD:ao(playerid, params[])
 {
-	new text[256],
-		string[128],
-		string2[128];
+	new text[256];
 
 	if(sscanf(params, "s[256]", text))
 	{
@@ -13519,25 +13555,8 @@ CMD:ao(playerid, params[])
 	}
 	else
 	{
-	    if(PlayerInfo[playerid][pAdmin] < 3)
-		{
-			format(string, sizeof(string), "(( [Anuncio] Mod %s: %s ))", GetPlayerNameEx(playerid), text);
-		}
-		else
-		{
-		    format(string, sizeof(string), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
-		}
-		if(strlen(string) > 128)
-		{
-		    strmid(string2, string, 128, 256);
-		    strdel(string, 128, 256);
-		    SendClientMessageToAll(COLOR_AOOC, string);
-		    SendClientMessageToAll(COLOR_AOOC, string2);
-		}
-		else
-		{
-		    SendClientMessageToAll(COLOR_AOOC, string);
-		}
+		format(text, sizeof(text), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
+  		SendClientLongMessageToAll(COLOR_AOOC, text);
 	}
 	return 1;
 }

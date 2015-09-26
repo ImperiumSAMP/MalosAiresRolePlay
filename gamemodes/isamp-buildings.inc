@@ -187,7 +187,7 @@ CMD:aeinfo(playerid, params[])
 	if(id < 1 || id >= MAX_BUILDINGS)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
 
-	SendFMessage(playerid, COLOR_WHITE, "=======================[Negocio %d '%s']=======================", id, Building[id][blText]);
+	SendFMessage(playerid, COLOR_WHITE, "=======================[Edificio %d '%s']=======================", id, Building[id][blText]);
 	SendFMessage(playerid, COLOR_WHITE, "- Texto: %s", Building[id][blText]);
 	SendFMessage(playerid, COLOR_WHITE, "- Texto2: %s", Building[id][blText2]);
 	SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Building[id][blEntranceFee]);
