@@ -422,7 +422,6 @@ forward BackupClear(playerid, calledbytimer);
 forward CloseGate(gateID);
 forward AllowAd(playerid);
 forward Unfreeze(playerid);
-forward OnPlayerPrivmsg(playerid, recieverid, text[]);
 forward SendFactionMessage(faction, color, string[]);
 forward SaveAccount(playerid);
 forward SetPlayerSpawn(playerid);
@@ -1605,9 +1604,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 public OnPlayerText(playerid, text[])
 {
-	new idx,
-		string[256],
-		tmp[256];
+	new string[256];
 
     if(!gPlayerLogged[playerid]) return 0;
 
@@ -1626,15 +1623,6 @@ public OnPlayerText(playerid, text[])
 	if(usingCamera[playerid]) {
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
 		return 0;
-	}
-
-	tmp = strtok(text, idx);
-
- 	if((strcmp("(", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("("))) {
-	    if(text[1] != 0) {
-            PlayerLocalMessage(playerid, 15.0, text);
-	   		return 0;
-   		}
 	}
 
 	new name[24]; // Para ver si mandar mensajes desde la mascara
@@ -1787,23 +1775,6 @@ public OnPlayerText(playerid, text[])
 		log(playerid, LOG_CHAT, string);
 	}
     return 0;
-}
-
-public OnPlayerPrivmsg(playerid, recieverid, text[])
-{
-	new string[128];
-	
-	if(!PMsEnabled[recieverid] && !AdminDuty[playerid])
-		return SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} el usuario ha bloqueado los susurros.");
-
-	foreach(new i : Player)	{
-		if(GetPVarInt(i, "pms") == 1)
-			SendFMessage(i, 0x00B400DC, "[MPS] ID %d a ID %d: %s", playerid, recieverid, text);
-	}
-	SendFMessage(recieverid, COLOR_MEDIUMBLUE, "[OOC]: MP de %s(%d): %s", GetPlayerNameEx(playerid),playerid, text);
-	SendFMessage(playerid, COLOR_MEDIUMBLUE, "[OOC]: MP a %s(%d): %s", GetPlayerNameEx(recieverid),recieverid, text);
-	log(playerid, LOG_CHAT, string);
-	return 0;
 }
 
 public OnPlayerCommandPerformed(playerid, cmdtext[], success)
@@ -2120,7 +2091,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					idx++;
 				}
 				new offset = idx;
-				new result[256];
+				new result[128];
 				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
 				{
 					result[idx - offset] = cmdtext[idx];
@@ -2132,7 +2103,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /do [acción]");
 					return 1;
 				}
-				new form[256];
+				new form[128];
 				format(form, sizeof(form), "%s", result);
 				PlayerDoMessage(playerid, 15.0, form);
 			}
@@ -6106,7 +6077,7 @@ stock SendClientLongMessageToAll(color, const message[])
 	return 1;
 }
 
-PlayerLocalMessage(playerid, Float:radius, message[])
+PlayerLocalMessage(playerid, Float:radius, const message[])
 {
 	new string[256];
 	format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
@@ -6116,7 +6087,7 @@ PlayerLocalMessage(playerid, Float:radius, message[])
 	return 1;
 }
 
-PlayerActionMessage(playerid,Float:radius,message[])
+PlayerActionMessage(playerid, Float:radius, const message[])
 {
 	new string[256];
 	if(!usingMask[playerid])
@@ -6124,11 +6095,10 @@ PlayerActionMessage(playerid,Float:radius,message[])
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], message);
 	ProxDetector2(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
-	PlayerActionLog(string);
 	return 1;
 }
 
-PlayerDoMessage(playerid,Float:radius,message[])
+PlayerDoMessage(playerid, Float:radius, const message[])
 {
 	new string[256];
 	if(!usingMask[playerid])
@@ -6136,11 +6106,10 @@ PlayerDoMessage(playerid,Float:radius,message[])
 	else
 	    format(string, sizeof(string), "* %s (( Enmascarado %d ))", message, maskNumber[playerid]);
 	ProxDetector(radius, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
-	PlayerActionLog(string);
 	return 1;
 }
 
-PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
+PlayerPlayerActionMessage(playerid, targetid, Float:radius, const message[])
 {
 	new string[256];
 
@@ -6159,7 +6128,6 @@ PlayerPlayerActionMessage(playerid,targetid,Float:radius,message[])
 		    format(string, sizeof(string), "* Enmascarado %d %s Enmascarado %d.", maskNumber[playerid], message, maskNumber[targetid]);
 	}
 	ProxDetector2(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
-	PlayerActionLog(string);
 	return 1;
 }
 
@@ -8467,6 +8435,7 @@ CMD:d(playerid, params[]) {
 CMD:departamento(playerid, params[])
 {
 	new text[256],
+		string[256],
 		factionID = PlayerInfo[playerid][pFaction];
 
 	if(factionID == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
@@ -8483,14 +8452,13 @@ CMD:departamento(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
-	
 	if(!usingMask[playerid])
-		format(text, sizeof(text), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
+		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
- 		format(text, sizeof(text), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
- 		
-	ProxDetector2(15.0, playerid, text, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
-	format(text, sizeof(text), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+ 		format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
+	ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+	
+	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player)
  	{
 		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i])
@@ -8498,7 +8466,7 @@ CMD:departamento(playerid, params[])
 			if(SearchHandsForItem(i, ITEM_ID_RADIO) != -1 || Container_SearchItem(PlayerInfo[i][pContainerID], ITEM_ID_RADIO) != -1)
 			{
 				if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
-					SendClientLongMessage(i, COLOR_LIGHTGREEN, text);
+					SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
 			}
 		}
   	}
@@ -8903,6 +8871,7 @@ CMD:r(playerid, params[])
 CMD:radio(playerid, params[])
 {
 	new text[256],
+	    string[256],
 		factionID = PlayerInfo[playerid][pFaction];
 
 	if(factionID == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
@@ -8917,14 +8886,13 @@ CMD:radio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar la radio, te encuentras silenciado.");
 
 	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
-	
 	if(!usingMask[playerid])
-		format(text, sizeof(text), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
+		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
-	    format(text, sizeof(text), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
-	    
-	ProxDetector2(15.0, playerid, text, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
-	format(text, sizeof(text), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	    format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
+	ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+
+	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pFaction] == factionID)
@@ -8934,7 +8902,7 @@ CMD:radio(playerid, params[])
 				if(SearchHandsForItem(i, ITEM_ID_RADIO) != -1 || Container_SearchItem(PlayerInfo[i][pContainerID], ITEM_ID_RADIO) != -1)
 				{
 					if((PlayerInfo[i][pFaction] == FAC_PMA && PlayerInfo[i][pRank] < 9) || PlayerInfo[i][pFaction] != FAC_PMA)
-						SendClientLongMessage(i, COLOR_PMA, text);
+						SendClientLongMessage(i, COLOR_PMA, string);
 				}
 			}
 		}
@@ -9114,9 +9082,11 @@ CMD:verf(playerid, params[])
 
 CMD:f(playerid, params[])
 {
-	new text[128], string[128], faction = PlayerInfo[playerid][pFaction], rank = PlayerInfo[playerid][pRank];
+	new text[256],
+		faction = PlayerInfo[playerid][pFaction],
+		rank = PlayerInfo[playerid][pRank];
 
-	if(sscanf(params, "s[128]", text))
+	if(sscanf(params, "s[256]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /f [texto]");
 	if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} te encuentras silenciado.");
@@ -9127,18 +9097,19 @@ CMD:f(playerid, params[])
 	if(!FactionEnabled[playerid])
         return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes desactivado el chat OOC de la facción.");
 
-	format(string, sizeof(string), "(( [%s] %s %s(%d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
+	format(text, sizeof(text), "(( [%s] %s %s(%d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
 	foreach(new i : Player)
 	{
  		if(PlayerInfo[i][pFaction] == faction && FactionEnabled[i])
-   			SendClientMessage(i, COLOR_FACTIONCHAT, string);
-		else // Para no spamear al admin con 2 veces el mismo mensaje
+ 		{
+   			SendClientLongMessage(i, COLOR_FACTIONCHAT, text);
+		}
+		else if(GetPVarInt(i, "fac") == 1)
 		{
-			if(GetPVarInt(i, "fac") == 1)
-				SendClientMessage(i, COLOR_GREEN, string);
+			SendClientLongMessage(i, COLOR_GREEN, text);
 		}
 	}
-	FactionChatLog(string);
+	FactionChatLog(text);
 	return 1;
 }
 
@@ -9160,15 +9131,17 @@ CMD:checkinv(playerid, params[])
 	return 1;
 }
 
-CMD:slap(playerid, params[]) {
-	new
-	    Float:pos[3],
+CMD:slap(playerid, params[])
+{
+	new Float:pos[3],
 	    Float:hp,
 		target;
 		
-	if(sscanf(params, "u", target)) {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /slap [IDJugador/ParteDelNombre]");
-	} else if(target != INVALID_PLAYER_ID) {
+	if(sscanf(params, "u", target))
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /slap [IDJugador/ParteDelNombre]");
+
+	if(IsPlayerConnected(target))
+	{
 		GetPlayerHealthEx(target, hp);
 		SetPlayerHealthEx(target, hp - 5);
 		GetPlayerPos(target, pos[0], pos[1], pos[2]);
@@ -13232,9 +13205,9 @@ CMD:check(playerid, params[])
 
 CMD:gooc(playerid, params[])
 {
-	new text[128], string[128];
+	new text[256];
 
- 	if(sscanf(params, "s[128]", text))
+ 	if(sscanf(params, "s[256]", text))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} [/go]oc [mensaje]");
     if(OOCStatus == 0 && PlayerInfo[playerid][pAdmin] < 2)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} OOC global desactivado.");
@@ -13243,15 +13216,14 @@ CMD:gooc(playerid, params[])
 
 	if(PlayerInfo[playerid][pAdmin] >= 2 && AdminDuty[playerid])
 	{
-		format(string, sizeof(string), "(( [Global] {3CB371}%s{87CEFA}: %s ))", GetPlayerNameEx(playerid), text);
-		SendClientMessageToAll(COLOR_GLOBALOOC, string);
-		log(playerid, LOG_CHAT, string);
-	} else
-		{
-			format(string, sizeof(string), "(( [Global] %s: %s ))", GetPlayerNameEx(playerid), text);
-			SendClientMessageToAll(COLOR_GLOBALOOC, string);
-			log(playerid, LOG_CHAT, string);
-		}
+		format(text, sizeof(text), "(( [Global] {3CB371}%s{87CEFA}: %s ))", GetPlayerNameEx(playerid), text);
+		SendClientLongMessageToAll(COLOR_GLOBALOOC, text);
+	}
+	else
+	{
+		format(text, sizeof(text), "(( [Global] %s: %s ))", GetPlayerNameEx(playerid), text);
+		SendClientLongMessageToAll(COLOR_GLOBALOOC, text);
+	}
 	return 1;
 }
 
@@ -13287,17 +13259,17 @@ CMD:susurrar(playerid, params[])
 	return 1;
 }
 
-CMD:vers(playerid, params[]) {
-
-	if(GetPVarInt(playerid, "vers") == 0) {
+CMD:vers(playerid, params[])
+{
+	if(GetPVarInt(playerid, "vers") == 0)
+	{
 		SetPVarInt(playerid, "vers", 1);
 		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros activado.");
-		return 1;
 	}
-	if(GetPVarInt(playerid, "vers") == 1) {
+	else if(GetPVarInt(playerid, "vers") == 1)
+	{
 		SetPVarInt(playerid, "vers", 0);
 		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros desactivado.");
-		return 1;
 	}
 	return 1;
 }
@@ -13357,7 +13329,7 @@ CMD:vb(playerid, params[])
 
 CMD:b(playerid, params[])
 {
-	new text[256], string[256];
+	new text[256];
 
 	if(sscanf(params, "s[256]", text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /b [mensaje]");
@@ -13369,8 +13341,7 @@ CMD:b(playerid, params[])
 		    SendFMessage(playerid, COLOR_YELLOW2, "No puedes hablar por /b por %d segundos.", PlayerInfo[playerid][pMuteB]);
 		return 1;
 	}
-	format(string, sizeof(string), "%s", text);
-	PlayerLocalMessage(playerid, 15.0, string);
+	PlayerLocalMessage(playerid, 15.0, text);
 	if(PlayerInfo[playerid][pAdmin] <= 1)
 	    PlayerInfo[playerid][pMuteB] = 5;
 	    
@@ -13379,18 +13350,36 @@ CMD:b(playerid, params[])
 	
 CMD:mp(playerid, params[])
 {
-	new targetid, text[128];
+	new targetid,
+		text[256],
+		string[256];
 
 	if(sscanf(params, "us[128]", targetid, text))
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mp [ID/Jugador] [mensaje]");
 	if(!PMsEnabled[playerid] && !AdminDuty[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes los mps bloqueados. Usa '/toggle mps' para activarlos.");
-	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID || targetid == playerid)
+	if(!IsPlayerConnected(targetid) || targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} Jugador inválido");
     if(TiempoEsperaMps[playerid] != 0)
 	    return SendClientMessage(playerid, COLOR_WHITE, "Debes esperar 5 segundos antes de usar nuevamente el comando.");
+	if(!PMsEnabled[targetid] && !AdminDuty[playerid])
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} el usuario ha bloqueado los susurros.");
 
-	OnPlayerPrivmsg(playerid, targetid, text);
+	format(string, sizeof(string), "[OOC]: MP de %s(%d): %s", GetPlayerNameEx(playerid), playerid, text);
+	SendClientLongMessage(targetid, COLOR_MEDIUMBLUE, string);
+	format(string, sizeof(string), "[OOC]: MP a %s(%d): %s", GetPlayerNameEx(targetid), targetid, text);
+	SendClientLongMessage(playerid, COLOR_MEDIUMBLUE, string);
+	log(playerid, LOG_CHAT, string);
+
+	format(string, sizeof(string), "[MPS] ID %d a ID %d: %s", playerid, targetid, text);
+	foreach(new i : Player)
+	{
+		if(GetPVarInt(i, "pms") == 1)
+		{
+			SendClientLongMessage(i, 0x00B400DC, string);
+		}
+	}
+	
 	if(PlayerInfo[playerid][pAdmin] <= 1)
 	{
 		TiempoEsperaMps[playerid] = 1;
@@ -13406,22 +13395,23 @@ public TimeMps(playerid)
 }
 
 
-CMD:mps(playerid, params[]) {
-	
-	if(GetPVarInt(playerid, "pms") == 0) {
+CMD:mps(playerid, params[])
+{
+	if(GetPVarInt(playerid, "pms") == 0)
+	{
 		SetPVarInt(playerid, "pms", 1);
 		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers activado.");
-		return 1;
 	}
-	if(GetPVarInt(playerid, "pms") == 1) {
+	else if(GetPVarInt(playerid, "pms") == 1)
+	{
 		SetPVarInt(playerid, "pms", 0);
 		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers desactivado.");
-		return 1;
 	}
 	return 1;
 }
 
-CMD:rerollplates(playerid, params[]) {
+CMD:rerollplates(playerid, params[])
+{
 	setVehicleRandomPlates();
 	SendClientMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8}Se han reseteado todas las patentes");
 	return 1;
@@ -13519,9 +13509,7 @@ CMD:a(playerid, params[])
 
 CMD:admin(playerid, params[])
 {
-	new text[256],
-		string[128],
-		string2[128];
+	new text[256];
 
 	if(sscanf(params, "s[256]", text))
 	{
@@ -13530,17 +13518,7 @@ CMD:admin(playerid, params[])
 	else
 	{
 		format(text, sizeof(text), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), text);
-		if(strlen(text) > 128)
-		{
-  			strmid(string, text, 0, 127);
-		    strmid(string2, text, 127, 255);
-		    AdministratorMessage(COLOR_ACHAT, string, 2);
-		    AdministratorMessage(COLOR_ACHAT, string2, 2);
-		}
-		else
-		{
-		    AdministratorMessage(COLOR_ACHAT, string, 2);
-		}
+  		AdministratorMessage(COLOR_ACHAT, text, 2);
 	}
 	return 1;
 }
