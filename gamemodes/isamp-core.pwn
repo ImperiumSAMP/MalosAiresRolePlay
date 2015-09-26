@@ -1750,7 +1750,7 @@ public OnPlayerText(playerid, text[])
     if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR)
 	{
         format(string, sizeof(string), "%s dice: %s", name, text);
-		ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
 	}
@@ -1769,7 +1769,7 @@ public OnPlayerText(playerid, text[])
 		else
 		{
 			format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
-			ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		}
 		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
 		log(playerid, LOG_CHAT, string);
@@ -1806,136 +1806,136 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 	//=====================================================================================================================
 		if(strcmp(cmd,"/toggle",true)==0)
 		{
-	 	if(IsPlayerConnected(playerid))
-	 	{
-			new x_info[128];
-			x_info = strtok(cmdtext, idx);
-			if(!strlen(x_info))
-			{
-				if(PlayerInfo[playerid][pAdmin] < 2)
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
-				else
-					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - admin]");
-				return 1;
-			}
-	  		else if(strcmp(x_info,"mps",true) == 0)
-			{
-				if(PMsEnabled[playerid])
+		 	if(IsPlayerConnected(playerid))
+		 	{
+				new x_info[128];
+				x_info = strtok(cmdtext, idx);
+				if(!strlen(x_info))
 				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes privados.");
-				    PMsEnabled[playerid] = false;
+					if(PlayerInfo[playerid][pAdmin] < 2)
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
+					else
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - admin]");
+					return 1;
 				}
-				else
+		  		else if(strcmp(x_info,"mps",true) == 0)
 				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
-				    PMsEnabled[playerid] = true;
+					if(PMsEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes privados.");
+					    PMsEnabled[playerid] = false;
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
+					    PMsEnabled[playerid] = true;
+					}
 				}
-			}
- 	  		else if(strcmp(x_info,"nicks",true) == 0)
-			{
-				if(NicksEnabled[playerid])
+	 	  		else if(strcmp(x_info,"nicks",true) == 0)
 				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás los nicks de los demas jugadores sobre sus cabezas.");
-				    NicksEnabled[playerid] = false;
-				    foreach(new i : Player)
-				    	ShowPlayerNameTagForPlayer(playerid, i, false);
+					if(NicksEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás los nicks de los demas jugadores sobre sus cabezas.");
+					    NicksEnabled[playerid] = false;
+					    foreach(new i : Player)
+					    	ShowPlayerNameTagForPlayer(playerid, i, false);
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
+					    NicksEnabled[playerid] = true;
+					    foreach(new i : Player)
+					    {
+					        if(usingMask[i] == false || PlayerInfo[playerid][pAdmin])
+					    		ShowPlayerNameTagForPlayer(playerid, i, true);
+						}
+					}
 				}
-				else
+		  		else if(strcmp(x_info,"noticias",true) == 0)
 				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
-				    NicksEnabled[playerid] = true;
-				    foreach(new i : Player)
-				    {
-				        if(usingMask[i] == false || PlayerInfo[playerid][pAdmin])
-				    		ShowPlayerNameTagForPlayer(playerid, i, true);
+					if(NewsEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás noticias de CTR-MAN.");
+					    NewsEnabled[playerid] = false;
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás noticias de CTR-MAN.");
+					    NewsEnabled[playerid] = true;
+					}
+				}
+	 			else if(strcmp(x_info,"faccion",true) == 0)
+				{
+					if(FactionEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes OOC de tu facción.");
+					    FactionEnabled[playerid] = false;
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
+					    FactionEnabled[playerid] = true;
+					}
+				}
+	 			else if(strcmp(x_info,"radio",true) == 0)
+				{
+					if(RadioEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
+					    RadioEnabled[playerid] = false;
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
+					    RadioEnabled[playerid] = true;
+					}
+				}
+	 			else if(strcmp(x_info,"hud",true) == 0)
+				{
+					if(HudEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás las interfaces gráficas del combustible, velocidad, hambre, etc.");
+					    HudEnabled[playerid] = false;
+					    HidePlayerSpeedo(playerid);
+						HidePlayerBasicNeeds(playerid);
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás nuevamente las interfaces gráficas del combustible, velocidad, hambre, etc.");
+					    HudEnabled[playerid] = true;
+					    ShowPlayerSpeedo(playerid);
+					    ShowPlayerBasicNeeds(playerid);
+					}
+				}
+		  		else if(strcmp(x_info,"telefono",true) == 0)
+				{
+					if(PhoneEnabled[playerid])
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
+			            PhoneEnabled[playerid] = false;
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
+					    PhoneEnabled[playerid] = true;
+					}
+				}
+		  		else if(strcmp(x_info,"adminmsgs",true) == 0 && PlayerInfo[playerid][pAdmin] > 1)
+				{
+					if(GetPVarInt(playerid, "adminmsgs") == 1)
+					{
+					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos.");
+			            SetPVarInt(playerid, "adminmsgs", 0);
+					}
+					else
+					{
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
+						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Siempre recuerda volver a activarlo, por la vital importancia de estos mensajes.");
+					    SetPVarInt(playerid, "adminmsgs", 1);
 					}
 				}
 			}
-	  		else if(strcmp(x_info,"noticias",true) == 0)
-			{
-				if(NewsEnabled[playerid])
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás noticias de CTR-MAN.");
-				    NewsEnabled[playerid] = false;
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás noticias de CTR-MAN.");
-				    NewsEnabled[playerid] = true;
-				}
-			}
- 			else if(strcmp(x_info,"faccion",true) == 0)
-			{
-				if(FactionEnabled[playerid])
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes OOC de tu facción.");
-				    FactionEnabled[playerid] = false;
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
-				    FactionEnabled[playerid] = true;
-				}
-			}
- 			else if(strcmp(x_info,"radio",true) == 0)
-			{
-				if(RadioEnabled[playerid])
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
-				    RadioEnabled[playerid] = false;
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
-				    RadioEnabled[playerid] = true;
-				}
-			}
- 			else if(strcmp(x_info,"hud",true) == 0)
-			{
-				if(HudEnabled[playerid])
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás las interfaces gráficas del combustible, velocidad, hambre, etc.");
-				    HudEnabled[playerid] = false;
-				    HidePlayerSpeedo(playerid);
-					HidePlayerBasicNeeds(playerid);
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás nuevamente las interfaces gráficas del combustible, velocidad, hambre, etc.");
-				    HudEnabled[playerid] = true;
-				    ShowPlayerSpeedo(playerid);
-				    ShowPlayerBasicNeeds(playerid);
-				}
-			}
-	  		else if(strcmp(x_info,"telefono",true) == 0)
-			{
-				if(PhoneEnabled[playerid])
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
-		            PhoneEnabled[playerid] = false;
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
-				    PhoneEnabled[playerid] = true;
-				}
-			}
-	  		else if(strcmp(x_info,"adminmsgs",true) == 0 && PlayerInfo[playerid][pAdmin] > 1)
-			{
-				if(GetPVarInt(playerid, "adminmsgs") == 1)
-				{
-				    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos.");
-		            SetPVarInt(playerid, "adminmsgs", 0);
-				}
-				else
-				{
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
-					SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Siempre recuerda volver a activarlo, por la vital importancia de estos mensajes.");
-				    SetPVarInt(playerid, "adminmsgs", 1);
-				}
-			}
-		}
-		return 1;
+			return 1;
 		}
 		if(strcmp(cmd, "/togglegooc", true) == 0)
 		{
@@ -4857,98 +4857,32 @@ stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5,
 			    SendClientLongMessage(i, col1, string);
 			}
 		}
-		else
-		{
-			if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
-	  		{
-				GetPlayerPos(i, posx, posy, posz);
-				tempposx = (oldposx -posx);
-				tempposy = (oldposy -posy);
-				tempposz = (oldposz -posz);
+		else if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
+  		{
+			GetPlayerPos(i, posx, posy, posz);
+			tempposx = (oldposx -posx);
+			tempposy = (oldposy -posy);
+			tempposz = (oldposz -posz);
 
-				if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
-				{
-					SendClientLongMessage(i, col1, string);
-				}
-				else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
-				{
-					SendClientLongMessage(i, col2, string);
-				}
-				else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
-				{
-					SendClientLongMessage(i, col3, string);
-				}
-				else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
-				{
-					SendClientLongMessage(i, col4, string);
-				}
-				else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
-				{
-					SendClientLongMessage(i, col5, string);
-				}
-			}
-		}
-	}
-	return 1;
-}
-
-//============================ProxDetector Experimental=========================
-
-stock ProxDetector2(Float:radi, playerid, string[], col1, col2, col3, col4, col5, show_self = 1)
-{
-	new Float:posx, Float:posy, Float:posz;
-	new Float:oldposx, Float:oldposy, Float:oldposz;
-	new Float:tempposx, Float:tempposy, Float:tempposz;
-	
-	new str_to_show[256];
-	strmid(str_to_show, string, 0, 243);
-
-	GetPlayerPos(playerid, oldposx, oldposy, oldposz);
-
-	foreach(new i : Player)
-	{
-	    if(i == playerid)
-		{
-		    if(show_self)
-		    {
-    			SendClientLongMessage(i, col1, str_to_show);
-		    }
-		}
-		else
-		{
-	  		if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
+			if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
 			{
-				GetPlayerPos(i, posx, posy, posz);
-
-				tempposx = (oldposx -posx);
-				tempposy = (oldposy -posy);
-				tempposz = (oldposz -posz);
-
-				if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
-				{
-    				strins(str_to_show, "[Muy cerca] ", 0, 12);
-		        	SendClientLongMessage(i, col1, str_to_show);
-				}
-				else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
-				{
-    				strins(str_to_show, "[Cerca] ", 0, 8);
-		        	SendClientLongMessage(i, col2, str_to_show);
-				}
-				else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
-				{
-    				strins(str_to_show, "[Distante] ", 0, 11);
-		        	SendClientLongMessage(i, col3, str_to_show);
-				}
-				else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
-				{
-    				strins(str_to_show, "[Lejos] ", 0, 8);
-		        	SendClientLongMessage(i, col4, str_to_show);
-				}
-				else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
-				{
-    				strins(str_to_show, "[Muy lejos] ", 0, 12);
-		        	SendClientLongMessage(i, col5, str_to_show);
-				}
+				SendClientLongMessage(i, col1, string);
+			}
+			else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
+			{
+				SendClientLongMessage(i, col2, string);
+			}
+			else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
+			{
+				SendClientLongMessage(i, col3, string);
+			}
+			else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
+			{
+				SendClientLongMessage(i, col4, string);
+			}
+			else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
+			{
+				SendClientLongMessage(i, col5, string);
 			}
 		}
 	}
@@ -6094,7 +6028,7 @@ PlayerActionMessage(playerid, Float:radius, const message[])
 		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), message);
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], message);
-	ProxDetector2(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 	return 1;
 }
 
@@ -6127,7 +6061,7 @@ PlayerPlayerActionMessage(playerid, targetid, Float:radius, const message[])
 		else
 		    format(string, sizeof(string), "* Enmascarado %d %s Enmascarado %d.", maskNumber[playerid], message, maskNumber[targetid]);
 	}
-	ProxDetector2(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
 	return 1;
 }
 
@@ -8456,7 +8390,7 @@ CMD:departamento(playerid, params[])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
  		format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
-	ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	
 	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player)
@@ -8890,7 +8824,7 @@ CMD:radio(playerid, params[])
 		format(string, sizeof(string), "%s dice por radio: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
-	ProxDetector2(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
+	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 
 	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
@@ -9059,7 +8993,7 @@ CMD:gritar(playerid, params[])
 		format(string, sizeof(string), "%s grita: ¡¡%s!!", GetPlayerNameEx(playerid), string);
 	else
 	    format(string, sizeof(string), "Enmascarado %d grita: ¡¡%s!!", maskNumber[playerid], string);
-	ProxDetector2(35.0, playerid, string, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
+	ProxDetector(35.0, playerid, string, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
 	return 1;
 }
 
@@ -10662,7 +10596,7 @@ CMD:megafono(playerid, params[])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar el megáfono, te encuentras silenciado.");
 
 	format(text, sizeof(text), "[Megáfono]: %s %s: ¡%s!", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
-	ProxDetector2(60.0, playerid, text, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA);
+	ProxDetector(60.0, playerid, text, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA);
 	return 1;
 }
 
@@ -13308,7 +13242,7 @@ CMD:local(playerid, params[])
 		format(text, sizeof(text), "%s dice: %s", GetPlayerNameEx(playerid), text);
 	else
 	    format(text, sizeof(text), "Enmascarado %d dice: %s", maskNumber[playerid], text);
-	ProxDetector2(15.0, playerid, text, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+	ProxDetector(15.0, playerid, text, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 	return 1;
 }
 
