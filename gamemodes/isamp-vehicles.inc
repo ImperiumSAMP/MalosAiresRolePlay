@@ -989,13 +989,13 @@ stock SaveItemOnTrunk(playerid, playerhand, vehicleid, trunkslot)
 
 //==============================[EXPERIMENTAL]==================================
 
-CMD:mal2(playerid, params[])
+CMD:mal(playerid, params[])
 {
- 	cmd_maletero2(playerid, params);
+ 	cmd_maletero(playerid, params);
 	return 1;
 }
 
-CMD:maletero2(playerid, params[])
+CMD:maletero(playerid, params[])
 {
 	new vehicleid = GetClosestVehicle(playerid, 5.0),
 		returnstr[32],
@@ -1203,7 +1203,8 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
 	{
         new itemid,
             itemparam,
-            str[128];
+            str[128],
+            free_hand = SearchFreeHand(playerid);
 
     	if(IsPlayerInAnyVehicle(playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Debes salir del vehículo primero.");
@@ -1217,16 +1218,12 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 		if(PlayerInfo[playerid][pHealth] < 25)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-		if(GetHandItem(playerid, HAND_RIGHT) != 0)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
-
-		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", container_id, vehicleid, listitem);
+		if(free_hand == -1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
 
 		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
-			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
-
-			SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creación lógica y grafica en la mano.
 
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -1247,13 +1244,13 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
 
 //============================[FIN EXPERIMENTAL]================================
 
-CMD:mal(playerid, params[])
+CMD:mal2(playerid, params[])
 {
- 	cmd_maletero(playerid, params);
+ 	cmd_maletero2(playerid, params);
 	return 1;
 }
 
-CMD:maletero(playerid, params[])
+CMD:maletero2(playerid, params[])
 {
 	new vehicleid = GetClosestVehicle(playerid, 5.0),
 		returnstr[32],

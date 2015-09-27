@@ -136,13 +136,13 @@ GetHouseMaxLockerSlots(houseid)
 
 //=================================COMANDOS=====================================
 
-CMD:arm(playerid, params[])
+CMD:arm2(playerid, params[])
 {
- 	cmd_armario(playerid, params);
+ 	cmd_armario2(playerid, params);
 	return 1;
 }
 
-CMD:armario(playerid, params[])
+CMD:armario2(playerid, params[])
 {
 	new cmd[32],
 		param1,
@@ -448,13 +448,13 @@ stock SaveItemOnLocker(playerid, playerhand, houseid, lockerslot)
 
 //============================[EXPERIMENTAL]====================================
 
-CMD:arm2(playerid, params[])
+CMD:arm(playerid, params[])
 {
- 	cmd_armario2(playerid, params);
+ 	cmd_armario(playerid, params);
 	return 1;
 }
 
-CMD:armario2(playerid, params[])
+CMD:armario(playerid, params[])
 {
 	new cmd[32],
 		param1,
@@ -714,7 +714,8 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 	{
         new itemid,
             itemparam,
-            str[128];
+            str[128],
+			free_hand = SearchFreeHand(playerid);
 
 		if(GetPlayerHouse(playerid) != houseid)
     		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la casa.");
@@ -724,16 +725,12 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 	  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	 	if(PlayerInfo[playerid][pHealth] < 25)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-		if(GetHandItem(playerid, HAND_RIGHT) != 0)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
-
-		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", container_id, houseid, listitem);
+		if(free_hand == -1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
 
 		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
-			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
-
-			SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creación lógica y grafica en la mano.
 
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);

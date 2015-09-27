@@ -139,9 +139,9 @@ stock LoadInvInfo(playerid)
 
 //================================COMANDOS======================================
 
-CMD:inv(playerid, params[])
+CMD:inv2(playerid, params[])
 {
-	cmd_inventario(playerid, params);
+	cmd_inventario2(playerid, params);
 	return 1;
 }
 
@@ -208,7 +208,7 @@ stock SaveItemOnInv(playerid, playerhand, invslot)
 	return 1;
 }
 
-CMD:inventario(playerid, params[])
+CMD:inventario2(playerid, params[])
 {
 	new returnid,
 		cmd[32];
@@ -243,13 +243,13 @@ CMD:inventario(playerid, params[])
 
 //==============================[EXPERIMENTAL]==================================
 
-CMD:inv2(playerid, params[])
+CMD:inv(playerid, params[])
 {
-	cmd_inventario2(playerid, params);
+	cmd_inventario(playerid, params);
 	return 1;
 }
 
-CMD:inventario2(playerid, params[])
+CMD:inventario(playerid, params[])
 {
 	new returnid,
 		cmd[32];
@@ -312,8 +312,7 @@ stock DeletePlayerInventory(playerid)
 
 Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
 {
-	new pid = Container_Selection[playerid][csOriginalId],
- 		container_id = Container_Selection[playerid][csId];
+	new container_id = Container_Selection[playerid][csId];
 
 	ResetContainerSelection(playerid);
 
@@ -321,18 +320,15 @@ Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
 	{
         new itemid,
             itemparam,
-            str[128];
+            str[128],
+            free_hand = SearchFreeHand(playerid);
 
-		if(GetHandItem(playerid, HAND_RIGHT) != 0)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
-
-		SendFMessage(playerid, COLOR_WHITE, "Vector ID %d e id original es %d, en slot %d", container_id, pid, listitem);
+		if(free_hand == -1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
 
 		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
-			SendFMessage(playerid, COLOR_WHITE, "Seleccionado del slot %d, el item %d con parametro %d", listitem, itemid, itemparam);
-
-			SetHandItemAndParam(playerid, HAND_RIGHT, itemid, itemparam); // Creación lógica y grafica en la mano.
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creación lógica y grafica en la mano.
 
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);

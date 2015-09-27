@@ -8368,11 +8368,11 @@ CMD:departamento(playerid, params[])
 {
 	new text[256],
 		string[256],
-		factionID = PlayerInfo[playerid][pFaction];
+		faction_id = PlayerInfo[playerid][pFaction];
 
-	if(factionID == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
+	if(faction_id == 0 || (PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] == 10))
 	    return 1;
-	if(FactionInfo[factionID][fType] != FAC_TYPE_GOV)
+	if(FactionInfo[faction_id][fType] != FAC_TYPE_GOV)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes permiso para hablar por esta frecuencia.");
 	if(sscanf(params, "s[256]", text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/d)epartamento [texto]");
@@ -8390,7 +8390,7 @@ CMD:departamento(playerid, params[])
  		format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 	
-	format(string, sizeof(string), "[%s %s]: %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	format(string, sizeof(string), "[DEPARTAMENTAL | %s] %s %s: %s", FactionInfo[faction_id][fName], GetRankName(faction_id, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
  	foreach(new i : Player)
  	{
 		if(FactionInfo[PlayerInfo[i][pFaction]][fType] == FAC_TYPE_GOV && RadioEnabled[i])
@@ -8824,7 +8824,7 @@ CMD:radio(playerid, params[])
 	    format(string, sizeof(string), "Enmascarado %d dice por radio: %s", maskNumber[playerid], text);
 	ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 0);
 
-	format(string, sizeof(string), "[RADIO]: %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	format(string, sizeof(string), "[RADIO] %s %s: %s", GetRankName(factionID, PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pFaction] == factionID)
@@ -8988,10 +8988,10 @@ CMD:gritar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/g)ritar [texto]");
 
 	if(!usingMask[playerid])
-		format(string, sizeof(string), "%s grita: ¡¡%s!!", GetPlayerNameEx(playerid), string);
+		format(string, sizeof(string), "%s {FF0000}grita{FFFFFF}: ¡¡%s!!", GetPlayerNameEx(playerid), string);
 	else
-	    format(string, sizeof(string), "Enmascarado %d grita: ¡¡%s!!", maskNumber[playerid], string);
-	ProxDetector(35.0, playerid, string, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
+	    format(string, sizeof(string), "Enmascarado %d {FF0000}grita{FFFFFF}: ¡¡%s!!", maskNumber[playerid], string);
+	ProxDetector(35.0, playerid, string, COLOR_DEEPWHITE, COLOR_DEEPWHITE, COLOR_DEEPWHITE, COLOR_DEEPWHITE, COLOR_DEEPWHITE);
 	return 1;
 }
 
@@ -9029,7 +9029,7 @@ CMD:f(playerid, params[])
 	if(!FactionEnabled[playerid])
         return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes desactivado el chat OOC de la facción.");
 
-	format(text, sizeof(text), "(( [%s] %s %s(%d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
+	format(text, sizeof(text), "(( [%s] %s %s (ID %d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
 	foreach(new i : Player)
 	{
  		if(PlayerInfo[i][pFaction] == faction && FactionEnabled[i])
