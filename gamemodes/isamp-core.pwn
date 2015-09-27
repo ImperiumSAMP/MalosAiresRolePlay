@@ -2091,7 +2091,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					idx++;
 				}
 				new offset = idx;
-				new result[128];
+				new result[256];
 				while ((idx < length) && ((idx - offset) < (sizeof(result) - 1)))
 				{
 					result[idx - offset] = cmdtext[idx];
@@ -2103,9 +2103,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /do [acción]");
 					return 1;
 				}
-				new form[128];
-				format(form, sizeof(form), "%s", result);
-				PlayerDoMessage(playerid, 15.0, form);
+				PlayerDoMessage(playerid, 15.0, result);
 			}
 			return 1;
 		}
@@ -5972,11 +5970,11 @@ stock SendClientLongMessage(playerid, color, const message[])
 	    new str1[130],
 	        str2[130];
 
-		strmid(str1, message, 0, 127);
-		strins(str1, "...", 127, 3);
+		strmid(str1, message, 0, 126);
+		format(str1, sizeof(str1), "%s...", str1);
 
-		strmid(str2, message, 127, 250);
-		strins(str2, "...", 0, 3);
+		strmid(str2, message, 126, strlen(message));
+		format(str2, sizeof(str2), "...%s", str2);
 
 		SendClientMessage(playerid, color, str1);
 		SendClientMessage(playerid, color, str2);
@@ -5995,11 +5993,11 @@ stock SendClientLongMessageToAll(color, const message[])
 	    new str1[130],
 	        str2[130];
 
-		strmid(str1, message, 0, 127);
-		strins(str1, "...", 127, 3);
+		strmid(str1, message, 0, 126);
+		format(str1, sizeof(str1), "%s...", str1);
 
-		strmid(str2, message, 127, 250);
-		strins(str2, "...", 0, 3);
+		strmid(str2, message, 126, strlen(message));
+		format(str2, sizeof(str2), "...%s", str2);
 
 		SendClientMessageToAll(color, str1);
 		SendClientMessageToAll(color, str2);
@@ -9811,16 +9809,15 @@ CMD:cla(playerid, params[])
 
 CMD:clasificado(playerid,params[])
 {
-	new text[128], string[128];
+	new text[256],
+	    string[128];
 
-	if(gPlayerLogged[playerid] != 1)
-		return 1;
-    if(sscanf(params, "s[128]", text))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/cla)sificado [texto - 64 carácteres] $80");
+    if(sscanf(params, "s[256]", text))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/cla)sificado [texto] $80");
     if(PlayerInfo[playerid][pLevel] < 2)
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"Debes ser al menos nivel 2 para enviar un anuncio.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ser al menos nivel 2 para enviar un anuncio.");
     if(AllowAdv[playerid] != 1)
-        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Espere 60 segundos antes de enviar otro anuncio.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Espere 60 segundos antes de enviar otro anuncio.");
     if(GetPlayerCash(playerid) < PRICE_ADVERTISE)
 	{
     	SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $%d.", PRICE_ADVERTISE);
@@ -9832,18 +9829,22 @@ CMD:clasificado(playerid,params[])
 	GameTextForPlayer(playerid, string, 1400, 5);
 	SetTimerEx("AllowAd", 60000, false, "i", playerid);
 	AllowAdv[playerid] = 0;
-	format(string, sizeof(string), "Publicidad: %s", text);
+	format(text, sizeof(text), "[PUBLICIDAD]: %s", text);
+	format(string, sizeof(string), "[STAFF] Anuncio enviado por %s (ID %d)", GetPlayerNameEx(playerid), playerid);
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pAdmin] >= 2)
 		{
-			SendClientMessage(i, COLOR_ADVERTISMENT, string);
-			SendFMessage(i, COLOR_LIGHTYELLOW2, "[STAFF] Anuncio enviado por %s (ID %d)", GetPlayerNameEx(playerid), playerid);
-		} else
-			SendClientMessage(i, COLOR_ADVERTISMENT, string);
+			SendClientLongMessage(i, COLOR_ADVERTISMENT, text);
+			SendClientMessage(i, COLOR_LIGHTYELLOW2, string);
+		}
+		else
+		{
+			SendClientLongMessage(i, COLOR_ADVERTISMENT, text);
+		}
 	}
 	GiveFactionMoney(FAC_MAN, PRICE_ADVERTISE);
-	printf("[Anuncio] %s: %s", GetPlayerNameEx(playerid), text);
+	printf("[%s] %s", GetPlayerNameEx(playerid), text);
 	return 1;
 }
 
