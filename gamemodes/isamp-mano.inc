@@ -230,6 +230,12 @@ CMD:dari(playerid, params[])
 	return 1;
 }
 
+CMD:mc(playerid, params[])
+{
+	cmd_mano(playerid, "cambiar");
+	return 1;
+}
+
 CMD:mano(playerid, params[])
 {
 	new command[32];

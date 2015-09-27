@@ -422,7 +422,7 @@ forward BackupClear(playerid, calledbytimer);
 forward CloseGate(gateID);
 forward AllowAd(playerid);
 forward Unfreeze(playerid);
-forward SendFactionMessage(faction, color, string[]);
+forward SendFactionMessage(faction, color, const string[]);
 forward SaveAccount(playerid);
 forward SetPlayerSpawn(playerid);
 forward PayDay(playerid);
@@ -1736,11 +1736,16 @@ public OnPlayerText(playerid, text[])
 		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		if(IsPlayerConnected(Mobile[playerid]))
 		{
-		    format(string, sizeof(string), "[Voz al teléfono]: %s", text);
 		    if(Mobile[Mobile[playerid]] == playerid)
-				SendClientMessage(Mobile[playerid], COLOR_WHITE, string);
-		} else
+		    {
+		        format(string, sizeof(string), "[Voz al teléfono]: %s", text);
+				SendClientLongMessage(Mobile[playerid], COLOR_FADE1, string);
+			}
+		}
+		else
+		{
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} no hay nadie en la línea.");
+		}
 		format(string, sizeof(string), "[IC-TELE] %s a %s (DBID: %d) : %s", GetPlayerNameEx(playerid), GetPlayerNameEx(Mobile[playerid]), PlayerInfo[Mobile[playerid]][pID], text);
 		log(playerid, LOG_CHAT, string);
 		return 0;
@@ -5801,12 +5806,14 @@ stock ShowServerPassword() {
 
 //====================================================[Chat Functions]=============================================================
 
-public SendFactionMessage(faction, color, string[])
+public SendFactionMessage(faction, color, const string[])
 {
 	foreach(new i : Player)
 	{
 		if(PlayerInfo[i][pFaction] == faction)
-			SendClientMessage(i, color, string);
+		{
+			SendClientLongMessage(i, color, string);
+		}
 	}
 }
 
@@ -9287,13 +9294,19 @@ CMD:atender(playerid, params[])
 }
 
 CMD:sms(playerid, params[])
-	return cmd_msg(playerid, params);
+{
+	cmd_msg(playerid, params);
+	return 1;
+}
 
 CMD:msg(playerid, params[])
 {
-	new phonenumber, string[128], text[128], contact;
+	new phonenumber,
+		string[256],
+		text[256],
+		contact;
 
-	if(sscanf(params, "ds[128]", phonenumber, text))
+	if(sscanf(params, "ds[256]", phonenumber, text))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /msg [número telefónico] [texto]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
@@ -9327,23 +9340,35 @@ CMD:msg(playerid, params[])
 			
 		   	contact = IsNumberInNotebook(playerid, phonenumber);
 			if(contact != -1)
-				SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %s: %s", GetNotebookContactName(playerid, contact), text);
+			{
+			    format(string, sizeof(string), "SMS para %s: %s", GetNotebookContactName(playerid, contact), text);
+			    SendClientLongMessage(playerid, COLOR_LIGHTGREEN, string);
+			}
             else
-				SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS para %d: %s", PlayerInfo[i][pPhoneNumber], text);
+			{
+			    format(string, sizeof(string), "SMS para %d: %s", PlayerInfo[i][pPhoneNumber], text);
+			    SendClientLongMessage(playerid, COLOR_LIGHTGREEN, string);
+			}
 
 			contact = IsNumberInNotebook(i, PlayerInfo[playerid][pPhoneNumber]);
 			if(contact != -1)
-				SendFMessage(i, COLOR_LIGHTGREEN, "SMS de %s: %s", GetNotebookContactName(i, contact), text);
+			{
+			    format(string, sizeof(string), "SMS de %s: %s", GetNotebookContactName(i, contact), text);
+			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
+			}
 			else
-			    SendFMessage(i, COLOR_LIGHTGREEN, "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
-			    
+			{
+			    format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
+			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
+			}
+			
 			PhoneAnimation(playerid);
-			SMSLog(string);
 			GivePlayerCash(playerid, -PRICE_TEXT);
 			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
 			return 1;
 		}
 	}
+	SendClientMessage(playerid, COLOR_WHITE, "[Operadora]: El número al que intenta comunicarse no existe.");
 	return 1;
 }
 

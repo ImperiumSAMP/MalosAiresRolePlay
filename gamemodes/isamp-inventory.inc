@@ -163,51 +163,6 @@ stock TakeItemFromInv(playerid, playerhand, invslot)
 	return 1;
 }
 
-stock SaveItemOnInv(playerid, playerhand, invslot)
-{
- 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
-	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
-	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-
-	new validslot,
-		itemid = GetHandItem(playerid, playerhand);
-
-	if(itemid == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
-	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
-	if(!HasItemInvPermission(itemid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
-	if(GetItemType(itemid) == ITEM_CONTAINER)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este tipo de items solo está disponible para el sistema experimental '/inv2'.");
-
-	if(invslot == -1)
-	{
-	    validslot = SearchInvFreeSlot(playerid);
-		if(validslot == -1)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El inventario se encuentra lleno!");
-	} else
-		{
-	        validslot = invslot;
-			if(validslot < 0 || validslot >= INV_MAX_SLOTS)
-			   	return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-		   	if(GetInvItem(playerid, validslot) != 0)
-		   	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
-		}
-
-	SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid, playerhand));
-	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico de la mano.
-	SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
-  	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-	return 1;
-}
-
 CMD:inventario2(playerid, params[])
 {
 	new returnid,
@@ -215,8 +170,7 @@ CMD:inventario2(playerid, params[])
 
     if(sscanf(params, "s[32]I(-1)", cmd, returnid))
 	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot] - guardar/guardari [slot (opcional)]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot]");
 		PrintInvForPlayer(playerid, playerid);
     }
 	else
@@ -228,14 +182,6 @@ CMD:inventario2(playerid, params[])
 		else if(strcmp(cmd, "tomari", true) == 0)
 		{
 			TakeItemFromInv(playerid, HAND_LEFT, returnid);
-	    }
-		else if(strcmp(cmd, "guardar", true) == 0)
-		{
-			SaveItemOnInv(playerid, HAND_RIGHT, returnid);
-	    }
-		else if(strcmp(cmd, "guardari", true) == 0)
-		{
-			SaveItemOnInv(playerid, HAND_LEFT, returnid);
 	    }
 	}
 	return 1;
@@ -251,10 +197,9 @@ CMD:inv(playerid, params[])
 
 CMD:inventario(playerid, params[])
 {
-	new returnid,
-		cmd[32];
+	new cmd[24];
 
-    if(sscanf(params, "s[32]", cmd, returnid))
+    if(sscanf(params, "s[24]", cmd))
 	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} guardar");
 
@@ -281,6 +226,8 @@ CMD:inventario(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 			if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if(!HasItemInvPermission(itemid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
 			if(!Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], itemid, itemparam))
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en tu inventario.");
 
