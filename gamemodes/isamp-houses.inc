@@ -73,17 +73,17 @@ stock GetHouseLockerSpace(houseid)
 
 	new hprice = House[houseid][HousePrice];
 
-	if(hprice < 100000) return 800;
-	if(hprice < 200000) return 1000;
-	if(hprice < 300000) return 1200;
-	if(hprice < 400000) return 1400;
-	if(hprice < 500000) return 1600;
-	if(hprice < 600000) return 1700;
-	if(hprice < 700000) return 1800;
-	if(hprice < 800000) return 1900;
-	if(hprice < 900000) return 2000;
-	if(hprice < 1000000) return 2100;
-	if(hprice >= 1000000) return 2200;
+	if(hprice < 100000) return 400;
+	if(hprice < 200000) return 500;
+	if(hprice < 300000) return 600;
+	if(hprice < 400000) return 700;
+	if(hprice < 500000) return 800;
+	if(hprice < 600000) return 900;
+	if(hprice < 700000) return 1000;
+	if(hprice < 800000) return 1100;
+	if(hprice < 900000) return 1200;
+	if(hprice < 1000000) return 1300;
+	if(hprice >= 1000000) return 1400;
 
 	return 0;
 }

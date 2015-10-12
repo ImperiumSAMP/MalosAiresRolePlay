@@ -1173,24 +1173,19 @@ public OnPlayerDisconnect(playerid, reason)
 	
 	Job_WorkingPlayerDisconnect(playerid);
 	
+	DestroyPlayerInventory(playerid);
+	DestroyPlayerHands(playerid);
+	DestroyPlayerBack(playerid);
+	
  	if(gPlayerLogged[playerid])
 	{
 		switch(reason)
 		{
-	        case 0,2:
-			{
-				PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
-			}
-			case 1:{
-			    PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: a voluntad).");
-			}
+	        case 0,2: PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
+			case 1: PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: a voluntad).");
 	    }
 		SaveAccount(playerid);
 	}
-	
-	DeletePlayerInventory(playerid);
-	DeletePlayerHands(playerid);
-	DeletePlayerBack(playerid);
 	return 1;
 }
 
@@ -1586,8 +1581,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 	// Los policias en servicio que mueren no pierden las armas (no se las confiscan en el hospital)
 	if(!isPlayerCopOnDuty(playerid))
 	{
-	    ResetAndSaveHands(playerid);
-  		ResetAndSaveBack(playerid);
+	    ResetHandsWeapons(playerid);
+  		ResetBackWeapon(playerid);
 	}
 	EndPlayerDuty(playerid);
 	ResetThiefCrime(playerid);
@@ -2323,13 +2318,43 @@ public OnPlayerDataLoad(playerid)
 		
 		cache_get_field_content(0, "pContainerSQLID", result); 	PlayerInfo[playerid][pContainerSQLID] = strval(result);
 
+		//=============================MANO DERECHA=============================
+		cache_get_field_content(0, "r_hand_item", result); 		HandInfo[playerid][HAND_RIGHT][Item]	= strval(result);
+		if(GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_CONTAINER)
+		{
+		    cache_get_field_content(0, "r_hand_param", result); HandInfo[playerid][HAND_RIGHT][Amount] = Container_Load(strval(result));
+		}
+		else
+		{
+			cache_get_field_content(0, "r_hand_param", result); HandInfo[playerid][HAND_RIGHT][Amount] = strval(result);
+		}
+        //============================MANO IZQUIERDA============================
+		cache_get_field_content(0, "l_hand_item", result); 		HandInfo[playerid][HAND_LEFT][Item]  	= strval(result);
+		if(GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_CONTAINER)
+		{
+		    cache_get_field_content(0, "l_hand_param", result);  HandInfo[playerid][HAND_LEFT][Amount] = Container_Load(strval(result));
+		}
+		else
+		{
+			cache_get_field_content(0, "l_hand_param", result);  HandInfo[playerid][HAND_LEFT][Amount] = strval(result);
+		}
+        //===============================ESPALDA================================
+		cache_get_field_content(0, "back_item", result); 		BackInfo[playerid][Item] 				= strval(result);
+		if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
+		{
+		    cache_get_field_content(0, "back_param", result);	BackInfo[playerid][Amount] = Container_Load(strval(result));
+		}
+		else
+		{
+			cache_get_field_content(0, "back_param", result);	BackInfo[playerid][Amount] = strval(result);
+		}
+		//======================================================================
+		
         gPlayerLogged[playerid] = 1;
 
 		loadPlayerCarKeys(playerid); // Llavero del usuario
 		LoadInvInfo(playerid); // Info de su inventario
-		LoadHandsInfo(playerid); // Info de lo que tiene en las manos
 		LoadToysInfo(playerid); // Toys
-		LoadBackInfo(playerid); // Info de espalda
 		LoadNotebookContacts(playerid); // Carga la agenda del jugador
 
 		LoadPlayerJobData(playerid); // Info del job
@@ -2794,7 +2819,7 @@ public SaveAccount(playerid)
 	if(gPlayerLogged[playerid] && !cheater[playerid])
 	{
 		new name[MAX_PLAYER_NAME],
-			query[1550],
+			query[1700],
 			day,
 			month,
 			year,
@@ -2908,10 +2933,11 @@ public SaveAccount(playerid)
 			minute,
 			second,
 			PlayerInfo[playerid][pAccusedOf],
-			PlayerInfo[playerid][pAccusedBy]);
+			PlayerInfo[playerid][pAccusedBy]
+		);
 		    
 		// Float.
-		format(query,sizeof(query),"%s, `pX`='%f', `pY`='%f', `pZ`='%f', `pA`='%f', `pAdictionPercent`='%f', `pHealth`='%f', `pArmour`='%f' WHERE `Id` = %d",
+		format(query, sizeof(query), "%s, `pX`='%f', `pY`='%f', `pZ`='%f', `pA`='%f', `pAdictionPercent`='%f', `pHealth`='%f', `pArmour`='%f'",
 		    query,
 		    PlayerInfo[playerid][pX],
 		    PlayerInfo[playerid][pY],
@@ -2919,8 +2945,28 @@ public SaveAccount(playerid)
 		    PlayerInfo[playerid][pA],
 		    PlayerInfo[playerid][pAdictionPercent],
 		    PlayerInfo[playerid][pHealth],
-		    PlayerInfo[playerid][pArmour],
-		    PlayerInfo[playerid][pID]);
+		    PlayerInfo[playerid][pArmour]
+		);
+
+		// Manos y espalda.
+
+		if(GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_CONTAINER)
+            HandInfo[playerid][HAND_RIGHT][Amount] = Container_GetSQLID(HandInfo[playerid][HAND_RIGHT][Amount]);
+        if(GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_CONTAINER)
+            HandInfo[playerid][HAND_LEFT][Amount]  = Container_GetSQLID(HandInfo[playerid][HAND_LEFT][Amount]);
+        if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
+            BackInfo[playerid][Amount] = Container_GetSQLID(BackInfo[playerid][Amount]);
+            
+        format(query, sizeof(query), "%s, r_hand_item=%d, r_hand_param=%d, l_hand_item=%d, l_hand_param=%d, back_item=%d, back_param=%d WHERE `Id` = %d",
+            query,
+            HandInfo[playerid][HAND_RIGHT][Item],
+            HandInfo[playerid][HAND_RIGHT][Amount],
+            HandInfo[playerid][HAND_LEFT][Item],
+            HandInfo[playerid][HAND_LEFT][Amount],
+            BackInfo[playerid][Item],
+            BackInfo[playerid][Amount],
+            PlayerInfo[playerid][pID]
+		);
 			    
 		mysql_function_query(dbHandle, query, false, "", "");
 
@@ -9215,7 +9261,8 @@ CMD:hora(playerid, params[])
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
 
-	switch(date[1]) {
+	switch(date[1])
+	{
 		case 1:	mText = "Enero";
 		case 2:	mText = "Febrero";
 		case 3:	mText = "Marzo";
@@ -9241,14 +9288,21 @@ CMD:hora(playerid, params[])
 	return 1;
 }
 
-CMD:servicios(playerid, params[]) {
+CMD:servicios(playerid, params[])
+{
     SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"Emergencias: 911 | Taller mecánico: 555 | Taxi: 444 | Radio CTR-MAN: sms al 3900");
     return 1;
 }
 
-CMD:telefono(playerid,params[])
+CMD:tel(playerid, params[])
 {
-    
+	cmd_telefono(playerid, params);
+	return 1;
+}
+
+
+CMD:telefono(playerid, params[])
+{
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(PhoneHand[playerid] == 0)
@@ -9361,7 +9415,7 @@ CMD:msg(playerid, params[])
 			    format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
 			}
-			
+			    
 			PhoneAnimation(playerid);
 			GivePlayerCash(playerid, -PRICE_TEXT);
 			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
@@ -14130,7 +14184,7 @@ CMD:ckearplayer(playerid,params[])
 		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
 		return 1;
 	}
-	
+
 	if(GetPVarInt(playerid, "ckeandoplayer") == PlayerInfo[targetid][pID])
 	{
 		if(house != 0) // Si tiene casa propia
@@ -14231,11 +14285,11 @@ CMD:ckearplayer(playerid,params[])
 		PlayerInfo[targetid][pEcstasy] = 0;
 
 		PlayerInfo[targetid][pMask] = 0;
-		
+
 		newmoney = GetPlayerMoney(targetid) / 4;
     	PlayerInfo[targetid][pBank] = newmoney;
     	SetPlayerCash(targetid, 0);
-    	
+
 		format(string, sizeof(string), "[STAFF] el administrador %s ha CKeado a %s. (Nuevo nombre: %s)", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), newname);
 		AdministratorMessage(COLOR_ADMINCMD, string, 2);
 		SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El administrador %s ha CKeado tu cuenta. Tu nuevo nombre es %s.", GetPlayerNameEx(playerid), newname);

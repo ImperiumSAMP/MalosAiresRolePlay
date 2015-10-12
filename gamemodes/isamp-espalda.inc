@@ -5,10 +5,6 @@
 
 //===========================MODELADO DE ESPALDA================================
 
-//================================CONSTANTES====================================
-
-#define SLOT_TYPE_BACK          5
-
 //============================VARIABLES INTERNAS================================
 
 new BackInfo[MAX_PLAYERS][SlotInfo];
@@ -28,14 +24,14 @@ static const BackWeapons[] =
 	ITEM_ID_MOCHILAMEDIANA
 };
 
-stock bool:HasBackPermission(itemid)
+stock HasBackPermission(itemid)
 {
 	for(new i = 0; i < sizeof(BackWeapons); i++)
 	{
 	    if(itemid == BackWeapons[i])
-	        return true;
+	        return 1;
 	}
-	return false;
+	return 0;
 }
 
 stock GetBackItem(playerid)
@@ -56,38 +52,15 @@ stock ResetBackInfo(playerid)
 
 stock SetBackItemAndParam(playerid, itemid, param)
 {
-	new query[128];
 	if(BackInfo[playerid][Item] > 0)
 	{
 	    DetachBackItem(playerid);
-	    if(itemid == 0)
-		{
-			ResetBackInfo(playerid);
-			format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	        mysql_function_query(dbHandle, query, false, "", "");
-		}
-		else
-		{
-			BackInfo[playerid][Item] = itemid;
-			BackInfo[playerid][Amount] = param;
-			format(query, sizeof(query), "UPDATE `slots_info` SET `Item`=%d, `Amount`=%d WHERE `Type`=%d AND `Id`=%d", itemid, param, SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-            mysql_function_query(dbHandle, query, false, "", "");
-			AttachBackItem(playerid);
-		}
+		ResetBackInfo(playerid);
 	}
-	else if(itemid > 0)
+	if(itemid > 0)
 	{
 		BackInfo[playerid][Item] = itemid;
 		BackInfo[playerid][Amount] = param;
-		if(GetItemType(itemid) == ITEM_CONTAINER)
-		{
-			format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, Container_GetSQLID(param));
-		}
-		else
-		{
-			format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, param);
-		}
-		mysql_function_query(dbHandle, query, false, "", "");
 		AttachBackItem(playerid);
 	}
 }
@@ -115,20 +88,6 @@ stock DetachBackItem(playerid)
 	RemovePlayerAttachedObject(playerid, INDEX_ID_BACK);
 }
 
-stock ResetAndSaveBack(playerid)
-{
-	new query[128];
-
-	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
-	{
-     	DetachBackItem(playerid);
-		ResetBackInfo(playerid);
-		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	    mysql_function_query(dbHandle, query, false, "", "");
-	}
-	return 1;
-}
-
 stock PrintBackForPlayer(playerid, targetid)
 {
 	SendClientMessage(targetid, COLOR_WHITE, "======================[En la espalda]=====================");
@@ -138,42 +97,21 @@ stock PrintBackForPlayer(playerid, targetid)
 	return 1;
 }
 
-stock LoadBackInfo(playerid)
-{
-	new query[128];
-		
-	ResetBackInfo(playerid);
-	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	mysql_function_query(dbHandle, query, true, "OnBackDataLoad", "i", playerid);
-	return 1;
-}
+//=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
 
-public OnBackDataLoad(playerid)
+ResetBackWeapon(playerid)
 {
-	new result[128], rows, fields;
-
-	cache_get_data(rows, fields);
-	
-	if(rows)
+	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
 	{
-		cache_get_field_content(0, "Item", result);
-		BackInfo[playerid][Item] = strval(result);
-		
-		if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
-		{
-		    cache_get_field_content(0, "Amount", result);
-			BackInfo[playerid][Amount] = Container_Load(strval(result));
-		}
-		else
-		{
-			cache_get_field_content(0, "Amount", result);
-			BackInfo[playerid][Amount] = strval(result);
-		}
+     	DetachBackItem(playerid);
+		ResetBackInfo(playerid);
 	}
 	return 1;
 }
 
-DeletePlayerBack(playerid)
+//=======DESTRUCTOR DE LOS CONTENEDORES EN MEMORIA ASOCIADOS A LA ESPALDA=======
+
+DestroyPlayerBack(playerid)
 {
 	if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
 	{
@@ -184,7 +122,8 @@ DeletePlayerBack(playerid)
 
 //==================================COMANDOS====================================
 
-CMD:esp(playerid, params[]) {
+CMD:esp(playerid, params[])
+{
 	cmd_espalda(playerid, params);
 	return 1;
 }

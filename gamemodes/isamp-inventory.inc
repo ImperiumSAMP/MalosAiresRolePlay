@@ -246,7 +246,7 @@ CMD:inventario(playerid, params[])
 	return 1;
 }
 
-stock DeletePlayerInventory(playerid)
+DestroyPlayerInventory(playerid)
 {
 	if(PlayerInfo[playerid][pContainerSQLID] > 0 && PlayerInfo[playerid][pContainerID] > 0)
 	{
