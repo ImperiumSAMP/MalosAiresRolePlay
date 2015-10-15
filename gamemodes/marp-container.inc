@@ -148,7 +148,6 @@ stock Container_Create(total_space, min_item_space, &container_id, &container_sq
 		
 		format(query, sizeof(query), "INSERT INTO containers_info (MinItemSpace, TotalSpace) VALUES (%d, %d)", min_item_space, total_space);
 		mysql_function_query(dbHandle, query, true, "GetContainerInsertedId", "dd", container_id, sqlid_address);
-
 		return 1;
 	}
 

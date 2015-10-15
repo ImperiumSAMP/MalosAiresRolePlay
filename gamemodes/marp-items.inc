@@ -14,7 +14,7 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 
-#define MAX_ITEMS               110
+#define MAX_ITEMS               111
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -120,7 +120,7 @@ enum ItemInfo {
 	OccupiedSpace
 };
 
-static const ServerItems[][ItemInfo] = {
+static const ServerItems[MAX_ITEMS][ItemInfo] = {
 
 /*0*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*1*/	{"Manopla", "Cantidad", ITEM_WEAPON, 40, true, 331, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 5},

@@ -1017,6 +1017,7 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pRentCarRID] = 0;
 	PlayerInfo[playerid][pRolePoints] = 0;
 	PlayerInfo[playerid][pContainerSQLID] = 0;
+	PlayerInfo[playerid][pContainerID] = 0;
 	
  	ResetJobVariables(playerid);
  	
@@ -2297,10 +2298,10 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "pFightStyle", result); 		PlayerInfo[playerid][pFightStyle] 		= strval(result);
         cache_get_field_content(0, "pAdictionAbstinence", result); 		PlayerInfo[playerid][pAdictionAbstinence] 		= strval(result);
 		
-		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName],1,MAX_PLAYER_NAME);
-		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected],1,25);
-		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf],1,64);
-		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy],1,24);
+		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName], 1, MAX_PLAYER_NAME);
+		cache_get_field_content(0, "LastConnected", 			PlayerInfo[playerid][pLastConnected],1, 25);
+		cache_get_field_content(0, "pAccusedOf", 				PlayerInfo[playerid][pAccusedOf], 1, 64);
+		cache_get_field_content(0, "pAccusedBy", 				PlayerInfo[playerid][pAccusedBy], 1, 24);
 
 		cache_get_field_content(0, "pX", result); 				PlayerInfo[playerid][pX] 				= floatstr(result);
 		cache_get_field_content(0, "pY", result); 				PlayerInfo[playerid][pY] 				= floatstr(result);
@@ -2310,44 +2311,30 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "pArmour", result); 			PlayerInfo[playerid][pArmour] 			= floatstr(result);
  		cache_get_field_content(0, "pAdictionPercent", result); 	PlayerInfo[playerid][pAdictionPercent] 			= floatstr(result);
  		
- 		cache_get_field_content(0, "pTakeInputs", result); 		PlayerInfo[playerid][pTakeInputs] 			= strval(result);
- 		
- 		cache_get_field_content(0, "HouseKeyIncome", result); 	PlayerInfo[playerid][pHouseKeyIncome] 		= strval(result);
-
-		cache_get_field_content(0, "pRolePoints", result); 		PlayerInfo[playerid][pRolePoints] = strval(result);
+ 		PlayerInfo[playerid][pTakeInputs] = cache_get_field_content_int(0, "pTakeInputs");
+ 		PlayerInfo[playerid][pHouseKeyIncome] = cache_get_field_content_int(0, "HouseKeyIncome");
+		PlayerInfo[playerid][pRolePoints] = cache_get_field_content_int(0, "pRolePoints");
 		
-		cache_get_field_content(0, "pContainerSQLID", result); 	PlayerInfo[playerid][pContainerSQLID] = strval(result);
-
+		PlayerInfo[playerid][pContainerSQLID] = cache_get_field_content_int(0, "pContainerSQLID");
+		
 		//=============================MANO DERECHA=============================
-		cache_get_field_content(0, "r_hand_item", result); 		HandInfo[playerid][HAND_RIGHT][Item]	= strval(result);
+		HandInfo[playerid][HAND_RIGHT][Item] = cache_get_field_content_int(0, "r_hand_item");
 		if(GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_CONTAINER)
-		{
-		    cache_get_field_content(0, "r_hand_param", result); HandInfo[playerid][HAND_RIGHT][Amount] = Container_Load(strval(result));
-		}
+		    HandInfo[playerid][HAND_RIGHT][Amount] = Container_Load(cache_get_field_content_int(0, "r_hand_param"));
 		else
-		{
-			cache_get_field_content(0, "r_hand_param", result); HandInfo[playerid][HAND_RIGHT][Amount] = strval(result);
-		}
+		    HandInfo[playerid][HAND_RIGHT][Amount] = cache_get_field_content_int(0, "r_hand_param");
         //============================MANO IZQUIERDA============================
-		cache_get_field_content(0, "l_hand_item", result); 		HandInfo[playerid][HAND_LEFT][Item]  	= strval(result);
+		HandInfo[playerid][HAND_LEFT][Item] = cache_get_field_content_int(0, "l_hand_item");
 		if(GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_CONTAINER)
-		{
-		    cache_get_field_content(0, "l_hand_param", result);  HandInfo[playerid][HAND_LEFT][Amount] = Container_Load(strval(result));
-		}
+		    HandInfo[playerid][HAND_LEFT][Amount] = Container_Load(cache_get_field_content_int(0, "l_hand_param"));
 		else
-		{
-			cache_get_field_content(0, "l_hand_param", result);  HandInfo[playerid][HAND_LEFT][Amount] = strval(result);
-		}
+			HandInfo[playerid][HAND_LEFT][Amount] = cache_get_field_content_int(0, "l_hand_param");
         //===============================ESPALDA================================
-		cache_get_field_content(0, "back_item", result); 		BackInfo[playerid][Item] 				= strval(result);
+        BackInfo[playerid][Item] = cache_get_field_content_int(0, "back_item");
 		if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
-		{
-		    cache_get_field_content(0, "back_param", result);	BackInfo[playerid][Amount] = Container_Load(strval(result));
-		}
+		    BackInfo[playerid][Amount] = Container_Load(cache_get_field_content_int(0, "back_param"));
 		else
-		{
-			cache_get_field_content(0, "back_param", result);	BackInfo[playerid][Amount] = strval(result);
-		}
+			BackInfo[playerid][Amount] = cache_get_field_content_int(0, "back_param");
 		//======================================================================
 		
         gPlayerLogged[playerid] = 1;
@@ -2819,19 +2806,10 @@ public SaveAccount(playerid)
 	if(gPlayerLogged[playerid] && !cheater[playerid])
 	{
 		new name[MAX_PLAYER_NAME],
-			query[1700],
-			day,
-			month,
-			year,
-			hour,
-			minute,
-			second;
-
-		getdate(year,month,day);
-		gettime(hour,minute,second);
+			query[1700];
 
 		GetPlayerName(playerid, name, 24);
-		mysql_real_escape_string(name, name,1,sizeof(name));
+		mysql_real_escape_string(name, name, 1, sizeof(name));
 		
         if(AdminDuty[playerid])
 		{
@@ -2904,6 +2882,7 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pRolePoints],
 			PlayerInfo[playerid][pContainerSQLID]
 		);
+		
 		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
 			PlayerInfo[playerid][pCarLic],
@@ -2922,23 +2901,12 @@ public SaveAccount(playerid)
    			PlayerInfo[playerid][pCantWork],
    			GetPVarInt(playerid, "pJobLimitCounter")
 		);
-
-		// Date.
-		format(query, sizeof(query), "%s,LastConnected='%02d-%02d-%02d %02d:%02d:%02d',pAccusedOf='%s',pAccusedBy='%s'",
-			query,
-			year,
-			month,
-			day,
-			hour,
-			minute,
-			second,
-			PlayerInfo[playerid][pAccusedOf],
-			PlayerInfo[playerid][pAccusedBy]
-		);
-		    
-		// Float.
-		format(query, sizeof(query), "%s, `pX`='%f', `pY`='%f', `pZ`='%f', `pA`='%f', `pAdictionPercent`='%f', `pHealth`='%f', `pArmour`='%f'",
+		
+		// Float y fecha
+		format(query, sizeof(query), "%s,LastConnected=CURRENT_TIMESTAMP,pAccusedOf='%s',pAccusedBy='%s', `pX`='%f', `pY`='%f', `pZ`='%f', `pA`='%f', `pAdictionPercent`='%f', `pHealth`='%f', `pArmour`='%f'",
 		    query,
+		    PlayerInfo[playerid][pAccusedOf],
+			PlayerInfo[playerid][pAccusedBy],
 		    PlayerInfo[playerid][pX],
 		    PlayerInfo[playerid][pY],
 		    PlayerInfo[playerid][pZ],
@@ -5016,73 +4984,54 @@ stock GetPlayerCash(playerid) {
 
 stock log(playerid, logType, text[])
 {
-	new year, month, day,
-	    hour, minute, second,
-	    name[32],
+	new name[32],
 		query[512];
-		
-	getdate(year, month, day);
-	gettime(hour, minute, second);
+
 	GetPlayerName(playerid, name, 24);
 	mysql_real_escape_string(name, name, 1, sizeof(name));
 	
-	if(logType == LOG_ADMIN) {
-		format(query, sizeof(query), "INSERT INTO `log_admin` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
+	if(logType == LOG_ADMIN)
+	{
+		format(query, sizeof(query), "INSERT INTO `log_admin` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, '%s')",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
-			year,
-			month,
-			day,
-			hour,
-			minute,
-			second,
 			text
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
-	} else if(logType == LOG_MONEY) {
-		format(query, sizeof(query), "INSERT INTO `log_money` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
+	}
+	else if(logType == LOG_MONEY)
+	{
+		format(query, sizeof(query), "INSERT INTO `log_money` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, '%s')",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
-			year,
-			month,
-			day,
-			hour,
-			minute,
-			second,
 			text
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
-	} else if(logType == LOG_INPUTS) {
-		format(query, sizeof(query), "INSERT INTO `log_inputs` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
+	}
+	else if(logType == LOG_INPUTS)
+	{
+		format(query, sizeof(query), "INSERT INTO `log_inputs` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, '%s')",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
-			year,
-			month,
-			day,
-			hour,
-			minute,
-			second,
 			text
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
-	} /*else 	if(logType == LOG_CHAT) {
-		format(query, sizeof(query), "INSERT INTO `log_chat` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', '%02d-%02d-%02d %02d:%02d:%02d', '%s')",
+	}
+	/*
+	else if(logType == LOG_CHAT)
+	{
+		format(query, sizeof(query), "INSERT INTO `log_chat` (pID, pName, pIP, date, text) VALUES (%d, '%s', '%s', CURRENT_TIMESTAMP, '%s')",
 			PlayerInfo[playerid][pID],
 			name,
 			PlayerInfo[playerid][pIP],
-			year,
-			month,
-			day,
-			hour,
-			minute,
-			second,
 			text
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
-	}*/
+	}
+	*/
 	return 1;
 }
 
@@ -7536,6 +7485,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
+					case 9:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_PARLANTE))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+
+						new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_PARLANTE, 1);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_PARLANTE));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado y compra un equipo de música portátil.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un equipo de música por $%d. Usa /parlante y /tomarparlante para usarlo!", GetItemPrice(ITEM_ID_PARLANTE));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_PARLANTE);
+	        			Business[business][bProducts]--;
+	        			saveBusiness(business);
+			        }
+					/*
 			        case 9:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_VALIJA))
@@ -7661,6 +7628,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
+			        */
 				}
 			}
 			return 1;
@@ -9602,6 +9570,16 @@ CMD:comprar(playerid, params[])
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON)
 				);
+				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d",
+				    content,
+					GetItemPrice(ITEM_ID_CAMARA) * 35,
+					GetItemPrice(ITEM_ID_SANDWICH),
+					GetItemPrice(ITEM_ID_AGUAMINERAL),
+					GetItemPrice(ITEM_ID_RADIO),
+					GetItemPrice(ITEM_ID_PARLANTE)
+				);
+				
+				/*
 				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nValija\t$%d",
 				    content,
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
@@ -9619,6 +9597,8 @@ CMD:comprar(playerid, params[])
 					GetItemPrice(ITEM_ID_MALETIN),
 					GetItemPrice(ITEM_ID_PARLANTE)
 				);
+				*/
+				
 		        TogglePlayerControllable(playerid, false);
 		        ShowPlayerDialog(playerid, DLG_247, DIALOG_STYLE_TABLIST, title, content, "Comprar", "Cerrar");
 			}
@@ -14045,15 +14025,10 @@ CMD:verconectados(playerid, params[])
 
 public AntecedentesLog(playerid, targetid, antecedentes[])
 {
-	new year, month, day,
-	    hour, minute, second,
-	    playerName[24],
+	new playerName[24],
 	    targetName[24] = "Ninguno",
 		query[512],
 		targetSQLID = 0;
-
-	getdate(year, month, day);
-	gettime(hour, minute, second);
 	
 	GetPlayerName(playerid, playerName, 24);
 	mysql_real_escape_string(playerName, playerName, 1, sizeof(playerName));
@@ -14065,16 +14040,10 @@ public AntecedentesLog(playerid, targetid, antecedentes[])
 		targetSQLID = PlayerInfo[targetid][pID];
 	}
 
-	format(query, sizeof(query), "INSERT INTO `log_antecedentes` (pID, pName, pIP, date, tID, pAntecedentes, tName) VALUES (%d, '%s', %d, '%02d-%02d-%02d %02d:%02d:%02d', %d, '%s', '%s')",
+	format(query, sizeof(query), "INSERT INTO `log_antecedentes` (pID, pName, pIP, date, tID, pAntecedentes, tName) VALUES (%d, '%s', %d, CURRENT_TIMESTAMP, %d, '%s', '%s')",
 		PlayerInfo[playerid][pID],
 		playerName,
 		PlayerInfo[playerid][pIP],
-		year,
-		month,
-		day,
-		hour,
-		minute,
-		second,
 		targetSQLID,
 		antecedentes,
 		targetName
@@ -14247,14 +14216,14 @@ CMD:ckearplayer(playerid,params[])
 		{
 			for(i = 0; i < MAX_NOTEBOOK_CONTACTS; i++)
 			{
-			    if(playerNotebook[targetid][i][cNumber] == 0)
+			    if(playerNotebook[targetid][i][cNumber] != 0)
 			    {
 					playerNotebook[targetid][i][cNumber] = 0;
 					strmid(playerNotebook[targetid][i][cName], " ", 0, strlen(" "));
 					SaveNotebookContact(targetid, i, CONTACT_DELETE);
 			    }
 			}
-			PlayerInfo[targetid][pPhoneNumber] = 1500000000 + random(99999999); // Le damos otro
+			PlayerInfo[targetid][pPhoneNumber] = 0;
 		}
 
 		GivePlayerCash(targetid, PlayerInfo[targetid][pBank]);

@@ -251,8 +251,6 @@ DestroyPlayerInventory(playerid)
 	if(PlayerInfo[playerid][pContainerSQLID] > 0 && PlayerInfo[playerid][pContainerID] > 0)
 	{
 		Container_Destroy(PlayerInfo[playerid][pContainerID]);
-  		PlayerInfo[playerid][pContainerID] = 0;
-  		PlayerInfo[playerid][pContainerSQLID] = 0;
 	}
 	return 1;
 }

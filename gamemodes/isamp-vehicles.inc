@@ -586,7 +586,7 @@ stock getVehicleType(vehid)
 stock getVehicleDescription(vehicleid)
 {
 	new vehdesc[64];
-	format(vehdesc,64, "%s de %s",GetVehicleName(vehicleid),VehicleInfo[vehicleid][VehOwnerName]);
+	format(vehdesc, 64, "%s de %s", GetVehicleName(vehicleid), VehicleInfo[vehicleid][VehOwnerName]);
 	return vehdesc;
 }
 
@@ -2074,10 +2074,15 @@ CMD:avmodelo(playerid, params[])
 	    Container_Empty(VehicleInfo[vehicleid][VehContainerID]);
         Container_SetTotalSpace(VehicleInfo[vehicleid][VehContainerID], GetVehicleModelTrunkSpace(modelid));
 	}
+	else
+	{
+	    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: El vehículo no tiene un contenedor asociado a su maletero. Reportar a un scripter.");
+	}
 
 	ResetTrunk(vehicleid);
 
-	for(new i = 0; i < 14; i++) {
+	for(new i = 0; i < 14; i++)
+	{
  	    VehicleInfo[vehicleid][VehCompSlot][i] = 0;
  	}
 	VehicleInfo[vehicleid][VehPaintjob] = 3;
@@ -2232,8 +2237,12 @@ CMD:avcrear(playerid, params[])
 			    Container_Empty(VehicleInfo[id][VehContainerID]);
 		        Container_SetTotalSpace(VehicleInfo[id][VehContainerID], GetVehicleModelTrunkSpace(modelid));
 			}
+			else
+			{
+			    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: El vehículo no tiene un contenedor asociado a su maletero. Reportar a un scripter.");
+			}
 			
-			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (desaparecerá luego de 5 minutos sin utilizar).");
+			SendClientMessage(playerid, COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (desaparecerá luego de 5 minutos sin utilizar).");
             VehicleLog(id, playerid, INVALID_PLAYER_ID, "/avcrear", params);
 			return 1;
 		}
@@ -2272,6 +2281,10 @@ CMD:avcrearperma(playerid, params[])
 			    Container_Empty(VehicleInfo[id][VehContainerID]);
 		        Container_SetTotalSpace(VehicleInfo[id][VehContainerID], GetVehicleModelTrunkSpace(modelid));
 			}
+			else
+			{
+			    SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: El vehículo no tiene un contenedor asociado a su maletero. Reportar a un scripter.");
+			}
 			
 			SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} vehículo creado correctamente (no desaparecerá hasta que sea eliminado o reinicie el servidor).");
             SendClientMessage(playerid,COLOR_RED,"{878EE7}[INFO]:{C8C8C8} Recuerda que siempre primero hay que setearle el tipo, y luego estacionarlo.");
@@ -2291,8 +2304,8 @@ CMD:avhp(playerid, params[])
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /avhp [idvehiculo] [hp]");
 	if(vehicleid < 1 || vehicleid >= MAX_VEH)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de vehiculo incorrecta.");
-	if(vhp < 500 || vhp > 10000)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Solo valores comprendidos en intervalo (500 - 10000).");
+	if(vhp < 250 || vhp > 10000)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} Solo valores comprendidos en intervalo (250 - 10000).");
 
 	SetVehicleHealth(vehicleid, float(vhp));
 	// VehicleInfo[vehicleid][VehMaxHp] = float(vhp);
