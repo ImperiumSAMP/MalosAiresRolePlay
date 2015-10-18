@@ -90,7 +90,7 @@ stock PrintHandsForPlayer(playerid, targetid)
 		SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", GetItemName(rightitem), GetItemParamName(rightitem), GetHandParam(playerid, HAND_RIGHT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano derecha] - Nada");
- 	if(leftitem > 0)
+	if(leftitem > 0)
 		SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", GetItemName(leftitem), GetItemParamName(leftitem), GetHandParam(playerid, HAND_LEFT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Nada");

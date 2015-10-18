@@ -10422,15 +10422,17 @@ CMD:multar(playerid, params[])
 
 CMD:quitar(playerid, params[])
 {
-	new itemString[64], targetID;
+	new itemString[64],
+		targetID;
 
   	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
 	  	return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
-	if(sscanf(params, "us[64]", targetID, itemString)) {
+	if(sscanf(params, "us[64]", targetID, itemString))
+	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitar [ID/Jugador] [ítem]");
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Items]: licconducir, licvuelo, licarmas, armas.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Items]: licconducir, licvuelo, licarmas.");
   	}
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
@@ -10447,29 +10449,20 @@ CMD:quitar(playerid, params[])
   			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto no tiene una licencia de conducir!");
 		PlayerPlayerActionMessage(playerid, targetID, 15.0, "le ha quitado la licencia de conducir a");
 		PlayerInfo[targetID][pCarLic] = 0;
-	} else
-	if(strcmp(itemString, "licvuelo", true) == 0)
+	}
+	else if(strcmp(itemString, "licvuelo", true) == 0)
 	{
  		if(PlayerInfo[targetID][pFlyLic] == 0)
    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto no tiene una licencia de vuelo!");
 		PlayerPlayerActionMessage(playerid, targetID, 10.0, "le ha quitado la licencia de vuelo a");
  		PlayerInfo[targetID][pFlyLic] = 0;
-	} else
-	if(strcmp(itemString, "licarmas", true) == 0)
+	}
+	else if(strcmp(itemString, "licarmas", true) == 0)
 	{
  		if(PlayerInfo[targetID][pWepLic] == 0)
     		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto no tiene una licencia de portación de armas!");
 		PlayerPlayerActionMessage(playerid, targetID, 10.0, "le ha quitado la licencia de armas a");
 		PlayerInfo[targetID][pWepLic] = 0;
-	} else
-	if(strcmp(itemString, "armas", true) == 0)
-	{
- 		PlayerPlayerActionMessage(playerid, targetID, 10.0, "le ha quitado todas las armas a");
-		ResetPlayerWeapons(targetID);
-		for(new invslot = 0; invslot < INV_MAX_SLOTS; invslot++) {
-		    if(GetItemType(GetInvItem(targetID, invslot)) == ITEM_WEAPON)
-		        SetInvItemAndParam(playerid, invslot, 0, 0);
-		}
 	}
 	return 1;
 }
@@ -10477,6 +10470,7 @@ CMD:quitar(playerid, params[])
 CMD:revisar(playerid, params[])
 {
 	new targetID;
+	
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
 	if(sscanf(params, "u", targetID))
@@ -10496,12 +10490,13 @@ CMD:revisar(playerid, params[])
 	  	PrintToysForPlayer(targetID, playerid);
 	  	PrintBackForPlayer(targetID, playerid);
 		PlayerPlayerActionMessage(playerid, targetID, 15.0, "ha revisado en busca de objetos a");
-	} else
-	    {
-	        SendFMessage(playerid, COLOR_LIGHTBLUE, "Quieres revisar a %s en busca de objetos. Para evitar abusos, debes esperar su respuesta.", GetPlayerNameEx(targetID));
-			SendFMessage(targetID, COLOR_LIGHTBLUE, "%s quiere revisarte en busca de objetos. Para evitar abusos, tienes que usar /aceptar revision.", GetPlayerNameEx(playerid));
-			ReviseOffer[targetID] = playerid;
-		}
+	}
+	else
+    {
+        SendFMessage(playerid, COLOR_LIGHTBLUE, "Quieres revisar a %s en busca de objetos. Para evitar abusos, debes esperar su respuesta.", GetPlayerNameEx(targetID));
+		SendFMessage(targetID, COLOR_LIGHTBLUE, "%s quiere revisarte en busca de objetos. Para evitar abusos, tienes que usar /aceptar revision.", GetPlayerNameEx(playerid));
+		ReviseOffer[targetID] = playerid;
+	}
 	return 1;
 }
 

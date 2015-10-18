@@ -508,7 +508,7 @@ stock Container_UpdateOpenedDialogs(id)
 
 //==============================================================================
 
-stock Container_Show(origid, type, id, playerid)
+stock Container_Show(origid, type, id, playerid, interact=1)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
@@ -543,34 +543,65 @@ stock Container_Show(origid, type, id, playerid)
 			    case CONTAINER_TYPE_TRUNK:
 			    {
 			        format(string1, sizeof(string1), "[Maletero] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-			        Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+			        if(interact)
+					{
+			        	Dialog_Show(playerid, Dlg_Show_Trunk_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+					}
+					else
+					{
+						Dialog_Show(playerid, Dlg_Print_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Cerrar", "");
+					}
 				}
 				case CONTAINER_TYPE_INV:
 				{
 				    format(string1, sizeof(string1), "[Inventario] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-			    	Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+			        if(interact)
+					{
+						Dialog_Show(playerid, Dlg_Show_Inv_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+   					}
+					else
+					{
+						Dialog_Show(playerid, Dlg_Print_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Cerrar", "");
+					}
 				}
 				case CONTAINER_TYPE_HOUSE:
 				{
 				    format(string1, sizeof(string1), "[Armario] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-		            Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+			        if(interact)
+					{
+						Dialog_Show(playerid, Dlg_Show_House_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+					}
+					else
+					{
+						Dialog_Show(playerid, Dlg_Print_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Cerrar", "");
+					}
 				}
 				case CONTAINER_TYPE_ITEM:
 				{
 				    format(string1, sizeof(string1), "[Item] Usado: %du - Libre: %du", Container_GetUsedSpace(id), Container_GetTotalSpace(id) - Container_GetUsedSpace(id));
-		            Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+			        if(interact)
+					{
+						Dialog_Show(playerid, Dlg_Show_Item_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Tomar", "Cerrar");
+					}
+					else
+					{
+						Dialog_Show(playerid, Dlg_Print_Container, DIALOG_STYLE_TABLIST, string1, Container_DlgInfoStr, "Cerrar", "");
+					}
 				}
 				default:
 					return 0;
 			}
-			Container_Selection[playerid][csId] = id;
-			Container_Selection[playerid][csOriginalId] = origid;
-			Container_Selection[playerid][csType] = type;
 		}
 		else
 		{
 			format(string1, sizeof(string1), "No hay items guardados. Espacio libre: %du", Container_GetTotalSpace(id));
 			Dialog_Show(playerid, DLG_SHOW_EMPTY_CONTAINER, DIALOG_STYLE_MSGBOX, "[Vacio]", string1, "Cerrar", "");
+		}
+		if(interact)
+		{
+			Container_Selection[playerid][csId] = id;
+			Container_Selection[playerid][csOriginalId] = origid;
+			Container_Selection[playerid][csType] = type;
 		}
 		return 1;
 	}

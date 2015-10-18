@@ -114,7 +114,7 @@ stock PrintInvForPlayer(playerid, targetid)
 {
 	new itemid;
 
- 	SendClientMessage(targetid, COLOR_WHITE, "======================[Inventario]======================");
+ 	SendClientMessage(targetid, COLOR_WHITE, "==================[Inventario 2 / Obsoleto]==================");
 	for(new i = 0; i < INV_MAX_SLOTS; i++)
 	{
 		itemid = GetInvItem(playerid, i);
@@ -124,6 +124,10 @@ stock PrintInvForPlayer(playerid, targetid)
 	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
 	}
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
+
+	if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], targetid, 0))
+		SendClientMessage(targetid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
+
 	return 1;
 }
 
