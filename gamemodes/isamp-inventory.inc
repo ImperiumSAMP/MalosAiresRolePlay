@@ -24,7 +24,7 @@ forward SetInvItemAndParam(playerid, invslot, itemid, param); // Setea item y ca
 forward ResetInv(playerid); // Borra todo slot del inventario del jugador y lo resetea a cero (para resetiar cuando se conecta nuevo jugador).
 forward ResetAndSaveInv(playerid); // Borra todo slot del inventario del jugador, lo resetea a cero, y lo guarda en DB.
 forward SearchInvForItem(playerid, itemid); // Busca un item pasado por parametro dentro de un inventario. Si existe, devuelve el slot en el que está, sino retorna -1.
-forward PrintInvForPlayer(playerid, targetid); // Imprime el inventario del jugador X al jugador Y.
+forward PrintInvForPlayer(playerid, targetid, show_both=1); // Imprime el inventario del jugador X al jugador Y.
 forward SearchInvFreeSlot(playerid); // Busca por el primer slot vacio en el inventario y devuelve su posicion. De no haber espacio retorna -1.
 forward LoadInvInfo(playerid); // Carga desde la base de datos al GM en ejecución el inventario del jugador indicado.
 
@@ -110,7 +110,7 @@ stock SearchInvForItem(playerid, itemid)
 	return -1;
 }
 
-stock PrintInvForPlayer(playerid, targetid)
+stock PrintInvForPlayer(playerid, targetid, show_both=1)
 {
 	new itemid;
 
@@ -125,9 +125,11 @@ stock PrintInvForPlayer(playerid, targetid)
 	}
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
 
-	if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], targetid, 0))
-		SendClientMessage(targetid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
-
+	if(show_both)
+	{
+		if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], targetid, 0))
+			SendClientMessage(targetid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
+	}
 	return 1;
 }
 
@@ -175,7 +177,7 @@ CMD:inventario2(playerid, params[])
     if(sscanf(params, "s[32]I(-1)", cmd, returnid))
 	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot]");
-		PrintInvForPlayer(playerid, playerid);
+		PrintInvForPlayer(playerid, playerid, 0);
     }
 	else
 	{
