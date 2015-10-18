@@ -39,7 +39,6 @@ enum pInfo {
 	pPhoneNumber,
 	pPhoneC,//Phone Company (Business ID)
 	pPhoneBook,
-	pListNumber,
 	pJailed,
 	pJailTime,
 	Float:pX,

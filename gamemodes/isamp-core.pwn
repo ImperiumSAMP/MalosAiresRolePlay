@@ -1,3 +1,16 @@
+/*******************************************************************************
+********************************************************************************
+***********************                                 ************************
+*********************    MALOS AIRES ROLEPLAY GAMEMODE    **********************
+**********										 			         ***********
+********    (C) Copyright 2010 - 2016 by Pheek Gaming Latinoamérica    *********
+**********                                            				 ***********
+***********************    @Do not remove this label    ************************
+***********************    @No remueva esta etiqueta    ************************
+*************************                             **************************
+********************************************************************************
+*******************************************************************************/
+
 #pragma semicolon 1
 #define _isamp_debug 0 //Esta linea activa algunos mensajes de log para debug. Debe ser comentada para versiones productivas.
 
@@ -1000,7 +1013,6 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pFlyLic] = 0;
 	PlayerInfo[playerid][pPhoneNumber] = 0;
 	PlayerInfo[playerid][pPhoneC] = 255;
-	PlayerInfo[playerid][pListNumber] = 1;
 	PlayerInfo[playerid][pJailed] = JAIL_NONE;
 	PlayerInfo[playerid][pJailTime] = 0;
 	PlayerInfo[playerid][pX] = 1481.2136;
@@ -2278,7 +2290,6 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "WepLic", result); 			PlayerInfo[playerid][pWepLic] 			= strval(result);
 		cache_get_field_content(0, "PhoneNumber", result); 		PlayerInfo[playerid][pPhoneNumber] 		= strval(result);
 		cache_get_field_content(0, "PhoneCompany", result); 	PlayerInfo[playerid][pPhoneC] 			= strval(result);
-		cache_get_field_content(0, "ListNumber", result);		PlayerInfo[playerid][pListNumber] 		= strval(result);
 		cache_get_field_content(0, "Jailed", result); 			PlayerInfo[playerid][pJailed]			= strval(result);
 		cache_get_field_content(0, "JailedTime", result); 		PlayerInfo[playerid][pJailTime] 		= strval(result);
 		cache_get_field_content(0, "pInterior", result);		PlayerInfo[playerid][pInterior] 		= strval(result);
@@ -2883,14 +2894,13 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pContainerSQLID]
 		);
 		
-		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `ListNumber`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
+		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
 			PlayerInfo[playerid][pCarLic],
 			PlayerInfo[playerid][pFlyLic],
 			PlayerInfo[playerid][pWepLic],
 			PlayerInfo[playerid][pPhoneNumber],
 			PlayerInfo[playerid][pPhoneC],
-			PlayerInfo[playerid][pListNumber],
 			PlayerInfo[playerid][pJailed],
 			PlayerInfo[playerid][pJailTime],
 			PlayerInfo[playerid][pThirst],
@@ -5077,19 +5087,23 @@ SaveAllBusiness() {
 	return 1;
 }
 
-stock saveBusiness(id) {
-    new
-		query[1024];
+stock saveBusiness(id)
+{
+    new query[1024];
 
-	if(dontsave) return 1;
+	if(dontsave)
+		return 1;
 
 	ReloadBizIcon(id);
-	if(Business[id][bDelete]) {
+	if(Business[id][bDelete])
+	{
 	    format(query, sizeof(query), "DELETE FROM `business` WHERE `bID` = %d", id);
 	    mysql_function_query(dbHandle, query, false, "", "");
 		Business[id][bDelete] = false;
 		Business[id][bLoaded] = false;
-	} else if(Business[id][bInsert]) {
+	}
+	else if(Business[id][bInsert])
+	{
 		format(query, sizeof(query), "INSERT INTO `business` (bID, bName, bOutsideX, bOutsideY, bOutsideZ, bEntranceCost, bOutsideInt, bLocked, bEnterable, bOutsideAngle)");
 		format(query, sizeof(query), "%s VALUES (%d, '%s', %f, %f, %f, %d, %d, %d, %d, %f)",
 			query,
@@ -5106,7 +5120,9 @@ stock saveBusiness(id) {
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
 		Business[id][bInsert] = false;
-	} else {
+	}
+	else
+	{
 		format(query, sizeof(query), "UPDATE `business` SET `bOwnerID`='%d', `bEnterable`='%d', `bOutsideInt`=%d, `bInsideInt`=%d, `bPrice`=%d, `bEntranceCost`=%d, `bTill`=%d, `bLocked`=%d, `bType`=%d, `bProducts`=%d",
 			Business[id][bOwnerSQLID],
 			Business[id][bEnterable],
@@ -5138,12 +5154,13 @@ stock saveBusiness(id) {
 	return 1;
 }
 
-stock LoadBusiness() {
-	new
-		query[128],
+stock LoadBusiness()
+{
+	new query[128],
 		id = 1;
 
-	while(id < MAX_BUSINESS) {
+	while(id < MAX_BUSINESS)
+	{
 		format(query, sizeof(query),"SELECT * FROM `business` WHERE `bID` = %d LIMIT 1", id);
 		mysql_function_query(dbHandle, query, true, "OnBusinessDataLoad", "i", id);
 		Business[id][bOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, Business[id][bOutsideX], Business[id][bOutsideY], Business[id][bOutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
@@ -5153,9 +5170,9 @@ stock LoadBusiness() {
 	return 1;
 }
 
-stock ReloadBlIcon(blid) {
-	new
-	    string[128];
+stock ReloadBlIcon(blid)
+{
+	new string[128];
 
 	if(!Building[blid][blLoaded])
 		return 1;
@@ -5169,9 +5186,12 @@ stock ReloadBlIcon(blid) {
 	if(Building[blid][blDelete])
 	    return 1;
 
-	if(Building[blid][blEntranceFee] == 0) {
+	if(Building[blid][blEntranceFee] == 0)
+	{
 		format(string, sizeof(string), "{A9E2F3}%s\nPresiona ENTER para entrar", Building[blid][blText]);
-	} else {
+	}
+	else
+	{
 		format(string, sizeof(string), "{A9E2F3}%s\nCosto de entrada: $%d\nPresiona ENTER para entrar", Building[blid][blText], Building[blid][blEntranceFee]);
 	}
 
@@ -5185,9 +5205,9 @@ stock ReloadBlIcon(blid) {
 	return 1;
 }
 
-stock ReloadBizIcon(bizid) {
-	new
-	    string[256],
+stock ReloadBizIcon(bizid)
+{
+	new string[256],
 		bizType[32];
 
     if(!Business[bizid][bLoaded])
@@ -5220,10 +5240,13 @@ stock ReloadBizIcon(bizid) {
 	if(Business[bizid][bDelete])
 	    return 1;
 
-    if(Business[bizid][bOwnerSQLID] == -1) {
+    if(Business[bizid][bOwnerSQLID] == -1)
+	{
         format(string, sizeof(string), "{A9E2F3}%s\n{31B404}¡Negocio a la venta!{A9E2F3}\nCosto: $%d\n{A9E2F3}Tipo: %s\nCosto de entrada: $%d\nPresiona ENTER para entrar", Business[bizid][bName], Business[bizid][bPrice], bizType, Business[bizid][bEntranceFee]);
 		Business[bizid][bOutsidePickup] = CreateDynamicPickup(1274, 1, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ], -1);
-	} else {
+	}
+	else
+	{
 		format(string, sizeof(string), "{A9E2F3}%s\nCosto de entrada: $%d\n{A9E2F3}Tipo: %s\nPresiona ENTER para entrar", Business[bizid][bName], Business[bizid][bEntranceFee], bizType);
 		Business[bizid][bOutsidePickup] = CreateDynamicPickup(1239, 1, Business[bizid][bOutsideX], Business[bizid][bOutsideY], Business[bizid][bOutsideZ], -1);
 	}
@@ -5233,14 +5256,15 @@ stock ReloadBizIcon(bizid) {
 	return 1;
 }
 
-stock saveBuildings() {
-	new
-	    id = 1;
+stock saveBuildings()
+{
+	new id = 1;
 
     if(dontsave)
 		return 1;
 
-	while(id < MAX_BUILDINGS) {
+	while(id < MAX_BUILDINGS)
+	{
 	    saveBuilding(id);
 		id++;
 	}
@@ -5248,20 +5272,23 @@ stock saveBuildings() {
 	return 1;
 }
 
-stock saveBuilding(id) {
-    new
-		query[1024];
+stock saveBuilding(id)
+{
+    new query[1024];
 
 	if(dontsave)
 		return 1;
 
 	ReloadBlIcon(id);
-	if(Building[id][blDelete]) {
+	if(Building[id][blDelete])
+	{
 	    format(query, sizeof(query), "DELETE FROM `buildings` WHERE `blID` = %d", id);
 	    mysql_function_query(dbHandle, query, false, "", "");
 		Building[id][blDelete] = false;
 		Building[id][blLoaded] = false;
-	} else if(Building[id][blInsert]) {
+	}
+	else if(Building[id][blInsert])
+	{
 		Building[id][blInsideWorld] = id + 16000;
 		format(query, sizeof(query), "INSERT INTO `buildings` (blID, blText, blText2, blOutsideX, blOutsideY, blOutsideZ, blEntranceFee, blOutsideInt, blOutsideAngle, blLocked, blPickupModel, blInsideWorld)");
 		format(query, sizeof(query), "%s VALUES (%d, '%s', '%s', %f, %f, %f, %d, %d, %f, %d, %d, %d)",
@@ -5281,7 +5308,9 @@ stock saveBuilding(id) {
 		);
 		mysql_function_query(dbHandle, query, false, "", "");
 		Building[id][blInsert] = false;
-	} else {
+	}
+	else
+	{
 		format(query, sizeof(query), "UPDATE `buildings` SET blText='%s',blText2='%s', `blOutsideX` = '%f', `blOutsideY` = '%f', `blOutsideZ` = '%f', `blEntranceFee` = %d, `blOutsideInt` = %d, `blOutsideAngle` = '%f', `blInsideX` = '%f', `blInsideY` = '%f', `blInsideZ` = '%f', `blInsideWorld` = '%d'",
 			Building[id][blText],
 			Building[id][blText2],
@@ -7367,7 +7396,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-                        SetHandItemAndParam(playerid, freehand, ITEM_ID_CIGARRILLOS, 10);
+                        SetHandItemAndParam(playerid, freehand, ITEM_ID_CIGARRILLOS, 20);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CIGARRILLOS));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un atado de cigarrilos.");
 						SendFMessage(playerid, COLOR_WHITE, "Has comprado un atado de diez cigarrillos por $%d, puedes utilizar /fumar.", GetItemPrice(ITEM_ID_CIGARRILLOS));
@@ -7401,7 +7430,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						SendFMessage(playerid, COLOR_WHITE, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
 						PlayerInfo[playerid][pPhoneNumber] = 1500000000 + random(99999999);
 						PlayerInfo[playerid][pPhoneC] = 0;
-						PlayerInfo[playerid][pListNumber] = 1;
 						Business[business][bTill] += PRICE_PHONE;
 			        	Business[business][bProducts]--;
         				saveBusiness(business);
@@ -9158,7 +9186,7 @@ CMD:ayuda(playerid,params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms /numero /telefono");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
@@ -9279,7 +9307,7 @@ CMD:telefono(playerid, params[])
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre.");
 	        
 		PlayerActionMessage(playerid, 15.0, "toma su teléfono celular del bolsillo.");
-		SendClientMessage(playerid,-1,"Para guardar tu telefono pon nuevamente /telefono");
+		SendClientMessage(playerid,-1,"Para guardar tu telefono pon nuevamente (/tel)efono");
 	    PhoneHand[playerid] = 1;	
 	    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_TELEFONO_CELULAR, 1);
 	}
@@ -9297,7 +9325,7 @@ CMD:atender(playerid, params[])
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada, /colgar para colgar.");
 	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
 	if(CheckMissionEvent(playerid, 1))
 	    return 1;
 
@@ -9333,7 +9361,7 @@ CMD:msg(playerid, params[])
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
 	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(GetPlayerCash(playerid) < PRICE_TEXT)
@@ -9399,7 +9427,7 @@ CMD:colgar(playerid, params[])
 	new caller = Mobile[playerid];
 
 	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
 	if(PlayerCancelMissionEvent(playerid))
 	    return 1;
 	    
@@ -9447,7 +9475,7 @@ CMD:llamar(playerid, params[])
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
 	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
 	if(!PhoneEnabled[playerid])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
 	if(Mobile[playerid] != 255)
@@ -13559,6 +13587,7 @@ CMD:fumar(playerid, params[])
 
 	SetPlayerSpecialAction(playerid, SPECIAL_ACTION_SMOKE_CIGGY);
 	PlayerActionMessage(playerid, 15.0, "saca un encendedor y un cigarrillo, lo enciende y comienza a fumar.");
+	SendClientMessage(playerid, COLOR_WHITE, "[INFO]: Usa /apagarcigarro cuando quieras terminarlo.");
 	smoking[playerid] = 1;
 	
 	if(GetHandParam(playerid, hand_cig) == 1)

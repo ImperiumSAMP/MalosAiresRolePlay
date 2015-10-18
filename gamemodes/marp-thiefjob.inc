@@ -44,8 +44,8 @@ ResetThiefVariables(playerid)
 	ThiefJobInfo[playerid][pFelonExp] = 0;
 	ThiefJobInfo[playerid][pFelonLevel] = 0;
 	ThiefJobInfo[playerid][pRobPersonLimit] = 0;
-	ThiefJobInfo[playerid][pRobLastVictimPID] = INVALID_PLAYER_ID;
-	ThiefJobInfo[playerid][pTheftLastVictimPID] = INVALID_PLAYER_ID;
+	ThiefJobInfo[playerid][pRobLastVictimPID] = 0;
+	ThiefJobInfo[playerid][pTheftLastVictimPID] = 0;
 	ThiefJobInfo[playerid][pTheftPersonLimit] = 0;
 	ThiefJobInfo[playerid][pRobHouseLimit] = 0;
 	ThiefJobInfo[playerid][pRob2HouseLimit] = 0;
@@ -91,26 +91,25 @@ forward OnThiefJobDataLoad(playerid);
 public OnThiefJobDataLoad(playerid)
 {
 	new rows,
-		fields,
-		result[32];
+		fields;
 
 	cache_get_data(rows, fields);
 
 	if(rows)
 	{
-		cache_get_field_content(0, "pFelonExp", result); 			ThiefJobInfo[playerid][pFelonExp] = strval(result);
-		cache_get_field_content(0, "pFelonLevel", result); 			ThiefJobInfo[playerid][pFelonLevel] = strval(result);
-		cache_get_field_content(0, "pRobPersonLimit", result);		ThiefJobInfo[playerid][pRobPersonLimit] = strval(result);
-		cache_get_field_content(0, "pRobLastVictimPID", result);	ThiefJobInfo[playerid][pRobLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftLastVictimPID", result);	ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftPersonLimit", result);	ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
-		cache_get_field_content(0, "pRobHouseLimit", result); 		ThiefJobInfo[playerid][pRobHouseLimit] = strval(result);
-		cache_get_field_content(0, "pRob2HouseLimit", result); 		ThiefJobInfo[playerid][pRob2HouseLimit] = strval(result);
-		cache_get_field_content(0, "pRob247Limit", result); 		ThiefJobInfo[playerid][pRob247Limit] = strval(result);
-		cache_get_field_content(0, "pTheft247Limit", result); 		ThiefJobInfo[playerid][pTheft247Limit] = strval(result);
-		cache_get_field_content(0, "pForceDoorLimit", result);		ThiefJobInfo[playerid][pForceDoorLimit] = strval(result);
-		cache_get_field_content(0, "pForceEngineLimit", result);	ThiefJobInfo[playerid][pForceEngineLimit] = strval(result);
-		cache_get_field_content(0, "pDesarmCarLimit", result);		ThiefJobInfo[playerid][pDesarmCarLimit] = strval(result);
+		ThiefJobInfo[playerid][pFelonExp] = cache_get_field_content_int(0, "pFelonExp");
+		ThiefJobInfo[playerid][pFelonLevel] = cache_get_field_content_int(0, "pFelonLevel");
+		ThiefJobInfo[playerid][pRobPersonLimit] = cache_get_field_content_int(0, "pRobPersonLimit");
+		ThiefJobInfo[playerid][pRobLastVictimPID] = cache_get_field_content_int(0, "pRobLastVictimPID");
+		ThiefJobInfo[playerid][pTheftLastVictimPID] = cache_get_field_content_int(0, "pTheftLastVictimPID");
+		ThiefJobInfo[playerid][pTheftPersonLimit] = cache_get_field_content_int(0, "pTheftPersonLimit");
+		ThiefJobInfo[playerid][pRobHouseLimit] = cache_get_field_content_int(0, "pRobHouseLimit");
+		ThiefJobInfo[playerid][pRob2HouseLimit] = cache_get_field_content_int(0, "pRob2HouseLimit");
+		ThiefJobInfo[playerid][pRob247Limit] = cache_get_field_content_int(0, "pRob247Limit");
+		ThiefJobInfo[playerid][pTheft247Limit] = cache_get_field_content_int(0, "pTheft247Limit");
+		ThiefJobInfo[playerid][pForceDoorLimit] = cache_get_field_content_int(0, "pForceDoorLimit");
+		ThiefJobInfo[playerid][pForceEngineLimit] = cache_get_field_content_int(0, "pForceEngineLimit");
+		ThiefJobInfo[playerid][pDesarmCarLimit] = cache_get_field_content_int(0, "pDesarmCarLimit");
 	}
 	else
 	{
@@ -156,27 +155,25 @@ forward OnPlayerThiefJobCheck(playerid);
 public OnPlayerThiefJobCheck(playerid)
 {
 	new rows,
-		fields,
-		result[32];
+		fields;
 
 	cache_get_data(rows, fields);
 
 	if(rows) // Alguna vez lo tuvo, por ende encontró un registro en DB.
 	{
-		cache_get_field_content(0, "pFelonExp", result); 			ThiefJobInfo[playerid][pFelonExp] = strval(result);
-		cache_get_field_content(0, "pFelonLevel", result); 			ThiefJobInfo[playerid][pFelonLevel] = strval(result);
-		cache_get_field_content(0, "pRobPersonLimit", result);		ThiefJobInfo[playerid][pRobPersonLimit] = strval(result);
-		cache_get_field_content(0, "pRobLastVictimPID", result);	ThiefJobInfo[playerid][pRobLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftLastVictimPID", result);	ThiefJobInfo[playerid][pTheftLastVictimPID] = strval(result);
-		cache_get_field_content(0, "pTheftPersonLimit", result);	ThiefJobInfo[playerid][pTheftPersonLimit] = strval(result);
-		cache_get_field_content(0, "pRobHouseLimit", result); 		ThiefJobInfo[playerid][pRobHouseLimit] = strval(result);
-		cache_get_field_content(0, "pRob2HouseLimit", result); 		ThiefJobInfo[playerid][pRob2HouseLimit] = strval(result);
-		cache_get_field_content(0, "pRob247Limit", result); 		ThiefJobInfo[playerid][pRob247Limit] = strval(result);
-		cache_get_field_content(0, "pTheft247Limit", result); 		ThiefJobInfo[playerid][pTheft247Limit] = strval(result);
-		cache_get_field_content(0, "pForceDoorLimit", result);		ThiefJobInfo[playerid][pForceDoorLimit] = strval(result);
-		cache_get_field_content(0, "pForceEngineLimit", result);	ThiefJobInfo[playerid][pForceEngineLimit] = strval(result);
-		cache_get_field_content(0, "pDesarmCarLimit", result);		ThiefJobInfo[playerid][pDesarmCarLimit] = strval(result);
-
+		ThiefJobInfo[playerid][pFelonExp] = cache_get_field_content_int(0, "pFelonExp");
+		ThiefJobInfo[playerid][pFelonLevel] = cache_get_field_content_int(0, "pFelonLevel");
+		ThiefJobInfo[playerid][pRobPersonLimit] = cache_get_field_content_int(0, "pRobPersonLimit");
+		ThiefJobInfo[playerid][pRobLastVictimPID] = cache_get_field_content_int(0, "pRobLastVictimPID");
+		ThiefJobInfo[playerid][pTheftLastVictimPID] = cache_get_field_content_int(0, "pTheftLastVictimPID");
+		ThiefJobInfo[playerid][pTheftPersonLimit] = cache_get_field_content_int(0, "pTheftPersonLimit");
+		ThiefJobInfo[playerid][pRobHouseLimit] = cache_get_field_content_int(0, "pRobHouseLimit");
+		ThiefJobInfo[playerid][pRob2HouseLimit] = cache_get_field_content_int(0, "pRob2HouseLimit");
+		ThiefJobInfo[playerid][pRob247Limit] = cache_get_field_content_int(0, "pRob247Limit");
+		ThiefJobInfo[playerid][pTheft247Limit] = cache_get_field_content_int(0, "pTheft247Limit");
+		ThiefJobInfo[playerid][pForceDoorLimit] = cache_get_field_content_int(0, "pForceDoorLimit");
+		ThiefJobInfo[playerid][pForceEngineLimit] = cache_get_field_content_int(0, "pForceEngineLimit");
+		ThiefJobInfo[playerid][pDesarmCarLimit] = cache_get_field_content_int(0, "pDesarmCarLimit");
 	}
 	else // Primera vez que lo tiene
 	{
@@ -191,7 +188,7 @@ public OnPlayerThiefJobCheck(playerid)
 	PlayerInfo[playerid][pJob] = JOB_FELON;
 	PlayerInfo[playerid][pJobTime] = JOB_WAITTIME;
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-	SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un %s!. Para saber los comandos disponibles mira en /delincuenteayuda y en /ayuda.", JobInfo[JOB_FELON][jName]);
+	SendClientMessage(playerid, COLOR_YELLOW3, "¡Felicidades, ahora eres un delincuente!. Para saber los comandos disponibles mira en /delincuenteayuda y en /ayuda.");
 	SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d paydays antes de volver a tomar otro empleo.", PlayerInfo[playerid][pJobTime]);
 	return 1;
 }
@@ -201,6 +198,13 @@ public Thief_Countdown(playerid)
 {
 	new string[128];
 
+	if(thief_timer_secs[playerid] < 0)
+	{
+	    SendClientMessage(playerid, COLOR_YELLOW2, "[ERROR]: thief_timer_secs < 0. Por favor, saca una foto del chatlog y repórtalo a un administrador.");
+	    ResetThiefCrime(playerid);
+	    return 1;
+	}
+	
 	switch(thief_type[playerid])
 	{
 	    case THIEF_SHOP_THEFT: //===============================================
@@ -226,7 +230,7 @@ public Thief_Countdown(playerid)
 				new takeMoney = 50 + random(200);
 
 			    thief_timer_secs[playerid] = -1;
-				SendFMessage(playerid, COLOR_WHITE, "Has tomado la mercancía por un valor de $%d, ¡retírate de la tienda!", takeMoney);
+				SendFMessage(playerid, COLOR_WHITE, "Has robado mercancía por un valor de $%d, ¡retírate de la tienda!", takeMoney);
 				TogglePlayerControllable(playerid, true);
 				GivePlayerCash(playerid, takeMoney);
 				if(ThiefJobInfo[playerid][pFelonLevel] == 2)
@@ -286,7 +290,7 @@ public Thief_Countdown(playerid)
 			{
 				new takeMoney = 800 + random(400);
 	            thief_timer_secs[playerid] = -1;
-				SendFMessage(playerid, COLOR_WHITE, "Has robado $%d objetos de valor, ¡escapa antes de que venga la policía!", takeMoney);
+				SendFMessage(playerid, COLOR_WHITE, "Has robado objetos por un valor de $%d. ¡Escapa antes de que venga la policía!", takeMoney);
 				TogglePlayerControllable(playerid, true);
 				GivePlayerCash(playerid, takeMoney);
 				if(ThiefJobInfo[playerid][pFelonLevel] == 5)
@@ -316,7 +320,7 @@ public Thief_Countdown(playerid)
 			{
 				new takeMoney = 1200 + random(600);
 	            thief_timer_secs[playerid] = -1;
-				SendFMessage(playerid, COLOR_WHITE, "Has robado $%d pesos, ¡escapa antes de que venga la policía!", takeMoney);
+				SendFMessage(playerid, COLOR_WHITE, "Has logrado encontrar y robar $%d, ¡escapa antes de que venga la policía!", takeMoney);
 				TogglePlayerControllable(playerid, true);
 				GivePlayerCash(playerid, takeMoney);
 				if(ThiefJobInfo[playerid][pFelonLevel] == 6)
@@ -336,19 +340,24 @@ public Thief_Countdown(playerid)
 
 RobberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 {
-	new string[128];
+	new string[144];
 
  	if(!usingMask[playerid]) // Si roba sin mascara le damos sosp automático
+ 	{
 		SetPlayerWantedLevelEx(playerid, GetPlayerWantedLevelEx(playerid) + 1);
-
+ 		format(PlayerInfo[playerid][pAccusedOf], 64, accusedOf);
+		format(PlayerInfo[playerid][pAccusedBy], 24, accusedBy);
+	}
 	if(houseId)
 	{
-	    format(string, sizeof(string), "[Dpto. de policía]: un vecino ha reportado una intrusión en la casa Nro %d. Marcamos la dirección en su GPS.", houseId);
+	    new area[MAX_ZONE_NAME];
+		GetCoords2DZone(House[houseId][OutsideX], House[houseId][OutsideY], area, MAX_ZONE_NAME);
+	    format(string, sizeof(string), "[Dpto. de policía]: se ha reportado una intrusión en la casa nro %d, en el barrio de %s. Lo marcamos en el GPS.", houseId, area);
 		foreach(new play : Player)
 		{
 			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
 			{
-			    SendClientMessage(play, COLOR_PMA, string);
+			    SendClientLongMessage(play, COLOR_PMA, string);
 				SetPlayerCheckpoint(play, House[houseId][OutsideX], House[houseId][OutsideY], House[houseId][OutsideZ], 2.0);
 			}
 		}
@@ -359,13 +368,11 @@ RobberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 		foreach(new play : Player)
 		{
 			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
+			{
 			    SendClientMessage(play, COLOR_PMA, string);
+			}
 		}
 	}
-
-	format(PlayerInfo[playerid][pAccusedOf], 64, accusedOf);
-	format(PlayerInfo[playerid][pAccusedBy], 24, accusedBy);
-
 }
 
 //==================================COMANDOS====================================
@@ -391,7 +398,7 @@ CMD:hurtarcasa(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
-	thief_timer_police_call[playerid] = 20 + random(60);
+	thief_timer_police_call[playerid] = 1 + random(80);
 	thief_timer_secs[playerid] = 100;
 	thief_type[playerid] = THIEF_HOUSE_THEFT;
 	thief_target[playerid] = house_id;
@@ -426,7 +433,7 @@ CMD:asaltarcasa(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
-	thief_timer_police_call[playerid] = 20 + random(60);
+	thief_timer_police_call[playerid] = 1 + random(80);
 	thief_timer_secs[playerid] = 100;
 	thief_type[playerid] = THIEF_HOUSE_ROBBERY;
 	thief_target[playerid] = house_id;
@@ -460,7 +467,7 @@ CMD:hurtartienda(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en un 24-7 o en una tienda de ropa.");
 
 	thief_stealing[playerid] = 1;
-	thief_timer_police_call[playerid] = 20 + random(35);
+	thief_timer_police_call[playerid] = 1 + random(55);
 	thief_timer_secs[playerid] = 60;
 	thief_type[playerid] = THIEF_SHOP_THEFT;
 	thief_target[playerid] = biz_id;
@@ -500,7 +507,7 @@ CMD:asaltartienda(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Esta tienda no puede ser asaltada, busca otra.");
 
 	thief_stealing[playerid] = 1;
-	thief_timer_police_call[playerid] = 20 + random(35);
+	thief_timer_police_call[playerid] = 1 + random(55);
 	thief_timer_secs[playerid] = 60;
 	thief_type[playerid] = THIEF_SHOP_ROBBERY;
 	thief_target[playerid] = biz_id;
@@ -517,7 +524,7 @@ forward RobberyCancel(playerid);
 public RobberyCancel(playerid)
 {
     SendClientMessage(thief_target[playerid], COLOR_YELLOW2, "El robo ha sido cancelado porque no respondiste en 15 segundos.");
-    SendClientMessage(playerid, COLOR_YELLOW2, "El robo ha sido cancelado porque la victima no ha respondido en 15 segundos.");
+    SendClientMessage(playerid, COLOR_YELLOW2, "El robo ha sido cancelado ya que la victima no ha respondido en 15 segundos.");
     
 	thief_stealing[playerid] = 0;
 	thief_type[playerid] = 0;
@@ -536,8 +543,11 @@ public GiveJobExp(playerid, job, exp)
 			ThiefJobInfo[playerid][pFelonExp] = 0;
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡Ahora eres un delincuente más experimentado y tienes acceso a nuevos comandos!");
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-		} else
+		}
+		else
+		{
 			ThiefJobInfo[playerid][pFelonExp] += exp;
+		}
 	}
 	return 1;
 }
@@ -546,8 +556,7 @@ stock GetJobExpNeeded(playerid, job)
 {
 	if(job == JOB_FELON)
 	{
-        new
-			level = ThiefJobInfo[playerid][pFelonLevel],
+        new level = ThiefJobInfo[playerid][pFelonLevel],
 			result;
 
         result = (level * level + 15) * (JOB_EXP_MULTIPLIER + level);
@@ -666,19 +675,23 @@ CMD:asaltar(playerid, params[])
  		PlayerActionMessage(playerid, 15.0, string);
 		GivePlayerCash(playerid, robbery_amount);
 		GivePlayerCash(target, -robbery_amount);
-		if(GetPVarInt(target, "disabled") != DISABLE_DYING && GetPVarInt(target, "disabled") != DISABLE_DEATHBED && ThiefJobInfo[playerid][pFelonLevel] == 3)
-		{
-	 		GiveJobExp(playerid, PlayerInfo[playerid][pJob], 5);
-	 	}
 		ThiefJobInfo[playerid][pRobLastVictimPID] = getPlayerMysqlId(target);
 	}
 	if(random(2))
 	{
-		SetPlayerWantedLevelEx(playerid, GetPlayerWantedLevelEx(playerid) + 1);
-		format(string, sizeof(string), "[Dpto. de policía]: un civil ha reportado a %s como sospechoso de robo a mano armada.", GetPlayerNameEx(playerid));
+	    if(!usingMask[playerid])
+	    {
+			SetPlayerWantedLevelEx(playerid, GetPlayerWantedLevelEx(playerid) + 1);
+			format(PlayerInfo[playerid][pAccusedOf], 64, "robo a mano armada");
+			format(PlayerInfo[playerid][pAccusedBy], 24, "anónimo");
+		}
+		
+	 	new Float:px, Float:py, Float:pz, area[MAX_ZONE_NAME];
+	 	
+		GetPlayerPos(playerid, px, py, pz);
+		GetCoords2DZone(px, py, area, MAX_ZONE_NAME);
+		format(string, sizeof(string), "[Dpto. de policía]: un civil reportó un robo a mano armada en curso en la zona de %s.", area);
 		SendFactionMessage(FAC_PMA, COLOR_PMA, string);
-		format(PlayerInfo[playerid][pAccusedOf], 64, "robo a mano armada");
-		format(PlayerInfo[playerid][pAccusedBy], 24, "anónimo");
     }
 	return 1;
 }
@@ -720,7 +733,7 @@ CMD:mentir(playerid, params[])
 				else
 				{
 			        PlayerActionMessage(playerid, 15.0, "le miente al ladrón y le dice que no tiene dinero.");
-		            format(string, sizeof(string), "se da cuenta del engaño, se enfurece, y le roba algo de dinero a %s.", GetPlayerNameEx(playerid));
+		            format(string, sizeof(string), "se da cuenta del engaño, se enfurece, y le roba gran parte de su dinero a %s.", GetPlayerNameEx(playerid));
 		        	PlayerActionMessage(thief_id, 15.0, string);
 		        	if(target_money > 50000)
 		        	{

@@ -276,6 +276,17 @@ stock Container_GetUsedSpace(id)
 
 //==============================================================================
 
+stock Container_GetFreeSpace(id)
+{
+	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
+	{
+		return vector_get(id, CONTAINER_INDEX_TOTAL_SPACE) - vector_get(id, CONTAINER_INDEX_USED_SPACE);
+	}
+	return 0;
+}
+
+//==============================================================================
+
 stock Container_GetElementsAmount(id)
 {
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
@@ -414,7 +425,7 @@ stock Container_AddItemAndParam(id, item, param)
 	{
 	    if(GetItemSpace(item) < Container_GetMinItemSpace(id))
 	        return 0;
-		if(Container_GetUsedSpace(id) + GetItemSpace(item) > Container_GetTotalSpace(id)) // No hay espacio para meter el peso del item
+		if(Container_GetFreeSpace(id) < GetItemSpace(item)) // No hay espacio para meter el peso del item
 		    return 0;
 
 		vector_push_back(id, item);
