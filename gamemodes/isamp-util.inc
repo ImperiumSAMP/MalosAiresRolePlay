@@ -85,6 +85,7 @@
 #define COLOR_YELLOW2 			0xF5DEB3AA
 #define COLOR_YELLOW3 			0xF5DEB3CC
 #define COLOR_WHITE 			0xE0E0E0AA
+#define COLOR_DEEPWHITE			0xFFFFFFFF
 #define COLOR_FADE1 			0xE6E6E6E6
 #define COLOR_FADE2 			0xC8C8C8C8
 #define COLOR_FADE3 			0xAAAAAAAA
@@ -195,3 +196,9 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:FactionEnabled[MAX_PLAYERS],
 	bool:TalkAnimEnabled[MAX_PLAYERS],
 	bool:HudEnabled[MAX_PLAYERS];
+	
+	// Sistema de streams de radios
+new bool:hearingRadioStream[MAX_PLAYERS];
+
+// sistema de mascaras
+new bool:usingMask[MAX_PLAYERS];

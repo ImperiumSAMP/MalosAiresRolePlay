@@ -80,12 +80,14 @@ stock IsAtArmoryInputs(playerid)
     return 0;
 }
 
-stock bool:CheckFreeSpaceForDuty(playerid)
+stock CheckFreeSpaceForDuty(playerid)
 {
-	if(GetHandItem(playerid, HAND_RIGHT) != 0 || GetHandItem(playerid, HAND_LEFT) != 0 || GetBackItem(playerid) != 0 || SearchInvFreeSlot(playerid) == -1)
-	    return false;
-	else
-		return true;
+	if(GetHandItem(playerid, HAND_RIGHT) != 0 ||
+		GetHandItem(playerid, HAND_LEFT) != 0 ||
+		GetBackItem(playerid) != 0 ||
+		Container_GetFreeSpace(PlayerInfo[playerid][pContainerID]) < 10)
+	    return 0;
+	return 1;
 }
 
 stock bool:CheckTakeInputs(playerid)
@@ -144,7 +146,7 @@ CMD:sequipo(playerid, params[])
 	if(!CheckTakeInputs(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "ARMERO: Ya has tomado demasiadas armas y municiones, pídele autorización a un superior para retirar nuevamente.");
 	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un slot del inventario, la espalda, y ambas manos libres para guardar el equipo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener 10u de espacio en inventario, y la espalda y ambas manos libres para guardar el equipo.");
 	switch(equipo)
 	{
 		case 1:
@@ -157,7 +159,7 @@ CMD:sequipo(playerid, params[])
 		    ResetPlayerWeapons(playerid);
 		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_SILENCED, 100);
+		    Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_SILENCED, 100);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE1, "EQUIPO 1");
 		}
 		case 2:
@@ -170,7 +172,7 @@ CMD:sequipo(playerid, params[])
 			ResetPlayerWeapons(playerid);
 		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
+		    Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE2, "EQUIPO 2");
 		}
 		case 3:
@@ -182,7 +184,7 @@ CMD:sequipo(playerid, params[])
 				
          	ResetPlayerWeapons(playerid);
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
             SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
 			SetPlayerSkin(playerid, 285); // STARS
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE3, "EQUIPO 3");
@@ -196,7 +198,7 @@ CMD:sequipo(playerid, params[])
 				
          	ResetPlayerWeapons(playerid);
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
             SetBackItemAndParam(playerid, WEAPON_M4, 250);
 			SetPlayerSkin(playerid, 285); // STARS
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE4, "EQUIPO 4");
@@ -211,7 +213,7 @@ CMD:sequipo(playerid, params[])
   			ResetPlayerWeapons(playerid);
 		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
 		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 60);
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE5, "EQUIPO 5");
 		}
 	}
@@ -240,9 +242,9 @@ CMD:pequipo(playerid, params[])
 		return 1;
 	}
 	if(!CheckTakeInputs(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "ARMERO: Ya has tomado demasiadas armas y municiones, pídele autorización a un superior a ver si te dejo tomar más o no.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "ARMERO: Ya has tomado demasiadas armas y municiones, pídele autorización a un superior a ver si te deja tomar más o no.");
 	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un slot del inventario, la espalda, y ambas manos libres para guardar el equipo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener 10u de espacio en inventario, y la espalda y ambas manos libres para guardar el equipo.");
 	switch(equipo)
 	{
 		case 1:
@@ -265,7 +267,7 @@ CMD:pequipo(playerid, params[])
 
     		ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_COLT45, 100);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_COLT45, 100);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE2, "EQUIPO 2");
 		}
   		case 3:
@@ -277,7 +279,7 @@ CMD:pequipo(playerid, params[])
 
 			ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_COLT45, 100);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_COLT45, 100);
 			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 25);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE3, "EQUIPO 3");
        	}
@@ -290,7 +292,7 @@ CMD:pequipo(playerid, params[])
 
 		    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 75);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 75);
 			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 40);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE4, "EQUIPO 4");
    		}
@@ -303,7 +305,7 @@ CMD:pequipo(playerid, params[])
 
 		    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 75);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 75);
 			SetBackItemAndParam(playerid, WEAPON_RIFLE, 40);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE5, "EQUIPO 5");
         }
@@ -316,7 +318,7 @@ CMD:pequipo(playerid, params[])
 
     	    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
 			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 60);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE6, "EQUIPO 6");
         }
@@ -329,7 +331,7 @@ CMD:pequipo(playerid, params[])
 				
     	    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
+   			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
 			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE7, "EQUIPO 7");
         }
@@ -342,7 +344,7 @@ CMD:pequipo(playerid, params[])
 
 		    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
+   			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
 			SetBackItemAndParam(playerid, WEAPON_M4, 200);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE8, "EQUIPO 8");
         }
@@ -355,7 +357,7 @@ CMD:pequipo(playerid, params[])
 				
 			ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 50);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
 			SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE9, "EQUIPO 9");
         }
@@ -368,7 +370,7 @@ CMD:pequipo(playerid, params[])
 
 		    ResetPlayerWeapons(playerid);
 			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			SetInvItemAndParam(playerid, SearchInvFreeSlot(playerid), WEAPON_DEAGLE, 35);
+			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 35);
 			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
 			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE10, "EQUIPO 10");
         }
@@ -490,8 +492,8 @@ CMD:pautorizar(playerid, params[])
         return 1;
 	if(PlayerInfo[playerid][pRank] > 3)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tu rango no tiene acceso a este comando.");
-    if(PlayerInfo[playerid][pRadio] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio, vé y compra una en algún 24-7.");
+    if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
     if(sscanf(params, "u", targetid))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pautorizar [ID/Jugador]");
     if(!IsPlayerConnected(targetid))
@@ -520,8 +522,8 @@ CMD:sautorizar(playerid, params[])
         return 1;
 	if(PlayerInfo[playerid][pRank] > 2)
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Tu rango no tiene acceso a este comando.");
-    if(PlayerInfo[playerid][pRadio] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una radio, vé y compra una en algún 24-7.");
+    if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una radio en alguna mano o en el inventario.");
     if(sscanf(params, "u", targetid))
     	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]:{C8C8C8} /sautorizar [ID/Jugador]");
     if(!IsPlayerConnected(targetid))

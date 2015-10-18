@@ -166,10 +166,13 @@ CMD:abrir(playerid, params[])
 CMD:aedificios(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA EDIFICIOS]==============================");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aeinfo - /aetele");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /aegetid - /aetele - /aeradio");
+	if(PlayerInfo[playerid][pAdmin] >= 4) {
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /aeinfo");
+	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aeinsert - /aeremove - /aevworld - /aegetid - /aetexto - /aetexto2 - /aeentrada - /aesalida");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aecosto - /aecerrado - /aetele - /aepickup - /aefaccion - /aeradio");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aeinsert - /aeremove - /aevworld - /aetexto - /aetexto2 - /aeentrada - /aesalida");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /aecosto - /aecerrado - /aetele - /aepickup - /aefaccion");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}Seteando posiciones deberás estar mirando hacia la puerta para que el ángulo de salida sea el correcto.");
 	}
 	return 1;
@@ -184,7 +187,7 @@ CMD:aeinfo(playerid, params[])
 	if(id < 1 || id >= MAX_BUILDINGS)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
 
-	SendFMessage(playerid, COLOR_WHITE, "=======================[Negocio %d '%s']=======================", id, Building[id][blText]);
+	SendFMessage(playerid, COLOR_WHITE, "=======================[Edificio %d '%s']=======================", id, Building[id][blText]);
 	SendFMessage(playerid, COLOR_WHITE, "- Texto: %s", Building[id][blText]);
 	SendFMessage(playerid, COLOR_WHITE, "- Texto2: %s", Building[id][blText2]);
 	SendFMessage(playerid, COLOR_WHITE, "- Costo de entrada: $%d", Building[id][blEntranceFee]);

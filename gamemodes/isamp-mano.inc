@@ -7,8 +7,6 @@
 
 //================================CONSTANTES====================================
 
-#define SLOT_TYPE_HAND		    4
-
 // #define HAND_LEFT             	0
 // #define HAND_RIGHT              1
 
@@ -18,20 +16,12 @@
 
 //============================VARIABLES INTERNAS================================
 
+enum SlotInfo {
+	Item,
+	Amount,
+};
+
 new HandInfo[MAX_PLAYERS][2][SlotInfo];
-
-//===============================FUNCIONES======================================
-
-forward GetHandItem(playerid, hand);
-forward GetHandParam(playerid, hand);
-forward SetHandItemAndParam(playerid, hand, itemid, param);
-forward ResetHands(playerid);
-forward ResetAndSaveHands(playerid);
-forward PrintHandForPlayer(playerid, hand, targetid);
-forward LoadHandsInfo(playerid);
-forward SearchHandsForItem(playerid, itemid);
-forward SearchFreeHand(playerid);
-forward SynchronizeWeaponAmmo(playerid, ammo);
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
@@ -52,16 +42,13 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	    DeleteHandItem(playerid, hand);
 		HandInfo[playerid][hand][Item] = 0;
 		HandInfo[playerid][hand][Amount] = 0;
-		SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand); // Borramos el anterior
 	}
-	if(itemid != 0)
+	if(itemid > 0)
 	{
 	    HandInfo[playerid][hand][Item] = itemid;
 		HandInfo[playerid][hand][Amount] = param;
 		LoadHandItem(playerid, hand);
-        SaveSlotInfo(SLOT_TYPE_HAND, playerid, hand);
 	}
-	return 1;
 }
 
 stock SearchHandsForItem(playerid, itemid)
@@ -93,15 +80,6 @@ stock ResetHands(playerid)
 	return 1;
 }
 
-stock ResetAndSaveHands(playerid)
-{
-	if(HandInfo[playerid][HAND_LEFT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_WEAPON)
-	    SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
-	if(HandInfo[playerid][HAND_RIGHT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_WEAPON)
-		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-	return 1;
-}
-
 stock PrintHandsForPlayer(playerid, targetid)
 {
 	new rightitem = GetHandItem(playerid, HAND_RIGHT),
@@ -112,7 +90,7 @@ stock PrintHandsForPlayer(playerid, targetid)
 		SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", GetItemName(rightitem), GetItemParamName(rightitem), GetHandParam(playerid, HAND_RIGHT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano derecha] - Nada");
- 	if(leftitem > 0)
+	if(leftitem > 0)
 		SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", GetItemName(leftitem), GetItemParamName(leftitem), GetHandParam(playerid, HAND_LEFT));
 	else
 	    SendClientMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Nada");
@@ -120,36 +98,37 @@ stock PrintHandsForPlayer(playerid, targetid)
 	return 1;
 }
 
-stock LoadHandsInfo(playerid)
+//=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
+
+ResetHandsWeapons(playerid)
 {
-	new query[128];
-		
-	ResetHands(playerid); // Reseteamos la variable a cero y cargamos la nueva data (porque si no carga nada queda la data del anterior pj con misma id)
-	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`= %d AND `Id` = %d", SLOT_TYPE_HAND, PlayerInfo[playerid][pID]);
-	mysql_function_query(dbHandle, query, true, "OnSlotsInfoDataLoad", "ii", SLOT_TYPE_HAND, playerid);
+	if(HandInfo[playerid][HAND_LEFT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_WEAPON)
+        SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+	if(HandInfo[playerid][HAND_RIGHT][Item] > 0 && GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_WEAPON)
+		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	return 1;
+}
+
+//=======DESTRUCTOR DE LOS CONTENEDORES EN MEMORIA ASOCIADOS A LAS MANOS========
+
+DestroyPlayerHands(playerid)
+{
+    if(GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_CONTAINER)
+	{
+	    Container_Destroy(HandInfo[playerid][HAND_RIGHT][Amount]);
+	}
+    if(GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_CONTAINER)
+	{
+	    Container_Destroy(HandInfo[playerid][HAND_LEFT][Amount]);
+	}
 	return 1;
 }
 
 //==========[Sincronizacion del arma en mano con las balas gastadas]============
 
-new bool:cantSaveSync[MAX_PLAYERS];
-
-forward CantSaveSyncTimer(playerid);
-public CantSaveSyncTimer(playerid)
-{
-    cantSaveSync[playerid] = false;
-	return 1;
-}
-
-stock SynchronizeWeaponAmmo(playerid, ammo)
+SynchronizeWeaponAmmo(playerid, ammo)
 {
 	HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
-	if(cantSaveSync[playerid] == false)
-	{
-	    SaveSlotInfo(SLOT_TYPE_HAND, playerid, HAND_RIGHT, SAVE_UPDATE);
-	    cantSaveSync[playerid] = true;
-		SetTimerEx("CantSaveSyncTimer", 2000, false, "i", playerid);
-	}
 	if(ammo <= 0) // Se le terminó el arma
 	{
 	    SendFMessage(playerid, COLOR_WHITE, "[OOC] Se te ha borrado el arma ya que llegaste a las %d municiones, y se te han acabado.", ammo);
@@ -212,15 +191,20 @@ CMD:dari(playerid, params[])
 	return 1;
 }
 
+CMD:mc(playerid, params[])
+{
+	cmd_mano(playerid, "cambiar");
+	return 1;
+}
+
 CMD:mano(playerid, params[])
 {
-	new command[128],
-		targetid;
+	new command[32];
 	    
-	if(sscanf(params, "s[128]", command, targetid))
+	if(sscanf(params, "s[32]", command))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - ver - guardar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
@@ -284,6 +268,43 @@ CMD:mano(playerid, params[])
 
 			TakeObject(playerid, HAND_LEFT);
 			
+		} else if(strcmp(command, "ver", true) == 0) {
+
+			new item = GetHandItem(playerid, HAND_RIGHT),
+			    param = GetHandParam(playerid, HAND_RIGHT);
+			    
+			if(GetItemType(item) != ITEM_CONTAINER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano derecha del tipo contenedor.");
+			if(!Container_Show(playerid, CONTAINER_TYPE_ITEM, param, playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del item. Reportar a un administador.");
+
+		} else if(strcmp(command, "guardar", true) == 0) {
+
+			new left_item = GetHandItem(playerid, HAND_LEFT),
+			    left_param = GetHandParam(playerid, HAND_LEFT);
+
+			if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) != ITEM_CONTAINER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano derecha del tipo contenedor.");
+			if(left_item == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano izquierda para guardar.");
+			if(left_item == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+			if(PlayerInfo[playerid][pHealth] < 25.0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
+			if(!Container_AddItemAndParam(GetHandParam(playerid, HAND_RIGHT), left_item, left_param))
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el contenedor.");
+
+			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico de la mano.
+
+			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en el contenedor que tienes en la mano derecha.", GetItemName(left_item));
+
+			SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+				
 		} else if(strcmp(command, "usar", true) == 0) {
 
 			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
@@ -313,4 +334,36 @@ CMD:mano(playerid, params[])
 	}
 	return 1;
 }
-			
+
+Dialog:Dlg_Show_Item_Container(playerid, response, listitem, inputtext[])
+{
+	new container_id = Container_Selection[playerid][csId];
+
+	ResetContainerSelection(playerid);
+
+	if(response)
+	{
+        new itemid,
+            itemparam,
+            str[128];
+
+		if(GetHandItem(playerid, HAND_LEFT) != 0)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano izquierda ocupada.");
+
+		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
+		{
+			SetHandItemAndParam(playerid, HAND_LEFT, itemid, itemparam); // Creación lógica y grafica en la mano.
+
+            SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+
+			format(str, sizeof(str), "toma un/a %s del contenedor de su mano derecha.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
+		}
+		else
+		{
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Contenedor vacio o el slot es inválido.");
+		}
+	}
+	return 1;
+}

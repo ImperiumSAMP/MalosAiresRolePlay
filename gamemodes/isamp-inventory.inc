@@ -10,12 +10,9 @@
 #define INV_MAX_SLOTS           2
 #define SLOT_TYPE_INV      		3
 
-//============================VARIABLES INTERNAS================================
+#define CONTAINER_INV_SPACE   	25
 
-enum SlotInfo {
-	Item,
-	Amount,
-};
+//============================VARIABLES INTERNAS================================
 
 new InvInfo[MAX_PLAYERS][INV_MAX_SLOTS][SlotInfo];
 
@@ -27,7 +24,7 @@ forward SetInvItemAndParam(playerid, invslot, itemid, param); // Setea item y ca
 forward ResetInv(playerid); // Borra todo slot del inventario del jugador y lo resetea a cero (para resetiar cuando se conecta nuevo jugador).
 forward ResetAndSaveInv(playerid); // Borra todo slot del inventario del jugador, lo resetea a cero, y lo guarda en DB.
 forward SearchInvForItem(playerid, itemid); // Busca un item pasado por parametro dentro de un inventario. Si existe, devuelve el slot en el que está, sino retorna -1.
-forward PrintInvForPlayer(playerid, targetid); // Imprime el inventario del jugador X al jugador Y.
+forward PrintInvForPlayer(playerid, targetid, show_both=1); // Imprime el inventario del jugador X al jugador Y.
 forward SearchInvFreeSlot(playerid); // Busca por el primer slot vacio en el inventario y devuelve su posicion. De no haber espacio retorna -1.
 forward LoadInvInfo(playerid); // Carga desde la base de datos al GM en ejecución el inventario del jugador indicado.
 
@@ -113,11 +110,11 @@ stock SearchInvForItem(playerid, itemid)
 	return -1;
 }
 
-stock PrintInvForPlayer(playerid, targetid)
+stock PrintInvForPlayer(playerid, targetid, show_both=1)
 {
 	new itemid;
 
- 	SendClientMessage(targetid, COLOR_WHITE, "======================[Inventario]======================");
+ 	SendClientMessage(targetid, COLOR_WHITE, "==================[Inventario 2 / Obsoleto]==================");
 	for(new i = 0; i < INV_MAX_SLOTS; i++)
 	{
 		itemid = GetInvItem(playerid, i);
@@ -127,6 +124,12 @@ stock PrintInvForPlayer(playerid, targetid)
 	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
 	}
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
+
+	if(show_both)
+	{
+		if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], targetid, 0))
+			SendClientMessage(targetid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
+	}
 	return 1;
 }
 
@@ -142,9 +145,9 @@ stock LoadInvInfo(playerid)
 
 //================================COMANDOS======================================
 
-CMD:inv(playerid, params[])
+CMD:inv2(playerid, params[])
 {
-	cmd_inventario(playerid, params);
+	cmd_inventario2(playerid, params);
 	return 1;
 }
 
@@ -166,59 +169,15 @@ stock TakeItemFromInv(playerid, playerhand, invslot)
 	return 1;
 }
 
-stock SaveItemOnInv(playerid, playerhand, invslot)
-{
- 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
-	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
-	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-
-	new validslot,
-		itemid = GetHandItem(playerid, playerhand);
-
-	if(itemid == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
-	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
-	if(!HasItemInvPermission(itemid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
-
-	if(invslot == -1)
-	{
-	    validslot = SearchInvFreeSlot(playerid);
-		if(validslot == -1)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El inventario se encuentra lleno!");
-	} else
-		{
-	        validslot = invslot;
-			if(validslot < 0 || validslot >= INV_MAX_SLOTS)
-			   	return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido.");
-		   	if(GetInvItem(playerid, validslot) != 0)
-		   	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes un item en ese slot.");
-		}
-
-	SetInvItemAndParam(playerid, validslot, itemid, GetHandParam(playerid, playerhand));
-	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico de la mano.
-	SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
-  	SetPVarInt(playerid, "cantSaveItems", 1);
-	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-	return 1;
-}
-
-CMD:inventario(playerid, params[])
+CMD:inventario2(playerid, params[])
 {
 	new returnid,
 		cmd[32];
 
     if(sscanf(params, "s[32]I(-1)", cmd, returnid))
 	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot] - guardar/guardari [slot (opcional)] - desechar [slot]");
-		PrintInvForPlayer(playerid, playerid);
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot]");
+		PrintInvForPlayer(playerid, playerid, 0);
     }
 	else
 	{
@@ -230,28 +189,110 @@ CMD:inventario(playerid, params[])
 		{
 			TakeItemFromInv(playerid, HAND_LEFT, returnid);
 	    }
-		else if(strcmp(cmd, "guardar", true) == 0)
+	}
+	return 1;
+}
+
+//==============================[EXPERIMENTAL]==================================
+
+CMD:inv(playerid, params[])
+{
+	cmd_inventario(playerid, params);
+	return 1;
+}
+
+CMD:inventario(playerid, params[])
+{
+	new cmd[24];
+
+    if(sscanf(params, "s[24]", cmd))
+	{
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} guardar");
+
+		if(!Container_Show(playerid, CONTAINER_TYPE_INV, PlayerInfo[playerid][pContainerID], playerid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "[SCRIPT ERROR]: Error al mostrar el contenedor del inventario. Reportar a un administador.");
+    }
+	else
+	{
+		if(strcmp(cmd, "guardar", true) == 0)
 		{
-			SaveItemOnInv(playerid, HAND_RIGHT, returnid);
-	    }
-		else if(strcmp(cmd, "guardari", true) == 0)
-		{
-			SaveItemOnInv(playerid, HAND_LEFT, returnid);
-	    }
-		else if(strcmp(cmd, "desechar", true) == 0)
-		{
-			new itemid = GetInvItem(playerid, returnid),
-				string[128];
+			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+			if(PlayerInfo[playerid][pHealth] < 25.0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar un item agonizando.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+			if(GetPVarInt(playerid, "cantSaveItems") == 1)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+
+			new itemid = GetHandItem(playerid, HAND_RIGHT),
+		    	itemparam = GetHandParam(playerid, HAND_RIGHT);
+
+			if(itemid == 0)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+			if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if(!HasItemInvPermission(itemid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
+			if(!Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], itemid, itemparam))
+		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en tu inventario.");
+
+			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico de la mano.
 			
-	        if(PlayerInfo[playerid][pHealth] < 25.0)
-	            return SendClientMessage(playerid, COLOR_LIGHTBLUE, "¡No puedes desechar un item agonizando!");
-	        if(itemid <= 0)
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	            
-      		format(string, sizeof(string), "ha desechado disimuladamente un/a %s.", GetItemName(itemid));
-            PlayerActionMessage(playerid, 8.0, string);
-			SetInvItemAndParam(playerid, returnid, 0, 0);
+			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
+			
+			SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+	    }
+		else
+		{
+		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} guardar");
 		}
 	}
 	return 1;
 }
+
+DestroyPlayerInventory(playerid)
+{
+	if(PlayerInfo[playerid][pContainerSQLID] > 0 && PlayerInfo[playerid][pContainerID] > 0)
+	{
+		Container_Destroy(PlayerInfo[playerid][pContainerID]);
+	}
+	return 1;
+}
+
+Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
+{
+	new container_id = Container_Selection[playerid][csId];
+
+	ResetContainerSelection(playerid);
+
+	if(response)
+	{
+        new itemid,
+            itemparam,
+            str[128],
+            free_hand = SearchFreeHand(playerid);
+
+		if(free_hand == -1)
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
+
+		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
+		{
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creación lógica y grafica en la mano.
+
+            SetPVarInt(playerid, "cantSaveItems", 1);
+			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+
+			format(str, sizeof(str), "toma un/a %s de su inventario.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
+		}
+		else
+		{
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Inventario vacio o el slot es inválido.");
+		}
+	}
+	return 1;
+}
+
+//============================[FIN EXPERIMENTAL]================================

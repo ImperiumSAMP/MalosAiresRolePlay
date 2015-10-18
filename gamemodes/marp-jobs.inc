@@ -5,11 +5,11 @@
 
 //====[EMPLEOS]=================================================================
 
-#define JOB_DELI	            1 		// Moto-delivery.
-#define JOB_TAXI             	2 		// Conductor.
-#define JOB_FARM             	3 		// Granjero.
-#define JOB_TRAN                4       // Transportista.
-#define JOB_GARB                5       // Basurero.
+#define JOB_DELI	            1
+#define JOB_TAXI             	2 	
+#define JOB_FARM             	3 	
+#define JOB_TRAN                4     
+#define JOB_GARB                5       
 #define JOB_FELON               6
 #define JOB_DRUGF          		7
 #define JOB_DRUGD          		8
@@ -27,7 +27,6 @@
 #define BLD_MAN                 36
 
 #define JOB_WAITTIME            5  // Número de PayDays que tienes que esperar para poder tomar otro empleo.
-#define JOB_NAME_FIELD_MAX		32
 
 #define JOB_STATE_NONE          0
 #define JOB_STATE_ACTIVE        1
@@ -39,30 +38,40 @@
 #define JOB_TYPE_LEGAL        	1
 #define JOB_TYPE_ILLEGAL        2
 
-#define DLG_JOB_INFO_1 			10036
-#define DLG_JOB_INFO_2 			10037
+//===============================DATA STORAGE===================================
 
-//Enums
-
-enum jInf {
-	jName[JOB_NAME_FIELD_MAX],
+enum e_job_info {
+	jName[32],
 	jType,
+	jBaseSalary,
+	jSkin,
+	jRpPoints,
 	Float:jTakeX,
 	Float:jTakeY,
 	Float:jTakeZ,
 	jTakeW,
 	jTakeI,
-	jSkin,
 	jTable[24],
 	jCharge1[64],
 	jCharge2[64],
 	jCharge3[64],
 	jCharge4[64],
-	jCharge5[64],
-	jBaseSalary,
+	jCharge5[64]
 };
 
-new JobInfo[20][jInf];
+new JobInfo[][e_job_info] = {
+
+/*0*/	{"NONE", 0,	0, 0, 0, 0.0, 0.0, 0.0, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
+/*1*/   {"Moto Delivery", 1, 375, 0, 0, 1739.45, -1583.3, 14.15, 0, 0, "job_deli", "Aprendiz", "Cadete", "Mensajero", "Mensajero experimentado", "Supervisor"},
+/*2*/   {"Taxista", 1, 0, 0, 0, 1813.68, -1896.36, 13.5781, 0, 0, "job_taxi", "Chofer", "Chofer", "Chofer", "Chofer", "Chofer"},
+/*3*/   {"Granjero", 1, 1800, 32, 0, -31.0715, 54.5695, 3.1172, 0, 0, "job_farm", "Aprendiz", "Ayudante de maquinas", "Chofer de maquina", "Evaluador de cosecha", "Supervisor"},
+/*4*/   {"Transportista", 1, 1800, 206, 0, 2229.23, -2208.34, 13.5469, 0, 0, "job_tran", "Aprendiz", "Carguero", "Chofer de camión", "Encargado de logística", "Supervisor"},
+/*5*/   {"Basurero", 1, 1800, 236, 0, 2405.58, -2060.67, 13.5469, 0, 0, "job_garb", "Aprendiz", "Recolector", "Compactador", "Chofer de camión", "Supervisor"},
+/*6*/   {"Delincuente", 2, 0, 0, 1, 2614.12, -1393.15, 34.8954, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
+/*7*/   {"Cosechador de Materia Prima", 2, 0, 0, 0, -1060.79, -1205.49, 129.322, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
+/*8*/   {"Narcotraficante", 2, 0, 0, 1, 2548.96, -1331.56, 34.2638, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"}
+
+};
 
 enum pPlayerJob {
 	pWorkingHours, // Cantidad de horas efectivas que trabajó (antiguedad)
@@ -130,72 +139,38 @@ stock GetJobChargeName(job, charge)
 
 //==============================================================================
 
-stock GetJobType(job)
+GetJobType(job)
 {
 	return JobInfo[job][jType];
 }
 
 //==============================================================================
 
-stock GetJobBaseSalary(job)
+GetJobBaseSalary(job)
 {
 	return JobInfo[job][jBaseSalary];
 }
-	
+
 //==============================================================================
 
-stock LoadJobs()
+Job_GetRpPointsNeeded(job)
 {
-	new query[128],
-		id = 1;
-		
-	while(id < sizeof(JobInfo))
-	{
-	    format(query, sizeof(query),"SELECT * FROM `jobs` WHERE `id`=%d LIMIT 1", id);
-  		mysql_function_query(dbHandle, query, true, "OnJobDataLoad", "i", id);
-		id++;
-	}
-	return 1;
+	return JobInfo[job][jRpPoints];
 }
 
 //==============================================================================
 
-forward OnJobDataLoad(id);
-public OnJobDataLoad(id)
+Jobs_LoadPickups()
 {
-   	new string[128],
-		result[32],
-		rows,
-		fields;
-
-	cache_get_data(rows, fields);
-
-	if(rows)
+	new jsize = sizeof(JobInfo),
+	    string[128];
+	
+	for(new i = 1; i < jsize; i++)
 	{
-		cache_get_field_content(0, "jTakeW", result); 		JobInfo[id][jTakeW] = strval(result);
-		cache_get_field_content(0, "jType", result); 		JobInfo[id][jType] 	= strval(result);
-		cache_get_field_content(0, "jTakeI", result);		JobInfo[id][jTakeI]	= strval(result);
-		cache_get_field_content(0, "jSkin", result); 		JobInfo[id][jSkin] 	= strval(result);
-		cache_get_field_content(0, "jBaseSalary", result); 	JobInfo[id][jBaseSalary] = strval(result);
-
-		cache_get_field_content(0, "jName", JobInfo[id][jName], 1, JOB_NAME_FIELD_MAX);
-		cache_get_field_content(0, "jTable", JobInfo[id][jTable], 1, 24);
-
-		cache_get_field_content(0, "jTakeX", result); 		JobInfo[id][jTakeX] = floatstr(result);
-		cache_get_field_content(0, "jTakeY", result); 		JobInfo[id][jTakeY] = floatstr(result);
-		cache_get_field_content(0, "jTakeZ", result); 		JobInfo[id][jTakeZ] = floatstr(result);
-
-        cache_get_field_content(0, "jCharge1", JobInfo[id][jCharge1], 1, 64);
-        cache_get_field_content(0, "jCharge2", JobInfo[id][jCharge2], 1, 64);
-        cache_get_field_content(0, "jCharge3", JobInfo[id][jCharge3], 1, 64);
-        cache_get_field_content(0, "jCharge4", JobInfo[id][jCharge4], 1, 64);
-        cache_get_field_content(0, "jCharge5", JobInfo[id][jCharge5], 1, 64);
-
-		CreateDynamicPickup(1274, 1, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ], JobInfo[id][jTakeW], JobInfo[id][jTakeI], -1);
-        format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\nUsa /consultarempleo para más información.", JobInfo[id][jName]);
-        CreateDynamic3DTextLabel(string, COLOR_WHITE, JobInfo[id][jTakeX], JobInfo[id][jTakeY], JobInfo[id][jTakeZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
+		CreateDynamicPickup(1274, 1, JobInfo[i][jTakeX], JobInfo[i][jTakeY], JobInfo[i][jTakeZ], JobInfo[i][jTakeW], JobInfo[i][jTakeI], -1);
+        format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\nUsa /consultarempleo para más información.", JobInfo[i][jName]);
+        CreateDynamic3DTextLabel(string, COLOR_WHITE, JobInfo[i][jTakeX], JobInfo[i][jTakeY], JobInfo[i][jTakeZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	}
-	return 1;
 }
 
 //==============================================================================
@@ -335,6 +310,8 @@ CMD:tomarempleo(playerid,params[])
 	{
 		if(PlayerToPoint(1.0, playerid, JobInfo[job][jTakeX], JobInfo[job][jTakeY], JobInfo[job][jTakeZ]))
 		{
+		    if(PlayerInfo[playerid][pRolePoints] < Job_GetRpPointsNeeded(job))
+		        return SendClientMessage(playerid, COLOR_WHITE, "[OOC]: No tienes suficientes puntos de rol para tomar este trabajo.");
 		    if((job == JOB_TAXI || job == JOB_TRAN || job == JOB_GARB || job == JOB_DELI) && PlayerInfo[playerid][pCarLic] == 0)
 		        return SendClientMessage(playerid, COLOR_WHITE, "No puedo emplearte si no tienes licencia de manejo, hasta luego.");
             if(job == JOB_DRUGD && (PlayerInfo[playerid][pFaction] == 0 || FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL || PlayerInfo[playerid][pLevel] < 3) )
@@ -507,6 +484,8 @@ CMD:setjob(playerid, params[])
 	ResetJobVariables(targetid); // Reseteamos todo a cero
 
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
+	if(PlayerInfo[targetid][pRolePoints] < Job_GetRpPointsNeeded(job))
+	    SendFMessage(playerid, COLOR_RED, "[RECORDATORIO]: %s no cumplía con los puntos de rol necesarios para el empleo (%d).", GetPlayerNameEx(targetid), Job_GetRpPointsNeeded(job));
 	format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
 
@@ -622,8 +601,8 @@ CMD:verempleo(playerid, params[])
 			GetJobReputationString(PlayerJobInfo[playerid][pReputation]),
    			GetJobStateString(PlayerJobInfo[playerid][pState])
 		);
-
-	    ShowPlayerDialog(playerid, DLG_JOB_INFO_1, DIALOG_STYLE_MSGBOX, "Información de tu empleo", content, "Cerrar", "");
+		
+        Dialog_Show(playerid, Job_Info, DIALOG_STYLE_MSGBOX, "Información de tu empleo", content, "Cerrar", "");
 	}
 	return 1;
 }
@@ -754,7 +733,7 @@ public OnPlayerInvestJob(playerid, job)
 	  		auxInformation
 		);
 	}
-	ShowPlayerDialog(playerid, DLG_JOB_INFO_2, DIALOG_STYLE_MSGBOX, "Información del empleo", content, "Cerrar", "");
+	Dialog_Show(playerid, Job_Info_Invest, DIALOG_STYLE_MSGBOX, "Información del empleo", content, "Cerrar", "");
 	return 1;
 }
 

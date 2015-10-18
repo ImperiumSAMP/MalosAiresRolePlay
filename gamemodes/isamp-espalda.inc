@@ -5,10 +5,6 @@
 
 //===========================MODELADO DE ESPALDA================================
 
-//================================CONSTANTES====================================
-
-#define SLOT_TYPE_BACK          5
-
 //============================VARIABLES INTERNAS================================
 
 new BackInfo[MAX_PLAYERS][SlotInfo];
@@ -23,17 +19,19 @@ static const BackWeapons[] =
 {
 	WEAPON_KATANA, WEAPON_SHOTGUN,
 	WEAPON_MP5, WEAPON_AK47, WEAPON_M4,
-	WEAPON_RIFLE, WEAPON_SNIPER
+	WEAPON_RIFLE, WEAPON_SNIPER,
+	ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILACHICA,
+	ITEM_ID_MOCHILAMEDIANA
 };
 
-stock bool:HasBackPermission(itemid)
+stock HasBackPermission(itemid)
 {
 	for(new i = 0; i < sizeof(BackWeapons); i++)
 	{
 	    if(itemid == BackWeapons[i])
-	        return true;
+	        return 1;
 	}
-	return false;
+	return 0;
 }
 
 stock GetBackItem(playerid)
@@ -54,58 +52,40 @@ stock ResetBackInfo(playerid)
 
 stock SetBackItemAndParam(playerid, itemid, param)
 {
-	new query[128];
 	if(BackInfo[playerid][Item] > 0)
 	{
 	    DetachBackItem(playerid);
-	    if(itemid == 0)
-		{
-			ResetBackInfo(playerid);
-			format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	        mysql_function_query(dbHandle, query, false, "", "");
-		}
-		else
-		{
-			BackInfo[playerid][Item] = itemid;
-			BackInfo[playerid][Amount] = param;
-			format(query, sizeof(query), "UPDATE `slots_info` SET `Item`=%d, `Amount`=%d WHERE `Type`=%d AND `Id`=%d", itemid, param, SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-            mysql_function_query(dbHandle, query, false, "", "");
-			AttachBackItem(playerid);
-		}
+		ResetBackInfo(playerid);
 	}
-	else if(itemid > 0)
+	if(itemid > 0)
 	{
 		BackInfo[playerid][Item] = itemid;
 		BackInfo[playerid][Amount] = param;
-		format(query, sizeof(query), "INSERT INTO `slots_info` (`Type`, `Id`, `Item`, `Amount`) VALUES (%d, %d, %d, %d)", SLOT_TYPE_BACK, PlayerInfo[playerid][pID], itemid, param);
-        mysql_function_query(dbHandle, query, false, "", "");
 		AttachBackItem(playerid);
 	}
 }
 
 stock AttachBackItem(playerid)
 {
-	if(GetItemObjectModel(GetBackItem(playerid)) != 0)
-		SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(GetBackItem(playerid)), BONE_ID_SPINE, -0.18, -0.18, -0.15, -36.0, 5.0, 5.0);
+	if(GetItemObjectModel(BackInfo[playerid][Item]) != 0)
+	{
+	    switch(BackInfo[playerid][Item])
+	    {
+	        case ITEM_ID_MOCHILAGRANDE:
+	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, 0.000, 0.000, 0.000, 0.000, 86.999, 0.000);
+	        case ITEM_ID_MOCHILACHICA:
+	        	SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.151, -0.063, -0.013, 0.000, 0.000, 0.000);
+			case ITEM_ID_MOCHILAMEDIANA:
+                SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, 0.000, -0.127, -0.006, 0.000, 88.099, 0.000);
+			default:
+				SetPlayerAttachedObject(playerid, INDEX_ID_BACK, GetItemObjectModel(BackInfo[playerid][Item]), BONE_ID_SPINE, -0.18, -0.18, -0.15, -36.0, 5.0, 5.0);
+		}
+	}
 }
 
 stock DetachBackItem(playerid)
 {
 	RemovePlayerAttachedObject(playerid, INDEX_ID_BACK);
-}
-
-stock ResetAndSaveBack(playerid)
-{
-	new query[128];
-	
-	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
-	{
-	    DetachBackItem(playerid);
-		ResetBackInfo(playerid);
-		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	    mysql_function_query(dbHandle, query, false, "", "");
-	}
-	return 1;
 }
 
 stock PrintBackForPlayer(playerid, targetid)
@@ -117,33 +97,33 @@ stock PrintBackForPlayer(playerid, targetid)
 	return 1;
 }
 
-stock LoadBackInfo(playerid)
+//=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
+
+ResetBackWeapon(playerid)
 {
-	new query[128];
-		
-	ResetBackInfo(playerid);
-	format(query, sizeof(query), "SELECT * FROM `slots_info` WHERE `Type`=%d AND `Id`=%d", SLOT_TYPE_BACK, PlayerInfo[playerid][pID]);
-	mysql_function_query(dbHandle, query, true, "OnBackDataLoad", "i", playerid);
+	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
+	{
+     	DetachBackItem(playerid);
+		ResetBackInfo(playerid);
+	}
 	return 1;
 }
 
-public OnBackDataLoad(playerid)
-{
-	new result[128], rows, fields;
+//=======DESTRUCTOR DE LOS CONTENEDORES EN MEMORIA ASOCIADOS A LA ESPALDA=======
 
-	cache_get_data(rows, fields);
-	
-	if(rows)
+DestroyPlayerBack(playerid)
+{
+	if(GetItemType(BackInfo[playerid][Item]) == ITEM_CONTAINER)
 	{
-		cache_get_field_content(0, "Item", result);     BackInfo[playerid][Item] = strval(result);
-		cache_get_field_content(0, "Amount", result);   BackInfo[playerid][Amount] = strval(result);
+	    Container_Destroy(BackInfo[playerid][Amount]);
 	}
 	return 1;
 }
 
 //==================================COMANDOS====================================
 
-CMD:esp(playerid, params[]) {
+CMD:esp(playerid, params[])
+{
 	cmd_espalda(playerid, params);
 	return 1;
 }
@@ -168,7 +148,7 @@ stock SaveItemOnBack(playerid, playerhand)
 
 	SetBackItemAndParam(playerid, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado lógico y grafico de la mano.
-	SendFMessage(playerid, COLOR_WHITE, "Has colgado un/a %s en tu hombro.", GetItemName(itemid));
+	SendFMessage(playerid, COLOR_WHITE, "Has colgado un/a %s en tu espalda.", GetItemName(itemid));
   	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
@@ -181,7 +161,7 @@ stock TakeItemFromBack(playerid, playerhand)
 		str[128];
 
 	if(itemid <= 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada colgado de tu hombro.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada colgado en tu espalda.");
 	if(GetHandItem(playerid, playerhand) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
 

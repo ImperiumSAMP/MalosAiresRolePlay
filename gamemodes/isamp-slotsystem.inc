@@ -59,14 +59,6 @@ public OnSlotsInfoDataLoad(type, id) {
 					aux ++;
 				}
 			}
-			case SLOT_TYPE_HAND: {
-				while(aux < rows) {
-					cache_get_field_content(aux, "Slot", result); slot = strval(result);
-					cache_get_field_content(aux, "Item", result); HandInfo[id][slot][Item] = strval(result);
-					cache_get_field_content(aux, "Amount", result); HandInfo[id][slot][Amount] = strval(result);
-					aux ++;
-				}
-			}
 			case SLOT_TYPE_TRUNK: {
 				while(aux < rows) {
 			    	cache_get_field_content(aux, "Slot", result); slot = strval(result);
@@ -88,7 +80,7 @@ public OnSlotsInfoDataLoad(type, id) {
 	return 1;
 }
 
-stock SaveSlotInfo(type, id, slot, option = 0)
+stock SaveSlotInfo(type, id, slot)
 {
     new query[256];
 
@@ -114,39 +106,6 @@ stock SaveSlotInfo(type, id, slot, option = 0)
 				    	type,
 				    	PlayerInfo[id][pID],
 				    	slot
-					);
-				}
-		}
-	    case SLOT_TYPE_HAND:
-	    {
-	        if(option == SAVE_UPDATE)
-	        {
-	 			if(HandInfo[id][slot][Item] > 0)
-			 	{
-					format(query, sizeof(query), "UPDATE `slots_info` SET `Item`=%d, `Amount`=%d WHERE `Type`=%d AND `Id`=%d AND `Slot`=%d",
-						HandInfo[id][slot][Item],
-						HandInfo[id][slot][Amount],
-  						type,
-						PlayerInfo[id][pID],
-						slot
-					);
-				}
-			} else
-			if(HandInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
-		 	{
-				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
-					type,
-					PlayerInfo[id][pID],
-					slot,
-					HandInfo[id][slot][Item],
-					HandInfo[id][slot][Amount]
-				);
-			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
-			    {
-		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
-				    	type,
-				    	PlayerInfo[id][pID],
-						slot
 					);
 				}
 		}

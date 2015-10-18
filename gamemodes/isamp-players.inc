@@ -39,7 +39,6 @@ enum pInfo {
 	pPhoneNumber,
 	pPhoneC,//Phone Company (Business ID)
 	pPhoneBook,
-	pListNumber,
 	pJailed,
 	pJailTime,
 	Float:pX,
@@ -61,11 +60,8 @@ enum pInfo {
  	pMuteB,
 	pRentCarID,
 	pRentCarRID,
-	pCigarettes,
-	pLighter,
 	pFightStyle,
 	pMask,
-	pRadio,
 	
 	pThirst,
 	pHunger,
@@ -81,6 +77,9 @@ enum pInfo {
 	
 	pHouseKeyIncome,
 	pRolePoints,
+	
+	pContainerSQLID,
+	pContainerID,
 };
 
 new PlayerInfo[MAX_PLAYERS][pInfo];

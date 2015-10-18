@@ -68,22 +68,22 @@ forward bool:LeaveHouse(playerid);
 
 stock GetHouseLockerSpace(houseid)
 {
-	if(houseid == 0 || houseid >= MAX_HOUSES)
+	if(houseid <= 0 || houseid >= MAX_HOUSES)
 		return 0;
 
 	new hprice = House[houseid][HousePrice];
 
-	if(hprice < 100000) return 800;
-	if(hprice < 200000) return 1000;
-	if(hprice < 300000) return 1200;
-	if(hprice < 400000) return 1400;
-	if(hprice < 500000) return 1600;
-	if(hprice < 600000) return 1700;
-	if(hprice < 700000) return 1800;
-	if(hprice < 800000) return 1900;
-	if(hprice < 900000) return 2000;
-	if(hprice < 1000000) return 2100;
-	if(hprice >= 1000000) return 2200;
+	if(hprice < 100000) return 400;
+	if(hprice < 200000) return 500;
+	if(hprice < 300000) return 600;
+	if(hprice < 400000) return 700;
+	if(hprice < 500000) return 800;
+	if(hprice < 600000) return 900;
+	if(hprice < 700000) return 1000;
+	if(hprice < 800000) return 1100;
+	if(hprice < 900000) return 1200;
+	if(hprice < 1000000) return 1300;
+	if(hprice >= 1000000) return 1400;
 
 	return 0;
 }
@@ -149,13 +149,15 @@ public OnHouseDataLoad(id)
 
 		cache_get_field_content(0, "ContainerSQLID", result); 		House[id][ContainerSQLID] 		= strval(result);
 
-		/*
+		//===========================CARGA DE CONTENEDOR========================
+
 		if(House[id][ContainerSQLID] > 0)
 		    House[id][ContainerID] = Container_Load(House[id][ContainerSQLID]);
 		else
-		    Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
-		*/
-		
+		    Container_Create(GetHouseLockerSpace(id), 4, House[id][ContainerID], House[id][ContainerSQLID]);
+
+		//======================================================================
+
 		House[id][Created] = 1;
 		House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 		House[id][hInsideLabel] = CreateDynamic3DTextLabel("-", 0x008080FF, House[id][InsideX], House[id][InsideY], House[id][InsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][InsideInterior], -1, 100.0);
@@ -231,10 +233,12 @@ stock CreateHouse(id)
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
 
-	/*
+	//=========================CREACION DE CONTENEDOR===========================
+	
     Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
-    */
     
+	//==========================================================================
+	
 	House[id][Created] = 1;
 	House[id][hOutsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][OutsideX], House[id][OutsideY], House[id][OutsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	House[id][hInsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, House[id][InsideX], House[id][InsideY], House[id][InsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, House[id][InsideWorld], House[id][InsideInterior], -1, 100.0);
@@ -287,14 +291,16 @@ stock DeleteHouse(id)
 	House[id][Cocaine] = 0;
 	House[id][Radio] = 0;
 	
-	/*
+	//==========================BORRADO DE CONTENEDOR===========================
+	
 	if(HouseHasContainer(id))
 	{
-	    Container_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
+	    Container_Fully_Destroy(House[id][ContainerID], House[id][ContainerSQLID]);
 	    House[id][ContainerID] = 0;
 	    House[id][ContainerSQLID] = 0;
 	}
-	*/
+	
+	//==========================================================================
 	
 	return 1;
 }
@@ -951,7 +957,10 @@ CMD:casacontrato(playerid, params[])
 CMD:acasas(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA CASAS]==============================");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /acinfo - /actele");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /actele");
+	if(PlayerInfo[playerid][pAdmin] >= 4) {
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /acinfo");
+	}
 	if(PlayerInfo[playerid][pAdmin] >= 5) {
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /acalquilar - /acnoalquilar");
 	}
@@ -1377,8 +1386,8 @@ CMD:acprecio(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de casa inválida.");
 	if(House[houseid][Created] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID inválida: la casa no está creada.");
-	if(price < 0 || price > 10000000)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Elige un precio de $0 a $10.000.000.");
+	if(price < 1 || price > 10000000)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Elige un precio entre $1 y $10.000.000.");
 	    
 	House[houseid][HousePrice] = price;
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de la casa %d ha sido ajustado a $%d.", houseid, price);
@@ -1386,13 +1395,15 @@ CMD:acprecio(playerid, params[])
 
 	ResetLocker(houseid); // Al cambiar el precio se cambian los slots de armario, por ende reseteamos todo para evitar bugs.
 
-	/*
+	//=========================VACIADO DE CONTENEDOR============================
+	
 	if(HouseHasContainer(houseid))
 	{
 	    Container_Empty(House[houseid][ContainerID]);
 	    Container_SetTotalSpace(House[houseid][ContainerID], GetHouseLockerSpace(houseid));
 	}
-	*/
+
+	//==========================================================================
 	    
 	SaveHouse(houseid);
 	return 1;
@@ -1440,10 +1451,12 @@ CMD:acvender(playerid, params[])
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
 	ResetLocker(houseid);
 	
-	/*
+	//=========================VACIADO DE CONTENEDOR============================
+	
 	if(HouseHasContainer(houseid))
 	    Container_Empty(House[houseid][ContainerID]);
-	*/
+	    
+	//==========================================================================
 	
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido vendida.", houseid);
@@ -1451,14 +1464,19 @@ CMD:acvender(playerid, params[])
 	return 1;
 }
 
-CMD:acpuerta(playerid, params[]) {
-	for(new i = 0; i < MAX_HOUSES; i++)	{
+CMD:acpuerta(playerid, params[])
+{
+	for(new i = 0; i < MAX_HOUSES; i++)
+	{
 		if(PlayerToPoint(1.0, playerid, House[i][OutsideX], House[i][OutsideY], House[i][OutsideZ]))
 		{
-		    if(House[i][Locked] == 1) {
+		    if(House[i][Locked] == 1)
+			{
 				House[i][Locked] = 0;
 		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
-			} else {
+			}
+			else
+			{
 				House[i][Locked] = 1;
 		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
 			}

@@ -5,12 +5,24 @@
 
 //===========================SISTEMA DE AGENDAS=================================
 
+//=======================FIX A VALSTR PARA NUMEROS GRANDES======================
+
+// valstr fix by Slice
+stock FIX_valstr(dest[], value, bool:pack = false)
+{
+    // format can't handle cellmin properly
+    static const cellmin_value[] = !"-2147483648";
+
+    if (value == cellmin)
+        pack && strpack(dest, cellmin_value, 12) || strunpack(dest, cellmin_value, 12);
+    else
+        format(dest, 12, "%d", value), pack && strpack(dest, dest, 12);
+}
+#define valstr FIX_valstr
+
 //===============================CONSTANTES=====================================
 
 #define MAX_NOTEBOOK_CONTACTS       15
-#define DLG_NOTEBOOK				10025
-#define DLG_NOTEBOOK_2       		10026
-#define DLG_NOTEBOOK_3       		10027
 
 #define CONTACT_CREATE              1
 #define CONTACT_DELETE              2
@@ -77,12 +89,12 @@ ShowNotebook(playerid)
 		if(aux != 1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu agenda no tiene ningún contacto agregado.");
 
-		ShowPlayerDialog(playerid, DLG_NOTEBOOK, DIALOG_STYLE_LIST, "Contactos", str, "Seleccionar", "Cerrar");
+		Dialog_Show(playerid, Notebook_Main_Menu, DIALOG_STYLE_LIST, "Contactos", str, "Seleccionar", "Cerrar");
 	}
 	return 1;
 }
 
-public OnNotebookDialogResponse(playerid, response, listitem)
+Dialog:Notebook_Main_Menu(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
@@ -92,29 +104,12 @@ public OnNotebookDialogResponse(playerid, response, listitem)
 		playerContactSelected[playerid] = listitem;
 		new str[64];
 		format(str, sizeof(str), "%s", playerNotebook[playerid][listitem][cName]);
-		ShowPlayerDialog(playerid, DLG_NOTEBOOK_2, DIALOG_STYLE_LIST, str, "Llamar\nEnviar SMS\nVolver", "Seleccionar", "Cerrar");
+		Dialog_Show(playerid, Notebook_Contact_Menu, DIALOG_STYLE_LIST, str, "Llamar\nEnviar SMS\nVolver", "Seleccionar", "Cerrar");
 	}
 	return 1;
 }
 
-//=======================FIX A VALSTR PARA NUMEROS GRANDES======================
-
-// valstr fix by Slice
-stock FIX_valstr(dest[], value, bool:pack = false)
-{
-    // format can't handle cellmin properly
-    static const cellmin_value[] = !"-2147483648";
-
-    if (value == cellmin)
-        pack && strpack(dest, cellmin_value, 12) || strunpack(dest, cellmin_value, 12);
-    else
-        format(dest, 12, "%d", value), pack && strpack(dest, dest, 12);
-}
-#define valstr FIX_valstr
-
-//==============================================================================
-
-public OnNotebook2DialogResponse(playerid, response, listitem)
+Dialog:Notebook_Contact_Menu(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
@@ -123,35 +118,43 @@ public OnNotebook2DialogResponse(playerid, response, listitem)
 	        case 0: // Llamada
 	        {
 	            new str[24];
+	            
 	            valstr(str, playerNotebook[playerid][playerContactSelected[playerid]][cNumber]);
 	            cmd_llamar(playerid, str);
 			}
 			case 1: // SMS
 			{
 				new str[64];
+				
 				format(str, sizeof(str), "%s", playerNotebook[playerid][playerContactSelected[playerid]][cName]);
-	   			ShowPlayerDialog(playerid, DLG_NOTEBOOK_3, DIALOG_STYLE_INPUT, str, "Ingrese el mensaje:", "Enviar", "Volver");
+                Dialog_Show(playerid, Notebook_SMS_Menu, DIALOG_STYLE_INPUT, str, "Ingrese el mensaje:", "Enviar", "Volver");
 			}
 			case 2: // Volver
+   			{
 				ShowNotebook(playerid);
+			}
 		}
 	}
 	return 1;
 }
 
-public OnNotebook3DialogResponse(playerid, response, inputtext[])
+Dialog:Notebook_SMS_Menu(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
-	    new str[24], string[128];
+	    new str[24],
+			string[128];
+			
      	valstr(str, playerNotebook[playerid][playerContactSelected[playerid]][cNumber]);
      	format(string, sizeof(string), "%s %s", str, inputtext);
 	    cmd_sms(playerid, string);
-	} else
+	}
+	else
 	{
 		new str[64];
+		
 		format(str, sizeof(str), "%s", playerNotebook[playerid][playerContactSelected[playerid]][cName]);
-		ShowPlayerDialog(playerid, DLG_NOTEBOOK_2, DIALOG_STYLE_LIST, str, "Llamar\nEnviar SMS\nVolver", "Seleccionar", "Cerrar");
+		Dialog_Show(playerid, Notebook_Contact_Menu, DIALOG_STYLE_LIST, str, "Llamar\nEnviar SMS\nVolver", "Seleccionar", "Cerrar");
 	}
 	return 1;
 }
