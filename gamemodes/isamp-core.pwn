@@ -2755,7 +2755,7 @@ public OnVehicleDataLoad(id)
         if(VehicleInfo[id][VehContainerSQLID] > 0)
             VehicleInfo[id][VehContainerID] = Container_Load(VehicleInfo[id][VehContainerSQLID]);
 		else
-		    Container_Create(GetVehicleModelTrunkSpace(VehicleInfo[id][VehModel]), 5, VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
+		    Container_Create(GetVehicleModelTrunkSpace(VehicleInfo[id][VehModel]), 4, VehicleInfo[id][VehContainerID], VehicleInfo[id][VehContainerSQLID]);
 
 		//======================================================================
 		

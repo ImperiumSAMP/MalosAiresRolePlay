@@ -154,7 +154,7 @@ public OnHouseDataLoad(id)
 		if(House[id][ContainerSQLID] > 0)
 		    House[id][ContainerID] = Container_Load(House[id][ContainerSQLID]);
 		else
-		    Container_Create(GetHouseLockerSpace(id), 10, House[id][ContainerID], House[id][ContainerSQLID]);
+		    Container_Create(GetHouseLockerSpace(id), 4, House[id][ContainerID], House[id][ContainerSQLID]);
 
 		//======================================================================
 
