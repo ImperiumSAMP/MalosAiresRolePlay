@@ -14149,17 +14149,17 @@ CMD:ckearplayer(playerid,params[])
 		bizID,
 		carkeys;
 
-    if(sscanf(params, "usii", targetid, newname, newage, newsex)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Masculino | 1 = Femenino)]");
+    if(sscanf(params, "us[24]ii", targetid, newname, newage, newsex)) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Femenino | 1 = Masculino)]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El comando solicitará una confirmación tras completar los parámetros.");
 		return 1;
 		}
    	if(targetid == INVALID_PLAYER_ID)
    	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(newsex < 0 || newsex > 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Masculino | 1 = Femenino)!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Femenino | 1 = Masculino)!");
 	if(newage < 1 || newage > 100)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 0 a 100 años!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 1 a 100 años!");
 
 	house = PlayerInfo[targetid][pHouseKey];
 	houseincome = PlayerInfo[targetid][pHouseKeyIncome];
