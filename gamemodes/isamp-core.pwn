@@ -1546,7 +1546,7 @@ public OnPlayerDeath(playerid, killerid, reason)
     else if(PlayerInfo[playerid][pJailed] == JAIL_IC_PRISON || PlayerInfo[playerid][pJailed] == JAIL_IC_GOB)
 	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
-		SetPlayerVirtualWorld(playerid, 38000);
+		SetPlayerVirtualWorld(playerid, 0);
  		SetPlayerInterior(playerid, 2);
     }
     
@@ -1565,7 +1565,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	    }
 		else if(killerid != playerid)
 		{
-			format(string, sizeof(string), "[STAFF] %s mató a %s.", GetPlayerNameEx(killerid), GetPlayerNameEx(playerid));
+			format(string, sizeof(string), "[STAFF] %s(ID %d) mató a %s (ID %d).", GetPlayerNameEx(killerid), killerid, GetPlayerNameEx(playerid), playerid);
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
             if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
 			{

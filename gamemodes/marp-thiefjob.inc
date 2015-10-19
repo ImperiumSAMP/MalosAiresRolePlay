@@ -394,7 +394,7 @@ CMD:hurtarcasa(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento ya que te encuentras ocupado en otro robo.");
 	if(house_id == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
- 	if(house_id == PlayerInfo[playerid][pHouseKey])
+ 	if(house_id == PlayerInfo[playerid][pHouseKey] || house_id == PlayerInfo[playerid][pHouseKeyIncome])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
@@ -429,7 +429,7 @@ CMD:asaltarcasa(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento ya que te encuentras ocupado en otro robo.");
 	if(house_id == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
- 	if(house_id == PlayerInfo[playerid][pHouseKey])
+ 	if(house_id == PlayerInfo[playerid][pHouseKey] || house_id == PlayerInfo[playerid][pHouseKeyIncome])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
