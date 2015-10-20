@@ -7737,55 +7737,55 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	    case DLG_GUIDE: {
 	        if(response) {
 			     switch(listitem) {
-				   	case 1: {
+				   	case 0: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la Comisaría se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1554.3136, -1675.6855, 16.1953, 5.0);
 		   			}
-		   			case 2: {
+		   			case 1: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el Hospital de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1184.5321, -1323.0847, 13.5741, 5.0);
 		   			}
-				   	case 3: {
+				   	case 2: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: para rentar un vehículo, vé al lugar marcado con rojo en el mapa o a alguna agencia de renta.");
 		                SetPlayerCheckpoint(playerid, 1568.4810, -2253.9084, 13.5425, 5.0);
 		   			}
-		   			case 4: {
+		   			case 3: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: puedes tomar la prueba de conducción en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1153.9204, -1771.8287, 16.5992, 5.0);
 		   			}
-		   			case 5: {
+		   			case 4: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el centro de empleos se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1480.9441, -1771.7863, 18.7958, 5.0);
 		   			}
-		   			case 6: {
+		   			case 5: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la tienda de ropa se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 2244.7151, -1664.2365, 15.4766, 5.0);
 		   			}
-		   			case 7: {
+		   			case 6: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la tienda de ropa se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 461.3749, -1500.8853, 31.0594, 5.0);
 		   			}
-		   			case 8: {
+		   			case 7: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Mercado de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 1132.9373, -1410.2246, 13.4747, 5.0);
 					}
-		   			case 9: {
+		   			case 8: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Taller Mecánico de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 2502.7063, -1512.4921, 23.5759, 5.0);
 					}
-		   			case 10: {
+		   			case 9: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Central de Noticias CTR-MAN se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 777.4657, -1328.1189, 13.1172, 5.0);
 					}
-		   			case 11: {
+		   			case 10: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Gimnasio se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 2228.6260, -1722.0267, 13.1245, 5.0);
 					}
-		   			case 12: {
+		   			case 11: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Ferretería se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 1363.2488, -1454.7837, 13.1016, 5.0);
 					}
-		   			case 13: {
+		   			case 12: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Tienda de Accesorios se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 1284.7767,-1584.7897,13.1066, 5.0);
 					}

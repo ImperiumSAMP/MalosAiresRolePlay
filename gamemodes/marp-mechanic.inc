@@ -1688,15 +1688,18 @@ CMD:mecpuertadepo(playerid, params[])
 	if(PlayerInfo[playerid][pRank] > 5)
 		return 1;
 
-	if(CarDepotDoorState[0] == 0) // La puerta está cerrada
+	if(PlayerToPoint(10.0, playerid, 2543.12, -2513.85, 14))
 	{
-		MoveObject(TMMACarDepotGate, 2547.1106, -2514.2385, 12.6646, 1, 0.00000, 0.00000, 0.00000);
-		CarDepotDoorState[0] = 1;
-	}
-	else // La puerta está abierta
-	{
-		MoveObject(TMMACarDepotGate, 2539.61060, -2514.25854, 12.66460, 1, 0.00000, 0.00000, 0.00000);
-		CarDepotDoorState[0] = 0;
+		if(CarDepotDoorState[0] == 0) // La puerta está cerrada
+		{
+			MoveObject(TMMACarDepotGate, 2547.1106, -2514.2385, 12.6646, 1, 0.00000, 0.00000, 0.00000);
+			CarDepotDoorState[0] = 1;
+		}
+		else // La puerta está abierta
+		{
+			MoveObject(TMMACarDepotGate, 2539.61060, -2514.25854, 12.66460, 1, 0.00000, 0.00000, 0.00000);
+			CarDepotDoorState[0] = 0;
+		}
 	}
 	return 1;
 }
