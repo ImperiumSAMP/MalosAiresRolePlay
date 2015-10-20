@@ -98,7 +98,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.3"
+#define GAMEMODE				"MA:RP v1.1.3b"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -1830,7 +1830,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					if(PlayerInfo[playerid][pAdmin] < 2)
 						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
 					else
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - admin]");
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs]");
 					return 1;
 				}
 		  		else if(strcmp(x_info,"mps",true) == 0)
@@ -14193,7 +14193,7 @@ CMD:ckearplayer(playerid,params[])
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d.", GetPlayerNameEx(targetid), newage, newsex);
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120} | {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d.", house, houseincome, bizID);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %s ckeandoplayer 0'{C8C8C8}.", GetPlayerNameEx(playerid));
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %d ckeandoplayer 0'{C8C8C8}.", playerid);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============================================================");
 		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
 		return 1;
