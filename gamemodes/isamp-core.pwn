@@ -139,7 +139,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 // Dialogs.
 #define DLG_LOGIN 				10000
-#define DLG_REGISTER        	10001
+// #define DLG_REGISTER        	10001
 // #define DLG_TUT1             10002
 #define DLG_TUT2                10003
 #define DLG_TUT3                10004
@@ -162,7 +162,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_BIZ_HARD         10028
 // #define DLG_BIZ_ACCESS       10029
 #define DLG_DYING		    	10030
-#define DLG_FIRST_LOGIN 		10035
+// #define DLG_FIRST_LOGIN 		10035
 #define DLG_POLICE_FINE	    	10039
 
 // Tiempos de jail.
@@ -736,7 +736,7 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en los foros de nuestra web: www.malosaires.com.ar");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestra web: www.malosaires.com.ar");
         SendClientMessage(playerid, COLOR_YELLOW2, "Dentro de la página haz click en el botón de 'Registrar Cuenta' y se te direccionará automáticamente a la página de registro.");
         SendClientMessage(playerid, COLOR_YELLOW2, "En esa página encontrarás toda la información y los pasos para registrar tu personaje (necesitarás también tener una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
@@ -751,7 +751,7 @@ public OnPlayerNameCheck(playerid)
 			{
  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
  				AdministratorMessage(COLOR_GREY, string, 2);
-				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
+				ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña que\nseleccionaste al registrar tu cuenta en la web:", "Ingresar", "");
 			}
 			else
 			{
@@ -764,6 +764,7 @@ public OnPlayerNameCheck(playerid)
 	return 1;
 }
 
+/*
 forward OnPlayerFirstLogin(playerid);
 public OnPlayerFirstLogin(playerid)
 {
@@ -798,6 +799,7 @@ OnPlayerRegister(playerid, password[])
 	}
 	return 0;
 }
+*/
 
 OnPlayerLogin(playerid, password[])
 {
@@ -7825,21 +7827,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 			return 1;
 		}
-		case DLG_FIRST_LOGIN:
+/*		case DLG_FIRST_LOGIN:
 		{
 	        if(response)
 			{
 			    if(gPlayerLogged[playerid] == 0)
 			    {
-			    	if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
+			    	if(strlen(inputtext) < 2 || strlen(inputtext) > 30)
 			    	{
 					    KickPlayer(playerid, "el sistema", "contraseña de registro muy corta o muy larga");
 					    return 0;
 					}
-					
-			        new query[256],
-			            name[MAX_PLAYER_NAME],
-			            password[32];
+
+			        new name[MAX_PLAYER_NAME],
+			            password[32],
+			            query[256];
 
 					GetPlayerName(playerid, name, MAX_PLAYER_NAME);
 					
@@ -7857,6 +7859,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 	        return 1;
 	    }
+*/
 		case DLG_LOGIN: {
 	        if(!response) {
 			    KickPlayer(playerid, "el sistema", "evadir inicio de sesión");
@@ -7866,22 +7869,25 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 	        return 1;
 	    }
-	    case DLG_REGISTER:
+/*
+		case DLG_REGISTER:
 		{
-		    if(!response)
+			if(!response)
 			{
-			    KickPlayer(playerid, "el sistema", "evadir registro");
-			    return 0;
+				KickPlayer(playerid, "el sistema", "evadir registro");
+				return 0;
 			}
 			else if(gPlayerLogged[playerid] == 0)
 			{
-			    if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
-			    	ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
-				else
-					OnPlayerRegister(playerid, inputtext);
+				if(strlen(inputtext) < 4 || strlen(inputtext) > 16)
+				ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
+			else
+				OnPlayerRegister(playerid, inputtext);
 			}
-	        return 1;
+		return 1;
 		}
+*/
+
 		case DLG_TUT1: {
 			if(!response) {
 			    KickPlayer(playerid, "el sistema", "evadir tutorial");
