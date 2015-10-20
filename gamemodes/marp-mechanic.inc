@@ -6,7 +6,8 @@
 //=====================SISTEMA Y COMANDOS DE MECANICO===========================
 
 new CarLiftState[4] = 0,
-	BoxDoorState[5] = 0;
+	BoxDoorState[5] = 0,
+	CarDepotDoorState[1] = 0;
 
 //================================CONSTANTES====================================
 
@@ -307,12 +308,14 @@ public CountMecasDuty()
 
 //================================COMANDOS======================================
 
-CMD:ayudamec(playerid, params[])
+CMD:mecayuda(playerid, params[])
 {
 	if(PlayerInfo[playerid][pFaction] == FAC_MECH)
 	{
 	    SendClientMessage(playerid, COLOR_WHITE, "[COMANDOS DE MECÁNICO]: /mecequipo - /mecreparar - /mecremolcar - /mectaller - /mecdestunear - /mectunear - /mectuning - /meccerradura");
         SendClientMessage(playerid, COLOR_WHITE, "/meccomprar - /mecguardar - /mecdeposito");
+		if(PlayerInfo[playerid][pRank] < 6)
+			SendFMessage(playerid, COLOR_WHITE, "[%s] /mecpuertadepo", GetRankName(FAC_MECH, 5));
         if(PlayerInfo[playerid][pRank] == 1)
         	SendClientMessage(playerid, COLOR_WHITE, "[Lider] /mecretirar");
 	}
@@ -1674,6 +1677,29 @@ CMD:mecpuerta(playerid, params[])
 			MoveObject(TMBoxDoor[4], 2503.08521, -1578.65002, 25.42830, 1, 0.00000, 0.00000, 90.00000);
 	        BoxDoorState[4] = 0;
 	    }
+	}
+	return 1;
+}
+
+CMD:mecpuertadepo(playerid, params[])
+{
+	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
+		return 1;
+	if(PlayerInfo[playerid][pRank] > 5)
+		return 1;
+
+	if(PlayerToPoint(10.0, playerid, 2543.12, -2513.85, 14))
+	{
+		if(CarDepotDoorState[0] == 0) // La puerta está cerrada
+		{
+			MoveObject(TMMACarDepotGate, 2547.1106, -2514.2385, 12.6646, 1, 0.00000, 0.00000, 0.00000);
+			CarDepotDoorState[0] = 1;
+		}
+		else // La puerta está abierta
+		{
+			MoveObject(TMMACarDepotGate, 2539.61060, -2514.25854, 12.66460, 1, 0.00000, 0.00000, 0.00000);
+			CarDepotDoorState[0] = 0;
+		}
 	}
 	return 1;
 }

@@ -98,7 +98,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.3"
+#define GAMEMODE				"MA:RP v1.1.3b"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -139,7 +139,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 // Dialogs.
 #define DLG_LOGIN 				10000
-#define DLG_REGISTER        	10001
+// #define DLG_REGISTER        	10001
 // #define DLG_TUT1             10002
 #define DLG_TUT2                10003
 #define DLG_TUT3                10004
@@ -162,7 +162,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 // #define DLG_BIZ_HARD         10028
 // #define DLG_BIZ_ACCESS       10029
 #define DLG_DYING		    	10030
-#define DLG_FIRST_LOGIN 		10035
+// #define DLG_FIRST_LOGIN 		10035
 #define DLG_POLICE_FINE	    	10039
 
 // Tiempos de jail.
@@ -736,7 +736,7 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en los foros de nuestra web: www.malosaires.com.ar");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestra web: www.malosaires.com.ar");
         SendClientMessage(playerid, COLOR_YELLOW2, "Dentro de la página haz click en el botón de 'Registrar Cuenta' y se te direccionará automáticamente a la página de registro.");
         SendClientMessage(playerid, COLOR_YELLOW2, "En esa página encontrarás toda la información y los pasos para registrar tu personaje (necesitarás también tener una cuenta en el foro).");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
@@ -751,7 +751,7 @@ public OnPlayerNameCheck(playerid)
 			{
  				format(string, sizeof(string), "** %s (%d) ha iniciado sesión por primera vez. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
  				AdministratorMessage(COLOR_GREY, string, 2);
-				ShowPlayerDialog(playerid, DLG_FIRST_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña provista\npor el administrador que registró tu cuenta:", "Ingresar", "");
+				ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires RolePlay!", "Ingresa a continuación la contraseña que\nseleccionaste al registrar tu cuenta en la web:", "Ingresar", "");
 			}
 			else
 			{
@@ -764,6 +764,7 @@ public OnPlayerNameCheck(playerid)
 	return 1;
 }
 
+/*
 forward OnPlayerFirstLogin(playerid);
 public OnPlayerFirstLogin(playerid)
 {
@@ -798,6 +799,7 @@ OnPlayerRegister(playerid, password[])
 	}
 	return 0;
 }
+*/
 
 OnPlayerLogin(playerid, password[])
 {
@@ -1546,7 +1548,7 @@ public OnPlayerDeath(playerid, killerid, reason)
     else if(PlayerInfo[playerid][pJailed] == JAIL_IC_PRISON || PlayerInfo[playerid][pJailed] == JAIL_IC_GOB)
 	{
 		GetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
-		SetPlayerVirtualWorld(playerid, 38000);
+		SetPlayerVirtualWorld(playerid, 0);
  		SetPlayerInterior(playerid, 2);
     }
     
@@ -1565,7 +1567,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	    }
 		else if(killerid != playerid)
 		{
-			format(string, sizeof(string), "[STAFF] %s mató a %s.", GetPlayerNameEx(killerid), GetPlayerNameEx(playerid));
+			format(string, sizeof(string), "[STAFF] %s(ID %d) mató a %s (ID %d).", GetPlayerNameEx(killerid), killerid, GetPlayerNameEx(playerid), playerid);
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
             if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
 			{
@@ -1828,7 +1830,7 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 					if(PlayerInfo[playerid][pAdmin] < 2)
 						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
 					else
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - admin]");
+						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs]");
 					return 1;
 				}
 		  		else if(strcmp(x_info,"mps",true) == 0)
@@ -6614,8 +6616,6 @@ public CloseGate(gateID) {
 		MoveObject(PMBarrier,  1544.68, -1631.00, 13.19, 0.004, 0.00, 90.00, 90.00);
 	} else if(gateID == TMMAGate) {
 	   	MoveObject(TMMAGate, 2498.66357, -1514.45837, 23.01290, 3.0, 0.00, 0.00, 0.00);
-	} else if(gateID == TMMACarDepotGate) {
-	   	MoveObject(TMMACarDepotGate, 2539.61060, -2514.25854, 12.66460, 3.0, 0.00, 0.00, 0.00);
 	} else if(gateID == MANGate) {
 	   	MoveObject(MANGate, 781.57, -1329.41, 13.34, 0.004, 0.00, 270.00, 0.00);
 	} else if(gateID == HOSPGate) {
@@ -6705,12 +6705,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    	if(PlayerToPoint(10.0, playerid, 2498.66357, -1514.45837, 23.01290)) {
 	            MoveObject(TMMAGate, 2507.5136, -1514.4584, 23.0129, 3.0, 0.00, 0.00, 0.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate);
-	        }
-	    } else
-		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-	    	if(PlayerToPoint(10.0, playerid, 2543.24, -2513.85, 13.66)) {
-	            MoveObject(TMMACarDepotGate, 2547.1106, -2514.2385, 12.6646, 3.0, 0.00, 0.00, 0.00);
-	            SetTimerEx("CloseGate", 4000, false, "i", TMMACarDepotGate);
 	        }
 	    } else
 	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
@@ -7744,28 +7738,56 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        if(response) {
 			     switch(listitem) {
 				   	case 0: {
+		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la Comisaría se encuentra en la localización marcada con rojo en el mapa.");
+		                SetPlayerCheckpoint(playerid, 1554.3136, -1675.6855, 16.1953, 5.0);
+		   			}
+		   			case 1: {
+		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el Hospital de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
+		                SetPlayerCheckpoint(playerid, 1184.5321, -1323.0847, 13.5741, 5.0);
+		   			}
+				   	case 2: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: para rentar un vehículo, vé al lugar marcado con rojo en el mapa o a alguna agencia de renta.");
 		                SetPlayerCheckpoint(playerid, 1568.4810, -2253.9084, 13.5425, 5.0);
 		   			}
-		   			case 1: {
+		   			case 3: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: puedes tomar la prueba de conducción en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1153.9204, -1771.8287, 16.5992, 5.0);
 		   			}
-		   			case 2: {
+		   			case 4: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el centro de empleos se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1480.9441, -1771.7863, 18.7958, 5.0);
 		   			}
-		   			case 3: {
+		   			case 5: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la tienda de ropa se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 2244.7151, -1664.2365, 15.4766, 5.0);
 		   			}
-		   			case 4: {
+		   			case 6: {
 		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: la tienda de ropa se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 461.3749, -1500.8853, 31.0594, 5.0);
 		   			}
-		   			case 5: {
+		   			case 7: {
 						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Mercado de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 1132.9373, -1410.2246, 13.4747, 5.0);
+					}
+		   			case 8: {
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Taller Mecánico de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
+						SetPlayerCheckpoint(playerid, 2502.7063, -1512.4921, 23.5759, 5.0);
+					}
+		   			case 9: {
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Central de Noticias CTR-MAN se encuentra en la localización marcada con rojo en el mapa.");
+						SetPlayerCheckpoint(playerid, 777.4657, -1328.1189, 13.1172, 5.0);
+					}
+		   			case 10: {
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Gimnasio se encuentra en la localización marcada con rojo en el mapa.");
+						SetPlayerCheckpoint(playerid, 2228.6260, -1722.0267, 13.1245, 5.0);
+					}
+		   			case 11: {
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Ferretería se encuentra en la localización marcada con rojo en el mapa.");
+						SetPlayerCheckpoint(playerid, 1363.2488, -1454.7837, 13.1016, 5.0);
+					}
+		   			case 12: {
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Tienda de Accesorios se encuentra en la localización marcada con rojo en el mapa.");
+						SetPlayerCheckpoint(playerid, 1284.7767,-1584.7897,13.1066, 5.0);
 					}
 				}
 	        }
@@ -7778,27 +7800,22 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			   		case 0: {
 			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: puedes tomar el empleo si te diriges a la siguiente localización.");
 		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
-		                SetPlayerCheckpoint(playerid, 1621.6262, -1863.1412, 13.5469, 5.0);
-			   		}
-			   		case 1: {
-			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: vé a la siguiente localización, probablemente deberás realizar ciertas pruebas y desde luego necesitarás una licencia de conducción.");
-		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
-		                SetPlayerCheckpoint(playerid, JobInfo[JOB_TAXI][jTakeX], JobInfo[JOB_TAXI][jTakeY], JobInfo[JOB_TAXI][jTakeZ], 5.0);
-			   		}
-			   		case 2: {
-			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: puedes tomar el empleo si te diriges a la siguiente localización.");
-		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
 		                SetPlayerCheckpoint(playerid, JobInfo[JOB_FARM][jTakeX], JobInfo[JOB_FARM][jTakeY], JobInfo[JOB_FARM][jTakeZ], 5.0);
 			   		}
-			   		case 3: {
+			   		case 1: {
 			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: puedes tomar el empleo si te diriges a la siguiente localización.");
 		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
 		                SetPlayerCheckpoint(playerid, JobInfo[JOB_TRAN][jTakeX], JobInfo[JOB_TRAN][jTakeY], JobInfo[JOB_TRAN][jTakeZ], 5.0);
 			   		}
-		  			case 4: {
+		  			case 2: {
 			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: puedes tomar el empleo si te diriges a la siguiente localización.");
 		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
 		                SetPlayerCheckpoint(playerid, JobInfo[JOB_GARB][jTakeX], JobInfo[JOB_GARB][jTakeY], JobInfo[JOB_GARB][jTakeZ], 5.0);
+			   		}
+		  			case 3: {
+			   		    SendClientMessage(playerid, COLOR_WHITE, "Asistente dice: puedes tomar el empleo si te diriges a la siguiente localización.");
+		                PlayerActionMessage(playerid, 15.0, "recibe un mapa por parte de la asistente con una localización marcada en rojo.");
+		                SetPlayerCheckpoint(playerid, 1739.3157, -1583.1968, 13.7314, 5.0);
 			   		}
 				}
 		    }
@@ -7825,21 +7842,21 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 			return 1;
 		}
-		case DLG_FIRST_LOGIN:
+/*		case DLG_FIRST_LOGIN:
 		{
 	        if(response)
 			{
 			    if(gPlayerLogged[playerid] == 0)
 			    {
-			    	if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
+			    	if(strlen(inputtext) < 2 || strlen(inputtext) > 30)
 			    	{
 					    KickPlayer(playerid, "el sistema", "contraseña de registro muy corta o muy larga");
 					    return 0;
 					}
-					
-			        new query[256],
-			            name[MAX_PLAYER_NAME],
-			            password[32];
+
+			        new name[MAX_PLAYER_NAME],
+			            password[32],
+			            query[256];
 
 					GetPlayerName(playerid, name, MAX_PLAYER_NAME);
 					
@@ -7857,6 +7874,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 	        return 1;
 	    }
+*/
 		case DLG_LOGIN: {
 	        if(!response) {
 			    KickPlayer(playerid, "el sistema", "evadir inicio de sesión");
@@ -7866,22 +7884,25 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 	        return 1;
 	    }
-	    case DLG_REGISTER:
+/*
+		case DLG_REGISTER:
 		{
-		    if(!response)
+			if(!response)
 			{
-			    KickPlayer(playerid, "el sistema", "evadir registro");
-			    return 0;
+				KickPlayer(playerid, "el sistema", "evadir registro");
+				return 0;
 			}
 			else if(gPlayerLogged[playerid] == 0)
 			{
-			    if(strlen(inputtext) < 6 || strlen(inputtext) > 16)
-			    	ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
-				else
-					OnPlayerRegister(playerid, inputtext);
+				if(strlen(inputtext) < 4 || strlen(inputtext) > 16)
+				ShowPlayerDialog(playerid, DLG_REGISTER, DIALOG_STYLE_PASSWORD, "¡Ultimo paso!", "Para terminar de registrar tu cuenta, ingresa la contraseña definitiva que solo tu conocerás: \r\n{BE0000}- Debe tener al menos 6 caracteres y no mas de 16.", "Registar", "");
+			else
+				OnPlayerRegister(playerid, inputtext);
 			}
-	        return 1;
+		return 1;
 		}
+*/
+
 		case DLG_TUT1: {
 			if(!response) {
 			    KickPlayer(playerid, "el sistema", "evadir tutorial");
@@ -9210,7 +9231,7 @@ CMD:ayuda(playerid,params[])
 		    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[HMA]:{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /ayudamec");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /mecayuda");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar /pronostico");
@@ -9829,7 +9850,7 @@ CMD:empleos(playerid, params[])
 	if(PlayerToPoint(4.0, playerid, 361.8299, 173.4907, 1008.3828))
 	{
 		TogglePlayerControllable(playerid, false);
-		ShowPlayerDialog(playerid, DLG_JOBS, DIALOG_STYLE_LIST, "Empleos de Malos Aires", "Empleo de mecanico\nEmpleo de taxista\nEmpleo de granjero\nEmpleo de transportista\nEmpleo de basurero", "Ver", "Cerrar");
+		ShowPlayerDialog(playerid, DLG_JOBS, DIALOG_STYLE_LIST, "Empleos de Malos Aires", "Empleo de granjero\nEmpleo de transportista\nEmpleo de basurero\nEmpleo de Moto-Delivery", "Ver", "Cerrar");
 	}
 	return 1;
 }
@@ -9841,7 +9862,7 @@ CMD:guia(playerid, params[])
         if(PlayerToPoint(4.0, playerid, GUIDE_POS[i][0], GUIDE_POS[i][1], GUIDE_POS[i][2]))
 		{
 			TogglePlayerControllable(playerid, false);
-            ShowPlayerDialog(playerid, DLG_GUIDE, DIALOG_STYLE_LIST, "Guía de Malos Aires", "Alquiler de vehiculos\nCentro de licencias\nCentro de empleos\nTienda de ropa urbana\nTienda de ropa fina\nMercado de Malos Aires", "Ver", "Cerrar");
+            ShowPlayerDialog(playerid, DLG_GUIDE, DIALOG_STYLE_LIST, "Guía de Malos Aires", "Comisaria\nHospital de Malos Aires\nAlquiler de vehiculos\nCentro de licencias\nCentro de empleos\nTienda de ropa urbana\nTienda de ropa fina\nMercado de Malos Aires\nTaller Mecánico\nCentral de noticias CTR-MAN\nGimnasio\nFerreteria\nTienda de Accesorios", "Ver", "Cerrar");
 		}
 	}
 	return 1;
@@ -14149,17 +14170,17 @@ CMD:ckearplayer(playerid,params[])
 		bizID,
 		carkeys;
 
-    if(sscanf(params, "usii", targetid, newname, newage, newsex)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Masculino | 1 = Femenino)]");
+    if(sscanf(params, "us[24]ii", targetid, newname, newage, newsex)) {
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /ckearplayer [ID/Jugador] [Nuevo nombre] [Nueva edad] [Nuevo sexo (0 = Femenino | 1 = Masculino)]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El comando solicitará una confirmación tras completar los parámetros.");
 		return 1;
 		}
    	if(targetid == INVALID_PLAYER_ID)
    	    return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(newsex < 0 || newsex > 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Masculino | 1 = Femenino)!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Elige un sexo válido (0 = Femenino | 1 = Masculino)!");
 	if(newage < 1 || newage > 100)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 0 a 100 años!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Sólo se permite una edad de 1 a 100 años!");
 
 	house = PlayerInfo[targetid][pHouseKey];
 	houseincome = PlayerInfo[targetid][pHouseKeyIncome];
@@ -14169,10 +14190,10 @@ CMD:ckearplayer(playerid,params[])
 	if(GetPVarInt(playerid, "ckeandoplayer") == 0)
 	{
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============{C8C8C8} CKear al jugador %s {878EE7}============", GetPlayerNameEx(targetid));
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d", GetPlayerNameEx(targetid), newage, newsex);
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d.", GetPlayerNameEx(targetid), newage, newsex);
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120} | {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d.", house, houseincome, bizID);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %s ckeandoplayer 0'{C8C8C8}.");
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %d ckeandoplayer 0'{C8C8C8}.", playerid);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============================================================");
 		SetPVarInt(playerid, "ckeandoplayer", PlayerInfo[targetid][pID]);
 		return 1;
@@ -14254,7 +14275,6 @@ CMD:ckearplayer(playerid,params[])
 		PlayerInfo[targetid][pBank] = 0;
 
 		SetPlayerFaction(targetid, 0, 0);
-		SpawnPlayer(targetid);
 
 		SavePlayerJobData(targetid, 1, 1);
 		ResetJobVariables(targetid);
