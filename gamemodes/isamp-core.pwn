@@ -9065,23 +9065,6 @@ CMD:gritar(playerid, params[])
 	return 1;
 }
 
-CMD:verf(playerid, params[])
-{
-	if(GetPVarInt(playerid, "fac") == 0)
-	{
-		SetPVarInt(playerid, "fac", 1);
-		SendClientMessage(playerid, COLOR_WHITE, "Lector de facción activado.");
-		return 1;
-	}
-	if(GetPVarInt(playerid, "fac") == 1)
-	{
-		SetPVarInt(playerid, "fac", 0);
-		SendClientMessage(playerid, COLOR_WHITE, "Lector de facción desactivado.");
-		return 1;
-	}
-	return 1;
-}
-
 CMD:f(playerid, params[])
 {
 	new text[256],
@@ -9374,6 +9357,7 @@ CMD:msg(playerid, params[])
 {
 	new phonenumber,
 		string[256],
+		string2[256],
 		text[256],
 		contact;
 
@@ -9432,7 +9416,18 @@ CMD:msg(playerid, params[])
 			    format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
 			}
-			    
+			
+			format(string2, sizeof(string2), "[SMS] ID %d a ID %d: %s", playerid, i, text);
+			
+			foreach(new i2 : Player)
+			{
+				if(GetPVarInt(i2, "sms") == 1 && i2 != playerid && i2 != i)
+				{
+					SendClientLongMessage(i2, 0x00C800DC, string2);
+				}
+			}
+	
+	
 			PhoneAnimation(playerid);
 			GivePlayerCash(playerid, -PRICE_TEXT);
 			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
@@ -13297,21 +13292,6 @@ CMD:susurrar(playerid, params[])
 	return 1;
 }
 
-CMD:vers(playerid, params[])
-{
-	if(GetPVarInt(playerid, "vers") == 0)
-	{
-		SetPVarInt(playerid, "vers", 1);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros activado.");
-	}
-	else if(GetPVarInt(playerid, "vers") == 1)
-	{
-		SetPVarInt(playerid, "vers", 0);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros desactivado.");
-	}
-	return 1;
-}
-
 CMD:me(playerid, params[])
 {
 	new text[256];
@@ -13432,18 +13412,96 @@ public TimeMps(playerid)
 	return 1;
 }
 
-
-CMD:mps(playerid, params[])
+CMD:vercanal(playerid, params[])
 {
-	if(GetPVarInt(playerid, "pms") == 0)
+	new param[12];
+
+	if(sscanf(params, "s[12]", param))
 	{
-		SetPVarInt(playerid, "pms", 1);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers activado.");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
+	    SendClientMessage(playerid, COLOR_WHITE, "Opciones: mps - susurros - faccion - sms - todos");
 	}
-	else if(GetPVarInt(playerid, "pms") == 1)
+	else if(strcmp(param, "mps", true) == 0)
 	{
-		SetPVarInt(playerid, "pms", 0);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers desactivado.");
+		if(GetPVarInt(playerid, "pms") == 0)
+		{
+			SetPVarInt(playerid, "pms", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de mensajería privada activado.");
+		}
+		else if(GetPVarInt(playerid, "pms") == 1)
+		{
+			SetPVarInt(playerid, "pms", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de mensajería privada desactivado.");
+		}
+		return 1;
+	}
+	else if(strcmp(param, "susurros", true) == 0)
+	{
+		if(GetPVarInt(playerid, "vers") == 0)
+		{
+			SetPVarInt(playerid, "vers", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de susurros activado.");
+		}
+		else if(GetPVarInt(playerid, "vers") == 1)
+		{
+			SetPVarInt(playerid, "vers", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de susurros desactivado.");
+		}
+		return 1;
+	}
+	else if(strcmp(param, "faccion", true) == 0)
+	{
+		if(GetPVarInt(playerid, "fac") == 0)
+		{
+			SetPVarInt(playerid, "fac", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal faccionario activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "fac") == 1)
+		{
+			SetPVarInt(playerid, "fac", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "LLector del canal faccionario desactivado.");
+			return 1;
+		}
+		return 1;
+	}
+	else if(strcmp(param, "sms", true) == 0)
+	{
+		if(GetPVarInt(playerid, "sms") == 0)
+		{
+			SetPVarInt(playerid, "sms", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de los mensajes de celular activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "sms") == 1)
+		{
+			SetPVarInt(playerid, "sms", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de los mensajes de celular desactivados.");
+			return 1;
+		}
+		return 1;
+	}
+	else if(strcmp(param, "todos", true) == 0)
+	{
+		if(GetPVarInt(playerid, "pms") == 0 && GetPVarInt(playerid, "vers") == 0 && GetPVarInt(playerid, "fac") == 0 && GetPVarInt(playerid, "sms") == 0)
+		{
+			SetPVarInt(playerid, "pms", 1);
+			SetPVarInt(playerid, "vers", 1);
+			SetPVarInt(playerid, "fac", 1);
+			SetPVarInt(playerid, "sms", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron activados (MPS-Susurros-Facción-SMS)");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "pms") == 1 || GetPVarInt(playerid, "vers") == 1 || GetPVarInt(playerid, "fac") == 1 || GetPVarInt(playerid, "sms") == 1)
+		{
+			SetPVarInt(playerid, "pms", 0);
+			SetPVarInt(playerid, "vers", 0);
+			SetPVarInt(playerid, "fac", 0);
+			SetPVarInt(playerid, "sms", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS)");
+			return 1;
+		}
+		return 1;
 	}
 	return 1;
 }
