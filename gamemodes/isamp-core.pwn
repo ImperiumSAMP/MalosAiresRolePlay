@@ -12675,21 +12675,23 @@ stock PlayRadioStreamForPlayer(playerid, radio)
 	{
 	    case 0: return 1;
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
-	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
-	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
-	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94"); //nueva
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
-     	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");//radio CTR
-	    case 16: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");//juance
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
+	    case 4: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
+	    case 5: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/la100.mp3");
+	    case 6: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Nacional_48.mp3");
+	    case 7: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Grandes_Del_Rock_48.mp3");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3");
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bachata_48.mp3");
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
+     	case 11: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bailando_Electro_48.mp3");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3");
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3");
+	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");
+	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");
+	    case 16: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cumbia_48.mp3");
+	    case 17: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cuarteto_48.mp3");
+	    case 18: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Folklore_48.mp3");
 	}
 	hearingRadioStream[playerid] = true;
 	return 1;
@@ -12706,8 +12708,8 @@ CMD:emisora(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
-	if(radio < 1 || radio > 16)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
+	if(radio < 1 || radio > 18)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 18.");
 
 	foreach(new i : Player)
 	{
