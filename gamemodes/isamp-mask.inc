@@ -185,6 +185,12 @@ PlayerTakeMaskID(playerid, maskid)
 
 //===================================COMANDOS===================================
 
+cmd:masc(playerid, params[])
+{
+	cmd_mascara(playerid, params);
+	return 1;
+}
+
 CMD:mascara(playerid, params[])
 {
 	if(PlayerInfo[playerid][pMask] == 0)
