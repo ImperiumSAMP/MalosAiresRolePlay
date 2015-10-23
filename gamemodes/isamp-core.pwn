@@ -10840,7 +10840,7 @@ CMD:soplarpipeta(playerid,params[])
 {
     if(BlowingPipette[playerid] == 0)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te está ofreciendo una pipeta para soplar.");
-	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta") > 2.0)
+	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta") > 2.0))
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Estás demasiado lejos del oficial que te ofreció la pipeta.");
 		
 	BlowingPipette[playerid] = 0;
@@ -13424,7 +13424,7 @@ CMD:vercanal(playerid, params[])
 	if(sscanf(params, "s[12]", param))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
-	    SendClientMessage(playerid, COLOR_WHITE, "Opciones: mps - susurros - faccion - sms - todos");
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}todos");
 	}
 	else if(strcmp(param, "mps", true) == 0)
 	{
@@ -13556,8 +13556,8 @@ CMD:set(playerid, params[])
 	    
 	if(sscanf(params, "us[16]S(null)[64]", target, param, value))
 	{
-	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /set [IDJugador/ParteDelNombre] [stat] [value]");
-	    SendClientMessage(playerid, COLOR_WHITE, "Stats: sexo | edad");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /set [IDJugador/ParteDelNombre] [opción] [value]");
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}sexo {878EE7}- {C8C8C8}edad");
 	}
 	else if(strcmp(param, "sexo", true) == 0)
 	{
