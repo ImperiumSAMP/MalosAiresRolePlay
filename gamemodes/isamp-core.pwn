@@ -9188,7 +9188,7 @@ CMD:ayuda(playerid,params[])
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
@@ -10818,13 +10818,14 @@ CMD:pipeta(playerid,params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(OfferingPipette[playerid] == 1)
 	    return SendClientMessage(playerid,COLOR_YELLOW2,"Ya has ofrecido una pipeta para que soplen.");
- 	if(GetDistanceBetweenPlayers(playerid, targetid) > 2)
+ 	if(GetDistanceBetweenPlayers(playerid, targetid) > 2.0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
-	
+
 	SendFMessage (playerid, COLOR_LIGHTYELLOW2, "Le diste una pipeta para que sople a %s, debes esperar que el sujeto responda.", GetPlayerNameEx(targetid));
     SendFMessage (targetid, COLOR_LIGHTYELLOW2, "%s te dío una pipeta de alcoholemia para que soples. (Utilizá /soplarpipeta)", GetPlayerNameEx (playerid));
 	BlowingPipette[targetid] = 1;
 	OfferingPipette[playerid] = 1;
+    SetPVarInt(targetid, "OfertaPipeta", playerid);
 	SetTimerEx("AceptarPipeta", 20000, false, "i", playerid);
 	return 1;
 }
@@ -10839,6 +10840,8 @@ CMD:soplarpipeta(playerid,params[])
 {
     if(BlowingPipette[playerid] == 0)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te está ofreciendo una pipeta para soplar.");
+	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta") > 2.0)
+	    return SendClientMessage(playerid,COLOR_YELLOW2, "Estás demasiado lejos del oficial que te ofreció la pipeta.");
 		
 	BlowingPipette[playerid] = 0;
 	PlayerActionMessage(playerid, 15.0, "toma la pipeta ofrecida por el oficial y comienza a soplarla");
@@ -13958,7 +13961,7 @@ CMD:quitarmascara(playerid, params[])
 	if(target == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(target == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando /mascara.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando (/masc)ara.");
 	if(!ProxDetectorS(3.0, playerid, target))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 	if(IsPlayerInAnyVehicle(target))
