@@ -8079,7 +8079,7 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /vers /verf /verip /vertlf /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /vercanal /verip /vertlf /mute /slap /skin");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
@@ -10840,7 +10840,7 @@ CMD:soplarpipeta(playerid,params[])
 {
     if(BlowingPipette[playerid] == 0)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te está ofreciendo una pipeta para soplar.");
-	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta") > 2.0))
+	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta")) > 2.0)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Estás demasiado lejos del oficial que te ofreció la pipeta.");
 		
 	BlowingPipette[playerid] = 0;
