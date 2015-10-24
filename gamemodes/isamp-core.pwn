@@ -98,7 +98,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.3b"
+#define GAMEMODE				"MA:RP v1.1.3c"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -1679,6 +1679,14 @@ public OnPlayerText(playerid, text[])
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades en el área, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			SendFactionMessage(FAC_PMA, COLOR_WHITE, string);
+			format(string, sizeof(string), "[911 - POLICÍA del ID %d]: %s", playerid, text);
+			foreach(new i : Player)
+			{
+				if(GetPVarInt(i, "emergency") == 1 && i != playerid && PlayerInfo[i][pFaction] != FAC_PMA)
+				{
+					SendClientLongMessage(i, 0x00C800DC, string);
+				}
+			}
 			Mobile[playerid] = 255;
 			lastPoliceCallNumber = PlayerInfo[playerid][pPhoneNumber];
 			GetPlayerPos(playerid, lastPoliceCallPos[0], lastPoliceCallPos[1], lastPoliceCallPos[2]);
@@ -1697,6 +1705,14 @@ public OnPlayerText(playerid, text[])
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
+			format(string, sizeof(string), "[911 - SAME del ID %d]: %s", playerid, text);
+			foreach(new i : Player)
+			{
+				if(GetPVarInt(i, "emergency") == 1 && i != playerid && PlayerInfo[i][pFaction] != FAC_HOSP)
+				{
+					SendClientLongMessage(i, 0x00C800DC, string);
+				}
+			}
 			Mobile[playerid] = 255;
 			lastMedicCallNumber = PlayerInfo[playerid][pPhoneNumber];
 			GetPlayerPos(playerid, lastMedicCallPos[0], lastMedicCallPos[1], lastMedicCallPos[2]);
@@ -8075,12 +8091,12 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aeditobjeto /ainfoobjetos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto /setcoord /setint /setvw /kick");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /gooc /congelar /descongelar /fly /getpos /goto /traer /muteb /setcoord /setint /setvw /kick");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /mps /vers /verf /verip /vertlf /mute /slap /skin");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /ban /check /checkinv /vercanal /verip /vertlf /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /quitarobjeto /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
@@ -8826,6 +8842,26 @@ CMD:quitarobjeto(playerid, params[])
 	return 1;
 }
 
+CMD:applyanimation(playerid, params[])
+{
+	new animlib[64],
+		animname[64],
+		Float:fDelta,
+		loop,
+		lockx,
+		locky,
+		freeze,
+		time,
+		forcesync;
+
+	if(sscanf(params, "s[64]s[64]fdddddd", animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /applyanimation [librería] [nombre] [fDelta] [loop] [lockx] [locky] [freeze] [time] [forcesync]");
+
+	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+	SendFMessage(playerid, COLOR_WHITE, "Ejecutaste ApplyAnimation(%d, %s, %s, %f, %d, %d, %d, %d, %d, %d);", playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+	return 1;
+}
+
 //====================COMANDOS DE COMUNICACION CON STAFF========================
 
 CMD:duda(playerid,params[]) {
@@ -9065,23 +9101,6 @@ CMD:gritar(playerid, params[])
 	return 1;
 }
 
-CMD:verf(playerid, params[])
-{
-	if(GetPVarInt(playerid, "fac") == 0)
-	{
-		SetPVarInt(playerid, "fac", 1);
-		SendClientMessage(playerid, COLOR_WHITE, "Lector de facción activado.");
-		return 1;
-	}
-	if(GetPVarInt(playerid, "fac") == 1)
-	{
-		SetPVarInt(playerid, "fac", 0);
-		SendClientMessage(playerid, COLOR_WHITE, "Lector de facción desactivado.");
-		return 1;
-	}
-	return 1;
-}
-
 CMD:f(playerid, params[])
 {
 	new text[256],
@@ -9205,7 +9224,7 @@ CMD:ayuda(playerid,params[])
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara /mascara /saludar /examinar /tomarobjeto");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
@@ -9374,6 +9393,7 @@ CMD:msg(playerid, params[])
 {
 	new phonenumber,
 		string[256],
+		string2[256],
 		text[256],
 		contact;
 
@@ -9432,7 +9452,18 @@ CMD:msg(playerid, params[])
 			    format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
 			}
-			    
+			
+			format(string2, sizeof(string2), "[SMS] ID %d a ID %d: %s", playerid, i, text);
+			
+			foreach(new i2 : Player)
+			{
+				if(GetPVarInt(i2, "sms") == 1 && i2 != playerid && i2 != i)
+				{
+					SendClientLongMessage(i2, 0x00C800DC, string2);
+				}
+			}
+	
+	
 			PhoneAnimation(playerid);
 			GivePlayerCash(playerid, -PRICE_TEXT);
 			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
@@ -10823,13 +10854,14 @@ CMD:pipeta(playerid,params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(OfferingPipette[playerid] == 1)
 	    return SendClientMessage(playerid,COLOR_YELLOW2,"Ya has ofrecido una pipeta para que soplen.");
- 	if(GetDistanceBetweenPlayers(playerid, targetid) > 2)
+ 	if(GetDistanceBetweenPlayers(playerid, targetid) > 2.0)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto debe estar cerca tuyo!");
-	
+
 	SendFMessage (playerid, COLOR_LIGHTYELLOW2, "Le diste una pipeta para que sople a %s, debes esperar que el sujeto responda.", GetPlayerNameEx(targetid));
     SendFMessage (targetid, COLOR_LIGHTYELLOW2, "%s te dío una pipeta de alcoholemia para que soples. (Utilizá /soplarpipeta)", GetPlayerNameEx (playerid));
 	BlowingPipette[targetid] = 1;
 	OfferingPipette[playerid] = 1;
+    SetPVarInt(targetid, "OfertaPipeta", playerid);
 	SetTimerEx("AceptarPipeta", 20000, false, "i", playerid);
 	return 1;
 }
@@ -10844,6 +10876,8 @@ CMD:soplarpipeta(playerid,params[])
 {
     if(BlowingPipette[playerid] == 0)
 	    return SendClientMessage(playerid,COLOR_YELLOW2, "Ningún oficial te está ofreciendo una pipeta para soplar.");
+	if(GetDistanceBetweenPlayers(playerid, GetPVarInt(playerid, "OfertaPipeta")) > 2.0)
+	    return SendClientMessage(playerid,COLOR_YELLOW2, "Estás demasiado lejos del oficial que te ofreció la pipeta.");
 		
 	BlowingPipette[playerid] = 0;
 	PlayerActionMessage(playerid, 15.0, "toma la pipeta ofrecida por el oficial y comienza a soplarla");
@@ -12677,21 +12711,23 @@ stock PlayRadioStreamForPlayer(playerid, radio)
 	{
 	    case 0: return 1;
 	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 4: PlayAudioStreamForPlayer(playerid, "http://movidamix.com:8128/listen.pls");
-	    case 5: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
-	    case 6: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
-	    case 7: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94"); //nueva
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94"); //nueva
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630"); //nueva
-     	case 11: PlayAudioStreamForPlayer(playerid, "http://95.141.24.173:80/listen.pls");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94"); // nueva
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://serverstreamgroup.biz:8112/stream?type=.fl"); //nueva
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash"); //nueva
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");//radio CTR
-	    case 16: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");//juance
+	    case 2: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
+	    case 3: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
+	    case 4: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
+	    case 5: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/la100.mp3");
+	    case 6: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Nacional_48.mp3");
+	    case 7: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Grandes_Del_Rock_48.mp3");
+	    case 8: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3");
+	    case 9: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bachata_48.mp3");
+     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
+     	case 11: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bailando_Electro_48.mp3");
+	    case 12: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3");
+	    case 13: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3");
+	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");
+	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");
+	    case 16: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cumbia_48.mp3");
+	    case 17: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cuarteto_48.mp3");
+	    case 18: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Folklore_48.mp3");
 	}
 	hearingRadioStream[playerid] = true;
 	return 1;
@@ -12703,13 +12739,13 @@ CMD:emisora(playerid, params[])
 	vType = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-16]. Para apagarla utiliza /emisoraoff.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-18]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
-	if(radio < 1 || radio > 16)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
+	if(radio < 1 || radio > 18)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 18.");
 
 	foreach(new i : Player)
 	{
@@ -13297,21 +13333,6 @@ CMD:susurrar(playerid, params[])
 	return 1;
 }
 
-CMD:vers(playerid, params[])
-{
-	if(GetPVarInt(playerid, "vers") == 0)
-	{
-		SetPVarInt(playerid, "vers", 1);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros activado.");
-	}
-	else if(GetPVarInt(playerid, "vers") == 1)
-	{
-		SetPVarInt(playerid, "vers", 0);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de susurros desactivado.");
-	}
-	return 1;
-}
-
 CMD:me(playerid, params[])
 {
 	new text[256];
@@ -13432,18 +13453,114 @@ public TimeMps(playerid)
 	return 1;
 }
 
-
-CMD:mps(playerid, params[])
+CMD:vercanal(playerid, params[])
 {
-	if(GetPVarInt(playerid, "pms") == 0)
+	new param[12];
+
+	if(sscanf(params, "s[12]", param))
 	{
-		SetPVarInt(playerid, "pms", 1);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers activado.");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
+	    SendClientLongMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}emergencias {878EE7}- {C8C8C8}todos");
 	}
-	else if(GetPVarInt(playerid, "pms") == 1)
+	else if(strcmp(param, "mps", true) == 0)
 	{
-		SetPVarInt(playerid, "pms", 0);
-		SendClientMessage(playerid, COLOR_GREEN, "Lector de whispers desactivado.");
+		if(GetPVarInt(playerid, "pms") == 0)
+		{
+			SetPVarInt(playerid, "pms", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de mensajería privada activado.");
+		}
+		else if(GetPVarInt(playerid, "pms") == 1)
+		{
+			SetPVarInt(playerid, "pms", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de mensajería privada desactivado.");
+		}
+		return 1;
+	}
+	else if(strcmp(param, "susurros", true) == 0)
+	{
+		if(GetPVarInt(playerid, "vers") == 0)
+		{
+			SetPVarInt(playerid, "vers", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de susurros activado.");
+		}
+		else if(GetPVarInt(playerid, "vers") == 1)
+		{
+			SetPVarInt(playerid, "vers", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de susurros desactivado.");
+		}
+		return 1;
+	}
+	else if(strcmp(param, "faccion", true) == 0)
+	{
+		if(GetPVarInt(playerid, "fac") == 0)
+		{
+			SetPVarInt(playerid, "fac", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal faccionario activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "fac") == 1)
+		{
+			SetPVarInt(playerid, "fac", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "LLector del canal faccionario desactivado.");
+			return 1;
+		}
+		return 1;
+	}
+	else if(strcmp(param, "sms", true) == 0)
+	{
+		if(GetPVarInt(playerid, "sms") == 0)
+		{
+			SetPVarInt(playerid, "sms", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de los mensajes de celular activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "sms") == 1)
+		{
+			SetPVarInt(playerid, "sms", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de los mensajes de celular desactivados.");
+			return 1;
+		}
+		return 1;
+	}
+	else if(strcmp(param, "emergencias", true) == 0)
+	{
+		if(GetPVarInt(playerid, "emergency") == 0)
+		{
+			SetPVarInt(playerid, "emergency", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "emergency") == 1)
+		{
+			SetPVarInt(playerid, "emergency", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 desactivado.");
+			return 1;
+		}
+		return 1;
+	}
+	else if(strcmp(param, "todos", true) == 0)
+	{
+		if(GetPVarInt(playerid, "pms") == 0 && GetPVarInt(playerid, "vers") == 0 && GetPVarInt(playerid, "fac") == 0 && GetPVarInt(playerid, "sms") == 0)
+		{
+			SetPVarInt(playerid, "pms", 1);
+			SetPVarInt(playerid, "vers", 1);
+			SetPVarInt(playerid, "fac", 1);
+			SetPVarInt(playerid, "sms", 1);
+			SetPVarInt(playerid, "emergency", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron activados (MPS-Susurros-Facción-SMS)");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "pms") == 1 || GetPVarInt(playerid, "vers") == 1 || GetPVarInt(playerid, "fac") == 1 || GetPVarInt(playerid, "sms") == 1)
+		{
+			SetPVarInt(playerid, "pms", 0);
+			SetPVarInt(playerid, "vers", 0);
+			SetPVarInt(playerid, "fac", 0);
+			SetPVarInt(playerid, "sms", 0);
+			SetPVarInt(playerid, "emergency", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS)");
+			return 1;
+		}
+		return 1;
 	}
 	return 1;
 }
@@ -13493,8 +13610,8 @@ CMD:set(playerid, params[])
 	    
 	if(sscanf(params, "us[16]S(null)[64]", target, param, value))
 	{
-	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /set [IDJugador/ParteDelNombre] [stat] [value]");
-	    SendClientMessage(playerid, COLOR_WHITE, "Stats: sexo | edad");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /set [IDJugador/ParteDelNombre] [opción] [value]");
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}sexo {878EE7}- {C8C8C8}edad");
 	}
 	else if(strcmp(param, "sexo", true) == 0)
 	{
@@ -13900,7 +14017,7 @@ CMD:quitarmascara(playerid, params[])
 	if(target == INVALID_PLAYER_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
 	if(target == playerid)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando /mascara.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo contigo mismo! Para ponerte/quitarte la máscara usa el comando (/masc)ara.");
 	if(!ProxDetectorS(3.0, playerid, target))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 	if(IsPlayerInAnyVehicle(target))
