@@ -23,21 +23,23 @@ static const SERVER_RADIOS[][128] = {
 
 /*0*/	"NONE",
 /*1*/	"http://buecrplb01.cienradios.com.ar/Mitre790.mp3",
-/*2*/	"http://pub8.sky.fm/sky_classicrap?26d5dea1edd974aa0d4b8d94", //nueva
-/*3*/	"http://pub8.sky.fm/sky_modernrock?26d5dea1edd974aa0d4b8d94", //nueva
-/*4*/	"http://movidamix.com:8128/listen.pls",
-/*5*/	"http://buecrplb01.cienradios.com.ar/Palermo_2.mp3",
-/*6*/	"http://buecrplb01.cienradios.com.ar/fm979.mp3",
-/*7*/	"http://buecrplb01.cienradios.com.ar/la100_mdq.mp3",
-/*8*/	"http://pub3.sky.fm/sky_bossanova?26d5dea1edd974aa0d4b8d94", //nueva
-/*9*/	"http://pub2.sky.fm/sky_tophits?26d5dea1edd974aa0d4b8d94", //nueva
-/*10*/	"http://stream.electroradio.ch:26630",//nueva
-/*11*/	"http://95.141.24.173:80/listen.pls",
-/*12*/	"http://pub3.sky.fm:80/sky_modernblues?26d5dea1edd974aa0d4b8d94", // nueva
-/*13*/	"http://serverstreamgroup.biz:8112/stream?type=.fl", //nueva
-/*14*/	"http://streaming.radionomy.com/CUMBIAPARATODOSyCADENAMIX?type=flash", //nueva
-/*15*/	"http://streaming.radionomy.com/CTRMAN", //radio CTR
-/*16*/	"http://streaming.radionomy.com/MIXLA128KB" //juance
+/*2*/	"http://buecrplb01.cienradios.com.ar/Palermo_2.mp3",
+/*3*/	"http://buecrplb01.cienradios.com.ar/fm979.mp3",
+/*4*/	"http://buecrplb01.cienradios.com.ar/la100_mdq.mp3",
+/*5*/	"http://s_mobile.cienradios.com/la100.mp3",
+/*6*/	"http://s_mobile.cienradios.com/Hot_100_Nacional_48.mp3",
+/*7*/	"http://s_mobile.cienradios.com/Grandes_Del_Rock_48.mp3",
+/*8*/	"http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3",
+/*9*/	"http://s_mobile.cienradios.com/Bachata_48.mp3",
+/*10*/	"http://stream.electroradio.ch:26630",
+/*11*/	"http://s_mobile.cienradios.com/Bailando_Electro_48.mp3",
+/*12*/	"http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3",
+/*13*/	"http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3",
+/*14*/	"http://streaming.radionomy.com/MIXLA128KB",
+/*15*/	"http://streaming.radionomy.com/CTRMAN",
+/*16*/	"http://s_mobile.cienradios.com/Cumbia_48.mp3",
+/*17*/	"http://s_mobile.cienradios.com/Cuarteto_48.mp3",
+/*18*/	"http://s_mobile.cienradios.com/Folklore_48.mp3"
 
 };
 

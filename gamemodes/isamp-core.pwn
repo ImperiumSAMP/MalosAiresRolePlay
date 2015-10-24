@@ -8862,6 +8862,35 @@ CMD:applyanimation(playerid, params[])
 	return 1;
 }
 
+CMD:playaudiostreamforplayer(playerid, params[])
+{
+	new targetid,
+		url[128];
+
+	if(sscanf(params, "us[128]", targetid, url))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /playaudiostreamforplayer [ID/Jugador] [URL del stream]");
+
+	PlayAudioStreamForPlayer(targetid, url);
+	if(playerid != targetid)
+		SendFMessage(playerid, COLOR_WHITE, "Ejecutaste PlayAudioStreamForPlayer(%d, %s);", targetid, url);
+		
+	return 1;
+}
+
+CMD:stopaudiostreamforplayer(playerid, params[])
+{
+	new targetid;
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /stopaudiostreamforplayer [ID/Jugador]");
+
+	StopAudioStreamForPlayer(targetid);
+	if(playerid != targetid)
+		SendFMessage(playerid, COLOR_WHITE, "Ejecutaste StopAudioStreamForPlayer(%d);", targetid);
+
+	return 1;
+}
+
 //====================COMANDOS DE COMUNICACION CON STAFF========================
 
 CMD:duda(playerid,params[]) {
@@ -9155,7 +9184,6 @@ CMD:checkinv(playerid, params[])
 CMD:slap(playerid, params[])
 {
 	new Float:pos[3],
-	    Float:hp,
 		target;
 		
 	if(sscanf(params, "u", target))
@@ -9163,8 +9191,6 @@ CMD:slap(playerid, params[])
 
 	if(IsPlayerConnected(target))
 	{
-		GetPlayerHealthEx(target, hp);
-		SetPlayerHealthEx(target, hp - 5);
 		GetPlayerPos(target, pos[0], pos[1], pos[2]);
 		SetPlayerPos(target, pos[0], pos[1], pos[2] + 5);
 		PlayerPlaySound(target, 1130, pos[0], pos[1], pos[2] + 5);
@@ -13460,7 +13486,7 @@ CMD:vercanal(playerid, params[])
 	if(sscanf(params, "s[12]", param))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
-	    SendClientLongMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}emergencias {878EE7}- {C8C8C8}todos");
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps - susurros - faccion - sms - 911 - todos");
 	}
 	else if(strcmp(param, "mps", true) == 0)
 	{
@@ -13522,7 +13548,7 @@ CMD:vercanal(playerid, params[])
 		}
 		return 1;
 	}
-	else if(strcmp(param, "emergencias", true) == 0)
+	else if(strcmp(param, "911", true) == 0)
 	{
 		if(GetPVarInt(playerid, "emergency") == 0)
 		{
@@ -13547,7 +13573,7 @@ CMD:vercanal(playerid, params[])
 			SetPVarInt(playerid, "fac", 1);
 			SetPVarInt(playerid, "sms", 1);
 			SetPVarInt(playerid, "emergency", 1);
-			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron activados (MPS-Susurros-Facción-SMS)");
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron activados (MPS-Susurros-Facción-SMS-911)");
 			return 1;
 		}
 		if(GetPVarInt(playerid, "pms") == 1 || GetPVarInt(playerid, "vers") == 1 || GetPVarInt(playerid, "fac") == 1 || GetPVarInt(playerid, "sms") == 1)
@@ -13557,7 +13583,7 @@ CMD:vercanal(playerid, params[])
 			SetPVarInt(playerid, "fac", 0);
 			SetPVarInt(playerid, "sms", 0);
 			SetPVarInt(playerid, "emergency", 0);
-			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS)");
+			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS-911)");
 			return 1;
 		}
 		return 1;
