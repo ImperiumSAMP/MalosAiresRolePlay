@@ -8899,7 +8899,7 @@ CMD:duda(playerid,params[]) {
 	else
 	{
 	    format(string2,sizeof(string2),"[Duda] (%d) %s: %s",playerid,GetPlayerNameEx(playerid),string);
-        AdministratorMessage(COLOR_ADMINQUESTION, string2, 2);
+        AdministratorMessage(COLOR_ADMINQUESTION, string2, 1);
         SendClientMessage(playerid,COLOR_RED,"La duda ha sido enviada, por favor sea paciente.");
 	}
 	return 1;
@@ -13427,7 +13427,7 @@ CMD:b(playerid, params[])
 		return 1;
 	}
 	PlayerLocalMessage(playerid, 15.0, text);
-	if(PlayerInfo[playerid][pAdmin] <= 1)
+	if(PlayerInfo[playerid][pAdmin] < 1)
 	    PlayerInfo[playerid][pMuteB] = 5;
 	    
 	return 1;
@@ -13465,7 +13465,7 @@ CMD:mp(playerid, params[])
 		}
 	}
 	
-	if(PlayerInfo[playerid][pAdmin] <= 1)
+	if(PlayerInfo[playerid][pAdmin] < 1)
 	{
 		TiempoEsperaMps[playerid] = 1;
 		SetTimerEx("TimeMps", 5000, false, "i", playerid);
