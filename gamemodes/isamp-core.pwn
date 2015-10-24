@@ -98,7 +98,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.3b"
+#define GAMEMODE				"MA:RP v1.1.3c"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -1679,6 +1679,14 @@ public OnPlayerText(playerid, text[])
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades en el área, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			SendFactionMessage(FAC_PMA, COLOR_WHITE, string);
+			format(string, sizeof(string), "[911 - POLICÍA del ID %d]: %s", playerid, text);
+			foreach(new i : Player)
+			{
+				if(GetPVarInt(i, "emergency") == 1 && i != playerid && PlayerInfo[i][pFaction] != FAC_PMA)
+				{
+					SendClientLongMessage(i, 0x00C800DC, string);
+				}
+			}
 			Mobile[playerid] = 255;
 			lastPoliceCallNumber = PlayerInfo[playerid][pPhoneNumber];
 			GetPlayerPos(playerid, lastPoliceCallPos[0], lastPoliceCallPos[1], lastPoliceCallPos[2]);
@@ -1697,6 +1705,14 @@ public OnPlayerText(playerid, text[])
 			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
             format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
+			format(string, sizeof(string), "[911 - SAME del ID %d]: %s", playerid, text);
+			foreach(new i : Player)
+			{
+				if(GetPVarInt(i, "emergency") == 1 && i != playerid && PlayerInfo[i][pFaction] != FAC_HOSP)
+				{
+					SendClientLongMessage(i, 0x00C800DC, string);
+				}
+			}
 			Mobile[playerid] = 255;
 			lastMedicCallNumber = PlayerInfo[playerid][pPhoneNumber];
 			GetPlayerPos(playerid, lastMedicCallPos[0], lastMedicCallPos[1], lastMedicCallPos[2]);
@@ -8826,6 +8842,26 @@ CMD:quitarobjeto(playerid, params[])
 	return 1;
 }
 
+CMD:applyanimation(playerid, params[])
+{
+	new animlib[64],
+		animname[64],
+		Float:fDelta,
+		loop,
+		lockx,
+		locky,
+		freeze,
+		time,
+		forcesync;
+
+	if(sscanf(params, "s[64]s[64]fdddddd", animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /applyanimation [librería] [nombre] [fDelta] [loop] [lockx] [locky] [freeze] [time] [forcesync]");
+
+	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+	SendFMessage(playerid, COLOR_WHITE, "Ejecutaste ApplyAnimation(%d, %s, %s, %f, %d, %d, %d, %d, %d, %d);", playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
+	return 1;
+}
+
 //====================COMANDOS DE COMUNICACION CON STAFF========================
 
 CMD:duda(playerid,params[]) {
@@ -12703,7 +12739,7 @@ CMD:emisora(playerid, params[])
 	vType = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-16]. Para apagarla utiliza /emisoraoff.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-18]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
@@ -13424,7 +13460,7 @@ CMD:vercanal(playerid, params[])
 	if(sscanf(params, "s[12]", param))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
-	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}todos");
+	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}llamadas911 {878EE7}- {C8C8C8}todos");
 	}
 	else if(strcmp(param, "mps", true) == 0)
 	{
@@ -13486,6 +13522,22 @@ CMD:vercanal(playerid, params[])
 		}
 		return 1;
 	}
+	else if(strcmp(param, "llamadas911", true) == 0)
+	{
+		if(GetPVarInt(playerid, "emergency") == 0)
+		{
+			SetPVarInt(playerid, "emergency", 1);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 activado.");
+			return 1;
+		}
+		if(GetPVarInt(playerid, "emergency") == 1)
+		{
+			SetPVarInt(playerid, "emergency", 0);
+			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 desactivado.");
+			return 1;
+		}
+		return 1;
+	}
 	else if(strcmp(param, "todos", true) == 0)
 	{
 		if(GetPVarInt(playerid, "pms") == 0 && GetPVarInt(playerid, "vers") == 0 && GetPVarInt(playerid, "fac") == 0 && GetPVarInt(playerid, "sms") == 0)
@@ -13494,6 +13546,7 @@ CMD:vercanal(playerid, params[])
 			SetPVarInt(playerid, "vers", 1);
 			SetPVarInt(playerid, "fac", 1);
 			SetPVarInt(playerid, "sms", 1);
+			SetPVarInt(playerid, "emergency", 1);
 			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron activados (MPS-Susurros-Facción-SMS)");
 			return 1;
 		}
@@ -13503,6 +13556,7 @@ CMD:vercanal(playerid, params[])
 			SetPVarInt(playerid, "vers", 0);
 			SetPVarInt(playerid, "fac", 0);
 			SetPVarInt(playerid, "sms", 0);
+			SetPVarInt(playerid, "emergency", 0);
 			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS)");
 			return 1;
 		}
