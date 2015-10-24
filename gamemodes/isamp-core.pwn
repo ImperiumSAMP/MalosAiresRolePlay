@@ -8091,12 +8091,12 @@ CMD:admincmds(playerid, params[]) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aeditobjeto /ainfoobjetos");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /congelar /descongelar /fly /getpos /goto /traer /muteb /quitarobjeto /setcoord /setint /setvw /kick");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /gooc /congelar /descongelar /fly /getpos /goto /traer /muteb /setcoord /setint /setvw /kick");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /gooc /ban /kick /check /checkinv /vercanal /verip /vertlf /mute /slap /skin");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /acasas /aedificios /anegocios");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /ban /check /checkinv /vercanal /verip /vertlf /mute /slap /skin");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /togglegooc /set /sethp /verjail /quitarobjeto /acasas /aedificios /anegocios");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 4) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 4]{C8C8C8} /advertir /cambiarnombre /jetx /tutorial /saltartuto /setarmour /setjob");
@@ -13460,7 +13460,7 @@ CMD:vercanal(playerid, params[])
 	if(sscanf(params, "s[12]", param))
 	{
 	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /vercanal [opción]");
-	    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}llamadas911 {878EE7}- {C8C8C8}todos");
+	    SendClientLongMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps {878EE7}- {C8C8C8}susurros {878EE7}- {C8C8C8}faccion {878EE7}- {C8C8C8}sms {878EE7}- {C8C8C8}emergencias {878EE7}- {C8C8C8}todos");
 	}
 	else if(strcmp(param, "mps", true) == 0)
 	{
@@ -13522,7 +13522,7 @@ CMD:vercanal(playerid, params[])
 		}
 		return 1;
 	}
-	else if(strcmp(param, "llamadas911", true) == 0)
+	else if(strcmp(param, "emergencias", true) == 0)
 	{
 		if(GetPVarInt(playerid, "emergency") == 0)
 		{
