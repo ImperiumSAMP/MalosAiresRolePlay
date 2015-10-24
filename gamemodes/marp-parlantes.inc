@@ -162,13 +162,13 @@ CMD:parlante(playerid, params[])
 	new radio;
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /parlante [radio] (1-16). Se ubicará el equipo en el piso, reproduciendo la radio elegida.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /parlante [radio] (1-18). Se ubicará el equipo en el piso, reproduciendo la radio elegida.");
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
 	if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_PARLANTE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un equipo de música portátil en condiciones en tu mano derecha.");
-	if(radio < 1 || radio > 16)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16.");
+	if(radio < 1 || radio > 18)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 18.");
 
 	new vsize = vector_size(SERVER_SPEAKERS),
 	    speaker_id;
