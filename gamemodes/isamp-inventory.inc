@@ -143,56 +143,6 @@ stock LoadInvInfo(playerid)
 	return 1;
 }
 
-//================================COMANDOS======================================
-
-CMD:inv2(playerid, params[])
-{
-	cmd_inventario2(playerid, params);
-	return 1;
-}
-
-stock TakeItemFromInv(playerid, playerhand, invslot)
-{
-	new itemid = GetInvItem(playerid, invslot),
-		itemparam = GetInvParam(playerid, invslot),
-		str[128];
-
-	if(itemid <= 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	if(GetHandItem(playerid, playerhand) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
-
-	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creación lógica y grafica en la mano.
-	SetInvItemAndParam(playerid, invslot, 0, 0); // Borrado lógico del item del inventario.
-	format(str, sizeof(str), "toma un/a %s de su inventario.", GetItemName(itemid));
-	PlayerActionMessage(playerid, 15.0, str);
-	return 1;
-}
-
-CMD:inventario2(playerid, params[])
-{
-	new returnid,
-		cmd[32];
-
-    if(sscanf(params, "s[32]I(-1)", cmd, returnid))
-	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/inv)entario [comando] - {5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot]");
-		PrintInvForPlayer(playerid, playerid, 0);
-    }
-	else
-	{
-		if(strcmp(cmd, "tomar", true) == 0)
-		{
-			TakeItemFromInv(playerid, HAND_RIGHT, returnid);
-        }
-		else if(strcmp(cmd, "tomari", true) == 0)
-		{
-			TakeItemFromInv(playerid, HAND_LEFT, returnid);
-	    }
-	}
-	return 1;
-}
-
 //==============================[EXPERIMENTAL]==================================
 
 CMD:inv(playerid, params[])

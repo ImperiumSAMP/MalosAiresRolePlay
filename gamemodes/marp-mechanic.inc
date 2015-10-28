@@ -1245,13 +1245,14 @@ public RestoreOriginalPaintjob(vehicleid, playerid)
 	return 1;
 }
 
-CMD:mecelevador(playerid, params[]) {
-	new direccion[6];
+CMD:mecelevador(playerid, params[])
+{
+	new direccion[12];
 
 	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
 		return 1;
 
-	if(sscanf(params, "s", direccion)) 
+	if(sscanf(params, "s[12]", direccion))
 	{
 		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mecelevador [dirección: subir - bajar]");
 	} 

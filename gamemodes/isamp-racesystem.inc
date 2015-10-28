@@ -185,7 +185,7 @@ stock bool:CreateRace(playerid)
 CMD:carreracrear(playerid, params[])
 {
     if(PlayerInfo[playerid][pLevel] < 8)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Para organizar carreras debes ser un usuario experimentado en el servidor ((Nivel 15)).");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Para organizar carreras debes ser un usuario experimentado en el servidor ((Nivel 8)).");
 	if(PlayerRaceInfo[playerid][pRaceID] != -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras en una carrera.");
 	if(CreateRace(playerid))
