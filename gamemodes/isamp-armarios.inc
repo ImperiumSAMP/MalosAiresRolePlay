@@ -7,114 +7,11 @@
 
 //================================CONSTANTES====================================
 
-#define SLOT_TYPE_LOCKER        1
-#define MAX_LOCKER_SLOTS 		22
-
 //============================VARIABLES INTERNAS================================
 
-new LockerInfo[MAX_HOUSES][MAX_LOCKER_SLOTS][SlotInfo];
 new LockerStatus[MAX_HOUSES];
 
 //===============================FUNCIONES======================================
-
-forward GetLockerItem(lockerid, lockerslot); // Devuelve el nro de item del slot indicado del armario de la casa. En caso de error retorna -1.
-forward GetLockerParam(lockerid, lockerslot); // Devuelve el parametro "cantidad" del slot indicado del armario de la casa. En caso de error retorna -1.
-forward SetLockerItemAndParam(lockerid, lockerslot, itemid, param); // Setea item y cantidad en el slot indicado. Guardado instantaneo en la DB.
-forward ResetLocker(lockerid); // Borra todo slot del armario de la casa y lo resetea a cero.
-forward GetHouseMaxLockerSlots(houseid); // Devuelve el nro de slots que tiene una casa X (se basa en su precio).
-forward SearchLockerForItem(lockerid, itemid); // Busca un item pasado por parametro dentro de un armario. Si existe, devuelve el slot en el que está, sino retorna -1.
-forward SearchLockerFreeSlot(lockerid); // Busca por el primer slot vacio en el armario y devuelve su posicion. De no haber espacio retorna -1.
-forward PrintLockerForPlayer(lockerid, targetid);// Imprime el armario de la casa al jugador indicado.
-
-//=======================IMPLEMENTACIÓN DE FUNCIONES============================
-
-stock GetLockerItem(lockerid, lockerslot)
-{
-	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		return LockerInfo[lockerid][lockerslot][Item];
-	else
-		return -1;
-}
-
-stock GetLockerParam(lockerid, lockerslot)
-{
-	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-		return LockerInfo[lockerid][lockerslot][Amount];
-	else
-		return -1;
-}
-
-stock SetLockerItemAndParam(lockerid, lockerslot, itemid, param)
-{
-	if(lockerslot >= 0 && lockerslot < MAX_LOCKER_SLOTS)
-	{
-	    if(GetLockerItem(lockerid, lockerslot) > 0) // Si quiere sobreescribir el slot teniendo algo dentro
-	    {
-			LockerInfo[lockerid][lockerslot][Item] = 0;
-			LockerInfo[lockerid][lockerslot][Amount] = 0;
-			SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, lockerslot); // Borramos el anterior
-		}
-		if(itemid != 0)
-		{
-			LockerInfo[lockerid][lockerslot][Item] = itemid;
-			LockerInfo[lockerid][lockerslot][Amount] = param;
-			SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, lockerslot);
-		}
-	}
-	return 1;
-}
-
-stock ResetLocker(lockerid)
-{
-	for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
-	{
-	    if(LockerInfo[lockerid][i][Item] > 0)
-	    {
-   			LockerInfo[lockerid][i][Item] = 0;
-			LockerInfo[lockerid][i][Amount] = 0;
-		    SaveSlotInfo(SLOT_TYPE_LOCKER, lockerid, i);
-		}
-	}
-	return 1;
-}
-
-stock SearchLockerForItem(lockerid, itemid)
-{
-	for(new i = 0; i < MAX_LOCKER_SLOTS; i++)
-	{
-		if(LockerInfo[lockerid][i][Item] == itemid)
-		    return i;
-	}
-	return -1;
-}
-
-stock SearchLockerFreeSlot(lockerid)
-{
-	new houseslots = GetHouseMaxLockerSlots(lockerid);
-	
-    for(new i = 0; i < houseslots; i++)
-    {
-        if(LockerInfo[lockerid][i][Item] == 0)
-            return i;
-	}
-	return -1;
-}
-
-stock PrintLockerForPlayer(lockerid, targetid)
-{
-	new itemid, houseslots = GetHouseMaxLockerSlots(lockerid);
-
- 	SendClientMessage(targetid, COLOR_WHITE, "=======================[Armario]=======================");
-	for(new i = 0; i < houseslots; i++)
-	{
-		itemid = GetLockerItem(lockerid, i);
-	    if(itemid > 0)
-			SendFMessage(targetid, COLOR_WHITE, " - %d- Item: %s - %s: %d", i, GetItemName(itemid), GetItemParamName(itemid), GetLockerParam(lockerid, i));
-	    else
-	        SendFMessage(targetid, COLOR_WHITE, " - %d- Vacío", i);
-	}
-	return 1;
-}
 
 //=================================COMANDOS=====================================
 
@@ -168,8 +65,9 @@ CMD:armario(playerid, params[])
 		return 1;
 
 	}
+	
 	if(strcmp(cmd, "usar", true) == 0) {
-
+	
 		if((House[houseid][Income] == 1 && House[houseid][Tenant] == PlayerInfo[playerid][pName]) || AdminDuty[playerid])
 		{
 		    if(LockerStatus[houseid] != 1)
@@ -195,9 +93,9 @@ CMD:armario(playerid, params[])
 				}
 		} else
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este armario!");
-
+			
 	} else if(strcmp(cmd, "tomardinero", true) == 0) {
-
+	
  		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
 		if(param1 < 1 || param1 > 200000)
@@ -259,6 +157,38 @@ CMD:armario(playerid, params[])
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 		
+		format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
+		PlayerActionMessage(playerid, 15.0, str);
+
+	} else if(strcmp(cmd, "guardari", true) == 0) {
+
+		if(LockerStatus[houseid] == 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
+		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+	  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+	 	if(PlayerInfo[playerid][pHealth] < 25)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+		if(GetHandItem(playerid, HAND_LEFT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+		if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_TELEFONO_CELULAR)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono.");
+		if(GetPVarInt(playerid, "cantSaveItems") == 1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+
+		new itemid = GetHandItem(playerid, HAND_LEFT),
+			itemparam = GetHandParam(playerid, HAND_LEFT),
+			str[128];
+
+		if(itemid == 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+		if(!Container_AddItemAndParam(House[houseid][ContainerID], itemid, itemparam))
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El ítem es demasiado chico para guardarse en un armario.");
+
+		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico.
+
+		SetPVarInt(playerid, "cantSaveItems", 1);
+		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+
 		format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
 		PlayerActionMessage(playerid, 15.0, str);
 

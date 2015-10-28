@@ -1392,9 +1392,7 @@ CMD:acprecio(playerid, params[])
 	House[houseid][HousePrice] = price;
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el precio de la casa %d ha sido ajustado a $%d.", houseid, price);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);
-
-	ResetLocker(houseid); // Al cambiar el precio se cambian los slots de armario, por ende reseteamos todo para evitar bugs.
-
+	
 	//=========================VACIADO DE CONTENEDOR============================
 	
 	if(HouseHasContainer(houseid))
@@ -1449,8 +1447,7 @@ CMD:acvender(playerid, params[])
 	House[houseid][IncomeAccept] = 0;
 	House[houseid][Income] = 0;
 	strmid(House[houseid][Tenant], "Ninguno", 0, strlen("Ninguno"), 255);
-	ResetLocker(houseid);
-	
+
 	//=========================VACIADO DE CONTENEDOR============================
 	
 	if(HouseHasContainer(houseid))
@@ -1552,7 +1549,6 @@ CMD:acborrar(playerid, params[])
 	format(string, sizeof(string), "UPDATE `accounts` SET `HouseKeyIncome` = 0 WHERE `HouseKeyIncome` = %d", houseid);
 	mysql_function_query(dbHandle, string, false, "", "");
 
-	ResetLocker(houseid);
 	DeleteHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la casa %d ha sido BORRADA.", houseid);
 	SendClientMessage(playerid, COLOR_ADMINCMD, string);

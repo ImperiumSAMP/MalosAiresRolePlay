@@ -518,7 +518,6 @@ public OnGameModeInit()
 	LoadHouses();
 	LoadBusiness();
 	loadBuildings();
-	LoadLockersSlotsInfo();
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
 	LoadServerActors();

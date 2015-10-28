@@ -82,15 +82,14 @@ forward OnContainerDataLoad(container_id);
 public OnContainerDataLoad(container_id)
 {
 	new rows,
-		fields,
-		result[32];
+		fields;
 
 	cache_get_data(rows, fields);
 
 	if(rows)
 	{
-		cache_get_field_content(0, "MinItemSpace", result); vector_set(container_id, CONTAINER_INDEX_MIN_ITEM_SPACE, strval(result));
-		cache_get_field_content(0, "TotalSpace", result); 	vector_set(container_id, CONTAINER_INDEX_TOTAL_SPACE, strval(result));
+		vector_set(container_id, CONTAINER_INDEX_MIN_ITEM_SPACE, cache_get_field_content_int(0, "MinItemSpace"));
+		vector_set(container_id, CONTAINER_INDEX_TOTAL_SPACE, cache_get_field_content_int(0, "TotalSpace"));
 	}
 	return 1;
 }
@@ -102,8 +101,8 @@ public OnContainerSlotsLoad(container_id)
 {
 	new rows,
 		fields,
-		result[32],
-		item_id;
+		item_id,
+		param;
 
 	cache_get_data(rows, fields);
 
@@ -116,15 +115,15 @@ public OnContainerSlotsLoad(container_id)
         	
         	vector_set(container_id, CONTAINER_INDEX_USED_SPACE, vector_get(container_id, CONTAINER_INDEX_USED_SPACE) + GetItemSpace(item_id));
         	
-			if(GetItemType(strval(result)) == ITEM_CONTAINER)
+        	param = cache_get_field_content_int(i, "Param");
+        	
+			if(GetItemType(item_id) == ITEM_CONTAINER)
 			{
-				cache_get_field_content(i, "Param", result);
-				vector_push_back(container_id, Container_Load(strval(result)));
+				vector_push_back(container_id, Container_Load(param));
 			}
 			else
 			{
-				cache_get_field_content(i, "Param", result);
-				vector_push_back(container_id, strval(result));
+				vector_push_back(container_id, param);
 			}
 		}
 	}
