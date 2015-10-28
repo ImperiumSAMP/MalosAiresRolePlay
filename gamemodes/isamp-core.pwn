@@ -7815,19 +7815,19 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			    switch(listitem)
 			    {
 			        case 0: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DM","DeathMatch:\nMatar a un jugador sin razon, sin motivo de rol.\nPegarle a alguien porque si.\nSi haces DM serás sancionado por un administrador.","Aceptar","Cancelar");
-			        case 1:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - PG","PowerGaming:\nHacer cosas que en la vida real no puedes hacer.\nEl PG es sancionado.","Aceptar","Cancelar");
-			        case 2:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - CJ","CarJacking:\nRobar un auto sin un rol previo.\nSubirse al auto de otro sin rolear el intento de robo.\n Si haces CJ serás sancionado por un administrador.","Aceptar","Cancelar");
-			        case 3:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - MG","MetaGaming:\nUsar informacion OOC dentro del rol (IC).\nEjemplo: Preguntar a un user donde esta por /w.\nLlamar a alguien por su nombre cuando IC no lo conocemos.\n El MG es sancionado.","Aceptar","Cancelar");
-			        case 4:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - RK","RevengeKill:\nVengarte de que te mataron matando al usuario que te mato.\nEsto no esta permitido ya que cuando mueres\npierdes la memoria.","Aceptar","Cancelar");
-			        case 5:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - BH","BunnyHop:\nSaltar abusivamente con el personaje o con la bicicleta.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar");
-			        case 6:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - VK","VehicleKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangrado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar");
-			        case 7:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - ZZ","ZigZag:\nMoverte de un lado al otro para esquivar las balas.\nEs considerado PowerGaming.\nSeras sancionado si lo haces.","Aceptar","Cancelar");
-			        case 8:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - HK","HeliKill:\nUsar las haspas del helicoptero para matar a alguien.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
-			        case 9:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DB","DriveBy:\nDisparar estando como conductor de un auto o una moto.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
-			        case 10:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - OOC","OutOfCharacter:\nSignifica afuera del personaje, cosas que no tienen nada que ver\ncon el rol de Malos Aires y de tu personaje.","Aceptar","Cancelar");
-			        case 11:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nMalos Aires y el de tu personaje.","Aceptar","Cancelar");
-			        case 12:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /ME","/ME:\nPara describir acciones de tu personaje. Por ejemplo:\n/me se rasca la cabeza.\n/me saca unos auriculares de su bolsillo.","Aceptar","Cancelar");
-			        case 13:ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /DO","/DO:\nPara describir acciones del ambiente, en tercera persona. Por ejemplo:\n/do Se escucha a un gallo cacarear.\n/do Hay una mancha de sangre en el piso.","Aceptar","Cancelar");
+			        case 1: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - PG","PowerGaming:\nHacer cosas que en la vida real no puedes hacer.\nEl PG es sancionado.","Aceptar","Cancelar");
+			        case 2: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - CJ","CarJacking:\nRobar un auto sin un rol previo.\nSubirse al auto de otro sin rolear el intento de robo.\n Si haces CJ serás sancionado por un administrador.","Aceptar","Cancelar");
+			        case 3: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - MG","MetaGaming:\nUsar informacion OOC dentro del rol (IC).\nEjemplo: Preguntar a un user donde esta por /w.\nLlamar a alguien por su nombre cuando IC no lo conocemos.\n El MG es sancionado.","Aceptar","Cancelar");
+			        case 4: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - RK","RevengeKill:\nVengarte de que te mataron matando al usuario que te mato.\nEsto no esta permitido ya que cuando mueres\npierdes la memoria.","Aceptar","Cancelar");
+			        case 5: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - BH","BunnyHop:\nSaltar abusivamente con el personaje o con la bicicleta.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar");
+			        case 6: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - VK","VehicleKill:\n Usar el auto para atropellar a un sujeto repetitivas veces hasta dejarlo desangrado o para matarlo.\nEsto no esta permitido y seras sancionado si lo haces.","Aceptar","Cancelar");
+			        case 7: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - ZZ","ZigZag:\nMoverte de un lado al otro para esquivar las balas.\nEs considerado PowerGaming.\nSeras sancionado si lo haces.","Aceptar","Cancelar");
+			        case 8: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - HK","HeliKill:\nUsar las haspas del helicoptero para matar a alguien.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
+			        case 9: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DB","DriveBy:\nDisparar estando como conductor de un auto o una moto.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
+			        case 10: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - OOC","OutOfCharacter:\nSignifica afuera del personaje, cosas que no tienen nada que ver\ncon el rol de Malos Aires y de tu personaje.","Aceptar","Cancelar");
+			        case 11: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nMalos Aires y el de tu personaje.","Aceptar","Cancelar");
+			        case 12: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /ME","/ME:\nPara describir acciones de tu personaje. Por ejemplo:\n/me se rasca la cabeza.\n/me saca unos auriculares de su bolsillo.","Aceptar","Cancelar");
+			        case 13: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /DO","/DO:\nPara describir acciones del ambiente, en tercera persona. Por ejemplo:\n/do Se escucha a un gallo cacarear.\n/do Hay una mancha de sangre en el piso.","Aceptar","Cancelar");
 				}
 			}
 			return 1;
@@ -10063,37 +10063,47 @@ CMD:ayudap(playerid, params[])
 	return 1;
 }
 
-CMD:apcarcel(playerid, params[]) {
-	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1) {
-		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1824.38635, -1534.71680, 14.28240)) { // Portón de la calle de Alhambra
-			if(PMBigJailGarajeDoors1[0] == 0) {
+CMD:apcarcel(playerid, params[])
+{
+	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1)
+	{
+		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1824.38635, -1534.71680, 14.28240)) // Portón de la calle de Alhambra
+		{
+			if(PMBigJailGarajeDoors1[0] == 0)
+			{
 			    PMBigJailGarajeDoors1[0] = 1;
 				MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 0.0004, 0.00, 0.00, -107.00);
             	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -107.00);
-			} else {
+			}
+			else
+			{
 			    PMBigJailGarajeDoors1[0] = 0;
 			    MoveObject(PMBigJailGarajeDoors1[1], 1824.38635, -1534.71680, 14.28240, 0.0004, 0.00, 0.00, -17.00);
-            	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -197.00);//
+            	MoveObject(PMBigJailGarajeDoors2[1], 1822.48608, -1540.93701, 14.28240, 0.0004, 0.00, 0.00, -197.00);
 			}
 		}
-		if(IsPlayerInRangeOfPoint(playerid, 10.0, 1752.00281, -1591.24292, 14.29420)) { // Portón de la otra calle
-			if(PMBigJailGarajeDoors3[0] == 0) {
+		else if(IsPlayerInRangeOfPoint(playerid, 10.0, 1752.00281, -1591.24292, 14.29420)) // Portón de la otra calle
+		{
+			if(PMBigJailGarajeDoors3[0] == 0)
+			{
 				PMBigJailGarajeDoors3[0] = 1;
 				MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 0.0004, 0.00, 0.00, 185.00);
  				MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 0.0004, 0.00, 0.00, 185.00);
-			} else {
+			}
+			else
+			{
 				PMBigJailGarajeDoors3[0] = 0;
 				MoveObject(PMBigJailGarajeDoors3[1], 1752.00281, -1591.24292, 14.29420, 0.0004, 0.00, 0.00, 76.00);
-				MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 0.0004, 0.00, 0.00, 256.00);//
+				MoveObject(PMBigJailGarajeDoors4[1], 1756.89319, -1592.47815, 14.29420, 0.0004, 0.00, 0.00, 256.00);
 			}
 		}
 	}
 }
-CMD:apuerta(playerid,params[]) {
-
+CMD:apuerta(playerid,params[])
+{
     // Policía de Malos Aires
-	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1) {
-
+	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid] == 1)
+	{
 		if(IsPlayerInRangeOfPoint(playerid, 4.0, 228.1902, 151.2390, 1003.0037)) {
 			// PM Puerta que da para el interior del edificio izq
 			if(PMHallDoor[0] == 0) {
@@ -14172,8 +14182,6 @@ CMD:verconectados(playerid, params[])
 		}
 	return 1;
 }
-
-// columnas en otros dialogs - notebook, etc. Notebook con dinamic arrays.
 
 public AntecedentesLog(playerid, targetid, antecedentes[])
 {

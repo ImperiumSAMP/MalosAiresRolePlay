@@ -91,7 +91,6 @@ public OnContainerDataLoad(container_id)
 	{
 		cache_get_field_content(0, "MinItemSpace", result); vector_set(container_id, CONTAINER_INDEX_MIN_ITEM_SPACE, strval(result));
 		cache_get_field_content(0, "TotalSpace", result); 	vector_set(container_id, CONTAINER_INDEX_TOTAL_SPACE, strval(result));
-		cache_get_field_content(0, "UsedSpace", result); 	vector_set(container_id, CONTAINER_INDEX_USED_SPACE, strval(result));
 	}
 	return 1;
 }
@@ -103,7 +102,8 @@ public OnContainerSlotsLoad(container_id)
 {
 	new rows,
 		fields,
-		result[32];
+		result[32],
+		item_id;
 
 	cache_get_data(rows, fields);
 
@@ -111,8 +111,10 @@ public OnContainerSlotsLoad(container_id)
 	{
 	    for(new i = 0; i < rows; i++)
 	    {
-			cache_get_field_content(i, "Item", result);
-        	vector_push_back(container_id, strval(result));
+			item_id = cache_get_field_content_int(i, "Item");
+        	vector_push_back(container_id, item_id);
+        	
+        	vector_set(container_id, CONTAINER_INDEX_USED_SPACE, vector_get(container_id, CONTAINER_INDEX_USED_SPACE) + GetItemSpace(item_id));
         	
 			if(GetItemType(strval(result)) == ITEM_CONTAINER)
 			{
@@ -223,12 +225,6 @@ stock Container_AddUsedSpace(id, space)
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 		vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) + space);
-		
-		new query[128];
-
-		format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = %d WHERE container = %d", Container_GetUsedSpace(id), Container_GetSQLID(id));
-		mysql_function_query(dbHandle, query, false, "", "");
-		
 		return 1;
 	}
 
@@ -397,9 +393,6 @@ stock Container_Empty(id)
 			    Container_Fully_Destroy(vector_get(id, i+1), Container_GetSQLID(vector_get(id, i+1))); // Los items CONTAINER, en su parametro guardan la id del vector real de ejecucion de su contenedor
 			}
 		}
-		
-	    format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
-		mysql_function_query(dbHandle, query, false, "", "");
 
 	    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d", vec_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
