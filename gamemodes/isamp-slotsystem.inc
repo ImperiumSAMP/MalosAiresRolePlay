@@ -51,14 +51,6 @@ public OnSlotsInfoDataLoad(type, id) {
 
 	if(rows) {
 	    switch(type) {
-			case SLOT_TYPE_INV: {
-				while(aux < rows) {
-			    	cache_get_field_content(aux, "Slot", result); slot = strval(result);
-					cache_get_field_content(aux, "Item", result); InvInfo[id][slot][Item] = strval(result);
-					cache_get_field_content(aux, "Amount", result); InvInfo[id][slot][Amount] = strval(result);
-					aux ++;
-				}
-			}
 			case SLOT_TYPE_TRUNK: {
 				while(aux < rows) {
 			    	cache_get_field_content(aux, "Slot", result); slot = strval(result);
@@ -89,26 +81,6 @@ stock SaveSlotInfo(type, id, slot)
 
 	switch(type)
 	{
-	    case SLOT_TYPE_INV:
-	    {
-			if(InvInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)
-		 	{
-				format(query, sizeof(query), "INSERT INTO `slots_info` (Type, Id, Slot, Item, Amount) VALUES (%d, %d, %d, %d, %d)",
-					type,
-					PlayerInfo[id][pID],
-					slot,
-					InvInfo[id][slot][Item],
-					InvInfo[id][slot][Amount]
-				);
-			} else // Caso contrario, si tomaron el arma, entonces el registro existia en DB ya que no era vacio, por ende lo borramos
-			    {
-		 	   		format(query, sizeof(query), "DELETE FROM `slots_info` WHERE `Type`= %d AND `Id` = %d AND `Slot` = %d",
-				    	type,
-				    	PlayerInfo[id][pID],
-				    	slot
-					);
-				}
-		}
 	    case SLOT_TYPE_LOCKER:
 	    {
 			if(LockerInfo[id][slot][Item] > 0) // Si el llamado a esta funcion fue porque guardo un arma, guardamos el registro (antes inexistente en db por estar vacio)

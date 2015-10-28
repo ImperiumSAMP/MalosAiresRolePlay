@@ -98,7 +98,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.3c"
+#define GAMEMODE				"MA:RP v1.1.4"
 #define MAP_NAME				"Malos Aires" 									
 #define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
 #define WEBSITE					"malosaires.com.ar"
@@ -1532,7 +1532,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 				PlayerInfo[playerid][pA] = 180.0000;
 				
 				ResetPlayerWantedLevelEx(playerid);
-				ResetAndSaveInv(playerid);
+				Container_Empty_Weapons(PlayerInfo[playerid][pContainerID]);
 				GiveFactionMoney(FAC_GOB, PlayerInfo[playerid][pJailTime]);
 				SaveFactions();
 			}
@@ -2318,7 +2318,6 @@ public OnPlayerDataLoad(playerid)
         gPlayerLogged[playerid] = 1;
 
 		loadPlayerCarKeys(playerid); // Llavero del usuario
-		LoadInvInfo(playerid); // Info de su inventario
 		LoadToysInfo(playerid); // Toys
 		LoadNotebookContacts(playerid); // Carga la agenda del jugador
 
@@ -8719,18 +8718,20 @@ CMD:quitarobjeto(playerid, params[])
 		slot,
 		target;
 
-	if(sscanf(params, "ui", target, slot)) {
+	if(sscanf(params, "ui", target, slot))
+	{
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /quitarobjeto [IDJugador/ParteDelNombre] [Número de slot]");
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Slots posibles: 1.Mano derecha | 2.Mano izquierda | 3.Inventario 0 | 4.Inventario 1 | 5.Espalda");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Slots posibles: 1.Mano derecha | 2.Mano izquierda | 3.Espalda");
 		return 1;
 	}
 
 	if(target != INVALID_PLAYER_ID)
 	{
-	    if(slot > 5 || slot < 1)
+	    if(slot > 3 || slot < 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Slot inválido, los números de slot posibles van del 1 al 5.");
 
-		switch(slot) {
+		switch(slot)
+		{
 		    case 1: { // Mano derecha
    				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto de la mano derecha.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
@@ -8744,19 +8745,7 @@ CMD:quitarobjeto(playerid, params[])
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la mano izquierda.", GetPlayerNameEx(playerid));
 				SetHandItemAndParam(target, HAND_LEFT, 0, 0);
 		    }
-		    case 3: { // Slot 0 del inventario
-  				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto del inventario 0.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-				AdministratorMessage(COLOR_ADMINCMD, string, 2);
-				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 0 del inventario.", GetPlayerNameEx(playerid));
-				SetInvItemAndParam(target, 0, 0, 0);
-		    }
-		    case 4: { // Slot 1 del inventario
-  				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto del inventario 1.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-				AdministratorMessage(COLOR_ADMINCMD, string, 2);
-				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en el slot 1 del inventario.", GetPlayerNameEx(playerid));
-				SetInvItemAndParam(target, 1, 0, 0);
-		    }
-		    case 5: { // Espalda
+		    case 3: { // Espalda
   				format(string, sizeof(string), "[STAFF] el administrador %s le ha retirado a %s el objeto de la espalda.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 				AdministratorMessage(COLOR_ADMINCMD, string, 2);
 				SendFMessage(target, COLOR_LIGHTBLUE, "El administrador %s te ha retirado el objeto que tenías en la espalda.", GetPlayerNameEx(playerid));
@@ -14396,9 +14385,8 @@ CMD:ckearplayer(playerid,params[])
 		PhoneHand[targetid] = 0;
 		SetHandItemAndParam(targetid, HAND_RIGHT, 0, 0);
 		SetHandItemAndParam(targetid, HAND_LEFT, 0, 0);
-		SetInvItemAndParam(targetid, 0, 0, 0);
-		SetInvItemAndParam(targetid, 1, 0, 0);
 		SetBackItemAndParam(targetid, 0, 0);
+		Container_Empty(PlayerInfo[playerid][pContainerID]);
 
 		PlayerInfo[targetid][pJailed] = JAIL_NONE;
 		PlayerInfo[targetid][pJailTime] = 0;
