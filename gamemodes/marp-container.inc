@@ -387,8 +387,10 @@ stock Container_Empty_Weapons(id)
 		{
 		    if(GetItemType(vector_get(id, i)) == ITEM_WEAPON) // Como "i" cae en los items, obtenemos el valor en posicion "i" y nos fijamos
 			{
+			    vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) - GetItemSpace(vector_get(id, i)));
 			    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", vec_sqlid, vector_get(id, i), vector_get(id, i+1)); // Guardamos
-			    vector_remove(id, i); // Remueve item.
+                mysql_function_query(dbHandle, query, false, "", "");
+				vector_remove(id, i); // Remueve item.
 			    vector_remove(id, i); // Al remover item, param cae a la pos de item, por lo tanto borramos la misma.
 			    vec_size = vec_size - 2;
 			    i = i - 2;
