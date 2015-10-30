@@ -4100,8 +4100,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					if(price < 100)
 						price = 100; // Seteamos un mínimo de precio
 					SendFMessage(playerid, COLOR_WHITE, "Costo de renta por hora: $%d.", price);
-					if(GetVehicleMaxTrunkSlots(vehicleid) > 0)
-						SendFMessage(playerid, COLOR_WHITE, "Maletero: %d slots.", GetVehicleMaxTrunkSlots(vehicleid));
+					if(GetVehicleTrunkSpace(vehicleid) > 0)
+						SendFMessage(playerid, COLOR_WHITE, "Maletero: %du.", GetVehicleTrunkSpace(vehicleid));
 					else
 					    SendClientMessage(playerid, COLOR_WHITE, "Maletero: No.");
 					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "(( Para rentar éste vehículo utiliza '/rentar [tiempo] (en horas)'. ))");
@@ -14264,7 +14264,6 @@ CMD:ckearplayer(playerid,params[])
 		newmoney,
 		i,
 		vehicleid,
-		vehicleprice,
 		house,
 		houseincome,
 		bizID,
@@ -14342,18 +14341,20 @@ CMD:ckearplayer(playerid,params[])
 		{
 			for(i=0;i<playerKeyCount[targetid];i++)
 			{
-				vehicleid = playerKeys[targetid][i][ckCarSqlId],
-				vehicleprice = GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]),
-
-				GivePlayerCash(targetid, vehicleprice / 2); // 50% del valor original.
-				ResetVehicle(vehicleid);
-				VehicleInfo[vehicleid][VehType] = VEH_NONE;
-				SetVehicleToRespawn(vehicleid);
-				SaveVehicle(vehicleid);
-				removeKeyFromPlayer(targetid, vehicleid);
-				deleteExtraKeysForCar(vehicleid);
-				VehicleLog(vehicleid, targetid, INVALID_PLAYER_ID, "Vendido por CK", "");
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el vehiculo %s ID %d.", GetVehicleName(vehicleid), vehicleid);
+				vehicleid = playerKeys[targetid][i][ckCarSqlId];
+				
+            	if(playerOwnsCar(targetid, vehicleid))
+				{
+					GivePlayerCash(targetid, GetVehiclePrice(vehicleid, ServerInfo[sVehiclePricePercent]) / 2); // 50% del valor original.
+					ResetVehicle(vehicleid);
+					VehicleInfo[vehicleid][VehType] = VEH_NONE;
+					SetVehicleToRespawn(vehicleid);
+					SaveVehicle(vehicleid);
+					removeKeyFromPlayer(targetid, vehicleid);
+					deleteExtraKeysForCar(vehicleid);
+					VehicleLog(vehicleid, targetid, INVALID_PLAYER_ID, "Vendido por CK", "");
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Vendido el vehiculo %s ID %d.", GetVehicleName(vehicleid), vehicleid);
+				}
 			}
 		}
 

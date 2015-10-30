@@ -92,7 +92,9 @@ Dealerships_LoadData()
 forward OnDealershipDataLoad(dealership);
 public OnDealershipDataLoad(dealership)
 {
-   	new result[128], rows, fields, aux = 0;
+   	new rows,
+	   	fields,
+   		aux = 0;
 
 	cache_get_data(rows, fields);
 
@@ -100,7 +102,7 @@ public OnDealershipDataLoad(dealership)
 	{
 		while(aux < rows)
 	    {
-			cache_get_field_content(aux, "Model", result);		DealershipVehicles[dealership][aux] = strval(result);
+			DealershipVehicles[dealership][aux] = cache_get_field_content_int(aux, "Model");
 			aux ++;
 		}
 	}
@@ -267,13 +269,13 @@ CMD:vercatalogo(playerid, params[])
 	    modelid = DealershipVehicles[dealership][i];
 	    if(modelid != 0)
 	    {
-            if(GetVehicleModelTrunkSlots(modelid) > 0)
+            if(GetVehicleModelTrunkSpace(modelid) > 0)
             {
-        		format(string, sizeof(string), "%s\n%s\t$%d\t%d slots", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSlots(modelid));
+        		format(string, sizeof(string), "%s\n%s\t$%d\t%du", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100), GetVehicleModelTrunkSpace(modelid));
 			}
 			else
 			{
-			    format(string, sizeof(string), "%s\n%s\t$%d\tNo tiene", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
+			    format(string, sizeof(string), "%s\n%s\t$%d\tNo", string, GetVehicleModelName(modelid), GetVehicleModelPrice(modelid, 100));
 			}
 		}
 	}

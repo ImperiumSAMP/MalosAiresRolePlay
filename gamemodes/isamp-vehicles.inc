@@ -488,7 +488,7 @@ GetVehicleMaxTrunkSlots(vehicleid)
 	return CarModels[modelid-400][mTrunkSlots];
 }
 
-GetVehicleModelTrunkSlots(modelid)
+stock GetVehicleModelTrunkSlots(modelid)
 {
 	if(modelid < 400 || modelid > 611)
 		return 0;
