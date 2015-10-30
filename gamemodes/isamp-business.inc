@@ -225,7 +225,7 @@ stock bool:EnterBusiness(playerid)
 	            PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
     		} else
 		    	{
-			    	if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
+			    	if(Business[i][bLocked] == 1 && !AdminDuty[playerid]) {
 						GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
 						return true;
 					}
@@ -277,7 +277,7 @@ stock bool:LeaveBusiness(playerid)
 					DestroySelectionMenu(playerid);
 					CancelSelectTextDraw(playerid);
 				}
-				if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1)
+				if(Business[i][bLocked] == 0 || AdminDuty[playerid])
 				{
 					SetPlayerInterior(playerid, Business[i][bOutsideInt]);
 					SetPlayerVirtualWorld(playerid, 0);

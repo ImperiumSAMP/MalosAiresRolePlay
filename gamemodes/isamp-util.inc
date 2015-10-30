@@ -103,6 +103,7 @@
 #define COLOR_OOC 				0xE0FFFFAA
 #define COLOR_NEWOOC 			0x0080FFAA
 #define COLOR_ADVERTISMENT      0xEEBC00FF
+#define COLOR_ADMINREAD         0x00B400DC
 
 //SKINS
 #define SKINS_M_1    129
@@ -185,7 +186,12 @@ new ServerInfo[sInfo];
 
 new Choice[MAX_PLAYERS],
 	Mobile[MAX_PLAYERS],
-	AdminDuty[MAX_PLAYERS];
+	bool:AdminDuty[MAX_PLAYERS],
+	bool:AdminPMsEnabled[MAX_PLAYERS],
+	bool:AdminWhispersEnabled[MAX_PLAYERS],
+	bool:AdminFactionEnabled[MAX_PLAYERS],
+	bool:AdminSMSEnabled[MAX_PLAYERS],
+	bool:Admin911Enabled[MAX_PLAYERS];
 	
 // Sistema de toggle
 new bool:PhoneEnabled[MAX_PLAYERS],
@@ -195,7 +201,8 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:RadioEnabled[MAX_PLAYERS],
 	bool:FactionEnabled[MAX_PLAYERS],
 	bool:TalkAnimEnabled[MAX_PLAYERS],
-	bool:HudEnabled[MAX_PLAYERS];
+	bool:HudEnabled[MAX_PLAYERS],
+	bool:AdminEnabled[MAX_PLAYERS];
 	
 	// Sistema de streams de radios
 new bool:hearingRadioStream[MAX_PLAYERS];

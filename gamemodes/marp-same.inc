@@ -182,7 +182,7 @@ public UpdatePlayerAdiction()
 {
     foreach(new playerid : Player)
     {
-    	if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != JAIL_OOC && AdminDuty[playerid] != 1) // Si no está AFK ni en Jail OOC
+    	if(!IsPlayerAfk(playerid) && PlayerInfo[playerid][pJailed] != JAIL_OOC && !AdminDuty[playerid]) // Si no está AFK ni en Jail OOC
 		{
 			if(PlayerInfo[playerid][pAdictionPercent] > 0.0)
 			{
