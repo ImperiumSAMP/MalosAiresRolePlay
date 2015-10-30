@@ -1853,6 +1853,9 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 				}
 	 			else if(strcmp(x_info,"radio",true) == 0)
 				{
+					if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una radio!");
+
 					if(RadioEnabled[playerid])
 					{
 					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
@@ -1883,6 +1886,8 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 				}
 		  		else if(strcmp(x_info,"telefono",true) == 0)
 				{
+					if(PlayerInfo[playerid][pPhoneNumber] == 0)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 					if(PhoneEnabled[playerid])
 					{
 					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
@@ -7839,11 +7844,11 @@ CMD:admincmds(playerid, params[]) {
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 5]{C8C8C8} /clima /darlider /desbanear /resetabstinencia");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 10) {
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /gametext /exp10de /afacciones");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /exp10de /afacciones");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 20) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /exit /money /givemoney /gmx /nivelcomando /payday /ppvehiculos /rerollplates");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /darobjeto /setadmin /tod /unknowngametext /agregarmodelo /borrarmodelo /pbayuda /debugayuda");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /darobjeto /setadmin /tod /agregarmodelo /borrarmodelo /pbayuda /debugayuda");
 	}
 	return 1;
 }
@@ -7897,13 +7902,14 @@ CMD:saltartuto(playerid, params[])
 
 CMD:teleayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/up /gotolv /gotosf /gotols /gotopos /gotospawn");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /up /gotolv /gotosf /gotols /gotopos /gotospawn /gotobanco");
 	return 1;
 }
 
 CMD:debugayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/racedebug /cardealerdebug /playercardealerdebug /playerracedebug /playerrobobancodebug /robobancodebug /inputsdebug");
+	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /playercardealerdebug /playerracedebug /playerrobobancodebug /robobancodebug /inputsdebug /racedebug /cardealerdebug");
+	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getpvarint /setpvarint /applyanimation /playaudiostreamforplayer /stopaudiostreamforplayer");
 	return 1;
 }
 
@@ -8660,7 +8666,7 @@ CMD:admins(playerid, params[])
 	if(IsPlayerConnected(playerid) && PlayerInfo[playerid][pAdmin] > 1)
 	{
 		new count = 0;
-		SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES CONECTADOS]===================");
+		SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES CONECTADOS]======================");
 		foreach(new i : Player)
 		{
 			if(PlayerInfo[i][pAdmin] >= 1 && !AdminEnabled[i])
@@ -8707,7 +8713,10 @@ CMD:sinfo(playerid, params[])
 
 CMD:stats(playerid, params[])
 {
-	ShowStats(playerid, playerid, false);
+	if(PlayerInfo[playerid][pAdmin] < 2)
+		ShowStats(playerid, playerid, false);
+	else
+	    ShowStats(playerid, playerid, true);
 	return 1;
 }
 
