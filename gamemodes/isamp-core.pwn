@@ -2017,13 +2017,13 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 				SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES CONECTADOS]===================");
 				foreach(new i : Player)
 				{
-				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 1)
+				    if(PlayerInfo[i][pAdmin] >= 1 && AdminEnabled[i])
 					{
 						format(string, 256, "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {FF0000}deshabilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 						SendClientMessage(playerid, COLOR_WHITE, string);
 						count++;
 					}
-				    if(PlayerInfo[i][pAdmin] >= 1 && GetPVarInt(i, "adminmsgs") == 0)
+				    if(PlayerInfo[i][pAdmin] >= 1 && !AdminEnabled[i])
 					{
 						format(string, 256, "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {3CB371}habilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 						SendClientMessage(playerid, COLOR_WHITE, string);
@@ -13467,7 +13467,7 @@ CMD:vercanal(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal de mensajería privada activado.");
 		}
 	}
-	else if(AdminWhispersEnabled[playerid])
+	else if(strcmp(param, "susurros", true) == 0)
 	{
 		if(AdminWhispersEnabled[playerid])
 		{
@@ -13513,6 +13513,7 @@ CMD:vercanal(playerid, params[])
 			Admin911Enabled[playerid] = false;
 			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 desactivado.");
 		}
+		else
 		{
             Admin911Enabled[playerid] = true;
 			SendClientMessage(playerid, COLOR_GREEN, "Lector de las llamadas al 911 activado.");
@@ -13529,7 +13530,7 @@ CMD:vercanal(playerid, params[])
 			Admin911Enabled[playerid] = false;
 			SendClientMessage(playerid, COLOR_GREEN, "Todos los lectores administrativos fueron desactivados (MPS-Susurros-Facción-SMS-911)");
 		}
-		if(AdminPMsEnabled[playerid] && AdminWhispersEnabled[playerid] && AdminFactionEnabled[playerid] && AdminSMSEnabled[playerid] && Admin911Enabled[playerid])
+		else
 		{
 			AdminPMsEnabled[playerid] = true;
 			AdminWhispersEnabled[playerid] = true;
