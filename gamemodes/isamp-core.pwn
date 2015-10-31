@@ -3710,6 +3710,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT)
 	{
+		ClearAnimations(playerid);
+		TogglePlayerControllable(playerid, 1);
+		
 		if(vehicleModelType != VTYPE_BMX)
 		{
 			KillTimer(pSpeedoTimer[playerid]); // Como las id de timer nunca se repiten, por si las dudas, borramos cualquier timer anterior (si existiese y reemplazamos la id, queda andando para siempre)
