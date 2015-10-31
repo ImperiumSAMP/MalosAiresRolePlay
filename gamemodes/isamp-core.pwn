@@ -127,6 +127,18 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_POLICE_ARREST2_Y	2005.0393
 #define POS_POLICE_ARREST2_Z	1992.4028
 
+#define POS_POLICE_FREEDOM_X	229.01
+#define POS_POLICE_FREEDOM_Y	151.30
+#define POS_POLICE_FREEDOM_Z	1003.02
+
+#define POS_PRISON_FREEDOM_X	1799.50
+#define POS_PRISON_FREEDOM_Y	-1577.04
+#define POS_PRISON_FREEDOM_Z	14.06
+
+#define POS_SPAWN_X				1685.7615
+#define POS_SPAWN_Y             -2241.1375
+#define POS_SPAWN_Z             13.5469
+
 #define POS_BM1_X               2659.6992
 #define POS_BM1_Y               -2056.4814
 #define POS_BM1_Z               13.4214
@@ -1701,7 +1713,7 @@ public OnPlayerText(playerid, text[])
 	        if(PlayerInfo[i][pJob] == JOB_TAXI && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
 			{
 	            SendClientMessage(i,COLOR_GREEN,"Se ha recibido un mensaje:");
-				format(string,sizeof(string),"Voz al telefono: %s", text);
+				format(string,sizeof(string),"Voz al teléfono: %s", text);
 				SendClientMessage(i,COLOR_WHITE,string);
 				SendClientMessage(i,COLOR_WHITE,"Use /aceptar taxi para aceptar la llamada.");
 				SendClientMessage(playerid,COLOR_WHITE,"Telefonista: enviaremos un vehículo a su posición, por favor aguarde.");
@@ -6062,10 +6074,10 @@ public JailTimer()
 			        case JAIL_IC_PMA:
 					{
 			            PlayerInfo[i][pJailed] = JAIL_NONE;
-						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Detención]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
+						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Detención]{C8C8C8} has finalizado tu condena y estás en libertad, puedes retirarte.");
 						SetPlayerVirtualWorld(i, Building[2][blInsideWorld]);
 					    SetPlayerInterior(i, 3);
-						SetPlayerPos(i, 229.01, 151.30, 1003.02);
+						SetPlayerPos(i, POS_POLICE_FREEDOM_X, POS_POLICE_FREEDOM_Y, POS_POLICE_FREEDOM_Z);
 						SetPlayerFacingAngle(i, 270.0000);
 						TogglePlayerControllable(i, true);
 		  			}
@@ -6075,11 +6087,7 @@ public JailTimer()
 			            PlayerInfo[i][pJailed] = JAIL_NONE;
 						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Castigo OOC]:{C8C8C8} has finalizado tu castigo, puedes irte ahora.");
 					    SetPlayerInterior(i, 0);
-					    PlayerInfo[i][pA] = 176.6281;
-						PlayerInfo[i][pX] = 1685.7615;
-						PlayerInfo[i][pY] = -2241.1375;
-						PlayerInfo[i][pZ] = 13.5469;
-						SetPlayerPos(i, 1685.7615, -2241.1375, 13.5469);
+						SetPlayerPos(i, POS_SPAWN_X, POS_SPAWN_Y, POS_SPAWN_Z);
 						SetPlayerFacingAngle(i, 176.6281);
 						SetPlayerHealthEx(i, 100.0);
 						TogglePlayerControllable(i, true);
@@ -6087,11 +6095,11 @@ public JailTimer()
 			        case JAIL_IC_PRISON:
 					{
 			            PlayerInfo[i][pJailed] = JAIL_NONE;
-						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} has finalizado tu condena, puedes retirarte.");
+						SendClientMessage(i, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]{C8C8C8} has finalizado tu condena y estás en libertad, puedes retirarte.");
 						SetPlayerVirtualWorld(i, 0);
-					    SetPlayerInterior(i, 2);
-						SetPlayerPos(i, 2543.43, -1315.38, 1034.50);
-						SetPlayerFacingAngle(i, 0.0000);
+					    SetPlayerInterior(i, 0);
+						SetPlayerPos(i, POS_PRISON_FREEDOM_X, POS_PRISON_FREEDOM_Y, POS_PRISON_FREEDOM_Z);
+						SetPlayerFacingAngle(i, 285.0000);
 						TogglePlayerControllable(i, true);
 		  			}
 				}
@@ -7905,9 +7913,9 @@ CMD:gotols(playerid, params[]) {
 CMD:gotospawn(playerid, params[]) {
 
 	if(GetPlayerState(playerid) == 2) {
-		SetVehiclePos(GetPlayerVehicleID(playerid), 1681.5281,-2256.2827,13.3512);
+		SetVehiclePos(GetPlayerVehicleID(playerid), POS_SPAWN_X, POS_SPAWN_Y, POS_SPAWN_Z);
 	}else {
-		SetPlayerPos(playerid, 1682.9645, -2244.8215, 13.5445);
+		SetPlayerPos(playerid, POS_SPAWN_X, POS_SPAWN_Y, POS_SPAWN_Z);
 	}
 	SetPlayerInterior(playerid, 0);
 	SetPlayerVirtualWorld(playerid, 0);
@@ -13967,10 +13975,10 @@ CMD:liberar(playerid, params[])
     
 	PlayerInfo[targetID][pJailed] = JAIL_NONE;
 	PlayerInfo[targetID][pJailTime] = 0;
-    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]:{C8C8C8} por orden de un juez quedas en libertad.");
+    SendClientMessage(targetID, COLOR_LIGHTYELLOW2,"{878EE7}[Prisión]{C8C8C8} por orden de un juez quedas en libertad.");
 	SetPlayerVirtualWorld(targetID, Building[2][blInsideWorld]);
 	SetPlayerInterior(targetID, 3);
-	SetPlayerPos(targetID, 229.01, 151.30, 1003.02);
+	SetPlayerPos(targetID, POS_POLICE_FREEDOM_X, POS_POLICE_FREEDOM_Y, POS_POLICE_FREEDOM_Z);
 	SetPlayerFacingAngle(targetID, 270.0000);
 	TogglePlayerControllable(targetID, true);
 	return 1;
