@@ -3309,6 +3309,7 @@ public fuelCar(playerid, refillprice, refillamount, refilltype)
 			    SendClientMessage(playerid, COLOR_WHITE, "{FF4600}[Error]:{C8C8C8} No tienes un bidón de combustible en tu mano derecha.");
 				TogglePlayerControllable(playerid, true);
 				fillingFuel[playerid] = false;
+				return 1;
 			}
 	    }
 	GivePlayerCash(playerid,-refillprice);
@@ -7796,8 +7797,9 @@ CMD:teleayuda(playerid, params[])
 
 CMD:debugayuda(playerid, params[])
 {
-	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /playercardealerdebug /playerracedebug /playerrobobancodebug /robobancodebug /inputsdebug /racedebug /cardealerdebug");
-	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getpvarint /setpvarint /applyanimation /playaudiostreamforplayer /stopaudiostreamforplayer");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /playercardealerdebug /playerracedebug /playerrobobancodebug");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /robobancodebug /inputsdebug /racedebug /cardealerdebug");
+	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getpvarint /setpvarint /applyanimation /playaudiostreamforplayer /stopaudiostreamforplayer /getplayervehicleseat");
 	return 1;
 }
 
