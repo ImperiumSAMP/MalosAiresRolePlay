@@ -3305,7 +3305,11 @@ public fuelCar(playerid, refillprice, refillamount, refilltype)
 		    	SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
 			}
 			else
-			    return SendClientMessage(playerid, COLOR_WHITE, "¡No tienes un bidón de combustible en tu mano derecha!");
+			{
+			    SendClientMessage(playerid, COLOR_WHITE, "{FF4600}[Error]:{C8C8C8} No tienes un bidón de combustible en tu mano derecha.");
+				TogglePlayerControllable(playerid, true);
+				fillingFuel[playerid] = false;
+			}
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
