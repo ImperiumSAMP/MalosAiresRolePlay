@@ -1774,148 +1774,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 
 	if(gPlayerLogged[playerid] == 1)
 	{
-		//==========================================================================================================================
-
-	//--------------------------------------------------------------------------------------------------------------------------
-	//=====================================================================================================================
-		if(strcmp(cmd,"/toggle",true)==0)
-		{
-		 	if(IsPlayerConnected(playerid))
-		 	{
-				new x_info[128];
-				x_info = strtok(cmdtext, idx);
-				if(!strlen(x_info))
-				{
-					if(PlayerInfo[playerid][pAdmin] < 2)
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud]");
-					else
-						SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /toggle [mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs]");
-					return 1;
-				}
-		  		else if(strcmp(x_info,"mps",true) == 0)
-				{
-					if(PMsEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes privados.");
-					    PMsEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
-					    PMsEnabled[playerid] = true;
-					}
-				}
-	 	  		else if(strcmp(x_info,"nicks",true) == 0)
-				{
-					if(NicksEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás los nicks de los demas jugadores sobre sus cabezas.");
-					    NicksEnabled[playerid] = false;
-					    foreach(new i : Player)
-					    	ShowPlayerNameTagForPlayer(playerid, i, false);
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
-					    NicksEnabled[playerid] = true;
-					    foreach(new i : Player)
-					    {
-					        if(usingMask[i] == false || PlayerInfo[playerid][pAdmin])
-					    		ShowPlayerNameTagForPlayer(playerid, i, true);
-						}
-					}
-				}
-		  		else if(strcmp(x_info,"noticias",true) == 0)
-				{
-					if(NewsEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás noticias de CTR-MAN.");
-					    NewsEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás noticias de CTR-MAN.");
-					    NewsEnabled[playerid] = true;
-					}
-				}
-	 			else if(strcmp(x_info,"faccion",true) == 0)
-				{
-					if(FactionEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes OOC de tu facción.");
-					    FactionEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
-					    FactionEnabled[playerid] = true;
-					}
-				}
-	 			else if(strcmp(x_info,"radio",true) == 0)
-				{
-					if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
-						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una radio!");
-
-					if(RadioEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
-					    RadioEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
-					    RadioEnabled[playerid] = true;
-					}
-				}
-	 			else if(strcmp(x_info,"hud",true) == 0)
-				{
-					if(HudEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás las interfaces gráficas del combustible, velocidad, hambre, etc.");
-					    HudEnabled[playerid] = false;
-					    HidePlayerSpeedo(playerid);
-						HidePlayerBasicNeeds(playerid);
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás nuevamente las interfaces gráficas del combustible, velocidad, hambre, etc.");
-					    HudEnabled[playerid] = true;
-					    ShowPlayerSpeedo(playerid);
-					    ShowPlayerBasicNeeds(playerid);
-					}
-				}
-		  		else if(strcmp(x_info,"telefono",true) == 0)
-				{
-					if(PlayerInfo[playerid][pPhoneNumber] == 0)
-						return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
-					if(PhoneEnabled[playerid])
-					{
-					    SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
-			            PhoneEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
-					    PhoneEnabled[playerid] = true;
-					}
-				}
-		  		else if(strcmp(x_info,"adminmsgs",true) == 0 && PlayerInfo[playerid][pAdmin] > 1)
-				{
-					if(AdminEnabled[playerid])
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Siempre recuerda volver a activarlo, por la vital importancia de estos mensajes.");
-			            AdminEnabled[playerid] = false;
-					}
-					else
-					{
-						SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
-					    AdminEnabled[playerid] = true;
-					}
-				}
-			}
-			return 1;
-		}
 	 	if(strcmp(cmd, "/id", true) == 0)
 		{
 		    if(IsPlayerConnected(playerid))
@@ -8695,6 +8553,146 @@ CMD:do(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /do [acción]");
 		
 	PlayerDoMessage(playerid, 15.0, cmdtext);
+	return 1;
+}
+
+CMD:toggle(playerid, params[])
+{
+	new param[12];
+
+	if(sscanf(params, "s[12]", param))
+	{
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis] {C8C8C8} /toggle [opción]");
+	    if(PlayerInfo[playerid][pAdmin] > 1)
+	    	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs");
+		else
+		    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud");
+	}
+	else if(strcmp(param, "mps", true) == 0)
+	{
+		if(PMsEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes privados.");
+			PMsEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes privados.");
+			PMsEnabled[playerid] = true;
+		}
+	}
+	else if(strcmp(param, "telefono", true) == 0)
+	{
+		if(PlayerInfo[playerid][pPhoneNumber] == 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
+
+		if(PhoneEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu teléfono.");
+			PhoneEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu teléfono.");
+			PhoneEnabled[playerid] = true;
+		}
+	}
+	else if(strcmp(param, "noticias", true) == 0)
+	{
+		if(NewsEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás noticias de CTR-MAN.");
+			NewsEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás noticias de CTR-MAN.");
+			NewsEnabled[playerid] = true;
+		}
+	}
+	else if(strcmp(param, "faccion", true) == 0)
+	{
+		if(FactionEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no recibirás mensajes OOC de tu facción.");
+			FactionEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora recibirás mensajes OOC de tu facción.");
+			FactionEnabled[playerid] = true;
+		}
+	}
+	else if(strcmp(param, "radio", true) == 0)
+	{
+		if(SearchHandsForItem(playerid, ITEM_ID_RADIO) == -1 && Container_SearchItem(PlayerInfo[playerid][pContainerID], ITEM_ID_RADIO) == -1)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes una radio!");
+
+		if(RadioEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has apagado tu radio.");
+			RadioEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has encendido tu radio.");
+			RadioEnabled[playerid] = true;
+		}
+	}
+	else if(strcmp(param, "nicks", true) == 0)
+	{
+		if(NicksEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás los nicks de los demas jugadores sobre sus cabezas.");
+			NicksEnabled[playerid] = false;
+			foreach(new i : Player)
+				ShowPlayerNameTagForPlayer(playerid, i, false);
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora veras los nicks de los demas jugadores sobre sus cabezas.");
+			NicksEnabled[playerid] = true;
+			foreach(new i : Player)
+			{
+				if(usingMask[i] == false || PlayerInfo[playerid][pAdmin])
+				ShowPlayerNameTagForPlayer(playerid, i, true);
+			}
+		}
+	}
+	else if(strcmp(param, "hud", true) == 0)
+	{
+		if(HudEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ya no verás las interfaces gráficas del combustible, velocidad, hambre, etc.");
+			HudEnabled[playerid] = false;
+			HidePlayerSpeedo(playerid);
+			HidePlayerBasicNeeds(playerid);
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Ahora verás nuevamente las interfaces gráficas del combustible, velocidad, hambre, etc.");
+			HudEnabled[playerid] = true;
+			ShowPlayerSpeedo(playerid);
+			ShowPlayerBasicNeeds(playerid);
+		}
+	}
+	else if(strcmp(param, "adminmsgs", true) == 0)
+	{
+	    if(PlayerInfo[playerid][pAdmin] < 2)
+	        return 1;
+
+		if(AdminEnabled[playerid])
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has deshabilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Siempre recuerda volver a activarlo, por la vital importancia de estos mensajes.");
+			AdminEnabled[playerid] = false;
+		}
+		else
+		{
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2, "Has habilitado los mensajes administrativos (tanto el chat como los mensajes automáticos).");
+			AdminEnabled[playerid] = true;
+		}
+	}
 	return 1;
 }
 
