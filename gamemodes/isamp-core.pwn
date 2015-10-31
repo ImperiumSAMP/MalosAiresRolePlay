@@ -3676,6 +3676,15 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	
 	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT)
 	{
+	    new vehicleseat;
+	    vehicleseat = GetPlayerVehicleSeat(playerid);
+		ClearAnimations(playerid);
+		TogglePlayerControllable(playerid, 1);
+		if(vehicleseat == 128)
+		    return 1;
+		else
+			PutPlayerInVehicle(playerid, vehicleid, vehicleseat);
+		
 		if(VehicleInfo[vehicleid][VehJob] == JOB_TAXI && TransportDriver[playerid] == 999)
 		{
 	        foreach(new i : Player)
