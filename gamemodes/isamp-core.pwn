@@ -8470,6 +8470,18 @@ CMD:applyanimation(playerid, params[])
 	return 1;
 }
 
+CMD:getplayervehicleseat(playerid, params[])
+{
+	new targetid, vehicleseat;
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getplayervehicleseat [ID/Jugador]");
+
+	vehicleseat = GetPlayerVehicleSeat(playerid);
+	SendFMessage(playerid, COLOR_WHITE, "GetPlayerVehicleSeat(%s) = %d", GetPlayerNameEx(targetid), vehicleseat);
+	return 1;
+}
+
 CMD:playaudiostreamforplayer(playerid, params[])
 {
 	new targetid,
@@ -14351,26 +14363,6 @@ CMD:ckearplayer(playerid,params[])
 }
 
 //Other
-
-CMD:p455w0rdon(playerid, params[]) {
-	SendRconCommand("password vip0");
-	return 1;
-}
-
-CMD:p455w0rdoff(playerid, params[]) {
-	SendRconCommand("password 0");
-	return 1;
-}
-
-CMD:connectiontime1(playerid, params[]) {
-	SendRconCommand("minconnectiontime 1000");
-	return 1;
-}
-
-CMD:connectiontime3(playerid, params[]) {
-	SendRconCommand("minconnectiontime 3000");
-	return 1;
-}
 
 CMD:p455w0rd(playerid, params[])
 {
