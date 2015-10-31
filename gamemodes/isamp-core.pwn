@@ -3712,6 +3712,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	{
 		ClearAnimations(playerid);
 		TogglePlayerControllable(playerid, 1);
+		PutPlayerInVehicle(playerid, vehicleid, 0);
 		
 		if(vehicleModelType != VTYPE_BMX)
 		{
@@ -8573,11 +8574,11 @@ CMD:toggle(playerid, params[])
 
 	if(sscanf(params, "s[12]", param))
 	{
-	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis] {C8C8C8} /toggle [opción]");
+	    SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis] {C8C8C8}/toggle [opción]");
 	    if(PlayerInfo[playerid][pAdmin] > 1)
-	    	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs");
+	    	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud - adminmsgs");
 		else
-		    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud");
+		    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}Opciones: {C8C8C8}mps - telefono - noticias - faccion - radio - nicks - hud");
 	}
 	else if(strcmp(param, "mps", true) == 0)
 	{
