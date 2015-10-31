@@ -3299,8 +3299,13 @@ public fuelCar(playerid, refillprice, refillamount, refilltype)
 	} else
 		if(refilltype == 2)
 		{
-		    SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
-		    SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
+			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BIDON)
+			{
+		    	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
+		    	SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
+			}
+			else
+			    return SendClientMessage(playerid, COLOR_WHITE, "¡No tienes un bidón de combustible en tu mano derecha!");
 	    }
 	GivePlayerCash(playerid,-refillprice);
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
@@ -6373,19 +6378,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 	// Puertas-barreras.
 	if((IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleSeat(playerid) == 0 && newkeys & KEY_CROUCH) || newkeys & KEY_SECONDARY_ATTACK) {
-        if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
+        if(PlayerInfo[playerid][pFaction] == FAC_MAN || AdminDuty[playerid]) {
 	    	if(PlayerToPoint(10.0, playerid, 778.88, -1329.78, 13.54)) {
 	            MoveObject(MANGate, 781.57, -1329.41, 13.341, 0.004, 0.00, 360.00, 0.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", MANGate);
 	        }
 	    } else
-		if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		if(PlayerInfo[playerid][pFaction] == FAC_MECH || AdminDuty[playerid]) {
 	    	if(PlayerToPoint(10.0, playerid, 2498.66357, -1514.45837, 23.01290)) {
 	            MoveObject(TMMAGate, 2507.5136, -1514.4584, 23.0129, 3.0, 0.00, 0.00, 0.00);
 	            SetTimerEx("CloseGate", 4000, false, "i", TMMAGate);
 	        }
 	    } else
-	    if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_PMA || AdminDuty[playerid]) {
 	        if(PlayerToPoint(10.0, playerid, 1544.69, -1630.79, 13.10)) {
       			if(PlayerInfo[playerid][pRank] == 10)
 		    		return 1;
@@ -6405,19 +6410,19 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	            SetTimerEx("CloseGate", 6000, false, "i", PMPrisonGate);
 	        }
 	    } else
-	    if(PlayerInfo[playerid][pFaction] == FAC_HOSP) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_HOSP || AdminDuty[playerid]) {
 	        if(PlayerToPoint(10.0, playerid, 1143.42, -1384.82, 13.79)) {
 	            MoveObject(HOSPGate,  1147.03149, -1384.87317, 13.46000, 0.0001, 0.00000, 0.00000, 0.00000);
 	            SetTimerEx("CloseGate", 4000, false, "i", HOSPGate);
 	        }
 	    } else
-		if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_1) {
+		if(PlayerInfo[playerid][pFaction] == FAC_FREE_ILLEGAL_MAF_1 || AdminDuty[playerid]) {
 	        if(PlayerToPoint(10.0, playerid, 263.70, -1332.88, 53.43)) {
 	            MoveObject(FORZGate,  257.1657, -1338.4166, 51.3975, 2, 0.0000, 0.0000, 35.8200);
 	            SetTimerEx("CloseGate", 6000, false, "i", FORZGate);
 	        }
 		} else
-		if(PlayerInfo[playerid][pFaction] == FAC_GOB && PlayerInfo[playerid][pRank] < 5) {
+		if((PlayerInfo[playerid][pFaction] == FAC_GOB && PlayerInfo[playerid][pRank] < 5) || AdminDuty[playerid]) {
 	        if(PlayerToPoint(10.0, playerid, 1534.54236, -1451.39893, 14.45500)) {
 	            MoveObject(GOBGate,  1545.50000, -1451.39893, 14.45500, 3.0, 0.0000, 0.0000, 0.0000);
 	            SetTimerEx("CloseGate", 6000, false, "i", GOBGate);
@@ -8477,7 +8482,7 @@ CMD:getplayervehicleseat(playerid, params[])
 	if(sscanf(params, "u", targetid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getplayervehicleseat [ID/Jugador]");
 
-	vehicleseat = GetPlayerVehicleSeat(playerid);
+	vehicleseat = GetPlayerVehicleSeat(targetid);
 	SendFMessage(playerid, COLOR_WHITE, "GetPlayerVehicleSeat(%s) = %d", GetPlayerNameEx(targetid), vehicleseat);
 	return 1;
 }
