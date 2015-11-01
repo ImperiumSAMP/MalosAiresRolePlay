@@ -6627,10 +6627,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 				PlayerTextDrawHide(playerid, RegTDOrigin[playerid]);
 				PlayerTextDrawHide(playerid, RegTDArrow[playerid]);
 				PlayerInfo[playerid][pRegStep] = 0;
-				PlayerInfo[playerid][pA] = 176.6281;
-				PlayerInfo[playerid][pX] = 1685.7615;
-				PlayerInfo[playerid][pY] = -2241.1375;
-				PlayerInfo[playerid][pZ] = 13.5469;
+				PlayerInfo[playerid][pA] = 357.796112; 
+				PlayerInfo[playerid][pX] = 1480.666137;
+				PlayerInfo[playerid][pY] = -1768.692382;
+				PlayerInfo[playerid][pZ] = 18.795755;
 				PlayerInfo[playerid][pInterior] = 0;
 				PlayerInfo[playerid][pVirtualWorld] = 0;
 
