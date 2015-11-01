@@ -271,7 +271,7 @@ CMD:pbreiniciar(playerid, params[])
 	{
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
-			SendClientMessage(playerid, COLOR_RED, "{878EE7}[INFO]{C8C8C8} El paintball se ha reiniciado ya que uno de los dos equipos ganó, vuelve a tu base para volver a jugar.");
+			SendClientMessage(i, COLOR_RED, "{878EE7}[INFO]{C8C8C8} El paintball se ha reiniciado ya que uno de los dos equipos ganó, vuelve a tu base para volver a jugar.");
 			TogglePlayerControllable(i, true);
 		}
 	}
