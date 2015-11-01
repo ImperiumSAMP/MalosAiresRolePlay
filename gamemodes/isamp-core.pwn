@@ -170,8 +170,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_GUIDE               10018
 #define DLG_247                 10019
 #define DLG_CAMARAS_POLICIA     10024
-// #define DLG_BIZ_HARD         10028
-// #define DLG_BIZ_ACCESS       10029
 #define DLG_DYING		    	10030
 #define DLG_POLICE_FINE	    	10039
 
@@ -7343,20 +7341,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			}
 			return 1;
         }
-        case DLG_BIZ_ACCESS:
-        {
-            if(response)
-            	OnPlayerBuyAccessDialog(playerid, listitem);
-            TogglePlayerControllable(playerid, true);
-            return 1;
-		}
-        case DLG_BIZ_HARD:
-        {
-            if(response)
-            	OnPlayerBuyHardDialog(playerid, listitem);
-            TogglePlayerControllable(playerid, true);
-            return 1;
-		}
 		case DLG_DYING:
 		{
 			if(response)
@@ -8179,25 +8163,17 @@ CMD:darlider(playerid, params[])
 
 //=========================COMANDOS VARIOS DE ADMIN=============================
 
-CMD:gmx(playerid, params[]) {
-	new
-		Float:x,
-		Float:y,
-		Float:z,
-		Float:a;
-
-	foreach(new i : Player) {
+CMD:gmx(playerid, params[])
+{
+	foreach(new i : Player)
+	{
   		DisablePlayerCheckpoint(i);
-		SetPlayerCameraPos(i,1460.0, -1324.0, 287.2);
-		SetPlayerCameraLookAt(i,1374.5, -1291.1, 239.0, 1);
-        GetPlayerPos(i,x,y,z);
-        GetPlayerFacingAngle(i, a);
-	    PlayerInfo[i][pX] = x;
-		PlayerInfo[i][pY] = y;
-		PlayerInfo[i][pZ] = z;
+		SetPlayerCameraPos(i, 1460.0, -1324.0, 287.2);
+		SetPlayerCameraLookAt(i, 1374.5, -1291.1, 239.0, 1);
+        GetPlayerPos(i, PlayerInfo[i][pX], PlayerInfo[i][pY], PlayerInfo[i][pZ]);
+        GetPlayerFacingAngle(i, PlayerInfo[i][pA]);
 		PlayerInfo[i][pInterior] = GetPlayerInterior(i);
 		PlayerInfo[i][pVirtualWorld] = GetPlayerVirtualWorld(i);
-		PlayerInfo[i][pA] = a;
 		SaveAccount(i);
 		gPlayerLogged[i] = 0;
 	}
@@ -8212,25 +8188,17 @@ CMD:gmx(playerid, params[]) {
 	return 1;
 }
 
-CMD:exit(playerid, params[]) {
-	new
-		Float:x,
-		Float:y,
-		Float:z,
-		Float:a;
-
-	foreach(new i : Player) {
+CMD:exit(playerid, params[])
+{
+	foreach(new i : Player)
+	{
   		DisablePlayerCheckpoint(i);
-		SetPlayerCameraPos(i,1460.0, -1324.0, 287.2);
-		SetPlayerCameraLookAt(i,1374.5, -1291.1, 239.0, 1);
-        GetPlayerPos(i,x,y,z);
-        GetPlayerFacingAngle(i, a);
-	    PlayerInfo[i][pX] = x;
-		PlayerInfo[i][pY] = y;
-		PlayerInfo[i][pZ] = z;
+		SetPlayerCameraPos(i, 1460.0, -1324.0, 287.2);
+		SetPlayerCameraLookAt(i, 1374.5, -1291.1, 239.0, 1);
+        GetPlayerPos(i, PlayerInfo[i][pX], PlayerInfo[i][pY], PlayerInfo[i][pZ]);
+        GetPlayerFacingAngle(i, PlayerInfo[i][pA]);
 		PlayerInfo[i][pInterior] = GetPlayerInterior(i);
 		PlayerInfo[i][pVirtualWorld] = GetPlayerVirtualWorld(i);
-		PlayerInfo[i][pA] = a;
 		SaveAccount(i);
 		gPlayerLogged[i] = 0;
 	}
