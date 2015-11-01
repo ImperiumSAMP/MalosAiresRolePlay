@@ -58,7 +58,7 @@ CMD:pbcomenzar(playerid, params[])
 		if(GetPVarInt(i, "GrupoPaintball") > 0)
 		{
 			GameTextForPlayer(i, "YA!!!", 7000, 3);
-			SendClientMessage(playerid, COLOR_RED, "{878EE7}[INFO]{C8C8C8} ¡El paintball comenzó! En caso de que te descalifiquen deberás regresar a tu base y volver a tomar tu arma.");
+			SendClientMessage(playerid, COLOR_RED, "{878EE7}[INFO]{C8C8C8} ¡El paintball comenzó! En caso de que te descalifiquen deberás esperar a que uno de los dos equipos gane para volver a jugar.");
 			SetHandItemAndParam(i, HAND_RIGHT, 0, 0);
 			PhoneHand[i] = 0;
 			SetPlayerHealthEx(i, 100);
@@ -184,7 +184,7 @@ CMD:pbreset(playerid, params[])
 
 CMD:pbayuda(playerid, params[])
 {
-	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[LVL 20]{C8C8C8} /pbcrear - /pbmaxplayers - /pbinvitar - /pbcomenzar - /pbinfo - /pbplayers - /pbreset - /pbskin - /gotopb");
+	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[LVL 20]{C8C8C8} /pbcrear - /pbmaxplayers - /pbinvitar - /pbcomenzar - /pbinfo - /pbplayers - /pbreset - /pbskin - /gotopb - /pbreiniciar");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para iniciar un evento de Paintball deberás, por empezar, crearlo con el comando /pbcrear");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Una vez creado el evento, configura la cantidad máxima de jugadores por equipo e invita a los usuarios.");
 	SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Para comenzar con el evento, usa el comando /pbcomenzar. El evento permanecerá activo hasta que lo termines con /pbreset.");
@@ -265,6 +265,17 @@ CMD:gotopb(playerid, params[])
 	return 1;
 }
 	
+CMD:pbreiniciar(playerid, params[])
+{
+	foreach(new i : Player) 
+	{
+		if(GetPVarInt(i, "GrupoPaintball") > 0)
+		{
+			SendClientMessage(playerid, COLOR_RED, "{878EE7}[INFO]{C8C8C8} El paintball se ha reiniciado ya que uno de los dos equipos ganó, vuelve a tu base para volver a jugar.");
+			TogglePlayerControllable(i, true);
+		}
+	}
+}
 	
 	
 	
