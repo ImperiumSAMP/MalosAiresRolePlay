@@ -367,3 +367,4 @@ Dialog:Dlg_Show_Item_Container(playerid, response, listitem, inputtext[])
 	}
 	return 1;
 }
+
