@@ -301,6 +301,7 @@ new
 	// Sistema de apuestas en casino
 	bool:isBetingRoulette[MAX_PLAYERS],
 	bool:isBetingFortune[MAX_PLAYERS],
+	bool:isBetingTragamonedas[MAX_PLAYERS],
 	
 	// Sistema de entrevistas para CTR-MAN
 	InterviewOffer[MAX_PLAYERS],
@@ -860,6 +861,7 @@ public ResetStats(playerid)
 	/* Sistema de casino */
 	isBetingRoulette[playerid] = false;
 	isBetingFortune[playerid] = false;
+	isBetingTragamonedas[playerid] = false;
 	
 	/* Sistema de hambre y sed */
     PlayerInfo[playerid][pThirst] = 100;
@@ -12151,11 +12153,12 @@ CMD:dado(playerid, params[])
 
 //=========================NEGOCIOS TIPO CASINO=================================
 
-#define ROULETTE_COLOR_RED    	1
-#define ROULETTE_COLOR_BLACK    2
-#define ROULETTE_COLOR_GREEN    3
-#define CASINO_GAME_ROULETTE    1
-#define CASINO_GAME_FORTUNE     2
+#define ROULETTE_COLOR_RED    	  1
+#define ROULETTE_COLOR_BLACK      2
+#define ROULETTE_COLOR_GREEN      3
+#define CASINO_GAME_ROULETTE      1
+#define CASINO_GAME_FORTUNE       2
+#define CASINO_GAME_TRAGAMONEDAS  3
 
 new rouletteData[37] = {
 	3,1,2,1,2,
@@ -12192,14 +12195,101 @@ public CasinoBetEnabled(playerid, game)
 		case CASINO_GAME_FORTUNE:
 		    if(isBetingFortune[playerid])
 	    		isBetingFortune[playerid] = false;
+		case CASINO_GAME_TRAGAMONEDAS:
+			if(isBetingTragamonedas[playerid])
+				isBetingTragamonedas[playerid] = false;
+	}
+	return 1;
+}
+
+CMD:tragamonedas(playerid, params[])
+{
+    for(new i = 0; i < MAX_BUSINESS; i++)
+	{
+		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
+		{
+			if(GetPlayerVirtualWorld(playerid) == i + 17000)
+			{
+	    		if(Business[i][bType] == BIZ_CASINO)
+	    		{
+                    new numberbet;
+                    if(sscanf(params, "i", numberbet))
+						return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /tragamonedas [apuesta]");
+                    if(isBetingTragamonedas[playerid] == true)
+			    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes esperar medio minuto para volver a apostar!");
+					if(numberbet < 10 || numberbet > 200)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $10 y la máxima de $200!");
+                    if(GetPlayerCash(playerid) < numberbet)
+		     			return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo!");
+					if( numberbet * 30 > Business[i][bTill] )
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "El casino no dispone de tanta liquidez en efectivo en el caso de que ganes. Prueba con otra apuesta.");
+
+                    new string[128], tm1, tm2, tm3, betWin;
+                    GivePlayerCash(playerid, -numberbet);
+                    Business[i][bTill] += numberbet;
+
+                    new aleatorio1 = random(100);
+					if(aleatorio1 < 30) tm1 = 1;
+						else if(aleatorio1 < 60) tm1 = 2;
+						    else if(aleatorio1 < 80) tm1 = 3;
+           						else if(aleatorio1 < 93) tm1 = 4;
+   						        	else tm1 = 5;
+
+                    new aleatorio2 = random(100);
+					if(aleatorio2 < 30) tm2 = 1;
+						else if(aleatorio2 < 60) tm2 = 2;
+						    else if(aleatorio2 < 80) tm2 = 3;
+           						else if(aleatorio2 < 93) tm2 = 4;
+   						        	else tm2 = 5;
+
+				    new aleatorio3 = random(100);
+					if(aleatorio3 < 30) tm3 = 1;
+						else if(aleatorio3 < 60) tm3 = 2;
+						    else if(aleatorio3 < 80) tm3 = 3;
+           						else if(aleatorio3 < 93) tm3 = 4;
+   						        	else tm3 = 5;
+
+					if ((tm1 == 1)&&(tm2 == 1)&&(tm3 != 1)) betWin = numberbet;
+					else if ((tm1 == 2)&&(tm2 == 2)&&(tm3 != 2)) betWin = numberbet;
+                    else if ((tm1 == 3)&&(tm2 == 3)&&(tm3 != 3)) betWin = numberbet * 2;
+                    else if ((tm1 == 4)&&(tm2 == 4)&&(tm3 != 4)) betWin = numberbet * 3;
+                    else if ((tm1 == 5)&&(tm2 == 5)&&(tm3 != 5)) betWin = numberbet * 4;
+                    else if ((tm1 == 1)&&(tm2 == 1)&&(tm3 == 1)) betWin = numberbet * 5;
+                    else if ((tm1 == 2)&&(tm2 == 2)&&(tm3 == 2)) betWin = numberbet * 5;
+                    else if ((tm1 == 3)&&(tm2 == 3)&&(tm3 == 3)) betWin = numberbet * 10;
+                    else if ((tm1 == 4)&&(tm2 == 4)&&(tm3 == 4)) betWin = numberbet * 20;
+                    else if ((tm1 == 5)&&(tm2 == 5)&&(tm3 == 5)) betWin = numberbet * 30;
+                    else betWin = 0;
+
+                    new betsWin[128] = "";
+                    format(betsWin, sizeof(betsWin), "La misma empieza a girar y muestra lo siguiente: |%d|%d|%d|.", tm1, tm2, tm3);
+                    format(string, sizeof(string), "introduce $%d a la maquina tragamonedas y tira la palanca. %s", numberbet, betsWin);
+                    PlayerActionMessage(playerid, 15.0, string);
+
+                    if(betWin == 0)
+						 PlayerActionMessage(playerid, 15.0, "ha perdido: el casino se queda con el dinero.");
+ 					else
+					{
+                        Business[i][bTill] -= betWin;
+					    GivePlayerCash(playerid, betWin);
+						format(string, sizeof(string), "tuvo suerte y ganó $%d!", betWin);
+					    PlayerActionMessage(playerid, 15.0, string);
+					}
+
+					isBetingTragamonedas[playerid] = true;
+					SetTimerEx("CasinoBetEnabled", 30000, false, "ii", playerid, CASINO_GAME_TRAGAMONEDAS);
+	    		}
+			}
+		}
 	}
 	return 1;
 }
 
 CMD:apostar(playerid, params[])
 {
-	return SendClientMessage(playerid, COLOR_YELLOW2, "Comandos para apostar en un casino: /apruleta, /apfortuna.");
+	return SendClientMessage(playerid, COLOR_YELLOW2, "Comandos para apostar en un casino: /apruleta, /apfortuna, /tragamonedas.");
 }
+
 CMD:apruleta(playerid, params[])
 {
 	for(new i = 0; i < MAX_BUSINESS; i++)
