@@ -212,42 +212,47 @@ stock bool:EnterBusiness(playerid)
 				SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
 	            SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
 	            SetCameraBehindPlayer(playerid);
-	            PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-    		} else
-		    	{
-			    	if(Business[i][bLocked] == 1 && !AdminDuty[playerid]) {
-						GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
-						return true;
-					}
-					if(GetPlayerCash(playerid) < Business[i][bEntranceFee]) {
-						SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
-						return true;
-					}
-					SetPlayerInterior(playerid, Business[i][bInsideInt]);
-					SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
-					SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
-					SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
-					SetCameraBehindPlayer(playerid);
-					PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-					GivePlayerCash(playerid, -Business[i][bEntranceFee]);
-					if(Business[i][bEntranceFee] > 0)
-                        SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
-					switch(Business[i][bType])
-					{
-					    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD, BIZ_ACCESS:
-			    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
-					    case BIZ_CLUB, BIZ_CLUB2:
-					    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
-						case BIZ_REST, BIZ_PIZZERIA, BIZ_BURGER1, BIZ_BURGER2, BIZ_BELL:
-  							SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-						case BIZ_CASINO:
- 	    					SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
-					}
-					if(Business[i][bProducts] == 0)
-						GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
-					Business[i][bTill] += Business[i][bEntranceFee];
-					saveBusiness(i);
+	            if(Business[i][bRadio] > 0)
+	            	Radio_Set(playerid, Business[i][bRadio], RADIO_TYPE_BIZ);
+    		}
+			else
+	    	{
+		    	if(Business[i][bLocked] == 1 && !AdminDuty[playerid])
+				{
+					GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
+					return true;
 				}
+				if(GetPlayerCash(playerid) < Business[i][bEntranceFee])
+				{
+					SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
+					return true;
+				}
+				SetPlayerInterior(playerid, Business[i][bInsideInt]);
+				SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
+				SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
+				SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
+				SetCameraBehindPlayer(playerid);
+    			if(Business[i][bRadio] > 0)
+	            	Radio_Set(playerid, Business[i][bRadio], RADIO_TYPE_BIZ);
+				GivePlayerCash(playerid, -Business[i][bEntranceFee]);
+				if(Business[i][bEntranceFee] > 0)
+                    SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
+				switch(Business[i][bType])
+				{
+				    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD, BIZ_ACCESS:
+		    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
+				    case BIZ_CLUB, BIZ_CLUB2:
+				    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+					case BIZ_REST, BIZ_PIZZERIA, BIZ_BURGER1, BIZ_BURGER2, BIZ_BELL:
+						SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+					case BIZ_CASINO:
+    					SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+				}
+				if(Business[i][bProducts] == 0)
+					GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
+				Business[i][bTill] += Business[i][bEntranceFee];
+				saveBusiness(i);
+			}
 			return true;
 		}
 	}
@@ -274,8 +279,10 @@ stock bool:LeaveBusiness(playerid)
 					SetPlayerPos(playerid,Business[i][bOutsideX],Business[i][bOutsideY],Business[i][bOutsideZ]);
 		            SetPlayerFacingAngle(playerid, Business[i][bOutsideAngle]);
 		            SetCameraBehindPlayer(playerid);
-		            PlayRadioStreamForPlayer(playerid, 0);
-				} else
+		            if(Radio_IsOnType(playerid, RADIO_TYPE_BIZ))
+						Radio_Stop(playerid);
+				}
+				else
 					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 				return true;
 			}
@@ -496,7 +503,8 @@ CMD:negocioradio(playerid,params[])
 
 	Business[bizID][bRadio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del negocio a %d.", Business[bizID][bRadio]);
-	PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+	if(Business[bizID][bRadio] > 0)
+		Radio_Set(playerid, Business[bizID][bRadio], RADIO_TYPE_BIZ);
 	return 1;
 }
 
@@ -817,7 +825,8 @@ CMD:anradio(playerid,params[])
 	{
 		Business[bizID][bRadio] = radio;
 		SendFMessage(playerid, COLOR_ADMINCMD, "Has seteado la radio del negocio [%d] a %d.", bizID, radio);
-		PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+	 	if(Business[bizID][bRadio] > 0)
+			Radio_Set(playerid, Business[bizID][bRadio], RADIO_TYPE_BIZ);
  	}
 	return 1;
 }

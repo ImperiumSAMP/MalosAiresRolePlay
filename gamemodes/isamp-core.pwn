@@ -44,6 +44,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "marp-items.inc" 				//Sistema de items
 #include "marp-container.inc"
+#include "marp-streamings.inc"
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
@@ -849,7 +850,7 @@ public ResetStats(playerid)
 	ResetMaskVariables(playerid);
 	
 	/* Sistema de stream de radios */
-	hearingRadioStream[playerid] = false;
+	Radio_Reset(playerid);
 	
 	/* Sistema de entrevistas para CTRMAN */
 	InterviewOffer[playerid] = 999;
@@ -1142,8 +1143,7 @@ public OnPlayerDisconnect(playerid, reason)
 	deleteAbandonedSprintRace(playerid);
 	OnPlayerLeaveRace(playerid);
 	
-	if(hearingRadioStream[playerid])
-		StopAudioStreamForPlayer(playerid);
+	Radio_Stop(playerid);
 	
 	HidePlayerBasicNeeds(playerid); // Destruimos las barras de hambre y sed, y ocultamos los textdraws
 	
@@ -1569,8 +1569,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	EndPlayerDuty(playerid);
 	ResetThiefCrime(playerid);
-	if(hearingRadioStream[playerid])
-		StopAudioStreamForPlayer(playerid);
+
+	Radio_Stop(playerid);
 		
 	OnPlayerLeaveRobberyGroup(playerid, 2);
 	
@@ -3649,11 +3649,12 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 		
-		if(hearingRadioStream[playerid])
+		//===============================RADIO EN AUTO==========================
+		if(Radio_IsOnType(playerid, RADIO_TYPE_VEH))
 		{
-			StopAudioStreamForPlayer(playerid);
-			hearingRadioStream[playerid] = false;
+			Radio_Stop(playerid);
 		}
+        //======================================================================
 	}
 	else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER)
 	{
@@ -3679,11 +3680,12 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 		
-		if(hearingRadioStream[playerid])
+		//===============================RADIO EN AUTO==========================
+		if(Radio_IsOnType(playerid, RADIO_TYPE_VEH))
 		{
-			StopAudioStreamForPlayer(playerid);
-			hearingRadioStream[playerid] = false;
+			Radio_Stop(playerid);
 		}
+		//======================================================================
 	}
 	
 	if(newstate == PLAYER_STATE_PASSENGER && oldstate == PLAYER_STATE_ONFOOT)
@@ -3721,12 +3723,12 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			RemovePlayerFromVehicle(playerid);
 		}
 		
-	//===============================RADIO EN AUTO==============================
-	
+		//===============================RADIO EN AUTO==========================
  		if(VehicleInfo[vehicleid][VehRadio] > 0)
-	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
-	    	
-	//==========================================================================
+		{
+ 			Radio_Set(playerid, VehicleInfo[vehicleid][VehRadio], RADIO_TYPE_VEH);
+	 	}
+		//======================================================================
 	}
 	
 	if(newstate == PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_ONFOOT)
@@ -3744,10 +3746,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
 		
 		//===============================RADIO EN AUTO==========================
-		
 		if(VehicleInfo[vehicleid][VehRadio] > 0)
-	    	PlayRadioStreamForPlayer(playerid, VehicleInfo[vehicleid][VehRadio]);
-	    	
+ 		{
+ 			Radio_Set(playerid, VehicleInfo[vehicleid][VehRadio], RADIO_TYPE_VEH);
+	 	}
 		//======================================================================
 
         if(VehicleInfo[vehicleid][VehType] == VEH_OWNED)
@@ -7580,7 +7582,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			    KickPlayer(playerid, "el sistema", "evadir tutorial");
 			    return 0;
 			} else if(listitem == 1 || listitem == 3) {
-			    StopAudioStreamForPlayer(playerid);
 				PlayerInfo[playerid][pTutorial] = 1;
 				if(PlayerInfo[playerid][pRegStep] != 0) {
 					TextDrawShowForPlayer(playerid, RegTDBorder1);
@@ -7737,7 +7738,6 @@ CMD:saltartuto(playerid, params[])
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /saltartuto [ID-Jugador]");
 
-	StopAudioStreamForPlayer(playerid);
 	PlayerInfo[playerid][pTutorial] = 1;
 
 	// Cerramos cualquier dialog y textdraw abierto.
@@ -12710,56 +12710,30 @@ CMD:ensamblar(playerid, params[])
 
 //==========================SISTEMA DE RADIO PARA AUTOS=========================
 
-stock PlayRadioStreamForPlayer(playerid, radio)
-{
-	if(hearingRadioStream[playerid])
- 		StopAudioStreamForPlayer(playerid);
-	switch(radio)
-	{
-	    case 0: return 1;
-	    case 1: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Mitre790.mp3");
-	    case 2: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/Palermo_2.mp3");
-	    case 3: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/fm979.mp3");
-	    case 4: PlayAudioStreamForPlayer(playerid, "http://buecrplb01.cienradios.com.ar/la100_mdq.mp3");
-	    case 5: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/la100.mp3");
-	    case 6: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Nacional_48.mp3");
-	    case 7: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Grandes_Del_Rock_48.mp3");
-	    case 8: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3");
-	    case 9: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bachata_48.mp3");
-     	case 10: PlayAudioStreamForPlayer(playerid, "http://stream.electroradio.ch:26630");
-     	case 11: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Bailando_Electro_48.mp3");
-	    case 12: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3");
-	    case 13: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3");
-	    case 14: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/MIXLA128KB");
-	    case 15: PlayAudioStreamForPlayer(playerid, "http://streaming.radionomy.com/CTRMAN");
-	    case 16: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cumbia_48.mp3");
-	    case 17: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Cuarteto_48.mp3");
-	    case 18: PlayAudioStreamForPlayer(playerid, "http://s_mobile.cienradios.com/Folklore_48.mp3");
-	}
-	hearingRadioStream[playerid] = true;
-	return 1;
-}
-
 CMD:emisora(playerid, params[])
 {
-    new radio, vType, vehicleid = GetPlayerVehicleID(playerid);
-	vType = GetVehicleType(vehicleid);
+	new radio,
+    	vehicleid = GetPlayerVehicleID(playerid),
+		veh_type = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /emisora [1-18]. Para apagarla utiliza /emisoraoff.");
-	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
+	if(!IsPlayerInAnyVehicle(playerid) || (veh_type != VTYPE_CAR && veh_type != VTYPE_HELI && veh_type != VTYPE_PLANE && veh_type != VTYPE_HEAVY))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
-	if(radio < 1 || radio > 18)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 18.");
+	if(radio < 1 || radio > Radio_GetAmount())
+	{
+	    SendFMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al %d.", Radio_GetAmount());
+		return 1;
+	}
 
 	foreach(new i : Player)
 	{
 		if(IsPlayerInVehicle(i, vehicleid))
 		{
 			SendFMessage(i, COLOR_ACT1, "%s sintoniza una radio en el estéreo del auto.", GetPlayerNameEx(playerid));
-  			PlayRadioStreamForPlayer(i, radio);
+  			Radio_Set(i, radio, RADIO_TYPE_VEH);
 		}
 	}
 	VehicleInfo[vehicleid][VehRadio] = radio;
@@ -12768,10 +12742,10 @@ CMD:emisora(playerid, params[])
 
 CMD:emisoraoff(playerid, params[])
 {
-	new vType, vehicleid = GetPlayerVehicleID(playerid);
-	vType = GetVehicleType(vehicleid);
+	new vehicleid = GetPlayerVehicleID(playerid),
+		veh_type = GetVehicleType(vehicleid);
 
-	if(!IsPlayerInAnyVehicle(playerid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY) )
+	if(!IsPlayerInAnyVehicle(playerid) || (veh_type != VTYPE_CAR && veh_type != VTYPE_HELI && veh_type != VTYPE_PLANE && veh_type != VTYPE_HEAVY))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en los asientos delanteros!");
@@ -12780,10 +12754,9 @@ CMD:emisoraoff(playerid, params[])
 		if(IsPlayerInVehicle(i, vehicleid))
 		{
 			SendFMessage(i, COLOR_ACT1, "%s apaga la radio sintonizada en el estéreo del auto.", GetPlayerNameEx(playerid));
-		    if(hearingRadioStream[i])
+		    if(Radio_IsOnType(i, RADIO_TYPE_VEH))
 		    {
-		        StopAudioStreamForPlayer(i);
-		        hearingRadioStream[playerid] = false;
+		        Radio_Stop(i);
 			}
 		}
 	}

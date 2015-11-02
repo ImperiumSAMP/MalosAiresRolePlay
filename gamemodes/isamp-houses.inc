@@ -407,8 +407,10 @@ stock bool:EnterHouse(playerid)
 					SetPlayerPos(playerid, House[i][InsideX], House[i][InsideY], House[i][InsideZ]);
 					SetPlayerFacingAngle(playerid, House[i][InsideAngle]);
 					SetCameraBehindPlayer(playerid);
-					PlayRadioStreamForPlayer(playerid, House[i][Radio]);
-				} else
+					if(House[i][Radio] > 0)
+					    Radio_Set(playerid, House[i][Radio], RADIO_TYPE_HOUSE);
+				}
+				else
 					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 				return true;
 			}
@@ -432,8 +434,10 @@ stock bool:LeaveHouse(playerid)
 					SetPlayerPos(playerid, House[i][OutsideX], House[i][OutsideY], House[i][OutsideZ]);
 					SetPlayerFacingAngle(playerid, House[i][OutsideAngle]);
 					SetCameraBehindPlayer(playerid);
-					PlayRadioStreamForPlayer(playerid, 0);
-				} else
+					if(Radio_IsOnType(playerid, RADIO_TYPE_HOUSE))
+					    Radio_Stop(playerid);
+				}
+				else
 					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 				return true;
 			}
@@ -557,7 +561,8 @@ CMD:casaradio(playerid, params[])
 
     House[houseid][Radio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]:{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
-	PlayRadioStreamForPlayer(playerid, House[houseid][Radio]);
+	if(House[houseid][Radio] > 0)
+	    Radio_Set(playerid, House[houseid][Radio], RADIO_TYPE_HOUSE);
 	SaveHouse(houseid);
 	return 1;
 }
@@ -596,7 +601,8 @@ CMD:casacomprar(playerid, params[])
 				SetPlayerPos(playerid, House[h][InsideX], House[h][InsideY], House[h][InsideZ]);
 				SetPlayerFacingAngle(playerid, House[h][InsideAngle]);
 				SetCameraBehindPlayer(playerid);
-				PlayRadioStreamForPlayer(playerid, House[h][Radio]);
+				if(House[h][Radio] > 0)
+	    			Radio_Set(playerid, House[h][Radio], RADIO_TYPE_HOUSE);
 				GivePlayerCash(playerid, -House[h][HousePrice]);
 				SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has comprado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
 			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y éste le entrega un par de llaves.");
@@ -840,7 +846,8 @@ CMD:casaalquilar(playerid, params[])
 				SetPlayerPos(playerid, House[h][InsideX], House[h][InsideY], House[h][InsideZ]);
 				SetPlayerFacingAngle(playerid, House[h][InsideAngle]);
 				SetCameraBehindPlayer(playerid);
-				PlayRadioStreamForPlayer(playerid, House[h][Radio]);
+				if(House[h][Radio] > 0)
+	    			Radio_Set(playerid, House[h][Radio], RADIO_TYPE_HOUSE);
 				SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has alquilado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
 			   	PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y éste le entregaun par de llaves.");
 				SaveHouse(h);

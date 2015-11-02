@@ -19,30 +19,6 @@
 
 //==================================DATA========================================
 
-static const SERVER_RADIOS[][128] = {
-
-/*0*/	"NONE",
-/*1*/	"http://buecrplb01.cienradios.com.ar/Mitre790.mp3",
-/*2*/	"http://buecrplb01.cienradios.com.ar/Palermo_2.mp3",
-/*3*/	"http://buecrplb01.cienradios.com.ar/fm979.mp3",
-/*4*/	"http://buecrplb01.cienradios.com.ar/la100_mdq.mp3",
-/*5*/	"http://s_mobile.cienradios.com/la100.mp3",
-/*6*/	"http://s_mobile.cienradios.com/Hot_100_Nacional_48.mp3",
-/*7*/	"http://s_mobile.cienradios.com/Grandes_Del_Rock_48.mp3",
-/*8*/	"http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3",
-/*9*/	"http://s_mobile.cienradios.com/Bachata_48.mp3",
-/*10*/	"http://stream.electroradio.ch:26630",
-/*11*/	"http://s_mobile.cienradios.com/Bailando_Electro_48.mp3",
-/*12*/	"http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3",
-/*13*/	"http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3",
-/*14*/	"http://streaming.radionomy.com/MIXLA128KB",
-/*15*/	"http://streaming.radionomy.com/CTRMAN",
-/*16*/	"http://s_mobile.cienradios.com/Cumbia_48.mp3",
-/*17*/	"http://s_mobile.cienradios.com/Cuarteto_48.mp3",
-/*18*/	"http://s_mobile.cienradios.com/Folklore_48.mp3"
-
-};
-
 new SERVER_SPEAKERS;
 
 //==============================IMPLEMENTACION==================================
@@ -87,7 +63,10 @@ DestroySpeaker(speaker_id)
 		{
 			if(IsPlayerInDynamicArea(i, vector_get(speaker_id, VEC_INDEX_AREA)))
 			{
-			    StopAudioStreamForPlayer(i);
+			    if(Radio_IsOnType(i, RADIO_TYPE_SPEAKER))
+			    {
+			    	Radio_Stop(i);
+				}
 			}
 		}
 		DestroyDynamicObject(vector_get(speaker_id, VEC_INDEX_OBJECT));
@@ -103,7 +82,7 @@ PlaySpeakerForPlayer(playerid, speaker_id)
 {
 	if(IsValidSpeaker(speaker_id))
 	{
-		PlayAudioStreamForPlayer(playerid, SERVER_RADIOS[vector_get(speaker_id, VEC_INDEX_RADIO)], vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z), vector_get(speaker_id, VEC_INDEX_VOLUME), 1);
+	    Radio_SetEx(playerid, vector_get(speaker_id, VEC_INDEX_RADIO), RADIO_TYPE_SPEAKER, vector_get_float(speaker_id, VEC_INDEX_X), vector_get_float(speaker_id, VEC_INDEX_Y), vector_get_float(speaker_id, VEC_INDEX_Z), vector_get(speaker_id, VEC_INDEX_VOLUME));
 	 	return 1;
 	}
 	return 0;
@@ -121,7 +100,7 @@ public OnPlayerEnterDynamicArea(playerid, areaid)
 	    speaker_id = vector_get(SERVER_SPEAKERS, i);
 	    if(vector_get(speaker_id, VEC_INDEX_AREA) == areaid)
 	    {
-	        if(!hearingRadioStream[playerid])
+	        if(!Radio_IsOn(playerid))
 	        {
 			    PlaySpeakerForPlayer(playerid, speaker_id);
 			}
@@ -144,9 +123,9 @@ public OnPlayerLeaveDynamicArea(playerid, areaid)
 	    speaker_id = vector_get(SERVER_SPEAKERS, i);
 	    if(vector_get(speaker_id, VEC_INDEX_AREA) == areaid)
 	    {
-	        if(!hearingRadioStream[playerid])
-	        {
-			    StopAudioStreamForPlayer(playerid);
+		    if(Radio_IsOnType(playerid, RADIO_TYPE_SPEAKER))
+		    {
+		    	Radio_Stop(playerid);
 			}
 		}
 	}

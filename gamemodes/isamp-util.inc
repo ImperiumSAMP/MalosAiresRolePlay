@@ -203,9 +203,6 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:TalkAnimEnabled[MAX_PLAYERS],
 	bool:HudEnabled[MAX_PLAYERS],
 	bool:AdminEnabled[MAX_PLAYERS];
-	
-	// Sistema de streams de radios
-new bool:hearingRadioStream[MAX_PLAYERS];
 
 // sistema de mascaras
 new bool:usingMask[MAX_PLAYERS];

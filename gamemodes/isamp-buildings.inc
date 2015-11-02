@@ -75,7 +75,8 @@ stock bool:EnterBuilding(playerid)
 					SetPlayerVirtualWorld(playerid, Building[i][blInsideWorld]);
 					SetPlayerPos(playerid, Building[i][blInsideX], Building[i][blInsideY], Building[i][blInsideZ]);
 					SetPlayerFacingAngle(playerid, Building[i][blInsideAngle]);
-					PlayRadioStreamForPlayer(playerid, Building[i][blRadio]);
+					if(Building[i][blRadio] > 0)
+					    Radio_Set(playerid, Building[i][blRadio], RADIO_TYPE_BLD);
 					GivePlayerCash(playerid, -Building[i][blEntranceFee]);
 					if(Building[i][blEntranceFee] > 0)
 						SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al edificio %s!", Building[i][blEntranceFee], Building[i][blText]);
@@ -84,7 +85,8 @@ stock bool:EnterBuilding(playerid)
 					SetCameraBehindPlayer(playerid);
 				} else
 					GameTextForPlayer(playerid, "~r~No tienes el dinero suficiente!", 2000, 2);
-			} else
+			}
+			else
 				GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 			return true;
 		}
@@ -107,8 +109,10 @@ stock bool:LeaveBuilding(playerid)
 					SetPlayerPos(playerid, Building[i][blOutsideX], Building[i][blOutsideY], Building[i][blOutsideZ]);
 					SetPlayerFacingAngle(playerid, Building[i][blOutsideAngle]);
 					SetCameraBehindPlayer(playerid);
-					PlayRadioStreamForPlayer(playerid, 0);
-				} else
+					if(Radio_IsOnType(playerid, RADIO_TYPE_BLD))
+						Radio_Stop(playerid);
+				}
+				else
 					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 				return true;
 			}
