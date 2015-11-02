@@ -280,14 +280,14 @@ static const CarModels[][CarModelInfo] = {
 /*443*/	{"Packer", VTYPE_HEAVY, 428000, 0, 0},
 /*444*/	{"Monster", VTYPE_MONSTER, 675000, 0, 0},
 /*445*/	{"Admiral", VTYPE_CAR, 61000, 4, 200},
-/*446*/	{"Squallo", VTYPE_SEA, 775000, 2, 100},
+/*446*/	{"Squallo", VTYPE_SEA, 425000, 2, 100},
 /*447*/	{"Seasparrow", VTYPE_HELI, 2000000, 0, 0},
 /*448*/	{"Pizzaboy", VTYPE_BIKE, 25000, 0, 0},
 /*449*/	{"Tram", VTYPE_TRAIN, 500000, 0, 0},
 /*450*/	{"Article Trailer 2", VTYPE_TRAILER, 150000, 10, 500},
 /*451*/	{"Turismo", VTYPE_CAR, 1050000, 2, 100},
-/*452*/	{"Speeder", VTYPE_SEA, 755000, 2, 100},
-/*453*/	{"Reefer", VTYPE_SEA, 480000, 8, 400},
+/*452*/	{"Speeder", VTYPE_SEA, 355000, 2, 100},
+/*453*/	{"Reefer", VTYPE_SEA, 415000, 8, 400},
 /*454*/	{"Tropic", VTYPE_SEA, 830000, 6, 300},
 /*455*/	{"Flatbed", VTYPE_CAR, 180000, 8, 400},
 /*456*/	{"Yankee", VTYPE_CAR, 155000, 8, 400},
@@ -306,7 +306,7 @@ static const CarModels[][CarModelInfo] = {
 /*469*/	{"Sparrow", VTYPE_HELI, 415000, 0, 0},
 /*470*/	{"Patriot", VTYPE_CAR, 315000, 4, 200},
 /*471*/	{"Quad", VTYPE_QUAD, 30000, 0, 0},
-/*472*/	{"Coastguard", VTYPE_SEA, 150000, 2, 100},
+/*472*/	{"Coastguard", VTYPE_SEA, 115000, 2, 100},
 /*473*/	{"Dinghy", VTYPE_SEA, 55000, 0, 0},
 /*474*/	{"Hermes", VTYPE_CAR, 61000, 2, 100},
 /*475*/	{"Sabre", VTYPE_CAR, 90000, 2, 100},
@@ -327,7 +327,7 @@ static const CarModels[][CarModelInfo] = {
 /*490*/	{"FBI Rancher", VTYPE_CAR, 150000, 4, 200},
 /*491*/	{"Virgo", VTYPE_CAR, 55000, 2, 100},
 /*492*/	{"Greenwood", VTYPE_CAR, 60000, 4, 200},
-/*493*/	{"Jetmax", VTYPE_SEA, 770000, 2, 100},
+/*493*/	{"Jetmax", VTYPE_SEA, 470000, 2, 100},
 /*494*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0, 0},
 /*495*/	{"Sandking", VTYPE_CAR, 1000000, 4, 200},
 /*496*/	{"Blista Compact", VTYPE_CAR, 100500, 2, 100},
@@ -488,7 +488,7 @@ GetVehicleMaxTrunkSlots(vehicleid)
 	return CarModels[modelid-400][mTrunkSlots];
 }
 
-GetVehicleModelTrunkSlots(modelid)
+stock GetVehicleModelTrunkSlots(modelid)
 {
 	if(modelid < 400 || modelid > 611)
 		return 0;
