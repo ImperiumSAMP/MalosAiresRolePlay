@@ -12249,9 +12249,6 @@ CMD:tragamonedas(playerid, params[])
            						else if(aleatorio3 < 93) tm3 = 4;
    						        	else tm3 = 5;
 
-                    format(string, sizeof(string), "introduce $%d a la maquina tragamonedas y tira la palanca.", numberbet);
-                    PlayerActionMessage(playerid, 15.0, string);
-
 					if ((tm1 == 1)&&(tm2 == 1)&&(tm3 != 1)) betWin = numberbet;
 					else if ((tm1 == 2)&&(tm2 == 2)&&(tm3 != 2)) betWin = numberbet;
                     else if ((tm1 == 3)&&(tm2 == 3)&&(tm3 != 3)) betWin = numberbet * 2;
@@ -12265,16 +12262,17 @@ CMD:tragamonedas(playerid, params[])
                     else betWin = 0;
 
                     new betsWin[128] = "";
-                    format(betsWin, sizeof(betsWin), "La maquina tragamonedas empieza a girar y muestra lo siguiente: |%d|%d|%d|.", tm1, tm2, tm3);
-					if(betWin == 0)
-					{
- 						PlayerActionMessage(playerid, 15.0, "ha perdido: el casino se queda con el dinero.")
-					}
-					else
+                    format(betsWin, sizeof(betsWin), "La misma empieza a girar y muestra lo siguiente: |%d|%d|%d|.", tm1, tm2, tm3);
+                    format(string, sizeof(string), "introduce $%d a la maquina tragamonedas y tira la palanca. %s", numberbet, betsWin);
+                    PlayerActionMessage(playerid, 15.0, string);
+
+                    if(betWin == 0)
+						 PlayerActionMessage(playerid, 15.0, "ha perdido: el casino se queda con el dinero.");
+ 					else
 					{
                         Business[i][bTill] -= betWin;
 					    GivePlayerCash(playerid, betWin);
-					    format(string, sizeof(string), "tuvo suerte y ganó $%d!", betWin);
+						format(string, sizeof(string), "tuvo suerte y ganó $%d!", betWin);
 					    PlayerActionMessage(playerid, 15.0, string);
 					}
 
