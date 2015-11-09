@@ -11118,7 +11118,7 @@ CMD:mequipo(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
 	if(sscanf(params, "i", equipo))
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /equipo [equipo]");
+		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /mequipo [equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros MED _______|");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Paramédico Junior    5: Sub Director");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Paramédico Senior    6: Director");
@@ -11192,6 +11192,61 @@ CMD:salircam(playerid, params[])
 	SetPlayerPos(playerid, 219.36, 188.31, 1003.00);
 	SetPlayerVirtualWorld(playerid, 16002);
 	SetPlayerInterior(playerid, 3);
+	return 1;
+}
+CMD:sir(playerid, params[]){
+	cmd_sirena(playerid, params);
+	return 1;
+}
+CMD:sirena(playerid, params[])
+{
+	new EstadoSir[MAX_VEH];
+	new Sir[3][MAX_VEH];
+	new vehicleid = GetPlayerVehicleID(playerid);
+
+	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+		return 1;
+
+	if(CopDuty[playerid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar dentro de un vehículo.");
+
+	if(VehicleInfo[vehicleid][VehFaction] != FAC_PMA && VehicleInfo[vehicleid][VehFaction] != FAC_SIDE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no pertenece a tu facción.");
+
+	if(EstadoSir[vehicleid] == 0)
+	    {
+     	Sir[0][vehicleid] = CreateObject(19292,0.0,0.0,0.0,0.0,0.0,0.0);//Azul
+      	Sir[1][vehicleid] = CreateObject(19290,0.0,0.0,0.0,0.0,0.0,0.0);//Rojo
+		Sir[2][vehicleid] = CreateObject(18646,0.0,0.0,0.0,0.0,0.0,0.0);//Sirena
+ 		if(GetVehicleModel(vehicleid) == 596)
+  		{
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+        }
+        if(GetVehicleModel(vehicleid) == 597)
+	    {
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+        }
+        if(GetVehicleModel(vehicleid) == 598)
+	    {
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+		}
+		else return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene sirenas.");
+		EstadoSir[vehicleid] = 1;
+		return 1;
+   		}
+	if(EstadoSir[vehicleid] == 1)
+	{
+		DestroyObject(Sir[0][vehicleid]);
+		DestroyObject(Sir[1][vehicleid]);
+		DestroyObject(Sir[2][vehicleid]);
+		EstadoSir[vehicleid] = 0;
+	}
 	return 1;
 }
 
