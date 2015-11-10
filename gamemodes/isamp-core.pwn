@@ -7184,14 +7184,16 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CERVEZA))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
-						new freehand = SearchFreeHand(playerid);
-						if(freehand == -1)
-							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return SendClientMessage(playerid, COLOR_YELLOW2, "Los menores de 18 años no pueden comprar alcohol.");
                         new Hour, Minute, Second;
                         gettime(Hour, Minute, Second);
 						if ((8 > Hour)&&(Hour > 20))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar cerveza a esta hora. Solo de 9 a 21 horas.");
-
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+							
 						SetHandItemAndParam(playerid, freehand, ITEM_ID_CERVEZA, 1);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CERVEZA));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cerveza.");
