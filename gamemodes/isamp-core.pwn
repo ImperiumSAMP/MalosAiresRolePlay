@@ -11221,25 +11221,46 @@ CMD:sirena(playerid, params[])
      	Sir[0][vehicleid] = CreateObject(19292,0.0,0.0,0.0,0.0,0.0,0.0);//Azul
       	Sir[1][vehicleid] = CreateObject(19290,0.0,0.0,0.0,0.0,0.0,0.0);//Rojo
 		Sir[2][vehicleid] = CreateObject(18646,0.0,0.0,0.0,0.0,0.0,0.0);//Sirena
- 		if(GetVehicleModel(vehicleid) == 596)
+		
+ 		if(GetVehicleModel(vehicleid) == 596)//Patrulla LS
   		{
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+ 		   	EstadoSir[vehicleid] = 1;
         }
-        if(GetVehicleModel(vehicleid) == 597)
+        else if(GetVehicleModel(vehicleid) == 597)//Patrulla SF
 	    {
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
+ 		   	EstadoSir[vehicleid] = 1;
         }
-        if(GetVehicleModel(vehicleid) == 598)
+        else if(GetVehicleModel(vehicleid) == 598)//Patrulla LV
 	    {
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid,0.5,-0.3,1.0,0.0,0.0,0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid,-0.5,-0.3,1.0,0.0,0.0,0.0);
+   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
+ 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
+ 		   	EstadoSir[vehicleid] = 1;
+		}
+		else if(GetVehicleModel(vehicleid) == 523)//Moto
+		{
+		     AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+			 AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+			 EstadoSir[vehicleid] = 1;
+		}
+		else if(GetVehicleModel(vehicleid) == 427)//Camion SWAT
+		{
+		     AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, -0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
+			 AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, 0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
+			 EstadoSir[vehicleid] = 1;
+		}
+		else if(GetVehicleModel(vehicleid) == 599) //Rancher
+		{
+			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+	        AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+       		EstadoSir[vehicleid] = 1;
 		}
 		else return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene sirenas.");
-		EstadoSir[vehicleid] = 1;
 		return 1;
-   		}
+	}
 	if(EstadoSir[vehicleid] == 1)
 	{
 		DestroyObject(Sir[0][vehicleid]);
