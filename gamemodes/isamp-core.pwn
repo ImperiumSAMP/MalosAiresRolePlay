@@ -14279,7 +14279,7 @@ CMD:ckearplayer(playerid,params[])
 	if(GetPVarInt(playerid, "ckeandoplayer") == 0)
 	{
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}============{C8C8C8} CKear al jugador %s {878EE7}============", GetPlayerNameEx(targetid));
-		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d.", GetPlayerNameEx(targetid), newage, newsex);
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Nuevo nombre:{C8C8C8} %s {f5a120}| {878EE7}Nueva edad:{C8C8C8} %d {f5a120}| {878EE7}Nuevo sexo:{C8C8C8} %d.", newname, newage, newsex);
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Casa:{C8C8C8} %d {f5a120} | {878EE7}Casa alquilada:{C8C8C8} %d {f5a120}| {878EE7}Negocio:{C8C8C8} %d.", house, houseincome, bizID);
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para realizar el CK, vuelve a ingresar el comando con los mismos parámetros.");
 		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Para {f5a120}cancelarlo{C8C8C8}, relogea o utiliza el comando {f5a120}'/setpvarint %d ckeandoplayer 0'{C8C8C8}.", playerid);
@@ -14388,6 +14388,13 @@ CMD:ckearplayer(playerid,params[])
 		PlayerInfo[targetid][pEcstasy] = 0;
 
 		PlayerInfo[targetid][pMask] = 0;
+		
+		PlayerInfo[targetid][pAdictionPercent] = 0.0;
+		PlayerInfo[targetid][pAdictionAbstinence] = 0;
+		
+ 		PlayerInfo[targetid][pFlyLic] = 0;
+ 		PlayerInfo[targetid][pCarLic] = 0;
+		PlayerInfo[targetid][pWepLic] = 0;
 
 		newmoney = GetPlayerMoney(targetid) / 4;
     	PlayerInfo[targetid][pBank] = newmoney;

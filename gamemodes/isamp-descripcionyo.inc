@@ -73,3 +73,21 @@ CMD:yob(playerid, params[])
 	return 1;
 }
 
+CMD:yodebug(playerid, params[])
+{
+	new targetid, param;
+
+	if(sscanf(params, "ui", targetid, param))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yodebug [ID/Jugador] [descActive (0 = true - 1 = false)]");
+	if(param != 0 && param != 1)
+	    return 1;
+		
+	if(param == 0)
+		descActive[targetid] = true;
+	else {
+		DestroyDynamic3DTextLabel(descLabel[targetid]);
+		ResetDescVariables(playerid);
+	}
+	return 1;
+}
+
