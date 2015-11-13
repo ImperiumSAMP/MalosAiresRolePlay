@@ -14,7 +14,7 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 
-#define MAX_ITEMS               111
+#define MAX_ITEMS               112
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -81,6 +81,7 @@
 #define ITEM_ID_MOCHILAMEDIANA		    108
 #define ITEM_ID_MALETIN				    109
 #define ITEM_ID_PARLANTE			    110
+#define ITEM_ID_CERVEZA                 111
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -232,8 +233,8 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*107*/ {"Mochila chica", "Espacio", ITEM_CONTAINER, 300, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 35},
 /*108*/ {"Mochila mediana", "Espacio", ITEM_CONTAINER, 425, false, 371, 0.377, 0.022, 0.049, 0.000, -104.999, 26.500, 0.340, -0.004, 0.074, 0.000, -99.700, 0.000, 0, 45},
 /*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 400, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45},
-/*110*/ {"Reproductor de música", "Cantidad", ITEM_SPEAKER, 550, false, 2102, 0.396, 0.000, 0.020, 0.000, -93.600, 8.399, 0.369, 0.021, 0.058, 0.000, -99.599, 0.000, 0, 50}
-
+/*110*/ {"Reproductor de música", "Cantidad", ITEM_SPEAKER, 550, false, 2102, 0.396, 0.000, 0.020, 0.000, -93.600, 8.399, 0.369, 0.021, 0.058, 0.000, -99.599, 0.000, 0, 50},
+/*111*/ {"Cerveza", "Cantidad", ITEM_OTHER, 35, true, 1486, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8}
 };
 
 //==============================FUNCIONES=======================================

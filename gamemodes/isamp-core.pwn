@@ -7185,6 +7185,28 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					}
 					case 8:
 					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CERVEZA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return SendClientMessage(playerid, COLOR_YELLOW2, "Los menores de 18 años no pueden comprar alcohol.");
+                        new Hour, Minute, Second;
+                        gettime(Hour, Minute, Second);
+						if ((8 > Hour)&&(Hour > 20))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar cerveza a esta hora. Solo de 9 a 21 horas.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+							
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_CERVEZA, 1);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CERVEZA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cerveza.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de cerveza por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_CERVEZA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_CERVEZA);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 9:
+					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_RADIO))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 
@@ -7200,7 +7222,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 9:
+					case 10:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_PARLANTE))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -9542,11 +9564,12 @@ CMD:comprar(playerid, params[])
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON)
 				);
-				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d",
+				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nCerveza\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d",
 				    content,
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
+					GetItemPrice(ITEM_ID_CERVEZA),
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_PARLANTE)
 				);
