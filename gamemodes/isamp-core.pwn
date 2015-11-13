@@ -533,6 +533,7 @@ public OnGameModeInit()
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
 	LoadServerActors();
+	LoadObjects();
 
 	//===================================[TIMERS]===============================
 	
@@ -8210,6 +8211,7 @@ CMD:gmx(playerid, params[])
 	SaveHouses();
 	SaveAllBusiness();
 	saveBuildings();
+	SaveObjectsAdmin(playerid);
 	iGMXTick = 11;
 	timersID[9] = SetTimerEx("restartTimer", 1000, true, "i", 0);
 	return 1;
@@ -8235,6 +8237,7 @@ CMD:exit(playerid, params[])
 	SaveHouses();
 	SaveAllBusiness();
 	saveBuildings();
+	SaveObjectsAdmin(playerid);
 	iGMXTick = 11;
 	timersID[9] = SetTimerEx("restartTimer", 1000, true, "i", 1);
 	return 1;
