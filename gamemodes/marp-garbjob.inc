@@ -121,7 +121,7 @@ GarbJob_PlayerEnterCheckpoint(playerid)
     if(gbCP == 25)
 	{
 		TogglePlayerControllable(playerid, false);
-		GameTextForPlayer(playerid, "Vaciando camión...", 6000, 4);
+		GameTextForPlayer(playerid, "Vaciando camion...", 6000, 4);
 		SetTimerEx("GarbJob_LoadingTimer", 6000, false, "ii", playerid, gbCP);
 		Cronometro_Borrar(playerid);
     }

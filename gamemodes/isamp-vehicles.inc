@@ -280,14 +280,14 @@ static const CarModels[][CarModelInfo] = {
 /*443*/	{"Packer", VTYPE_HEAVY, 428000, 0, 0},
 /*444*/	{"Monster", VTYPE_MONSTER, 675000, 0, 0},
 /*445*/	{"Admiral", VTYPE_CAR, 61000, 4, 200},
-/*446*/	{"Squallo", VTYPE_SEA, 775000, 2, 100},
+/*446*/	{"Squallo", VTYPE_SEA, 425000, 2, 100},
 /*447*/	{"Seasparrow", VTYPE_HELI, 2000000, 0, 0},
 /*448*/	{"Pizzaboy", VTYPE_BIKE, 25000, 0, 0},
 /*449*/	{"Tram", VTYPE_TRAIN, 500000, 0, 0},
 /*450*/	{"Article Trailer 2", VTYPE_TRAILER, 150000, 10, 500},
 /*451*/	{"Turismo", VTYPE_CAR, 1050000, 2, 100},
-/*452*/	{"Speeder", VTYPE_SEA, 755000, 2, 100},
-/*453*/	{"Reefer", VTYPE_SEA, 480000, 8, 400},
+/*452*/	{"Speeder", VTYPE_SEA, 355000, 2, 100},
+/*453*/	{"Reefer", VTYPE_SEA, 415000, 8, 400},
 /*454*/	{"Tropic", VTYPE_SEA, 830000, 6, 300},
 /*455*/	{"Flatbed", VTYPE_CAR, 180000, 8, 400},
 /*456*/	{"Yankee", VTYPE_CAR, 155000, 8, 400},
@@ -306,7 +306,7 @@ static const CarModels[][CarModelInfo] = {
 /*469*/	{"Sparrow", VTYPE_HELI, 415000, 0, 0},
 /*470*/	{"Patriot", VTYPE_CAR, 315000, 4, 200},
 /*471*/	{"Quad", VTYPE_QUAD, 30000, 0, 0},
-/*472*/	{"Coastguard", VTYPE_SEA, 150000, 2, 100},
+/*472*/	{"Coastguard", VTYPE_SEA, 115000, 2, 100},
 /*473*/	{"Dinghy", VTYPE_SEA, 55000, 0, 0},
 /*474*/	{"Hermes", VTYPE_CAR, 61000, 2, 100},
 /*475*/	{"Sabre", VTYPE_CAR, 90000, 2, 100},
@@ -327,7 +327,7 @@ static const CarModels[][CarModelInfo] = {
 /*490*/	{"FBI Rancher", VTYPE_CAR, 150000, 4, 200},
 /*491*/	{"Virgo", VTYPE_CAR, 55000, 2, 100},
 /*492*/	{"Greenwood", VTYPE_CAR, 60000, 4, 200},
-/*493*/	{"Jetmax", VTYPE_SEA, 770000, 2, 100},
+/*493*/	{"Jetmax", VTYPE_SEA, 470000, 2, 100},
 /*494*/	{"Hotring Racer", VTYPE_CAR, 1000000, 0, 0},
 /*495*/	{"Sandking", VTYPE_CAR, 1000000, 4, 200},
 /*496*/	{"Blista Compact", VTYPE_CAR, 100500, 2, 100},
@@ -488,7 +488,7 @@ GetVehicleMaxTrunkSlots(vehicleid)
 	return CarModels[modelid-400][mTrunkSlots];
 }
 
-GetVehicleModelTrunkSlots(modelid)
+stock GetVehicleModelTrunkSlots(modelid)
 {
 	if(modelid < 400 || modelid > 611)
 		return 0;
@@ -912,32 +912,7 @@ stock VehicleLog(vehicleid, playerid, targetid, command[], params[])
 
 //=============================[VEHICLE COMMANDS]===============================
 
-stock TakeItemFromTrunk(playerid, playerhand, vehicleid, trunkslot)
-{
-	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
- 	if(PlayerInfo[playerid][pHealth] < 25)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-		
-	new	itemid = GetTrunkItem(vehicleid, trunkslot),
-		itemparam = GetTrunkParam(vehicleid, trunkslot),
-		str[128];
-		
-	if(itemid <= 0)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-	if(GetHandItem(playerid, playerhand) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
-
-	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creación lógica y grafica en la mano.
-	SetTrunkItemAndParam(vehicleid, trunkslot, 0, 0);
-	format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
-	PlayerActionMessage(playerid, 15.0, str);
-	format(str, sizeof(str), "tomar %d %s slot %d", itemparam, GetItemName(itemid), trunkslot);
-	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
-	return 1;
-}
-
-//==============================[EXPERIMENTAL]==================================
+//============================[EXPERIMENTAL]====================================
 
 CMD:mal(playerid, params[])
 {
@@ -1194,213 +1169,7 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
 	return 1;
 }
 
-//============================[FIN EXPERIMENTAL]================================
-
-CMD:mal2(playerid, params[])
-{
- 	cmd_maletero2(playerid, params);
-	return 1;
-}
-
-CMD:maletero2(playerid, params[])
-{
-	new vehicleid = GetClosestVehicle(playerid, 5.0),
-		returnstr[32],
-		returnid2,
-		cmd[32];
-
-    if(IsPlayerInAnyVehicle(playerid))
-       	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes salir del vehículo primero!");
-    if(vehicleid == INVALID_VEHICLE_ID)
-       	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningún vehículo cerca tuyo.");
-    if(GetVehicleMaxTrunkSlots(vehicleid) == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no tiene maletero!");
-	if(VehicleInfo[vehicleid][VehBoot] != 1 && !AdminDuty[playerid])
-	   	return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero está cerrado!");
-        
-    if(sscanf(params, "s[32]S(-1)[32]I(-1)", cmd, returnstr, returnid2))
-	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero [comando]");
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari [slot de item] - guardardroga [tipo] [cant]");
-     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomardroga [tipo] [cant] - guardardinero [cant] - tomardinero [slot de item]");
-		PrintTrunkForPlayer(vehicleid, playerid);
-		if(VehicleInfo[vehicleid][VehMarijuana] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Marihuana: %d gramos.", VehicleInfo[vehicleid][VehMarijuana]);
-		}
-		if(VehicleInfo[vehicleid][VehLSD] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - LSD: %d dosis.", VehicleInfo[vehicleid][VehLSD]);
-		}
-		if(VehicleInfo[vehicleid][VehEcstasy] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Éxtasis: %d dosis.", VehicleInfo[vehicleid][VehEcstasy]);
-		}
-		if(VehicleInfo[vehicleid][VehCocaine] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", VehicleInfo[vehicleid][VehCocaine]);
-		}
-       	SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
-       	return 1;
-	}
-	
-	if(strcmp(cmd, "guardardroga", true) == 0)
-	{
-        if(strcmp(returnstr, "marihuana", true) == 0)
-		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-            if(PlayerInfo[playerid][pMarijuana] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pMarijuana] -= returnid2;
-            VehicleInfo[vehicleid][VehMarijuana] += returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "lsd", true) == 0)
-		{
-			if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(PlayerInfo[playerid][pLSD] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pLSD] -= returnid2;
-         	VehicleInfo[vehicleid][VehLSD] += returnid2;
-         	SaveVehicle(vehicleid);
-         	PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
-         	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "extasis", true) == 0)
-		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(PlayerInfo[playerid][pEcstasy] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pEcstasy] -= returnid2;
-            VehicleInfo[vehicleid][VehEcstasy] += returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "cocaina", true) == 0)
-		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(PlayerInfo[playerid][pCocaine] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pCocaine] -= returnid2;
-            VehicleInfo[vehicleid][VehCocaine] += returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "guarda un paquete sospechoso dentro de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else
-		{
-            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero guardardroga [tipo] [cantidad]");
-       		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
-        }
-    }
-	else if(strcmp(cmd, "tomardroga", true) == 0)
-	{
-       	if(strcmp(returnstr, "marihuana", true) == 0)
- 		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-            if(VehicleInfo[vehicleid][VehMarijuana] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pMarijuana] += returnid2;
-            VehicleInfo[vehicleid][VehMarijuana] -= returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "lsd", true) == 0)
-		{
-			if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(VehicleInfo[vehicleid][VehLSD] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pLSD] += returnid2;
-         	VehicleInfo[vehicleid][VehLSD] -= returnid2;
-         	SaveVehicle(vehicleid);
-         	PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
-         	VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "extasis", true) == 0)
-		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(VehicleInfo[vehicleid][VehEcstasy] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pEcstasy] += returnid2;
-            VehicleInfo[vehicleid][VehEcstasy] -= returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else if(strcmp(returnstr, "cocaina", true) == 0)
-		{
-            if(returnid2 <= 0 || returnid2 > 5000)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad no debe ser menor a 0 o mayor que 5000.");
-        	if(VehicleInfo[vehicleid][VehCocaine] < returnid2)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-
-			PlayerInfo[playerid][pCocaine] += returnid2;
-            VehicleInfo[vehicleid][VehCocaine] -= returnid2;
-            SaveVehicle(vehicleid);
-            PlayerActionMessage(playerid, 15.0, "toma un paquete sospechoso de su vehículo.");
-            VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-        }
-		else
-		{
-            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/mal)etero tomardroga [tipo] [cantidad]");
-       		SendClientMessage(playerid, COLOR_YELLOW2, "Tipos: marihuana - lsd - extasis - cocaina");
-        }
-	}
-	else if(strcmp(cmd, "guardardinero", true) == 0)
-	{
-		if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-	    new amount = strval(returnstr);
-	    if(amount < 1 || amount > 250000)
-	        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes guardar menos de $1 ni más de $250.000 por slot.");
-		if(GetPlayerCash(playerid) < amount)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad de efectivo.");
-
-		new validslot = SearchTrunkFreeSlot(vehicleid);
-		if(validslot == -1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El maletero se encuentra lleno!");
-			
-		SetPVarInt(playerid, "cantSaveItems", 1);
-		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-		SetTrunkItemAndParam(vehicleid, validslot, 51, amount);
-		GivePlayerCash(playerid, -amount);
-		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-	}
-	else if(strcmp(cmd, "tomardinero", true) == 0)
-	{
-
-		new slot = strval(returnstr);
-        if(GetTrunkItem(vehicleid, slot) != 51)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
-			
-		GivePlayerCash(playerid, GetTrunkParam(vehicleid, slot));
-		SetTrunkItemAndParam(vehicleid, slot, 0, 0);
-		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", params);
-    }
-	else if(strcmp(cmd, "tomar", true) == 0)
-	{
-		TakeItemFromTrunk(playerid, HAND_RIGHT, vehicleid, strval(returnstr));
-    }
-	else if(strcmp(cmd, "tomari", true) == 0)
-	{
-		TakeItemFromTrunk(playerid, HAND_LEFT, vehicleid, strval(returnstr));
-    }
-	return 1;
-}
+//===========================[FIN EXPERIMENTAL]=================================
 
 CMD:usarbidon(playerid, params[])
 {

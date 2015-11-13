@@ -10,9 +10,6 @@
 #define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
 #define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios"
 
-#define DLG_BIZ_HARD            10028
-#define DLG_BIZ_ACCESS          10029
-
 // Negocios.
 #define BIZ_REST          		1
 #define BIZ_PHON                2
@@ -178,13 +175,6 @@ forward ResetBusinessOffer(playerid);
 forward bool:EnterBusiness(playerid);
 forward bool:LeaveBusiness(playerid);
 
-forward OnPlayerBuyHard(playerid, biz);
-forward OnPlayerBuyHardDialog(playerid, listitem);
-forward OnPlayerBuyClot(biz, playerid);
-forward OnPlayerBuyAmmu(biz, playerid, params[]);
-forward OnPlayerBuyAccess(playerid, biz);
-forward OnPlayerBuyAccessDialog(playerid, listitem);
-
 //==========================IMPLEMENTACION DE FUNCIONES=========================
 
 stock ResetBusinessOffer(playerid)
@@ -222,42 +212,47 @@ stock bool:EnterBusiness(playerid)
 				SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
 	            SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
 	            SetCameraBehindPlayer(playerid);
-	            PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-    		} else
-		    	{
-			    	if(Business[i][bLocked] == 1 && AdminDuty[playerid] != 1) {
-						GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
-						return true;
-					}
-					if(GetPlayerCash(playerid) < Business[i][bEntranceFee]) {
-						SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
-						return true;
-					}
-					SetPlayerInterior(playerid, Business[i][bInsideInt]);
-					SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
-					SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
-					SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
-					SetCameraBehindPlayer(playerid);
-					PlayRadioStreamForPlayer(playerid, Business[i][bRadio]);
-					GivePlayerCash(playerid, -Business[i][bEntranceFee]);
-					if(Business[i][bEntranceFee] > 0)
-                        SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
-					switch(Business[i][bType])
-					{
-					    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD, BIZ_ACCESS:
-			    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
-					    case BIZ_CLUB, BIZ_CLUB2:
-					    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
-						case BIZ_REST, BIZ_PIZZERIA, BIZ_BURGER1, BIZ_BURGER2, BIZ_BELL:
-  							SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
-						case BIZ_CASINO:
- 	    					SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
-					}
-					if(Business[i][bProducts] == 0)
-						GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
-					Business[i][bTill] += Business[i][bEntranceFee];
-					saveBusiness(i);
+	            if(Business[i][bRadio] > 0)
+	            	Radio_Set(playerid, Business[i][bRadio], RADIO_TYPE_BIZ);
+    		}
+			else
+	    	{
+		    	if(Business[i][bLocked] == 1 && !AdminDuty[playerid])
+				{
+					GameTextForPlayer(playerid, "~r~negocio cerrado.", 2000, 4);
+					return true;
 				}
+				if(GetPlayerCash(playerid) < Business[i][bEntranceFee])
+				{
+					SendClientMessage(playerid,COLOR_YELLOW2,"¡No tienes el dinero suficiente!");
+					return true;
+				}
+				SetPlayerInterior(playerid, Business[i][bInsideInt]);
+				SetPlayerPos(playerid, Business[i][bInsideX] + 2 * floatcos(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideY] + 2 * floatsin(Business[i][bInsideAngle] + 90, degrees), Business[i][bInsideZ]);
+				SetPlayerVirtualWorld(playerid, Business[i][bInsideWorld]);
+				SetPlayerFacingAngle(playerid, Business[i][bInsideAngle]);
+				SetCameraBehindPlayer(playerid);
+    			if(Business[i][bRadio] > 0)
+	            	Radio_Set(playerid, Business[i][bRadio], RADIO_TYPE_BIZ);
+				GivePlayerCash(playerid, -Business[i][bEntranceFee]);
+				if(Business[i][bEntranceFee] > 0)
+                    SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al negocio %s!", Business[i][bEntranceFee], Business[i][bName]);
+				switch(Business[i][bType])
+				{
+				    case BIZ_247, BIZ_CLOT, BIZ_CLOT2, BIZ_AMMU, BIZ_HARD, BIZ_ACCESS:
+		    			SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comprar para comprar en este negocio.");
+				    case BIZ_CLUB, BIZ_CLUB2:
+				    	SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida.");
+					case BIZ_REST, BIZ_PIZZERIA, BIZ_BURGER1, BIZ_BURGER2, BIZ_BELL:
+						SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /comer para comprar comida.");
+					case BIZ_CASINO:
+    					SendClientMessage(playerid, COLOR_YELLOW2, "Utiliza /beber para comprar una bebida o /apostar para jugar en el casino.");
+				}
+				if(Business[i][bProducts] == 0)
+					GameTextForPlayer(playerid, "~r~sin productos.", 2000, 4);
+				Business[i][bTill] += Business[i][bEntranceFee];
+				saveBusiness(i);
+			}
 			return true;
 		}
 	}
@@ -277,15 +272,17 @@ stock bool:LeaveBusiness(playerid)
 					DestroySelectionMenu(playerid);
 					CancelSelectTextDraw(playerid);
 				}
-				if(Business[i][bLocked] == 0 || AdminDuty[playerid] >= 1)
+				if(Business[i][bLocked] == 0 || AdminDuty[playerid])
 				{
 					SetPlayerInterior(playerid, Business[i][bOutsideInt]);
 					SetPlayerVirtualWorld(playerid, 0);
 					SetPlayerPos(playerid,Business[i][bOutsideX],Business[i][bOutsideY],Business[i][bOutsideZ]);
 		            SetPlayerFacingAngle(playerid, Business[i][bOutsideAngle]);
 		            SetCameraBehindPlayer(playerid);
-		            PlayRadioStreamForPlayer(playerid, 0);
-				} else
+		            if(Radio_IsOnType(playerid, RADIO_TYPE_BIZ))
+						Radio_Stop(playerid);
+				}
+				else
 					GameTextForPlayer(playerid, "~r~Cerrado!", 2000, 4);
 				return true;
 			}
@@ -506,7 +503,8 @@ CMD:negocioradio(playerid,params[])
 
 	Business[bizID][bRadio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del negocio a %d.", Business[bizID][bRadio]);
-	PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+	if(Business[bizID][bRadio] > 0)
+		Radio_Set(playerid, Business[bizID][bRadio], RADIO_TYPE_BIZ);
 	return 1;
 }
 
@@ -827,7 +825,8 @@ CMD:anradio(playerid,params[])
 	{
 		Business[bizID][bRadio] = radio;
 		SendFMessage(playerid, COLOR_ADMINCMD, "Has seteado la radio del negocio [%d] a %d.", bizID, radio);
-		PlayRadioStreamForPlayer(playerid, Business[bizID][bRadio]);
+	 	if(Business[bizID][bRadio] > 0)
+			Radio_Set(playerid, Business[bizID][bRadio], RADIO_TYPE_BIZ);
  	}
 	return 1;
 }
@@ -1094,111 +1093,102 @@ CMD:comer(playerid, params[])
 
 //===========================NEGOCIO FERRETERIA/HARD============================
 
-public OnPlayerBuyHard(playerid, biz)
+OnPlayerBuyHard(playerid, biz)
 {
 	if(Business[biz][bProducts] < 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve más tarde.");
 
-    TogglePlayerControllable(playerid, false);
-	ShowPlayerHardBizDialog(playerid, biz);
-	return 1;
-}
+    new content[600] = "";
 
-ShowPlayerHardBizDialog(playerid, biz)
-{
-	new title[64], content[600] = "";
-
-	format(title, sizeof(title), "%s", Business[biz][bName]);
 	for(new i = 0; i < sizeof(HardItems); i++)
 	{
-		format(content, sizeof(content), "%s{FFEFD5}%s {556B2F}$%d\n", content, GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
+		format(content, sizeof(content), "%s%s\t$%d\n", content, GetItemName(HardItems[i]), GetItemPrice(HardItems[i]));
 	}
 
-	ShowPlayerDialog(playerid, DLG_BIZ_HARD, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+	Dialog_Show(playerid, Hardware_Shop, DIALOG_STYLE_TABLIST, Business[biz][bName], content, "Comprar", "Cerrar");
 	return 1;
 }
 
-public OnPlayerBuyHardDialog(playerid, listitem)
+Dialog:Hardware_Shop(playerid, response, listitem, inputtext[])
 {
-	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
+	if(response)
+	{
+		new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
 
- 	if(biz == 0)
-    	return 1;
+	 	if(biz == 0)
+	    	return 1;
 
-	itemid = HardItems[listitem];
-	itemprice = GetItemPrice(itemid);
+		itemid = HardItems[listitem];
+		itemprice = GetItemPrice(itemid);
 
-	if(GetPlayerCash(playerid) < itemprice)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
-	freehand = SearchFreeHand(playerid);
-	if(freehand == -1)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
+		if(GetPlayerCash(playerid) < itemprice)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
+		freehand = SearchFreeHand(playerid);
+		if(freehand == -1)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
-	SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
-	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
-    GivePlayerCash(playerid, -itemprice);
-    Business[biz][bTill] += itemprice;
-    Business[biz][bProducts] --;
-    saveBusiness(biz);
-	PlayerActionMessage(playerid, 15.0, str);
+		SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
+		format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
+	    GivePlayerCash(playerid, -itemprice);
+	    Business[biz][bTill] += itemprice;
+	    Business[biz][bProducts] --;
+	    saveBusiness(biz);
+		PlayerActionMessage(playerid, 15.0, str);
+	}
 	return 1;
 }
 
 //===========================NEGOCIO DE ACCESORIOS==============================
 
-public OnPlayerBuyAccess(playerid, biz)
+
+OnPlayerBuyAccess(playerid, biz)
 {
 	if(Business[biz][bProducts] < 1)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio se ha quedado sin stock, vuelve más tarde.");
 
-    TogglePlayerControllable(playerid, false);
-	ShowPlayerAccessBizDialog(playerid, biz);
-	return 1;
-}
+	new content[1500] = "";
 
-ShowPlayerAccessBizDialog(playerid, biz)
-{
-	new title[64], content[1500] = "";
-
-	format(title, sizeof(title), "%s", Business[biz][bName]);
 	for(new i = 0; i < sizeof(AccessItems); i++)
 	{
-		format(content, sizeof(content), "%s{FFEFD5}%s {556B2F}$%d\n", content, GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
+		format(content, sizeof(content), "%s%s\t$%d\n", content, GetItemName(AccessItems[i]), GetItemPrice(AccessItems[i]));
 	}
 
-	ShowPlayerDialog(playerid, DLG_BIZ_ACCESS, DIALOG_STYLE_LIST, title, content, "Comprar", "Cerrar");
+	Dialog_Show(playerid, Access_Shop, DIALOG_STYLE_TABLIST, Business[biz][bName], content, "Comprar", "Cerrar");
 	return 1;
 }
 
-public OnPlayerBuyAccessDialog(playerid, listitem)
+Dialog:Access_Shop(playerid, response, listitem, inputtext[])
 {
-	new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
+	if(response)
+	{
+		new biz = GetPlayerBusiness(playerid), itemid, itemprice, str[128], freehand;
 
- 	if(biz == 0)
-    	return 1;
+	 	if(biz == 0)
+	    	return 1;
 
-	itemid = AccessItems[listitem];
-	itemprice = GetItemPrice(itemid);
+		itemid = AccessItems[listitem];
+		itemprice = GetItemPrice(itemid);
 
-	if(GetPlayerCash(playerid) < itemprice)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
-	freehand = SearchFreeHand(playerid);
-	if(freehand == -1)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
+		if(GetPlayerCash(playerid) < itemprice)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente.");
+		freehand = SearchFreeHand(playerid);
+		if(freehand == -1)
+	        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
-	SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
-	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
-    GivePlayerCash(playerid, -itemprice);
-    Business[biz][bTill] += itemprice;
-    Business[biz][bProducts] --;
-    saveBusiness(biz);
-	PlayerActionMessage(playerid, 15.0, str);
+		SetHandItemAndParam(playerid, freehand, itemid, 1); // Creación lógica y grafica en la mano.
+		format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
+	    GivePlayerCash(playerid, -itemprice);
+	    Business[biz][bTill] += itemprice;
+	    Business[biz][bProducts] --;
+	    saveBusiness(biz);
+		PlayerActionMessage(playerid, 15.0, str);
+	}
 	return 1;
 }
 
 //============================NEGOCIO DE ROPA/CLOT==============================
 
-public OnPlayerBuyClot(biz, playerid)
+OnPlayerBuyClot(biz, playerid)
 {
 	new skintype;
 	
@@ -1242,7 +1232,7 @@ ShowAmmuCatalog(playerid)
 	return 1;
 }
 
-public OnPlayerBuyAmmu(biz, playerid, params[])
+OnPlayerBuyAmmu(biz, playerid, params[])
 {
 	new option, param, itemid, itemprice, str[128], freehand;
 	
@@ -1278,6 +1268,8 @@ public OnPlayerBuyAmmu(biz, playerid, params[])
 	PlayerActionMessage(playerid, 15.0, str);
 	return 1;
 }
+
+//==============================================================================
 
 CMD:comprarproductos(playerid, params[])
 {

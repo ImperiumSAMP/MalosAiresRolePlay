@@ -185,7 +185,7 @@ stock bool:CreateRace(playerid)
 CMD:carreracrear(playerid, params[])
 {
     if(PlayerInfo[playerid][pLevel] < 8)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Para organizar carreras debes ser un usuario experimentado en el servidor ((Nivel 15)).");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Para organizar carreras debes ser un usuario experimentado en el servidor ((Nivel 8)).");
 	if(PlayerRaceInfo[playerid][pRaceID] != -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras en una carrera.");
 	if(CreateRace(playerid))
@@ -517,7 +517,7 @@ CMD:carrerainiciar(playerid, params[])
  	if(CountRaceDrivers(PlayerRaceInfo[playerid][pRaceID]) < 2)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "La carrera debe contar con al menos 2 corredores. Usa /carrerainvitar para agregar corredores.");
 
-	if(random(4) == 0) // 25% de chance de que se alerte a la policia
+	if(random(3) == 0) // 33% de chance de que se alerte a la policia
 	{
 	    new location[MAX_ZONE_NAME];
 	    GetPlayer2DZone(playerid, location, MAX_ZONE_NAME);
@@ -547,27 +547,49 @@ stock OnDriverRaceCheckpoint(driverid)
 
 		if(pcp == rcp) // Entró al ultimo checkpoint de la vuelta
 		{
-			if(pl == rl) // Si está en la ultima vuelta le seteamos en el checkpoint de la largada la bandera a cuadros
-				SetPlayerRaceCheckpoint(driverid, 1, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], 0.0, 0.0, 0.0, 10);
-			else // Sino le seteamos el checkpoint de la largada de la nueva vuelta apuntando al segundo cp.
-				SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], 10.0);
-		}
-		else if(pcp == rcp + 1) // Entró al primer checkpoint luego de una vuelta (largada/bandera a cuadros)
-		{
-			if(pl == rl) // Termina la carrera
+		    if(rl == 1) // Si es modalidad SPRINT
 		    {
 		        new str[128];
+		        
 		        if(RaceInfo[raceid][rWinner] == INVALID_PLAYER_ID)
 		        {
 	            	format(str, sizeof(str), "[Carrera]: %s ha ganado la carrera.", GetPlayerNameEx(driverid));
 					RaceMessage(raceid, COLOR_LIGHTGREEN, str);
 					GameTextForPlayer(driverid, "¡Ganaste!", 1000, 3);
                     RaceInfo[raceid][rWinner] = driverid;
-				} else
-				    {
-	  					format(str, sizeof(str), "[Carrera]: %s ha terminado la carrera.", GetPlayerNameEx(driverid));
-						RaceMessage(raceid, COLOR_WHITE, str);
-				    }
+				}
+				else
+			    {
+  					format(str, sizeof(str), "[Carrera]: %s ha terminado la carrera.", GetPlayerNameEx(driverid));
+					RaceMessage(raceid, COLOR_WHITE, str);
+			    }
+		    }
+		    else
+		    {
+				if(pl == rl) // Si está en la ultima vuelta le seteamos en el checkpoint de la largada la bandera a cuadros
+					SetPlayerRaceCheckpoint(driverid, 1, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], 0.0, 0.0, 0.0, 10);
+				else // Sino le seteamos el checkpoint de la largada de la nueva vuelta apuntando al segundo cp.
+					SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][0][0], TrackInfo[raceid][0][1], TrackInfo[raceid][0][2], TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], 10.0);
+			}
+		}
+		else if(pcp == rcp + 1) // Entró al primer checkpoint luego de una vuelta (largada/bandera a cuadros)
+		{
+			if(pl == rl) // Termina la carrera
+		    {
+		        new str[128];
+		        
+		        if(RaceInfo[raceid][rWinner] == INVALID_PLAYER_ID)
+		        {
+	            	format(str, sizeof(str), "[Carrera]: %s ha ganado la carrera.", GetPlayerNameEx(driverid));
+					RaceMessage(raceid, COLOR_LIGHTGREEN, str);
+					GameTextForPlayer(driverid, "¡Ganaste!", 1000, 3);
+                    RaceInfo[raceid][rWinner] = driverid;
+				}
+				else
+			    {
+  					format(str, sizeof(str), "[Carrera]: %s ha terminado la carrera.", GetPlayerNameEx(driverid));
+					RaceMessage(raceid, COLOR_WHITE, str);
+			    }
 			} else // Termina la vuelta
 				{
 			        SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][1][0], TrackInfo[raceid][1][1], TrackInfo[raceid][1][2], TrackInfo[raceid][2][0], TrackInfo[raceid][2][1], TrackInfo[raceid][2][2], 10.0);
@@ -576,6 +598,15 @@ stock OnDriverRaceCheckpoint(driverid)
 				}
 		}
 		else // checkpoint comun, con checkpoint entremedio de meta y largada
-		    SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][1], TrackInfo[raceid][pcp+1][2], 10.0);
+		{
+		    if(rl == 1 && pcp == rcp - 1) // Si es modalidad SPRINT y está en el anteúltimo checkpoint: le seteamos el último con la bandera a cuadros
+		    {
+      			SetPlayerRaceCheckpoint(driverid, 1, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], 0.0, 0.0, 0.0, 10.0);
+		    }
+		    else
+		    {
+		    	SetPlayerRaceCheckpoint(driverid, 0, TrackInfo[raceid][pcp][0], TrackInfo[raceid][pcp][1], TrackInfo[raceid][pcp][2], TrackInfo[raceid][pcp+1][0], TrackInfo[raceid][pcp+1][1], TrackInfo[raceid][pcp+1][2], 10.0);
+			}
+		}
 	}
 }

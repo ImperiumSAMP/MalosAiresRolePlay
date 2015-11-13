@@ -5,7 +5,8 @@
 
 new Text3D:descLabel[MAX_PLAYERS],
 	descText[MAX_PLAYERS][70],
-	bool:descActive[MAX_PLAYERS];
+	bool:descActive[MAX_PLAYERS],
+	ReplenishDescTimer[MAX_PLAYERS];
 	
 stock ResetDescVariables(playerid)
 {
@@ -39,7 +40,7 @@ stock HidePlayerDesc(playerid, time)
 {
     DestroyDynamic3DTextLabel(descLabel[playerid]);
     descActive[playerid] = false;
-    SetTimerEx("ReplenishDesc", time, false, "i", playerid);
+    ReplenishDescTimer[playerid] = SetTimerEx("ReplenishDesc", time, false, "i", playerid);
 }
 
 CMD:yo(playerid, params[])
@@ -69,6 +70,24 @@ CMD:yob(playerid, params[])
 	DestroyDynamic3DTextLabel(descLabel[playerid]);
 	SendClientMessage(playerid, COLOR_WHITE, "Has borrado tu descripción actual. Para escribir una nueva usa /yo.");
 	ResetDescVariables(playerid);
+	return 1;
+}
+
+CMD:yodebug(playerid, params[])
+{
+	new targetid, param;
+
+	if(sscanf(params, "ui", targetid, param))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /yodebug [ID/Jugador] [descActive (0 = true - 1 = false)]");
+	if(param != 0 && param != 1)
+	    return 1;
+		
+	if(param == 0)
+		descActive[targetid] = true;
+	else {
+		DestroyDynamic3DTextLabel(descLabel[targetid]);
+		ResetDescVariables(playerid);
+	}
 	return 1;
 }
 

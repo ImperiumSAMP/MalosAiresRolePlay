@@ -14,7 +14,7 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 
-#define MAX_ITEMS               111
+#define MAX_ITEMS               112
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -81,6 +81,7 @@
 #define ITEM_ID_MOCHILAMEDIANA		    108
 #define ITEM_ID_MALETIN				    109
 #define ITEM_ID_PARLANTE			    110
+#define ITEM_ID_CERVEZA                 111
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -125,7 +126,7 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*0*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*1*/	{"Manopla", "Cantidad", ITEM_WEAPON, 40, true, 331, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 5},
 /*2*/	{"Palo de Golf", "Cantidad", ITEM_WEAPON, 60, false, 333, 0.035, 0.074, 0.0, 153.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
-/*3*/	{"Macana", "Cantidad", ITEM_WEAPON, 300, true, 334, 0.017, 0.048, -0.13, 175.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
+/*3*/	{"Macana", "Cantidad", ITEM_WEAPON, 300, true, 334, 0.017, 0.048, -0.13, 175.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*4*/	{"Navaja", "Cantidad", ITEM_WEAPON, 250, true, 335, 0.0, 0.074, 0.0, 148.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 6},
 /*5*/	{"Bate", "Cantidad", ITEM_WEAPON, 120, false, 336, 0.024, 0.017, -0.13, 157.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
 /*6*/	{"Pala", "Cantidad", ITEM_WEAPON, 75, false, 337, 0.032, 0.065, 0.0, 163.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
@@ -163,16 +164,16 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*38*/	{"Minigun", "Munición", ITEM_WEAPON, 0, false, 362, -0.039, 0.126, -0.079, -164.78, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
 /*39*/	{"Carga C4", "Cantidad", ITEM_WEAPON, 15000, false, 363, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
 /*40*/	{"Detonador", "Cantidad", ITEM_WEAPON, 1000, true, 364, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4},
-/*41*/	{"Aerosol", "Contenido", ITEM_WEAPON, 50, true, 365, 0.029, 0.059, -0.109, -177.1, -0.9, -21.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*41*/	{"Aerosol", "Contenido", ITEM_WEAPON, 50, true, 365, 0.029, 0.059, -0.109, -177.1, -0.9, -21.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 6},
 /*42*/	{"Matafuegos", "Contenido", ITEM_WEAPON, 250, false, 366, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
 /*43*/	{"Cámara fotográfica", "Fotos", ITEM_WEAPON, 10, true, 367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
 /*44*/	{"Visión nocturna", "Cantidad", ITEM_WEAPON, 0, false, 368, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, 0, false, 369, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*46*/	{"Paracaídas", "Cantidad", ITEM_WEAPON, 0, false, 371, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
 /*47*/	{"Caja de materiales", "Cantidad", ITEM_OTHER, 45, false, 2040, 0.0, 0.074, 0.016, -85.2, 0.0, 0.0, 0.0, 0.074, 0.016, -85.2, 0.0, 0.0, 0, 100},
-/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 50, false, 1650, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0, 75},
+/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 50, false, 1650, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0, 70},
 /*49*/	{"Bolsa de materia prima", "Cantidad", ITEM_OTHER, 10, false, 2060, 0.0, 0.086, 0.155, 93.6, 0.0, 75.1, 0.0, 0.086, 0.155, 93.6, 0.0, 75.1, 0, 60},
-/*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false, 2694, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0, 100},
+/*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false, 2694, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0, 65},
 /*51*/	{"Dinero", "Cantidad", ITEM_OTHER, 1, false, 1212, 0.115, 0.039, 0.0, 1.9, -102.40, 10.8, 0.115, 0.039, 0.0, 1.9, -102.40, 10.8, 0, 4},
 /*52*/	{"Sándwich", "Cantidad", ITEM_OTHER, 20, true, 2769, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, 10, true, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
@@ -232,8 +233,8 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*107*/ {"Mochila chica", "Espacio", ITEM_CONTAINER, 300, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 35},
 /*108*/ {"Mochila mediana", "Espacio", ITEM_CONTAINER, 425, false, 371, 0.377, 0.022, 0.049, 0.000, -104.999, 26.500, 0.340, -0.004, 0.074, 0.000, -99.700, 0.000, 0, 45},
 /*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 400, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45},
-/*110*/ {"Reproductor de música", "Cantidad", ITEM_SPEAKER, 550, false, 2102, 0.396, 0.000, 0.020, 0.000, -93.600, 8.399, 0.369, 0.021, 0.058, 0.000, -99.599, 0.000, 0, 50}
-
+/*110*/ {"Reproductor de música", "Cantidad", ITEM_SPEAKER, 550, false, 2102, 0.396, 0.000, 0.020, 0.000, -93.600, 8.399, 0.369, 0.021, 0.058, 0.000, -99.599, 0.000, 0, 50},
+/*111*/ {"Cerveza", "Cantidad", ITEM_OTHER, 35, true, 1486, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8}
 };
 
 //==============================FUNCIONES=======================================

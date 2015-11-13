@@ -82,16 +82,14 @@ forward OnContainerDataLoad(container_id);
 public OnContainerDataLoad(container_id)
 {
 	new rows,
-		fields,
-		result[32];
+		fields;
 
 	cache_get_data(rows, fields);
 
 	if(rows)
 	{
-		cache_get_field_content(0, "MinItemSpace", result); vector_set(container_id, CONTAINER_INDEX_MIN_ITEM_SPACE, strval(result));
-		cache_get_field_content(0, "TotalSpace", result); 	vector_set(container_id, CONTAINER_INDEX_TOTAL_SPACE, strval(result));
-		cache_get_field_content(0, "UsedSpace", result); 	vector_set(container_id, CONTAINER_INDEX_USED_SPACE, strval(result));
+		vector_set(container_id, CONTAINER_INDEX_MIN_ITEM_SPACE, cache_get_field_content_int(0, "MinItemSpace"));
+		vector_set(container_id, CONTAINER_INDEX_TOTAL_SPACE, cache_get_field_content_int(0, "TotalSpace"));
 	}
 	return 1;
 }
@@ -103,7 +101,8 @@ public OnContainerSlotsLoad(container_id)
 {
 	new rows,
 		fields,
-		result[32];
+		item_id,
+		param;
 
 	cache_get_data(rows, fields);
 
@@ -111,18 +110,20 @@ public OnContainerSlotsLoad(container_id)
 	{
 	    for(new i = 0; i < rows; i++)
 	    {
-			cache_get_field_content(i, "Item", result);
-        	vector_push_back(container_id, strval(result));
+			item_id = cache_get_field_content_int(i, "Item");
+        	vector_push_back(container_id, item_id);
         	
-			if(GetItemType(strval(result)) == ITEM_CONTAINER)
+        	vector_set(container_id, CONTAINER_INDEX_USED_SPACE, vector_get(container_id, CONTAINER_INDEX_USED_SPACE) + GetItemSpace(item_id));
+        	
+        	param = cache_get_field_content_int(i, "Param");
+        	
+			if(GetItemType(item_id) == ITEM_CONTAINER)
 			{
-				cache_get_field_content(i, "Param", result);
-				vector_push_back(container_id, Container_Load(strval(result)));
+				vector_push_back(container_id, Container_Load(param));
 			}
 			else
 			{
-				cache_get_field_content(i, "Param", result);
-				vector_push_back(container_id, strval(result));
+				vector_push_back(container_id, param);
 			}
 		}
 	}
@@ -223,12 +224,6 @@ stock Container_AddUsedSpace(id, space)
 	if(id > 0 && vector_size(id) > 3) // Está creado (tiene al menos los 3 elementos que se generan al crearlo)
 	{
 		vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) + space);
-		
-		new query[128];
-
-		format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = %d WHERE container = %d", Container_GetUsedSpace(id), Container_GetSQLID(id));
-		mysql_function_query(dbHandle, query, false, "", "");
-		
 		return 1;
 	}
 
@@ -379,6 +374,35 @@ stock Container_SearchItem(id, itemid)
 
 //==============================================================================
 
+stock Container_Empty_Weapons(id)
+{
+    if(id > 0 && vector_size(id) > 3)
+    {
+  		new query[128];
+        new vec_sqlid = vector_get(id, CONTAINER_INDEX_SQLID);
+		new vec_size = vector_size(id);
+
+		for(new i = 4; i < vec_size; i += 2) // Para todos los items almacenados en el vector que simula el contenedor
+		{
+		    if(GetItemType(vector_get(id, i)) == ITEM_WEAPON) // Como "i" cae en los items, obtenemos el valor en posicion "i" y nos fijamos
+			{
+			    vector_set(id, CONTAINER_INDEX_USED_SPACE, vector_get(id, CONTAINER_INDEX_USED_SPACE) - GetItemSpace(vector_get(id, i)));
+			    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d AND Item = %d AND Param = %d LIMIT 1", vec_sqlid, vector_get(id, i), vector_get(id, i+1)); // Guardamos
+                mysql_function_query(dbHandle, query, false, "", "");
+				vector_remove(id, i); // Remueve item.
+			    vector_remove(id, i); // Al remover item, param cae a la pos de item, por lo tanto borramos la misma.
+			    vec_size = vec_size - 2;
+			    i = i - 2;
+			}
+		}
+		return 1;
+	}
+
+	return 0;
+}
+
+//==============================================================================
+
 stock Container_Empty(id)
 {
     if(id > 0 && vector_size(id) > 3)
@@ -397,9 +421,6 @@ stock Container_Empty(id)
 			    Container_Fully_Destroy(vector_get(id, i+1), Container_GetSQLID(vector_get(id, i+1))); // Los items CONTAINER, en su parametro guardan la id del vector real de ejecucion de su contenedor
 			}
 		}
-		
-	    format(query, sizeof(query), "UPDATE containers_info SET UsedSpace = 0 WHERE container = %d", vec_sqlid);
-		mysql_function_query(dbHandle, query, false, "", "");
 
 	    format(query, sizeof(query), "DELETE FROM containers_slots WHERE container = %d", vec_sqlid);
 	    mysql_function_query(dbHandle, query, false, "", "");
