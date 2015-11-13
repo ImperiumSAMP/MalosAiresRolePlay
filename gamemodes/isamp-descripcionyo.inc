@@ -5,7 +5,8 @@
 
 new Text3D:descLabel[MAX_PLAYERS],
 	descText[MAX_PLAYERS][70],
-	bool:descActive[MAX_PLAYERS];
+	bool:descActive[MAX_PLAYERS],
+	ReplenishDescTimer[MAX_PLAYERS];
 	
 stock ResetDescVariables(playerid)
 {
@@ -39,7 +40,7 @@ stock HidePlayerDesc(playerid, time)
 {
     DestroyDynamic3DTextLabel(descLabel[playerid]);
     descActive[playerid] = false;
-    SetTimerEx("ReplenishDesc", time, false, "i", playerid);
+    ReplenishDescTimer[playerid] = SetTimerEx("ReplenishDesc", time, false, "i", playerid);
 }
 
 CMD:yo(playerid, params[])

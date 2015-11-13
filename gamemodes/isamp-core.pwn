@@ -1057,6 +1057,7 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
+	KillTimer(ReplenishDescTimer[playerid]);
 	DestroyAfkTimer(playerid);
 	KillMissionEventTimer(playerid);
 	ResetThiefCrime(playerid);
