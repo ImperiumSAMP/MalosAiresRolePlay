@@ -7191,7 +7191,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
                             return SendClientMessage(playerid, COLOR_YELLOW2, "Los menores de 18 años no pueden comprar alcohol.");
                         new Hour, Minute, Second;
                         gettime(Hour, Minute, Second);
-						if ((8 > Hour)&&(Hour > 20))
+						if ((8 > Hour) || (Hour > 20))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar cerveza a esta hora. Solo de 9 a 21 horas.");
                         new freehand = SearchFreeHand(playerid);
 						if(freehand == -1)
