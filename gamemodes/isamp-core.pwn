@@ -7810,8 +7810,9 @@ CMD:teleayuda(playerid, params[])
 CMD:debugayuda(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /playercardealerdebug /playerracedebug /playerrobobancodebug");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /robobancodebug /inputsdebug /racedebug /cardealerdebug");
-	SendClientLongMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getpvarint /setpvarint /applyanimation /playaudiostreamforplayer /stopaudiostreamforplayer /getplayervehicleseat");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /robobancodebug /inputsdebug /racedebug /cardealerdebug /yodebug");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getpvarint /setpvarint /applyanimation /playaudiostreamforplayer /stopaudiostreamforplayer");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 20]{C8C8C8} /getplayervehicleseat");
 	return 1;
 }
 
@@ -8569,13 +8570,13 @@ CMD:admins(playerid, params[])
 		SendClientMessage(playerid, COLOR_LIGHTGREEN, "====================[ADMINISTRADORES CONECTADOS]======================");
 		foreach(new i : Player)
 		{
-			if(PlayerInfo[i][pAdmin] >= 1 && !AdminEnabled[i])
+			if(PlayerInfo[i][pAdmin] >= 1 && !AdminEnabled[i] && PlayerInfo[i][pAdmin] != 21)
 			{
 				format(string, sizeof(string), "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {FF0000}deshabilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 				SendClientMessage(playerid, COLOR_WHITE, string);
 				count++;
 			}
-			if(PlayerInfo[i][pAdmin] >= 1 && AdminEnabled[i])
+			if(PlayerInfo[i][pAdmin] >= 1 && AdminEnabled[i] && PlayerInfo[i][pAdmin] != 21)
 			{
 				format(string, sizeof(string), "{878EE7}Admin n. %d:{C8C8C8} %s {878EE7}|{C8C8C8} Mensajes administrativos {3CB371}habilitados{C8C8C8}.", PlayerInfo[i][pAdmin], GetPlayerNameEx(i));
 				SendClientMessage(playerid, COLOR_WHITE, string);
