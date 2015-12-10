@@ -60,7 +60,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
 #include "marp-thiefjob.inc"
-#include "isamp-tazer.inc" 				//Sistema del tazer
+#include "marp-tazer.inc" 				//Sistema del tazer
 #include "isamp-animations.inc" 		//Sistema de animaciones
 #include "marp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
 #include "isamp-sprintrace.inc"			//Sistema de picadas (carreras)
@@ -1057,6 +1057,7 @@ public OnPlayerDisconnect(playerid, reason)
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
+	KillTimer(GetPVarInt(playerid, "ChangeTire"));
 	KillTimer(ReplenishDescTimer[playerid]);
 	DestroyAfkTimer(playerid);
 	KillMissionEventTimer(playerid);
@@ -7160,7 +7161,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, freehand, ITEM_ID_SANDWICH, 1);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_SANDWICH, 4);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_SANDWICH));
 						PlayerActionMessage(playerid, 15.0, "agarra un sándwich de jamón y queso y le paga al empleado su precio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un sándwich por $%d. Lo tienes en tus manos!", GetItemPrice(ITEM_ID_SANDWICH));
@@ -7176,7 +7177,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 
-						SetHandItemAndParam(playerid, freehand, ITEM_ID_AGUAMINERAL, 1);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_AGUAMINERAL, 5);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_AGUAMINERAL));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un agua mineral.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de agua por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_AGUAMINERAL));
@@ -7198,7 +7199,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
 							
-						SetHandItemAndParam(playerid, freehand, ITEM_ID_CERVEZA, 1);
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_CERVEZA, 5);
 						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CERVEZA));
 						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una cerveza.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de cerveza por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_CERVEZA));
@@ -9155,8 +9156,8 @@ CMD:ayuda(playerid,params[])
 		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[PMA]:{C8C8C8} /ayudap /gobierno /departamento");
 
 		} else if(PlayerInfo[playerid][pFaction] == FAC_SIDE) {
- 	   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /sservicio /schaleco /sequipo /sropero /esposar /quitaresposas /revisar /tomartazer /quitar");
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /guardartazer /arrastrar (/ref)uerzos /vercargos /buscados (/r)adio (/d)epartamento /porton");
+ 	   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /sservicio /schaleco /sequipo /sropero /esposar /quitaresposas /revisar /quitar");
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /tazer /arrastrar (/ref)uerzos /vercargos /buscados (/r)adio (/d)epartamento /porton");
             if(PlayerInfo[playerid][pRank] <= 3)
         		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos /verinsumos");
 			if(PlayerInfo[playerid][pRank] == 1) {
@@ -10007,8 +10008,8 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /cono (/bar)ricada /camaras (/sir)ena");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tomartazer /guardartazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /cono (/bar)ricada /camaras");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel (/sir)ena");
     if(PlayerInfo[playerid][pRank] <= 3)
         SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[%s] /verregistros /comprarinsumos /guardarinsumos /verinsumos", GetRankName(FAC_PMA, 3));
 	if(PlayerInfo[playerid][pRank] <= 4)
@@ -10536,14 +10537,14 @@ CMD:esposar(playerid, params[])
 
 CMD:arrastrar(playerid, params[])
 {
-	new target, vehicleid;
+	new target, vehicleid, lugar;
 
 	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
 		return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
-	if(sscanf(params, "u", target))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrastrar [ID/Jugador]");
+	if(sscanf(params, "ui", target, lugar))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrastrar [ID/Jugador] [1/2/3]");
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 
@@ -10559,7 +10560,10 @@ CMD:arrastrar(playerid, params[])
 	if(!ProxDetectorS(1.5, playerid, target))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra demasiado lejos.");
 
- 	PutPlayerInVehicle(target, vehicleid, 1);
+ 	PutPlayerInVehicle(target, vehicleid, lugar);
+ 	if (PlayerCuffed[target] != 1)
+		TogglePlayerControllable(target, true); //para que no se puedan bajar de la patrulla si los arrastran esposado.
+		
   	PlayerPlayerActionMessage(playerid, target, 15.0, "ha arrastrado al móvil a");
 	return 1;
 }
@@ -11240,7 +11244,7 @@ CMD:sirena(playerid, params[])
 	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar dentro de un vehículo.");
 
-	if(VehicleInfo[vehicleid][VehFaction] != FAC_PMA && VehicleInfo[vehicleid][VehFaction] != FAC_SIDE)
+	if(VehicleInfo[vehicleid][VehFaction] != FAC_PMA)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no pertenece a tu facción.");
 
 	if(EstadoSir[vehicleid] == 0)
@@ -13659,6 +13663,9 @@ CMD:sacar(playerid, params[])
 	    if(vehicleid == GetPlayerVehicleID(target) && target != INVALID_PLAYER_ID)
 		{
 	        RemovePlayerFromVehicle(target);
+	        if(PlayerCuffed[target] != 1)
+        		TogglePlayerControllable(target, false); //esto los descongela si los arrastraron esposado.
+        		
 	        SendFMessage(playerid, COLOR_WHITE, "Has sacado a %s del vehículo.", GetPlayerNameEx(target));
 	        SendFMessage(target, COLOR_WHITE, "%s te ha sacado del vehículo.", GetPlayerNameEx(playerid));
 	    }

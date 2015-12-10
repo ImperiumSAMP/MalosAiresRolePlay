@@ -308,8 +308,8 @@ CMD:mano(playerid, params[])
 		} else if(strcmp(command, "usar", true) == 0) {
 
 			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
-	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sándwich de jámon y queso.");
-	            PlayerEat(playerid, 40);
+	            PlayerActionMessage(playerid, 15.0, "come un pedaso de su sándwich de jamón y queso.");
+	            PlayerEat(playerid, 10);
 	            if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 	            	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
 				else
@@ -322,15 +322,15 @@ CMD:mano(playerid, params[])
 				else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 			} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_AGUAMINERAL) {
-				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
-			    PlayerDrink(playerid, 50);
+				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua mineral.");
+			    PlayerDrink(playerid, 10);
 			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
 				else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
            	} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_CERVEZA) {
-				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de cerveza.");
-			    PlayerDrink(playerid, 50);
+				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de cerveza.");
+			    PlayerDrink(playerid, 10);
 			    PlayerDrinkAlcohol(playerid, 20);
 			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
