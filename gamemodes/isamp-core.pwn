@@ -10547,6 +10547,8 @@ CMD:arrastrar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrastrar [ID/Jugador] [1/2/3]");
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
+	if(lugar < 1 || lugar > 3)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Solo son validos los lugares 1, 2 y 3.");
 
 	if(IsPlayerInAnyVehicle(playerid))
 		vehicleid = GetPlayerVehicleID(playerid);
