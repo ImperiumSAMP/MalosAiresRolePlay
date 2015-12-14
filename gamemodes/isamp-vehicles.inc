@@ -1588,6 +1588,7 @@ CMD:cambiarrueda(playerid, params[])
 	
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Baja del vehículo, debes estar a pie.");
+	vehicleid = GetClosestVehicle(playerid, 5.0);
 	if(vehicleid == INVALID_VEHICLE_ID)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No hay ningún vehículo cerca tuyo!");
 		
