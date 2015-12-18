@@ -94,7 +94,7 @@ CMD:cponer(playerid,params[])
 	if(CopDuty[playerid] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
-    if(PlayerInfo[playerid][pRank] > 7)
+    if(PlayerInfo[playerid][pRank] > 9)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
@@ -123,7 +123,7 @@ CMD:cquitar(playerid,params[])
 	if(CopDuty[playerid] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
 
-    if(PlayerInfo[playerid][pRank] > 7)
+    if(PlayerInfo[playerid][pRank] > 9)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
 
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
@@ -144,7 +144,7 @@ CMD:cquitar(playerid,params[])
 
 CMD:cquitartodo(playerid, params[])
 {
-    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
+    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 9 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
     {
 		if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
 		{
@@ -173,7 +173,13 @@ CMD:bar(playerid, params[])
 CMD:barricada(playerid,params[])
 {
     if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-    return 1;
+    	return 1;
+    if(CopDuty[playerid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+    if(PlayerInfo[playerid][pRank] > 9)
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+   		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
     
     new command[7];
 
@@ -184,18 +190,6 @@ CMD:barricada(playerid,params[])
     } else {
 		if(sscanf(params, "poner1", true)== 0)
 		{
-			if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-       		return 1;
-
-			if(CopDuty[playerid] == 0)
-	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-		    if(PlayerInfo[playerid][pRank] > 7)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-
-		   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
     		new cant;
 			cant = PlayerCantBarricadas[playerid];
 			if( cant >= MAX_PLAYER_BARRICATE)
@@ -212,18 +206,6 @@ CMD:barricada(playerid,params[])
 		}
 		else if(sscanf(params, "poner2", true)== 0)
 		{
-			if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-       		return 1;
-
-			if(CopDuty[playerid] == 0)
-	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-		    if(PlayerInfo[playerid][pRank] > 7)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-
-		   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
     		new cant;
 			cant = PlayerCantBarricadas2[playerid];
 			if( cant >= MAX_PLAYER_BARRICATE2)
@@ -240,18 +222,6 @@ CMD:barricada(playerid,params[])
 		}
         else if(sscanf(params, "quitar1", true)== 0)
 		{
-    		if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        		return 1;
-
-			if(CopDuty[playerid] == 0)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    		if(PlayerInfo[playerid][pRank] > 7)
-    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-
-   			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    			return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
 			new cant = PlayerCantBarricadas[playerid];
 			if(cant > 0)
     		{
@@ -266,18 +236,6 @@ CMD:barricada(playerid,params[])
 		}
 		else if(sscanf(params, "quitar2", true)== 0)
 		{
-    		if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-        		return 1;
-
-			if(CopDuty[playerid] == 0)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-    		if(PlayerInfo[playerid][pRank] > 7)
-    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-
-   			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    			return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
 			new cant = PlayerCantBarricadas2[playerid];
 			if(cant > 0)
     		{
@@ -292,27 +250,20 @@ CMD:barricada(playerid,params[])
 		}
         else if(sscanf(params, "quitartodo", true)== 0)
 		{
-    		if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
-    		{
-				if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
-				{
-				    for(new i = 0; i < MAX_PLAYERS; i++)
-		    		{
-      					deleteAuxiliarItemsPMA(i, PMA_BARRICATE_ITEM);
-      					deleteAuxiliarItemsPMA(i, PMA_BARRICATE2_ITEM);
-					}
-					SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todas las barricadas puestas por la facción. ))");
-				} else
+			if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
+			{
+			    for(new i = 0; i < MAX_PLAYERS; i++)
 		    	{
-					deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
-					deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE2_ITEM);
-					SendClientMessage(playerid, COLOR_YELLOW2, "Retiras cualquier barricada que hayas puesto.");
+      				deleteAuxiliarItemsPMA(i, PMA_BARRICATE_ITEM);
+      				deleteAuxiliarItemsPMA(i, PMA_BARRICATE2_ITEM);
 				}
-			} else
-				if (PlayerInfo[playerid][pFaction] == FAC_PMA)
-				SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
-			return 1;
+				SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todas las barricadas puestas por la facción. ))");
+			} else {
+				deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
+				deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE2_ITEM);
+				SendClientMessage(playerid, COLOR_YELLOW2, "Retiras cualquier barricada que hayas puesto.");
+			}
 		}
-	}
+ 	}
 	return 0;
 }

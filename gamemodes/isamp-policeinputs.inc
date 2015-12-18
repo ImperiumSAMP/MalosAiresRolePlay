@@ -36,16 +36,15 @@
 
 
 // POLICE DEFINES
-#define INPUTS_POLICE_CASE1					6
-#define INPUTS_POLICE_CASE2                 83
-#define INPUTS_POLICE_CASE3                 133
-#define INPUTS_POLICE_CASE4                 295
-#define INPUTS_POLICE_CASE5                 306
-#define INPUTS_POLICE_CASE6                 256
-#define INPUTS_POLICE_CASE7                 506
-#define INPUTS_POLICE_CASE8                 922
-#define INPUTS_POLICE_CASE9                 778
-#define INPUTS_POLICE_CASE10                595
+#define INPUTS_POLICE_MACANA                 5
+#define INPUTS_POLICE_9MM                   56
+#define INPUTS_POLICE_ESCOPETA              89
+#define INPUTS_POLICE_DEAGLE	            78
+#define INPUTS_POLICE_RIFLE		            134
+#define INPUTS_POLICE_MP5          			178
+#define INPUTS_POLICE_M4    	            245
+#define INPUTS_POLICE_SNIPER                222
+#define INPUTS_POLICE_GRANADAS              45
 
 // DEFINES BUY INPUTS
 #define POS_INPUTS_NORTE_X                  1417.3534
@@ -67,7 +66,8 @@
 
 
 new DOEM = 0,
- 	STARS = 0
+ 	STARS = 0,
+	PAutorizado[MAX_PLAYERS] = 0
 ;
 
 
@@ -222,178 +222,6 @@ CMD:sequipo(playerid, params[])
 	return 1;
 }
 
-CMD:pequipo(playerid, params[])
-{
-	new equipo;
-
-	if(!isPlayerCopOnDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
-	if(sscanf(params, "i", equipo))
-	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /pequipo [equipo]");
-		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Macana - Tazer (Cadete)							 6: Tazer - Granada de humo - Deagle - Escopeta (DOEM 1)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Macana - Tazer - 9mm (Oficial)					 7: Tazer - Granada de humo - Deagle - MP5 (DOEM 2)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 3: Macana - Tazer - 9mm - Escopeta (Oficial Mayor)	 8: Tazer - Granada de humo - Deagle - Fusil M4 (DOEM 3)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 4: Macana - Tazer - Deagle - Escopeta (Subinspector) 9: Tazer - Granada de humo - Deagle - Rifle francotirador (DOEM 4)");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 5: Macana - Tazer - Deagle - Rifle (Inspector)		 10: Macana - Tazer - Deagle - MP5 (D.I.)");
-		return 1;
-	}
-	if(!CheckTakeInputs(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "ARMERO: Ya has tomado demasiadas armas y municiones, pídele autorización a un superior a ver si te deja tomar más o no.");
-	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener 10u de espacio en inventario, y la espalda y ambas manos libres para guardar el equipo.");
-	switch(equipo)
-	{
-		case 1:
-		{
-  			if(PlayerInfo[playerid][pRank] > 8)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-			if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-				
-    		ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE1, "EQUIPO 1");
-      	}
-       	case 2:
-		{
-    		if(PlayerInfo[playerid][pRank] > 7)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE2)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-    		ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_COLT45, 100);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE2, "EQUIPO 2");
-		}
-  		case 3:
-  		{
-    		if(PlayerInfo[playerid][pRank] > 6)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE3)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-			ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_COLT45, 100);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 25);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE3, "EQUIPO 3");
-       	}
-       	case 4:
-	   	{
-	   		if(PlayerInfo[playerid][pRank] > 5)
-            	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE4)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-		    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 75);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 40);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE4, "EQUIPO 4");
-   		}
-        case 5:
-		{
-            if(PlayerInfo[playerid][pRank] > 4)
-                return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE5)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-		    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 75);
-			SetBackItemAndParam(playerid, WEAPON_RIFLE, 40);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE5, "EQUIPO 5");
-        }
-        case 6:
-		{
-        	if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE6)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_SHOTGUN, 60);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE6, "EQUIPO 6");
-        }
-        case 7:
-		{
-			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE7)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-				
-    	    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-   			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE7, "EQUIPO 7");
-        }
-        case 8:
-		{
-			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE8)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-		    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-   			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_M4, 200);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE8, "EQUIPO 8");
-        }
-        case 9:
-		{
-			if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo o D.O.E.M. no está autorizado.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE9)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-				
-			ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_TEARGAS, 4);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 50);
-			SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE9, "EQUIPO 9");
-        }
-        case 10:
-		{
-			if(PlayerInfo[playerid][pRank] > 4)
-        	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
-            if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE10)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
-
-		    ResetPlayerWeapons(playerid);
-			SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-			Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 35);
-			SetBackItemAndParam(playerid, WEAPON_MP5, 200);
-			PlayerTakeInput(playerid, FAC_PMA, INPUTS_POLICE_CASE10, "EQUIPO 10");
-        }
-        default:
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Selecciona una opción de equipo válida.");
-	}
-	PlayerActionMessage(playerid, 15.0, "toma su equipo de los casilleros.");
-	tazerStatus[playerid] = TAZER_EQUIPPED;
-	return 1;
-}
-
-CMD:ptazer(playerid, params[])
-{
-	if(!isPlayerCopOnDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
-	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
-	ResetPlayerWeapons(playerid);
-	tazerStatus[playerid] = TAZER_EQUIPPED;
-	return 1;
-}
-
 CMD:stazer(playerid, params[])
 {
 	if(!isPlayerSideOnDuty(playerid))
@@ -431,30 +259,6 @@ CMD:smacana(playerid, params[])
     ResetPlayerWeapons(playerid);
     SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
 	PlayerActionMessage(playerid, 15.0, "toma una macana de los casilleros.");
-	return 1;
-}
-
-CMD:pchaleco(playerid, params[])
-{
-	new Float:armour;
-
-    if(!isPlayerCopOnDuty(playerid))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
-
-    GetPlayerArmour(playerid, armour);
-    
-	if(armour == 0.0)
-	{
-		PlayerActionMessage(playerid, 15.0, "toma un chaleco antibalas de su casillero.");
-		SetPlayerArmour(playerid, 100);
-	}
-	else
-	{
-		PlayerActionMessage(playerid, 15.0, "deja el chaleco antibalas en su casillero.");
-		SetPlayerArmour(playerid, 0);
-	}
 	return 1;
 }
 
@@ -502,6 +306,7 @@ CMD:pautorizar(playerid, params[])
 	if(PlayerInfo[targetid][pTakeInputs] >= 2)
 	{
      	PlayerInfo[targetid][pTakeInputs] --;
+		PAutorizado[targetid] = 1;
      	PlayerActionMessage(playerid, 15.0, "toma una radio de su bolsillo y habla por ella.");
      	format(string, sizeof(string), "%s ha autorizado a %s a retirar más armas y municiones del depósito.", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid));
      	SendFactionMessage(FAC_PMA, COLOR_PMA, string);
@@ -540,6 +345,7 @@ CMD:sautorizar(playerid, params[])
 		else
 		    format(string, sizeof(string), "Enmascarado dice por radio: Armero, autorizo a %s a retirar mas armas y municiones.", GetPlayerNameEx(targetid));
   		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5, 1);
+  		PAutorizado[targetid] = 1;
 	}
     return 1;
 }
@@ -665,3 +471,4 @@ CMD:verinsumos(playerid, params[])
 	SendFMessage(playerid, COLOR_WHITE, "[%s] El depósito cuenta actualmente con %d insumos.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials]);
 	return 1;
 }
+//

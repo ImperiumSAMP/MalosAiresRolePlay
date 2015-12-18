@@ -179,6 +179,9 @@ public RestartPlayerEffectMarijuana(playerid)
 
 CMD:consumir(playerid, params[])
 {
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+		
 	new type[32],
 		weathers[4] = {234, 22, 401, -234};
 		
