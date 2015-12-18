@@ -4259,7 +4259,7 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 		return 1;
 
 	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
+		GameTextForPlayer(playerid, "~w~/pcasilleros", 2000, 4);
 		return 1;
 		
 	} else if(pickupid == P_JAIL_EAT) {
