@@ -7696,7 +7696,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 					    if(!isPlayerCopOnDuty(playerid))
 	    					return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar esta función.");
-                        ShowPlayerDialog(playerid, DLG_POLICE_DUTYR, DIALOG_STYLE_MSGBOX, "Uniforme","Cadete\nOficial 1\nOficial 2\nOficial 3\nOficial 4\nOficial 5\nOficial 6\nOficial mujer 1\nOficial mujer 2\nOficial motorizado\nTeniente\nSub-Comisario\nComisario\nDOEM\nD.I\nCivil","Equipar","Salir");
+                        ShowPlayerDialog(playerid, DLG_POLICE_DUTYR, DIALOG_STYLE_MSGBOX, "Uniforme","Cadete\nCadee mujer\nOficial 1\nOficial 2\nOficial 3\nOficial 4\nOficial 5\nOficial 6\nOficial mujer 1\nOficial mujer 2\nOficial motorizado\nTeniente\nSub-Comisario\nComisario\nDOEM\nD.I\nCivil","Equipar","Salir");
            				if(!response)
 		   				{
                  			switch(listitem)
@@ -7708,48 +7708,48 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 									SetPlayerSkin(playerid, 71);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 1: // Oficial
+								case 1: // Cadete
+								{
+								    if(PlayerInfo[playerid][pRank] > 9)
+								        return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+                                    if(PlayerInfo[playerid][pSex] != 0)
+										return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
+                                    SetPlayerSkin(playerid, 309); // Skin de oficial mujer 1
+									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
+								}
+								case 2: // Oficial
 								{
 									if(PlayerInfo[playerid][pRank] > 8)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 280); // Skin de oficial 1
         				 			PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 2: // Oficial
+								case 3: // Oficial
 								{
 									if(PlayerInfo[playerid][pRank] > 8)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 265); // Tenpenny
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 3: // Oficial
+								case 4: // Oficial
 								{
 									if(PlayerInfo[playerid][pRank] > 8)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 266); // Pulaski
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 4: // Oficial
+								case 5: // Oficial
 								{
 									if(PlayerInfo[playerid][pRank] > 8)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 267); // Hernandez
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 5: // Oficial
-								{
-									if(PlayerInfo[playerid][pRank] > 8)
-										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-									SetPlayerSkin(playerid, 281); // Skin de oficial 2
-									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
-								}
 								case 6: // Oficial
 								{
 									if(PlayerInfo[playerid][pRank] > 8)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
-									if(PlayerInfo[playerid][pSex] != 0)
-										return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
-									SetPlayerSkin(playerid, 306); // Skin de oficial mujer 1
+									SetPlayerSkin(playerid, 281); // Skin de oficial 2
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
 								case 7: // Oficial
@@ -7758,52 +7758,61 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									if(PlayerInfo[playerid][pSex] != 0)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
+									SetPlayerSkin(playerid, 306); // Skin de oficial mujer 1
+									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
+								}
+								case 8: // Oficial
+								{
+									if(PlayerInfo[playerid][pRank] > 8)
+										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
+									if(PlayerInfo[playerid][pSex] != 0)
+										return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
 									SetPlayerSkin(playerid, 307); // Skin de oficial mujer 2
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 8: // Cabo
+								case 9: // Cabo
 								{
 									if(PlayerInfo[playerid][pRank] > 6)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 284);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 9: // Teniente
+								case 10: // Teniente
 								{
 									if(PlayerInfo[playerid][pRank] > 3)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 300);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 10: // Sub Comisario
+								case 11: // Sub Comisario
 								{
 									if(PlayerInfo[playerid][pRank] > 2)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 302);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 11: // Comisario
+								case 12: // Comisario
 								{
 									if(PlayerInfo[playerid][pRank] > 1)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 310);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 12: // DOEM
+								case 13: // DOEM
 								{
 									if(PlayerInfo[playerid][pRank] > 6 || DOEM != 1)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta o D.O.E.M no está autorizado.");
 									SetPlayerSkin(playerid, 285);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 13: // DIM
+								case 14: // DIM
 								{
 									if(PlayerInfo[playerid][pRank] > 4)
 										return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 									SetPlayerSkin(playerid, 286);
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
 								}
-								case 14:
+								case 15:
 								{
 									SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]); // Civil
 									PlayerActionMessage(playerid, 15.0, "toma su vestimenta de los casilleros.");
