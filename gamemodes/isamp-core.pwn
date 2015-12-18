@@ -8493,6 +8493,30 @@ CMD:getplayervehicleseat(playerid, params[])
 	return 1;
 }
 
+CMD:getvehicledamagestatus(playerid, params[])
+{
+	new vehicleid, panels, doors, lights, tires;
+
+	if(sscanf(params, "i", vehicleid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /getvehicledamagestatus [ID del vehículo] (params: vid, panels, doors, lights, tires)");
+
+	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	SendFMessage(playerid, COLOR_WHITE, "Ejecutaste GetVehicleDamageStatus(%d, %d, %d, %d, %d);", vehicleid, panels, doors, lights, tires);
+	return 1;
+}
+
+CMD:updatevehicledamagestatus(playerid, params[])
+{
+	new vehicleid, panels, doors, lights, tires;
+
+	if(sscanf(params, "iiiii", vehicleid, panels, doors, lights, tires))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /updatevehicledamagestatus [ID del vehículo] [panels] [doors] [lights] [tires]");
+
+	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
+	SendFMessage(playerid, COLOR_WHITE, "Ejecutaste UpdateVehicleDamageStatus(%d, %d, %d, %d, %d);", vehicleid, panels, doors, lights, tires);
+	return 1;
+}
+
 CMD:playaudiostreamforplayer(playerid, params[])
 {
 	new targetid,

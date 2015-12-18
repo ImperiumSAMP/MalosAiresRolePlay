@@ -1595,7 +1595,7 @@ CMD:cambiarrueda(playerid, params[])
 	new hand_rueda = SearchHandsForItem(playerid, ITEM_ID_RUEDA_DE_REPUESTO),
 		hand_llave = SearchHandsForItem(playerid, ITEM_ID_LLAVE_DE_CRUZ);
 		
-	if(hand_rueda != -1 || hand_llave != -1)
+	if(hand_rueda == -1 || hand_llave == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener una llave de cruz y una rueda de repuesto en tus manos!");
 	
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
