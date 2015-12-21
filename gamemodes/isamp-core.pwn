@@ -9168,7 +9168,7 @@ CMD:ayuda(playerid,params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /susurrar /me /do /cme /gooc /toggle /animhablar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
@@ -13424,7 +13424,7 @@ CMD:susurrar(playerid, params[])
 		message[256];
 
 	if(sscanf(params, "us[256]", targetid, message))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /susurrar [ID/Jugador] [mensaje]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /(sus)urrar [ID/Jugador] [mensaje]");
 	if(!IsPlayerConnected(targetid) || targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
     if(!ProxDetectorS(1.5, playerid, targetid))
@@ -13450,6 +13450,11 @@ CMD:susurrar(playerid, params[])
 	return 1;
 }
 
+CMD:sus(playerid, params[])
+{
+	cmd_susurrar(playerid, params);
+	return 1;
+}
 CMD:me(playerid, params[])
 {
 	new text[256];
@@ -13874,6 +13879,20 @@ CMD:apagarcigarro(playerid, params[])
 	return 1;
 }
 
+CMD:llenarbotella(playerid,params[])
+{
+    if(GetPlayerHouse(playerid) == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
+	if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_AGUAMINERAL)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la botella de agua en la mano derecha.");
+    if(GetHandParam(playerid, HAND_RIGHT) == 5)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La botella de agua ya esta llena.");
+	{
+        SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, 5);
+        PlayerActionMessage(playerid, 15.0, "llena su botella con agua del grifo.");
+	}
+	return 1;
+}
 //===================================SIDE=======================================
 
 CMD:sservicio(playerid, params[])

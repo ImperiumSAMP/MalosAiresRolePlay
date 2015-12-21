@@ -541,8 +541,8 @@ stock HouseHasContainer(houseid)
 
 CMD:ayudacasa(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaradio - /puerta - /armario");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casaenalquiler - /casasinalquiler - /casacontrato");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaradio");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA]: /casaenalquiler - /casasinalquiler - /casacontrato - /puerta - /armario - /llenarbotella");
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]:{C8C8C8} Si alguien alquila tu casa y quieres rescindirle el contrato utiliza '/casacontrato'");
 	return 1;
 }
