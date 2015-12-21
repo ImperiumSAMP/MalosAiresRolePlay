@@ -322,12 +322,12 @@ CMD:mano(playerid, params[])
 				else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 			} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_AGUAMINERAL) {
-				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua mineral.");
-			    PlayerDrink(playerid, 10);
-			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
-				else
-					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+                if(GetHandParam(playerid, HAND_RIGHT) > 0) {
+				  PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua.");
+			      PlayerDrink(playerid, 10);
+        	      SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
+     	      } else
+	              SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
            	} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_CERVEZA) {
 				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de cerveza.");
 			    PlayerDrink(playerid, 10);
