@@ -97,8 +97,6 @@ CMD:tazer(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar equipado con un tazer!");
 	if(tazerStatus[playerid] == TAZER_EMPTY)
  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaría a recargarlo!");
-	if(GetHandItem(playerid, HAND_RIGHT) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes la mano ocupada!");
 
     if(tazerInUse[playerid] == 0)
     {
