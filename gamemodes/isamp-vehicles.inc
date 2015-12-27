@@ -141,9 +141,10 @@ public ChangeTire(playerid, vehicleid)
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, 0);
  	TogglePlayerControllable(playerid, true);
  	
- 	if(GetHandParam(playerid, HAND_RIGHT) == ITEM_ID_RUEDA_DE_REPUESTO || (GetHandParam(playerid, HAND_LEFT) == ITEM_ID_RUEDA_DE_REPUESTO)
- 	{
+ 	if(GetHandParam(playerid, HAND_RIGHT) == ITEM_ID_RUEDA_DE_REPUESTO){
  	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+	}else{
+	    SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico
 	}
 	return 1;
 }
@@ -1589,7 +1590,7 @@ CMD:vehcapot(playerid, params[])
 }
 CMD:cambiarrueda(playerid, params[])
 {
-	new vehicleid, vehicleType, panels, doors, lights, tires;
+	new vehicleid, panels, doors, lights, tires;
 	
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Baja del vehículo, debes estar a pie.");
