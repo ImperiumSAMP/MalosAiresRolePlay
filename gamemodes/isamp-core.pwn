@@ -5748,7 +5748,7 @@ PlayerLocalMessage(playerid, Float:radius, const message[])
     if(!AdminDuty[playerid])
         ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
     else
-        ProxDetector(radius, playerid, string, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY);
+        ProxDetector(radius, playerid, string, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY);
     format(string, sizeof(string), "[OOC-LOCAL] %s", string);
     log(playerid, LOG_CHAT, string);
     return 1;
