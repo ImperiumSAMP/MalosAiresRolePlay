@@ -14,7 +14,7 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 
-#define MAX_ITEMS               114
+#define MAX_ITEMS               118
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -84,6 +84,10 @@
 #define ITEM_ID_CERVEZA                 111
 #define ITEM_ID_RUEDA_DE_REPUESTO       112
 #define ITEM_ID_LLAVE_DE_CRUZ           113
+#define ITEM_ID_VINO					114
+#define ITEM_ID_WHISKY					115
+#define ITEM_ID_VODKA					116
+#define ITEM_ID_RON						117
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -239,6 +243,10 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*111*/ {"Cerveza", "Cantidad", ITEM_OTHER, 35, true, 1486, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*112*/ {"Rueda de repuesto", "Cantidad", ITEM_OTHER, 800, false, 1079, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 50},
 /*113*/ {"Llave de cruz", "cantidad", ITEM_OTHER, 100, false, 18633, 0.108, 0.012, -0.109, -102.7, -135.4, 0.0, 0.08, 0.043, 0.206, 85.5, -5.5, 0.6, 0, 10}
+/*114*/ {"Vino", "Cantidad", ITEM_OTHER, 45, true, 1669, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
+/*115*/ {"Whisky", "Cantidad", ITEM_OTHER, 150, true, 19823, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
+/*116*/ {"Vodka", "Cantidad", ITEM_OTHER, 100, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
+/*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 };
 
 //==============================FUNCIONES=======================================

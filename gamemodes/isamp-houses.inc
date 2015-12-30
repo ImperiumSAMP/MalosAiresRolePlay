@@ -1707,3 +1707,30 @@ CMD:acnoalquilar(playerid, params[])
 	SaveHouse(houseid);
 	return 1;
 }
+
+CMD:timbre(playerid, params[])
+{
+	for(new h = 1; h < MAX_HOUSES; h++)
+	{
+		if(House[h][Created] == 1)
+		{
+			if(IsPlayerOnOutsideHouseDoor(playerid, h))
+			{
+				if(IsPlayerInAnyVehicle(playerid))
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+				if(PlayerInfo[playerid][pHealth] < 25.0)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tocar el timbre agonizando!");
+				PlayerActionMessage(playerid, 15.0, "toca el timbre de la casa.");
+				for(new p = 1; p < MAX_PLAYERS; p++)
+					new houseid = GetPlayerHouse(p);
+					if(houseid == h)
+					PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!");
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
+			}
+		}
+	}
+	return 1;
+}

@@ -5743,12 +5743,15 @@ stock SendClientLongMessageToAll(color, const message[])
 
 PlayerLocalMessage(playerid, Float:radius, const message[])
 {
-	new string[256];
-	format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
-	ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-	format(string, sizeof(string), "[OOC-LOCAL] %s", string);
-	log(playerid, LOG_CHAT, string);
-	return 1;
+    new string[256];
+    format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
+    if(!AdminDuty[playerid])
+        ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+    else
+        ProxDetector(radius, playerid, string, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY, COLOR_ADMINDUTY);
+    format(string, sizeof(string), "[OOC-LOCAL] %s", string);
+    log(playerid, LOG_CHAT, string);
+    return 1;
 }
 
 PlayerActionMessage(playerid, Float:radius, const message[])
@@ -7241,6 +7244,93 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 	        			Business[business][bProducts]--;
 	        			saveBusiness(business);
 			        }
+					case 11:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_VINO))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new Hour, Minute, Second;
+                        gettime(Hour, Minute, Second);
+						if ((8 > Hour) || (Hour > 20))
+							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_VINO, 5);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_VINO));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una botella de vino.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de vino por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_VINO));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_VINO);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 12:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_WHISKY))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new Hour, Minute, Second;
+                        gettime(Hour, Minute, Second);
+						if ((8 > Hour) || (Hour > 20))
+							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_WHISKY, 10);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_WHISKY));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una botella de whisky.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de whisky por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_WHISKY));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_WHISKY);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 13:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_VODKA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new Hour, Minute, Second;
+                        gettime(Hour, Minute, Second);
+						if ((8 > Hour) || (Hour > 20))
+							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_VODKA, 8);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_VODKA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una botella de vodka.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de vodka por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_VODKA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_VODKA);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 14:
+					{
+				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_RON))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new Hour, Minute, Second;
+                        gettime(Hour, Minute, Second);
+						if ((8 > Hour) || (Hour > 20))
+							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_RON, 9);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_RON));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por una botella de ron.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de ron por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_RON));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_RON);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
 					/*
 			        case 9:
 					{
@@ -9454,7 +9544,7 @@ CMD:colgar(playerid, params[])
 				StartedCall[caller] = 0;
 			}
 		}
-		Mobile[playerid] = 255;
+		fplayerid] = 255;
 		return 1;
 	}
 	return 1;
@@ -9593,12 +9683,13 @@ CMD:comprar(playerid, params[])
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON)
 				);
-				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nCerveza\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d",
+				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nCerveza\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d\nVino\t$%d",
 				    content,
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
 					GetItemPrice(ITEM_ID_CERVEZA),
+					GetItemPrice(ITEM_ID_VINO),
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_PARLANTE)
 				);
@@ -14108,7 +14199,8 @@ CMD:llenar(playerid, params[])
 		if(preamount > 99)
   			return SendClientMessage(playerid, COLOR_YELLOW2, "El tanque se encuentra lleno.");
 		refilltype = 1;
-        PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el tanque del vehículo.");
+        PlayerActionMessage(playerid, 15.0, "le indica al empleado el tipo de nafta, precio a llenar y le entrega el dinero.");
+   		PlayerDoMessage(playerid, 15.0, "El empleado toma una manguera del surtidor y comienza a llenar el vehiculo.");
 	} else
 		{
 			if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_BIDON)

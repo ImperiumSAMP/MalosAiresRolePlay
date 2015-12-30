@@ -39,6 +39,7 @@
 #define COLOR_GLOBALOOC         0x87CEFAFF
 #define COLOR_AOOC              0x3CB371FF
 #define COLOR_MP                0x5F9EA0FF
+#define COLOR_ADMINDUTY         0xF3280084
 //
 #define COLOR_EVENT             0x4F76F7FF
 #define COLOR_ADMINQUESTION     0xFF0000BB
