@@ -932,8 +932,6 @@ public ResetStats(playerid)
 	Mobile[playerid] = 255;
 	gPlayerLogged[playerid] = 0;
 
-	resetAuxiliarItemsPMA(playerid);
-
 	ResetAfkVariables(playerid);
 
 	playerLicense[playerid][lDStep] = 0;
@@ -1137,11 +1135,6 @@ public OnPlayerDisconnect(playerid, reason)
 	}
 
 	OnPlayerLeaveRobberyGroup(playerid, 1);
-
-	EndPlayerDuty(playerid);
-	
-	deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
-	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
 
 	deleteAbandonedSprintRace(playerid);
 	OnPlayerLeaveRace(playerid);
@@ -10036,12 +10029,14 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /cono (/bar)ricada /camaras");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /pponer /pquitar /camaras");
  	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel (/sir)ena");
     if(PlayerInfo[playerid][pRank] <= 3)
         SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[%s] /verregistros /comprarinsumos /guardarinsumos /verinsumos", GetRankName(FAC_PMA, 3));
 	if(PlayerInfo[playerid][pRank] <= 4)
         SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[%s]: /doem", GetRankName(FAC_PMA, 4));
+    if(PlayerInfo[playerid][pRank] <= 5)
+        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[%s]: /pquitartodo", GetRankName(FAC_PMA, 5));
 	return 1;
 }
 
@@ -10571,8 +10566,11 @@ CMD:arrastrar(playerid, params[])
 		return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
-	if(sscanf(params, "ui", target, lugar))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrastrar [ID/Jugador] [1/2/3]");
+	if(sscanf(params, "ui", target, lugar)){
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /arrastrar [ID/Jugador] [Lugar]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Lugar]:{C8C8C8} 1 Copiloto - 2 Atras a la izquierda - 3 Atras a la derecha.");
+		return 1;
+	}
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(lugar < 1 || lugar > 3)
@@ -10587,13 +10585,10 @@ CMD:arrastrar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehículo o jugador incorrecto.");
 	if(VehicleInfo[vehicleid][VehFaction] != FAC_PMA && VehicleInfo[vehicleid][VehFaction] != FAC_SIDE)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no pertenece a tu facción.");
-	if(!ProxDetectorS(1.5, playerid, target))
+	if(!ProxDetectorS(2, playerid, target))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador se encuentra demasiado lejos.");
 
  	PutPlayerInVehicle(target, vehicleid, lugar);
- 	if (PlayerCuffed[target] != 1)
-		TogglePlayerControllable(target, true); //para que no se puedan bajar de la patrulla si los arrastran esposado.
-		
   	PlayerPlayerActionMessage(playerid, target, 15.0, "ha arrastrado al móvil a");
 	return 1;
 }
@@ -13698,10 +13693,7 @@ CMD:sacar(playerid, params[])
 	    if(vehicleid == GetPlayerVehicleID(target) && target != INVALID_PLAYER_ID)
 		{
 	        RemovePlayerFromVehicle(target);
-	        if(PlayerCuffed[target] != 1)
-        		TogglePlayerControllable(target, false); //esto los descongela si los arrastraron esposado.
-        		
-	        SendFMessage(playerid, COLOR_WHITE, "Has sacado a %s del vehículo.", GetPlayerNameEx(target));
+            SendFMessage(playerid, COLOR_WHITE, "Has sacado a %s del vehículo.", GetPlayerNameEx(target));
 	        SendFMessage(target, COLOR_WHITE, "%s te ha sacado del vehículo.", GetPlayerNameEx(playerid));
 	    }
 		else
