@@ -140,6 +140,12 @@ public ChangeTire(playerid, vehicleid)
 	new panels, doors, lights;
 	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, 0);
  	TogglePlayerControllable(playerid, true);
+ 	
+ 	if(GetHandParam(playerid, HAND_RIGHT) == ITEM_ID_RUEDA_DE_REPUESTO){
+ 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+	}else{
+	    SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico
+	}
 	return 1;
 }
 
@@ -1584,7 +1590,7 @@ CMD:vehcapot(playerid, params[])
 }
 CMD:cambiarrueda(playerid, params[])
 {
-	new vehicleid, vehicleType, panels, doors, lights, tires;
+	new vehicleid, panels, doors, lights, tires;
 	
 	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Baja del vehículo, debes estar a pie.");
@@ -1601,15 +1607,6 @@ CMD:cambiarrueda(playerid, params[])
 	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
 	if(tires == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene ninguna rueda pinchada.");
-    if(!AdminDuty[playerid])
-	{
-		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED && vehicleType != VEH_JOB) ||
-			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
-			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
-			(vehicleType == VEH_JOB && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob]) ||
-		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
-	}
 
 	if(tires == 1 || tires == 2 || tires == 4 || tires == 8){
  		ApplyAnimation(playerid, "MISC", "PLUNGER_01", 4.0, 0, 1, 1, 0, 0);
@@ -1619,6 +1616,7 @@ CMD:cambiarrueda(playerid, params[])
 		SetPVarInt(playerid, "ChangeTire", SetTimerEx("ChangeTire", 6000, false, "iiii", playerid, vehicleid));
 		return 1;
 	}
+	
 	if(tires == 3 || tires == 5 || tires == 6 || tires == 7 || tires == 9 || tires == 10 || tires == 11 || tires == 12 || tires == 13 || tires == 14 || tires == 15)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar todas las ruedas de tu vehículo, debes ir a un taller mecánico.");
 	return 0;
