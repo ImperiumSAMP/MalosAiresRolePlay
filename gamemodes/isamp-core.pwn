@@ -9684,13 +9684,12 @@ CMD:comprar(playerid, params[])
 					PRICE_PHONE,
 					GetItemPrice(ITEM_ID_BIDON)
 				);
-				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nCerveza\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d\nVino\t$%d",
+				format(content, sizeof(content),"%s\nCámara (35 fotos)\t$%d\nSándwich\t$%d\nAgua Mineral\t$%d\nCerveza\t$%d\nRadio Walkie Talkie\t$%d\nReproductor de música\t$%d",
 				    content,
 					GetItemPrice(ITEM_ID_CAMARA) * 35,
 					GetItemPrice(ITEM_ID_SANDWICH),
 					GetItemPrice(ITEM_ID_AGUAMINERAL),
 					GetItemPrice(ITEM_ID_CERVEZA),
-					GetItemPrice(ITEM_ID_VINO),
 					GetItemPrice(ITEM_ID_RADIO),
 					GetItemPrice(ITEM_ID_PARLANTE)
 				);
