@@ -1711,16 +1711,18 @@ CMD:acnoalquilar(playerid, params[])
 CMD:timbre(playerid, params[])
 {
 	new houseid, p;
+	
+	if(IsPlayerInAnyVehicle(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+	if(PlayerInfo[playerid][pHealth] < 25.0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tocar el timbre agonizando!");
+					
 	for(new h = 1; h < MAX_HOUSES; h++)
 	{
 		if(House[h][Created] == 1)
 		{
 			if(IsPlayerOnOutsideHouseDoor(playerid, h))
 			{
-				if(IsPlayerInAnyVehicle(playerid))
-					return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
-				if(PlayerInfo[playerid][pHealth] < 25.0)
-					return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tocar el timbre agonizando!");
 				PlayerActionMessage(playerid, 15.0, "toca el timbre de la casa.");
 				for(p = 1; p < MAX_PLAYERS; p++) {
 					houseid = GetPlayerHouse(p);
@@ -1728,9 +1730,7 @@ CMD:timbre(playerid, params[])
 						PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!"); }
 			}
 			else
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
-			}
+				return SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
 		}
 	}
 	return 1;
