@@ -1710,7 +1710,7 @@ CMD:acnoalquilar(playerid, params[])
 
 CMD:timbre(playerid, params[])
 {
-	new houseid;
+	new houseid, p;
 	for(new h = 1; h < MAX_HOUSES; h++)
 	{
 		if(House[h][Created] == 1)
@@ -1722,10 +1722,10 @@ CMD:timbre(playerid, params[])
 				if(PlayerInfo[playerid][pHealth] < 25.0)
 					return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tocar el timbre agonizando!");
 				PlayerActionMessage(playerid, 15.0, "toca el timbre de la casa.");
-				for(new p = 1; p < MAX_PLAYERS; p++)
+				for(p = 1; p < MAX_PLAYERS; p++) {
 					houseid = GetPlayerHouse(p);
 					if(houseid == h)
-					PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!");
+						PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!"); }
 			}
 			else
 			{

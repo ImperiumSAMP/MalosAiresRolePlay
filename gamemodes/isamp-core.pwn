@@ -7331,6 +7331,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		   				Business[business][bTill] += GetItemPrice(ITEM_ID_RON);
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
+					}
 					/*
 			        case 9:
 					{
@@ -9544,7 +9545,7 @@ CMD:colgar(playerid, params[])
 				StartedCall[caller] = 0;
 			}
 		}
-		fplayerid] = 255;
+		Mobile[playerid] = 255;
 		return 1;
 	}
 	return 1;
