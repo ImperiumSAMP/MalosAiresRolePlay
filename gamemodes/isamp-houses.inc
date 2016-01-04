@@ -1724,10 +1724,12 @@ CMD:timbre(playerid, params[])
 			if(IsPlayerOnOutsideHouseDoor(playerid, h))
 			{
 				PlayerActionMessage(playerid, 15.0, "toca el timbre de la casa.");
-				for(p = 1; p < MAX_PLAYERS; p++) {
+				foreach(p : Player)
+				{
 					houseid = GetPlayerHouse(p);
 					if(houseid == h)
-						PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!"); }
+						return PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!");
+				}
 			}
 			else
 				return SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
