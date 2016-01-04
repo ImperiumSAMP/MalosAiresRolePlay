@@ -13712,7 +13712,7 @@ CMD:vercanal(playerid, params[])
 		else
 		{
 			AdminFactionEnabled[playerid] = true;
-			SendClientMessage(playerid, COLOR_GREEN, "LLector del canal faccionario activado.");
+			SendClientMessage(playerid, COLOR_GREEN, "Lector del canal faccionario activado.");
 		}
 	}
 	else if(strcmp(param, "sms", true) == 0)
