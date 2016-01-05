@@ -34,7 +34,7 @@ CMD:pponer(playerid, params[])
     
     switch(objetos)
     {
-        case 1:
+        case 1: // Cono
         {
             for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -74,7 +74,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		}
-		case 2:
+		case 2: // Barricada
         {
  			for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -114,7 +114,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		}
-		case 3:
+		case 3: // Baliza 1
 		{
            	for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -124,27 +124,27 @@ CMD:pponer(playerid, params[])
                		GetPlayerFacingAngle(playerid, fAngle);
 
                		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1282, x-0.8, y, z-0.7, 0.0, 0.0, 0);
+						pmaitems[i] = CreateDynamicObject(1282, x-0.8, y, z-0.5, 0.0, 0.0, 0);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.7, 0.0, 0.0, 90);
+						pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.5, 0.0, 0.0, 90);
 						SetPlayerPos(playerid, x, y-0.01, z);
     					PlayerActionMessage(playerid, 15.0, "ubica una Bbaliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
  						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1282, x+0.8, y, z-0.7, 0.0, 0.0, 0);
+						pmaitems[i] = CreateDynamicObject(1282, x+0.8, y, z-0.5, 0.0, 0.0, 0);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
  						return 1;
 					} else {
-				    	pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.7, 0.0, 0.0, 90);
+				    	pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.5, 0.0, 0.0, 90);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
@@ -154,7 +154,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		}
-		case 4:
+		case 4:  // Baliza inrompible
 		{
            	for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -194,7 +194,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		}
-		case 5:
+		case 5: // Baliza con flecha
 		{
 		    for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -204,27 +204,27 @@ CMD:pponer(playerid, params[])
                		GetPlayerFacingAngle(playerid, fAngle);
 
                		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1425, x-0.8, y, z-0.4, 0.0, 0.0, 270);
+						pmaitems[i] = CreateDynamicObject(1425, x-0.8, y, z-0.5, 0.0, 0.0, 270);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1425, x, y-0.8, z-0.4, 0.0, 0.0, 0);
+						pmaitems[i] = CreateDynamicObject(1425, x, y-0.8, z-0.5, 0.0, 0.0, 0);
 						SetPlayerPos(playerid, x, y-0.01, z);
    						PlayerActionMessage(playerid, 15.0, "ubica una Bbaliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1425, x+0.8, y, z-0.4, 0.0, 0.0, 90);
+						pmaitems[i] = CreateDynamicObject(1425, x+0.8, y, z-0.5, 0.0, 0.0, 90);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					} else { // 0 grados
-				    	pmaitems[i] = CreateDynamicObject(1425, x, y+0.8, z-0.4, 0.0, 0.0, 180);
+				    	pmaitems[i] = CreateDynamicObject(1425, x, y+0.8, z-0.5, 0.0, 0.0, 180);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
@@ -234,7 +234,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		}
-		case 6:
+		case 6: // Cinta de la policia
 		{
 		    for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -274,7 +274,7 @@ CMD:pponer(playerid, params[])
 				SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
 			}
 		} 
-		case 7:
+		case 7: // Barricada de metal
 		{
 		    for(new i; i < MAX_PMAITEMS; i++)
 			{
@@ -284,27 +284,27 @@ CMD:pponer(playerid, params[])
                		GetPlayerFacingAngle(playerid, fAngle);
 
                		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1424, x-0.8, y, z, 0.0, 0.0, 270);
+						pmaitems[i] = CreateDynamicObject(1424, x-0.8, y, z-0.4, 0.0, 0.0, 270);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1424, x, y-0.8, z, 0.0, 0.0, 0);
+      					pmaitems[i] = CreateDynamicObject(1424, x, y-0.8, z-0.4, 0.0, 0.0, 0);
 						SetPlayerPos(playerid, x, y-0.01, z);
    						PlayerActionMessage(playerid, 15.0, "ubica una Bbaliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1424, x+0.8, y, z, 0.0, 0.0, 90);
+						pmaitems[i] = CreateDynamicObject(1424, x+0.8, y, z-0.4, 0.0, 0.0, 90);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					} else { // 0 grados
-				    	pmaitems[i] = CreateDynamicObject(1424, x, y+0.8, z, 0.0, 0.0, 180);
+				    	pmaitems[i] = CreateDynamicObject(1424, x, y+0.8, z-0.4, 0.0, 0.0, 180);
 						SetPlayerPos(playerid, x, y-0.01, z);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
@@ -334,7 +334,7 @@ CMD:pquitar(playerid, params[])
 	for(new i; i < MAX_PMAITEMS; i++)
 	{
 	    GetDynamicObjectPos(pmaitems[i], x, y, z);
-	    if(IsPlayerInRangeOfPoint(playerid, 5.0, x, y, z)){
+	    if(IsPlayerInRangeOfPoint(playerid, 1.0, x, y, z)){
 	        DestroyDynamicObject(pmaitems[i]);
 	        pmaitems[i] = 0;
 	        PlayerActionMessage(playerid, 15.0, "quita el objeto que tiene frente a el.");
