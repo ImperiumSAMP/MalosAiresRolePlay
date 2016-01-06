@@ -10408,7 +10408,7 @@ CMD:multar(playerid, params[])
   	if(PlayerInfo[playerid][pFaction] != FAC_PMA || PlayerInfo[playerid][pRank] == 10)
 	  	return 1;
 	if(sscanf(params, "uds[64]", targetid, cost, reason))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /multa [ID/Jugador] [costo] [razón]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /multar [ID/Jugador] [costo] [razón]");
 	if(CopDuty[playerid] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio como oficial de policía!");
 	if(!ProxDetectorS(3.0, playerid, targetid) || targetid == playerid)
