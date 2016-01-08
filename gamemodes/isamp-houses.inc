@@ -554,7 +554,7 @@ CMD:casaradio(playerid, params[])
 
 	if(sscanf(params, "i", radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaradio [ID radio]");
-	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey])
+	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey] || houseid != PlayerInfo[playerid][pHouseKeyIncome])
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en tu casa.");
 	if(radio < 0 || radio > 16)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
