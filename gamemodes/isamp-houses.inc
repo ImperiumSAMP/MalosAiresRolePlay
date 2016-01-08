@@ -1735,13 +1735,13 @@ CMD:timbre(playerid, params[])
 				{
 					houseid = GetPlayerHouse(p);
 					if(houseid == h)
-						SendClientMessage(p, COLOR_YELLOW2, "¡Suena el timbre de la casa, alguien está en la puerta!");
+						SendClientMessage(p, COLOR_DO1, "¡Suena el timbre de la casa, alguien está en la puerta!");
 				}
 				return 1;
 			}
 		}
 		else
-			SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
+			return SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
 	}
 	return 1;
 }

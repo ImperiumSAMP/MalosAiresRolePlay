@@ -80,8 +80,6 @@ stock bool:EnterBuilding(playerid)
 					GivePlayerCash(playerid, -Building[i][blEntranceFee]);
 					if(Building[i][blEntranceFee] > 0)
 						SendFMessage(playerid, COLOR_YELLOW2, "¡Te han cobrado $%d para ingresar al edificio %s!", Building[i][blEntranceFee], Building[i][blText]);
-					else
-					    SendFMessage(playerid, COLOR_YELLOW2, "¡Bienvenido al edificio %s!", Building[i][blText]);
 					SetCameraBehindPlayer(playerid);
 				} else
 					GameTextForPlayer(playerid, "~r~No tienes el dinero suficiente!", 2000, 2);
