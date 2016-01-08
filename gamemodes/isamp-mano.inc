@@ -149,7 +149,7 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
     if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro ítem!");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
@@ -221,7 +221,7 @@ CMD:mano(playerid, params[])
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
             if(GetPVarInt(playerid, "cantSaveItems") == 1)
- 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+ 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro ítem!");
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);

@@ -1739,9 +1739,9 @@ CMD:timbre(playerid, params[])
 				}
 				return 1;
 			}
-			else
-				SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
 		}
+		else
+			SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
 	}
 	return 1;
 }
