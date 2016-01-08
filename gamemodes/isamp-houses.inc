@@ -549,15 +549,17 @@ CMD:ayudacasa(playerid, params[])
 
 CMD:casaradio(playerid, params[])
 {
-	new radio,
-	    houseid = GetPlayerHouse(playerid);
+	new radio, houseid, housekey, houseincome;
+	houseid = GetPlayerHouse(playerid);
+	housekey = PlayerInfo[playerid][pHouseKey];
+	houseincome = PlayerInfo[playerid][pHouseKeyIncome];
 
 	if(sscanf(params, "i", radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casaradio [ID radio]");
-	if(houseid == 0 || houseid != PlayerInfo[playerid][pHouseKey] || houseid != PlayerInfo[playerid][pHouseKeyIncome])
+	if(houseid == 0 || (houseid != housekey && houseid != houseincome))
  		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en tu casa.");
-	if(radio < 0 || radio > 16)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 18)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 18. Usa 0 para dejarla sin radio.");
 
     House[houseid][Radio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]:{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
@@ -625,12 +627,17 @@ CMD:casavender(playerid, params[])
 	if(House[house][OwnerSQLID] != PlayerInfo[playerid][pID])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Error, la casa no está a tu nombre (Consulta a un administrador).");
 
-	if(House[house][Income] >= 1)
-	    House[house][IncomePrice] = House[house][HousePrice] / 100;
 	House[house][Owned] = 0;
 	House[house][OwnerSQLID] = 0;
 	strmid(House[house][OwnerName], "Ninguno", 0, strlen("Ninguno"), 255);
 	House[house][Locked] = 1;
+	if(House[house][IncomePrice] != 0)
+	{
+		House[house][IncomePrice] = 0;
+		House[house][IncomeAccept] = 0;
+		House[house][IncomePriceAdd] = 0;
+		House[house][Income] = 0;
+	}
 	PlayerInfo[playerid][pHouseKey] = 0;
 	GivePlayerCash(playerid, House[house][HousePrice] / 3 * 2); // 66 % del valor original.
 	PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
@@ -1482,7 +1489,7 @@ CMD:acpuerta(playerid, params[])
 			else
 			{
 				House[i][Locked] = 1;
-		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
+		    	SendFMessage(playerid, COLOR_WHITE, "Cerraste la puerta de la casa ID: %d.", i);
 			}
 		    return 1;
 		}
@@ -1728,11 +1735,12 @@ CMD:timbre(playerid, params[])
 				{
 					houseid = GetPlayerHouse(p);
 					if(houseid == h)
-						return PlayerDoMessage(p , 15.0, "¡Suena el timbre de tu casa, alguien está en la puerta!");
+						SendClientMessage(p, COLOR_YELLOW2, "¡Suena el timbre de la casa, alguien está en la puerta!");
 				}
+				return 1;
 			}
 			else
-				return SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
+				SendClientMessage(playerid, COLOR_WHITE, "¡No estás en ninguna casa!");
 		}
 	}
 	return 1;
