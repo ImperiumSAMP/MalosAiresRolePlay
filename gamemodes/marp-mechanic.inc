@@ -262,7 +262,7 @@ public Reparacion(playerid)
 		FactionInfo[FAC_MECH][fBank] += RepairProducts[playerid] * (GetItemPrice(ITEM_ID_REPUESTOAUTO) + 25);
 	}
 	
-	if (GetPlayerCash(playerid) >= RepairPrice[playerid])
+	if (GetPlayerCash(playerid) < RepairPrice[playerid])
 	{
 	     RepairVehicle(vehicleid);
 	     VehicleInfo[vehicleid][VehHP] = 100;
