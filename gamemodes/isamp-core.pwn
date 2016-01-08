@@ -9433,14 +9433,14 @@ CMD:colgar(playerid, params[])
 	{
 		if(caller < 255)
 		{
-		    PlayerDoMessage(playerid, 15.0, "Han colgado...");
-		    PlayerDoMessage(caller, 15.0, "Han colgado...");
+           	SendClientMessage(playerid, COLOR_YELLOW2, "Han colgado...");
+           	SendClientMessage(caller, COLOR_YELLOW2, "Han colgado...");
 			if(!IsPlayerInAnyVehicle(playerid))
 				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_STOPUSECELLPHONE);
 			if(!IsPlayerInAnyVehicle(caller))
 				SetPlayerSpecialAction(caller, SPECIAL_ACTION_STOPUSECELLPHONE);
-			PlayerActionMessage(playerid,15.0,"cuelga y guarda su teléfono celular en el bolsillo.");
-			PlayerActionMessage(caller,15.0,"cuelga y guarda su teléfono celular en el bolsillo.");
+			PlayerActionMessage(playerid,15.0,"cuelga la llamada en su teléfono celular.");
+			PlayerActionMessage(caller,15.0,"cuelga la llamada en su teléfono celular.");
 			Mobile[caller] = 255;
 			if(StartedCall[playerid]) {
 			    //TODO: Implementar tiempo de llamada
