@@ -229,14 +229,14 @@ CMD:mascara(playerid, params[])
 CMD:comprarmascara(playerid, params[])
 {
     new idmask;
-    new maskModels[9] = {18912, 18913, 18914, 18915, 18916, 18917, 18918, 18919, 18920};
+    new maskModels[13] = {18912, 18913, 18914, 18915, 18916, 18917, 18918, 18919, 18920, 18911, 19801, 19036, 19163};
     new business = GetPlayerBusiness(playerid);
     if(sscanf(params, "i", idmask))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 12) Precio: $50.");
     if(business == 0 || (Business[business][bType] != BIZ_CLOT &&  Business[business][bType] != BIZ_CLOT2))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algún negocio de ropa que los venda.");
 	if(idmask < 0 || idmask > 8)
-        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 8) Precio: $50.");
+        return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 12) Precio: $50.");
 	if(GetPlayerCash(playerid) < 50)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $50. ¡Vuelve cuando los tengas!");
 	if(Business[business][bProducts] < 1)
