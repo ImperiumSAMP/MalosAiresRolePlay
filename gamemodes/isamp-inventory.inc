@@ -66,7 +66,8 @@ CMD:inventario(playerid, params[])
 
 			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico de la mano.
 			
-			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
+			format(str, sizeof(str), "utilizando su mano derecha, guarda un/a %s en su inventario.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
 			
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -96,12 +97,10 @@ CMD:inventario(playerid, params[])
 
 			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico de la mano.
 
-			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
-
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 			
-			format(str, sizeof(str), "utilizando una de sus manos, guarda un/a %s en su inventario.", GetItemName(itemid));
+			format(str, sizeof(str), "utilizando su mano izquierda, guarda un/a %s en su inventario.", GetItemName(itemid));
 			PlayerActionMessage(playerid, 15.0, str);
 	    }
 		else
@@ -144,7 +143,7 @@ Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "utilizando una de sus manos, toma un/a %s de su inventario.", GetItemName(itemid));
+			format(str, sizeof(str), "toma un/a %s de su inventario y lo sostiene en una de sus manos.", GetItemName(itemid));
 			PlayerActionMessage(playerid, 15.0, str);
 		}
 		else
