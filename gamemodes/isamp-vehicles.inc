@@ -1582,47 +1582,6 @@ CMD:vehcapot(playerid, params[])
 	SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
 	return 1;
 }
-CMD:cambiarrueda(playerid, params[])
-{
-	new vehicleid, vehicleType, panels, doors, lights, tires;
-	
-	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Baja del vehículo, debes estar a pie.");
-	vehicleid = GetClosestVehicle(playerid, 5.0);
-	if(vehicleid == INVALID_VEHICLE_ID)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No hay ningún vehículo cerca tuyo!");
-		
-	new hand_rueda = SearchHandsForItem(playerid, ITEM_ID_RUEDA_DE_REPUESTO),
-		hand_llave = SearchHandsForItem(playerid, ITEM_ID_LLAVE_DE_CRUZ);
-		
-	if(hand_rueda == -1 || hand_llave == -1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener una llave de cruz y una rueda de repuesto en tus manos!");
-	
-	GetVehicleDamageStatus(vehicleid, panels, doors, lights, tires);
-	if(tires == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene ninguna rueda pinchada.");
-    if(!AdminDuty[playerid])
-	{
-		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED && vehicleType != VEH_JOB) ||
-			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
-			(vehicleType == VEH_OWNED && !playerHasCarKey(playerid,vehicleid)) ||
-			(vehicleType == VEH_JOB && PlayerInfo[playerid][pJob] != VehicleInfo[vehicleid][VehJob]) ||
-		 	(vehicleType == VEH_RENT && PlayerInfo[playerid][pRentCarID] != vehicleid) )
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este vehículo!");
-	}
-
-	if(tires == 1 || tires == 2 || tires == 4 || tires == 8){
- 		ApplyAnimation(playerid, "MISC", "PLUNGER_01", 4.0, 0, 1, 1, 0, 0);
- 		PlayerActionMessage(playerid, 15.0, "comienza a cambiar la rueda del vehículo.");
- 		TogglePlayerControllable(playerid, false);
-		GameTextForPlayer(playerid, "~w~Cambiando rueda", 6000, 4);
-		SetPVarInt(playerid, "ChangeTire", SetTimerEx("ChangeTire", 6000, false, "iiii", playerid, vehicleid));
-		return 1;
-	}
-	if(tires == 3 || tires == 5 || tires == 6 || tires == 7 || tires == 9 || tires == 10 || tires == 11 || tires == 12 || tires == 13 || tires == 14 || tires == 15)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes reparar todas las ruedas de tu vehículo, debes ir a un taller mecánico.");
-	return 0;
-}
 
 	    
 //=======================COMANDOS DE ADMIN PARA VEHICULOS=======================

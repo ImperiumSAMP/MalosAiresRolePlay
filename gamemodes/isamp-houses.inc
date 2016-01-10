@@ -1484,12 +1484,12 @@ CMD:acpuerta(playerid, params[])
 		    if(House[i][Locked] == 1)
 			{
 				House[i][Locked] = 0;
-		    	SendFMessage(playerid, COLOR_WHITE, "Abriste la puerta de la casa ID: %d.", i);
+		    	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Abriste la puerta de la casa ID: %d.", i);
 			}
 			else
 			{
 				House[i][Locked] = 1;
-		    	SendFMessage(playerid, COLOR_WHITE, "Cerraste la puerta de la casa ID: %d.", i);
+		    	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Cerraste la puerta de la casa ID: %d.", i);
 			}
 		    return 1;
 		}

@@ -353,7 +353,7 @@ CMD:mecequipo(playerid, params[])
 	if(sscanf(params, "i", option))
 	{
         SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mecequipo [opción] (1-5)");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Opciones:{C8C8C8} Uniformes: 1 - 4 | Ropa normal: 5 | Aerosol: 6");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}Opciones:{C8C8C8} Uniformes: 1 - 4 | Ropa normal: 5 | Aerosol: 6");
         return 1;
 	}
 	if(option < 1 || option > 6)
