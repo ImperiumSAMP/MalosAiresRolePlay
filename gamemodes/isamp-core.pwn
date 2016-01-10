@@ -1418,7 +1418,7 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype)
 			}
 		}
         PlayerActionMessage(playerid, 15.0, "elige unas vestimentas en el negocio y se las indica al empleado.");
-		PlayerActionMessage(playerid, 15.0, "El empleado las dobla y embolsa, para posteriormente cobrarle y entregárselas.");
+		PlayerDoMessage(playerid, 15.0, "El empleado las dobla y embolsa, para posteriormente cobrarle y entregárselas.");
 		SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, gSelectionItemsTag[playerid][selecteditem]);
 		return 1;
 	}
