@@ -1372,6 +1372,7 @@ DestroySelectionMenu(playerid)
 
 HandlePlayerItemSelection(playerid, selecteditem, skintype)
 {
+	new freehand;
 	// In this case we change the player's skin
   	if(gSelectionItemsTag[playerid][selecteditem] >= 0 && gSelectionItemsTag[playerid][selecteditem] < 300)
 	{
@@ -1382,8 +1383,11 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype)
 				if(GetPlayerCash(playerid) < PRICE_CLOTHES1)
 				{
 				    SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario ($%d).", PRICE_CLOTHES1);
-					return 1;
+				    return 1;
 				}
+				freehand = SearchFreeHand(playerid);
+				if(freehand == -1)
+				    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ninguna mano disponible.");
 				GivePlayerCash(playerid, -PRICE_CLOTHES1);
 				new business = GetPlayerBusiness(playerid);
 		        if(business != 0 && Business[business][bType] == BIZ_CLOT)
@@ -1399,8 +1403,11 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype)
 			    {
 					SendFMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario ($%d).", PRICE_CLOTHES2);
 					return 1;
-   				}
-     			GivePlayerCash(playerid, -PRICE_CLOTHES2);
+				}
+				freehand = SearchFreeHand(playerid);
+				if(freehand == -1)
+				    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ninguna mano disponible.");
+				GivePlayerCash(playerid, -PRICE_CLOTHES2);
 	       		new business = GetPlayerBusiness(playerid);
 		        if(business != 0 && Business[business][bType] == BIZ_CLOT2)
 		        {
@@ -1410,9 +1417,8 @@ HandlePlayerItemSelection(playerid, selecteditem, skintype)
 				}
 			}
 		}
-        SetPlayerSkin(playerid, gSelectionItemsTag[playerid][selecteditem]);
         PlayerActionMessage(playerid, 15.0, "compra unas vestimentas en el negocio y se las viste en el probador.");
-        PlayerInfo[playerid][pSkin] = gSelectionItemsTag[playerid][selecteditem];
+		SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, gSelectionItemsTag[playerid][selecteditem]);
 		return 1;
 	}
 	return 1;
