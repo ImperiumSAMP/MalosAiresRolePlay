@@ -95,13 +95,13 @@ CMD:tazer(playerid, params[])
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(tazerStatus[playerid] == TAZER_NONE)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar equipado con un tazer!");
-	if(tazerStatus[playerid] == TAZER_EMPTY)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaría a recargarlo!");
-	if(GetHandItem(playerid, HAND_RIGHT) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes la mano ocupada!");
 
     if(tazerInUse[playerid] == 0)
     {
+		if(tazerStatus[playerid] == TAZER_EMPTY)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tu tazer no tiene mas munición, vuelve a la comisaría a recargarlo!");
+		if(GetHandItem(playerid, HAND_RIGHT) != 0)
+	    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Tienes la mano ocupada!");
     	if(tazerStatus[playerid] == TAZER_EQUIPPED)
    		SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_SILENCED, 10);
 		if(tazerStatus[playerid] == TAZER_USED)
@@ -135,7 +135,7 @@ CMD:tazer(playerid, params[])
 			}
 		}
 		tazerInUse[playerid] = 0;
-    	SendClientMessage(playerid, COLOR_WHITE, "Has guardado tu tazer. Para usarlo nuevamente usa /tazer o vé a recargarlo si se te ha acabado.");
+    	SendClientMessage(playerid, COLOR_WHITE, "Has guardado tu tazer. Para usarlo nuevamente usa /tazer o ve a recargarlo si se te ha acabado.");
 		return 1;
 	}
 	return 1;

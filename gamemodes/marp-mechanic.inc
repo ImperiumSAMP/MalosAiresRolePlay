@@ -242,7 +242,7 @@ public Reparacion(playerid)
 		
     TogglePlayerControllable(playerid, true);
     
-	if(GetPlayerCash(playerid) < RepairPrice[playerid]) && (PlayerInfo[playerid][pBank] < RepairPrice[playerid])
+	if((GetPlayerCash(playerid) < RepairPrice[playerid]) && (PlayerInfo[playerid][pBank] < RepairPrice[playerid]))
  	{
   		SendClientMessage(mechanic, COLOR_YELLOW2, "El jugador no tiene el dinero necesario.");
 		SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -351,36 +351,33 @@ CMD:mecequipo(playerid, params[])
 	if(PlayerInfo[playerid][pFaction] != FAC_MECH)
 	    return 1;
 	if(sscanf(params, "i", option))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mecequipo [ropa] (1-5)");
-	if(option < 1 || option > 5)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mecequipo [ropa] (1-5)");
+	{
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mecequipo [opción] (1-5)");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}Opciones:{C8C8C8} Uniformes: 1 - 4 | Ropa normal: 5 | Aerosol: 6");
+        return 1;
+	}
+	if(option < 1 || option > 6)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡Elige una opción válida!");
     if(!PlayerToPoint(3.0, playerid, MEC_OFFICE_X, MEC_OFFICE_Y, MEC_OFFICE_Z))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la oficina del taller, al lado de los estantes donde se guardan las vestimentas de trabajo.");
-	if(option == 5)
-	{
-		if(GetPlayerSkin(playerid) == PlayerInfo[playerid][pSkin])
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes puestas tus vestimentas personales!.");
-
-		SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
-        PlayerActionMessage(playerid, 15.0, "devuelve su ropa de trabajo al estante y se viste con sus vestimentas personales.");
-        return 1;
-	} 
 	if(!jobDuty[playerid])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
-	    
-    		hand = SearchFreeHand(playerid);
-			if(hand == -1)
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener alguna mano libre para agarrar el aerosol de pintura.");
-			switch(option)
-			{
-			    case 1: SetPlayerSkin(playerid, 8);
-			    case 2: SetPlayerSkin(playerid, 50);
-			    case 3: SetPlayerSkin(playerid, 42);
-			    case 4: SetPlayerSkin(playerid, 268);
-			}
-			SetHandItemAndParam(playerid, hand, WEAPON_SPRAYCAN, 750);
-			PlayerActionMessage(playerid, 15.0, "toma unas vestimentas del estante y se las pone. Luego agarra un aerosol de pintura.");
-		}
+
+	hand = SearchFreeHand(playerid);
+	switch(option)
+	{
+		case 1: SetPlayerSkin(playerid, 8);
+		case 2: SetPlayerSkin(playerid, 50);
+		case 3: SetPlayerSkin(playerid, 42);
+		case 4: SetPlayerSkin(playerid, 268);
+		case 5: SetPlayerSkin(playerid, PlayerInfo[playerid][pSkin]);
+		case 6: if(hand != -1) SetHandItemAndParam(playerid, hand, WEAPON_SPRAYCAN, 500);
+	}
+
+	if(option == 5) PlayerActionMessage(playerid, 15.0, "devuelve su ropa de trabajo al estante y se viste con sus vestimentas personales.");
+	if(option == 6) PlayerActionMessage(playerid, 15.0, "agarra un aerosol de pintura del casillero.");
+	if(option < 5) PlayerActionMessage(playerid, 15.0, "toma el uniforme del estante y se lo pone, dejando su ropa normal en el casillero.");
+
 	return 1;
 }
 
@@ -554,7 +551,7 @@ CMD:mecreparar(playerid,params[])
 	RepairClient[playerid] = target;
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s reparar su vehículo por $%d. La propuesta vence en 10 segs.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "%s te ofreció reparar el vehículo por $%d. Usa /mecaceptar. La propuesta vence en 10 segs.", GetPlayerNameEx(playerid), price);
-	SendFMessage(target, COLOR_LIGHTBLUE, "Si no tienes el dinero necesario en mano, se descontará de tu cuenta bancaria.");
+	SendClientMessage(target, COLOR_LIGHTBLUE, "Si no tienes el dinero necesario en mano, se descontará de tu cuenta bancaria.");
 	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
 }
@@ -591,7 +588,7 @@ CMD:meccerradura(playerid, params[])
 	RepairClient[playerid] = target;
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido a %s cambiar la cerradura por $%d. La propuesta vence en 10 segs.", GetPlayerNameEx(target), price);
 	SendFMessage(target, COLOR_LIGHTBLUE, "%s quiere cambiarte la cerradura por $%d. Usa /mecaceptar. Tienes 10 segs.", GetPlayerNameEx(playerid), price);
-    SendFMessage(target, COLOR_LIGHTBLUE, "Si no tienes el dinero necesario en mano, se descontará de tu cuenta bancaria.");
+    SendClientMessage(target, COLOR_LIGHTBLUE, "Si no tienes el dinero necesario en mano, se descontará de tu cuenta bancaria.");
 	RepairOfferTimer[target] = SetTimerEx("EndRepairOffer", 10000, false, "i", target);
 	return 1;
 }

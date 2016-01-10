@@ -5602,7 +5602,8 @@ stock IsAtATM(playerid) {
 	   || PlayerToPoint(1.0,playerid,2423.6157,-1220.1835,25.4946)
 	   || PlayerToPoint(1.0,playerid,2232.5903,-1161.5964,25.8906)
 	   || PlayerToPoint(1.0,playerid,2422.7905,-1959.7603,13.5375)
-	   || PlayerToPoint(1.0,playerid,1186.7105,-1368.3475,13.5743))	{
+	   || PlayerToPoint(1.0,playerid,1186.7105,-1368.3475,13.5743)
+	   || PlayerToPoint(1.5,playerid,695.14789,-539.28339,15.98150))	{
 		return 1;
 	}
 	return 0;
