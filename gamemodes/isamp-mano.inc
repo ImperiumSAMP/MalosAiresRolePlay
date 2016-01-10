@@ -51,10 +51,12 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	}
 	if(hand == HAND_RIGHT && GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && param > 1)
 	{
+	    SendClientMessage(playerid, COLOR_WHITE, "A");
 		GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT) - 1);
 		SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT) - 1);
 	}
 	if((param == 0 && itemid == 0) || (param < 2 && GetItemType(itemid) == ITEM_FIREWEAPON))
+	    SendClientMessage(playerid, COLOR_WHITE, "AA");
 		ResetPlayerWeapons(playerid);
 }
 
@@ -281,11 +283,14 @@ CMD:mano(playerid, params[])
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
+			if(rightparam > 1 && itemtype == ITEM_FIREWEAPON)
+				GivePlayerWeapon(playerid, rightitem, rightparam);
           	SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 3000, false, "i", playerid);
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
+		
 			if(rightparam > 0 && itemtype == ITEM_FIREWEAPON)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada, usa /mano separar para descargarla.");
 			switch(rightitem)
@@ -385,12 +390,16 @@ CMD:mano(playerid, params[])
 			if(itemtype == ITEM_WEAPONMAG)
 			    PlayerActionMessage(playerid, 15.0, "retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
 			else
+			{
                 PlayerActionMessage(playerid, 15.0, "calza el cargador en el arma, con la mano izquierda.");
+				if(rightparam > 1)
+				    GivePlayerWeapon(playerid, rightitem, rightparam);
+			}
 
 		} else if(strcmp(command, "separar", true) == 0) {
 			if(GetItemType(rightitem) != ITEM_FIREWEAPON)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas.");
-			if(leftitem != -1)
+			if(SearchFreeHand(playerid) != -1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Para descargar el arma necesitas la mano izquierda libre.");
 			if(rightparam == 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma está actualmente descargada.");

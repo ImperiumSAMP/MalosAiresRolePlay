@@ -1238,21 +1238,19 @@ ShowAmmuCatalog(playerid)
 
 OnPlayerBuyAmmu(biz, playerid, params[])
 {
-	new option, param, itemid, itemprice, str[128], freehand;
+	new option, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo más tarde.");
-    if(sscanf(params, "ii", option, param))
+    if(sscanf(params, "i", option))
         return ShowAmmuCatalog(playerid);
 	if(option < 0 || option >= sizeof(AmmuItems))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de opción válido.");
 	if(!PlayerInfo[playerid][pWepLic])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar si no tienes una licencia de portación de armas.");
-	if(param < 1 || param > 200)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 bala ni más de 200.");
 
 	itemid = AmmuItems[option];
-	itemprice = GetItemPrice(itemid) * param;
+	itemprice = GetItemPrice(itemid);
 
 	if(GetPlayerCash(playerid) < itemprice)
 	{
