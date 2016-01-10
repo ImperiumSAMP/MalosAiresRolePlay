@@ -149,7 +149,7 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
     if(targetid == playerid || !ProxDetectorS(2.0, playerid, targetid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Jugador inválido o se encuentra muy lejos!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro ítem!");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
@@ -221,7 +221,7 @@ CMD:mano(playerid, params[])
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
             if(GetPVarInt(playerid, "cantSaveItems") == 1)
- 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+ 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro ítem!");
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
@@ -308,35 +308,35 @@ CMD:mano(playerid, params[])
 		} else if(strcmp(command, "usar", true) == 0) {
 
 			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
-	            PlayerActionMessage(playerid, 15.0, "comienza a comer un sándwich de jámon y queso.");
-	            PlayerEat(playerid, 40);
+	            PlayerActionMessage(playerid, 15.0, "come un pedazo de su sándwich de jamón y queso.");
+	            PlayerEat(playerid, 10);
 	            if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 	            	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
-				else
+					else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 	        } else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_ALFAJOR) {
          		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
 		        PlayerEat(playerid, 15);
 		        if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-		          	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_RIGHT) - 1);
-				else
+		       	   	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_RIGHT) - 1);
+					else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 			} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_AGUAMINERAL) {
-				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de agua mineral.");
-			    PlayerDrink(playerid, 50);
-			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
-				else
-					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+                if(GetHandParam(playerid, HAND_RIGHT) > 0) {
+				  PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua.");
+			      PlayerDrink(playerid, 10);
+        	      SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
+			      } else
+	              SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
            	} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_CERVEZA) {
-				PlayerActionMessage(playerid, 15.0, "comienza a beber de su botella de cerveza.");
-			    PlayerDrink(playerid, 50);
-			    PlayerDrinkAlcohol(playerid, 20);
+				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de cerveza.");
+			    PlayerDrink(playerid, 10);
+			    PlayerDrinkAlcohol(playerid, 4);
 			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
-				else
+			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CERVEZA, GetHandParam(playerid, HAND_RIGHT) - 1);
+				  else
 					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
-			} else
+				} else
   				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		}
 	}

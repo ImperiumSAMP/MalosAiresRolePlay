@@ -132,6 +132,17 @@ forward SearchTrunkForItem(trunkid, itemid); // Busca un item pasado por paramet
 forward SearchTrunkFreeSlot(trunkid); // Busca por el primer slot vacio en el maletero y devuelve su posicion. De no haber espacio retorna -1.
 forward PrintTrunkForPlayer(trunkid, targetid); // Imprime el maletero del vehiculo al jugador indicado.
 
+//==================================TIMER=======================================
+forward ChangeTire(playerid, vehicleid);
+
+public ChangeTire(playerid, vehicleid)
+{
+	new panels, doors, lights;
+	UpdateVehicleDamageStatus(vehicleid, panels, doors, lights, 0);
+ 	TogglePlayerControllable(playerid, true);
+	return 1;
+}
+
 //==================VEHICLE TRUNK FUNCTIONS IMPLEMENTATION======================
 
 stock GetTrunkItem(trunkid, trunkslot)
@@ -1548,7 +1559,7 @@ CMD:vehcapot(playerid, params[])
 	if(GetVehicleType(vehicleid) != VTYPE_CAR)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Este vehículo no tiene capot!");
 	vehicleType = VehicleInfo[vehicleid][VehType];
-	if(!AdminDuty[playerid])
+ 	if(!AdminDuty[playerid])
 	{
 		if( (vehicleType != VEH_FACTION && vehicleType != VEH_RENT && vehicleType != VEH_OWNED && vehicleType != VEH_JOB) ||
 			(vehicleType == VEH_FACTION && PlayerInfo[playerid][pFaction] != VehicleInfo[vehicleid][VehFaction]) ||
@@ -1572,6 +1583,7 @@ CMD:vehcapot(playerid, params[])
 	return 1;
 }
 
+	    
 //=======================COMANDOS DE ADMIN PARA VEHICULOS=======================
 
 CMD:av(playerid, params[])
