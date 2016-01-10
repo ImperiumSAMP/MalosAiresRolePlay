@@ -13,9 +13,18 @@
 #define ITEM_TOY                3
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
+#define ITEM_FIREWEAPON         6
 
 #define MAX_ITEMS               129
 
+#define ITEM_ID_9MM                     22
+#define ITEM_ID_9MM_SILENCED            23
+#define ITEM_ID_DEAGLE                  24
+#define ITEM_ID_UZI                     28
+#define ITEM_ID_TEC9                    32
+#define ITEM_ID_MP5                     29
+#define ITEM_ID_M4                      31
+#define ITEM_ID_AK47                    30
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
 #define ITEM_ID_BIDON		    		48
@@ -162,17 +171,17 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*19*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*20*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*21*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
-/*22*/	{"Pistola 9mm", "Munición", ITEM_OTHER, 35, true, 346, 0.009, 0.061, -0.025, 150.9, 8.6, -11.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
-/*23*/	{"Pistola 9mm con silenciador", "Munición", ITEM_OTHER, 75, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
-/*24*/	{"Pistola Desert Eagle", "Munición", ITEM_OTHER, 150, true, 348, 0.011, 0.058, 0.0, -178.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*22*/	{"Pistola 9mm", "Munición", ITEM_FIREWEAPON, 35, true, 346, 0.009, 0.061, -0.025, 150.9, 8.6, -11.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
+/*23*/	{"Pistola 9mm con silenciador", "Munición", ITEM_FIREWEAPON, 75, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*24*/	{"Pistola Desert Eagle", "Munición", ITEM_FIREWEAPON, 150, true, 348, 0.011, 0.058, 0.0, -178.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*25*/	{"Escopeta", "Munición", ITEM_WEAPON, 70, false, 349, 0.035, 0.081, 0.023, 154.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
 /*26*/	{"Escopeta recortada", "Munición", ITEM_WEAPON, 120, false, 350, 0.026, 0.058, -0.023, 170.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
 /*27*/	{"Escopeta de combate", "Munición", ITEM_WEAPON, 200, false, 351, 0.024, 0.059, -0.01, 172.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35},
-/*28*/	{"Uzi", "Munición", ITEM_OTHER, 50, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
-/*29*/	{"Subfusil MP-5", "Munición", ITEM_OTHER, 95, false, 353, 0.03, 0.065, 0.0, 163.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
-/*30*/	{"Fusil AK-47", "Munición", ITEM_OTHER, 170, false, 355, 0.057, 0.076, 0.014, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
-/*31*/	{"Fusil M4", "Munición", ITEM_OTHER, 170, false, 356, 0.031, 0.042, -0.021, 174.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
-/*32*/	{"Pistola semiautomatica TEC-9", "Munición", ITEM_OTHER, 50, true, 372, 0.022, 0.067, 0.0, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*28*/	{"Uzi", "Munición", ITEM_FIREWEAPON, 50, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
+/*29*/	{"Subfusil MP-5", "Munición", ITEM_FIREWEAPON, 95, false, 353, 0.03, 0.065, 0.0, 163.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
+/*30*/	{"Fusil AK-47", "Munición", ITEM_FIREWEAPON, 170, false, 355, 0.057, 0.076, 0.014, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
+/*31*/	{"Fusil M4", "Munición", ITEM_FIREWEAPON, 170, false, 356, 0.031, 0.042, -0.021, 174.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
+/*32*/	{"Pistola semiautomatica TEC-9", "Munición", ITEM_FIREWEAPON, 50, true, 372, 0.022, 0.067, 0.0, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*33*/	{"Rifle de caza", "Munición", ITEM_WEAPON, 60, false, 357, 0.057, 0.083, -0.007, 168.1, 19.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
 /*34*/	{"Rifle de francotirador", "Munición", ITEM_WEAPON, 550, false, 358, 0.052, 0.086, 0.007, 150.1, 8.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
 /*35*/	{"RPG-7", "Munición", ITEM_WEAPON, 25000, false, 359, 0.004, 0.046, 0.0, 158.8, 9.5, -4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
