@@ -49,6 +49,11 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 		HandInfo[playerid][hand][Amount] = param;
 		LoadHandItem(playerid, hand);
 	}
+	if(hand == HAND_RIGHT && GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON)
+	{
+		GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT) - 1);
+		SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT) - 1);
+	}
 }
 
 stock SearchHandsForItem(playerid, itemid)
@@ -289,6 +294,90 @@ CMD:mano(playerid, params[])
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
 					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
 					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_9MM_SILENCED:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_9MM)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_DEAGLE:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_DEAGLE)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_UZI:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_UZI)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_TEC9:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_UZI)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_MP5:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_MP5)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_M4:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_M4)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_AK47:
+				{
+					if(leftitem != ITEM_ID_CARGADOR_M4)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+				}
+				case ITEM_ID_CARGADOR_9MM:
+				{
+					if(leftitem != ITEM_ID_CAJA_BALAS_9MM)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes llenar tu cargador con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
+				}
+				case ITEM_ID_CARGADOR_DEAGLE:
+				{
+					if(leftitem != ITEM_ID_CAJA_BALAS_DEAGLE)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes llenar tu cargador con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
+				}
+				case ITEM_ID_CARGADOR_UZI:
+				{
+					if(leftitem != ITEM_ID_CAJA_BALAS_UZI)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes llenar tu cargador con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
+				}
+				case ITEM_ID_CARGADOR_MP5:
+				{
+					if(leftitem != ITEM_ID_CAJA_BALAS_MP5)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes llenar tu cargador con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
+				}
+				case ITEM_ID_CARGADOR_M4:
+				{
+					if(leftitem != ITEM_ID_CAJA_BALAS_M4)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes llenar tu cargador con este objeto.");
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
+					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
 				}
 			}
 

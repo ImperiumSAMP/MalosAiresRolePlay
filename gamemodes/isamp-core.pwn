@@ -8417,7 +8417,7 @@ CMD:darobjeto(playerid, params[])
 	}
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
-	if(item < 1 || item > MAX_ITEMS)
+	if(item < 1 || item >= MAX_ITEMS)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de objeto inválida.");
 	targetfreehand = SearchFreeHand(targetid);
 	if(targetfreehand == -1)
