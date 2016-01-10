@@ -120,10 +120,12 @@ static const AccessItems[] = {
 };
 
 static const AmmuItems[] = {
-	22, // 9mm
-	24, // Deagle
-	25, // Escopeta
-	33 //Rifle de caza
+	ITEM_ID_9MM,
+	ITEM_ID_DEAGLE,
+	ITEM_ID_CARGADOR_9MM,
+	ITEM_ID_CARGADOR_DEAGLE,
+	ITEM_ID_CAJA_BALAS_9MM,
+	ITEM_ID_CAJA_BALAS_DEAGLE
 };
 
 //Enums
@@ -1221,14 +1223,16 @@ OnPlayerBuyClot(biz, playerid)
 
 ShowAmmuCatalog(playerid)
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número] [balas]");
+	new string[64];
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
  	for(new i = 0; i < sizeof(AmmuItems); i++)
  	{
- 	    if(GetItemType(AmmuItems[i]) == ITEM_WEAPON)
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d por munición", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
+ 	    if(GetItemType(AmmuItems[i]) != ITEM_FIREWEAPON && GetItemType(AmmuItems[i]) != ITEM_WEAPONMAG)
+ 	        format(string, sizeof(string), "%s (100 municiones)", GetItemName(AmmuItems[i]));
 		else
-		    SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
-	}
+		    format(string, sizeof(string), "%s", GetItemName(AmmuItems[i]));
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "%d) %s - $%d", i, string, GetItemPrice(AmmuItems[i]));
+ 	}
 	return 1;
 }
 

@@ -382,7 +382,7 @@ CMD:mano(playerid, params[])
 					SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
 				}
 			}
-			if(itemtype(rightitem) == ITEM_WEAPONMAG)
+			if(itemtype == ITEM_WEAPONMAG)
 			    PlayerActionMessage(playerid, 15.0, "retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
 			else
                 PlayerActionMessage(playerid, 15.0, "calza el cargador en el arma, con la mano izquierda.");
