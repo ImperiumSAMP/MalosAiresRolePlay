@@ -1261,7 +1261,10 @@ OnPlayerBuyAmmu(biz, playerid, params[])
 	if(freehand == -1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
-	SetHandItemAndParam(playerid, freehand, itemid, param); // Creación lógica y grafica en la mano.
+	if(GetItemType(itemid) == ITEM_FIREWEAPON || GetItemType(itemid) == ITEM_WEAPONMAG)
+		SetHandItemAndParam(playerid, freehand, itemid, 0);
+	else
+	    SetHandItemAndParam(playerid, freehand, itemid, 100);
 	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice / 2;

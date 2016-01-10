@@ -57,7 +57,7 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 	}
 	if((param == 0 && itemid == 0) || (param < 2 && GetItemType(itemid) == ITEM_FIREWEAPON))
 	    SendClientMessage(playerid, COLOR_WHITE, "AA");
-		ResetPlayerWeapons(playerid);
+	ResetPlayerWeapons(playerid);
 }
 
 stock SearchHandsForItem(playerid, itemid)
