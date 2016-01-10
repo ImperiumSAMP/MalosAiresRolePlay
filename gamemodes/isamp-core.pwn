@@ -931,8 +931,6 @@ public ResetStats(playerid)
 	Mobile[playerid] = 255;
 	gPlayerLogged[playerid] = 0;
 
-	resetAuxiliarItemsPMA(playerid);
-
 	ResetAfkVariables(playerid);
 
 	playerLicense[playerid][lDStep] = 0;
@@ -1139,9 +1137,6 @@ public OnPlayerDisconnect(playerid, reason)
 
 	EndPlayerDuty(playerid);
 	
-	deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
-	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
-
 	deleteAbandonedSprintRace(playerid);
 	OnPlayerLeaveRace(playerid);
 	
