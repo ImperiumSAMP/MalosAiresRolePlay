@@ -14,6 +14,7 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 #define ITEM_FIREWEAPON         6
+#define ITEM_WEAPONMAG          7
 
 #define MAX_ITEMS               129
 
@@ -268,11 +269,11 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*116*/ {"Vodka", "Cantidad", ITEM_OTHER, 100, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*118*/ {"Vestimenta", "Tipo", ITEM_OTHER, 125, false, 1575, 0.235, 0.088, 0.0, 53.8, -14.09, 104.2, 0.165, -0.103, 0.0, -81.5, 19.1, 79.19, 0, 15},
-/*119*/ {"Cargador de 9mm", "Municiones", ITEM_OTHER, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*120*/ {"Cargador de Deagle", "Municiones", ITEM_OTHER, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*121*/ {"Cargador de UZI/TEC9", "Municiones", ITEM_OTHER, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
-/*122*/ {"Cargador de MP5", "Municiones", ITEM_OTHER, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
-/*123*/ {"Cargador de M4/AK47", "Municiones", ITEM_OTHER, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*119*/ {"Cargador de 9mm", "Municiones", ITEM_WEAPONMAG, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*120*/ {"Cargador de Deagle", "Municiones", ITEM_WEAPONMAG, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*121*/ {"Cargador de UZI/TEC9", "Municiones", ITEM_WEAPONMAG, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
+/*122*/ {"Cargador de MP5", "Municiones", ITEM_WEAPONMAG, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
+/*123*/ {"Cargador de M4/AK47", "Municiones", ITEM_WEAPONMAG, 125, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*124*/ {"Caja de municiones 9mm", "Municiones", ITEM_OTHER, 125, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 8},
 /*125*/ {"Caja de municiones Deagle", "Municiones", ITEM_OTHER, 125, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15},
 /*126*/ {"Caja de municiones UZI/TEC9", "Municiones", ITEM_OTHER, 125, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15},
