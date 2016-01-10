@@ -3211,7 +3211,7 @@ public AntiCheatImmunityTimer(playerid)
 
 public AntiCheatTimer()
 {
-	new string[128], weapon, ammo, hack;
+	new string[128], weapon, ammo, hack, righthand, rightparam;
 
 	foreach(new playerid : Player)
 	{
@@ -3236,10 +3236,17 @@ public AntiCheatTimer()
 				    			AdministratorMessage(COLOR_WHITE, string, 2);
 							}
 							ResetPlayerWeapons(playerid);
-		    				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+							righthand = GetHandItem(playerid, HAND_RIGHT);
+							rightparam = GetHandParam(playerid, HAND_RIGHT);
+		    				if(GetItemType(righthand) == ITEM_WEAPON)
 		    				{
-		    			    	GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
-                                SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+		    			    	GivePlayerWeapon(playerid, righthand, rightparam);
+                                SetPlayerAmmo(playerid, righthand, rightparam);
+							}
+							if(GetItemType(righthand) == ITEM_FIREWEAPON && rightparam > 1)
+							{
+		    			    	GivePlayerWeapon(playerid, righthand, rightparam - 1);
+                                SetPlayerAmmo(playerid, righthand, rightparam - 1);
 							}
 					  	}
 					}

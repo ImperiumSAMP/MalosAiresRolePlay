@@ -287,7 +287,7 @@ CMD:mano(playerid, params[])
 				{
 					if(leftitem != ITEM_ID_CARGADOR_9MM)
 					    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam);
+					SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
 					SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
 				}
 			}

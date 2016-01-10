@@ -30,7 +30,7 @@ CMD:inv(playerid, params[])
 
 CMD:inventario(playerid, params[])
 {
-	new cmd[24];
+	new cmd[24], str[128];
 
     if(sscanf(params, "s[24]", cmd))
 	{
