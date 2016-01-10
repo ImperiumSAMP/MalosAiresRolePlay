@@ -16,7 +16,7 @@
 #define ITEM_FIREWEAPON         6
 #define ITEM_WEAPONMAG          7
 
-#define MAX_ITEMS               129
+#define MAX_ITEMS               131
 
 #define ITEM_ID_9MM                     22
 #define ITEM_ID_9MM_SILENCED            23
@@ -104,11 +104,13 @@
 #define ITEM_ID_CARGADOR_UZI			121
 #define ITEM_ID_CARGADOR_MP5			122
 #define ITEM_ID_CARGADOR_M4				123
-#define ITEM_ID_CAJA_BALAS_9MM			124
-#define ITEM_ID_CAJA_BALAS_DEAGLE		125
-#define ITEM_ID_CAJA_BALAS_UZI			126
-#define ITEM_ID_CAJA_BALAS_MP5			127
-#define ITEM_ID_CAJA_BALAS_M4			128
+#define ITEM_ID_CARGADOR_AK47           124
+#define ITEM_ID_CAJA_BALAS_9MM			125
+#define ITEM_ID_CAJA_BALAS_DEAGLE		126
+#define ITEM_ID_CAJA_BALAS_UZI			127
+#define ITEM_ID_CAJA_BALAS_MP5			128
+#define ITEM_ID_CAJA_BALAS_M4			129
+#define ITEM_ID_CAJA_BALAS_AK47         130
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -273,12 +275,15 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*120*/ {"Cargador de Deagle", "Municiones", ITEM_WEAPONMAG, 1500, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*121*/ {"Cargador de UZI/TEC9", "Municiones", ITEM_WEAPONMAG, 1750, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
 /*122*/ {"Cargador de MP5", "Municiones", ITEM_WEAPONMAG, 2000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 15},
-/*123*/ {"Cargador de M4/AK47", "Municiones", ITEM_WEAPONMAG, 5000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*123*/ {"Cargador de M4", "Municiones", ITEM_WEAPONMAG, 6500, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*123*/ {"Cargador de AK47", "Municiones", ITEM_WEAPONMAG, 5000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*124*/ {"Caja de municiones 9mm", "Municiones", ITEM_OTHER, 7000, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 8},
 /*125*/ {"Caja de municiones Deagle", "Municiones", ITEM_OTHER, 20500, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15},
 /*126*/ {"Caja de municiones UZI/TEC9", "Municiones", ITEM_OTHER, 10000, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15},
 /*127*/ {"Caja de municiones MP5", "Municiones", ITEM_OTHER, 12000, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 8},
-/*128*/ {"Caja de municiones M4/AK47", "Municiones", ITEM_OTHER, 20500, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15}
+/*128*/ {"Caja de municiones M4", "Municiones", ITEM_OTHER, 20500, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15}
+/*128*/ {"Caja de municiones AK47", "Municiones", ITEM_OTHER, 20500, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15}
+
 };
 
 //==============================FUNCIONES=======================================
