@@ -11275,6 +11275,7 @@ CMD:salircam(playerid, params[])
 	return 1;
 }
 
+
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
 CMD:bol(playerid, params[])
@@ -14558,4 +14559,74 @@ CMD:playertimeout(playerid, params[])
 	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} Nuevo playertimeout %s.", param);
 
 	return 1;
+}
+
+//========================SISTEMA DE SIRENAS SILENSIOSAS========================
+
+new Sir[2][MAX_VEHICLES];
+new	SirState[MAX_VEHICLES]; // 0 desactivada 1 activado
+
+CMD:sir(playerid, params[]){
+	cmd_sirena(playerid, params);
+	return 1;
+}
+
+CMD:sirena(playerid, params[]){
+
+    new vehicleid = GetPlayerVehicleID(playerid);
+    
+	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+	    return 1;
+    if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
+		return 1;
+	if(!CopDuty[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio.");
+	if(GetPlayerVehicleSeat(playerid) != 0 && GetPlayerVehicleSeat(playerid) != 1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en la parte delantera de un vehículo.");
+
+	if(SirState[vehicleid] == 0){
+ 		if(GetVehicleModel(vehicleid) == 596 || GetVehicleModel(vehicleid) == 597 || GetVehicleModel(vehicleid) == 598){
+	    	SirState[vehicleid] = 1;
+	        Sir[0][vehicleid] = CreateDynamicObject(19292, 0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+            Sir[1][vehicleid] = CreateDynamicObject(19290, -0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+            AttachDynamicObjectToVehicle(Sir[0][vehicleid], vehicleid, 0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+            AttachDynamicObjectToVehicle(Sir[1][vehicleid], vehicleid, -0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Colocaste las sirenas silenciosas de tu vehículo.");
+            return 1;
+		}
+		else if(GetVehicleModel(vehicleid) == 523){
+		    SirState[vehicleid] = 1;
+		    Sir[0][vehicleid] = CreateDynamicObject(19292, 0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+            Sir[1][vehicleid] = CreateDynamicObject(19290, -0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[0][vehicleid], vehicleid, 0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[1][vehicleid], vehicleid, -0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Colocaste las sirenas silenciosas de tu vehículo.");
+            return 1;
+   		}
+   		else if(GetVehicleModel(vehicleid) == 599){
+   		    SirState[vehicleid] = 1;
+		    Sir[0][vehicleid] = CreateDynamicObject(19292, 0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            Sir[1][vehicleid] = CreateDynamicObject(19290, -0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[0][vehicleid], vehicleid, 0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[1][vehicleid], vehicleid, -0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Colocaste las sirenas silenciosas de tu vehículo.");
+            return 1;
+   		}
+   		else if(GetVehicleModel(vehicleid) == 427){
+   		    SirState[vehicleid] = 1;
+		    Sir[0][vehicleid] = CreateDynamicObject(19292, -0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
+            Sir[1][vehicleid] = CreateDynamicObject(19290, 0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[0][vehicleid], vehicleid, 0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            AttachObjectToVehicle(Sir[1][vehicleid], vehicleid, -0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
+            SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Colocaste las sirenas silenciosas de tu vehículo.");
+            return 1;
+		}
+		else return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene sirenas.");
+	} else {
+	    SirState[vehicleid] = 0;
+	    DestroyDynamicObject(Sir[0][vehicleid]);
+	    DestroyDynamicObject(Sir[1][vehicleid]);
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Sacaste las sirenas silenciosas de tu vehículo.");
+	    return 1;
+	}
 }
