@@ -281,8 +281,6 @@ CMD:mano(playerid, params[])
 	    		
           	SetHandItemAndParam(playerid, HAND_RIGHT, leftitem, leftparam);
           	SetHandItemAndParam(playerid, HAND_LEFT, rightitem, rightparam);
-			if(GetHandParam(playerid, HAND_RIGHT) > 1 && GetItemType(rightitem) == ITEM_FIREWEAPON)
-				GivePlayerWeapon(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
           	SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 3000, false, "i", playerid);
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
