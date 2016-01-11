@@ -3229,7 +3229,9 @@ public AntiCheatTimer()
 
 		if(itemtype == ITEM_WEAPON || (itemtype == ITEM_FIREWEAPON && rightparam > 1)) // Si tiene un arma común en mano, o un arma del sistema de cargadores con mínimo una bala.
 		{
-			if(righthand != weapon || (righthand == weapon && ((itemtype == ITEM_WEAPON && rightparam != ammo) || (itemtype == ITEM_FIREWEAPON && ammodif != 1)))) // Si el arma en mano difiere, o si tiene una diferencia de balas (en las armas del sistema de cargadores, si la diferencia es distinta a 1)
+			if(weapon == 0)
+			    SetPlayerArmedWeapon(playerid, righthand);
+			if(righthand != weapon || (righthand == weapon && ((itemtype == ITEM_WEAPON && rightparam != ammo) || (itemtype == ITEM_FIREWEAPON && ammodif != 1))) && antiCheatImmunity[playerid] == 0) // Si el arma en mano difiere, o si tiene una diferencia de balas (en las armas del sistema de cargadores, si la diferencia es distinta a 1)
 			{
 				if(righthand != weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
 				if(righthand == weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
@@ -8337,6 +8339,30 @@ CMD:getpvarint(playerid, params[])
 	value = GetPVarInt(targetid, varint);
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} La variable '%s' del jugador '%s' equivale a '%d'.", varint, GetPlayerNameEx(targetid), value);
     return 1;
+}
+
+CMD:anticheat(playerid, params[])
+{
+	new targetid, value, string[128];
+
+    if(sscanf(params, "ui", targetid, value))
+    	return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]{C8C8C8} /anticheatoff [ID/Jugador] [0 = false | 1 = true]");
+
+	if(value == 0)
+	{
+		antiCheatEnabled[targetid] = true;
+		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue habilitado en %s.", GetPlayerNameEx(targetid));
+		format(string, sizeof(string), "[ANTICHEAT] habilitado a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+
+	}
+	if(value == 1)
+	{
+		antiCheatEnabled[targetid] = false;
+		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue deshabilitado en %s.", GetPlayerNameEx(targetid));
+		format(string, sizeof(string), "[ANTICHEAT] habilitado a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	}
+	log(playerid, LOG_ADMIN, string);
+	return 1;
 }
 
 CMD:resetabstinencia(playerid, params[])

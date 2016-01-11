@@ -50,19 +50,6 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 		HandInfo[playerid][hand][Amount] = param;
 		LoadHandItem(playerid, hand);
 	}
-
-	if(hand == HAND_RIGHT && GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-	{
-		GivePlayerWeapon(playerid, itemid, param);
-		SetPlayerAmmo(playerid, itemid, param);
-	}
-	else if(hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && param > 1))
-	{
-		GivePlayerWeapon(playerid, itemid, param - 1);
-		SetPlayerAmmo(playerid, itemid, param - 1);
-	}
-	else if((hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON && param == 0)) || (hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && param < 2)))
-	    ResetPlayerWeapons(playerid);
 }
 
 stock SearchHandsForItem(playerid, itemid)
@@ -271,20 +258,13 @@ stock ReplenishClip(playerid)
 
 SynchronizeWeaponAmmo(playerid, ammo)
 {
-	new rightitem, itemtype;
-	rightitem = GetHandItem(playerid, HAND_RIGHT);
-	itemtype = GetItemType(rightitem);
+	new itemtype = GetItemType(GetHandItem(playerid, HAND_RIGHT));
 	
 	if(itemtype == ITEM_WEAPON)
-	{
 		HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
-		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, ammo);
-	}
+
 	if(itemtype == ITEM_FIREWEAPON)
-	{
-        HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
-        SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, ammo - 1);
-	}
+		HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
 }
 
 //=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================

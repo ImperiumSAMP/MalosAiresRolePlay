@@ -86,6 +86,7 @@ new PlayerInfo[MAX_PLAYERS][pInfo];
 
 // Inmunidad al anticheat
 new antiCheatImmunity[MAX_PLAYERS];
+new bool:antiCheatEnabled[MAX_PLAYERS];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];
