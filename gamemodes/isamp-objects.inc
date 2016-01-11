@@ -99,6 +99,7 @@ stock DropObject(playerid, playerhand)
     ServerObject[j][sTimeLeft] = SERVER_OBJECT_LIFETIME;
 	SendFMessage(playerid, COLOR_WHITE, "Has depositado un/a %s en el suelo.", GetItemName(ServerObject[j][sItemID]) );
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+	Streamer_Update(playerid);
 	return 1;
 }
 
