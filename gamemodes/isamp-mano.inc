@@ -50,16 +50,19 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 		HandInfo[playerid][hand][Amount] = param;
 		LoadHandItem(playerid, hand);
 	}
-	
-	if((param == 0 && itemid == 0) || (param < 2 && GetItemType(itemid) == ITEM_FIREWEAPON))
-		ResetPlayerWeapons(playerid);
-		
-	if(hand == HAND_RIGHT && GetItemType(itemid) == ITEM_FIREWEAPON && param > 1)
+
+	if(hand == HAND_RIGHT && GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
+	{
+		GivePlayerWeapon(playerid, itemid, param);
+		SetPlayerAmmo(playerid, itemid, param);
+	}
+	else if(hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && param > 1))
 	{
 		GivePlayerWeapon(playerid, itemid, param - 1);
 		SetPlayerAmmo(playerid, itemid, param - 1);
 	}
-
+	else if((hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON && param == 0)) || (hand == HAND_RIGHT && (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && param < 2)))
+	    ResetPlayerWeapons(playerid);
 }
 
 stock SearchHandsForItem(playerid, itemid)
@@ -108,11 +111,12 @@ stock PrintRightHandForPlayer(playerid, targetid)
 	if(itemtype == ITEM_FIREWEAPON)
 	{
 		if(rightparam > 0)
+		{
 		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(rightitem));
-		else if(rightparam == 0)
-		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(rightitem));
-		else
 			rightparam -= 1;
+		}
+		if(rightparam == 0)
+		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(rightitem));
 	}
 		
 	SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", itemname, itemparam, rightparam);
@@ -136,11 +140,12 @@ stock PrintLeftHandForPlayer(playerid, targetid)
 	if(itemtype == ITEM_FIREWEAPON)
 	{
 		if(leftparam > 0)
+		{
 		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(leftitem));
-		else if(leftparam == 0)
+		    leftparam -= 1;
+		}
+		if(leftparam == 0)
 		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(leftitem));
-		else
-			leftparam -= 1;
 	}
 
 	SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", itemname, itemparam, leftparam);
@@ -166,11 +171,11 @@ stock ReloadWeapon(playerid)
 		rightparam = GetHandParam(playerid, HAND_RIGHT),
 		leftparam = GetHandParam(playerid, HAND_LEFT);
 
-	if(rightparam > 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada. Usa /mano separar para retirar el cargador");
-
 	if(GetItemType(rightitem) == ITEM_FIREWEAPON)
 	{
+		if(rightparam > 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada. Usa /mano separar para retirar el cargador");
+			
 		switch(rightitem)
 		{
 		    case ITEM_ID_9MM: if(leftitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
@@ -262,6 +267,26 @@ stock ReplenishClip(playerid)
 	return 1;
 }
 
+//==========[Sincronizacion del arma en mano con las balas gastadas]============
+
+SynchronizeWeaponAmmo(playerid, ammo)
+{
+	new rightitem, itemtype;
+	rightitem = GetHandItem(playerid, HAND_RIGHT);
+	itemtype = GetItemType(rightitem);
+	
+	if(itemtype == ITEM_WEAPON)
+	{
+		HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
+		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, ammo);
+	}
+	if(itemtype == ITEM_FIREWEAPON)
+	{
+        HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
+        SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, ammo - 1);
+	}
+}
+
 //=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
 
 ResetHandsWeapons(playerid)
@@ -286,18 +311,6 @@ DestroyPlayerHands(playerid)
 	    Container_Destroy(HandInfo[playerid][HAND_LEFT][Amount]);
 	}
 	return 1;
-}
-
-//==========[Sincronizacion del arma en mano con las balas gastadas]============
-
-SynchronizeWeaponAmmo(playerid, ammo)
-{
-	HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
-	if(ammo <= 0) // Se le terminó el arma
-	{
-	    SendFMessage(playerid, COLOR_WHITE, "[OOC] Se te ha borrado el arma ya que llegaste a las %d municiones, y se te han acabado.", ammo);
-	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-	}
 }
 
 //==================================COMANDOS====================================

@@ -3211,103 +3211,58 @@ public AntiCheatImmunityTimer(playerid)
 
 public AntiCheatTimer()
 {
-	new string[128], weapon, ammo, hack, righthand, rightparam;
+	new string[128], weapon, ammo, hack, righthand, rightparam, itemtype, ammodif;
 
 	foreach(new playerid : Player)
 	{
-		if(gPlayerLogged[playerid] == 1)
-		{
-		    weapon = GetPlayerWeapon(playerid),
-		    ammo = GetPlayerAmmo(playerid);
+		if(gPlayerLogged[playerid] != 1) continue;
+		
+		weapon = GetPlayerWeapon(playerid);
+		ammo = GetPlayerAmmo(playerid);
+		righthand = GetHandItem(playerid, HAND_RIGHT);
+		rightparam = GetHandParam(playerid, HAND_RIGHT);
+		itemtype = GetItemType(righthand);
+		ammodif = rightparam - ammo;
+		
+		if(GetPVarInt(playerid, "died") != 1)
+			SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
 
-			if(GetPVarInt(playerid, "died") != 1)
+		if(itemtype == ITEM_WEAPON || (itemtype == ITEM_FIREWEAPON && rightparam > 1)) // Si tiene un arma común en mano, o un arma del sistema de cargadores con mínimo una bala.
+		{
+			if(righthand != weapon || (righthand == weapon && ((itemtype == ITEM_WEAPON && rightparam != ammo) || (itemtype == ITEM_FIREWEAPON && ammodif != 1)))) // Si el arma en mano difiere, o si tiene una diferencia de balas (en las armas del sistema de cargadores, si la diferencia es distinta a 1)
 			{
-			    SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
-			    
-				if(GetItemType(weapon) == ITEM_WEAPON)
-				{
-				    if(GetHandItem(playerid, HAND_RIGHT) != weapon)
-        			{
-            			if(ammo != 0)
-            			{
-             				if(antiCheatImmunity[playerid] == 0)
-             				{
-								format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				    			AdministratorMessage(COLOR_WHITE, string, 2);
-							}
-							ResetPlayerWeapons(playerid);
-							righthand = GetHandItem(playerid, HAND_RIGHT);
-							rightparam = GetHandParam(playerid, HAND_RIGHT);
-		    				if(GetItemType(righthand) == ITEM_WEAPON)
-		    				{
-		    			    	GivePlayerWeapon(playerid, righthand, rightparam);
-                                SetPlayerAmmo(playerid, righthand, rightparam);
-							}
-							if(GetItemType(righthand) == ITEM_FIREWEAPON && rightparam > 1)
-							{
-		    			    	GivePlayerWeapon(playerid, righthand, rightparam - 1);
-                                SetPlayerAmmo(playerid, righthand, rightparam - 1);
-							}
-					  	}
-					}
-					else
-					{
-						if(ammo > GetHandParam(playerid, HAND_RIGHT))
-					    {
-	        				if(antiCheatImmunity[playerid] == 0)
-					        {
-						        format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
-			    				AdministratorMessage(COLOR_WHITE, string, 2);
-							}
-		    				SetPlayerAmmo(playerid, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
-					    }
-					    else if(ammo < GetHandParam(playerid, HAND_RIGHT))
-					    {
-     						if(antiCheatImmunity[playerid] == 0)
-					        {
-			    				SynchronizeWeaponAmmo(playerid, ammo);
-							}
-						}
-					}
-				}
-				if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON)
-				{
-				    if(weapon != GetHandItem(playerid, HAND_RIGHT))
-				    	SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
-				}
+				if(righthand != weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+				if(righthand == weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
+				AdministratorMessage(COLOR_WHITE, string, 2);
+				ResetPlayerWeapons(playerid);
 			}
-			
-			if(PlayerInfo[playerid][pAdmin] < 2)
+			SynchronizeWeaponAmmo(playerid, ammo);
+		}
+		
+		if(PlayerInfo[playerid][pAdmin] < 2)
+		{
+		    if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK) BanPlayer(playerid, INVALID_PLAYER_ID, "JetPack Cheat", 0);
+		    
+			format(string, sizeof(string), "arma %d [%s] ", righthand, GetItemName(righthand));
+		    if(!isWeaponAllowed(righthand)) KickPlayer(playerid, "el sistema", string);
+		}
+
+		if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
+		{
+			hack = GetPlayerMoney(playerid) != GetPlayerCash(playerid);
+			if(hack >= 5000)
 			{
-				if(!isWeaponAllowed(GetHandItem(playerid, HAND_RIGHT)))
-				{
-				    format(string, sizeof(string), "arma %d [%s] ", GetHandItem(playerid, HAND_RIGHT), GetItemName(GetHandItem(playerid, HAND_RIGHT)));
-					KickPlayer(playerid, "el sistema", string);
-				} else if(!isWeaponAllowed(GetHandItem(playerid, HAND_LEFT)))
-				{
-					format(string, sizeof(string), "arma %d [%s] ", GetHandItem(playerid, HAND_LEFT), GetItemName(GetHandItem(playerid, HAND_LEFT)));
-					KickPlayer(playerid, "el sistema", string);
-				}
-				if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK)
-					BanPlayer(playerid, INVALID_PLAYER_ID, "Cheat Jet Pack", 0);
+				format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
+				AdministratorMessage(COLOR_WHITE, string, 2);
+				format(string, sizeof(string), "Intentó editarse $%d.", hack);
+				log(playerid, LOG_MONEY, string);
 			}
-			
-			if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
-			{
- 				hack = GetPlayerMoney(playerid) - GetPlayerCash(playerid);
-		  		if(hack >= 5000)
-			  	{
-				    format(string, sizeof(string), "[Advertencia]: %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
-				    AdministratorMessage(COLOR_WHITE, string, 2);
-				    format(string, sizeof(string), "Intentó editarse $%d.", hack);
-				    log(playerid, LOG_MONEY, string);
-		  		}
-		 		ResetMoneyBar(playerid);
-				UpdateMoneyBar(playerid,PlayerInfo[playerid][pCash]);
-			}
+			ResetMoneyBar(playerid);
+			UpdateMoneyBar(playerid,PlayerInfo[playerid][pCash]);
 		}
 	}
 }
+
 public fuelCar(playerid, refillprice, refillamount, refilltype)
 {
 	if(refilltype == 1)
