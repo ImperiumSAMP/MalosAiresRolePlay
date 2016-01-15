@@ -8,7 +8,6 @@ forward CreateHR();
 forward RunHR();
 forward ResetHR();
 
-new horseObj[5];
 new horseNames[5][128];
 new bool:boolNames[HR_MAXNAMES];
 new winnerHR;
@@ -22,6 +21,7 @@ new secondHR;
 
 public CreateHR()
 {
+	runningHR = false;
 	new i;
 	for(i = 0; i < HR_MAXNAMES; i++)
 		boolNames[i] = false;
@@ -111,11 +111,11 @@ public RunHR()
 	}
 	time[winnerHR] = 1;
 
-	MoveObject(horse0, 795.68701, 1619.68835, 4.02860, time[0]);
-	MoveObject(horse1, 798.68701, 1619.68835, 4.02860, time[1]);
-	MoveObject(horse2, 801.68701, 1619.68835, 4.02860, time[2]);
-	MoveObject(horse3, 804.68701, 1619.68835, 4.02860, time[3]);
-	MoveObject(horse4, 807.68701, 1619.68835, 4.02860, time[4]);
+	MoveObject(horseObj[0], 795.68701, 1619.68835, 4.02860, time[0]);
+	MoveObject(horseObj[1], 798.68701, 1619.68835, 4.02860, time[1]);
+	MoveObject(horseObj[2], 801.68701, 1619.68835, 4.02860, time[2]);
+	MoveObject(horseObj[3], 804.68701, 1619.68835, 4.02860, time[3]);
+	MoveObject(horseObj[4], 807.68701, 1619.68835, 4.02860, time[4]);
 
     new msg[128];
     for (new i = 0; i < MAX_PLAYERS; i++)
@@ -178,7 +178,7 @@ public ResetHR()
 					}
 					else
 					{
-					   	GivePlayerCash(playerid, -betsHR[i][g]);
+					   	GivePlayerCash(i, -betsHR[i][g]);
                         format(textbet, sizeof(textbet), "¡Has perdido $%d!", betsHR[i][g]);
 					    SendClientMessage(i, COLOR_YELLOW2, textbet);
 					}
@@ -197,16 +197,16 @@ public ResetHR()
     {
         if(isWatchingHR[i])
         {
-			format(msg, sizeof(msg), "Relator dice: ¡El ganador es: %s, con el numero %d!", horsenames[winnerHR], aux);
+			format(msg, sizeof(msg), "Relator dice: ¡El ganador es: %s, con el numero %d!", horseNames[winnerHR], aux);
 			SendClientMessage(i, COLOR_WHITE, msg);
 		}
 	}
 
-	MoveObject(horse0, 795.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse1, 798.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse2, 801.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse3, 804.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse4, 807.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[0], 795.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[1], 798.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[2], 801.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[3], 804.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[4], 807.68701, 1669.14832, 4.02860, 1000000);
 
 	CreateHR();
 	return 1;
@@ -276,16 +276,16 @@ public ResetHR()
 		new text4[128];
   		new showTimeLeft[128];
 
-		SendClientMessage(playerid, COLOR_RED, "Nro|Dividendo|Nombre del caballo");
-		format(text0, sizeof(text0), "  1  |     2.0     | %s", horseNames[0]);
+		SendClientMessage(playerid, COLOR_RED, "Nro | Dividendo | Nombre del caballo");
+		format(text0, sizeof(text0), "  1  |       2.0       | %s", horseNames[0]);
 		SendClientMessage(playerid, COLOR_WHITE, text0);
-		format(text1, sizeof(text0), "  2  |     2.0     | %s", horseNames[1]);
+		format(text1, sizeof(text0), "  2  |      2.0       | %s", horseNames[1]);
 		SendClientMessage(playerid, COLOR_WHITE, text1);
-		format(text2, sizeof(text0), "  3  |     3.0     | %s", horseNames[2]);
+		format(text2, sizeof(text0), "  3  |      3.0       | %s", horseNames[2]);
 		SendClientMessage(playerid, COLOR_WHITE, text2);
-		format(text3, sizeof(text0), "  4  |     5. 0    | %s", horseNames[3]);
+		format(text3, sizeof(text0), "  4  |      5. 0      | %s", horseNames[3]);
 		SendClientMessage(playerid, COLOR_WHITE, text3);
-		format(text4, sizeof(text0), "  5  |     10.0   | %s", horseNames[4]);
+		format(text4, sizeof(text0), "  5  |      10.0    | %s", horseNames[4]);
 		SendClientMessage(playerid, COLOR_WHITE, text4);
 
 		if(!runningHR)
@@ -307,23 +307,31 @@ public ResetHR()
 
 			if((minute < 5) && (minute > 0))
 			{
-				format(showtimeleft, sizeof(text0), "CARTEL | La carrera arranca en %d:%d minutos |", minute, second);
-				SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
+				if(second > 9)
+				{
+					format(showTimeLeft, sizeof(text0), "CARTEL | La carrera arranca en %d:%d minutos |", minute, second);
+					SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
+				}
+				else
+				{
+				    format(showTimeLeft, sizeof(text0), "CARTEL | La carrera arranca en %d:%0d minutos |", minute, second);
+					SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
+				}
 			}
 			else if (minute == 0)
 			{
-                format(showtimeleft, sizeof(text0), "CARTEL | La carrera arranca en %d segundos |", second);
+                format(showTimeLeft, sizeof(text0), "CARTEL | La carrera arranca en %d segundos |", second);
 				SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
     		}
     		else
     		{
-               	format(showtimeleft, sizeof(text0), "CARTEL | Los caballos estan posicionandose |", second);
+               	format(showTimeLeft, sizeof(text0), "CARTEL | Los caballos estan posicionandose |", second);
 				SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
     		}
 		}
 		else
 		{
- 			format(showtimeleft, sizeof(text0), "CARTEL | Carrera en progreso |");
+ 			format(showTimeLeft, sizeof(text0), "CARTEL | Carrera en progreso |");
 			SendClientMessage(playerid, COLOR_YELLOW, showTimeLeft);
 		}
 		return 1;
@@ -335,7 +343,7 @@ public ResetHR()
 		SetPlayerPos(playerid, 787, 1640.1511, 55);
 		SetPlayerCameraPos(playerid, 787, 1643.5, 45);
 		SetPlayerCameraLookAt(playerid, 801, 1643.5, 0);
-		isWatchinghr[playerid] = true;
+		isWatchingHR[playerid] = true;
 
 		return 1;
 	}
@@ -345,7 +353,7 @@ public ResetHR()
 		SetPlayerPos(playerid, 787.3289, 1642.1511, 7.7802);
 		SetCameraBehindPlayer(playerid);
 		TogglePlayerControllable(playerid, 1);
-		isWatchinghr[playerid] = false;
+		isWatchingHR[playerid] = false;
 
 		return 1;
 	}
