@@ -111,18 +111,18 @@ public RunHR()
 	}
 	time[winnerHR] = 1;
 
-	MoveObject(horse0, 795.68701, 1619.68835, 4.02860, time[0]);
-	MoveObject(horse1, 798.68701, 1619.68835, 4.02860, time[1]);
-	MoveObject(horse2, 801.68701, 1619.68835, 4.02860, time[2]);
-	MoveObject(horse3, 804.68701, 1619.68835, 4.02860, time[3]);
-	MoveObject(horse4, 807.68701, 1619.68835, 4.02860, time[4]);
+	MoveObject(horseObj[0], 795.68701, 1619.68835, 4.02860, time[0]);
+	MoveObject(horseObj[1], 798.68701, 1619.68835, 4.02860, time[1]);
+	MoveObject(horseObj[2], 801.68701, 1619.68835, 4.02860, time[2]);
+	MoveObject(horseObj[3], 804.68701, 1619.68835, 4.02860, time[3]);
+	MoveObject(horseObj[4], 807.68701, 1619.68835, 4.02860, time[4]);
 
     new msg[128];
     for (new i = 0; i < MAX_PLAYERS; i++)
     {
         if(isWatchingHR[i])
         {
-			format(msg, sizeof(msg), "Relator dice: ¡Arranca la carrera!");
+			format(msg, sizeof(msg), "Relator dice: Â¡Arranca la carrera!");
 			SendClientMessage(i, COLOR_WHITE, msg);
 		}
 	}
@@ -148,38 +148,38 @@ public ResetHR()
 					    if(winnerHR == 0)
 					    {
 							GivePlayerCash(i, betsHR[i][winnerHR] * 2);
-							format(textbet, sizeof(textbet), "¡Has ganado $%d!", betsHR[i][winnerHR] * 2);
+							format(textbet, sizeof(textbet), "Â¡Has ganado $%d!", betsHR[i][winnerHR] * 2);
 							SendClientMessage(i, COLOR_YELLOW2, textbet);
 						}
 						else if(winnerHR == 1)
 						{
 						    GivePlayerCash(i, betsHR[i][winnerHR] * 2);
-							format(textbet, sizeof(textbet), "¡Has ganado $%d!", betsHR[i][winnerHR] * 2);
+							format(textbet, sizeof(textbet), "Â¡Has ganado $%d!", betsHR[i][winnerHR] * 2);
 							SendClientMessage(i, COLOR_YELLOW2, textbet);
 						}
 						else if(winnerHR == 2)
 						{
 						    GivePlayerCash(i, betsHR[i][winnerHR] * 3);
-							format(textbet, sizeof(textbet), "¡Has ganado $%d!", betsHR[i][winnerHR] * 3);
+							format(textbet, sizeof(textbet), "Â¡Has ganado $%d!", betsHR[i][winnerHR] * 3);
 							SendClientMessage(i, COLOR_YELLOW2, textbet);
 						}
 						else if(winnerHR == 3)
 						{
 						    GivePlayerCash(i, betsHR[i][winnerHR] * 5);
-							format(textbet, sizeof(textbet), "¡Has ganado $%d!", betsHR[i][winnerHR] * 5);
+							format(textbet, sizeof(textbet), "Â¡Has ganado $%d!", betsHR[i][winnerHR] * 5);
 							SendClientMessage(i, COLOR_YELLOW2, textbet);
 						}
 						else if(winnerHR == 4)
 						{
 						    GivePlayerCash(i, betsHR[i][winnerHR] * 10);
-							format(textbet, sizeof(textbet), "¡Has ganado $%d!", betsHR[i][winnerHR] * 10);
+							format(textbet, sizeof(textbet), "Â¡Has ganado $%d!", betsHR[i][winnerHR] * 10);
 							SendClientMessage(i, COLOR_YELLOW2, textbet);
 						}
 					}
 					else
 					{
 					   	GivePlayerCash(playerid, -betsHR[i][g]);
-                        format(textbet, sizeof(textbet), "¡Has perdido $%d!", betsHR[i][g]);
+                        format(textbet, sizeof(textbet), "Â¡Has perdido $%d!", betsHR[i][g]);
 					    SendClientMessage(i, COLOR_YELLOW2, textbet);
 					}
 					ok = true;
@@ -197,16 +197,16 @@ public ResetHR()
     {
         if(isWatchingHR[i])
         {
-			format(msg, sizeof(msg), "Relator dice: ¡El ganador es: %s, con el numero %d!", horsenames[winnerHR], aux);
+			format(msg, sizeof(msg), "Relator dice: Â¡El ganador es: %s, con el numero %d!", horsenames[winnerHR], aux);
 			SendClientMessage(i, COLOR_WHITE, msg);
 		}
 	}
 
-	MoveObject(horse0, 795.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse1, 798.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse2, 801.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse3, 804.68701, 1669.14832, 4.02860, 1000000);
-	MoveObject(horse4, 807.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[0], 795.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[1], 798.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[2], 801.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[3], 804.68701, 1669.14832, 4.02860, 1000000);
+	MoveObject(horseObj[4], 807.68701, 1669.14832, 4.02860, 1000000);
 
 	CreateHR();
 	return 1;
@@ -250,7 +250,7 @@ public ResetHR()
 		if(numHorse < 0 || numHorse > 4)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "Ese caballo no existe.");
 		if(numBet < 1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mínima es de $1.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "La apuesta mÃ­nima es de $1.");
   		if(GetPlayerCash(playerid) < numBet)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No dispones de esa cantidad en efectivo.");
 
