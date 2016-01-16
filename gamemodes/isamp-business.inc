@@ -1238,7 +1238,7 @@ ShowAmmuCatalog(playerid)
 
 OnPlayerBuyAmmu(biz, playerid, params[])
 {
-	new option, itemid, itemprice, str[128], freehand, param;
+	new option, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo más tarde.");
