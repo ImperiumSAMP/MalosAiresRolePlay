@@ -389,7 +389,7 @@ CMD:geofanims(playerid, params[])
 	switch(animid)
 	{
   		case 1:	ApplyAnimation(playerid, "PED", "swat_run", 4.1,0,1,1,1,0);
-  		case 2:	ApplyAnimation(playerid, "POLICE", "Door_Kick", 4.1,0,1,1,1,0);
+  		case 2:	ApplyAnimation(playerid, "POLICE", "Door_Kick", 4.1, 0, 1, 1, 0, 0);
    		case 3:	ApplyAnimation(playerid, "SWAT", "swt_breach_01", 4.1,0,1,1,1,0);
   		case 4:	ApplyAnimation(playerid, "SWAT", "swt_breach_02", 4.1,0,1,1,1,0);
   		case 5:	ApplyAnimation(playerid, "SWAT", "swt_breach_03",4.1,0,1,1,1,0);
@@ -783,5 +783,53 @@ CMD:arrastrarse(playerid, params[])
 	return 1;
 }
 
-//-----------------------------FIN ANIMACIONES----------------------------------
+CMD:cansado(playerid, params[]){
+    if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cansado [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado 1
+		case 2: ApplyAnimation(playerid, "FAT", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado 2
+	}
+	return 1;
+}
+
+CMD:rodar(playerid, params[]){
+	if(GetPlayerState(playerid) != 1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /rodar [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "Crouch_Roll_L", 3.5, 0, 1, 1, 0, 0, 1); // /rodar 1
+		case 2: ApplyAnimation(playerid, "PED", "Crouch_Roll_R", 3.5, 0, 1, 1, 0, 0, 1); // /rodar 2
+	}
+	return 1;
+}
+
+CMD:teclear(playerid, params[]){
+	if(GetPlayerState(playerid) != 1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /teclear [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "INT_OFFICE", " OFF_Sit_Type_Loop", 4, 50, 0, 0, 0, 0, 1); // /teclar 1
+		case 2: ApplyAnimation(playerid, "INT_OFFICE", "OFF_Sit_Bored_Loop", 4, 50, 0, 0, 0, 0, 1); // /teclear 2
+	}
+	return 1;
+}
+
+CMD:palpar(playerid, paras[]){
+    if(GetPlayerState(playerid) != 1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    ApplyAnimation(playerid, "POLICE", "plc_drgbst_01", 4, 0, 0, 0, 0, 2000, 1); // /palpar
+	return 1;
+}
+
 //-----------------------------FIN ANIMACIONES----------------------------------
