@@ -20,7 +20,8 @@ CMD:animaciones(playerid, params[])
 	SendClientMessage(playerid, COLOR_GREY, "/entregar - /geofanims - /hablar - /levantarbrazos - /manosarriba - /mear - /mirar - /muerte");
 	SendClientMessage(playerid, COLOR_GREY, "/nockeado - /oral - /orar - /pagando - /paja - /pasartarjeta - /pudrete - /quebrar - /quepaso");
 	SendClientMessage(playerid, COLOR_GREY, "/rapear - /reanimar - /reir - /saltar - /sentarse - /sentarsenigga - /taichi - /tantear - /taxi");
-	SendClientMessage(playerid, COLOR_GREY, "/tirarse - /vigilar - /noanim");
+	SendClientMessage(playerid, COLOR_GREY, "/tirarse - /vigilar - /teclear - /cansado - /rodar - /lowrider - /abeber - /estirarse - /pesas");
+    SendClientMessage(playerid, COLOR_GREY, "/lavarmanos - /codazo - /chau - /ponermascara - /noanim");
 	return 1;
 }
 
@@ -168,11 +169,14 @@ CMD:alpiso(playerid, params[])
  	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	new anim;
 	if(sscanf(params,"i",anim))
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /alpiso [1-2]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /alpiso [1-4]");
 	switch(anim)
 	{
 		case 1: ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
 		case 2: ApplyAnimation(playerid, "PED", "getup_front", 4.1, 0, 0, 0, 0, 0, 0);
+		case 3:ApplyAnimation(playerid, "PED", "FLOOR_hit", 4.5, 0, 1, 1, 1, 0, 1);
+		case 4:ApplyAnimation(playerid, "PED", "getup", 4.5, 0, 1, 1, 0, 0, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /alpiso [1-4]");
 	}
 	return 1;
 }
@@ -191,7 +195,7 @@ CMD:caminar(playerid, params[])
  	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
  	new animid;
 	if(sscanf(params, "d", animid))
-		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /caminar [1-13]");
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /caminar [1-14]");
 	switch(animid)
 	{
 		case 1: ApplyAnimation(playerid, "WUZI", "WUZI_WALK", 4.1, 1, 1, 1, 1, 1, 1); // /caminar
@@ -207,7 +211,8 @@ CMD:caminar(playerid, params[])
 		case 11: ApplyAnimation(playerid, "PED", "WOMAN_walkshop", 4.1, 1, 1, 1, 1, 1, 1);
 		case 12: ApplyAnimation(playerid, "PED", "WALK_shuffle", 4.1, 1, 1, 1, 1, 1, 1);
 		case 13: ApplyAnimation(playerid, "MUSCULAR", "MUSCLEWALK", 4.1, 1, 1, 1, 1, 1, 1); // /caminar
-		default: SendClientMessage(playerid, 0xFFFFFFAA, "[Sintaxis]: /caminar [1-13]");
+		case 14: ApplyAnimation(playerid, "POOL", "POOL_Walk", 4.1, 1, 1, 1, 1, 1, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /caminar [1-14]");
 	}
 	return 1;
 }
@@ -445,11 +450,14 @@ CMD:apuntar(playerid, params[])
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	new anim;
 	if(sscanf(params, "d", anim))
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /apuntar [1-2]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /apuntar [1-4]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "SHOP", "ROB_Loop_Threat",4.1, 0, 1, 1, 1, 0);
-		case 2: ApplyAnimation(playerid, "PED", "ARRESTGUN", 4.0, 0, 0, 0, 1, 0); // /apuntar
+		case 1: ApplyAnimation(playerid, "SHOP", "ROB_Loop_Threat",4.1, 0, 1, 1, 1, 0); // /apuntar 1
+		case 2: ApplyAnimation(playerid, "PED", "ARRESTGUN", 4.0, 0, 0, 0, 1, 0); // /apuntar 2
+		case 3: ApplyAnimation(playerid, "SHOP", "SHP_Gun_Aim", 4.5, 0, 1, 1, 1, 0, 1);
+		case 4: ApplyAnimation(playerid, "POOL", "POOL_Idle_Stance", 4.5, 0, 1, 1, 1, 0, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /apuntar [1-4]");
 	}
 	return 1;
 }
@@ -584,12 +592,14 @@ CMD:mirar(playerid, params[])
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	new anim;
 	if(sscanf(params, "d", anim))
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mirar [1-3]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mirar [1-4]");
 	switch(anim)
 	{
 		case 1: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOKA", 4.0, 1, 0, 0, 0, 0); // /mirar
 		case 2: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOP", 4.0, 1, 0, 0, 0, 0); // /mirar2
 		case 3: ApplyAnimation(playerid, "INT_SHOP", "SHOP_OUT", 4.0, 0, 0, 0, 0, 0); // /dejardemirar
+		case 4: ApplyAnimation(playerid, "BAR", "Barserve_order", 4.5, 0, 1, 1, 0, 0, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mirar [1-4]");
 	}
 	return 1;
 }
@@ -783,5 +793,168 @@ CMD:arrastrarse(playerid, params[])
 	return 1;
 }
 
+CMD:cansado(playerid, params[]){
+    if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cansado [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado1
+		case 2: ApplyAnimation(playerid, "FAT", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado2
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cnsado [1-2]");
+	}
+	return 1;
+}
+
+CMD:rodar(playerid, params[]){
+	if(GetPlayerState(playerid) != 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /rodar [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "Crouch_Roll_L", 3.5, 0, 1, 1, 0, 0, 1);
+		case 2: ApplyAnimation(playerid, "PED", "Crouch_Roll_R", 3.5, 0, 1, 1, 0, 0, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /rodar [1-2]");
+	}
+	return 1;
+}
+
+CMD:teclear(playerid, params[]){
+	if(GetPlayerState(playerid) != 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /teclear [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "INT_OFFICE", "OFF_Sit_Type_Loop", 4, 1, 0, 0, 1, 0, 1);
+		case 2: ApplyAnimation(playerid, "INT_OFFICE", "OFF_Sit_Bored_Loop", 4, 1, 0, 0, 1, 0, 1);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /teclear [1-2]");
+	}
+	return 1;
+}
+
+CMD:lowrider(playerid, params[]){
+	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo dentro de un vehículo!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lowrider [1-5]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "CAR", "Sit_relaxed", 4, 0, 0, 0, 1, 0, 1); // /loeraider1
+		case 2: ApplyAnimation(playerid, "CAR", "Tap_hand", 4, 1, 0, 0, 1, 0, 1); // /loeraider2
+		case 3: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idle_to_l0", 4.0, 0, 0, 0, 1, 0, 1); // /loerider3
+		case 4: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idleloop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider4
+		case 5: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_l0_loop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider5
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lowrider [1-5]");
+	}
+	return 1;
+}
+
+CMD:pesas(playerid, params[]){
+    if(GetPlayerState(playerid) != 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pesas [1-8]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "benchpress", "gym_bp_geton", 4.5, 0, 1, 1, 1, 0, 1); // /pesas1
+		case 2: ApplyAnimation(playerid, "benchpress", "gym_bp_up_smooth", 4.5, 0, 1, 1, 1, 0, 1); // /pesas2
+		case 3: ApplyAnimation(playerid, "benchpress", "gym_bp_down", 4.5, 0, 1, 1, 1, 0, 1); // /pesas3
+		case 4: ApplyAnimation(playerid, "benchpress", "gym_bp_getoff", 4.5, 0, 1, 1, 0, 0, 1); // /pesas4
+		case 5: ApplyAnimation(playerid, "Freeweights", "gym_free_pickup", 4.5, 0, 1, 1, 1, 0, 1); // pesas5
+		case 6: ApplyAnimation(playerid, "Freeweights", "gym_free_up_smooth", 4.5, 0, 1, 1, 1, 0, 1); // pesas6
+        case 7: ApplyAnimation(playerid, "Freeweights", "gym_free_down", 4.5, 0, 1, 1, 1, 0, 1); // pesas7
+        case 8: ApplyAnimation(playerid, "Freeweights", "gym_free_putdown", 4.5, 0, 1, 1, 0, 0, 1); // pesas8
+        default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pesas [1-8]");
+	}
+	return 1;
+}
+
+CMD:lavarmanos(playerid, params[]){
+    if(GetPlayerState(playerid) != 1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.5, 0, 1, 1, 0, 0, 1); // /lavarmanos1
+	return 1;
+}
+
+CMD:codazo(playerid, params[])
+{
+    if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    ApplyAnimation(playerid, "PED", "GUN_BUTT", 4.5, 0, 1, 1, 0, 0, 1);
+    return 1;
+}
+
+CMD:ponermascara(playerid, params[])
+{
+    if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    ApplyAnimation(playerid, "SHOP", "ROB_Shifty", 4.5, 0, 0, 0, 0, 0, 1);
+    return 1;
+}
+
+CMD:chau(playerid, params[])
+{
+	if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    new anim;
+    if(sscanf(params,"i",anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /chau [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "endchat_01", 4.1, 0, 1, 1, 0, 0, 1);
+		case 2: ApplyAnimation(playerid, "PED", "endchat_03", 4.1, 0, 1, 1, 0, 0, 0);
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /caminar [1-2]");
+	}
+	return 1;
+}
+
+CMD:estirarse(playerid, params[])
+{
+    if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    ApplyAnimation(playerid, "PLAYIDLES", "stretch", 4.5, 0, 1, 1, 0, 0, 1);
+    return 1;
+}
+
+CMD:abeber(playerid, params[])
+{
+    if(GetPlayerState(playerid) !=1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+    if(PlayerInfo[playerid][pSex] == 0)
+    	return ApplyAnimation(playerid, "BAR", "dnk_stndF_loop", 4.5, 0, 1, 1, 0, 0, 1);
+    if(PlayerInfo[playerid][pSex] == 1)
+        return ApplyAnimation(playerid, "BAR", "dnk_stndM_loop", 4.5, 0, 1, 1, 0, 0, 1);
+    return 1;
+}
 //-----------------------------FIN ANIMACIONES----------------------------------
 //-----------------------------FIN ANIMACIONES----------------------------------
