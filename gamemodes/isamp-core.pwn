@@ -11635,6 +11635,8 @@ CMD:depositar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /depositar [cantidad]");
 	if(GetPlayerCash(playerid) < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 	    
 	GivePlayerCash(playerid, -amount);
 	PlayerInfo[playerid][pBank] += amount;
@@ -11655,6 +11657,8 @@ CMD:retirar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /retirar [cantidad]");
 	if(PlayerInfo[playerid][pBank] < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+	if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	GivePlayerCash(playerid, amount);
 	PlayerInfo[playerid][pBank] -= amount;
@@ -11677,6 +11681,8 @@ CMD:transferir(playerid, params[])
   		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
 	if(!IsPlayerConnected(targetID) || targetID == playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	GetPlayerName(targetID, name, 32);
 	format(string, sizeof(string), "[TRANSFER] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
@@ -11693,6 +11699,8 @@ CMD:verbalance(playerid,params[])
 {
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -11728,6 +11736,8 @@ CMD:fverbalance(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
     if(PlayerInfo[playerid][pRank] != 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -11746,6 +11756,8 @@ CMD:fdepositar(playerid,params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /fdepositar [cantidad]");
  	if(GetPlayerCash(playerid) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
  	    
 	GivePlayerCash(playerid, -amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], amount);
@@ -11771,6 +11783,8 @@ CMD:fretirar(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
  	    
 	GivePlayerCash(playerid, amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], -amount);
