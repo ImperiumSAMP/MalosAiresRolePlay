@@ -431,7 +431,7 @@ stock LoadHandItem(playerid, hand)
 	{
 	    if(hand == HAND_RIGHT)
 		{
-			if(GetItemType(itemid) != ITEM_WEAPON || (GetItemType(itemid) != ITEM_FIREWEAPON && GetHandParam(playerid, HAND_RIGHT) < 2))
+			if(GetItemType(itemid) != ITEM_WEAPON || (GetItemType(itemid) == ITEM_FIREWEAPON && GetHandParam(playerid, hand) < 2))
 				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
 			else
 			{
@@ -449,7 +449,7 @@ stock DeleteHandItem(playerid, hand)
 {
 	if(hand == HAND_RIGHT)
 	{
-	    if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) != ITEM_WEAPON && (GetItemType(GetHandItem(playerid, hand)) == ITEM_FIREWEAPON &&  GetHandParam(playerid, HAND_RIGHT) < 2))
+	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON || (GetItemType(GetHandItem(playerid, hand)) == ITEM_FIREWEAPON && GetHandParam(playerid, hand) < 2))
 			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
 		else
 		    ResetPlayerWeapons(playerid);

@@ -3214,7 +3214,8 @@ public AntiCheatTimer()
 		
 		
 		// Anti WeaponCheat y sincronización de la munición.
-		if(AntiCheatWeaponCheck(playerid) == 1) SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
+		AntiCheatWeaponCheck(playerid);
+		SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
 		
 		// Sincronización de la vida.
 		if(GetPVarInt(playerid, "died") != 1)
@@ -3266,27 +3267,27 @@ public AntiCheatWeaponCheck(playerid)
 	if(weapon == righthand && ammo == rightparam)
 	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
 	    
-	if(itemtype == ITEM_WEAPON && ammo != rightparam)
+	if(itemtype == ITEM_WEAPON && ammo != rightparam) // Tiene un arma común en mano y hay diferencia de balas.
 	{
 		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
 		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
 		AdministratorMessage(COLOR_WHITE, string, 2);
-		return 0; // Tiene un arma común en mano y hay diferencia de balas.
+		SetPlayerAmmo(playerid, righthand, rightparam);
 	}
 	
-	if(itemtype == ITEM_FIREWEAPON && rightparam > 1)
+	if(itemtype == ITEM_FIREWEAPON && rightparam > 1) // Tiene un arma del sistema de cargadores "cargada" en mano y hay diferencia de balas.
 	{
 		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
 		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
 		AdministratorMessage(COLOR_WHITE, string, 2);
-		return 0; // Tiene un arma en mano que no debería tener.
+ 		SetPlayerAmmo(playerid, righthand, rightparam);
 	}
 	
-	if(weapon != righthand)
+	if(weapon != righthand) // Tiene un arma en mano que no debería tener.
 	{
 		format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
 		AdministratorMessage(COLOR_WHITE, string, 2);
-		return 0; // Tiene un arma en mano que no debería tener.
+		ResetPlayerWeapons(playerid);
 	}
 	
 	return 1;
