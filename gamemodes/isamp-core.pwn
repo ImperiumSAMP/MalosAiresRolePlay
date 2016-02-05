@@ -425,7 +425,7 @@ forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
 forward AntiCheatTimer();
-forward AntiCheatImmunityTimer(playerid);
+forward AntiCheatWeaponCheck(playerid);
 forward globalUpdate();
 forward commandPermissionsUpdate();
 forward accountTimer();
@@ -3203,59 +3203,43 @@ stock isWeaponAllowed(weapon)
 	return 1;
 }
 
-public AntiCheatImmunityTimer(playerid)
-{
-	antiCheatImmunity[playerid] = 0;
-	return 1;
-}
-
 public AntiCheatTimer()
 {
-	new string[128], weapon, ammo, hack, righthand, rightparam, itemtype, ammodif;
+	new string[128], hack;
 
 	foreach(new playerid : Player)
 	{
 		if(gPlayerLogged[playerid] != 1) continue;
-		if(!antiCheatEnabled[playerid]) continue;
+		if(antiCheatDisabled[playerid]) continue;
 		
-		weapon = GetPlayerWeapon(playerid);
-		ammo = GetPlayerAmmo(playerid);
-		righthand = GetHandItem(playerid, HAND_RIGHT);
-		rightparam = GetHandParam(playerid, HAND_RIGHT);
-		itemtype = GetItemType(righthand);
-		ammodif = rightparam - ammo;
 		
+		// Anti WeaponCheat y sincronización de la munición.
+		if(AntiCheatWeaponCheck(playerid) == 1) SynchronizeWeaponAmmo(playerid, GetPlayerAmmo(playerid));
+		
+		// Sincronización de la vida.
 		if(GetPVarInt(playerid, "died") != 1)
 			SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
-
-		if(itemtype == ITEM_WEAPON || (itemtype == ITEM_FIREWEAPON && rightparam > 1)) // Si tiene un arma común en mano, o un arma del sistema de cargadores con mínimo una bala.
-		{
-			if(weapon == 0 || weapon == 19 || weapon == 20 || weapon == 21)
-			    SetPlayerArmedWeapon(playerid, righthand);
-			if(righthand != weapon || (righthand == weapon && ((itemtype == ITEM_WEAPON && rightparam != ammo) || (itemtype == ITEM_FIREWEAPON && ammodif != 1))) && antiCheatImmunity[playerid] == 0) // Si el arma en mano difiere, o si tiene una diferencia de balas (en las armas del sistema de cargadores, si la diferencia es distinta a 1)
-			{
-				if(righthand != weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				if(righthand == weapon) format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse mas balas para su arma.", GetPlayerNameEx(playerid), playerid);
-				AdministratorMessage(COLOR_WHITE, string, 2);
-				ResetPlayerWeapons(playerid);
-			}
-			SynchronizeWeaponAmmo(playerid, ammo);
-		}
-		
+			
+			
+			
+			
 		if(PlayerInfo[playerid][pAdmin] < 2)
 		{
+            // Anti JetPack
 		    if(GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_USEJETPACK) BanPlayer(playerid, INVALID_PLAYER_ID, "JetPack Cheat", 0);
 		    
-			format(string, sizeof(string), "arma %d [%s] ", righthand, GetItemName(righthand));
-		    if(!isWeaponAllowed(righthand)) KickPlayer(playerid, "el sistema", string);
+		    // Armas deshabilitadas
+			format(string, sizeof(string), "arma %d [%s] ", GetHandItem(playerid, HAND_RIGHT), GetItemName(GetHandItem(playerid, HAND_RIGHT)));
+		    if(!isWeaponAllowed(GetHandItem(playerid, HAND_RIGHT))) KickPlayer(playerid, "el sistema", string);
 		}
 
+		// Anti MoneyHack
 		if(GetPlayerCash(playerid) != GetPlayerMoney(playerid))
 		{
 			hack = GetPlayerMoney(playerid) != GetPlayerCash(playerid);
 			if(hack >= 5000)
 			{
-				format(string, sizeof(string), "[Advertencia] %s (ID:%d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
+				format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse $%d.",GetPlayerNameEx(playerid), playerid, hack);
 				AdministratorMessage(COLOR_WHITE, string, 2);
 				format(string, sizeof(string), "Intentó editarse $%d.", hack);
 				log(playerid, LOG_MONEY, string);
@@ -3264,6 +3248,48 @@ public AntiCheatTimer()
 			UpdateMoneyBar(playerid,PlayerInfo[playerid][pCash]);
 		}
 	}
+}
+
+public AntiCheatWeaponCheck(playerid)
+{
+	new weapon, ammo, righthand, rightparam, itemtype, ammodif, string[128];
+	weapon = GetPlayerWeapon(playerid);
+	ammo = GetPlayerAmmo(playerid);
+	righthand = GetHandItem(playerid, HAND_RIGHT);
+	rightparam = GetHandParam(playerid, HAND_RIGHT);
+	itemtype = GetItemType(righthand);
+	ammodif = GetPlayerAmmo(playerid) - rightparam;
+		
+		
+	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype != ITEM_FIREWEAPON && rightparam > 1))
+		return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores "cargada".
+	if(weapon == righthand && ammo == rightparam)
+	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
+	    
+	if(itemtype == ITEM_WEAPON && ammo != rightparam)
+	{
+		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
+		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+		AdministratorMessage(COLOR_WHITE, string, 2);
+		return 0; // Tiene un arma común en mano y hay diferencia de balas.
+	}
+	
+	if(itemtype == ITEM_FIREWEAPON && rightparam > 1)
+	{
+		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
+		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+		AdministratorMessage(COLOR_WHITE, string, 2);
+		return 0; // Tiene un arma en mano que no debería tener.
+	}
+	
+	if(weapon != righthand)
+	{
+		format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+		AdministratorMessage(COLOR_WHITE, string, 2);
+		return 0; // Tiene un arma en mano que no debería tener.
+	}
+	
+	return 1;
 }
 
 public fuelCar(playerid, refillprice, refillamount, refilltype)
@@ -8351,15 +8377,15 @@ CMD:anticheat(playerid, params[])
 
 	if(value == 0)
 	{
-		antiCheatEnabled[targetid] = false;
-		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue deshabilitado en %s.", GetPlayerNameEx(targetid));
+		antiCheatDisabled[targetid] = false;
+		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue habilitado en %s.", GetPlayerNameEx(targetid));
 		format(string, sizeof(string), "[ANTICHEAT] habilitado a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	}
 	if(value == 1)
 	{
-		antiCheatEnabled[targetid] = true;
-		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue habilitado en %s.", GetPlayerNameEx(targetid));
-		format(string, sizeof(string), "[ANTICHEAT] habilitado a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+		antiCheatDisabled[targetid] = true;
+		SendFMessage(playerid, COLOR_LIGHTBLUE, "{878EE7}[INFO]{C8C8C8} El anticheat fue deshabilitado en %s.", GetPlayerNameEx(targetid));
+		format(string, sizeof(string), "[ANTICHEAT] deshabilitado a %s (DBID: %d)", GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	}
 	log(playerid, LOG_ADMIN, string);
 	return 1;

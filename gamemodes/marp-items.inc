@@ -435,11 +435,6 @@ stock LoadHandItem(playerid, hand)
 				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
 			else
 			{
-   				//======================[Inmunidad anticheat]=======================
-			    if(antiCheatImmunity[playerid] != 0)
-			        KillTimer(antiCheatImmunity[playerid]);
-	      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
-	      		//==================================================================
 			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
 			    SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
 			}
@@ -454,21 +449,12 @@ stock DeleteHandItem(playerid, hand)
 {
 	if(hand == HAND_RIGHT)
 	{
-	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
+	    if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) != ITEM_WEAPON && (GetItemType(GetHandItem(playerid, hand)) == ITEM_FIREWEAPON &&  GetHandParam(playerid, HAND_RIGHT) < 2))
 			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
 		else
-		{
-		    //======================[Inmunidad anticheat]=======================
-		    if(antiCheatImmunity[playerid] != 0)
-		        KillTimer(antiCheatImmunity[playerid]);
-      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
-      		//==================================================================
 		    ResetPlayerWeapons(playerid);
-		}
 	}
 	else
 	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	return 1;
 }
-
-//================================COMANDOS======================================
