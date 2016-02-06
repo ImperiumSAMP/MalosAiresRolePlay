@@ -41,7 +41,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 //Includes  módulos isamp
 #include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
-#include "marp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
+#include "marp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores
 #include "marp-items.inc" 				//Sistema de items
 #include "marp-container.inc"
 #include "marp-streamings.inc"
@@ -59,7 +59,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
-#include "marp-thiefjob.inc"
+#include "marp-thiefjob.inc"            //Sistema del trabajo de delincuente
 #include "marp-tazer.inc" 				//Sistema del tazer
 #include "isamp-animations.inc" 		//Sistema de animaciones
 #include "marp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
@@ -67,18 +67,18 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-gangzones.inc"  		//Sistema de control de barrios
 #include "marp-mapeos.inc"  			//Mapeos del GM
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
-#include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo.
+#include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo
 #include "isamp-maletin.inc" 			//sistema maletin
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
-#include "isamp-robobanco.inc"          //Robo a banco.
-#include "isamp-carthief.inc"          	//Robo de autos.
-#include "marp-mechanic.inc"          	//Sistemas y comandos de mecanicos
-#include "isamp-missions.inc"          	//Sistemas de misiones automaticas
+#include "isamp-robobanco.inc"          //Sistema del robo al banco
+#include "isamp-carthief.inc"          	//Sistema de robo de autos
+#include "marp-mechanic.inc"          	//Sistema de mecanicos
+#include "isamp-missions.inc"          	//Sistema de misiones automaticas ilegales
 #include "isamp-racesystem.inc"         //Sistema de carreras
 #include "isamp-espalda.inc"            //Sistema de espalda/guardado de armas largas
 #include "isamp-notebook.inc"           //Sistema de agenda
 #include "isamp-policeinputs.inc"       //Sistema de insumos de la pm y side (/pequipo - /sequipo)
-#include "isamp-adminobjects.inc"       //Sistema de Objetos para admins.
+#include "isamp-adminobjects.inc"       //Sistema de objetos para admins
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
@@ -904,6 +904,8 @@ public ResetStats(playerid)
 	AdminSMSEnabled[playerid] = false;
 	Admin911Enabled[playerid] = false;
 	
+	antiCheatDisabled[playerid] = false;
+	
 	/* Sistema de tazer */
 	resetTazer(playerid);
 
@@ -1595,6 +1597,9 @@ public OnPlayerText(playerid, text[])
 	new string[256];
 
     if(!gPlayerLogged[playerid]) return 0;
+    
+    // Log
+    serverLog(playerid, 1, text);
 
     if(TalkAnimEnabled[playerid] && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	{
@@ -3269,7 +3274,7 @@ public AntiCheatWeaponCheck(playerid)
 	ammodif = GetPlayerAmmo(playerid) - rightparam;
 		
 		
-	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype != ITEM_FIREWEAPON && rightparam > 1))
+	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype != ITEM_FIREWEAPON && rightparam < 2))
 		return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores "cargada".
 	if(weapon == righthand && ammo == rightparam)
 	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
@@ -4730,6 +4735,31 @@ stock log(playerid, logType, text[])
 	return 1;
 }
 
+stock serverLog(playerid, logType, text[])
+{
+	new name[32], string[512], type[12], time[3], date[3];
+
+	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
+	gettime(time[0], time[1], time[2]);
+	getdate(date[0], date[1], date[2]);
+	
+	switch(logType)
+	{
+	    case 1: format(type, sizeof(type), "LOCAL");
+	    case 2: format(type, sizeof(type), "COMANDOS");
+	    case 3: format(type, sizeof(type), "TELÉFONO");
+	    case 4: format(type, sizeof(type), "CONEXIÓN");
+	    case 5: format(type, sizeof(type), "DESCONEXIÓN");
+	}
+	
+	if(time[1] < 10)
+		format(string, sizeof(string), "[%d/%d/%d %d:0%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	else
+		format(string, sizeof(string), "[%d/%d/%d %d:%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+		
+	printf("%s", string);
+}
+
 stock initiateHospital(playerid)
 {
 	TogglePlayerControllable(playerid, false);
@@ -4768,7 +4798,7 @@ SaveAllBusiness() {
 		saveBusiness(id);
 		id++;
 	}
-	print("[INFO]: negocios guardados.");
+	print("[INFO] negocios guardados.");
 	return 1;
 }
 
@@ -4953,7 +4983,7 @@ stock saveBuildings()
 	    saveBuilding(id);
 		id++;
 	}
-	print("[INFO]: edificios guardados.");
+	print("[INFO] edificios guardados.");
 	return 1;
 }
 
@@ -5037,6 +5067,7 @@ stock loadBuildings()
 		Building[bdid][blInsideLabel] = CreateDynamic3DTextLabel("-", COLOR_WHITE, Building[bdid][blInsideX], Building[bdid][blInsideY], Building[bdid][blInsideZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, Building[bdid][blInsideWorld], Building[bdid][blInsideInt], -1, 100.0);
 		bdid++;
 	}
+	print("[INFO] edificios cargados.");
 	return 1;
 }
 
@@ -5046,7 +5077,7 @@ stock LoadServerInfo()
 
     format(query, sizeof(query),"SELECT * FROM `server` WHERE ID = 1;");
 	mysql_function_query(dbHandle, query, true, "OnServerDataLoad", "");
-	print("[INFO]: configuración cargada.");
+	print("[INFO] configuración cargada.");
 	return 1;
 }
 
@@ -5064,7 +5095,7 @@ SaveServerInfo()
 		ServerInfo[sDrugRawMats]
 	);
     mysql_function_query(dbHandle, query, false, "", "");
-    print("[INFO]: configuración guardada.");
+    print("[INFO] configuración guardada.");
     return 1;
 }
 
@@ -5079,7 +5110,7 @@ stock LoadFactions()
 		mysql_function_query(dbHandle, query, true, "OnFactionDataLoad", "i", id);
 		id++;
 	}
-	print("[INFO]: facciones cargadas.");
+	print("[INFO] facciones cargadas.");
 	return 1;
 }
 
@@ -5125,7 +5156,7 @@ SaveFactions()
 		factionid++;
 	}
 
-	print("[INFO]: facciones guardadas.");
+	print("[INFO] facciones guardadas.");
 	return 1;
 }
 
@@ -9981,7 +10012,6 @@ CMD:clasificado(playerid,params[])
 		}
 	}
 	GiveFactionMoney(FAC_MAN, PRICE_ADVERTISE);
-	printf("[%s] %s", GetPlayerNameEx(playerid), text);
 	return 1;
 }
 
@@ -14138,7 +14168,6 @@ CMD:exp10de(playerid, params[])
 		SetPlayerHealth(target, 10);
 		GetPlayerPos(target, boom[0], boom[1], boom[2]);
 		CreateExplosion(boom[0], boom[1] , boom[2], 7, 10);
-		printf("[Comando] %s ha usado /exp10de para explotar a %s", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
 	}
 	return 1;
 }
