@@ -1,7 +1,7 @@
-#if defined _isamp_players_included
+#if defined _marp_players_included
 	#endinput
 #endif
-#define _isamp_players_included
+#define _marp_players_included
 
 
 //====[ENUMS AND PLAYERS ARRAY]=====================================
@@ -85,7 +85,8 @@ enum pInfo {
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
 // Inmunidad al anticheat
-new bool:antiCheatDisabled[MAX_PLAYERS];
+new bool:antiCheatDisabled[MAX_PLAYERS],
+	antiCheatImmunity[MAX_PLAYERS];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];

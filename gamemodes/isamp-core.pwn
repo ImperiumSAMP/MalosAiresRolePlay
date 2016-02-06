@@ -38,10 +38,10 @@
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 //#include <mapandreas>
-//Includes  moudulos isamp
+//Includes  módulos isamp
 #include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
-#include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
+#include "marp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "marp-items.inc" 				//Sistema de items
 #include "marp-container.inc"
 #include "marp-streamings.inc"
@@ -424,6 +424,7 @@ forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2)
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
+forward AntiCheatImmunityTimer(playerid);
 forward AntiCheatTimer();
 forward AntiCheatWeaponCheck(playerid);
 forward globalUpdate();
@@ -3203,6 +3204,12 @@ stock isWeaponAllowed(weapon)
 	return 1;
 }
 
+public AntiCheatImmunityTimer(playerid)
+{
+	antiCheatImmunity[playerid] = 0;
+	return 1;
+}
+
 public AntiCheatTimer()
 {
 	new string[128], hack;
@@ -3267,7 +3274,7 @@ public AntiCheatWeaponCheck(playerid)
 	if(weapon == righthand && ammo == rightparam)
 	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
 	    
-	if(itemtype == ITEM_WEAPON && ammo != rightparam) // Tiene un arma común en mano y hay diferencia de balas.
+	if((itemtype == ITEM_WEAPON && ammo != rightparam) && antiCheatImmunity[playerid] == 0) // Tiene un arma común en mano y hay diferencia de balas.
 	{
 		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
 		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
@@ -3275,7 +3282,7 @@ public AntiCheatWeaponCheck(playerid)
 		SetPlayerAmmo(playerid, righthand, rightparam);
 	}
 	
-	if(itemtype == ITEM_FIREWEAPON && rightparam > 1) // Tiene un arma del sistema de cargadores "cargada" en mano y hay diferencia de balas.
+	if((itemtype == ITEM_FIREWEAPON && rightparam > 1) && antiCheatImmunity[playerid] == 0) // Tiene un arma del sistema de cargadores "cargada" en mano y hay diferencia de balas.
 	{
 		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
 		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
@@ -3283,7 +3290,7 @@ public AntiCheatWeaponCheck(playerid)
  		SetPlayerAmmo(playerid, righthand, rightparam);
 	}
 	
-	if(weapon != righthand) // Tiene un arma en mano que no debería tener.
+	if(weapon != righthand && antiCheatImmunity[playerid] == 0) // Tiene un arma en mano que no debería tener.
 	{
 		format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
 		AdministratorMessage(COLOR_WHITE, string, 2);
