@@ -317,7 +317,7 @@ SaveHouses()
 	    SaveHouse(id);
 		id++;
 	}
-    print("[INFO]: casas guardadas.");
+    print("[INFO] casas guardadas.");
 	return 1;
 }
 

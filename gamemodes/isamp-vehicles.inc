@@ -767,7 +767,7 @@ SaveVehicles() {
         SaveVehicle(id);
         id++;
 	}
-	printf("[INFO]: vehículos guardados.");
+	printf("[INFO] vehículos guardados.");
 	return 1;
 }
 

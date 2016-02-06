@@ -1035,9 +1035,9 @@ public OnPlayerDisconnect(playerid, reason)
 	// Log.
 	switch(reason)
 	{
-	    case 1: format(disconnectreason, sizeof(disconnectreason), "Timeout/Crash.");
-	    case 2: format(disconnectreason, sizeof(disconnectreason), "a voluntad.");
-	    case 3: format(disconnectreason, sizeof(disconnectreason), "Kick.");
+	    case 0: format(disconnectreason, sizeof(disconnectreason), "Timeout/Crash.");
+	    case 1: format(disconnectreason, sizeof(disconnectreason), "a voluntad.");
+	    case 2: format(disconnectreason, sizeof(disconnectreason), "Kick.");
 	}
 	format(logString, sizeof(logString), "se ha desconectado del servidor. (razón: %s)", disconnectreason);
 	serverLog(playerid, 5, logString);
@@ -4758,26 +4758,29 @@ stock log(playerid, logType, text[])
 
 stock serverLog(playerid, logType, text[])
 {
-	new name[32], string[512], type[12], time[3], date[3];
+	new name[32], string[512], type[12], time[3], date[3], finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
 	
+	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
+	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
+	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
+	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
+	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
+	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
+	
 	switch(logType)
 	{
-	    case 1: format(type, sizeof(type), "LOCAL");
-	    case 2: format(type, sizeof(type), "COMANDOS");
-	    case 3: format(type, sizeof(type), "TELÉFONO");
-	    case 4: format(type, sizeof(type), "CONEXIÓN");
-	    case 5: format(type, sizeof(type), "DESCONEXIÓN");
+	    case 1: format(type, sizeof(type), "[LOCAL]      ");
+	    case 2: format(type, sizeof(type), "[COMANDOS]   ");
+	    case 3: format(type, sizeof(type), "[TELÉFONO]   ");
+	    case 4: format(type, sizeof(type), "[CONEXIÓN]   ");
+	    case 5: format(type, sizeof(type), "[DESCONEXIÓN]");
 	}
 	
-	if(time[1] < 10)
-		format(string, sizeof(string), "[%d/%d/%d | %d:0%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-	else
-		format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-		
+	format(string, sizeof(string), "[%s/%s/%d | %s:%s:%s] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
 	printf("%s", string);
 }
 
