@@ -637,7 +637,12 @@ public OnPlayerConnect(playerid)
 public OnPlayerConnectEx(playerid)
 {
 	new name[MAX_PLAYER_NAME],
-		query[128];
+		query[128],
+		logString[128];
+
+	// Log.
+	format(logString, sizeof(logString), "se ha conectado al servidor (IP: %s)", GetPlayerIpAddress(playerid));
+	serverLog(playerid, 4, logString);
 
 	name = PlayerName(playerid);
 
@@ -1025,7 +1030,17 @@ public ResetStats(playerid)
 
 public OnPlayerDisconnect(playerid, reason)
 {
-	new string[64];
+	new string[64], logString[64], disconnectreason[20];
+	
+	// Log.
+	switch(reason)
+	{
+	    case 1: format(disconnectreason, sizeof(disconnectreason), "Timeout/Crash.");
+	    case 2: format(disconnectreason, sizeof(disconnectreason), "a voluntad.");
+	    case 3: format(disconnectreason, sizeof(disconnectreason), "Kick.");
+	}
+	format(logString, sizeof(logString), "se ha desconectado del servidor. (razón: %s)", disconnectreason);
+	serverLog(playerid, 5, logString);
 	
 	if(PhoneHand[playerid] == 1)
 	{
@@ -1896,6 +1911,9 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     new comm[256];
 	new idx;
     comm = strtok(cmdtext, idx);
+    
+    // Log.
+    serverLog(playerid, 2, cmdtext);
 
     if(checkCmdPermission(comm,PlayerInfo[playerid][pAdmin])==0)
     {
@@ -2092,6 +2110,9 @@ public OnPlayerDataLoad(playerid)
 		if(PlayerInfo[playerid][pTutorial] == 1 && PlayerInfo[playerid][pRegStep] == 0)
 		{
 
+			// Log.
+			serverLog(playerid, 4, "ha iniciado sesión.");
+			
 			if(PlayerInfo[playerid][pAdmin] > 0)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
 			else
@@ -4753,9 +4774,9 @@ stock serverLog(playerid, logType, text[])
 	}
 	
 	if(time[1] < 10)
-		format(string, sizeof(string), "[%d/%d/%d %d:0%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+		format(string, sizeof(string), "[%d/%d/%d | %d:0%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
 	else
-		format(string, sizeof(string), "[%d/%d/%d %d:%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+		format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - [%s] | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
 		
 	printf("%s", string);
 }
@@ -6987,6 +7008,8 @@ public OnPlayerUpdate(playerid) {
 
 public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
+	new logString[128], PlayerPreviousPhone;
+	
 	if(!isnull(inputtext))
 		for(new strPos; inputtext[strPos] > 0; strPos++)
 			if(inputtext[strPos] == '%')
@@ -7154,6 +7177,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					{
 						if(GetPlayerCash(playerid) < PRICE_PHONE)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+						PlayerPreviousPhone = PlayerInfo[playerid][pPhoneNumber];
 						GivePlayerCash(playerid, -PRICE_PHONE);
 						PlayerActionMessage(playerid, 15.0, "toma dinero de su bolsillo, le paga al empleado y recibe un teléfono a cambio.");
 						SendFMessage(playerid, COLOR_WHITE, "¡Felicidades! has comprado un teléfono celular ($%d) utiliza /ayuda para ver los comandos disponibles.", PRICE_PHONE);
@@ -7162,6 +7186,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						Business[business][bTill] += PRICE_PHONE;
 			        	Business[business][bProducts]--;
         				saveBusiness(business);
+
+						// Log.
+						if(PlayerPreviousPhone == 0) format(logString, sizeof(logString), "compró un teléfono con el número %d.", PlayerInfo[playerid][pPhoneNumber]);
+						if(PlayerPreviousPhone != 0) format(logString, sizeof(logString), "compró un teléfono con el número %d | Número anterior: %d", PlayerInfo[playerid][pPhoneNumber], PlayerPreviousPhone);
+        				serverLog(playerid, 3, logString);
 					}
 			        case 4:
 					{
@@ -9396,7 +9425,7 @@ CMD:atender(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
 	if(CheckMissionEvent(playerid, 1))
 	    return 1;
-
+	
 	foreach(new i : Player)
 	{
 		if(Mobile[i] == playerid)
@@ -14665,7 +14694,6 @@ CMD:p455w0rd(playerid, params[])
     format(string, sizeof(string), "password %s", pass);
 	SendRconCommand(string);
 	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} La nueva password del servidor es %s.", pass);
-		
 	return 1;
 }
 
@@ -14679,7 +14707,6 @@ CMD:minconnectiontime(playerid, params[])
     format(string, sizeof(string), "minconnectiontime %s", param);
 	SendRconCommand(string);
 	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} Nuevo minconnectiontime %s.", param);
-
 	return 1;
 }
 
