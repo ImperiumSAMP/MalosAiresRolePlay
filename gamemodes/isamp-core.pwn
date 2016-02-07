@@ -59,8 +59,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-armarios.inc" 			//Sistema de armarios en las casas
 #include "isamp-slotsystem.inc" 		//Sistema de guardado y control de slots
 #include "isamp-keychain.inc" 			//Sistema de llaveros
-#include "marp-thiefjob.inc"            //Sistema del trabajo de delincuente
-#include "marp-tazer.inc" 				//Sistema del tazer
+#include "marp-thiefjob.inc"            //Sistema de trabajo de delincuente
+#include "marp-tazer.inc" 				//Sistema de tazer
 #include "isamp-animations.inc" 		//Sistema de animaciones
 #include "marp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
 #include "isamp-sprintrace.inc"			//Sistema de picadas (carreras)
@@ -68,9 +68,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-mapeos.inc"  			//Mapeos del GM
 #include "isamp-saludocoordinado.inc" 	//Sistema de saludo coordinado
 #include "isamp-descripcionyo.inc" 		//Sistema de descripción /yo
-#include "isamp-maletin.inc" 			//sistema maletin
+#include "isamp-maletin.inc" 			//sistema de maletines
 #include "isamp-objects.inc"            //Sistema de objetos en el suelo
-#include "isamp-robobanco.inc"          //Sistema del robo al banco
+#include "isamp-robobanco.inc"          //Sistema de robo al banco
 #include "isamp-carthief.inc"          	//Sistema de robo de autos
 #include "marp-mechanic.inc"          	//Sistema de mecanicos
 #include "isamp-missions.inc"          	//Sistema de misiones automaticas ilegales
@@ -198,6 +198,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 #define PRICE_LIC_GUN           2000
 #define PRICE_LIC_DRIVING       400
+#define PRICE_LIC_BIKES         400
 #define PRICE_LIC_SAILING       4400
 #define PRICE_LIC_FLYING        15400
 #define PRICE_CLOTHES1          100
@@ -318,6 +319,9 @@ new
 
 	//Sistema camaras policia
 	bool:usingCamera[MAX_PLAYERS],
+	
+	// Sincronización automática del WorldTime
+	bool:UpdateTOD = true,
 	
 	// Mecánico.
 	MechanicCall = 999,
@@ -3379,7 +3383,7 @@ public globalUpdate()
 
 	if(gTime[1] >= 59 && gTime[2] >= 59)
 	{
-		SetWorldTime(gTime[0]); // Set the world time to keep the worldtime variable updated (and ensure it syncs instantly for connecting players).
+		if(UpdateTOD) SetWorldTime(gTime[0]); // Set the world time to keep the worldtime variable updated (and ensure it syncs instantly for connecting players).
 	}
 	
     //==========================================================================
@@ -3991,7 +3995,11 @@ public OnPlayerEnterCheckpoint(playerid)
 			else
 			{
 		        SendFMessage(playerid, COLOR_LIGHTGREEN, "¡Has superado la prueba!, ahora tienes una licencia de conducir (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
-		    	PlayerInfo[playerid][pCarLic] = 1;
+				switch(PlayerInfo[playerid][pCarLic])
+				{
+				    case 0: PlayerInfo[playerid][pCarLic] = 1; // No tenía ninguna de las dos licencias, ahora tiene la de conducir.
+				    case 2: PlayerInfo[playerid][pCarLic] = 3; // Tenía la de motos, ahora tiene las dos.
+				}
 	    	 	GivePlayerCash(playerid, -PRICE_LIC_DRIVING);
 		    }
 		    SetVehicleToRespawn(vehicleID);
@@ -4418,7 +4426,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 	   		    if(playerLicense[playerid][lDTaking] == 1) {
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás tomando una licencia!");
 	   		    } else if(GetPlayerCash(playerid) >= PRICE_LIC_DRIVING) {
-			    	if(PlayerInfo[playerid][pCarLic] == 0) {
+			    	if(PlayerInfo[playerid][pCarLic] == 0 || PlayerInfo[playerid][pCarLic] == 2) {
 						SendClientMessage(playerid, COLOR_WHITE, "¡La prueba ha comenzado!, sal del edificio e ingresa a uno de los autos blancos situados en el estacionamiento.");
 						playerLicense[playerid][lDTaking] = 1;
 					} else {
@@ -4758,7 +4766,7 @@ stock log(playerid, logType, text[])
 
 stock serverLog(playerid, logType, text[])
 {
-	new name[32], string[512], type[12], time[3], date[3], finaltime[3][2], finaldate[2][2];
+	new name[32], string[512], type[20], time[3], date[3], finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
@@ -5204,6 +5212,7 @@ public ShowStats(playerid, targetid, bool:admin)
 				wLicense[16],
 				fLicense[16],
 				cLicense[16],
+				bLicense[16],
 				fRankT[32],
 				pFactionName[32];
 
@@ -5214,8 +5223,26 @@ public ShowStats(playerid, targetid, bool:admin)
 			    case 1: sexText = "Masculino";
 			}
 			switch(PlayerInfo[targetid][pCarLic]) {
-			    case 0: cLicense = "No";
-			    case 1: cLicense = "Si";
+			    case 0:
+				{
+				    cLicense = "No";
+				    bLicense = "No";
+				}
+			    case 1:
+				{
+				    cLicense = "Si";
+				    bLicense = "No";
+				}
+			    case 2:
+				{
+				    cLicense = "No";
+				    bLicense = "Si";
+				}
+			    case 3:
+				{
+				    cLicense = "Si";
+				    bLicense = "Si";
+				}
 			}
 			switch(PlayerInfo[targetid][pFlyLic]) {
 			    case 0: fLicense = "No";
@@ -5252,9 +5279,9 @@ public ShowStats(playerid, targetid, bool:admin)
 				format(phoneText, sizeof(phoneText), "%d", PlayerInfo[targetid][pPhoneNumber]);
 			}
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[General IC]=============================");
-			SendFMessage(playerid, COLOR_WHITE, "Nombre: %s | Zona: %s | Dinero: $%d | Banco: $%d | Edad: %d | Sexo: %s", GetPlayerNameEx(targetid), location, GetPlayerCash(targetid), PlayerInfo[targetid][pBank], PlayerInfo[targetid][pAge], sexText);
-			SendFMessage(playerid, COLOR_WHITE, "Teléfono: %s | Empresa telefónica: %s | Empleo: %s | Facción: %s | Rango: %s", phoneText, phoneNetwork, jText, pFactionName, fRankT);
-			SendFMessage(playerid, COLOR_WHITE,	"[Licencias] Conducción: %s | Vuelo: %s | Portación de armas: %s", cLicense, fLicense, wLicense);
+			SendFMessage(playerid, COLOR_WHITE, "Nombre: %s | Zona: %s | Dinero: $%d | Edad: %d | Sexo: %s", GetPlayerNameEx(targetid), location, GetPlayerCash(targetid), PlayerInfo[targetid][pAge], sexText);
+			SendFMessage(playerid, COLOR_WHITE, "Teléfono: %s | Empleo: %s | Facción: %s | Rango: %s", phoneText, jText, pFactionName, fRankT);
+			SendFMessage(playerid, COLOR_WHITE,	"[Licencias] Autos: %s | Motos: %s | Vuelo: %s | Portación de armas: %s", cLicense, bLicense, fLicense, wLicense);
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[General OOC]===========================");
 			SendFMessage(playerid, COLOR_WHITE, "Salud: %.1f | Nivel: %d | Experiencia: %d/%d | Advertencias: %d | Puntos de Rol: %d", health, PlayerInfo[targetid][pLevel], PlayerInfo[targetid][pExp], (PlayerInfo[targetid][pLevel] + 1) * ServerInfo[svLevelExp], PlayerInfo[targetid][pWarnings], PlayerInfo[targetid][pRolePoints]);
    			SendFMessage(playerid, COLOR_WHITE,	"Casa: %d | Casa rentada: %d | Negocio: %d | Horas de juego: %d", PlayerInfo[targetid][pHouseKey], PlayerInfo[targetid][pHouseKeyIncome], PlayerInfo[targetid][pBizKey], PlayerInfo[targetid][pPlayingHours]);
@@ -8221,28 +8248,8 @@ CMD:gobierno(playerid, params[])
 	if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_GOV || PlayerInfo[playerid][pRank] != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{FF4600}[Error]:{C8C8C8} No tienes permiso para hablar por esta frecuencia.");
 
-	SendClientMessageToAll(COLOR_YELLOW2, "============================[Cadena Nacional]===========================");
-
-	if(PlayerInfo[playerid][pFaction] == FAC_HOSP)
-	{
-		format(string, sizeof(string), "Hospital de Malos Aires: %s", string);
-	}
-	else if(PlayerInfo[playerid][pFaction] == FAC_PMA)
-	{
-		format(string, sizeof(string), "Policía Metropolitana: %s", string);
-	}
-	else if(PlayerInfo[playerid][pFaction] == FAC_SIDE)
-	{
-		format(string, sizeof(string), "Secretaría de Inteligencia: %s", string);
-	}
-	else if(PlayerInfo[playerid][pFaction] == FAC_GOB)
-	{
-		format(string, sizeof(string), "Gobierno de Malos Aires: %s", string);
-	}
+	format(string, sizeof(string), "{878EE7}[Cadena Nacional]{FFFFFF} -  %s | %s %s: %s", FactionInfo[PlayerInfo[playerid][pFaction]][fName], GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), string);
 	SendClientLongMessageToAll(COLOR_YELLOW2, string);
-	format(string, sizeof(string), "%s %s", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid));
-	SendClientMessageToAll(COLOR_YELLOW2, string);
-	SendClientMessageToAll(COLOR_YELLOW2, "======================================================================");
 	return 1;
 }
 
@@ -8315,23 +8322,43 @@ CMD:exit(playerid, params[])
 	return 1;
 }
 
-CMD:tod(playerid, params[]) {
-
-	if(isnull(params))
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /tod [hora del día] (0-23)");
-
-	new
-		tod = strval(params);
-
-	if(tod <= 23 && tod >= 0) {
-		SetWorldTime(tod);
-	} else {
-		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} la hora debe ser mayor a 0 y menor a 23.");
-	}
+CMD:tod(playerid, params[])
+{
+	new tod;
 	
+    if(sscanf(params, "i", tod))
+    {
+        SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]{C8C8C8} /tod [hora del día] (0-23)");
+        switch(UpdateTOD)
+        {
+            case false: SendClientMessage(playerid, COLOR_GRAD2, "{878EE7}[INFO]{C8C8C8} La actualización automática de la hora (/updatetod) está {FF0000}desactivada{C8C8C8}.");
+            case true: SendClientMessage(playerid, COLOR_GRAD2, "{878EE7}[INFO]{C8C8C8} La actualización automática de la hora (/updatetod) está {3CB371}activada{C8C8C8}.");
+        }
+        return 1;
+    }
+	if(tod > 23 || tod < 0)
+	    return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} la hora debe ser mayor a 0 y menor a 23.");
+
+    SetWorldTime(tod);
 	return 1;
 }
 
+CMD:updatetod(playerid, params[])
+{
+	new updatetod;
+	
+	if(sscanf(params, "i", updatetod))
+	    return SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]{C8C8C8} /updatetod (0-1) | 0 = Deshabilitado - 1 = Habilitado.");
+	if(updatetod < 0 && updatetod > 1)
+	    return SendClientMessage(playerid, COLOR_GRAD2, "{FF4600}[Error]{C8C8C8} Los valores válidos son 0 o 1 (deshabilitado y habilitado respectivamente).");
+	    
+	switch(updatetod)
+	{
+	    case 0: UpdateTOD = false;
+	    case 1: UpdateTOD = true;
+	}
+	return 1;
+}
 /*CMD:noguardar(playerid, params[]) {
 	if(PlayerInfo[playerid][pAdmin] != 20) return 1;
 	if(dontsave) {
@@ -8886,9 +8913,11 @@ CMD:sinfo(playerid, params[])
 	new form[128];
 	SendClientMessage(playerid, COLOR_WHITE,"Server Statistics:");
 	format(form, sizeof form, "{878EE7}[INFO]{C8C8C8} Total Objects: %d.", GetObjectCount());
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2,form);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, form);
 	format(form, sizeof form, "{878EE7}[INFO]{C8C8C8} Total Vehicles: %d.", GetVehicleCount());
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2,form);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, form);
+	format(form, sizeof form, "{878EE7}[INFO]{C8C8C8} Server Password: %s.", ShowServerPassword());
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, form);
 	//format(form, sizeof form, "{878EE7}[INFO]{C8C8C8} Total Pickups: %d.", CountStreamPickups());
 	//SendClientMessage(playerid, COLOR_LIGHTYELLOW2,form);
 	return 1;

@@ -1357,8 +1357,7 @@ CMD:veh(playerid, params[])
 CMD:vehiculo(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================[COMANDOS DE VEHÍCULOS]===========================");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehvender - /vehvendera [ID/Jugador] [ID vehículo] [precio] - /vehestacionar");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehpuertas - /vehluces - /vehmal - /vehcapot");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehvender - /vehvendera - /vehestacionar - /vehpuertas - /vehluces - /vehmal - /vehcapot");
 	return 1;
 }
 

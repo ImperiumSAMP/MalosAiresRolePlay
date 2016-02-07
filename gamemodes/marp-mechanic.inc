@@ -113,64 +113,27 @@ forward Destuning(playerid);
 
 forward GetRepairMaterialCost(vehicleid);
 
-forward CloseTuneGate0();
-forward CloseTuneGate1();
-forward CloseTuneGate2();
-forward CloseTuneGate3();
-forward CloseTuneGate4();
+forward CloseTuneGate(gate);
 forward CountMecasDuty();
 
 
 //=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
-public CloseTuneGate0()
+public CloseTuneGate(gate)
 {
-    if(TMTune[0][0] == 1)
+    if(TMTune[gate][0] == 1)
 	{
-	    TMTune[0][0] = 0;
+	    TMTune[gate][0] = 0;
 	    MoveObject(TMTune[0][1], -2716.01, 217.88, 5.48, 1, 0.00, 0.00, 0.00);
+	    switch(gate)
+	    {
+	        case 0: MoveObject(TMTune[0][1], -2716.01, 217.88, 5.48, 1, 0.00, 0.00, 0.00);
+	        case 1: MoveObject(TMTune[1][1],  2644.83, -2039.06, 14.32, 1, 0.00, 0.00, 73.08);
+	        case 2: MoveObject(TMTune[2][1], -1935.01, 238.70, 33.69, 1, 0.00, 0.00, 0.00);
+	        case 3: MoveObject(TMTune[3][1], 1043.17, -1025.85, 33.66, 1, 0.00, 0.00, 0.00);
+	        case 4: MoveObject(TMTune[4][1], 2387.38, 1043.45, 11.82, 1, 0.00, 0.00, 0.00);
+	    }
 	}
-	return 1;
-}
-
-public CloseTuneGate1()
-{
-    if(TMTune[1][0] == 1)
-	{
-	    TMTune[1][0] = 0;
-	    MoveObject(TMTune[1][1],  2644.83, -2039.06, 14.32, 1, 0.00, 0.00, 73.08);
-	}
-	return 1;
-}
-
-public CloseTuneGate2()
-{
-    if(TMTune[2][0] == 1)
-	{
-	    TMTune[2][0] = 0;
-	    MoveObject(TMTune[2][1], -1935.01, 238.70, 33.69, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
-}
-
-public CloseTuneGate3()
-{
-    if(TMTune[3][0] == 1)
-	{
-	    TMTune[3][0] = 0;
-	    MoveObject(TMTune[3][1], 1043.17, -1025.85, 33.66, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
-}
-
-public CloseTuneGate4()
-{
-    if(TMTune[4][0] == 1)
-	{
-	    TMTune[4][0] = 0;
-	    MoveObject(TMTune[4][1], 2387.38, 1043.45, 11.82, 1, 0.00, 0.00, 0.00);
-	}
-	return 1;
 }
 
 public ResetRepairOffer(playerid)
@@ -1041,13 +1004,12 @@ CMD:mectaller(playerid, params[])
 	 	{
  	        TMTune[0][0] = 1;
  	    	MoveObject(TMTune[0][1], -2716.01, 217.88, 10, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[0] = SetTimer("CloseTuneGate0", 1000 * 60 * 5, false);
+ 	    	TMTuneTimers[0] = SetTimer("CloseTuneGate(0)", 1000 * 60 * 5, false);
 		}
 		else
 		{
 		    KillTimer(TMTuneTimers[0]);
-		    TMTune[0][0] = 0;
-		    MoveObject(TMTune[0][1], -2716.01, 217.88, 5.48, 1, 0.00, 0.00, 0.00);
+		    CloseTuneGate(0);
 		}
 	}
 	else if(PlayerToPoint(5.0, playerid, 2649.7874, -2037.5381, 13.5500)) // Loco Low Co. Los Santos.
@@ -1056,13 +1018,12 @@ CMD:mectaller(playerid, params[])
 	 	{
  	        TMTune[1][0] = 1;
  	    	MoveObject(TMTune[1][1], 2651.19, -2039.01, 14.32, 1, 0.00, 0.00, -73.08);
- 	    	TMTuneTimers[1] = SetTimer("CloseTuneGate1", 1000 * 60 * 5, false);
+ 	    	TMTuneTimers[1] = SetTimer("CloseTuneGate(1)", 1000 * 60 * 5, false);
 		}
 		else
 		{
 			KillTimer(TMTuneTimers[1]);
-		    TMTune[1][0] = 0;
-		    MoveObject(TMTune[1][1], 2644.83, -2039.06, 14.32, 1, 0.00, 0.00, -73.08);
+		    CloseTuneGate(1);
 		}
 	}
 	else if(PlayerToPoint(5.0, playerid, -1931.3779, 237.0436, 34.3470)) // TransFender San Fierro.
@@ -1070,14 +1031,13 @@ CMD:mectaller(playerid, params[])
  	    if(TMTune[2][0] <= 0)
 	 	{
  	        TMTune[2][0] = 1;
- 	    	MoveObject(TMTune[2][1],  -1927.87, 238.66, 33.70, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[2] = SetTimer("CloseTuneGate2", 1000 * 60 * 5, false);
+			MoveObject(TMTune[2][1],  -1927.87, 238.66, 33.70, 1, 0.00, 0.00, 0.00);
+ 	    	TMTuneTimers[2] = SetTimer("CloseTuneGate(2)", 1000 * 60 * 5, false);
 		}
 		else
 		{
 		    KillTimer(TMTuneTimers[2]);
-		    TMTune[2][0] = 0;
-		    MoveObject(TMTune[2][1], -1935.01, 238.70, 33.69, 1, 0.00, 0.00, 0.00);
+			CloseTuneGate(2);
 		}
 	}
 	else if(PlayerToPoint(5.0, playerid, 1044.7301, -1027.6169, 32.1016)) // TransFender Los Santos.
@@ -1086,13 +1046,12 @@ CMD:mectaller(playerid, params[])
 	 	{
  	        TMTune[3][0] = 1;
  	    	MoveObject(TMTune[3][1], 1050.63, -1025.82, 33.66, 1, 0.00, 0.00, 0.00);
- 	    	TMTuneTimers[3] = SetTimer("CloseTuneGate3", 1000 * 60 * 5, false);
+ 	    	TMTuneTimers[3] = SetTimer("CloseTuneGate(3)", 1000 * 60 * 5, false);
 		}
 		else
 		{
 		    KillTimer(TMTuneTimers[3]);
-		    TMTune[3][0] = 0;
-		    MoveObject(TMTune[3][1], 1043.17, -1025.85, 33.66, 1, 0.00, 0.00, 0.00);
+		    CloseTuneGate(3);
 		}
 	}
 	else if(PlayerToPoint(5.0, playerid, 2391.1355, 1041.8885, 10.8203)) // TransFender Las Venturas.
@@ -1101,13 +1060,12 @@ CMD:mectaller(playerid, params[])
  		{
  	        TMTune[4][0] = 1;
  	    	MoveObject(TMTune[4][1], 2394.90, 1043.69, 11.82, 1, 0.00, 90.00, 90.00);
-       		TMTuneTimers[4] = SetTimer("CloseTuneGate4", 1000 * 60 * 5, false);
+       		TMTuneTimers[4] = SetTimer("CloseTuneGate(4)", 1000 * 60 * 5, false);
 		}
 		else
 		{
 		    KillTimer(TMTuneTimers[4]);
-		    TMTune[4][0] = 0;
-		    MoveObject(TMTune[4][1], 2387.38, 1043.45, 11.82, 1, 0.00, 0.00, 0.00);
+		    CloseTuneGate(4);
 		}
 	}
 	else
