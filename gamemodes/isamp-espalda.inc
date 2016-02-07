@@ -137,8 +137,8 @@ stock SaveItemOnBack(playerid, playerhand)
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
-	new itemid = GetHandItem(playerid, playerhand);
-	 str[128];
+	new itemid = GetHandItem(playerid, playerhand),
+		str[128];
 
 	if(GetBackItem(playerid) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes algo colgado en ese lado de tu hombro!");

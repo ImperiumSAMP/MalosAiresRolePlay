@@ -5800,9 +5800,7 @@ stock SendClientLongMessage(playerid, color, const message[])
 		SendClientMessage(playerid, color, str2);
 	}
 	else
-	{
-	    SendClientMessage(playerid, color, message);
-	}
+		SendClientMessage(playerid, color, message);
 	return 1;
 }
 
@@ -5823,20 +5821,18 @@ stock SendClientLongMessageToAll(color, const message[])
 		SendClientMessageToAll(color, str2);
 	}
 	else
-	{
-	    SendClientMessageToAll(color, message);
-	}
+		SendClientMessageToAll(color, message);
 	return 1;
 }
 
 PlayerLocalMessage(playerid, Float:radius, const message[])
 {
     new string[256];
-    format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
+    format(string, sizeof(string), "(( [%d] {3CB371}%s{FFFFFF}: %s ))", playerid, GetPlayerNameEx(playerid), message);
     if(!AdminDuty[playerid])
         ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
     else
-        ProxDetector(radius, playerid, string, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY, COLOR_BDUTY);
+        ProxDetector(radius, playerid, string, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
     format(string, sizeof(string), "[OOC-LOCAL] %s", string);
     log(playerid, LOG_CHAT, string);
     return 1;
