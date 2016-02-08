@@ -261,6 +261,26 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define RELEASED(%0) 			(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 //==============================================================================
 
+
+// ======== Log types ========
+#define LOG_LOCAL           1
+#define LOG_COMMANDS        2
+#define LOG_PHONE	        3
+#define LOG_CONNECT			4
+#define LOG_DISCONNECT		5
+#define LOG_LOCALOOC        1
+#define LOG_ME              2
+#define LOG_CME             3
+#define LOG_DO              4
+#define LOG_CASINO          5
+#define LOG_KICK            6
+#define LOG_REPORT          7
+#define LOG_PMS             8
+#define LOG_SMS             9
+#define LOG_FAMILY          10
+#define LOG_ADMINCHAT       11
+// ===========================
+
 new
     iGMXTick,
     SIDEGateTimer,
@@ -459,16 +479,6 @@ forward ShowStats(playerid, targetid, bool:admin);
 forward BanPlayer(playerid, issuerid, reason[], days);
 forward KickPlayer(playerid,kickedby[MAX_PLAYER_NAME],reason[]);
 forward ProxDetectorS(Float:radi, playerid, targetid);
-forward KickLog(string[]);
-forward PlayerActionLog(string[]);
-forward PlayerLocalLog(string[]);
-forward TalkLog(string[]);
-forward FactionChatLog(string[]);
-forward SMSLog(string[]);
-forward DonatorLog(string[]);
-forward PMLog(string[]);
-forward ReportLog(string[]);
-forward OOCLog(string[]);
 forward HangupTimer(playerid);
 forward JailTimer();
 forward PhoneAnimation(playerid);
@@ -646,7 +656,7 @@ public OnPlayerConnectEx(playerid)
 
 	// Log.
 	format(logString, sizeof(logString), "se ha conectado al servidor (IP: %s)", GetPlayerIpAddress(playerid));
-	serverLog(playerid, 4, logString);
+	serverLog(playerid, LOG_CONNECT, logString);
 
 	name = PlayerName(playerid);
 
@@ -1044,7 +1054,7 @@ public OnPlayerDisconnect(playerid, reason)
 	    case 2: format(disconnectreason, sizeof(disconnectreason), "Kick.");
 	}
 	format(logString, sizeof(logString), "se ha desconectado del servidor. (razón: %s)", disconnectreason);
-	serverLog(playerid, 5, logString);
+	serverLog(playerid, LOG_DISCONNECT, logString);
 	
 	if(PhoneHand[playerid] == 1)
 	{
@@ -1618,7 +1628,7 @@ public OnPlayerText(playerid, text[])
     if(!gPlayerLogged[playerid]) return 0;
     
     // Log
-    serverLog(playerid, 1, text);
+    serverLog(playerid, LOG_LOCAL, text);
 
     if(TalkAnimEnabled[playerid] && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	{
@@ -1917,7 +1927,8 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     comm = strtok(cmdtext, idx);
     
     // Log.
-    serverLog(playerid, 2, cmdtext);
+    serverLog(playerid, LOG_COMMANDS, cmdtext);
+    if(!gPlayerLogged[playerid]) return 0;
 
     if(checkCmdPermission(comm,PlayerInfo[playerid][pAdmin])==0)
     {
@@ -2115,7 +2126,7 @@ public OnPlayerDataLoad(playerid)
 		{
 
 			// Log.
-			serverLog(playerid, 4, "ha iniciado sesión.");
+			serverLog(playerid, LOG_CONNECT, "ha iniciado sesión.");
 			
 			if(PlayerInfo[playerid][pAdmin] > 0)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
@@ -4766,7 +4777,7 @@ stock log(playerid, logType, text[])
 
 stock serverLog(playerid, logType, text[])
 {
-	new name[32], string[512], type[20], time[3], date[3], finaltime[3][2], finaldate[2][2];
+	new name[24], string[512], type[15], time[3], date[3], finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
@@ -4788,8 +4799,95 @@ stock serverLog(playerid, logType, text[])
 	    case 5: format(type, sizeof(type), "[DESCONEXIÓN]");
 	}
 	
-	format(string, sizeof(string), "[%s/%s/%d | %s:%s:%s] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
+	format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
 	printf("%s", string);
+}
+
+stock otherLog(playerid, secondplayer, logType, text[])
+{
+	new File:hFile, filename[32], name[24], string[512], type[15], time[3], date[3], finaltime[3][2], finaldate[2][2];
+
+	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
+	gettime(time[0], time[1], time[2]);
+	getdate(date[0], date[1], date[2]);
+
+	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
+	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
+	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
+	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
+	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
+	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
+
+
+	switch(secondplayer)
+	{
+	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
+	}
+	
+	
+	switch(logType)
+	{
+	    case 1:
+		{
+		    format(type, sizeof(type), "[OOC-LOCAL]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/localooc.log");
+		}
+	    case 2:
+		{
+		    format(type, sizeof(type), "[ME] ");
+		    format(filename, sizeof(filename), "isamp-data/Logs/playeraction.log");
+		}
+	    case 3:
+		{
+		    format(type, sizeof(type), "[CME]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/playeraction.log");
+		}
+	    case 4:
+		{
+		    format(type, sizeof(type), "[DO] ");
+		    format(filename, sizeof(filename), "isamp-data/Logs/playeraction.log");
+		}
+	    case 5:
+		{
+		    format(type, sizeof(type), "[CASINO]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/casino.log");
+		}
+	    case 6:
+		{
+		    format(type, sizeof(type), "[KICK]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/kicks.log");
+		}
+	    case 7:
+		{
+		    format(type, sizeof(type), "[REPORTE]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/reports.log");
+		}
+	    case 8:
+		{
+		    format(type, sizeof(type), "[MP]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/mps.log");
+		}
+		case 9:
+		{
+		    format(type, sizeof(type), "[SMS]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/sms.log");
+		}
+		case 10:
+		{
+		    format(type, sizeof(type), "[FACCION - %s]", FactionInfo[PlayerInfo[playerid][pFaction]][fName]);
+		    format(filename, sizeof(filename), "isamp-data/Logs/factionchat.log");
+		}
+		case 11:
+		{
+		    format(type, sizeof(type), "[ADMINCHAT]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/adminchat.log");
+		}
+	}
+	
+	hFile = fopen(filename, io_append);
+	fwrite(hFile, string);
+	fclose(hFile);
 }
 
 stock initiateHospital(playerid)
@@ -5525,8 +5623,9 @@ public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
 	        SendFMessage(i, COLOR_ADMINCMD, "%s ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
 	    }
 	}
-	format(string, sizeof(string), "%s ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
-	KickLog(string);
+	format(string, sizeof(string), "ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
+	serverLog(playerid, LOG_DISCONNECT, string);
+	otherLog(playerid, -1, LOG_KICK, string);
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -5828,13 +5927,16 @@ stock SendClientLongMessageToAll(color, const message[])
 PlayerLocalMessage(playerid, Float:radius, const message[])
 {
     new string[256];
-    format(string, sizeof(string), "(( [%d] {3CB371}%s{FFFFFF}: %s ))", playerid, GetPlayerNameEx(playerid), message);
+    format(string, sizeof(string), "(( [%d] %s: %s ))", playerid, GetPlayerNameEx(playerid), message);
     if(!AdminDuty[playerid])
         ProxDetector(radius, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
     else
+    {
+		format(string, sizeof(string), "(( [%d] {3CB371}%s{FFFFFF}: %s ))", playerid, GetPlayerNameEx(playerid), message);
         ProxDetector(radius, playerid, string, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE, COLOR_WHITE);
-    format(string, sizeof(string), "[OOC-LOCAL] %s", string);
-    log(playerid, LOG_CHAT, string);
+    }
+	format(string, sizeof(string), "%s", message);
+    otherLog(playerid, -1, LOG_LOCALOOC, string);
     return 1;
 }
 
@@ -5846,6 +5948,8 @@ PlayerActionMessage(playerid, Float:radius, const message[])
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], message);
 	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	format(string, sizeof(string), "%s", message);
+	otherLog(playerid, -1, LOG_ME, string);
 	return 1;
 }
 
@@ -5857,6 +5961,8 @@ PlayerDoMessage(playerid, Float:radius, const message[])
 	else
 	    format(string, sizeof(string), "* %s (( Enmascarado %d ))", message, maskNumber[playerid]);
 	ProxDetector(radius, playerid, string, COLOR_DO1, COLOR_DO2, COLOR_DO3, COLOR_DO4, COLOR_DO5);
+	format(string, sizeof(string), "%s", message);
+	otherLog(playerid, -1, LOG_DO, string);
 	return 1;
 }
 
@@ -5879,6 +5985,8 @@ PlayerPlayerActionMessage(playerid, targetid, Float:radius, const message[])
 		    format(string, sizeof(string), "* Enmascarado %d %s Enmascarado %d.", maskNumber[playerid], message, maskNumber[targetid]);
 	}
 	ProxDetector(radius, playerid, string, COLOR_ACT1, COLOR_ACT2, COLOR_ACT3, COLOR_ACT4, COLOR_ACT5);
+	format(string, sizeof(string), "%s", message);
+	otherLog(playerid, targetid, LOG_ME, string);
 	return 1;
 }
 
@@ -5895,171 +6003,9 @@ PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
 	else
 	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], str);
 	SendClientMessage(playerid, COLOR_ACT1, string);
+	otherLog(playerid, -1, LOG_CME, str);
     return 1;
 }
-//==============================================================================
-
-
-public KickLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-	    
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/kick.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public PlayerActionLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/playeraction.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-public PlayerLocalLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/playerlocal.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public TalkLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/talk.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public FactionChatLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/factionchat.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public SMSLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/sms.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public PMLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/mp.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public DonatorLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/donator.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public ReportLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/report.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-public OOCLog(string[]) {
-	new
-	    time[3],
-	    date[3],
-	    entry[256],
-	    File:hFile;
-
-    getdate(date[0], date[1], date[2]);
-	gettime(time[0], time[1], time[2]);
-	
-	format(entry, sizeof(entry), "[%d/%d/%d %d:%d:%d] - %s\r\n", date[0], date[1], date[2], time[0], time[1], time[2], string);
-	hFile = fopen("isamp-data/Logs/ooc.log", io_append);
-	fwrite(hFile, entry);
-	fclose(hFile);
-}
-
-//============================================================================================================================
 
 stock AdministratorMessage(color, const string[], level)
 {
@@ -7216,7 +7162,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						// Log.
 						if(PlayerPreviousPhone == 0) format(logString, sizeof(logString), "compró un teléfono con el número %d.", PlayerInfo[playerid][pPhoneNumber]);
 						if(PlayerPreviousPhone != 0) format(logString, sizeof(logString), "compró un teléfono con el número %d | Número anterior: %d", PlayerInfo[playerid][pPhoneNumber], PlayerPreviousPhone);
-        				serverLog(playerid, 3, logString);
+        				serverLog(playerid, LOG_PHONE, logString);
 					}
 			        case 4:
 					{
@@ -9191,11 +9137,12 @@ CMD:gritar(playerid, params[])
 
 CMD:f(playerid, params[])
 {
-	new text[256],
+	new inputtext[144],
+	    text[256],
 		faction = PlayerInfo[playerid][pFaction],
 		rank = PlayerInfo[playerid][pRank];
 
-	if(sscanf(params, "s[256]", text))
+	if(sscanf(params, "s[144]", inputtext))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /f [texto]");
 	if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} te encuentras silenciado.");
@@ -9218,7 +9165,7 @@ CMD:f(playerid, params[])
 			SendClientLongMessage(i, COLOR_ADMINREAD, text);
 		}
 	}
-	FactionChatLog(text);
+	otherLog(playerid, -1, LOG_FAMILY, inputtext);
 	return 1;
 }
 
@@ -9537,6 +9484,7 @@ CMD:msg(playerid, params[])
 			    format(string, sizeof(string), "SMS de %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
 			    SendClientLongMessage(i, COLOR_LIGHTGREEN, string);
 			}
+			otherLog(playerid, i, LOG_SMS, text);
 			
 			format(string2, sizeof(string2), "[SMS] ID %d a ID %d: %s", playerid, i, text);
 			
@@ -9547,8 +9495,6 @@ CMD:msg(playerid, params[])
 					SendClientLongMessage(i2, COLOR_ADMINREAD, string2);
 				}
 			}
-	
-	
 			PhoneAnimation(playerid);
 			GivePlayerCash(playerid, -PRICE_TEXT);
 			Business[PlayerInfo[playerid][pPhoneC]][bTill] += PRICE_TEXT;
@@ -13917,9 +13863,9 @@ CMD:a(playerid, params[])
 
 CMD:admin(playerid, params[])
 {
-	new text[256];
+	new inputtext[144], text[256];
 
-	if(sscanf(params, "s[256]", text))
+	if(sscanf(params, "s[144]", inputtext))
 	{
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} (/a)dmin [mensaje]");
 	}
@@ -13927,15 +13873,16 @@ CMD:admin(playerid, params[])
 	{
 		format(text, sizeof(text), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), text);
   		AdministratorMessage(COLOR_ACHAT, text, 2);
+  		otherLog(playerid, -1, LOG_ADMINCHAT, inputtext);
 	}
 	return 1;
 }
 
 CMD:ao(playerid, params[])
 {
-	new text[256];
+	new inputtext[144], text[256];
 
-	if(sscanf(params, "s[256]", text))
+	if(sscanf(params, "s[144]", inputtext))
 	{
     	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} (/a)ooc [mensaje]");
 	}
@@ -13943,6 +13890,8 @@ CMD:ao(playerid, params[])
 	{
 		format(text, sizeof(text), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
   		SendClientLongMessageToAll(COLOR_AOOC, text);
+  		format(text, sizeof(text), "[COMANDO /AO] %s", inputtext);
+  		otherLog(playerid, -1, LOG_ADMINCHAT, text);
 	}
 	return 1;
 }
