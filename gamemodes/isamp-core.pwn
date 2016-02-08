@@ -4777,18 +4777,20 @@ stock log(playerid, logType, text[])
 
 stock serverLog(playerid, logType, text[])
 {
-	new name[24], string[512], type[15], time[3], date[3], finaltime[3][2], finaldate[2][2];
+	new name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
 	
 	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
+	/*
 	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
 	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
 	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
 	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
 	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
+	*/
 	
 	switch(logType)
 	{
@@ -4799,30 +4801,32 @@ stock serverLog(playerid, logType, text[])
 	    case 5: format(type, sizeof(type), "[DESCONEXIÓN]");
 	}
 	
-	format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
+	format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
 	printf("%s", string);
 }
 
 stock otherLog(playerid, secondplayer, logType, text[])
 {
-	new File:hFile, filename[32], name[24], string[512], type[15], time[3], date[3], finaltime[3][2], finaldate[2][2];
+	new File:hFile, filename[32], name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
 
 	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
+	/*
 	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
 	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
 	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
 	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
 	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
+	*/
 
 
 	switch(secondplayer)
 	{
-	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), text);
-	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", finaldate[0], finaldate[1], date[0], finaltime[0], finaltime[1], finaltime[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
+	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
 	}
 	
 	
@@ -9153,7 +9157,7 @@ CMD:f(playerid, params[])
 	if(!FactionEnabled[playerid])
         return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes desactivado el chat OOC de la facción.");
 
-	format(text, sizeof(text), "(( [%s] %s %s (ID %d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, text);
+	format(text, sizeof(text), "(( [%s] %s %s (ID %d): %s ))", FactionInfo[faction][fName], GetRankName(faction, rank), GetPlayerNameEx(playerid), playerid, inputtext);
 	foreach(new i : Player)
 	{
  		if(PlayerInfo[i][pFaction] == faction && FactionEnabled[i])
@@ -13871,7 +13875,7 @@ CMD:admin(playerid, params[])
 	}
 	else
 	{
-		format(text, sizeof(text), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), text);
+		format(text, sizeof(text), "[Admin n. %d] %s: %s", PlayerInfo[playerid][pAdmin], GetPlayerNameEx(playerid), inputtext);
   		AdministratorMessage(COLOR_ACHAT, text, 2);
   		otherLog(playerid, -1, LOG_ADMINCHAT, inputtext);
 	}
@@ -13884,11 +13888,11 @@ CMD:ao(playerid, params[])
 
 	if(sscanf(params, "s[144]", inputtext))
 	{
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} (/a)ooc [mensaje]");
+    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} (/ao)oc [mensaje]");
 	}
 	else
 	{
-		format(text, sizeof(text), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), text);
+		format(text, sizeof(text), "(( [Anuncio] Admin %s: %s ))", GetPlayerNameEx(playerid), inputtext);
   		SendClientLongMessageToAll(COLOR_AOOC, text);
   		format(text, sizeof(text), "[COMANDO /AO] %s", inputtext);
   		otherLog(playerid, -1, LOG_ADMINCHAT, text);
