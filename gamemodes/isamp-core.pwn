@@ -4807,7 +4807,7 @@ stock serverLog(playerid, logType, text[])
 
 stock otherLog(playerid, secondplayer, logType, text[])
 {
-	new File:hFile, filename[32], name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
+	new File:hFile, filename[36], name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
@@ -12429,6 +12429,10 @@ public CasinoBetEnabled(playerid, game)
 
 CMD:tragamonedas(playerid, params[])
 {
+	new logmessage[80];
+	format(logmessage, sizeof(logmessage), "/tragamonedas %s", params);
+	otherLog(playerid, -1, LOG_CASINO, params);
+	
     for(new i = 0; i < MAX_BUSINESS; i++)
 	{
 		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
@@ -12490,6 +12494,7 @@ CMD:tragamonedas(playerid, params[])
                     format(betsWin, sizeof(betsWin), "La misma empieza a girar y muestra lo siguiente: |%d|%d|%d|.", tm1, tm2, tm3);
                     format(string, sizeof(string), "introduce $%d a la maquina tragamonedas y tira la palanca. %s", numberbet, betsWin);
                     PlayerActionMessage(playerid, 15.0, string);
+                    otherLog(playerid, -1, LOG_CASINO, string);
 
                     if(betWin == 0)
 						 PlayerActionMessage(playerid, 15.0, "ha perdido: el casino se queda con el dinero.");
@@ -12517,6 +12522,10 @@ CMD:apostar(playerid, params[])
 
 CMD:apruleta(playerid, params[])
 {
+	new logmessage[80];
+	format(logmessage, sizeof(logmessage), "/apruleta %s", params);
+	otherLog(playerid, -1, LOG_CASINO, params);
+	
 	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
 		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
@@ -12591,6 +12600,7 @@ CMD:apruleta(playerid, params[])
 					    GivePlayerCash(playerid, betWin);
 					    format(string, sizeof(string), "tuvo suerte y ganó $%d! %s", betWin, betsWin);
 					    PlayerActionMessage(playerid, 15.0, string);
+					    otherLog(playerid, -1, LOG_CASINO, string);
 					}
 					isBetingRoulette[playerid] = true;
 					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_ROULETTE);
@@ -12603,6 +12613,10 @@ CMD:apruleta(playerid, params[])
 
 CMD:apfortuna(playerid, params[])
 {
+	new logmessage[80];
+	format(logmessage, sizeof(logmessage), "/apfortuna %s", params);
+	otherLog(playerid, -1, LOG_CASINO, params);
+	
  	for(new i = 0; i < MAX_BUSINESS; i++)
 	{
 		if(PlayerToPoint(100.0, playerid, Business[i][bInsideX], Business[i][bInsideY], Business[i][bInsideZ]))
@@ -12647,6 +12661,7 @@ CMD:apfortuna(playerid, params[])
 					} else
 					    	format(string, sizeof(string), "ha perdido $%d apostándole al %d!", numberbet, number);
        				PlayerActionMessage(playerid, 15.0, string);
+       				otherLog(playerid, -1, LOG_CASINO, string);
 					isBetingFortune[playerid] = true;
 					SetTimerEx("CasinoBetEnabled", 60000, false, "ii", playerid, CASINO_GAME_FORTUNE);
 				}
