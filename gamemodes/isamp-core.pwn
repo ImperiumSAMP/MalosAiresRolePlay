@@ -3326,7 +3326,7 @@ public AntiCheatWeaponCheck(playerid)
 	ammodif = ammo - rightparam;
 	
 	
-	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype == ITEM_FIREWEAPON && rightparam < 2))
+	if(weapon == 0 && (itemtype != ITEM_WEAPON || (itemtype == ITEM_FIREWEAPON && rightparam < 2)))
 	    return 1; // No tiene ningún arma en mano, lo dejamos tranquilo.
 	if(weapon == righthand && itemtype == ITEM_WEAPON && ammo == righthand)
 	    return 1; // Tiene un arma común en mano, pero coinciden las balas.
@@ -3348,14 +3348,14 @@ public AntiCheatWeaponCheck(playerid)
 	    	case ITEM_WEAPON:
 	    	{
 				if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
-				if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+				if(ammodif > 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
 				AdministratorMessage(COLOR_WHITE, string, 2);
 				SetPlayerAmmo(playerid, righthand, rightparam);
 	    	}
 	    	case ITEM_FIREWEAPON:
 	    	{
-				if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
-				if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+				if(ammodif == 2) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
+				if(ammodif >= 2) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif + 1);
 				AdministratorMessage(COLOR_WHITE, string, 2);
 				SetPlayerAmmo(playerid, righthand, rightparam - 1);
 	    	}
