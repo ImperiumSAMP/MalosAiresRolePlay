@@ -150,6 +150,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BM3_Y               -2137.0635
 #define POS_BM3_Z               13.4390
 
+#define SKIN_NUDE_MALE          252
+#define SKIN_NUDE_FEMALE        138
+
 // Dialogs.
 #define DLG_LOGIN 				10000
 //#define DLG_TUT1             	10002
@@ -272,6 +275,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_DEADS			7
 #define LOG_ANTICHEAT       8
 #define LOG_AUTOS           9
+#define LOG_CHATOOC			10
 #define LOG_LOCALOOC        1
 #define LOG_ME              2
 #define LOG_CME             3
@@ -3313,41 +3317,49 @@ public AntiCheatTimer()
 
 public AntiCheatWeaponCheck(playerid)
 {
-	new weapon, ammo, righthand, rightparam, itemtype, ammodif, string[128];
-	weapon = GetPlayerWeapon(playerid);
-	ammo = GetPlayerAmmo(playerid);
-	righthand = GetHandItem(playerid, HAND_RIGHT);
-	rightparam = GetHandParam(playerid, HAND_RIGHT);
-	itemtype = GetItemType(righthand);
-	ammodif = GetPlayerAmmo(playerid) - rightparam;
-		
-		
-	if(weapon == 0 && itemtype != ITEM_WEAPON && itemtype != ITEM_FIREWEAPON)
-		return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores.
-	if(weapon == righthand && ammo == rightparam)
-	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
+	new string[128],
+	weapon = GetPlayerWeapon(playerid),
+	ammo = GetPlayerAmmo(playerid),
+	righthand = GetHandItem(playerid, HAND_RIGHT),
+	rightparam = GetHandParam(playerid, HAND_RIGHT),
+	itemtype = GetItemType(righthand),
+	ammodif = ammo - rightparam;
+	
+	
+	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype == ITEM_FIREWEAPON && rightparam < 2))
+	    return 1; // No tiene ningún arma en mano, lo dejamos tranquilo.
+	if(weapon == righthand && itemtype == ITEM_WEAPON && ammo == righthand)
+	    return 1; // Tiene un arma común en mano, pero coinciden las balas.
+	if(weapon == righthand && itemtype == ITEM_FIREWEAPON && ammodif == -1)
+	    return 1; // Tiene un arma del sistema de cargadores en mano, la diferencia de balas está bien.
 	    
-	if((itemtype == ITEM_WEAPON && ammo != rightparam) && antiCheatImmunity[playerid] == 0) // Tiene un arma común en mano y hay diferencia de balas.
+	    
+	if(antiCheatImmunity[playerid] == 0)
 	{
-		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
-		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
-		AdministratorMessage(COLOR_WHITE, string, 2);
-		SetPlayerAmmo(playerid, righthand, rightparam);
-	}
-	
-	if((itemtype == ITEM_FIREWEAPON && rightparam > 1) && antiCheatImmunity[playerid] == 0) // Tiene un arma del sistema de cargadores "cargada" en mano y hay diferencia de balas.
-	{
-		if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
-		if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
-		AdministratorMessage(COLOR_WHITE, string, 2);
- 		SetPlayerAmmo(playerid, righthand, rightparam);
-	}
-	
-	if(weapon != righthand && antiCheatImmunity[playerid] == 0) // Tiene un arma en mano que no debería tener.
-	{
-		format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-		AdministratorMessage(COLOR_WHITE, string, 2);
-		ResetPlayerWeapons(playerid);
+		if(weapon != righthand)
+		{
+			format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+			AdministratorMessage(COLOR_WHITE, string, 2);
+			ResetPlayerWeapons(playerid);
+		}
+		
+	    switch(itemtype)
+	    {
+	    	case ITEM_WEAPON:
+	    	{
+				if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
+				if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+				AdministratorMessage(COLOR_WHITE, string, 2);
+				SetPlayerAmmo(playerid, righthand, rightparam);
+	    	}
+	    	case ITEM_FIREWEAPON:
+	    	{
+				if(ammodif == 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse 1 bala para su arma.", GetPlayerNameEx(playerid), playerid);
+				if(ammodif != 1) format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse %d balas para su arma.", GetPlayerNameEx(playerid), playerid, ammodif);
+				AdministratorMessage(COLOR_WHITE, string, 2);
+				SetPlayerAmmo(playerid, righthand, rightparam - 1);
+	    	}
+	    }
 	}
 	
 	return 1;
@@ -8334,8 +8346,16 @@ CMD:updatetod(playerid, params[])
 	    
 	switch(updatetod)
 	{
-	    case 0: UpdateTOD = false;
-	    case 1: UpdateTOD = true;
+	    case 0:
+		{
+		    UpdateTOD = false;
+		    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Desactivaste la sincronización automática del WorldTime.");
+		}
+	    case 1:
+		{
+		    UpdateTOD = true;
+		    SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Activaste la sincronización automática del WorldTime.");
+		}
 	}
 	return 1;
 }
@@ -9290,7 +9310,6 @@ CMD:jetx(playerid,params[])
 
 CMD:ayuda(playerid,params[])
 {
-    SendClientMessage(playerid, COLOR_YELLOW, " ");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
@@ -9326,7 +9345,7 @@ CMD:ayuda(playerid,params[])
 			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar /pronostico");
 			
 		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verconectados /verpresos /verantecedentes /departamento");
+			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verpresos /verantecedentes /departamento");
 			if(PlayerInfo[playerid][pRank] <= 2) {
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Juez]:{C8C8C8} /liberar /ppreventiva");
 			} if(PlayerInfo[playerid][pRank] == 1) {
@@ -14307,6 +14326,36 @@ CMD:quitarmascara(playerid, params[])
 	return 1;
 }
 
+CMD:desvestirse(playerid, params[])
+{
+	new freehand = SearchFreeHand(playerid);
+	
+	if((GetPlayerSkin(playerid) == SKIN_NUDE_MALE && PlayerInfo[playerid][pSex] == 1) || (GetPlayerSkin(playerid) == SKIN_NUDE_FEMALE && PlayerInfo[playerid][pSex] == 0))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás desnudo/a!");
+	if(freehand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar tu ropa ya que tienes ambas manos ocupadas.");
+
+	    
+	switch(PlayerInfo[playerid][pSex])
+	{
+	    case 0:
+	    {
+			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
+			SetPlayerSkin(playerid, SKIN_NUDE_FEMALE);
+	        PlayerInfo[playerid][pSkin] = SKIN_NUDE_FEMALE;
+	    }
+	    case 1:
+	    {
+			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
+	        SetPlayerSkin(playerid, SKIN_NUDE_MALE);
+	        PlayerInfo[playerid][pSkin] = SKIN_NUDE_MALE;
+	    }
+	}
+	
+	PlayerLocalMessage(playerid, 15.0, "se desviste y dobla su ropa, que posteriormente sostiene en su mano.");
+	return 1;
+}
+
 CMD:animhablar(playerid, params[])
 {
 	if(!TalkAnimEnabled[playerid])
@@ -14433,26 +14482,16 @@ CMD:verpresos(playerid, params[])
 
 CMD:verconectados(playerid, params[])
 {
-    if(PlayerInfo[playerid][pFaction] != FAC_GOB)
-	    return 1;
-	if(PlayerInfo[playerid][pRank] > 3)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese comando.");
+	new factionid;
+	if(sscanf(params, "i", factionid))
+	    return SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]{C8C8C8} /verconectados [ID de la facción]");
 	
-	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_PMA][fName]);
-    foreach(new i : Player) {
-        if(PlayerInfo[i][pFaction] == FAC_PMA)
-	        SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_PMA, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[factionid][fName]);
+    foreach(new i : Player)
+	{
+        if(PlayerInfo[i][pFaction] == factionid)
+	        SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(factionid, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
         }
-	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_HOSP][fName]);
-    foreach(new i : Player) {
-        if(PlayerInfo[i][pFaction] == FAC_HOSP)
-	        SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_HOSP, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
-	    }
-	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Miembros conectados [%s]:", FactionInfo[FAC_MECH][fName]);
-    foreach(new i : Player) {
-	    if(PlayerInfo[i][pFaction] == FAC_MECH)
-	     	SendFMessage(playerid, COLOR_WHITE, "* (%s) %s", GetRankName(FAC_MECH, PlayerInfo[i][pRank]), GetPlayerNameEx(i));
-		}
 	return 1;
 }
 
