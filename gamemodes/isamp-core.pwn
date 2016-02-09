@@ -271,6 +271,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_VEHICLES		6
 #define LOG_DEADS			7
 #define LOG_ANTICHEAT       8
+#define LOG_AUTOS           9
 #define LOG_LOCALOOC        1
 #define LOG_ME              2
 #define LOG_CME             3
@@ -282,7 +283,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_SMS             9
 #define LOG_FAMILY          10
 #define LOG_ADMINCHAT       11
-#define LOG_ADMIN			12
+#define LOG_ADMIN2			12
+#define LOG_ANTICHEAT2      13
 // ===========================
 
 new
@@ -1582,9 +1584,10 @@ public OnPlayerDeath(playerid, killerid, reason)
 		{
 			format(string, sizeof(string), "[STAFF] %s(ID %d) mató a %s (ID %d).", GetPlayerNameEx(killerid), killerid, GetPlayerNameEx(playerid), playerid);
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
-			format(string, sizeof(string), "
             if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
 			{
+			    format(string, sizeof(string), "enviado a la cárcel por %d minutos", PlayerInfo[playerid][pWantedLevel] * 3 * 60);
+			    serverLog(killerid, playerid, LOG_DEADS, string);
 				SendFMessage(killerid, COLOR_WHITE, "Has reducido a %s y ha sido arrestado por miembros del departamento de policía.", GetPlayerNameEx(playerid));
 				PlayerInfo[playerid][pJailTime] = PlayerInfo[playerid][pWantedLevel] * 3 * 60;
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has sido reducido y arrestado por miembros de la policía perdiendo todas las armas y drogas en el inventario.");
@@ -1601,6 +1604,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 				GiveFactionMoney(FAC_GOB, PlayerInfo[playerid][pJailTime]);
 				SaveFactions();
 			}
+			else
+			    serverLog(killerid, playerid, LOG_DEADS, "");
 	    }
  	}
  	
@@ -1933,7 +1938,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     
     // Log.
     serverLog(playerid, -1, LOG_COMMANDS, cmdtext);
-    if(PlayerInfo[playerid][pAdmin] != 0 && checkCmdPermission(comm, PlayerInfo[playerid][pAdmin] != 0)) otherLog(playerid, -1, LOG_ADMIN, cmdtext);
+    if(PlayerInfo[playerid][pAdmin] != 0 && checkCmdPermission(comm, PlayerInfo[playerid][pAdmin] != 0)) otherLog(playerid, -1, LOG_ADMIN2, cmdtext);
 
 	if(!gPlayerLogged[playerid]) return 0;
 
@@ -3494,6 +3499,7 @@ public globalUpdate()
 				
 		        if(PlayerInfo[playerid][pHealth] > 0 && PlayerInfo[playerid][pHealth] < 25 && GetPVarInt(playerid, "disabled") != DISABLE_DYING && GetPVarInt(playerid, "disabled") != DISABLE_DEATHBED)
 				{
+				    serverLog(playerid, -1, LOG_DEADS, "entró en estado de agonía");
 		         	TogglePlayerControllable(playerid, false);
 		            if(!IsPlayerInAnyVehicle(playerid))
 					{
@@ -4784,7 +4790,7 @@ stock log(playerid, logType, text[])
 	return 1;
 }
 
-stock serverLog(playerid, messageType, logType, text[])
+stock serverLog(playerid, PlayerMessageType, logType, text[])
 {
 	new name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
 
@@ -4811,13 +4817,14 @@ stock serverLog(playerid, messageType, logType, text[])
 	    case 6: format(type, sizeof(type), "[AUTOS]      ");
 	    case 7: format(type, sizeof(type), "[MUERTE]     ");
 	    case 8: format(type, sizeof(type), "[ANTICHEAT]  ");
+	    case 9: format(type, sizeof(type), "[AUTOS]      ");
 	}
 	
-	switch(messageType)
+	switch(PlayerMessageType)
 	{
 	    case -2: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | %s", date[2], date[1], date[0], time[0], time[1], time[2], type, text);
 	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
+	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(PlayerMessageType), PlayerMessageType, text);
 	}
 	printf("%s", string);
 }

@@ -460,6 +460,10 @@ Dialog:Car_Dealer_Step_5(playerid, response, listitem, inputtext[])
 		SaveVehicle(newveh);
 		SetVehicleNumberPlate(newveh, VehicleInfo[newveh][VehPlate]);
 		SetVehicleToRespawn(newveh);
+		
+		Container_Empty(VehicleInfo[newveh][VehContainerID]);
+		Container_SetTotalSpace(VehicleInfo[newveh][VehContainerID], GetVehicleModelTrunkSpace(VehicleInfo[newveh][VehModel]));
+		
 		format(str, sizeof(str), "Mod:%d C1:%d C2:%d", carModelSelection[playerid], carColor1Selection[playerid], carColor2Selection[playerid]);
 		VehicleLog(newveh, playerid, INVALID_PLAYER_ID, "/vehcomprar", str);
 	}
