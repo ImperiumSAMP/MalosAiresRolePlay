@@ -268,6 +268,9 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_PHONE	        3
 #define LOG_CONNECT			4
 #define LOG_DISCONNECT		5
+#define LOG_VEHICLES		6
+#define LOG_DEADS			7
+#define LOG_ANTICHEAT       8
 #define LOG_LOCALOOC        1
 #define LOG_ME              2
 #define LOG_CME             3
@@ -279,6 +282,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_SMS             9
 #define LOG_FAMILY          10
 #define LOG_ADMINCHAT       11
+#define LOG_ADMIN			12
 // ===========================
 
 new
@@ -656,7 +660,7 @@ public OnPlayerConnectEx(playerid)
 
 	// Log.
 	format(logString, sizeof(logString), "se ha conectado al servidor (IP: %s)", GetPlayerIpAddress(playerid));
-	serverLog(playerid, LOG_CONNECT, logString);
+	serverLog(playerid, -1, LOG_CONNECT, logString);
 
 	name = PlayerName(playerid);
 
@@ -1054,7 +1058,7 @@ public OnPlayerDisconnect(playerid, reason)
 	    case 2: format(disconnectreason, sizeof(disconnectreason), "Kick.");
 	}
 	format(logString, sizeof(logString), "se ha desconectado del servidor. (razón: %s)", disconnectreason);
-	serverLog(playerid, LOG_DISCONNECT, logString);
+	serverLog(playerid, -1, LOG_DISCONNECT, logString);
 	
 	if(PhoneHand[playerid] == 1)
 	{
@@ -1578,6 +1582,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		{
 			format(string, sizeof(string), "[STAFF] %s(ID %d) mató a %s (ID %d).", GetPlayerNameEx(killerid), killerid, GetPlayerNameEx(playerid), playerid);
 			AdministratorMessage(COLOR_ADMINCMD, string, 2);
+			format(string, sizeof(string), "
             if(PlayerInfo[playerid][pWantedLevel] > 0 && isPlayerCopOnDuty(killerid))
 			{
 				SendFMessage(killerid, COLOR_WHITE, "Has reducido a %s y ha sido arrestado por miembros del departamento de policía.", GetPlayerNameEx(playerid));
@@ -1628,7 +1633,7 @@ public OnPlayerText(playerid, text[])
     if(!gPlayerLogged[playerid]) return 0;
     
     // Log
-    serverLog(playerid, LOG_LOCAL, text);
+    serverLog(playerid, -1, LOG_LOCAL, text);
 
     if(TalkAnimEnabled[playerid] && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	{
@@ -1927,8 +1932,10 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     comm = strtok(cmdtext, idx);
     
     // Log.
-    serverLog(playerid, LOG_COMMANDS, cmdtext);
-    if(!gPlayerLogged[playerid]) return 0;
+    serverLog(playerid, -1, LOG_COMMANDS, cmdtext);
+    if(PlayerInfo[playerid][pAdmin] != 0 && checkCmdPermission(comm, PlayerInfo[playerid][pAdmin] != 0)) otherLog(playerid, -1, LOG_ADMIN, cmdtext);
+
+	if(!gPlayerLogged[playerid]) return 0;
 
     if(checkCmdPermission(comm,PlayerInfo[playerid][pAdmin])==0)
     {
@@ -2126,7 +2133,7 @@ public OnPlayerDataLoad(playerid)
 		{
 
 			// Log.
-			serverLog(playerid, LOG_CONNECT, "ha iniciado sesión.");
+			serverLog(playerid, -1, LOG_CONNECT, "ha iniciado sesión.");
 			
 			if(PlayerInfo[playerid][pAdmin] > 0)
 			    SendClientMessage(playerid, COLOR_YELLOW2, "{878EE7}[INFO]{C8C8C8} bienvenido, para ver los comandos de administración escribe /acmds.");
@@ -3310,8 +3317,8 @@ public AntiCheatWeaponCheck(playerid)
 	ammodif = GetPlayerAmmo(playerid) - rightparam;
 		
 		
-	if(weapon == 0 && itemtype != ITEM_WEAPON && (itemtype != ITEM_FIREWEAPON && rightparam < 2))
-		return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores "cargada".
+	if(weapon == 0 && itemtype != ITEM_WEAPON && itemtype != ITEM_FIREWEAPON)
+		return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores.
 	if(weapon == righthand && ammo == rightparam)
 	    return 1; // Tiene un arma común en mano o un arma del sistema de cargadores, y en ambos casos coinciden las balas.
 	    
@@ -3647,6 +3654,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
  	if(newstate == PLAYER_STATE_PASSENGER || newstate == PLAYER_STATE_DRIVER)
  	{
 		LastVeh[playerid] = GetPlayerVehicleID(playerid);
+		format(string, sizeof(string), "se subió al vehículo %s ID %d", GetVehicleName(vehicleid), vehicleid);
+		serverLog(playerid, -1, LOG_AUTOS, string);
 		vehicleModelType = GetVehicleType(LastVeh[playerid]);
 	}
 		
@@ -4775,7 +4784,7 @@ stock log(playerid, logType, text[])
 	return 1;
 }
 
-stock serverLog(playerid, logType, text[])
+stock serverLog(playerid, messageType, logType, text[])
 {
 	new name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
 
@@ -4799,9 +4808,17 @@ stock serverLog(playerid, logType, text[])
 	    case 3: format(type, sizeof(type), "[TELÉFONO]   ");
 	    case 4: format(type, sizeof(type), "[CONEXIÓN]   ");
 	    case 5: format(type, sizeof(type), "[DESCONEXIÓN]");
+	    case 6: format(type, sizeof(type), "[AUTOS]      ");
+	    case 7: format(type, sizeof(type), "[MUERTE]     ");
+	    case 8: format(type, sizeof(type), "[ANTICHEAT]  ");
 	}
 	
-	format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	switch(messageType)
+	{
+	    case -2: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | %s", date[2], date[1], date[0], time[0], time[1], time[2], type, text);
+	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
+	}
 	printf("%s", string);
 }
 
@@ -4822,12 +4839,6 @@ stock otherLog(playerid, secondplayer, logType, text[])
 	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
 	*/
 
-
-	switch(secondplayer)
-	{
-	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
-	}
 	
 	
 	switch(logType)
@@ -4887,6 +4898,22 @@ stock otherLog(playerid, secondplayer, logType, text[])
 		    format(type, sizeof(type), "[ADMINCHAT]");
 		    format(filename, sizeof(filename), "isamp-data/Logs/adminchat.log");
 		}
+		case 12:
+		{
+		    format(type, sizeof(type), "[ADMIN]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/admin.log");
+		}
+		case 13:
+		{
+		    format(type, sizeof(type), "[ANTICHEAT]");
+		    format(filename, sizeof(filename), "isamp-data/Logs/anticheat.log");
+		}
+	}
+	
+	switch(secondplayer)
+	{
+	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
 	}
 	
 	hFile = fopen(filename, io_append);
@@ -5628,7 +5655,7 @@ public KickPlayer(playerid, kickedby[MAX_PLAYER_NAME], reason[])
 	    }
 	}
 	format(string, sizeof(string), "ha sido expulsado/a por %s, razón: %s.", GetPlayerNameEx(playerid), kickedby, reason);
-	serverLog(playerid, LOG_DISCONNECT, string);
+	serverLog(playerid, -1, LOG_DISCONNECT, string);
 	otherLog(playerid, -1, LOG_KICK, string);
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
@@ -7166,7 +7193,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 						// Log.
 						if(PlayerPreviousPhone == 0) format(logString, sizeof(logString), "compró un teléfono con el número %d.", PlayerInfo[playerid][pPhoneNumber]);
 						if(PlayerPreviousPhone != 0) format(logString, sizeof(logString), "compró un teléfono con el número %d | Número anterior: %d", PlayerInfo[playerid][pPhoneNumber], PlayerPreviousPhone);
-        				serverLog(playerid, LOG_PHONE, logString);
+        				serverLog(playerid, -1, LOG_PHONE, logString);
 					}
 			        case 4:
 					{
