@@ -522,11 +522,20 @@ CMD:mano(playerid, params[])
 
 				case ITEM_ID_VESTIMENTA:
 				{
-					PlayerActionMessage(playerid, 15.0, "se desviste y dobla rápidamente la ropa. Posteriormente se viste con la ropa que tiene en mano.");
+				    if(PlayerInfo[playerid][pSex] == 0 && GetPlayerSkin(playerid) != 138)
+				        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes ropa puesta, usa /desvestirse para quitártela!");
+					if(PlayerInfo[playerid][pSex] == 1 && GetPlayerSkin(playerid) != 252)
+						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes ropa puesta, usa /desvestirse para quitártela!");
+					PlayerActionMessage(playerid, 15.0, "se viste con la ropa que tiene en mano.");
 					newskin = GetHandParam(playerid, HAND_RIGHT);
-					SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VESTIMENTA, GetPlayerSkin(playerid));
-					PlayerInfo[playerid][pSkin] = newskin;
-					SetPlayerSkin(playerid, newskin);
+					switch(PlayerInfo[playerid][pSex])
+					{
+					    case 0: if(GetPlayerSkin(playerid) != 138) SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VESTIMENTA, GetPlayerSkin(playerid));
+					    case 1: if(GetPlayerSkin(playerid) != 252) SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VESTIMENTA, GetPlayerSkin(playerid));
+					}
+					GameTextForPlayer(playerid, "~w~Vistiendose...", 10000, 4);
+					TogglePlayerControllable(playerid, false);
+					SetTimerEx("GetDressed", 10000, false, "ii", playerid, newskin);
 					return 1;
 				}
 				

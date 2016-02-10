@@ -150,9 +150,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define POS_BM3_Y               -2137.0635
 #define POS_BM3_Z               13.4390
 
-#define SKIN_NUDE_MALE          252
-#define SKIN_NUDE_FEMALE        138
-
 // Dialogs.
 #define DLG_LOGIN 				10000
 //#define DLG_TUT1             	10002
@@ -504,6 +501,7 @@ forward AceptarPipeta(playerid);
 forward SoplandoPipeta(playerid);
 forward RecoverLastShot(playerid);
 forward AntecedentesLog(playerid, targetid, antecedentes[]);
+forward GetDressed(playerid, skin);
 
 //==============================================================================
 
@@ -1942,7 +1940,7 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     
     // Log.
     serverLog(playerid, -1, LOG_COMMANDS, cmdtext);
-    if(PlayerInfo[playerid][pAdmin] != 0 && checkCmdPermission(comm, PlayerInfo[playerid][pAdmin] != 0)) otherLog(playerid, -1, LOG_ADMIN2, cmdtext);
+    if(PlayerInfo[playerid][pAdmin] > 0 && checkCmdPermission(comm, 0) == 0) otherLog(playerid, -1, LOG_ADMIN2, cmdtext);
 
 	if(!gPlayerLogged[playerid]) return 0;
 
@@ -2974,6 +2972,13 @@ public accountTimer()
 			SaveAccount(playerid);
 		}
 	}
+}
+
+public GetDressed(playerid, skin)
+{
+	SetPlayerSkin(playerid, skin);
+	PlayerInfo[playerid][pSkin] = skin;
+	TogglePlayerControllable(playerid, true);
 }
 
 SyncPlayerTimeAndWeather(playerid)
@@ -4938,6 +4943,50 @@ stock otherLog(playerid, secondplayer, logType, text[])
 	hFile = fopen(filename, io_append);
 	fwrite(hFile, string);
 	fclose(hFile);
+}
+
+stock CKLog(adminid, playerid, newname[], newage, newsex)
+{
+	new File:CKFileLog, date[3], time[3], string[256];
+	gettime(time[0], time[1], time[2]);
+	getdate(date[0], date[1], date[2]);
+	
+	CKFileLog = fopen("isamp-data/Logs/CKLog.log", io_append);
+	
+	format(string, sizeof(string), "[%d/%d/&d - %d:%d:%d] ADMIN: %s (IP: %s) (MYSQLID: %d)\r\n", date[2], date[1], date[0], time[0], time[1], time[2], GetPlayerNameEx(adminid), GetPlayerIpAddress(adminid), PlayerInfo[adminid][pID]);
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "JUGADOR: %s | NUEVO NOMBRE: %s (IP: %s) (MYSQLID: %d)\r\n", GetPlayerNameEx(playerid), newname, GetPlayerIpAddress(playerid), PlayerInfo[playerid][pID]);
+    fwrite(CKFileLog, string);
+
+
+	if(playerKeyCount[playerid]>0)
+	{
+	    format(string, sizeof(string), "==== LLAVES DE VEHÍCULOS:\r\n");
+	    fwrite(CKFileLog, string);
+		for(new i=0;i<playerKeyCount[playerid];i++)
+		{
+			format(string, sizeof(string), "[%d] %s\r\n", playerKeys[playerid][i][ckCarSqlId], getVehicleDescription(playerKeys[playerid][i][ckCarSqlId]));
+			fwrite(CKFileLog, string);
+		}
+	}
+	
+	format(string, sizeof(string), "==== INFORMACIÓN GENERAL:\r\n");
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "[STATS] DINERO TOTAL: %d | FACCION: %d| RANGO: %d | TRABAJO: %d | EDAD: %d | SEXO: %d\r\n", PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pCash], PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank], PlayerInfo[playerid][pJob], PlayerInfo[playerid][pAge], PlayerInfo[playerid][pSex]);
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "[PROPIEDADES] CASA: %d | CASA ALQUILADA: %d | NEGOCIO: %d\r\n", PlayerInfo[playerid][pHouseKey], PlayerInfo[playerid][pHouseKeyIncome], PlayerInfo[playerid][pBizKey]);
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "[LICENCIAS] Auto: %d | Vuelo: %d | Armas: %d\r\n", PlayerInfo[playerid][pCarLic], PlayerInfo[playerid][pFlyLic], PlayerInfo[playerid][pWepLic]);
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "[DELINCUENTE] Nivel: %d | Experiencia: %d\r\n", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp]);
+	fwrite(CKFileLog, string);
+	
+	format(string, sizeof(string), "==== POST CK:\r\n");
+	fwrite(CKFileLog, string);
+	format(string, sizeof(string), "[STATS] SEXO: %d | EDAD: %d\r\n\r\n\r\n", newsex, newage);
+	fwrite(CKFileLog, string);
+	
+	fclose(CKFileLog);
 }
 
 stock initiateHospital(playerid)
@@ -14330,7 +14379,7 @@ CMD:desvestirse(playerid, params[])
 {
 	new freehand = SearchFreeHand(playerid);
 	
-	if((GetPlayerSkin(playerid) == SKIN_NUDE_MALE && PlayerInfo[playerid][pSex] == 1) || (GetPlayerSkin(playerid) == SKIN_NUDE_FEMALE && PlayerInfo[playerid][pSex] == 0))
+	if((GetPlayerSkin(playerid) == 252 && PlayerInfo[playerid][pSex] == 1) || (GetPlayerSkin(playerid) == 138 && PlayerInfo[playerid][pSex] == 0))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás desnudo/a!");
 	if(freehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar tu ropa ya que tienes ambas manos ocupadas.");
@@ -14341,14 +14390,16 @@ CMD:desvestirse(playerid, params[])
 	    case 0:
 	    {
 			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
-			SetPlayerSkin(playerid, SKIN_NUDE_FEMALE);
-	        PlayerInfo[playerid][pSkin] = SKIN_NUDE_FEMALE;
+			GameTextForPlayer(playerid, "~w~Desvistiendose...", 10000, 4);
+			TogglePlayerControllable(playerid, false);
+			SetTimerEx("GetDressed", 10000, false, "ii", playerid, 138);
 	    }
 	    case 1:
 	    {
 			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
-	        SetPlayerSkin(playerid, SKIN_NUDE_MALE);
-	        PlayerInfo[playerid][pSkin] = SKIN_NUDE_MALE;
+			GameTextForPlayer(playerid, "~w~Desvistiendose...", 10000, 4);
+			TogglePlayerControllable(playerid, false);
+			SetTimerEx("GetDressed", 10000, false, "ii", playerid, 252);
 	    }
 	}
 	
@@ -14624,6 +14675,7 @@ CMD:ckearplayer(playerid,params[])
 
 	if(GetPVarInt(playerid, "ckeandoplayer") == PlayerInfo[targetid][pID])
 	{
+		CKLog(playerid, targetid, newname, newage, newsex);
 		if(house != 0) // Si tiene casa propia
 		{
 			if(House[house][Income] >= 1)
