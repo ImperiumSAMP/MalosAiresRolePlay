@@ -260,11 +260,24 @@ SynchronizeWeaponAmmo(playerid, ammo)
 {
 	new itemtype = GetItemType(GetHandItem(playerid, HAND_RIGHT));
 	
-	if(itemtype == ITEM_WEAPON)
-		HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
-
-	if(itemtype == ITEM_FIREWEAPON)
-		HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
+	switch(itemtype)
+	{
+	    case ITEM_WEAPON:
+		{
+		    if(ammo <= 0)
+				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+			else
+			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
+		}
+		
+	    case ITEM_FIREWEAPON:
+	    {
+		    if(ammo <= 1)
+				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+			else
+			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
+	    }
+	}
 }
 
 //=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
