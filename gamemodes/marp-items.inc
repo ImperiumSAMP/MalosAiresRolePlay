@@ -15,8 +15,10 @@
 #define ITEM_SPEAKER	        5
 #define ITEM_FIREWEAPON         6
 #define ITEM_WEAPONMAG          7
+#define ITEM_FOOD               8
+#define ITEM_INGREDIENT         9
 
-#define MAX_ITEMS               135
+#define MAX_ITEMS               170
 
 #define ITEM_ID_9MM                     22
 #define ITEM_ID_9MM_SILENCED            23
@@ -111,6 +113,41 @@
 #define ITEM_ID_CAJA_BALAS_MP5			128
 #define ITEM_ID_CAJA_BALAS_M4			129
 #define ITEM_ID_CAJA_BALAS_AK47         130
+#define ITEM_ID_JAMON                   131
+#define ITEM_ID_MANZANA_ROJA            132
+#define ITEM_ID_MANZANA_VERDE           133
+#define ITEM_ID_NARANJA                 134
+#define ITEM_ID_TOMATE                  135
+#define ITEM_ID_BANANA                  136
+#define ITEM_ID_PAN                     137
+#define ITEM_ID_CARNE1		            138
+#define ITEM_ID_CARNE2                  139
+#define ITEM_ID_PIZZA1                  140
+#define ITEM_ID_CAJA_PIZZA	            141
+#define ITEM_ID_PESCADO                 143
+#define ITEM_ID_HELADO                  144
+#define ITEM_ID_CEREALES1               145
+#define ITEM_ID_CEREALES2               146
+#define ITEM_ID_PORCION_PIZZA           147
+#define ITEM_ID_BANDEJA1                148
+#define ITEM_ID_BANDEJA2                149
+#define ITEM_ID_BANDEJA3                150
+#define ITEM_ID_BANDEJA4                151
+#define ITEM_ID_BANDEJA5                152
+#define ITEM_ID_BANDEJA6                153
+#define ITEM_ID_BANDEJA7                154
+#define ITEM_ID_BANDEJA8                155
+#define ITEM_ID_BANDEJA9                156
+#define ITEM_ID_BANDEJA10               157
+#define ITEM_ID_BANDEJA11               158
+#define ITEM_ID_BANDEJA12               159
+#define ITEM_ID_BANDEJA13               160
+#define ITEM_ID_BANDEJA14               161
+#define ITEM_ID_BANDEJA15               162
+#define ITEM_ID_TORTA1                  163
+#define ITEM_ID_TORTA2                  164
+#define ITEM_ID_TORTA3                  165
+#define ITEM_ID_HAMBURGUESA             166
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -285,9 +322,43 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*130*/ {"Caja de municiones AK47", "Municiones", ITEM_OTHER, 20500, false, 19832, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 15},
 /*131*/ {"Llave de casa", "ID", ITEM_OTHER, 750, true, 11746, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1},
 /*132*/ {"Llave de negocio", "ID", ITEM_OTHER, 750, true, 11746, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1},
-/*123*/ {"Llave de edificio", "ID", ITEM_OTHER, 750, true, 11746, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1},
-/*134*/ {"Tarjeta", "Número", ITEM_OTHER, 1, true, 19792, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1}
-
+/*133*/ {"Llave de edificio", "ID", ITEM_OTHER, 750, true, 11746, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1},
+/*134*/ {"Tarjeta", "Número", ITEM_OTHER, 1, true, 19792, 0.308, -0.019, 0.0, 0.0, -103.7, 17.9, 0.279, -0.015, 0.052, 30.5, -96.3, 23.6, 0, 1},
+/*135*/ {"Jamon", "Cantidad", ITEM_INGREDIENT, 5000, false, 19847, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*136*/ {"Manzana roja", "Cantidad", ITEM_INGREDIENT, 5000, false, 19575, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*137*/ {"Manzana verde", "Cantidad", ITEM_INGREDIENT, 5000, false, 19576, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*138*/ {"Naranja", "Cantidad", ITEM_INGREDIENT, 5000, false, 19574, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*139*/ {"Tomate", "Cantidad", ITEM_INGREDIENT, 5000, false, 19577, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*140*/ {"Banana", "Cantidad", ITEM_INGREDIENT, 5000, false, 19578, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*141*/ {"Pan", "Cantidad", ITEM_INGREDIENT, 5000, false, 19579, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*142*/ {"Carne cruda", "Cantidad", ITEM_INGREDIENT, 5000, false, 19582, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*143*/ {"Carne cocida", "Cantidad", ITEM_FOOD, 5000, false, 19882, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*144*/ {"Pizza", "Cantidad", ITEM_FOOD, 5000, false, 19580, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*145*/ {"Caja de pizza", "Cantidad", ITEM_FOOD, 5000, false, 19571, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*146*/ {"Pescado", "Cantidad", ITEM_INGREDIENT, 5000, false, 19630, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*147*/ {"Helado", "Cantidad", ITEM_FOOD, 5000, false, 19568, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*148*/ {"Cereales Crispy Flakes", "Cantidad", ITEM_FOOD, 5000, false, 19561, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*149*/ {"Cereales Cok O Pops", "Cantidad", ITEM_FOOD, 5000, false, 19562, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*150*/ {"Porción de pizza", "Cantidad", ITEM_FOOD, 5000, false, 2702, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*151*/ {"Ensalada César con Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2353, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*152*/ {"Bandeja 2", "Cantidad", ITEM_FOOD, 5000, false, 2216, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*153*/ {"Bandeja 3", "Cantidad", ITEM_FOOD, 5000, false, 2354, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*154*/ {"Bandeja 4", "Cantidad", ITEM_FOOD, 5000, false, 2212, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*155*/ {"Bandeja 5", "Cantidad", ITEM_FOOD, 5000, false, 2213, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*156*/ {"Bandeja 6", "Cantidad", ITEM_FOOD, 5000, false, 2214, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*157*/ {"Bandeja 7", "Cantidad", ITEM_FOOD, 5000, false, 2355, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*158*/ {"Bandeja 8", "Cantidad", ITEM_FOOD, 5000, false, 2218, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*159*/ {"Bandeja 9", "Cantidad", ITEM_FOOD, 5000, false, 2220, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*160*/ {"Bandeja 10", "Cantidad", ITEM_FOOD, 5000, false, 2215, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*161*/ {"Bandeja 11", "Cantidad", ITEM_FOOD, 5000, false, 2217, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*162*/ {"Bandeja 12", "Cantidad", ITEM_FOOD, 5000, false, 2222, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*163*/ {"Bandeja 13", "Cantidad", ITEM_FOOD, 5000, false, 2223, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*164*/ {"Bandeja 14", "Cantidad", ITEM_FOOD, 5000, false, 2221, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*165*/ {"Bandeja 15", "Cantidad", ITEM_FOOD, 5000, false, 2219, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*166*/ {"Torta de crema y frutillas", "Cantidad", ITEM_FOOD, 5000, false, 11739, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*167*/ {"Bizcochuelo", "Cantidad", ITEM_FOOD, 5000, false, 11740, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*168*/ {"Torta de chocolate", "Cantidad", ITEM_FOOD, 5000, false, 11741, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*169*/ {"Hamburguesa", "Cantidad", ITEM_FOOD, 5000, false, 2703, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8}
 };
 
 //==============================FUNCIONES=======================================
@@ -470,3 +541,4 @@ stock DeleteHandItem(playerid, hand)
 	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	return 1;
 }
+
