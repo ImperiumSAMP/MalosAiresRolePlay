@@ -113,41 +113,45 @@
 #define ITEM_ID_CAJA_BALAS_MP5			128
 #define ITEM_ID_CAJA_BALAS_M4			129
 #define ITEM_ID_CAJA_BALAS_AK47         130
-#define ITEM_ID_JAMON                   131
-#define ITEM_ID_MANZANA_ROJA            132
-#define ITEM_ID_MANZANA_VERDE           133
-#define ITEM_ID_NARANJA                 134
-#define ITEM_ID_TOMATE                  135
-#define ITEM_ID_BANANA                  136
-#define ITEM_ID_PAN                     137
-#define ITEM_ID_CARNE1		            138
-#define ITEM_ID_CARNE2                  139
-#define ITEM_ID_PIZZA1                  140
-#define ITEM_ID_CAJA_PIZZA	            141
-#define ITEM_ID_PESCADO                 143
-#define ITEM_ID_HELADO                  144
-#define ITEM_ID_CEREALES1               145
-#define ITEM_ID_CEREALES2               146
-#define ITEM_ID_PORCION_PIZZA           147
-#define ITEM_ID_BANDEJA1                148
-#define ITEM_ID_BANDEJA2                149
-#define ITEM_ID_BANDEJA3                150
-#define ITEM_ID_BANDEJA4                151
-#define ITEM_ID_BANDEJA5                152
-#define ITEM_ID_BANDEJA6                153
-#define ITEM_ID_BANDEJA7                154
-#define ITEM_ID_BANDEJA8                155
-#define ITEM_ID_BANDEJA9                156
-#define ITEM_ID_BANDEJA10               157
-#define ITEM_ID_BANDEJA11               158
-#define ITEM_ID_BANDEJA12               159
-#define ITEM_ID_BANDEJA13               160
-#define ITEM_ID_BANDEJA14               161
-#define ITEM_ID_BANDEJA15               162
-#define ITEM_ID_TORTA1                  163
-#define ITEM_ID_TORTA2                  164
-#define ITEM_ID_TORTA3                  165
-#define ITEM_ID_HAMBURGUESA             166
+#define ITEM_ID_LLAVE_CASA              131
+#define ITEM_ID_LLAVE_NEGOCIO           132
+#define ITEM_ID_LLAVE_EDIFICIO          133
+#define ITEM_ID_TARJETA                 134
+#define ITEM_ID_JAMON                   135
+#define ITEM_ID_MANZANA_ROJA            136
+#define ITEM_ID_MANZANA_VERDE           137
+#define ITEM_ID_NARANJA                 138
+#define ITEM_ID_TOMATE                  139
+#define ITEM_ID_BANANA                  140
+#define ITEM_ID_PAN                     141
+#define ITEM_ID_CARNE1		            142
+#define ITEM_ID_CARNE2                  143
+#define ITEM_ID_PIZZA1                  144
+#define ITEM_ID_CAJA_PIZZA	            145
+#define ITEM_ID_PESCADO                 146
+#define ITEM_ID_HELADO                  147
+#define ITEM_ID_CEREALES1               148
+#define ITEM_ID_CEREALES2               149
+#define ITEM_ID_PORCION_PIZZA           150
+#define ITEM_ID_BANDEJA1                151
+#define ITEM_ID_BANDEJA2                152
+#define ITEM_ID_BANDEJA3                153
+#define ITEM_ID_BANDEJA4                154
+#define ITEM_ID_BANDEJA5                155
+#define ITEM_ID_BANDEJA6                156
+#define ITEM_ID_BANDEJA7                157
+#define ITEM_ID_BANDEJA8                158
+#define ITEM_ID_BANDEJA9                159
+#define ITEM_ID_BANDEJA10               160
+#define ITEM_ID_BANDEJA11               161
+#define ITEM_ID_BANDEJA12               162
+#define ITEM_ID_BANDEJA13               163
+#define ITEM_ID_BANDEJA14               164
+#define ITEM_ID_BANDEJA15               165
+#define ITEM_ID_TORTA1                  166
+#define ITEM_ID_TORTA2                  167
+#define ITEM_ID_TORTA3                  168
+#define ITEM_ID_HAMBURGUESA             169
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -508,7 +512,7 @@ stock LoadHandItem(playerid, hand)
 			{
 				//======================[Inmunidad anticheat]=======================
 				if(antiCheatImmunity[playerid] != 0)
-				KillTimer(antiCheatImmunity[playerid]);
+					KillTimer(antiCheatImmunity[playerid]);
 				antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
 				//==================================================================
 			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
@@ -531,7 +535,7 @@ stock DeleteHandItem(playerid, hand)
 		{
 			//======================[Inmunidad anticheat]=======================
 			if(antiCheatImmunity[playerid] != 0)
-			KillTimer(antiCheatImmunity[playerid]);
+				KillTimer(antiCheatImmunity[playerid]);
 			antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
 			//==================================================================
 			ResetPlayerWeapons(playerid);

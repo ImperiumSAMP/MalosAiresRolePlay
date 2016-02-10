@@ -4985,7 +4985,7 @@ stock CKLog(adminid, playerid, newname[], newage, newsex)
 	
 	CKFileLog = fopen("isamp-data/Logs/CKLog.log", io_append);
 	
-	format(string, sizeof(string), "[%d/%d/&d - %d:%d:%d] ADMIN: %s (IP: %s) (MYSQLID: %d)\r\n", date[2], date[1], date[0], time[0], time[1], time[2], GetPlayerNameEx(adminid), GetPlayerIpAddress(adminid), PlayerInfo[adminid][pID]);
+	format(string, sizeof(string), "[%d/%d/%d - %d:%d:%d] ADMIN: %s (IP: %s) (MYSQLID: %d)\r\n", date[2], date[1], date[0], time[0], time[1], time[2], GetPlayerNameEx(adminid), GetPlayerIpAddress(adminid), PlayerInfo[adminid][pID]);
 	fwrite(CKFileLog, string);
 	format(string, sizeof(string), "JUGADOR: %s | NUEVO NOMBRE: %s (IP: %s) (MYSQLID: %d)\r\n", GetPlayerNameEx(playerid), newname, GetPlayerIpAddress(playerid), PlayerInfo[playerid][pID]);
     fwrite(CKFileLog, string);
@@ -14435,7 +14435,7 @@ CMD:desvestirse(playerid, params[])
 	    }
 	}
 	
-	PlayerLocalMessage(playerid, 15.0, "se desviste y dobla su ropa, que posteriormente sostiene en su mano.");
+	PlayerActionMessage(playerid, 15.0, "se desviste y dobla su ropa, que posteriormente sostiene en su mano.");
 	return 1;
 }
 
