@@ -455,7 +455,6 @@ forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2)
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
-forward AntiCheatImmunityTimer(playerid);
 forward AntiCheatTimer();
 forward AntiCheatWeaponCheck(playerid);
 forward globalUpdate();
@@ -3266,12 +3265,6 @@ stock isWeaponAllowed(weapon)
 	return 1;
 }
 
-public AntiCheatImmunityTimer(playerid)
-{
-	antiCheatImmunity[playerid] = 0;
-	return 1;
-}
-
 public AntiCheatTimer()
 {
 	new string[128], hack;
@@ -3333,7 +3326,7 @@ public AntiCheatWeaponCheck(playerid)
 	    
 	if(weapon == righthand)
 	{
-		if(ammo > rightparam && antiCheatImmunity[playerid] == 0)
+		if(ammo > rightparam)
 		{
 			format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse más balas para su arma.", GetPlayerNameEx(playerid), playerid);
 			AdministratorMessage(COLOR_WHITE, string, 2);
@@ -3341,7 +3334,7 @@ public AntiCheatWeaponCheck(playerid)
 		else if(ammo < rightparam)
 		    SynchronizeWeaponAmmo(playerid, ammo);
 	}
-	else if(weapon != righthand && antiCheatImmunity[playerid] == 0)
+	else if(weapon != righthand)
 	{
 	    format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
 		AdministratorMessage(COLOR_WHITE, string, 2);
