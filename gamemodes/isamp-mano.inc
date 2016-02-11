@@ -272,8 +272,11 @@ SynchronizeWeaponAmmo(playerid, ammo)
 		
 	    case ITEM_FIREWEAPON:
 	    {
-		    if(ammo <= 1)
+		    if(ammo < 2)
+			{
 				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+				SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), 1);
+			}
 			else
 			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
 	    }

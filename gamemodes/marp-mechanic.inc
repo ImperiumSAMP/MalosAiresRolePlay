@@ -293,20 +293,6 @@ public CountMecasDuty()
 
 //================================COMANDOS======================================
 
-CMD:mecayuda(playerid, params[])
-{
-	if(PlayerInfo[playerid][pFaction] == FAC_MECH)
-	{
-	    SendClientMessage(playerid, COLOR_WHITE, "[COMANDOS DE MECÁNICO]: /mecequipo - /mecreparar - /mecremolcar - /mectaller - /mecdestunear - /mectunear - /mectuning - /meccerradura");
-        SendClientMessage(playerid, COLOR_WHITE, "/meccomprar - /mecguardar - /mecdeposito");
-		if(PlayerInfo[playerid][pRank] < 6)
-			SendFMessage(playerid, COLOR_WHITE, "[%s] /mecpuertadepo", GetRankName(FAC_MECH, 5));
-        if(PlayerInfo[playerid][pRank] == 1)
-        	SendClientMessage(playerid, COLOR_WHITE, "[Lider] /mecretirar");
-	}
-	return 1;
-}
-
 CMD:mecequipo(playerid, params[])
 {
 	new option, hand;

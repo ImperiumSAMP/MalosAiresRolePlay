@@ -918,7 +918,7 @@ public ResetStats(playerid)
 	RadioEnabled[playerid] = true;
 	FactionEnabled[playerid] = true;
 	PhoneEnabled[playerid] = true;
-	TalkAnimEnabled[playerid] = false;
+	TalkAnimEnabled[playerid] = true;
 	HudEnabled[playerid] = true;
 	AdminEnabled[playerid] = true;
 	
@@ -8133,7 +8133,7 @@ CMD:descongelar(playerid, params[])
 	if(sscanf(params, "u", targetid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /descongelar [ID/Jugador]");
 	if(!IsPlayerConnected(targetid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador inválida.");
 	    
 	TogglePlayerControllable(targetid, true);
 	SetPVarInt(targetid, "disabled", DISABLE_NONE);
@@ -8151,7 +8151,7 @@ CMD:congelar(playerid, params[])
 	if(sscanf(params, "u", targetid))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /congelar [ID/Jugador]");
 	if(!IsPlayerConnected(targetid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador iválida.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de jugador inválida.");
 
 	TogglePlayerControllable(targetid, false);
 	SetPVarInt(targetid, "disabled", DISABLE_FREEZE);
@@ -9087,7 +9087,7 @@ CMD:faccion(playerid, params[])
 	if(sscanf(params, "s[32]S(-1)[32]I(0)", cmd, param, param2))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} (/fac)cion [comando]");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos: abandonar | conectados");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos: abandonar | conectados | ayuda");
 		if(FactionInfo[factionid][fType] == FAC_TYPE_ILLEGAL)
 		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Comandos extra: materiales");
 		if(PlayerInfo[playerid][pRank] == 1)
@@ -9210,7 +9210,69 @@ CMD:faccion(playerid, params[])
 			SendFactionMessage(PlayerInfo[playerid][pFaction], COLOR_FACTIONCHAT, string);
 		}
 	}
-	return 1;
+	else if(strcmp(cmd, "ayuda", true) == 0)
+	{
+		if(PlayerInfo[playerid][pRank] == 10 && factionid == FAC_PMA)
+			return 1;
+			
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Comandos de %s]", FactionInfo[factionid][fName]);
+
+		switch(factionid)
+		{
+		    case FAC_PMA:
+			{
+				SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /d /megafono /arrestar /esposar /quitaresposas /revisar /cono (/bar)ricada /camaras");
+				SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8}/tazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel (/sir)ena");
+				if(PlayerInfo[playerid][pRank] <= 4)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s] {C8C8C8}/doem", GetRankName(FAC_PMA, 4));
+				if(PlayerInfo[playerid][pRank] <= 3)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s] {C8C8C8}/verregistros /comprarinsumos /guardarinsumos /verinsumos", GetRankName(FAC_PMA, 3));
+			}
+		    case FAC_SIDE:
+		    {
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /sservicio /schaleco /sequipo /sropero /esposar /quitaresposas /revisar /quitar");
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /tazer /arrastrar (/ref)uerzos /vercargos /buscados (/r)adio (/d)epartamento /porton");
+				if(PlayerInfo[playerid][pRank] <= 3)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s] {C8C8C8}/verregistros /comprarinsumos /guardarinsumos /verinsumos", GetRankName(FAC_PMA, 3));
+				if(PlayerInfo[playerid][pRank] == 1)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s]{C8C8C8} /stars", GetRankName(FAC_SIDE, 1));
+		    }
+		    case FAC_HOSP: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
+		    case FAC_MECH:
+		    {
+				SendClientMessage(playerid, COLOR_WHITE, "{C8C8C8}/mecequipo /mecreparar /mecremolcar /mectaller /mecdestunear /mectunear /mectuning /meccerradura /meccomprar /mecguardar /mecdeposito");
+				if(PlayerInfo[playerid][pRank] < 6)
+					SendFMessage(playerid, COLOR_WHITE, "{FFDD00}[%s] {C8C8C8}/mecpuertadepo", GetRankName(FAC_MECH, 5));
+				if(PlayerInfo[playerid][pRank] == 1)
+					SendFMessage(playerid, COLOR_WHITE, "{FFDD00}[%s] {C8C8C8}/mecretirar", GetRankName(FAC_MECH, 1));
+		    }
+		    case FAC_MAN: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /noticia /entrevistar /pronostico");
+			case FAC_GOB:
+			{
+				SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8} /verpresos /verantecedentes /departamento");
+				if(PlayerInfo[playerid][pRank] <= 2)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s]{C8C8C8} /liberar /ppreventiva", GetRankName(FAC_GOB, 2));
+				if(PlayerInfo[playerid][pRank] == 1)
+					SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[%s]{C8C8C8} /gobierno", GetRankName(FAC_GOB, 1));
+			}
+		}
+
+
+		switch(FactionInfo[factionid][fType])
+		{
+		    case FAC_TYPE_GANG: if(PlayerInfo[playerid][pRank] == 1) SendFMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[%s]{C8C8C8} /tomarbarrio", GetRankName(factionid, 1));
+		    case FAC_TYPE_ILLEGAL:
+			{
+				if(PlayerInfo[playerid][pRank] == 1)
+					SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{C8C8C8} /comprarmateriales (en el shop de materiales) /guardarmateriales /ensamblar (dentro del HQ) /ch /it /ru");
+				else
+					SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /comprarmateriales (en el shop de materiales) /descargarmateriales /ch /it /ru");
+
+			}
+		}
+		
+		return 1;
+	}
 }
 
 CMD:g(playerid, params[])
@@ -9351,69 +9413,24 @@ CMD:jetx(playerid,params[])
 
 CMD:ayuda(playerid,params[])
 {
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]:{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]:{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]:{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]:{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]:{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]:{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]{C8C8C8} /reportar /duda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Facción]{C8C8C8} /f /faccion /fdepositar");
 
-    if(PlayerInfo[playerid][pFaction] != 0)
+	switch(PlayerInfo[playerid][pJob])
 	{
-    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Facción]:{C8C8C8} /f /faccion /fdepositar");
-		if(PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[PMA]:{C8C8C8} /ayudap /gobierno /departamento");
-
-		} else if(PlayerInfo[playerid][pFaction] == FAC_SIDE) {
- 	   		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /sservicio /schaleco /sequipo /sropero /esposar /quitaresposas /revisar /quitar");
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[S.I.D.E.]:{C8C8C8} /tazer /arrastrar (/ref)uerzos /vercargos /buscados (/r)adio (/d)epartamento /porton");
-            if(PlayerInfo[playerid][pRank] <= 3)
-        		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/verregistros /comprarinsumos /guardarinsumos /verinsumos");
-			if(PlayerInfo[playerid][pRank] == 1) {
-		    	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /stars");
-			}
-
-		} else if(PlayerInfo[playerid][pFaction] == FAC_HOSP) {
-		    SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[HMA]:{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
-
-		} else if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Taller Mercury]:{C8C8C8} /mecayuda");
-
-		} else if(PlayerInfo[playerid][pFaction] == FAC_MAN) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[CTR-MAN]:{C8C8C8} /noticia /entrevistar /pronostico");
-			
-		} else if(PlayerInfo[playerid][pFaction] == FAC_GOB) {
-			SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[GOBIERNO]:{C8C8C8} /verpresos /verantecedentes /departamento");
-			if(PlayerInfo[playerid][pRank] <= 2) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Juez]:{C8C8C8} /liberar /ppreventiva");
-			} if(PlayerInfo[playerid][pRank] == 1) {
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Líder]:{C8C8C8} /gobierno");
-			}
-
-		} else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG) {
-			if(PlayerInfo[playerid][pRank] == 1) {
-		        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Líder]:{C8C8C8} /tomarbarrio");
-		    }
-
-		} else if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
-		    if(PlayerInfo[playerid][pRank] == 1) {
-		        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Líder]:{C8C8C8} /comprarmateriales (en el shop de materiales) /guardarmateriales /ensamblar (dentro del HQ) /ch /it /ru");
-		    } else {
-		        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Miembro]:{C8C8C8} /comprarmateriales (en el shop de materiales) /descargarmateriales /ch /it /ru");
-		    }
-		}
+	    case JOB_FELON: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Delincuente]{C8C8C8} /delincuenteayuda /dejarempleo");
+	    case JOB_DRUGD: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Narcotraficante]{C8C8C8} /comenzar /comprar /dardroga /dejarempleo");
+	    default: SendClientMessage(playerid, COLOR_LIGHTYELLOW2," {FFDD00}[Empleo]{C8C8C8} /tomarempleo /consultarempleo /dejarempleo /verempleo /trabajar /terminar");
 	}
-
-	if(PlayerInfo[playerid][pJob] == JOB_FELON) {
-        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Delincuente]:{C8C8C8} /delincuenteayuda /dejarempleo");
-	} else if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
-        SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Narcotraficante]:{C8C8C8} /comenzar /comprar /dardroga /dejarempleo");
-	} else {
-		SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{FFDD00}[Empleo]:{C8C8C8} /tomarempleo /consultarempleo /dejarempleo /verempleo /trabajar /terminar");
-	}
+	
 	return 1;
 }
 
