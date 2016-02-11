@@ -3325,80 +3325,28 @@ public AntiCheatWeaponCheck(playerid)
 	weapon = GetPlayerWeapon(playerid),
 	ammo = GetPlayerAmmo(playerid),
 	righthand = GetHandItem(playerid, HAND_RIGHT),
-	rightparam = GetHandParam(playerid, HAND_RIGHT),
-	itemtype = GetItemType(weapon),
-	ammodif = rightparam - ammo;
+	rightparam = GetHandParam(playerid, HAND_RIGHT);
 	
-	if(weapon == 0 && (GetItemType(righthand) != ITEM_WEAPON || (GetItemType(righthand) == ITEM_FIREWEAPON && rightparam < 2)))
-	    return 1; // No tiene un arma común en mano, ni un arma del sistema de cargadores "cargada".
-	if((itemtype == ITEM_WEAPON || itemtype == ITEM_FIREWEAPON) && ammo == 0)
-		return 1;
-	    
-	    
-	switch(itemtype)
-	{
-	    case ITEM_WEAPON:
-	    {
-			if(righthand != weapon && antiCheatImmunity[playerid] == 0)
-			{
-				format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				AdministratorMessage(COLOR_WHITE, string, 2);
-			}
-            ResetPlayerWeapons(playerid);
-			if(GetItemType(righthand) == ITEM_WEAPON)
-			{
-				GivePlayerWeapon(playerid, righthand, rightparam);
-				SetPlayerAmmo(playerid, righthand, rightparam);
-			}
-	    }
-	    
-	    case ITEM_FIREWEAPON:
-	    {
-			if(righthand != weapon && antiCheatImmunity[playerid] == 0)
-			{
-				format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
-				AdministratorMessage(COLOR_WHITE, string, 2);
-			}
-            ResetPlayerWeapons(playerid);
-			if(GetItemType(righthand) == ITEM_FIREWEAPON)
-			{
-				GivePlayerWeapon(playerid, righthand, rightparam - 1);
-				SetPlayerAmmo(playerid, righthand, rightparam - 1);
-			}
-	    }
-	}
-	
-	switch(itemtype)
-	{
-	    case ITEM_WEAPON:
-	    {
-	        if(ammo > righthand && antiCheatImmunity[playerid] == 0)
-	        {
-				format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse más balas para su arma.", GetPlayerNameEx(playerid), playerid);
-				AdministratorMessage(COLOR_WHITE, string, 2);
-				SetPlayerAmmo(playerid, righthand, rightparam);
-	        }
-	        else if(ammo < righthand && antiCheatImmunity[playerid] == 0)
-	            SynchronizeWeaponAmmo(playerid, ammo);
-	    }
+	if(weapon == 0)
+	    return 1;
 
-		case ITEM_FIREWEAPON:
+	    
+	if(weapon == righthand)
+	{
+		if(ammo > rightparam && antiCheatImmunity[playerid] == 0)
 		{
-	        if(ammodif > 1 && antiCheatImmunity[playerid] == 0)
-	        {
-				format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse más balas para su arma.", GetPlayerNameEx(playerid), playerid);
-				AdministratorMessage(COLOR_WHITE, string, 2);
-				SetPlayerAmmo(playerid, righthand, rightparam);
-	        }
-	        else if(ammodif < 1 && antiCheatImmunity[playerid] == 0)
-	            SynchronizeWeaponAmmo(playerid, ammo);
+			format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse más balas para su arma.", GetPlayerNameEx(playerid), playerid);
+			AdministratorMessage(COLOR_WHITE, string, 2);
 		}
+		else if(ammo < rightparam)
+		    SynchronizeWeaponAmmo(playerid, ammo);
 	}
-	
-	if(GetItemType(righthand) == ITEM_WEAPON || (GetItemType(righthand) == ITEM_FIREWEAPON && rightparam > 1))
-		if(weapon != righthand)
-			SetPlayerArmedWeapon(playerid, righthand);
-			
+	else if(weapon != righthand && antiCheatImmunity[playerid] == 0)
+	{
+	    format(string, sizeof(string), "[Advertencia] %s (ID: %d) intentó editarse un/a %s.", GetPlayerNameEx(playerid), playerid, GetItemName(weapon));
+		AdministratorMessage(COLOR_WHITE, string, 2);
+		ResetPlayerWeapons(playerid);
+	}
 	return 1;
 }
 
