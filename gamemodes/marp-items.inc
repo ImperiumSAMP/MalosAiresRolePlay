@@ -502,35 +502,60 @@ stock LoadHandItem(playerid, hand)
 {
 	new itemid = GetHandItem(playerid, hand);
 
-	if(GetItemObjectModel(itemid) != 0)
+	if(GetItemObjectModel(itemid) == 0)
+	    return 1;
+	    
+	    
+	switch(hand)
 	{
-	    if(hand == HAND_RIGHT)
-		{
-			if(GetItemType(itemid) != ITEM_WEAPON || (GetItemType(itemid) == ITEM_FIREWEAPON && GetHandParam(playerid, HAND_RIGHT) < 2))
-				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
-			else
+	    case HAND_RIGHT:
+	    {
+			switch(GetItemType(itemid))
 			{
-			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
-			    SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			    case ITEM_WEAPON:
+			    {
+					GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+					SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			    }
+			    case ITEM_FIREWEAPON:
+				{
+				    if(GetHandParam(playerid, HAND_RIGHT) > 1)
+				    {
+						GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT) - 1);
+						SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT) - 1);
+				    }
+				    else
+						SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
+			    }
+			    default: SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
 			}
-		}
-		else
- 			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemLeftXPos(itemid), GetItemLeftYPos(itemid), GetItemLeftZPos(itemid), GetItemLeftRxPos(itemid), GetItemLeftRyPos(itemid), GetItemLeftRzPos(itemid), 1.0, 1.0, 1.0);
+	    }
+		case HAND_LEFT: SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemLeftXPos(itemid), GetItemLeftYPos(itemid), GetItemLeftZPos(itemid), GetItemLeftRxPos(itemid), GetItemLeftRyPos(itemid), GetItemLeftRzPos(itemid), 1.0, 1.0, 1.0);
 	}
 	return 1;
 }
 
 stock DeleteHandItem(playerid, hand)
 {
-	if(hand == HAND_RIGHT)
+	switch(hand)
 	{
-	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON || (GetItemType(GetHandItem(playerid, hand)) == ITEM_FIREWEAPON && GetHandParam(playerid, hand) < 2))
-			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
-		else
-			ResetPlayerWeapons(playerid);
+	    case HAND_RIGHT:
+	    {
+	        switch(GetItemType(GetHandItem(playerid, hand)))
+	        {
+	            case ITEM_WEAPON: ResetPlayerWeapons(playerid);
+	            case ITEM_FIREWEAPON:
+	            {
+					if(GetHandParam(playerid, HAND_RIGHT) > 1)
+					    ResetPlayerWeapons(playerid);
+					else
+					    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+	            }
+				default: RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+	        }
+	    }
+	    case HAND_LEFT: RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	}
-	else
-	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	return 1;
 }
 
