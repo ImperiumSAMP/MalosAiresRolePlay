@@ -960,8 +960,6 @@ public ResetStats(playerid)
 	Mobile[playerid] = 255;
 	gPlayerLogged[playerid] = 0;
 
-	resetAuxiliarItemsPMA(playerid);
-
 	ResetAfkVariables(playerid);
 
 	playerLicense[playerid][lDStep] = 0;
@@ -1177,9 +1175,6 @@ public OnPlayerDisconnect(playerid, reason)
 	OnPlayerLeaveRobberyGroup(playerid, 1);
 
 	EndPlayerDuty(playerid);
-	
-	deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
-	deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
 
 	deleteAbandonedSprintRace(playerid);
 	OnPlayerLeaveRace(playerid);
@@ -10235,8 +10230,8 @@ CMD:ayudap(playerid, params[])
 		return 1;
 		
 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[Policía Metropolitana]:");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /cono (/bar)ricada /camaras");
- 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel (/sir)ena");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/apuerta /pequipo /propero /pservicio /pchaleco /sosp /r /megafono /arrestar /esposar /quitaresposas /revisar /pponer /pquitar /camaras");
+ 	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"/tazer /quitar /multar /mecremolcar /arrastrar /refuerzos /ultimallamada /vercargos /buscados /localizar /pipeta /apcarcel ");
     if(PlayerInfo[playerid][pRank] <= 3)
         SendFMessage(playerid, COLOR_LIGHTYELLOW2, "[%s] /verregistros /comprarinsumos /guardarinsumos /verinsumos", GetRankName(FAC_PMA, 3));
 	if(PlayerInfo[playerid][pRank] <= 4)
@@ -11454,82 +11449,6 @@ CMD:salircam(playerid, params[])
 	SetPlayerInterior(playerid, 3);
 	return 1;
 }
-CMD:sir(playerid, params[]){
-	cmd_sirena(playerid, params);
-	return 1;
-}
-CMD:sirena(playerid, params[])
-{
-	new EstadoSir[MAX_VEH];
-	new Sir[3][MAX_VEH];
-	new vehicleid = GetPlayerVehicleID(playerid);
-
-	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
-		return 1;
-
-	if(CopDuty[playerid] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
-
-	if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar dentro de un vehículo.");
-
-	if(VehicleInfo[vehicleid][VehFaction] != FAC_PMA)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no pertenece a tu facción.");
-
-	if(EstadoSir[vehicleid] == 0)
-	    {
-     	Sir[0][vehicleid] = CreateObject(19292,0.0,0.0,0.0,0.0,0.0,0.0);//Azul
-      	Sir[1][vehicleid] = CreateObject(19290,0.0,0.0,0.0,0.0,0.0,0.0);//Rojo
-		Sir[2][vehicleid] = CreateObject(18646,0.0,0.0,0.0,0.0,0.0,0.0);//Sirena
-		
- 		if(GetVehicleModel(vehicleid) == 596)//Patrulla LS
-  		{
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0 , 0.0, 0.0);
- 		   	EstadoSir[vehicleid] = 1;
-        }
-        else if(GetVehicleModel(vehicleid) == 597)//Patrulla SF
-	    {
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
- 		   	EstadoSir[vehicleid] = 1;
-        }
-        else if(GetVehicleModel(vehicleid) == 598)//Patrulla LV
-	    {
-   			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
- 		   	AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, -0.3, 1.0, 0.0, 0.0, 0.0);
- 		   	EstadoSir[vehicleid] = 1;
-		}
-		else if(GetVehicleModel(vehicleid) == 523)//Moto
-		{
-		     AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
-			 AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.1, 0.8, 0.4, 0.0, 0.0, 0.0);
-			 EstadoSir[vehicleid] = 1;
-		}
-		else if(GetVehicleModel(vehicleid) == 427)//Camion SWAT
-		{
-		     AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, -0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
-			 AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, 0.5, 1.13, 1.4, 0.0, 0.0, 0.0);
-			 EstadoSir[vehicleid] = 1;
-		}
-		else if(GetVehicleModel(vehicleid) == 599) //Rancher
-		{
-			AttachObjectToVehicle(Sir[0][vehicleid],vehicleid, 0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
-	        AttachObjectToVehicle(Sir[1][vehicleid],vehicleid, -0.5, 0.001, 1.19, 0.0, 0.0, 0.0);
-       		EstadoSir[vehicleid] = 1;
-		}
-		else return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no tiene sirenas.");
-		return 1;
-	}
-	if(EstadoSir[vehicleid] == 1)
-	{
-		DestroyObject(Sir[0][vehicleid]);
-		DestroyObject(Sir[1][vehicleid]);
-		DestroyObject(Sir[2][vehicleid]);
-		EstadoSir[vehicleid] = 0;
-	}
-	return 1;
-}
 
 //=================COMANDOS QUE LISTAN LINEAS / INFORMATIVOS====================
 
@@ -11890,6 +11809,8 @@ CMD:depositar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /depositar [cantidad]");
 	if(GetPlayerCash(playerid) < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+	if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 	    
 	GivePlayerCash(playerid, -amount);
 	PlayerInfo[playerid][pBank] += amount;
@@ -11910,6 +11831,8 @@ CMD:retirar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /retirar [cantidad]");
 	if(PlayerInfo[playerid][pBank] < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	GivePlayerCash(playerid, amount);
 	PlayerInfo[playerid][pBank] -= amount;
@@ -11932,6 +11855,8 @@ CMD:transferir(playerid, params[])
   		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
 	if(!IsPlayerConnected(targetID) || targetID == playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	GetPlayerName(targetID, name, 32);
 	format(string, sizeof(string), "[TRANSFER] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
@@ -11948,6 +11873,8 @@ CMD:verbalance(playerid,params[])
 {
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -11964,6 +11891,8 @@ CMD:donar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} cantidad inválida.");
 	if(GetPlayerCash(playerid) < money)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} no tienes esa cantidad.");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 	    
 	GivePlayerCash(playerid, -money);
 	format(str, sizeof(str), "{878EE7}[INFO]{C8C8C8} %s ha donado $%d.", GetPlayerNameEx(playerid), money);
@@ -11983,6 +11912,8 @@ CMD:fverbalance(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
     if(PlayerInfo[playerid][pRank] != 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -12001,6 +11932,8 @@ CMD:fdepositar(playerid,params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /fdepositar [cantidad]");
  	if(GetPlayerCash(playerid) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
  	    
 	GivePlayerCash(playerid, -amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], amount);
@@ -12026,6 +11959,8 @@ CMD:fretirar(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
+    if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
  	    
 	GivePlayerCash(playerid, amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], -amount);
