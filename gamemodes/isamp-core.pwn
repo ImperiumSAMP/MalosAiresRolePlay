@@ -343,6 +343,7 @@ new
 	ReviseOffer[MAX_PLAYERS],
 	
 	InEnforcer[MAX_PLAYERS],
+	InAmbulance[MAX_PLAYERS],
 
 	//Sistema camaras policia
 	bool:usingCamera[MAX_PLAYERS],
@@ -1083,6 +1084,15 @@ public OnPlayerDisconnect(playerid, reason)
 		InEnforcer[playerid] = 0;
 	}
 	
+	if(InAmbulance[playerid] == 1)
+	{
+		new Float:X, Float:Y, Float:Z;
+		GetVehiclePos(InAmbulance[playerid], X, Y, Z);
+		SetPlayerPos(playerid, X+4, Y, Z);
+		SetPlayerInterior(playerid, 0);
+		InAmbulance[playerid] = 0;
+	}
+	
 	TD_LogotipoHideForPlayer(playerid);
 
 	ResetDescLabel(playerid);
@@ -1627,6 +1637,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	OnPlayerLeaveRobberyGroup(playerid, 2);
 	
 	InEnforcer[playerid] = 0;
+	InAmbulance[playerid] = 0;
 
 	ResetPlayerWeapons(playerid);
 	return 1;
@@ -3688,12 +3699,20 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
  	}
 	
-	if(newstate == PLAYER_STATE_PASSENGER && GetVehicleModel(GetPlayerVehicleID(playerid)) == 427)
+	if(newstate == PLAYER_STATE_PASSENGER && GetVehicleModel(GetPlayerVehicleID(playerid)) == 427) // Enforcer
 	{
      	SetPlayerPos(playerid, 2407.186279, -1526.410522, 985.309814);
      	SetPlayerFacingAngle(playerid, 0);
         SetCameraBehindPlayer(playerid);
 		InEnforcer[playerid] = GetPlayerVehicleID(playerid);
+	}
+
+	if(newstate == PLAYER_STATE_PASSENGER && GetVehicleModel(GetPlayerVehicleID(playerid)) == 416) // Ambulancia
+	{
+     	SetPlayerPos(playerid, 1146.3438, -1255.7153, 1194.9938);
+     	SetPlayerFacingAngle(playerid, 0);
+        SetCameraBehindPlayer(playerid);
+		InAmbulance[playerid] = GetPlayerVehicleID(playerid);
 	}
 	        
 	if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_PASSENGER)
@@ -6485,6 +6504,15 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		SetPlayerInterior(playerid, 0);
 		InEnforcer[playerid] = 0;
 	}
+	
+	if(newkeys == 16 && InAmbulance[playerid])
+	{
+		new Float:X, Float:Y, Float:Z;
+		GetVehiclePos(InAmbulance[playerid], X, Y, Z);
+		SetPlayerPos(playerid, X+4, Y, Z);
+		SetPlayerInterior(playerid, 0);
+		InAmbulance[playerid] = 0;
+	}
 
 	if(PRESSED(KEY_WALK)) {
 		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 2) {
@@ -9273,6 +9301,7 @@ CMD:faccion(playerid, params[])
 		
 		return 1;
 	}
+	return 1;
 }
 
 CMD:g(playerid, params[])
