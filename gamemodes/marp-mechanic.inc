@@ -89,6 +89,7 @@ new CarLiftState[4] = 0,
 #define MEC_OFFER_CERRADURA     	2
 #define MEC_OFFER_TUNING        	3
 #define MEC_OFFER_DESTUNING     	4
+#define MEC_OFFER_GNC               5
 
 //==============================DATA STORAGE====================================
 
@@ -97,7 +98,11 @@ new RepairClient[MAX_PLAYERS],
 	RepairProducts[MAX_PLAYERS],
 	RepairPrice[MAX_PLAYERS],
 	RepairType[MAX_PLAYERS],
-	RepairOfferTimer[MAX_PLAYERS];
+	RepairOfferTimer[MAX_PLAYERS],
+	// GNC Variables
+	GNCOffer[MAX_PLAYERS],
+	GNCClient[MAX_PLAYERS],
+	GNCTimer[MAX_PLAYERS];
 
 new TMTuneTimers[5];
 
@@ -105,12 +110,13 @@ new TMTuneTimers[5];
 
 forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
-
+forward EndGNCOffer(playerid);
+forward ResetGNCOffer(playerid);
 forward Cerrajeria(playerid);
 forward AutoReparacion(playerid, paynsprayid);
 forward Reparacion(playerid);
 forward Destuning(playerid);
-
+forward GncInstall(playerid);
 forward GetRepairMaterialCost(vehicleid);
 
 forward CloseTuneGate(gate);
@@ -151,6 +157,21 @@ public EndRepairOffer(playerid)
 	RepairClient[RepairOffer[playerid]] = 999;
     ResetRepairOffer(playerid);
     return 1;
+}
+
+public EndGNCOffer(playerid)
+{
+	GNCClient[GNCOffer[playerid]] = 999;
+	ResetGNCOffer(playerid);
+	return 1;
+}
+
+
+public ResetGNCOffer(playerid)
+{
+	GNCClient[playerid] = 999;
+	GNCOffer[playerid] = 999;
+	return 1;
 }
 
 stock GetRepairMaterialCost(vehicleid)
@@ -269,6 +290,21 @@ public Destuning(playerid)
 	SendFMessage(RepairOffer[playerid], COLOR_WHITE, "Has removido las partes tuning del vehículo de %s.", GetPlayerNameEx(playerid));
 	TogglePlayerControllable(playerid, true);
 	EndRepairOffer(playerid);
+	return 1;
+}
+
+public GncInstall(playerid)
+{
+	new vehicleid = GetPlayerVehicleID(playerid);
+	new mecanico = GNCOffer[playerid];
+
+	VehicleInfo[vehicleid][VehGNCTank] = 1;
+	VehicleInfo[vehicleid][VehGNC] = 0;
+	SaveVehicle(vehicleid);
+	SendFMessage(playerid, -1, "El tanque de GNC fue instalado en tu vehículo por %s.", GetPlayerNameEx(GNCOffer[playerid]));
+	SendFMessage(mecanico, -1, "Instalaste el tanque de GNC en el vehículo de %s", GetPlayerNameEx(playerid));
+	TogglePlayerControllable(playerid, true);
+	EndGNCOffer(playerid);
 	return 1;
 }
 
@@ -632,6 +668,25 @@ CMD:mecaceptar(playerid, params[])
   			RepairClient[RepairOffer[playerid]] = playerid;
 			SendClientMessage(playerid, COLOR_WHITE, "Has aceptado la propuesta de tuneo.");
 			SendClientMessage(RepairOffer[playerid], COLOR_WHITE, "Han aceptado tu propuesta, usa /mectuning estando como conductor del vehículo a tunear.");
+		}
+		case MEC_OFFER_GNC:
+		{
+			if(GNCOffer[playerid] == 999)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ningún mecánico te ofreció instalar un tanque de GNC en tu vehículo.");
+			if(!IsPlayerConnected(GNCOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "El soplapollas no está conectado.");
+			if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el area de reparaciones de mercury XD");
+			if(!ProxDetectorS(5.0, playerid, GNCOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Estas muy lejos del sujeto");
+			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de conductor");
+
+			GameTextForPlayer(playerid, "El mecanico esta instalando el tanque en tu vehiculo", 4000, 1);
+			GameTextForPlayer(GNCOffer[playerid], "Instalando tanque de GNC", 400, 1);
+           	KillTimer(GNCTimer[playerid]);
+			TogglePlayerControllable(playerid, false);
+			SetTimerEx("GncInstall", 5000, false, "d", playerid);
 		}
 	}
 	return 1;
@@ -1673,5 +1728,33 @@ CMD:mecpuertadepo(playerid, params[])
 			CarDepotDoorState[0] = 0;
 		}
 	}
+	return 1;
+}
+
+CMD:mecgnc(playerid, params[])
+{
+	new targetid,
+	    vehicleid = GetPlayerVehicleID(playerid);
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mecgnc [ID del jugador]");
+	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o no conectado.");
+	if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
+	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
+	if(GNCClient[playerid] < 999)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
+	if(targetid == playerid)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalartelo a vos mismo.");
+	if(GetVehicleType(vehicleid) != VTYPE_CAR)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo es posible instalar un tanque de GNC en autos.");
+
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar un tanque de GNC en su vehículo y tiene 15 segundos para responder.", GetUserName(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/aceptar).", GetUserName(playerid));
+	GNCOffer[targetid] = playerid;
+	GNCClient[playerid] = targetid;
+	GNCTimer[targetid] = SetTimerEx("EndGNCOffer", 15000, false, "d", targetid);
 	return 1;
 }
