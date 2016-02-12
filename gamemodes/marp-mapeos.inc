@@ -4794,7 +4794,14 @@ stock LoadMap() {
 	SetDynamicObjectMaterial(	Textura, 0, 2545, "cj_ss_3", "CJ_SHELF_WHITE", -1);
 	Textura = 	CreateDynamicObject(19893, 1113.58191, -1525.92078, 15.65880,   0.00000, 0.00000, -112.24000);
 	SetDynamicObjectMaterial(	Textura, 1, 19172, "samppictures", "SAMPPicture1", -1);
-
+	Textura =	CreateDynamicObject(19366, 1110.93506, -1535.26904, 16.67150,   0.00000, 90.00000, 68.60000);
+	SetDynamicObjectMaterial(	Textura, 0, 2545, "cj_ss_3", "CJ_SHELF_WHITE", -1);
+	Textura =	CreateDynamicObject(19366, 1117.61804, -1531.78198, 15.89150,   0.00000, 0.00000, 159.12399);
+	SetDynamicObjectMaterial(	Textura, 0, 2545, "cj_ss_3", "CJ_SHELF_WHITE", -1);
+	Textura =	CreateDynamicObject(19366, 1118.15808, -1531.98706, 15.57150,   0.00000, 90.00000, 159.12399);
+	SetDynamicObjectMaterial(	Textura, 0, 2545, "cj_ss_3", "CJ_SHELF_WHITE", -1);
+	Textura =	CreateDynamicObject(19366, 1118.15808, -1531.98706, 16.67150,   0.00000, 90.00000, 159.12399);
+	SetDynamicObjectMaterial(	Textura, 0, 2545, "cj_ss_3", "CJ_SHELF_WHITE", -1);
 
 	CreateDynamicObject(2368, 1118.23975, -1525.40735, 14.77370,   0.00000, 0.00000, -109.31200);
 	CreateDynamicObject(1514, 1118.19666, -1525.32544, 16.05470,   0.00000, 0.00000, -109.31200);
@@ -4860,9 +4867,6 @@ stock LoadMap() {
 	CreateDynamicObject(1785, 1114.69250, -1525.85498, 14.91990,   0.00000, 0.00000, 67.58800);
 	CreateDynamicObject(1783, 1114.69250, -1525.85498, 15.09990,   0.00000, 0.00000, 67.58800);
 	CreateDynamicObject(1782, 1114.69250, -1525.85498, 15.25990,   0.00000, 0.00000, 67.58800);
-	CreateDynamicObject(19366, 1110.93506, -1535.26904, 16.67150,   0.00000, 90.00000, 68.60000);
-	CreateDynamicObject(19366, 1117.61804, -1531.78198, 15.89150,   0.00000, 0.00000, 159.12399);
-	CreateDynamicObject(19366, 1118.15808, -1531.98706, 15.57150,   0.00000, 90.00000, 159.12399);
 	CreateDynamicObject(1782, 1117.25916, -1530.48694, 15.73990,   0.00000, 0.00000, -111.99600);
 	CreateDynamicObject(1788, 1116.99585, -1531.23608, 15.71980,   0.00000, 0.00000, -111.99600);
 	CreateDynamicObject(1790, 1116.71570, -1531.97607, 15.71980,   0.00000, 0.00000, -111.99600);

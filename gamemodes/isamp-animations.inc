@@ -783,5 +783,19 @@ CMD:arrastrarse(playerid, params[])
 	return 1;
 }
 
+CMD:cansado(playerid, params[])
+{
+    if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	new anim;
+	if(sscanf(params, "d", anim))
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cansado [1-2]");
+	switch(anim)
+	{
+		case 1: ApplyAnimation(playerid, "PED", "IDLE_tired",  4.0, 0, 0, 0, 1, 0, 1); // /cansado1
+		case 2: ApplyAnimation(playerid, "FAT", "IDLE_tired",  4.0, 0, 0, 0, 1, 0, 1); // /cansado2
+	}
+	return 1;
+}
 //-----------------------------FIN ANIMACIONES----------------------------------
 //-----------------------------FIN ANIMACIONES----------------------------------
