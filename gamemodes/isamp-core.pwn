@@ -108,7 +108,8 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 #define HP_GAIN           		2         	                                	// Vida que ganas por segundo al estar hospitalizado.
 #define HP_LOSS           		0.1	                                           	// Vida que perdés por segundo al agonizar.
-#define GAS_UPDATE_TIME         15000                                           // Tiempo de actualizacion de la gasolina.
+#define GAS_UPDATE_TIME         15000                                           // Tiempo de actualización de la gasolina.
+#define GNC_UPDATE_TIME         5000                                            // Tiempo de actualización del GNC
 #define MAX_TEXTDRAWS           10
 #define MAX_SPAWN_ATTEMPTS 		4 												// Cantidad de intentos de spawn.
 #define MAX_LOGIN_ATTEMPTS      5
@@ -501,6 +502,7 @@ forward SoplandoPipeta(playerid);
 forward RecoverLastShot(playerid);
 forward AntecedentesLog(playerid, targetid, antecedentes[]);
 forward GetDressed(playerid, skin);
+forward PlayerVW(playerid);
 
 //==============================================================================
 
@@ -2973,6 +2975,12 @@ public accountTimer()
 	}
 }
 
+public PlayerVW(playerid)
+{
+    SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirtualWorld]);
+	return 1;
+}
+
 public GetDressed(playerid, skin)
 {
 	SetPlayerSkin(playerid, skin);
@@ -4588,10 +4596,10 @@ public SetPlayerSpawn(playerid)
 	    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
      	SetPlayerInterior(playerid, PlayerInfo[playerid][pInterior]);
-     	SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirtualWorld]);
+     	SetPlayerVirtualWorld(playerid, 1000);
+     	SetTimerEx("PlayerVW", 3000, false, "d", playerid);
      	SetCameraBehindPlayer(playerid);
 	}
-    
 	return 1;
 }
 
