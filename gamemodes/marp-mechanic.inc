@@ -688,9 +688,9 @@ CMD:mecaceptar(playerid, params[])
 			if(GNCOffer[playerid] == 999)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ningún mecánico te ofreció instalar un tanque de GNC en tu vehículo.");
 			if(!IsPlayerConnected(GNCOffer[playerid]))
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "El soplapollas no está conectado.");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está conectado.");
 			if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el area de reparaciones de mercury XD");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el area de reparaciones del taller Mercury.");
 			if(!ProxDetectorS(5.0, playerid, GNCOffer[playerid]))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Estas muy lejos del sujeto");
 			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
