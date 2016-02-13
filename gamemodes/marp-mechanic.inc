@@ -1751,8 +1751,8 @@ CMD:mecgnc(playerid, params[])
 	if(GetVehicleType(vehicleid) != VTYPE_CAR)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo es posible instalar un tanque de GNC en autos.");
 
-	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar un tanque de GNC en su vehículo y tiene 15 segundos para responder.", GetUserName(targetid));
-	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/aceptar).", GetUserName(playerid));
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar un tanque de GNC en su vehículo y tiene 15 segundos para responder.", GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/aceptar).", GetPlayerNameEx(playerid));
 	GNCOffer[targetid] = playerid;
 	GNCClient[playerid] = targetid;
 	GNCTimer[targetid] = SetTimerEx("EndGNCOffer", 15000, false, "d", targetid);

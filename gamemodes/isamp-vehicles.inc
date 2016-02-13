@@ -709,7 +709,7 @@ SaveVehicle(id)
  	}
  	VehicleInfo[id][VehEngine] = 0;
 
-	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehPaintjob=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d, VehGNC=%d, VehGNCTank=%d, VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
+	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehPaintjob=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d, VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
 		VehicleInfo[id][VehModel],
 	    VehicleInfo[id][VehPosX],
 	    VehicleInfo[id][VehPosY],
@@ -732,8 +732,8 @@ SaveVehicle(id)
 	    VehicleInfo[id][VehBoot],
 	    VehicleInfo[id][VehLights],
 	    VehicleInfo[id][VehFuel],
-	    VehicleInfo[id][VehGNC],
-	    VehicleInfo[id][VehGNCTank],
+	    // VehicleInfo[id][VehGNC],
+	    // VehicleInfo[id][VehGNCTank],
 		VehicleInfo[id][VehHP],
 		VehicleInfo[id][VehPlate],
 		VehicleInfo[id][VehOwnerName]
