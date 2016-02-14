@@ -5908,6 +5908,20 @@ stock IsAtATM(playerid) {
 	return 0;
 }
 
+stock IsAtDrump(playerid) {
+	if(PlayerToPoint(1.0, playerid, 1577.66113, -1690.72131, 5.93850)
+		|| PlayerToPoint(1.0, playerid, 1847.00354, -1860.56836, 13.37480)
+		|| PlayerToPoint(1.0, playerid, 2432.36841, -1741.47815, 13.38110)
+		|| PlayerToPoint(1.0, playerid, 1952.24744, -2063.52222, 13.35960)
+		|| PlayerToPoint(1.0, playerid, 2725.22363, -2018.65710, 13.3406)
+		|| PlayerToPoint(1.0, playerid, 2380.97070, -1215.53406, 27.21220)
+		|| PlayerToPoint(1.0, playerid, 1304.94397, -898.85468, 39.35660)
+		|| PlayerToPoint(1.0, playerid, 610.24652, -1489.33154, 14.58360))  {
+		 return 1;
+  	}
+  	return 0;
+}
+
 IsAtGasStation(playerid)
 {
     if(IsPlayerConnected(playerid))
@@ -14085,6 +14099,32 @@ CMD:llenarbotella(playerid,params[])
 	}
 	return 1;
 }
+
+CMD:desechar(playerid, params[])
+{
+	new str[128];
+
+	if(!IsAtDrump(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un contenedor de basura.");
+	if(GetPlayerState(playerid) != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de pie.");
+    if(PlayerCuffed[playerid] == 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacer esto estando esposado.");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+
+    new itemid = GetHandItem(playerid, HAND_RIGHT);
+    
+    if(itemid == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún objeto que tirar.");
+
+	format(str, sizeof(str), "utilizando su mano izquierda abre el contenedor y tira un/a %s dentro de este.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+	
+	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico de la mano.
+	return 1;
+}
+	
 //===================================SIDE=======================================
 
 CMD:sservicio(playerid, params[])
@@ -14247,7 +14287,7 @@ CMD:aprender(playerid,params[])
  	   	        PlayerInfo[playerid][pFightStyle] = 15; // FIGHT_STYLE_GRABKICK
  	   	        GivePlayerCash(playerid, -PRICE_FIGHTSTYLE);
     	    	SendClientMessage(playerid, 0xFFFFFFAA, "Tu nuevo estilo de pelea es patadas.");
-			} else if(strcmp(text, "codazos", true) == 0) {
+            } else if(strcmp(text, "codazos", true) == 0) {
 				SetPlayerFightingStyle(playerid, 16); // FIGHT_STYLE_ELBOW
     	        PlayerInfo[playerid][pFightStyle] = 16; // FIGHT_STYLE_ELBOW
     	        GivePlayerCash(playerid, -PRICE_FIGHTSTYLE);
