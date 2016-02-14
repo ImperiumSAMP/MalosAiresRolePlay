@@ -44,7 +44,7 @@ CMD:pponer(playerid, params[])
                 	GetPlayerFacingAngle(playerid, fAngle);
 
                 	if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						CreateDynamicObject(1238, x-0.5, y, z-0.7, 0.0, 0.0, 0.0);
+						pmaitems[i] = CreateDynamicObject(1238, x-0.5, y, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
@@ -84,14 +84,14 @@ CMD:pponer(playerid, params[])
                		GetPlayerFacingAngle(playerid, fAngle);
 
                		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1459, x, y-0.5, z-0.7, 0.0, 0.0, 90);
+						pmaitems[i] = CreateDynamicObject(1459, x-0.5, y, z-0.7, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1459, x-0.5, y, z-0.7, 0.0, 0.0, 180);
+						pmaitems[i] = CreateDynamicObject(1459, x, y-0.5, z-0.7, 0.0, 0.0, 180);
 						Streamer_Update(playerid);
     					PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
@@ -131,7 +131,7 @@ CMD:pponer(playerid, params[])
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.5, 0.0, 0.0, 90);
+						pmaitems[i] = CreateDynamicObject(1282, x, y-0.8, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
     					PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
