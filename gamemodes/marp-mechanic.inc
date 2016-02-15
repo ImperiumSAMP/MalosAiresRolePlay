@@ -100,8 +100,8 @@ new RepairClient[MAX_PLAYERS],
 	RepairType[MAX_PLAYERS],
 	RepairOfferTimer[MAX_PLAYERS],
 	// GNC Variables
-	GNCOffer[MAX_PLAYERS],
-	GNCClient[MAX_PLAYERS],
+	GNCOffer[MAX_PLAYERS] = 999,
+	GNCClient[MAX_PLAYERS] = 999,
 	GNCTimer[MAX_PLAYERS];
 
 new TMTuneTimers[5];
@@ -1755,6 +1755,6 @@ CMD:mecgnc(playerid, params[])
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/aceptar).", GetPlayerNameEx(playerid));
 	GNCOffer[targetid] = playerid;
 	GNCClient[playerid] = targetid;
-	GNCTimer[targetid] = SetTimerEx("EndGNCOffer", 15000, false, "d", targetid);
+	GNCTimer[targetid] = SetTimerEx("EndGNCOffer", 10000, false, "d", targetid);
 	return 1;
 }

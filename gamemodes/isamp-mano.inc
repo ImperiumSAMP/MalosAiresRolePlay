@@ -258,8 +258,9 @@ stock ReplenishClip(playerid)
 
 SynchronizeWeaponAmmo(playerid, ammo)
 {
-	new itemtype = GetItemType(GetHandItem(playerid, HAND_RIGHT));
-	
+	new rightitem = GetHandItem(playerid, HAND_RIGHT),
+	    itemtype = GetItemType(rightitem);
+
 	switch(itemtype)
 	{
 	    case ITEM_WEAPON:
@@ -275,7 +276,7 @@ SynchronizeWeaponAmmo(playerid, ammo)
 		    if(ammo < 2)
 			{
 				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-				SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), 1);
+				SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 1);
 			}
 			else
 			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
@@ -414,7 +415,7 @@ CMD:mano(playerid, params[])
 		} else if(strcmp(command, "separar", true) == 0) {
 			if(GetItemType(rightitem) != ITEM_FIREWEAPON)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas.");
-			if(SearchFreeHand(playerid) != -1)
+			if(SearchFreeHand(playerid) == -1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Para descargar el arma necesitas la mano izquierda libre.");
 			if(rightparam == 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma está actualmente descargada.");
@@ -428,7 +429,7 @@ CMD:mano(playerid, params[])
 				case ITEM_ID_TEC9: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_UZI, rightparam - 1);
 				case ITEM_ID_MP5: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_MP5, rightparam - 1);
 				case ITEM_ID_M4: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_M4, rightparam - 1);
-				case ITEM_ID_AK47: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_M4, rightparam - 1);
+				case ITEM_ID_AK47: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_AK47, rightparam - 1);
 			}
 			SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 0);
 			PlayerActionMessage(playerid, 15.0, "descalza el cargador del arma y lo sostiene con la mano izquierda.");
@@ -544,14 +545,10 @@ CMD:mano(playerid, params[])
 						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes ropa puesta, usa /desvestirse para quitártela!");
 					PlayerActionMessage(playerid, 15.0, "se viste con la ropa que tiene en mano.");
 					newskin = GetHandParam(playerid, HAND_RIGHT);
-					switch(PlayerInfo[playerid][pSex])
-					{
-					    case 0: if(GetPlayerSkin(playerid) != 138) SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VESTIMENTA, GetPlayerSkin(playerid));
-					    case 1: if(GetPlayerSkin(playerid) != 252) SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VESTIMENTA, GetPlayerSkin(playerid));
-					}
-					GameTextForPlayer(playerid, "~w~Vistiendose...", 10000, 4);
-					TogglePlayerControllable(playerid, false);
-					SetTimerEx("GetDressed", 10000, false, "ii", playerid, newskin);
+					GameTextForPlayer(playerid, "~w~Vistiendose...", 3000, 4);
+					ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 1, 0, 0, 0, 0);
+					SetTimerEx("GetDressed", 4000, false, "ii", playerid, newskin);
+					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 					return 1;
 				}
 				

@@ -2989,9 +2989,10 @@ public PlayerVW(playerid)
 
 public GetDressed(playerid, skin)
 {
-	SetPlayerSkin(playerid, skin);
+	if(skin != 252 || skin != 138) SetPlayerSkin(playerid, skin);
 	PlayerInfo[playerid][pSkin] = skin;
 	TogglePlayerControllable(playerid, true);
+	ClearAnimations(playerid);
 }
 
 SyncPlayerTimeAndWeather(playerid)
@@ -3287,11 +3288,17 @@ public AntiCheatTimer()
 	{
 		if(gPlayerLogged[playerid] != 1) continue;
 		if(antiCheatDisabled[playerid]) continue;
-		
-		
+
 		// Anti WeaponCheat y sincronización de la munición.
 		AntiCheatWeaponCheck(playerid);
 		
+		
+		// Anti scrolleo de arma en mano.
+		if(GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_WEAPON || (GetItemType(GetHandItem(playerid, HAND_RIGHT)) == ITEM_FIREWEAPON && GetHandParam(playerid, HAND_RIGHT) > 1))
+			if(GetPlayerWeapon(playerid) != GetHandItem(playerid, HAND_RIGHT))
+				SetPlayerArmedWeapon(playerid, GetHandItem(playerid, HAND_RIGHT));
+				
+				
 		// Sincronización de la vida.
 		if(GetPVarInt(playerid, "died") != 1)
 			SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
@@ -4607,11 +4614,11 @@ public SetPlayerSpawn(playerid)
 	}
 	else
 	{
+     	SetPlayerVirtualWorld(playerid, 1000);
+     	SetTimerEx("PlayerVW", 6000, false, "d", playerid);
 	    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
      	SetPlayerInterior(playerid, PlayerInfo[playerid][pInterior]);
-     	SetPlayerVirtualWorld(playerid, 1000);
-     	SetTimerEx("PlayerVW", 3000, false, "d", playerid);
      	SetCameraBehindPlayer(playerid);
 	}
 	return 1;
@@ -14371,16 +14378,18 @@ CMD:desvestirse(playerid, params[])
 	    case 0:
 	    {
 			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
-			GameTextForPlayer(playerid, "~w~Desvistiendose...", 10000, 4);
-			TogglePlayerControllable(playerid, false);
-			SetTimerEx("GetDressed", 10000, false, "ii", playerid, 138);
+			SetPlayerSkin(playerid, 138);
+			GameTextForPlayer(playerid, "~w~Desvistiendose...", 4000, 4);
+			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 1, 0, 0, 0, 0);
+			SetTimerEx("GetDressed", 4000, false, "ii", playerid, 138);
 	    }
 	    case 1:
 	    {
 			SetHandItemAndParam(playerid, freehand, ITEM_ID_VESTIMENTA, PlayerInfo[playerid][pSkin]);
-			GameTextForPlayer(playerid, "~w~Desvistiendose...", 10000, 4);
-			TogglePlayerControllable(playerid, false);
-			SetTimerEx("GetDressed", 10000, false, "ii", playerid, 252);
+			SetPlayerSkin(playerid, 252);
+			GameTextForPlayer(playerid, "~w~Desvistiendose...", 4000, 4);
+			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 1, 0, 0, 0, 0);
+			SetTimerEx("GetDressed", 4000, false, "ii", playerid, 252);
 	    }
 	}
 	
