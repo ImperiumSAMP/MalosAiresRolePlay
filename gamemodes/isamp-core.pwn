@@ -5916,6 +5916,7 @@ stock IsAtDrump(playerid) {
 		|| PlayerToPoint(1.0, playerid, 2725.22363, -2018.65710, 13.3406)
 		|| PlayerToPoint(1.0, playerid, 2380.97070, -1215.53406, 27.21220)
 		|| PlayerToPoint(1.0, playerid, 1304.94397, -898.85468, 39.35660)
+        || PlayerToPoint(1.0, playerid, 1337.5345, -1756.6494, 13.2783)
 		|| PlayerToPoint(1.0, playerid, 610.24652, -1489.33154, 14.58360))  {
 		 return 1;
   	}
