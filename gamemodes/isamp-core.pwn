@@ -567,7 +567,7 @@ public OnGameModeInit()
 	timersID[3] = SetTimer("commandPermissionsUpdate", 60000, true);			// 60 seg.  - Refresca los permisos de los comandos
 	timersID[5] = SetTimer("JailTimer", 1000, true);                            // 1 seg.   - Actualiza el jail de los jugadores.
 	timersID[6] = SetTimer("vehicleTimer", 1000, true);                    		// 1 seg.	- Actualiza motores dañados y evita explosiones.
-	timersID[8] = SetTimer("AntiCheatTimer", 500, true);
+	timersID[8] = SetTimer("AntiCheatTimer", 250, true);
 	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, true);               // Respawn de vehículos de renta.
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
@@ -9468,7 +9468,7 @@ CMD:jetx(playerid,params[])
 CMD:ayuda(playerid,params[])
 {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda /desechar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");

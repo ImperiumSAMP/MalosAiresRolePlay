@@ -258,8 +258,9 @@ stock ReplenishClip(playerid)
 
 SynchronizeWeaponAmmo(playerid, ammo)
 {
-	new rightitem = GetHandItem(playerid, HAND_RIGHT),
+	new rightitem = GetHandItem(playerid, HAND_RIGHT),	
 	    itemtype = GetItemType(rightitem);
+		
 
 	switch(itemtype)
 	{
@@ -273,7 +274,7 @@ SynchronizeWeaponAmmo(playerid, ammo)
 		
 	    case ITEM_FIREWEAPON:
 	    {
-		    if(ammo < 2)
+		    if(ammo <= 0)
 			{
 				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 				SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 1);
