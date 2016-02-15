@@ -4836,15 +4836,6 @@ stock serverLog(playerid, PlayerMessageType, logType, text[])
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
 	
-	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
-	/*
-	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
-	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
-	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
-	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
-	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
-	*/
-	
 	switch(logType)
 	{
 	    case 1: format(type, sizeof(type), "[LOCAL]      ");
@@ -4860,9 +4851,9 @@ stock serverLog(playerid, PlayerMessageType, logType, text[])
 	
 	switch(PlayerMessageType)
 	{
-	    case -2: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | %s", date[2], date[1], date[0], time[0], time[1], time[2], type, text);
-	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(PlayerMessageType), PlayerMessageType, text);
+	    case -2: format(string, sizeof(string), "[%02d/%02d/%d | %02d:%02d:%02d] - %s | %s", date[2], date[1], date[0], time[0], time[1], time[2], type, text);
+	    case -1: format(string, sizeof(string), "[%02d/%02d/%d | %02d:%02d:%02d] - %s | [%d] %s: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[%02d/%02d/%d | %02d:%02d:%02d] - %s | [%d] %s a %s [%d]: %s", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(PlayerMessageType), PlayerMessageType, text);
 	}
 	printf("%s", string);
 }
@@ -4874,16 +4865,6 @@ stock otherLog(playerid, secondplayer, logType, text[])
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
 	getdate(date[0], date[1], date[2]);
-
-	// Para agregar el "0" en aquellos casos en que hora/minutos/segundos/dia/mes sean menores a 10.
-	/*
-	if(date[2] < 10) format(finaldate[0], 2, "0%d", date[2]);
-	if(date[1] < 10) format(finaldate[1], 2, "0%d", date[1]);
-	if(time[0] < 10) format(finaltime[0], 2, "0%d", time[0]);
-	if(time[1] < 10) format(finaltime[1], 2, "0%d", time[1]);
-	if(time[2] < 10) format(finaltime[2], 2, "0%d", time[2]);
-	*/
-
 	
 	
 	switch(logType)
@@ -9516,10 +9497,7 @@ CMD:hora(playerid, params[])
 
 	PlayerActionMessage(playerid, 15.0, "toma su reloj y se fija la hora.");
 	
-	if(time[1] < 10)
-		format(string, sizeof(string), "La hora actual es %d:0%d:%d del día %d de %s del %d. {5CACC8}Próximo Día de Pago en %d minutos.", time[0], time[1], time[2], date[2], mText, date[0], 60 - (GetPVarInt(playerid, "pPayTime") / 60));
-	else
-		format(string, sizeof(string), "La hora actual es %d:%d:%d del día %d de %s del %d. {5CACC8}Próximo Día de Pago en %d minutos.", time[0], time[1], time[2], date[2], mText, date[0], 60 - (GetPVarInt(playerid, "pPayTime") / 60));
+	format(string, sizeof(string), "La hora actual es %02d:%02d:%02d del día %02d de %s del %d. {5CACC8}Próximo Día de Pago en %d minutos.", time[0], time[1], time[2], date[2], mText, date[0], 60 - (GetPVarInt(playerid, "pPayTime") / 60));
 
 	SendClientMessage(playerid, COLOR_WHITE, string);
 	return 1;

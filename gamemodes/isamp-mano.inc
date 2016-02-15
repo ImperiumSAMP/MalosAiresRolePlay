@@ -97,13 +97,13 @@ stock PrintRightHandForPlayer(playerid, targetid)
 		
 	if(itemtype == ITEM_FIREWEAPON)
 	{
-		if(rightparam > 0)
+		if(rightparam == 0)
+		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(rightitem));
+		else if(rightparam > 0)
 		{
 		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(rightitem));
 			rightparam -= 1;
 		}
-		if(rightparam == 0)
-		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(rightitem));
 	}
 		
 	SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", itemname, itemparam, rightparam);
@@ -126,13 +126,13 @@ stock PrintLeftHandForPlayer(playerid, targetid)
 
 	if(itemtype == ITEM_FIREWEAPON)
 	{
-		if(leftparam > 0)
+		if(leftparam == 0)
+			format(itemname, sizeof(itemname), "%s descargada", GetItemName(leftitem));
+		else if(leftparam > 0)
 		{
 		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(leftitem));
 		    leftparam -= 1;
 		}
-		if(leftparam == 0)
-		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(leftitem));
 	}
 
 	SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", itemname, itemparam, leftparam);
@@ -182,6 +182,9 @@ stock ReloadWeapon(playerid)
 
 	else if(GetItemType(leftitem) == ITEM_FIREWEAPON)
 	{
+		if(leftparam > 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada. Usa /mano separar para retirar el cargador");
+			
 	 	switch(leftitem)
 		{
 		    case ITEM_ID_9MM: if(rightitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
@@ -216,6 +219,16 @@ stock ReplenishClip(playerid)
 		case ITEM_ID_CARGADOR_MP5: if(rightparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
 		case ITEM_ID_CARGADOR_M4: if(rightparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
 		case ITEM_ID_CARGADOR_AK47: if(rightparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+	}
+	
+	switch(leftitem)
+	{
+		case ITEM_ID_CARGADOR_9MM: if(leftparam == 17) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+		case ITEM_ID_CARGADOR_DEAGLE: if(leftparam == 7) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+		case ITEM_ID_CARGADOR_UZI: if(leftparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+		case ITEM_ID_CARGADOR_MP5: if(leftparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+		case ITEM_ID_CARGADOR_M4: if(leftparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
+		case ITEM_ID_CARGADOR_AK47: if(leftparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
 	}
 
 	if(GetItemType(rightitem) == ITEM_WEAPONMAG)
