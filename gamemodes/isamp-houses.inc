@@ -99,7 +99,7 @@ stock LoadHouses()
 		mysql_function_query(dbHandle, query, true, "OnHouseDataLoad", "i", id);
 		id++;
 	}
-	print("[INFO]: casas cargadas.");
+	print("[INFO] casas cargadas.");
 	return 1;
 }
 

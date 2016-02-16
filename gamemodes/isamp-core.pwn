@@ -520,9 +520,7 @@ public OnGameModeInit()
         printf("[ERROR]: 'maxplayers' (%i) excede MAX_PLAYERS (%i). Arreglar.", GetMaxPlayers(), MAX_PLAYERS);
     }
     
-	print("HELP");
     loadMySQLcfg();
-	print("HELP");
 	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
     LoadTDs();
     LoadMap();
@@ -567,7 +565,7 @@ public OnGameModeInit()
 	timersID[3] = SetTimer("commandPermissionsUpdate", 60000, true);			// 60 seg.  - Refresca los permisos de los comandos
 	timersID[5] = SetTimer("JailTimer", 1000, true);                            // 1 seg.   - Actualiza el jail de los jugadores.
 	timersID[6] = SetTimer("vehicleTimer", 1000, true);                    		// 1 seg.	- Actualiza motores dañados y evita explosiones.
-	timersID[8] = SetTimer("AntiCheatTimer", 250, true);
+	timersID[8] = SetTimer("AntiCheatTimer", 500, true);
 	timersID[12] = SetTimer("rentRespawn", 1000 * 60 * 20, true);               // Respawn de vehículos de renta.
 	timersID[13] = SetTimer("UpdatePlayerAdiction", ADICTION_UPDATE_TIME * 1000, true);  	 // 5 min.	- Sistema de drogas.
 	timersID[14] = SetTimer("UpdatePlayerBasicNeeds", BASIC_NEEDS_UPDATE_TIME * 1000, true); // 5 min.		- Sistema de hambre y sed.
@@ -2092,7 +2090,8 @@ public OnPlayerDataLoad(playerid)
 		    Container_Create(CONTAINER_INV_SPACE, 1, PlayerInfo[playerid][pContainerID], PlayerInfo[playerid][pContainerSQLID]);
 
 		//======================================================================
-
+		SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT);
+		SetHandItemAndParam(playerid, HAND_LEFT, GetHandItem(playerid, HAND_LEFT), GetHandParam(playerid, HAND_LEFT);
 
 		GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
@@ -4615,7 +4614,7 @@ public SetPlayerSpawn(playerid)
 	else
 	{
      	SetPlayerVirtualWorld(playerid, 1000);
-     	SetTimerEx("PlayerVW", 6000, false, "d", playerid);
+     	SetTimerEx("PlayerVW", 4000, false, "d", playerid);
 	    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
      	SetPlayerInterior(playerid, PlayerInfo[playerid][pInterior]);
@@ -4830,7 +4829,7 @@ stock log(playerid, logType, text[])
 
 stock serverLog(playerid, PlayerMessageType, logType, text[])
 {
-	new name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
+	new name[24], string[512], type[15], time[3], date[3];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
@@ -4860,7 +4859,7 @@ stock serverLog(playerid, PlayerMessageType, logType, text[])
 
 stock otherLog(playerid, secondplayer, logType, text[])
 {
-	new File:hFile, filename[36], name[24], string[512], type[15], time[3], date[3]; // finaltime[3][2], finaldate[2][2];
+	new File:hFile, filename[36], name[24], string[512], type[15], time[3], date[3];
 
 	format(name, sizeof(name), "%s", GetPlayerNameEx(playerid));
 	gettime(time[0], time[1], time[2]);
@@ -4938,8 +4937,8 @@ stock otherLog(playerid, secondplayer, logType, text[])
 	
 	switch(secondplayer)
 	{
-	    case -1: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
-	    default: format(string, sizeof(string), "[%d/%d/%d | %d:%d:%d] - %s | [%d] %s a %s [%d]: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
+	    case -1: format(string, sizeof(string), "[%02d/%02d/%d | %02d:%02d:%02d] - %s | [%d] %s: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), text);
+	    default: format(string, sizeof(string), "[[%02d/%02d/%d | %02d:%02d:%02d] - %s | [%d] %s a %s [%d]: %s\r\n", date[2], date[1], date[0], time[0], time[1], time[2], type, playerid, GetPlayerNameEx(playerid), GetPlayerNameEx(secondplayer), secondplayer, text);
 	}
 	
 	hFile = fopen(filename, io_append);
@@ -4955,7 +4954,7 @@ stock CKLog(adminid, playerid, newname[], newage, newsex)
 	
 	CKFileLog = fopen("isamp-data/Logs/CKLog.log", io_append);
 	
-	format(string, sizeof(string), "[%d/%d/%d - %d:%d:%d] ADMIN: %s (IP: %s) (MYSQLID: %d)\r\n", date[2], date[1], date[0], time[0], time[1], time[2], GetPlayerNameEx(adminid), GetPlayerIpAddress(adminid), PlayerInfo[adminid][pID]);
+	format(string, sizeof(string), "[%02d/%02d/%d | %02d:%02d:%02d] ADMIN: %s (IP: %s) (MYSQLID: %d)\r\n", date[2], date[1], date[0], time[0], time[1], time[2], GetPlayerNameEx(adminid), GetPlayerIpAddress(adminid), PlayerInfo[adminid][pID]);
 	fwrite(CKFileLog, string);
 	format(string, sizeof(string), "JUGADOR: %s | NUEVO NOMBRE: %s (IP: %s) (MYSQLID: %d)\r\n", GetPlayerNameEx(playerid), newname, GetPlayerIpAddress(playerid), PlayerInfo[playerid][pID]);
     fwrite(CKFileLog, string);
