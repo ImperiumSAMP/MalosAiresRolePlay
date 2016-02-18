@@ -235,7 +235,7 @@ CMD:comprarmascara(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 12) Precio: $50.");
     if(business == 0 || (Business[business][bType] != BIZ_CLOT &&  Business[business][bType] != BIZ_CLOT2))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Para comprar un pañuelo debes dirigirte a algún negocio de ropa que los venda.");
-	if(idmask < 0 || idmask > 8)
+	if(idmask < 0 || idmask > 12)
         return SendClientMessage(playerid, COLOR_YELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmascara [modelo]. (modelos del 0 al 12) Precio: $50.");
 	if(GetPlayerCash(playerid) < 50)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, necesitas $50. ¡Vuelve cuando los tengas!");
