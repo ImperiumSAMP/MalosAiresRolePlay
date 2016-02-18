@@ -18,7 +18,7 @@
 #define ITEM_FOOD               8
 #define ITEM_INGREDIENT         9
 
-#define MAX_ITEMS               170
+#define MAX_ITEMS               171
 
 #define ITEM_ID_9MM                     22
 #define ITEM_ID_9MM_SILENCED            23
@@ -152,6 +152,7 @@
 #define ITEM_ID_TORTA2                  167
 #define ITEM_ID_TORTA3                  168
 #define ITEM_ID_HAMBURGUESA             169
+#define ITEM_ID_GANZUA                  170
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -362,7 +363,8 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*166*/ {"Torta de crema y frutillas", "Cantidad", ITEM_FOOD, 5000, false, 11739, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*167*/ {"Bizcochuelo", "Cantidad", ITEM_FOOD, 5000, false, 11740, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*168*/ {"Torta de chocolate", "Cantidad", ITEM_FOOD, 5000, false, 11741, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*169*/ {"Hamburguesa", "Cantidad", ITEM_FOOD, 5000, false, 2703, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8}
+/*169*/ {"Hamburguesa", "Cantidad", ITEM_FOOD, 5000, false, 2703, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*170*/ {"Ganzua", "Cantidad", ITEM_OTHER, 30, true, 18644, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6)
 };
 
 //==============================FUNCIONES=======================================
