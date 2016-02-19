@@ -88,7 +88,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-farmjob.inc"
 #include "marp-drugfjob.inc"
 #include "marp-delijob.inc"
-#include "marp-paintball.inc"
 #include "marp-tutorial.inc"
 #include "marp-cronometro.inc"
 #include "marp-rolepoints.inc"
@@ -1066,11 +1065,6 @@ public OnPlayerDisconnect(playerid, reason)
 	{
 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 		PhoneHand[playerid] = 0;
-	}
-	
-	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
-	{
-		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 	}
 	
 	if(InEnforcer[playerid] == 1)
@@ -2090,8 +2084,8 @@ public OnPlayerDataLoad(playerid)
 		    Container_Create(CONTAINER_INV_SPACE, 1, PlayerInfo[playerid][pContainerID], PlayerInfo[playerid][pContainerSQLID]);
 
 		//======================================================================
-		SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT);
-		SetHandItemAndParam(playerid, HAND_LEFT, GetHandItem(playerid, HAND_LEFT), GetHandParam(playerid, HAND_LEFT);
+		SetHandItemAndParam(playerid, HAND_RIGHT, GetHandItem(playerid, HAND_RIGHT), GetHandParam(playerid, HAND_RIGHT));
+		SetHandItemAndParam(playerid, HAND_LEFT, GetHandItem(playerid, HAND_LEFT), GetHandParam(playerid, HAND_LEFT));
 
 		GetPlayerIp(playerid, PlayerInfo[playerid][pIP], 16);
 
@@ -2982,6 +2976,7 @@ public accountTimer()
 
 public PlayerVW(playerid)
 {
+	TogglePlayerControllable(playerid, true);
     SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirtualWorld]);
 	return 1;
 }
@@ -3076,7 +3071,7 @@ stock chargeTaxis()
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
-	new Float:armour, string[128];
+	new Float:armour;
 
     GetPlayerArmour(playerid, armour);
 
@@ -3086,40 +3081,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
  		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
-
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1 && GetPVarInt(playerid, "GrupoPaintball") != GetPVarInt(issuerid, "GrupoPaintball"))
-		{
-			if(PaintballStart == 1)
-		    {
-			    if(weaponid == WEAPON_SILENCED)
-			    {
-				    if(GetPVarInt(playerid, "GrupoPaintball") == 1)
-					{
-				        ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
-						TogglePlayerControllable(playerid, false);
-				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda a que uno de los dos equipos descalifique a todos los contrincantes.");
-						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
-						AdministratorMessage(COLOR_ADMINCMD, string, 2);
-						SetPVarInt(playerid, "Descalificado", 1);
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-						RedTeamDeads += 1;
-					    amount = 0;
-					}
-					if(GetPVarInt(playerid, "GrupoPaintball") == 2)
-					{
-				        ApplyAnimation(playerid, "PED", "FLOOR_hit_f", 4.1, 0, 1, 1, 1, 1, 1);
-						TogglePlayerControllable(playerid, false);
-				        SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Te acertaron un disparo y quedas descalificado, aguarda a que uno de los dos equipos descalifique a todos los contrincantes.");
-						format(string, sizeof(string), "[Paintball] El jugador %s descalificó a %s.", GetPlayerNameEx(issuerid), GetPlayerNameEx(playerid));
-						AdministratorMessage(COLOR_ADMINCMD, string, 2);
-						SetPVarInt(playerid, "Descalificado", 1);
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-						BlueTeamDeads += 1;
-					    amount = 0;
-					}
-			    }
-			}
-		}
+            
 	    //===============================TAZER==================================
 
 		if(checkTazer(playerid, issuerid, amount, weaponid))
@@ -4614,7 +4576,8 @@ public SetPlayerSpawn(playerid)
 	else
 	{
      	SetPlayerVirtualWorld(playerid, 1000);
-     	SetTimerEx("PlayerVW", 4000, false, "d", playerid);
+     	TogglePlayerControllable(playerid, false);
+     	SetTimerEx("PlayerVW", 1500, false, "d", playerid);
 	    SetPlayerPos(playerid, PlayerInfo[playerid][pX], PlayerInfo[playerid][pY], PlayerInfo[playerid][pZ]);
 	    SetPlayerFacingAngle(playerid, PlayerInfo[playerid][pA]);
      	SetPlayerInterior(playerid, PlayerInfo[playerid][pInterior]);
@@ -6596,33 +6559,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	            MoveObject(GOBGate,  1545.50000, -1451.39893, 14.45500, 3.0, 0.0000, 0.0000, 0.0000);
 	            SetTimerEx("CloseGate", 6000, false, "i", GOBGate);
 	        }
-	    }/* else
-	    if(PlayerInfo[playerid][pFaction] == FAC_CHIN) {
-	        if(PlayerToPoint(10.0, playerid, 321.01, -1188.81, 76.36)) {
-	            MoveObject(CHINGate[0], 330.4567, -1180.4983, 75.4260, 2.0, 0.0000, 0.0000, 37.5000);
-				MoveObject(CHINGate[1], 310.6317, -1195.7115, 75.4260, 2.0, 0.0000, 0.0000, 37.5000);
-	            SetTimerEx("CloseGate", 6000, false, "i", CHINGate[0]);
-	        }
-	    }
-	    */
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && PaintballStart != 0 && GetPVarInt(playerid, "Descalificado") != 0)
-		{
-		    if(GetPVarInt(playerid, "GrupoPaintball") == 1 && PlayerToPoint(25.0, playerid, POS_PBREDTEAMHQ_X, POS_PBREDTEAMHQ_Y, POS_PBREDTEAMHQ_Z))
-		    {
-		        SetPVarInt(playerid, "Descalificado", 0);
-				SetPlayerHealthEx(playerid, 100);
-				GivePlayerGun(playerid, 23, 100);
-				SetPlayerSkin(playerid, RedTeamSkin);
-				SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Recuperaste tu arma y puedes seguir jugando.");
-			}
-		    if(GetPVarInt(playerid, "GrupoPaintball") == 2 && PlayerToPoint(25.0, playerid, POS_PBBLUETEAMHQ_X, POS_PBBLUETEAMHQ_Y, POS_PBBLUETEAMHQ_Z))
-		    {
-		        SetPVarInt(playerid, "Descalificado", 0);
-				SetPlayerHealthEx(playerid, 100);
-				GivePlayerGun(playerid, 23, 100);
-				SetPlayerSkin(playerid, BlueTeamSkin);
-				SendClientMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Recuperaste tu arma y puedes seguir jugando.");
-			}
 		}
     }
 
@@ -11845,8 +11781,8 @@ CMD:depositar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /depositar [cantidad]");
 	if(GetPlayerCash(playerid) < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-	if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	    
 	GivePlayerCash(playerid, -amount);
 	PlayerInfo[playerid][pBank] += amount;
@@ -11867,8 +11803,8 @@ CMD:retirar(playerid,params[])
     	return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /retirar [cantidad]");
 	if(PlayerInfo[playerid][pBank] < amount || amount < 1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 
 	GivePlayerCash(playerid, amount);
 	PlayerInfo[playerid][pBank] -= amount;
@@ -11891,8 +11827,8 @@ CMD:transferir(playerid, params[])
   		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
 	if(!IsPlayerConnected(targetID) || targetID == playerid)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 
 	GetPlayerName(targetID, name, 32);
 	format(string, sizeof(string), "[TRANSFER] $%d a %s (DBID: %d)", amount, name, PlayerInfo[targetID][pID]);
@@ -11909,8 +11845,8 @@ CMD:verbalance(playerid,params[])
 {
 	if(!PlayerToPoint(5.0, playerid, POS_BANK_X, POS_BANK_Y, POS_BANK_Z) && !IsAtATM(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un banco o cajero automático!");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "Tu balance actual es de $%d.", PlayerInfo[playerid][pBank]);
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -11927,8 +11863,8 @@ CMD:donar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} cantidad inválida.");
 	if(GetPlayerCash(playerid) < money)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} no tienes esa cantidad.");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	    
 	GivePlayerCash(playerid, -money);
 	format(str, sizeof(str), "{878EE7}[INFO]{C8C8C8} %s ha donado $%d.", GetPlayerNameEx(playerid), money);
@@ -11948,8 +11884,8 @@ CMD:fverbalance(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No perteneces a una facción!");
     if(PlayerInfo[playerid][pRank] != 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 
 	SendFMessage(playerid, COLOR_WHITE, "El balance actual de la cuenta compartida es de $%d.", GetFactionMoney(PlayerInfo[playerid][pFaction]));
 	PlayerActionMessage(playerid, 15.0, "recibe un papel con el estado de su cuenta bancaria.");
@@ -11968,8 +11904,8 @@ CMD:fdepositar(playerid,params[])
   		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /fdepositar [cantidad]");
  	if(GetPlayerCash(playerid) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
  	    
 	GivePlayerCash(playerid, -amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], amount);
@@ -11995,8 +11931,8 @@ CMD:fretirar(playerid,params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
  	if(GetFactionMoney(PlayerInfo[playerid][pFaction]) < amount || amount < 1)
  	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Cantidad de dinero inválida!");
-    if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
  	    
 	GivePlayerCash(playerid, amount);
 	GiveFactionMoney(PlayerInfo[playerid][pFaction], -amount);
@@ -14091,8 +14027,8 @@ CMD:desechar(playerid, params[])
 
 	if(!IsAtDrump(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un contenedor de basura.");
-	if(GetPlayerState(playerid) != 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de pie.");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
     if(PlayerCuffed[playerid] == 1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacer esto estando esposado.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
@@ -14293,15 +14229,16 @@ CMD:exp10de(playerid, params[])
 		target,
 		Float:boom[3];
 
-	if(sscanf(params, "u", target)) {
-		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} /exp10de [IDJugador/ParteDelNombre]");
-	} else {
-		format(string, sizeof(string), "[STAFF] %s ha explotado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
-		AdministratorMessage(COLOR_ADMINCMD, string, 2);
-		SetPlayerHealth(target, 10);
-		GetPlayerPos(target, boom[0], boom[1], boom[2]);
-		CreateExplosion(boom[0], boom[1] , boom[2], 7, 10);
-	}
+	if(sscanf(params, "u", target))
+		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} /exp10de [IDJugador/ParteDelNombre]");
+	if(target == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido.");
+			
+	format(string, sizeof(string), "[STAFF] %s ha explotado a %s.", GetPlayerNameEx(playerid), GetPlayerNameEx(target));
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
+	SetPlayerHealth(target, 10);
+	GetPlayerPos(target, boom[0], boom[1], boom[2]);
+	CreateExplosion(boom[0], boom[1] , boom[2], 7, 10);
 	return 1;
 }
 
@@ -14389,6 +14326,8 @@ CMD:desvestirse(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás desnudo/a!");
 	if(freehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar tu ropa ya que tienes ambas manos ocupadas.");
+    if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar de pie!");
 
 	    
 	switch(PlayerInfo[playerid][pSex])
