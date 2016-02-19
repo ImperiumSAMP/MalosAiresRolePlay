@@ -1671,164 +1671,151 @@ public OnPlayerText(playerid, text[])
 	if(CheckMissionEvent(playerid, 3, text))
 	    return 0;
 	    
-    //==========================================================================
-	if(Mobile[playerid] == 911)
+	    
+	switch(Mobile[playerid])
 	{
-		if((strcmp("policia", text, true, strlen(text)) == 0) && (strlen(text) == strlen("policia")))
-		{
-		    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: policía metropolitana, por favor de un breve informe de lo ocurrido.");
-			Mobile[playerid] = 912;
-			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		}
-		else if((strcmp("paramedico", text, true, strlen(text)) == 0) && (strlen(text) == strlen("paramedico")))
-		{
-		    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: departamento de emergencias, por favor de un breve informe de lo ocurrido.");
-			Mobile[playerid] = 913;
-			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		}
-		else
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: no le entiendo solo diga, policía o paramédico.");
-		return 0;
-	}
-	//==========================================================================
-	else if(Mobile[playerid] == 912)
-	{
-		if(!strlen(text))
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
-		else
-		{
-		    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
-			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades en el área, mantenga la calma.");
-            format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
-			SendFactionMessage(FAC_PMA, COLOR_WHITE, string);
-			format(string, sizeof(string), "[911 - POLICÍA del ID %d]: %s", playerid, text);
-			foreach(new i : Player)
+	    case 911:
+	    {
+			if((strcmp("policia", text, true, strlen(text)) == 0) && (strlen(text) == strlen("policia")))
 			{
-				if(Admin911Enabled[i] && i != playerid && PlayerInfo[i][pFaction] != FAC_PMA)
-				{
-					SendClientLongMessage(i, COLOR_ADMINREAD, string);
-				}
+			    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: policía metropolitana, por favor de un breve informe de lo ocurrido.");
+				Mobile[playerid] = 912;
+				ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 			}
+			else if((strcmp("paramedico", text, true, strlen(text)) == 0) && (strlen(text) == strlen("paramedico")))
+			{
+			    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: departamento de emergencias, por favor de un breve informe de lo ocurrido.");
+				Mobile[playerid] = 913;
+				ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+			}
+			else
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: no le entiendo solo diga, policía o paramédico.");
+	    }
+	    case 912:
+	    {
+			if(!strlen(text))
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
+			else
+			{
+			    format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+				ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades en el área, mantenga la calma.");
+        	    format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+				SendFactionMessage(FAC_PMA, COLOR_WHITE, string);
+				format(string, sizeof(string), "[911 - POLICÍA del ID %d]: %s", playerid, text);
+				foreach(new i : Player)
+				{
+					if(Admin911Enabled[i] && i != playerid && PlayerInfo[i][pFaction] != FAC_PMA)
+						SendClientLongMessage(i, COLOR_ADMINREAD, string);
+				}
+				Mobile[playerid] = 255;
+				lastPoliceCallNumber = PlayerInfo[playerid][pPhoneNumber];
+				GetPlayerPos(playerid, lastPoliceCallPos[0], lastPoliceCallPos[1], lastPoliceCallPos[2]);
+			}
+	    }
+	    case 913:
+	    {
+			if(!strlen(text))
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
+			else
+			{
+				format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+				ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+				SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
+        	    format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
+				SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
+				format(string, sizeof(string), "[911 - SAME del ID %d]: %s", playerid, text);
+				foreach(new i : Player)
+				{
+					if(Admin911Enabled[i] && i != playerid && PlayerInfo[i][pFaction] != FAC_HOSP)
+						SendClientLongMessage(i, COLOR_ADMINREAD, string);
+				}
+				Mobile[playerid] = 255;
+				lastMedicCallNumber = PlayerInfo[playerid][pPhoneNumber];
+				GetPlayerPos(playerid, lastMedicCallPos[0], lastMedicCallPos[1], lastMedicCallPos[2]);
+			}
+	    }
+	    case 555:
+	    {
+	    	foreach(new i : Player)
+			{
+	    	    if(PlayerInfo[i][pFaction] == FAC_MECH && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
+				{
+	    	        SendFMessage(i, COLOR_GREEN, "Nuevo mensaje del %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
+					SendClientMessage(i, COLOR_WHITE, "Use /aceptar mecanico para aceptar la llamada.");
+				}
+	    	}
+			MechanicCall = playerid;
 			Mobile[playerid] = 255;
-			lastPoliceCallNumber = PlayerInfo[playerid][pPhoneNumber];
-			GetPlayerPos(playerid, lastPoliceCallPos[0], lastPoliceCallPos[1], lastPoliceCallPos[2]);
+			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
+			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+	    	SendClientMessage(playerid, COLOR_WHITE, "Telefonista: un mecánico debería llegar a su posición en un momento, adiós.");
 		}
-		return 0;
-	}
-	//==========================================================================
-	else if(Mobile[playerid] == 913)
-	{
-		if(!strlen(text))
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: disculpe, no le entiendo...");
-		else
+	    case 444:
+	    {
+	    	foreach(new i : Player)
+			{
+	    	    if(PlayerInfo[i][pJob] == JOB_TAXI && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
+				{
+	    	        SendClientMessage(i,COLOR_GREEN,"Se ha recibido un mensaje:");
+					format(string,sizeof(string),"Voz al teléfono: %s", text);
+					SendClientMessage(i,COLOR_WHITE,string);
+					SendClientMessage(i,COLOR_WHITE,"Use /aceptar taxi para aceptar la llamada.");
+					SendClientMessage(playerid,COLOR_WHITE,"Telefonista: enviaremos un vehículo a su posición, por favor aguarde.");
+					TaxiCall = playerid;
+					Mobile[playerid] = 255;
+				}
+	    	}
+		}
+		case 255:
+		{
+    		if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR)
+			{
+    		    format(string, sizeof(string), "%s dice: %s", name, text);
+				ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+				format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
+				log(playerid, LOG_CHAT, string);
+			}
+			else
+			{
+				new vehicleid = GetPlayerVehicleID(playerid),
+					vehSeat = GetPlayerVehicleSeat(playerid),
+					winState[4];
+
+				GetVehicleParamsCarWindows(vehicleid, winState[0], winState[1], winState[2], winState[3]);
+	  			if(vehSeat < 0 || vehSeat > 3 || winState[vehSeat] != 0)
+				{
+					format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", name, text);
+					ProxDetector(5.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+				}
+				else
+				{
+					format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
+					ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+				}
+				format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
+				log(playerid, LOG_CHAT, string);
+			}
+		}
+		default:
 		{
 			format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
 			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-			SendClientMessage(playerid, COLOR_FADE1, "Operadora dice: gracias, hemos alertado a todas las unidades, mantenga la calma.");
-            format(string, sizeof(string), "[Llamada al 911 del %d]: %s", PlayerInfo[playerid][pPhoneNumber], text);
-			SendFactionMessage(FAC_HOSP, COLOR_WHITE, string);
-			format(string, sizeof(string), "[911 - SAME del ID %d]: %s", playerid, text);
-			foreach(new i : Player)
+			if(IsPlayerConnected(Mobile[playerid]))
 			{
-				if(Admin911Enabled[i] && i != playerid && PlayerInfo[i][pFaction] != FAC_HOSP)
-				{
-					SendClientLongMessage(i, COLOR_ADMINREAD, string);
+			    if(Mobile[Mobile[playerid]] == playerid)
+			    {
+			        format(string, sizeof(string), "[Voz al teléfono]: %s", text);
+					SendClientLongMessage(Mobile[playerid], COLOR_FADE1, string);
 				}
 			}
-			Mobile[playerid] = 255;
-			lastMedicCallNumber = PlayerInfo[playerid][pPhoneNumber];
-			GetPlayerPos(playerid, lastMedicCallPos[0], lastMedicCallPos[1], lastMedicCallPos[2]);
+			else
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} no hay nadie en la línea.");
+			format(string, sizeof(string), "[IC-TELE] %s a %s (DBID: %d) : %s", GetPlayerNameEx(playerid), GetPlayerNameEx(Mobile[playerid]), PlayerInfo[Mobile[playerid]][pID], text);
+			log(playerid, LOG_CHAT, string);
 		}
-		return 0;
-	}
-    //==========================================================================
-	else if(Mobile[playerid] == 555)
-	{
-	    foreach(new i : Player)
-		{
-	        if(PlayerInfo[i][pFaction] == FAC_MECH && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
-			{
-	            SendFMessage(i, COLOR_GREEN, "Nuevo mensaje del %d: %s", PlayerInfo[playerid][pPhoneNumber], text);
-				SendClientMessage(i, COLOR_WHITE, "Use /aceptar mecanico para aceptar la llamada.");
-			}
-	    }
-		MechanicCall = playerid;
-		Mobile[playerid] = 255;
-		format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
-		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-	    SendClientMessage(playerid, COLOR_WHITE, "Telefonista: un mecánico debería llegar a su posición en un momento, adiós.");
-		return 0;
-	}
-	//==========================================================================
-	else if(Mobile[playerid] == 444)
-	{
-	    foreach(new i : Player)
-		{
-	        if(PlayerInfo[i][pJob] == JOB_TAXI && PlayerInfo[i][pJailed] == JAIL_NONE && jobDuty[i])
-			{
-	            SendClientMessage(i,COLOR_GREEN,"Se ha recibido un mensaje:");
-				format(string,sizeof(string),"Voz al teléfono: %s", text);
-				SendClientMessage(i,COLOR_WHITE,string);
-				SendClientMessage(i,COLOR_WHITE,"Use /aceptar taxi para aceptar la llamada.");
-				SendClientMessage(playerid,COLOR_WHITE,"Telefonista: enviaremos un vehículo a su posición, por favor aguarde.");
-				TaxiCall = playerid;
-				Mobile[playerid] = 255;
-			}
-	    }
-		return 0;
-	}
-    //==========================================================================
-	else if(Mobile[playerid] != 255)
-	{
-		format(string, sizeof(string), "%s dice por teléfono: %s", name, text);
-		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		if(IsPlayerConnected(Mobile[playerid]))
-		{
-		    if(Mobile[Mobile[playerid]] == playerid)
-		    {
-		        format(string, sizeof(string), "[Voz al teléfono]: %s", text);
-				SendClientLongMessage(Mobile[playerid], COLOR_FADE1, string);
-			}
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_LIGHTYELLOW2,"{FF4600}[Error]:{C8C8C8} no hay nadie en la línea.");
-		}
-		format(string, sizeof(string), "[IC-TELE] %s a %s (DBID: %d) : %s", GetPlayerNameEx(playerid), GetPlayerNameEx(Mobile[playerid]), PlayerInfo[Mobile[playerid]][pID], text);
-		log(playerid, LOG_CHAT, string);
-		return 0;
-	}
-	//==========================================================================
-	
-    if(!IsPlayerInAnyVehicle(playerid) || GetVehicleType(GetPlayerVehicleID(playerid)) != VTYPE_CAR)
-	{
-        format(string, sizeof(string), "%s dice: %s", name, text);
-		ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
-		log(playerid, LOG_CHAT, string);
-	}
-	else
-	{
-		new vehicleid = GetPlayerVehicleID(playerid),
-			vehSeat = GetPlayerVehicleSeat(playerid),
-			winState[4];
-			
-        GetVehicleParamsCarWindows(vehicleid, winState[0], winState[1], winState[2], winState[3]);
-	  	if(vehSeat < 0 || vehSeat > 3 || winState[vehSeat] != 0)
-	    {
-	        format(string, sizeof(string), "[Ventanillas cerradas] %s dice: %s", name, text);
-			ProxDetector(5.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		}
-		else
-		{
-			format(string, sizeof(string), "[Ventanillas abiertas] %s dice: %s", name, text);
-			ProxDetector(15.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-		}
-		format(string, sizeof(string), "[IC-LOCAL] %s: %s", GetPlayerNameEx(playerid), text);
-		log(playerid, LOG_CHAT, string);
 	}
     return 0;
 }
@@ -2237,30 +2224,35 @@ public OnUnbanDataLoad(playerid, type, target[32])
 	
     cache_get_data(rows, fields);
 
-	if(type == 0)
+
+
+	switch(type)
 	{
-	    if(rows)
+		case 0:
 		{
-			format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
-			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pName` = '%s'", target);
+	    	if(rows)
+			{
+				format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a '%s'.", GetPlayerNameEx(playerid), target);
+				format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pName` = '%s'", target);
+			}
+			else
+			{
+			    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con el nombre '%s' en la base de datos.", target);
+			    return 1;
+			}
 		}
-		else
+		case 1:
 		{
-		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con el nombre '%s' en la base de datos.", target);
-		    return 1;
-		}
-	}
-	else if(type == 1)
-	{
-		if(rows)
-		{
-			format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
-			format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pIP` = '%s'", target);
-		}
-		else
-		{
-		    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con la IP '%s' en la base de datos.", target);
-		    return 1;
+			if(rows)
+			{
+				format(string, sizeof(string), "[STAFF] el administrador %s ha removido el BAN a todas las cuentas con la IP '%s'.", GetPlayerNameEx(playerid), target);
+				format(query, sizeof(query), "UPDATE `bans` SET `banActive` = '0' WHERE `pIP` = '%s'", target);
+			}
+			else
+			{
+			    SendFMessage(playerid, COLOR_YELLOW2, "No se ha encontrado ningún ban ACTIVO relacionado con la IP '%s' en la base de datos.", target);
+			    return 1;
+			}
 		}
 	}
 	mysql_function_query(dbHandle, query, false, "", "");
@@ -4281,6 +4273,8 @@ stock LoadPickups() {
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
+	new string[128];
+	
 	for(new i = 0; i < 5; i++) {
 	    if(pickupid == P_TUNE[i]) {
 	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
@@ -4306,135 +4300,133 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	    }
 	}
 
-	if(pickupid == P_BANK) {
-		GameTextForPlayer(playerid, "~w~/ayudabanco", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_FIGHT_STYLE) {
-		GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_POLICE_ARREST2 && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
-		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
-		return 1;
-		
-	} else if(pickupid == P_JAIL_EAT) {
-		GameTextForPlayer(playerid, "~w~Usa /carcelcomer para recibir tu bandeja con alimentos.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
-		GameTextForPlayer(playerid, "~w~/mservicio - /mequipo", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_SIDE_DUTY && PlayerInfo[playerid][pFaction] == FAC_SIDE) {
-		GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco - /smacana - /stazer", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_LICENSE_CENTER) {
-		GameTextForPlayer(playerid, "~w~/licencias para ver las licencias disponibles. ~n~/manuales para ver los manuales.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_JOB_CENTER) {
-		GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_POLICE_CAMERAS) {
-		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
-		return 1;
-		
-	} else if(pickupid == P_CARLIFT1) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
-		return 1;
-
-	} else if(pickupid == P_CARLIFT2) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
-		return 1;
-	} else if(pickupid == P_CARLIFT3) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
-		return 1;
-
-	} else if(pickupid == P_CARLIFT4) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
-		return 1;
-		
-	} else if(pickupid == P_MECBOX1) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
-		return 1;
-
-	} else if(pickupid == P_MECBOX2) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
-		return 1;
-	} else if(pickupid == P_MECBOX3) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
-		return 1;
-
-	} else if(pickupid == P_MECBOX4) {
-	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
-		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
-		return 1;
-
-	} else if(pickupid == P_HOSP_HEAL) {
-		new string[128];
-		format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
-		GameTextForPlayer(playerid, string, 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_CAR_DEMOLITION) {
-		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
-			GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_CARPART_SHOP) {
-		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
-			GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
-		GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
-		return 1;
-
-	} else if(pickupid == P_MATS_SHOP) {
-		if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
- 			new string[128];
-			format(string, sizeof(string), "~w~/comprarmateriales para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
-		    GameTextForPlayer(playerid, string, 2000, 4);
+	switch(pickupid)
+	{
+	    case P_BANK: return GameTextForPlayer(playerid, "~w~/ayudabanco", 2000, 4);
+	    case P_FIGHT_STYLE: return GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
+		case P_JAIL_EAT: return GameTextForPlayer(playerid, "~w~Usa /carcelcomer para recibir tu bandeja con alimentos.", 2000, 4);
+		case P_LICENSE_CENTER: return GameTextForPlayer(playerid, "~w~/licencias para ver las licencias disponibles. ~n~/manuales para ver los manuales.", 2000, 4);
+		case P_JOB_CENTER: return GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
+		case P_CAR_RENT1: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
+		case P_CAR_RENT2: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
+		case P_CAR_RENT3: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
+	    case P_POLICE_ARREST:
+	    {
+	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+	        return GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
+	    }
+		case P_POLICE_ARREST2:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+	        return GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
 		}
-
-	} else if(pickupid == P_DRUGFARM_MATS) {
-	    if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
-	    	new string[128];
-			format(string, sizeof(string), "~w~bolsas de materia prima: %d a $%d c/u", ServerInfo[sDrugRawMats], GetItemPrice(ITEM_ID_MATERIAPRIMA));
-		    GameTextForPlayer(playerid, string, 2000, 4);
-	    } else if(PlayerInfo[playerid][pJob] == JOB_DRUGF) {
-	    	new string[128];
-			format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
-		    GameTextForPlayer(playerid, string, 2000, 4);
- 	    }
-
-	} else if(pickupid == P_PRODS_SHOP) {
-		new string[128];
-		format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
-		GameTextForPlayer(playerid, string, 2000, 4);
-	} else if(pickupid == P_INPUTS_SHOP_N || pickupid == P_INPUTS_SHOP_S) {
-		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE) {
-			new string[128];
-			format(string, sizeof(string), "~w~/comprarinsumos para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
-			GameTextForPlayer(playerid, string, 2000, 4);
+		case P_POLICE_DUTY:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+			return GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
+		}
+		case P_POLICE_CAMERAS:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
+	        return GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
+		}
+		case P_HOSP_DUTY:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_HOSP) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mservicio - /mequipo", 2000, 4);
+		}
+		case P_HOSP_HEAL:
+		{
+		    if(PlayerInfo[playerid][pFaction] != FAC_HOSP) return 1;
+		    format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
+		    return GameTextForPlayer(playerid, string, 2000, 4);
+		}
+		case P_SIDE_DUTY:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
+	        return GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco - /smacana - /stazer", 2000, 4);
+		}
+		case P_CARLIFT1:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
+		}
+		case P_CARLIFT2:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
+		}
+		case P_CARLIFT3:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
+		}
+		case P_CARLIFT4:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+			return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
+		}
+		case P_MECBOX1:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
+		}
+		case P_MECBOX2:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
+		}
+		case P_MECBOX3:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
+		}
+		case P_MECBOX3:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+			return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
+		}
+		case P_CARPART_SHOP:
+		{
+	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
+			return GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
+		}
+		case P_CAR_DEMOLITION:
+		{
+		    if(PlayerInfo[playerid][pJob] != JOB_FELON || ThiefJobInfo[playerid][pFelonLevel] < 7) return 1;
+		    return GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
+		}
+		case P_MATS_SHOP:
+		{
+		    if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL) return 1;
+			format(string, sizeof(string), "~w~/comprarmateriales para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
+			return GameTextForPlayer(playerid, string, 2000, 4);
+		}
+		case P_DRUGFARM_MATS:
+		{
+		    switch(PlayerInfo[playerid][pJob])
+		    {
+		        case JOB_DRUGD: format(string, sizeof(string), "~w~bolsas de materia prima: %d a $%d c/u", ServerInfo[sDrugRawMats], GetItemPrice(ITEM_ID_MATERIAPRIMA));
+		        default: format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
+		    }
+			return GameTextForPlayer(playerid, string, 2000, 4);
+		}
+		case P_PRODS_SHOP:
+		{
+			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+			return GameTextForPlayer(playerid, string, 2000, 4);
+		}
+		case P_INPUTS_SHOP_N:
+		{
+			if(PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
+			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+			return GameTextForPlayer(playerid, string, 2000, 4);
+		}
+		case P_INPUTS_SHOP_S:
+		{
+			if(PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
+			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+			return GameTextForPlayer(playerid, string, 2000, 4);
 		}
 	}
 	return 1;
@@ -9654,68 +9646,66 @@ CMD:llamar(playerid, params[])
 	
 	PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
 	
-	if(number == 911)
+	switch(number)
 	{
-		Mobile[playerid] = 911;
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Emergencias: ¿Qué servicio solicita, policia o paramedico?");
-		return 1;
-	}
-	
-	if(number == 555)
-	{
-		foreach(new i : Player)
+	    case 911:
+	    {
+			Mobile[playerid] = 911;
+			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Emergencias: ¿Qué servicio solicita, policia o paramedico?");
+	    }
+	    case 555:
 		{
-			if(PlayerInfo[i][pFaction] == FAC_MECH && jobDuty[i])
-				workers++;
+			foreach(new i : Player)
+			{
+				if(PlayerInfo[i][pFaction] == FAC_MECH && jobDuty[i])
+					workers++;
+			}
+			if(workers < 1)
+  				return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay mecánicos disponibles por el momento.");
+
+			Mobile[playerid] = 555;
+			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Malos Aires, ¿en qué le podemos ayudar?");
 		}
-		if(workers < 1)
-  			return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay mecánicos disponibles por el momento.");
-
-		Mobile[playerid] = 555;
-		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Malos Aires, ¿en qué le podemos ayudar?");
-		return 1;
-	}
-	
-	if(number == 444)
-	{
- 		if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI)
-   			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo mientras te encuentras en servicio como taxista!");
-
-		foreach(new i : Player)
+		case 444:
 		{
-			if(PlayerInfo[i][pJob] == JOB_TAXI && jobDuty[i])
-				workers++;
+ 			if(jobDuty[playerid] && PlayerInfo[playerid][pJob] == JOB_TAXI)
+   				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo mientras te encuentras en servicio como taxista!");
+
+			foreach(new i : Player)
+			{
+				if(PlayerInfo[i][pJob] == JOB_TAXI && jobDuty[i])
+					workers++;
+			}
+			if(workers < 1)
+				return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay vehículos disponibles por el momento.");
+
+			Mobile[playerid] = 444;
+			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
 		}
-		if(workers < 1)
-			return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay vehículos disponibles por el momento.");
-
-		Mobile[playerid] = 444;
-		SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
-		return 1;
-	}
-	
-	foreach(new i : Player)
-	{
-		if(PlayerInfo[i][pPhoneNumber] == number)
+		default:
 		{
-    		if(!PhoneEnabled[i] || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
-		    	return SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
-			if(Mobile[i] != 255)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "La linea se encuentra ocupada.");
+			foreach(new i : Player)
+			{
+				if(PlayerInfo[i][pPhoneNumber] == number)
+				{
+    				if(!PhoneEnabled[i] || PlayerInfo[i][pSpectating] != INVALID_PLAYER_ID)
+		 		   		return SendClientMessage(playerid, COLOR_WHITE, "Operadora dice: el teléfono al que intenta comunicarse se encuentra fuera de línea.");
+					if(Mobile[i] != 255)
+					    return SendClientMessage(playerid, COLOR_YELLOW2, "La linea se encuentra ocupada.");
 
-			Mobile[playerid] = i;
-			PlayerDoMessage(i, 15.0, "Un teléfono ha comenzado a sonar.");
-
-			contact = IsNumberInNotebook(i, PlayerInfo[playerid][pPhoneNumber]);
-			if(contact != -1)
-				SendFMessage(i, COLOR_WHITE, "Tienes una llamada de %s, utiliza /atender o /colgar.", GetNotebookContactName(i, contact));
-			else
-				SendFMessage(i, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
-            StartedCall[playerid] = 1;
-            StartedCall[i] = 0;
-            if(!IsPlayerInAnyVehicle(playerid))
-				SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
-			return 1;
+					Mobile[playerid] = i;
+					PlayerDoMessage(i, 15.0, "Un teléfono ha comenzado a sonar.");
+					contact = IsNumberInNotebook(i, PlayerInfo[playerid][pPhoneNumber]);
+					if(contact != -1)
+						SendFMessage(i, COLOR_WHITE, "Tienes una llamada de %s, utiliza /atender o /colgar.", GetNotebookContactName(i, contact));
+					else
+						SendFMessage(i, COLOR_WHITE, "Tienes una llamada del %d, utiliza /atender o /colgar.", PlayerInfo[playerid][pPhoneNumber]);
+        		    StartedCall[playerid] = 1;
+        		    StartedCall[i] = 0;
+        		    if(!IsPlayerInAnyVehicle(playerid))
+						SetPlayerSpecialAction(playerid, SPECIAL_ACTION_USECELLPHONE);
+				}
+			}
 		}
 	}
 	return 1;
