@@ -96,6 +96,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-lifts.inc"
 #include "marp-actors.inc"
 #include "marp-parlantes.inc"
+#include "marp-horseraces.inc"
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.5"
@@ -594,6 +595,7 @@ public OnGameModeInit()
 	ResetServerRacesVariables();
 	Lift_CreateAll();
 	InitializeServerSpeakers();
+	CreateHR();
 	return 1;
 }
 

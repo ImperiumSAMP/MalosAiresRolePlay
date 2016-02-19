@@ -68,6 +68,8 @@ new
 
 new CarLift[4][10];
 
+new horseObj[5];
+
 new
     BANK_ACCESS_DOOR,
     BANK_SAFE_DOOR;
@@ -10330,6 +10332,16 @@ stock LoadMap() {
 	CreateDynamicObject(1344, 2380.97070, -1215.53406, 27.21220,   0.00000, 0.00000, -90.00000);
 	CreateDynamicObject(1344, 1304.94397, -898.85468, 39.35660,   0.00000, 0.00000, 90.00000);
 	CreateDynamicObject(1344, 610.24652, -1489.33154, 14.58360,   0.00000, 1.42090, 0.00000);
+
+	//==================Carrera de caballos==================
+	horseObj[0] = CreateDynamicObject(11733, 795.68701, 1669.14832, 4.02860,   0.00000, 0.00000, 0.00000); //Caballo 1 salida
+    horseObj[1] = CreateDynamicObject(11733, 798.68701, 1669.14832, 4.02860,   0.00000, 0.00000, 0.00000); //Caballo 2 salida
+    horseObj[2] = CreateDynamicObject(11733, 801.68701, 1669.14832, 4.02860,   0.00000, 0.00000, 0.00000); //Caballo 3 salida
+    horseObj[3] = CreateDynamicObject(11733, 804.66701, 1669.14832, 4.02860,   0.00000, 0.00000, 0.00000); //Caballo 4 salida
+    horseObj[4] = CreateDynamicObject(11733, 807.68701, 1669.14832, 4.02860,   0.00000, 0.00000, 0.00000); //Caballo 5 salida
+    CreateDynamicObject(18761, 801.35028, 1620.93298, 7.69230,   0.00000, 0.00000, 356.60172); //Meta
+    CreateDynamicObject(19461, 797.62567, 1621.16565, 2.54990,   0.00000, 0.00000, 86.79910);  // Linea meta 1
+    CreateDynamicObject(19461, 805.03351, 1620.72571, 2.54990,   0.00000, 0.00000, 86.48071);  // Linea meta 2
 
 	//==========================================================================
 	return 1;
