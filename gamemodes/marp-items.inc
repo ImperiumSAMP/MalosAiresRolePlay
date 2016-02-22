@@ -19,7 +19,7 @@
 #define ITEM_INGREDIENT         9
 #define ITEM_SPECIALWEAPON      10
 
-#define MAX_ITEMS               173
+#define MAX_ITEMS               174
 
 #define ITEM_ID_9MM                     22
 #define ITEM_ID_9MM_SILENCED            23
@@ -156,6 +156,7 @@
 #define ITEM_ID_TASER                   170
 #define ITEM_ID_PLACA_POLICIAL          171
 #define ITEM_ID_ESPOSAS                 172
+#define ITEM_ID_GANZUA                  173
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -369,7 +370,8 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*169*/ {"Hamburguesa", "Cantidad", ITEM_FOOD, 5000, false, 2703, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*170*/	{"Táser X26", "Cargas", ITEM_SPECIALWEAPON, 0, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*171*/ {"Placa policial", "Número", ITEM_OTHER, 5000, false, 19774, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*172*/ {"Esposas", "Cantidad", ITEM_OTHER, 5000, false, 11750, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8}
+/*172*/ {"Esposas", "Cantidad", ITEM_OTHER, 5000, false, 11750, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
+/*173*/ {"Ganzua", "Cantidad", ITEM_OTHER, 30, true, 18644, 0.0, 0.074, 0.0, 148.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 6}
 };
 
 //==============================FUNCIONES=======================================
