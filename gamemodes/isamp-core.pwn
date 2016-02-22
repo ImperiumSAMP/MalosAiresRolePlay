@@ -4273,8 +4273,6 @@ stock LoadPickups() {
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
-	new string[128];
-	
 	for(new i = 0; i < 5; i++) {
 	    if(pickupid == P_TUNE[i]) {
 	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
@@ -4285,14 +4283,14 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 			return 1;
 		}
 	}
-	
+
 	for(new i = 0; i < sizeof(P_GUIDE); i++) {
 	    if(pickupid == P_GUIDE[i]) {
 	        GameTextForPlayer(playerid, "~w~/guia para ver una lista de lugares disponibles.", 2000, 4);
 	        return 1;
 	    }
 	}
-	
+
 	for(new i = 0; i < sizeof(P_BLACK_MARKET); i++) {
 	    if(pickupid == P_BLACK_MARKET[i]) {
 	        GameTextForPlayer(playerid, "~w~Mercado negro - Utiliza /comprar o /vender.", 2000, 4);
@@ -4300,133 +4298,135 @@ public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 	    }
 	}
 
-	switch(pickupid)
-	{
-	    case P_BANK: return GameTextForPlayer(playerid, "~w~/ayudabanco", 2000, 4);
-	    case P_FIGHT_STYLE: return GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
-		case P_JAIL_EAT: return GameTextForPlayer(playerid, "~w~Usa /carcelcomer para recibir tu bandeja con alimentos.", 2000, 4);
-		case P_LICENSE_CENTER: return GameTextForPlayer(playerid, "~w~/licencias para ver las licencias disponibles. ~n~/manuales para ver los manuales.", 2000, 4);
-		case P_JOB_CENTER: return GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
-		case P_CAR_RENT1: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
-		case P_CAR_RENT2: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
-		case P_CAR_RENT3: return GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
-	    case P_POLICE_ARREST:
-	    {
-	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
-	        return GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
-	    }
-		case P_POLICE_ARREST2:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
-	        return GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
-		}
-		case P_POLICE_DUTY:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
-			return GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
-		}
-		case P_POLICE_CAMERAS:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_PMA) return 1;
-	        return GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
-		}
-		case P_HOSP_DUTY:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_HOSP) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mservicio - /mequipo", 2000, 4);
-		}
-		case P_HOSP_HEAL:
-		{
-		    if(PlayerInfo[playerid][pFaction] != FAC_HOSP) return 1;
-		    format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
-		    return GameTextForPlayer(playerid, string, 2000, 4);
-		}
-		case P_SIDE_DUTY:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
-	        return GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco - /smacana - /stazer", 2000, 4);
-		}
-		case P_CARLIFT1:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
-		}
-		case P_CARLIFT2:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
-		}
-		case P_CARLIFT3:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
-		}
-		case P_CARLIFT4:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-			return GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4);
-		}
-		case P_MECBOX1:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
-		}
-		case P_MECBOX2:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
-		}
-		case P_MECBOX3:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-	        return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
-		}
-		case P_MECBOX3:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-			return GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4);
-		}
-		case P_CARPART_SHOP:
-		{
-	        if(PlayerInfo[playerid][pFaction] != FAC_MECH) return 1;
-			return GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
-		}
-		case P_CAR_DEMOLITION:
-		{
-		    if(PlayerInfo[playerid][pJob] != JOB_FELON || ThiefJobInfo[playerid][pFelonLevel] < 7) return 1;
-		    return GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
-		}
-		case P_MATS_SHOP:
-		{
-		    if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] != FAC_TYPE_ILLEGAL) return 1;
+	if(pickupid == P_BANK) {
+		GameTextForPlayer(playerid, "~w~/ayudabanco", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_FIGHT_STYLE) {
+		GameTextForPlayer(playerid, "~w~Escribe /aprender para adquirir nuevos conocimientos de pelea.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_POLICE_ARREST && PlayerInfo[playerid][pFaction] == FAC_PMA) {
+		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_POLICE_ARREST2 && PlayerInfo[playerid][pFaction] == FAC_PMA) {
+		GameTextForPlayer(playerid, "~w~/arrestar aqui para arrestar.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_POLICE_DUTY && PlayerInfo[playerid][pFaction] == FAC_PMA) {
+		GameTextForPlayer(playerid, "~w~/pservicio - /pequipo - /propero - /pchaleco - /pmacana - /ptazer", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_JAIL_EAT) {
+		GameTextForPlayer(playerid, "~w~Usa /carcelcomer para recibir tu bandeja con alimentos.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_HOSP_DUTY && PlayerInfo[playerid][pFaction] == FAC_HOSP) {
+		GameTextForPlayer(playerid, "~w~/mservicio - /mequipo", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_SIDE_DUTY && PlayerInfo[playerid][pFaction] == FAC_SIDE) {
+		GameTextForPlayer(playerid, "~w~/sservicio - /sequipo - /sropero - /schaleco - /smacana - /stazer", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_LICENSE_CENTER) {
+		GameTextForPlayer(playerid, "~w~/licencias para ver las licencias disponibles. ~n~/manuales para ver los manuales.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_JOB_CENTER) {
+		GameTextForPlayer(playerid, "~w~/empleos para ver una lista de los empleos disponibles.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_POLICE_CAMERAS) {
+		GameTextForPlayer(playerid, "~w~/camaras para seleccionar una camara de la ciudad.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_CARLIFT1) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_CARLIFT2) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+	} else if(pickupid == P_CARLIFT3) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_CARLIFT4) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecelevador", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_MECBOX1) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_MECBOX2) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+	} else if(pickupid == P_MECBOX3) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_MECBOX4) {
+	    if(PlayerInfo[playerid][pFaction] == FAC_MECH) {
+		GameTextForPlayer(playerid, "~w~/mecpuerta", 2000, 4); }
+		return 1;
+
+	} else if(pickupid == P_HOSP_HEAL) {
+		new string[128];
+		format(string, sizeof(string), "~w~/curarse para solicitar un medico que atienda tus heridas ($%d)", PRICE_HOSP_HEAL);
+		GameTextForPlayer(playerid, string, 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_CAR_DEMOLITION) {
+		if(PlayerInfo[playerid][pJob] == JOB_FELON && ThiefJobInfo[playerid][pFelonLevel] >= 7)
+			GameTextForPlayer(playerid, "~w~Utiliza /desarmar para desarmar el vehiculo robado.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_CARPART_SHOP) {
+		if(PlayerInfo[playerid][pFaction] == FAC_MECH)
+			GameTextForPlayer(playerid, "~w~Utiliza /meccomprar para comprar repuestos de auto.", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_CAR_RENT1 || pickupid == P_CAR_RENT2 || pickupid == P_CAR_RENT3) {
+		GameTextForPlayer(playerid, "~w~Alquiler de vehiculos", 2000, 4);
+		return 1;
+
+	} else if(pickupid == P_MATS_SHOP) {
+		if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL) {
+ 			new string[128];
 			format(string, sizeof(string), "~w~/comprarmateriales para comprar piezas - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
-			return GameTextForPlayer(playerid, string, 2000, 4);
+		    GameTextForPlayer(playerid, string, 2000, 4);
 		}
-		case P_DRUGFARM_MATS:
-		{
-		    switch(PlayerInfo[playerid][pJob])
-		    {
-		        case JOB_DRUGD: format(string, sizeof(string), "~w~bolsas de materia prima: %d a $%d c/u", ServerInfo[sDrugRawMats], GetItemPrice(ITEM_ID_MATERIAPRIMA));
-		        default: format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
-		    }
-			return GameTextForPlayer(playerid, string, 2000, 4);
-		}
-		case P_PRODS_SHOP:
-		{
-			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
-			return GameTextForPlayer(playerid, string, 2000, 4);
-		}
-		case P_INPUTS_SHOP_N:
-		{
-			if(PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
-			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
-			return GameTextForPlayer(playerid, string, 2000, 4);
-		}
-		case P_INPUTS_SHOP_S:
-		{
-			if(PlayerInfo[playerid][pFaction] != FAC_PMA && PlayerInfo[playerid][pFaction] != FAC_SIDE) return 1;
-			format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
-			return GameTextForPlayer(playerid, string, 2000, 4);
+
+	} else if(pickupid == P_DRUGFARM_MATS) {
+	    if(PlayerInfo[playerid][pJob] == JOB_DRUGD) {
+	    	new string[128];
+			format(string, sizeof(string), "~w~bolsas de materia prima: %d a $%d c/u", ServerInfo[sDrugRawMats], GetItemPrice(ITEM_ID_MATERIAPRIMA));
+		    GameTextForPlayer(playerid, string, 2000, 4);
+	    } else if(PlayerInfo[playerid][pJob] == JOB_DRUGF) {
+	    	new string[128];
+			format(string, sizeof(string), "~w~bolsas de materia prima: %d", ServerInfo[sDrugRawMats]);
+		    GameTextForPlayer(playerid, string, 2000, 4);
+ 	    }
+
+	} else if(pickupid == P_PRODS_SHOP) {
+		new string[128];
+		format(string, sizeof(string), "~w~/comprarproductos para comprar productos - $%d por unidad", GetItemPrice(ITEM_ID_PRODUCTOS));
+		GameTextForPlayer(playerid, string, 2000, 4);
+	} else if(pickupid == P_INPUTS_SHOP_N || pickupid == P_INPUTS_SHOP_S) {
+		if(PlayerInfo[playerid][pFaction] == FAC_PMA || PlayerInfo[playerid][pFaction] == FAC_SIDE) {
+			new string[128];
+			format(string, sizeof(string), "~w~/comprarinsumos para comprar insumos - $%d por unidad", GetItemPrice(ITEM_ID_MATERIALES));
+			GameTextForPlayer(playerid, string, 2000, 4);
 		}
 	}
 	return 1;

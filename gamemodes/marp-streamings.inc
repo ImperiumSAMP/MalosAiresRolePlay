@@ -34,7 +34,8 @@ new SERVER_RADIOS[][128] = {
 /*15*/	"http://streaming.radionomy.com/CTRMAN",
 /*16*/	"http://s_mobile.cienradios.com/Cumbia_48.mp3",
 /*17*/	"http://s_mobile.cienradios.com/Cuarteto_48.mp3",
-/*18*/	"http://s_mobile.cienradios.com/Folklore_48.mp3"
+/*18*/	"http://s_mobile.cienradios.com/Folklore_48.mp3",
+/*19*/  "http://streamcasthd.com:26353/"
 
 };
 
