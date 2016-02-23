@@ -2435,6 +2435,9 @@ public OnVehicleDataLoad(id)
 		cache_get_field_content(0, "VehDamage3", result); 				VehicleInfo[id][VehDamage3] 	= strval(result);
 		cache_get_field_content(0, "VehDamage4", result); 				VehicleInfo[id][VehDamage4]	 	= strval(result);
 		cache_get_field_content(0, "VehFuel", result); 					VehicleInfo[id][VehFuel] 		= strval(result);
+		cache_get_field_content(0, "VehGNC", result); 					VehicleInfo[id][VehGNC] 		= strval(result);
+		cache_get_field_content(0, "VehGNCTank", result);				VehicleInfo[id][VehGNCTank]		= strval(result);
+		cache_get_field_content(0, "VehLojack", result);				VehicleInfo[id][VehLojack] 		= strval(result);
 		cache_get_field_content(0, "VehType", result); 					VehicleInfo[id][VehType] 		= strval(result);
 		cache_get_field_content(0, "VehOwnerID", result); 				VehicleInfo[id][VehOwnerSQLID] 	= strval(result);
 		cache_get_field_content(0, "VehLocked", result);	 			VehicleInfo[id][VehLocked] 		= strval(result);
