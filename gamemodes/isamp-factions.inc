@@ -127,8 +127,8 @@ stock GetFactionMoney(factionid)
 CMD:afacciones(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA FACCIONES]==============================");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]:{C8C8C8} /afexpulsar /afvehiculos /afallowjob /afinfo - /aftipo - /afnombre - /afrangos");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]:{C8C8C8} /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afexpulsar /afvehiculos /afallowjob /afinfo - /aftipo - /afnombre - /afrangos");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision - /afpayday");
 	return 1;
 }
 
@@ -316,6 +316,39 @@ CMD:afrangos(playerid, params[]) {
 	} else {
 	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facciÃ³n incorrecta o la cantidad de rangos es mayor a 10 o menor a 2.");
 	}
+	return 1;
+}
+
+CMD:afpayday(playerid, params[])
+{
+	new factionID,
+		rankNum,
+		PayDayAmount;
+
+	if(sscanf(params, "dd", factionID, rankNum))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afpayday [idfacción] [rango] [payday]");
+	if(factionID > MAX_FACTIONS || factionID < 1)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} ID de facción incorrecta.");
+	if(rankNum > 10 || rankNum < 1)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} Los rangos pueden ir del 1 al 10.");
+	if(PayDayAmount < 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} El payday no puede ser negativo.");
+
+	switch(rankNum)
+	{
+	    case 1: FactionInfo[factionID][fPayDay1] = PayDayAmount;
+	    case 2: FactionInfo[factionID][fPayDay2] = PayDayAmount;
+	    case 3: FactionInfo[factionID][fPayDay3] = PayDayAmount;
+	    case 4: FactionInfo[factionID][fPayDay4] = PayDayAmount;
+	    case 5: FactionInfo[factionID][fPayDay5] = PayDayAmount;
+	    case 6: FactionInfo[factionID][fPayDay6] = PayDayAmount;
+	    case 7: FactionInfo[factionID][fPayDay7] = PayDayAmount;
+	    case 8: FactionInfo[factionID][fPayDay8] = PayDayAmount;
+	    case 9: FactionInfo[factionID][fPayDay9] = PayDayAmount;
+	    case 10: FactionInfo[factionID][fPayDay10] = PayDayAmount;
+	}
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El payday del rango %d en la facción %d fue ajustado a $%d.", rankNum, factionID, PayDayAmount);
+	SaveFactions();
 	return 1;
 }
 

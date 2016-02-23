@@ -5258,7 +5258,7 @@ SaveFactions()
 		FactionInfo[factionid][fRank9],
 		FactionInfo[factionid][fRank10]);
 
-		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `JoinRank`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d WHERE `id`=%d",
+		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `JoinRank`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d, fPayDay1=%d, fPayDay2=%d, fPayDay3=%d, fPayDay4=%d, fPayDay5=%d, fPayDay6=%d, fPayDay7=%d, fPayDay8=%d, fPayDay9=%d, fPayDay10=%d WHERE `id`=%d",
 		FactionInfo[factionid][fMaterials],
 		FactionInfo[factionid][fBank],
 		FactionInfo[factionid][fJoinRank],
@@ -5266,6 +5266,16 @@ SaveFactions()
 		FactionInfo[factionid][fRankAmount],
 		FactionInfo[factionid][fAllowJob],
 		FactionInfo[factionid][fMissionVeh],
+		FactionInfo[factionid][fPayDay1],
+		FactionInfo[factionid][fPayDay2],
+		FactionInfo[factionid][fPayDay3],
+		FactionInfo[factionid][fPayDay4],
+		FactionInfo[factionid][fPayDay5],
+		FactionInfo[factionid][fPayDay6],
+		FactionInfo[factionid][fPayDay7],
+		FactionInfo[factionid][fPayDay8],
+		FactionInfo[factionid][fPayDay9],
+		FactionInfo[factionid][fPayDay10],
 		factionid);
 
         format(query,sizeof(query),"UPDATE `factions` SET %s %s", squery, iquery);
