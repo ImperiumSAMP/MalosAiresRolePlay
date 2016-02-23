@@ -325,7 +325,7 @@ CMD:afpayday(playerid, params[])
 		rankNum,
 		PayDayAmount;
 
-	if(sscanf(params, "dd", factionID, rankNum))
+	if(sscanf(params, "ddd", factionID, rankNum, PayDayAmount))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afpayday [idfacción] [rango] [payday]");
 	if(factionID > MAX_FACTIONS || factionID < 1)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} ID de facción incorrecta.");

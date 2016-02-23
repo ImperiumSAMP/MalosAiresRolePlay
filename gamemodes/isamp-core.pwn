@@ -581,10 +581,13 @@ public OnGameModeInit()
 	licenseMenu = CreateMenu("Licencias", 2, 200.0, 100.0, 150.0, 150.0);
 
 	AddMenuItem(licenseMenu, 0, "Lic. de conduccion");
+	AddMenuItem(licenseMenu, 0, "Lic. de motos");
 	AddMenuItem(licenseMenu, 0, "Lic. de navegacion");
 	AddMenuItem(licenseMenu, 0, "Lic. de vuelo");
 
 	format(price, sizeof(price), "$%d", PRICE_LIC_DRIVING);
+	AddMenuItem(licenseMenu, 1, price);
+	format(price, sizeof(price), "$%d", PRICE_LIC_BIKES);
 	AddMenuItem(licenseMenu, 1, price);
 	format(price, sizeof(price), "$%d", PRICE_LIC_SAILING);
 	AddMenuItem(licenseMenu, 1, price);
@@ -1009,6 +1012,7 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pBizKey] = 0;
 	PlayerInfo[playerid][pWarnings] = 0;
 	PlayerInfo[playerid][pCarLic] = 0;
+	PlayerInfo[playerid][pBikeLic] = 0;
 	PlayerInfo[playerid][pWepLic] = 0;
 	PlayerInfo[playerid][pFlyLic] = 0;
 	PlayerInfo[playerid][pPhoneNumber] = 0;
@@ -1987,6 +1991,7 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "BizKey", result); 			PlayerInfo[playerid][pBizKey] 			= strval(result);
 		cache_get_field_content(0, "Warnings", result); 		PlayerInfo[playerid][pWarnings] 		= strval(result);
 		cache_get_field_content(0, "CarLic", result); 			PlayerInfo[playerid][pCarLic] 			= strval(result);
+		cache_get_field_content(0, "BikeLic", result); 			PlayerInfo[playerid][pBikeLic] 			= strval(result);
 		cache_get_field_content(0, "FlyLic", result); 			PlayerInfo[playerid][pFlyLic] 			= strval(result);
 		cache_get_field_content(0, "WepLic", result); 			PlayerInfo[playerid][pWepLic] 			= strval(result);
 		cache_get_field_content(0, "PhoneNumber", result); 		PlayerInfo[playerid][pPhoneNumber] 		= strval(result);
@@ -2613,9 +2618,10 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pContainerSQLID]
 		);
 		
-		format(query,sizeof(query),"%s, `CarLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
+		format(query,sizeof(query),"%s, `CarLic`='%d', `BikeLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
 			query,
 			PlayerInfo[playerid][pCarLic],
+			PlayerInfo[playerid][pBikeLic],
 			PlayerInfo[playerid][pFlyLic],
 			PlayerInfo[playerid][pWepLic],
 			PlayerInfo[playerid][pPhoneNumber],
@@ -3946,12 +3952,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			else
 			{
 		        SendFMessage(playerid, COLOR_LIGHTGREEN, "¡Has superado la prueba!, ahora tienes una licencia de conducir (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
-				switch(PlayerInfo[playerid][pCarLic])
-				{
-				    case 0: PlayerInfo[playerid][pCarLic] = 1; // No tenía ninguna de las dos licencias, ahora tiene la de conducir.
-				    case 2: PlayerInfo[playerid][pCarLic] = 3; // Tenía la de motos, ahora tiene las dos.
-				}
-	    	 	GivePlayerCash(playerid, -PRICE_LIC_DRIVING);
+				PlayerInfo[playerid][pCarLic] = 1;
 		    }
 		    SetVehicleToRespawn(vehicleID);
 		    PutPlayerInVehicle(playerid, vehicleID, 0);
@@ -4377,7 +4378,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 	   		    if(playerLicense[playerid][lDTaking] == 1) {
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás tomando una licencia!");
 	   		    } else if(GetPlayerCash(playerid) >= PRICE_LIC_DRIVING) {
-			    	if(PlayerInfo[playerid][pCarLic] == 0 || PlayerInfo[playerid][pCarLic] == 2) {
+			    	if(PlayerInfo[playerid][pCarLic] == 0) {
 						SendClientMessage(playerid, COLOR_WHITE, "¡La prueba ha comenzado!, sal del edificio e ingresa a uno de los autos blancos situados en el estacionamiento.");
 						playerLicense[playerid][lDTaking] = 1;
 					} else {
@@ -4866,7 +4867,7 @@ stock CKLog(adminid, playerid, newname[], newage, newsex)
 	fwrite(CKFileLog, string);
 	format(string, sizeof(string), "[PROPIEDADES] CASA: %d | CASA ALQUILADA: %d | NEGOCIO: %d\r\n", PlayerInfo[playerid][pHouseKey], PlayerInfo[playerid][pHouseKeyIncome], PlayerInfo[playerid][pBizKey]);
 	fwrite(CKFileLog, string);
-	format(string, sizeof(string), "[LICENCIAS] Auto: %d | Vuelo: %d | Armas: %d\r\n", PlayerInfo[playerid][pCarLic], PlayerInfo[playerid][pFlyLic], PlayerInfo[playerid][pWepLic]);
+	format(string, sizeof(string), "[LICENCIAS] Auto: %d | Moto: %d | Vuelo: %d | Armas: %d\r\n", PlayerInfo[playerid][pCarLic], PlayerInfo[playerid][pBikeLic], PlayerInfo[playerid][pFlyLic], PlayerInfo[playerid][pWepLic]);
 	fwrite(CKFileLog, string);
 	format(string, sizeof(string), "[DELINCUENTE] Nivel: %d | Experiencia: %d\r\n", ThiefJobInfo[playerid][pFelonLevel], ThiefJobInfo[playerid][pFelonExp]);
 	fwrite(CKFileLog, string);
@@ -5258,7 +5259,7 @@ SaveFactions()
 		FactionInfo[factionid][fRank9],
 		FactionInfo[factionid][fRank10]);
 
-		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `JoinRank`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d, fPayDay1=%d, fPayDay2=%d, fPayDay3=%d, fPayDay4=%d, fPayDay5=%d, fPayDay6=%d, fPayDay7=%d, fPayDay8=%d, fPayDay9=%d, fPayDay10=%d WHERE `id`=%d",
+		format(iquery,sizeof(iquery),"`Materials`=%d, `Bank`=%d, `JoinRank`=%d, `Type`=%d, `RankAmount`=%d, `AllowJob`=%d, fMissionVeh=%d, PayDay1=%d, PayDay2=%d, PayDay3=%d, PayDay4=%d, PayDay5=%d, PayDay6=%d, PayDay7=%d, PayDay8=%d, PayDay9=%d, PayDay10=%d WHERE `id`=%d",
 		FactionInfo[factionid][fMaterials],
 		FactionInfo[factionid][fBank],
 		FactionInfo[factionid][fJoinRank],
@@ -5320,34 +5321,20 @@ public ShowStats(playerid, targetid, bool:admin)
 			    case 1: sexText = "Masculino";
 			}
 			switch(PlayerInfo[targetid][pCarLic]) {
-			    case 0:
-				{
-				    cLicense = "No";
-				    bLicense = "No";
-				}
-			    case 1:
-				{
-				    cLicense = "Si";
-				    bLicense = "No";
-				}
-			    case 2:
-				{
-				    cLicense = "No";
-				    bLicense = "Si";
-				}
-			    case 3:
-				{
-				    cLicense = "Si";
-				    bLicense = "Si";
-				}
+				case 0: cLicense = "No";
+				case 1: cLicense = "Sí";
+			}
+			switch(PlayerInfo[targetid][pBikeLic]) {
+				case 0: bLicense = "No";
+				case 1: bLicense = "Sí";
 			}
 			switch(PlayerInfo[targetid][pFlyLic]) {
 			    case 0: fLicense = "No";
-			    case 1: fLicense = "Si";
+			    case 1: fLicense = "Sí";
 			}
 			switch(PlayerInfo[targetid][pWepLic]) {
 			    case 0: wLicense = "No";
-			    case 1: wLicense = "Si";
+			    case 1: wLicense = "Sí";
 			}
 			
 			if(PlayerInfo[targetid][pFaction] > 0) {
@@ -10541,7 +10528,7 @@ CMD:quitar(playerid, params[])
 	if(sscanf(params, "us[64]", targetID, itemString))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /quitar [ID/Jugador] [ítem]");
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Items]: licconducir, licvuelo, licarmas.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "[Items]: licconducir, licmotos, licvuelo, licarmas.");
   	}
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
@@ -10558,6 +10545,13 @@ CMD:quitar(playerid, params[])
   			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto no tiene una licencia de conducir!");
 		PlayerPlayerActionMessage(playerid, targetID, 15.0, "le ha quitado la licencia de conducir a");
 		PlayerInfo[targetID][pCarLic] = 0;
+	}
+	if(strcmp(itemString, "licmotos", true) == 0)
+	{
+		if(PlayerInfo[targetID][pBikeLic] == 0)
+  			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El sujeto no tiene una licencia de motos!");
+		PlayerPlayerActionMessage(playerid, targetID, 15.0, "le ha quitado la licencia de motos a");
+		PlayerInfo[targetID][pBikeLic] = 0;
 	}
 	else if(strcmp(itemString, "licvuelo", true) == 0)
 	{
@@ -11478,31 +11472,37 @@ CMD:mostrarlic(playerid, params[])
        	SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Ministerio del Interior");
        	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
        	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de conducir del bolsillo y se la muestra a");
- 	} else
-	    if(strcmp(lic, "vuelo", true) == 0)
-	    {
-	        if(!PlayerInfo[playerid][pFlyLic])
-	            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de vuelo.");
-	    	SendClientMessage(targetid, COLOR_LIGHTGREEN, "========================[Licencia de Vuelo]========================");
-	        SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
-	       	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
-	       	SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Dirección Nacional de Aeronáutica Civíl");
-	       	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
-	       	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de vuelo del bolsillo y se la muestra a");
-	 	} else
-	   		if(strcmp(lic, "armas", true) == 0)
-		    {
-		        if(!PlayerInfo[playerid][pWepLic])
-		            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de portación de armas.");
-		    	SendClientMessage(targetid, COLOR_LIGHTGREEN, "==================[Licencia de Portación de Armas]===================");
-		        SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
-		       	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
-		       	SendClientMessage(targetid, COLOR_WHITE, "Habilita: Pistola 9mm - Pistola Desert Eagle - Escopeta - Rifle de Caza");
-		       	SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Ministerio de Seguridad Pública");
-		       	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
-		       	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de portación de armas del bolsillo y se la muestra a");
-		 	} else
-		 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mostrarlic [Licencia] [ID/Jugador]. Licencias: conducir - vuelo - armas.");
+ 	} else if(strcmp(lic, "motos", true) == 0) {
+        if(!PlayerInfo[playerid][pBikeLic])
+            return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de motos.");
+    	SendClientMessage(targetid, COLOR_LIGHTGREEN, "=======================[Licencia de Motos]======================");
+        SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
+       	SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
+       	SendClientMessage(targetid, COLOR_WHITE, "Categoría: Original");
+       	SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Ministerio del Interior");
+       	SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
+       	PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de motos del bolsillo y se la muestra a");
+ 	} else if(strcmp(lic, "vuelo", true) == 0) {
+		if(!PlayerInfo[playerid][pFlyLic])
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de vuelo.");
+		SendClientMessage(targetid, COLOR_LIGHTGREEN, "========================[Licencia de Vuelo]========================");
+		SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
+		SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
+		SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Dirección Nacional de Aeronáutica Civíl");
+		SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
+		PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de vuelo del bolsillo y se la muestra a");
+	} else if(strcmp(lic, "armas", true) == 0) {
+		if(!PlayerInfo[playerid][pWepLic])
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una licencia de portación de armas.");
+		SendClientMessage(targetid, COLOR_LIGHTGREEN, "==================[Licencia de Portación de Armas]===================");
+		SendFMessage(targetid, COLOR_WHITE, "Nombre: %s", GetPlayerNameEx(playerid));
+		SendFMessage(targetid, COLOR_WHITE, "Edad: %d", PlayerInfo[playerid][pAge]);
+		SendClientMessage(targetid, COLOR_WHITE, "Habilita: Pistola 9mm - Pistola Desert Eagle - Escopeta - Rifle de Caza");
+		SendClientMessage(targetid, COLOR_WHITE, "Expedido por: Ministerio de Seguridad Pública");
+		SendClientMessage(targetid, COLOR_LIGHTGREEN, "===============================================================");
+		PlayerPlayerActionMessage(playerid, targetid, 15.0, "toma su licencia de portación de armas del bolsillo y se la muestra a");
+	} else
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mostrarlic [Licencia] [ID/Jugador]. Licencias: conducir - vuelo - armas.");
 	return 1;
 }
 
@@ -14661,6 +14661,7 @@ CMD:ckearplayer(playerid,params[])
 		
  		PlayerInfo[targetid][pFlyLic] = 0;
  		PlayerInfo[targetid][pCarLic] = 0;
+ 		PlayerInfo[targetid][pBikeLic] = 0;
 		PlayerInfo[targetid][pWepLic] = 0;
 
 		newmoney = GetPlayerMoney(targetid) / 4;
@@ -14677,6 +14678,7 @@ CMD:ckearplayer(playerid,params[])
 		SetPlayerName(targetid, PlayerInfo[targetid][pName]);
     	PlayerInfo[targetid][pSex] = newsex;
     	PlayerInfo[targetid][pAge] = newage;
+    	SaveAccount(targetid);
 
     	SetPVarInt(playerid, "ckeandoplayer", 0);
     	return 1;

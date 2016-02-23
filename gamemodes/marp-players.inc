@@ -34,10 +34,11 @@ enum pInfo {
 	pBizKey,
 	pWarnings,
 	pCarLic,
+	pBikeLic,
 	pFlyLic,
 	pWepLic,
 	pPhoneNumber,
-	pPhoneC,//Phone Company (Business ID)
+	pPhoneC,
 	pPhoneBook,
 	pJailed,
 	pJailTime,
