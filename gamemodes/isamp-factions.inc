@@ -8,7 +8,7 @@
 
 //====[FACCIONES]===============================================================
 #define FAC_NONE                0
-#define FAC_PMA                 1 		// PolicÃ­a Metropolitana.
+#define FAC_PMA                 1 		// Policía Metropolitana.
 #define FAC_HOSP                2       // SAME
 #define FAC_SIDE                3		// SIDE
 #define FAC_GOB	                4       // Malos Aires Ciudad
@@ -41,6 +41,16 @@ enum Factions {
 	fName[50],
 	fMaterials,
 	fBank,
+	fPayDay1,
+	fPayDay2,
+	fPayDay3,
+	fPayDay4,
+	fPayDay5,
+	fPayDay6,
+	fPayDay7,
+	fPayDay8,
+	fPayDay9,
+	fPayDay10,
 	fRank1[35],
 	fRank2[35],
 	fRank3[35],
@@ -52,7 +62,7 @@ enum Factions {
 	fRank9[35],
 	fRank10[35],
 	fJoinRank,
-	fType,//For Government factions etc
+	fType,
 	fRankAmount,
 	fAllowJob,
 	fMissionVeh,

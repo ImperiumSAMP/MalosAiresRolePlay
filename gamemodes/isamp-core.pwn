@@ -38,13 +38,13 @@
 forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 //#include <mapandreas>
-//Includes  módulos isamp
+
 #include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
 #include "marp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores
 #include "marp-items.inc" 				//Sistema de items
-#include "marp-container.inc"
-#include "marp-streamings.inc"
+#include "marp-container.inc"           //Sistema de containers.
+#include "marp-streamings.inc"          //Lista de URLS para streamear.
 #include "isamp-mano.inc" 				//Sistema de items en la mano
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
@@ -82,21 +82,21 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-mask.inc"       		//Sistema de mascaras con id
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
-#include "marp-concesionaria.inc"
-#include "marp-garbjob.inc"
-#include "marp-tranjob.inc"
-#include "marp-farmjob.inc"
-#include "marp-drugfjob.inc"
-#include "marp-delijob.inc"
-#include "marp-tutorial.inc"
-#include "marp-cronometro.inc"
-#include "marp-rolepoints.inc"
-#include "marp-weather.inc"
-#include "marp-same.inc"
-#include "marp-lifts.inc"
-#include "marp-actors.inc"
-#include "marp-parlantes.inc"
-#include "marp-horseraces.inc"
+#include "marp-concesionaria.inc"       //Sistema de compra y venta de vehículos
+#include "marp-garbjob.inc"             //Trabajo de basurero
+#include "marp-tranjob.inc"             //Trabajo de transportista
+#include "marp-farmjob.inc"             //Trabajo de granjero
+#include "marp-drugfjob.inc"            //Trabajo de vendedor de drogas
+#include "marp-delijob.inc"             //Trabajo de delivery
+#include "marp-tutorial.inc"            //Sistema de tutorial
+#include "marp-cronometro.inc"          //Funciones para cronómetro/cuenta atrás
+#include "marp-rolepoints.inc"          //Sistema de puntos de rol
+#include "marp-weather.inc"             //Sistema de climas automáticos
+#include "marp-same.inc"                //Facción SAME
+#include "marp-lifts.inc"               //Sistema/Funciones para ascensores
+#include "marp-actors.inc"              //Sistema de actores
+#include "marp-parlantes.inc"           //Sistema de parlantes
+#include "marp-horseraces.inc"          //Sistema de carreras de caballos.
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.5"
@@ -176,16 +176,16 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_POLICE_FINE	    	10039
 
 // Tiempos de jail.
-#define DM_JAILTIME 			300 	// 5 minutos
+#define DM_JAILTIME 			300					// 5 minutos
 
 // Precios.
 #define PRICE_ADVERTISE         80
 #define PRICE_FIGHTSTYLE        3000
 #define PRICE_TEXT              1
-#define PRICE_CALL              20  // Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
+#define PRICE_CALL              20					// Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
 #define PRICE_TAXI              1
-#define PRICE_TAXI_INTERVAL		15   // Intervalo de tiempo de la bajada de taximetro (en segundos)
-#define PRICE_TAXI_PERPASSENGER 390 // Dinero por pasajero.
+#define PRICE_TAXI_INTERVAL		15					// Intervalo de tiempo de la bajada de taximetro (en segundos)
+#define PRICE_TAXI_PERPASSENGER 390					// Dinero por pasajero.
 #define PRICE_UNLISTEDPHONE     4500
 #define PRICE_TREATMENT         500
 
@@ -2381,6 +2381,16 @@ public OnFactionDataLoad(id)
 		cache_get_field_content(0, "fMissionVeh", result); 				FactionInfo[id][fMissionVeh]= strval(result);
 		cache_get_field_content(0, "JoinRank", result); 				FactionInfo[id][fJoinRank] 	= strval(result);
 		cache_get_field_content(0, "RankAmount", result); 				FactionInfo[id][fRankAmount]= strval(result);
+		cache_get_field_content(0, "PayDay1", result);					FactionInfo[id][fPayDay1]	= strval(result);
+		cache_get_field_content(0, "PayDay2", result);					FactionInfo[id][fPayDay2]	= strval(result);
+		cache_get_field_content(0, "PayDay3", result);					FactionInfo[id][fPayDay3]	= strval(result);
+		cache_get_field_content(0, "PayDay4", result);					FactionInfo[id][fPayDay4]	= strval(result);
+		cache_get_field_content(0, "PayDay5", result);					FactionInfo[id][fPayDay5]	= strval(result);
+		cache_get_field_content(0, "PayDay6", result);					FactionInfo[id][fPayDay6]	= strval(result);
+		cache_get_field_content(0, "PayDay7", result);					FactionInfo[id][fPayDay7]	= strval(result);
+		cache_get_field_content(0, "PayDay8", result);					FactionInfo[id][fPayDay8]	= strval(result);
+		cache_get_field_content(0, "PayDay9", result);					FactionInfo[id][fPayDay9]	= strval(result);
+		cache_get_field_content(0, "PayDay10", result);					FactionInfo[id][fPayDay10]	= strval(result);
 		cache_get_field_content(0, "Name",								FactionInfo[id][fName],1,50);
 		cache_get_field_content(0, "Rank1", 							FactionInfo[id][fRank1],1,35);
 		cache_get_field_content(0, "Rank2", 							FactionInfo[id][fRank2],1,35);
@@ -2722,110 +2732,32 @@ public PayDay(playerid)
 	{
         switch(PlayerInfo[playerid][pFaction])
 		{
-            case FAC_PMA:
+            case 0:
 			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
-            }
-            case FAC_HOSP:
-			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
-            }
-            case FAC_MECH:
-			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 1850;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 1700;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 1550;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 1400;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 1250;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
-            }
-            case FAC_MAN:
-			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 2600;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 2300;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 1700;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 1400;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
-            }
-            case FAC_SIDE:
-			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 3000;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 2800;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 2600;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 2400;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 2200;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
-            }
-            case FAC_GOB:
-			{
-                switch(PlayerInfo[playerid][pRank])
-				{
-	                case 1: PlayerInfo[playerid][pPayCheck] += 3500;
-	                case 2: PlayerInfo[playerid][pPayCheck] += 3300;
-	                case 3: PlayerInfo[playerid][pPayCheck] += 3100;
-	                case 4: PlayerInfo[playerid][pPayCheck] += 2900;
-	                case 5: PlayerInfo[playerid][pPayCheck] += 2700;
-	                case 6: PlayerInfo[playerid][pPayCheck] += 2500;
-	                case 7: PlayerInfo[playerid][pPayCheck] += 2300;
-	                case 8: PlayerInfo[playerid][pPayCheck] += 2100;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1900;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
-	            }
+			    switch(PlayerInfo[playerid][pJob])
+			    {
+			        case 0: PlayerInfo[playerid][pPayCheck] += 600;
+			        case JOB_FELON: PlayerInfo[playerid][pPayCheck] += 600;
+			        case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += 600;
+			        case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += 800; // Mínimo por si no hay ventas
+			        case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += 1200; // Mínimo por si no hay pasajeros disponibles
+			    }
             }
             default:
 			{
-            	if(PlayerInfo[playerid][pJob] == 0 || PlayerInfo[playerid][pJob] == JOB_FELON || PlayerInfo[playerid][pJob] == JOB_DRUGF) // ASIGNACION A LOS DESEMPLEADOS
-            		PlayerInfo[playerid][pPayCheck] += 600;
-				if(PlayerInfo[playerid][pJob] == JOB_DRUGD) //Mínimo por si no hay ventas
-				    PlayerInfo[playerid][pPayCheck] += 800;
-                if(PlayerInfo[playerid][pJob] == JOB_TAXI) //Mínimo por si no hay pasajeros disponibles
-            		PlayerInfo[playerid][pPayCheck] += 1200;
+			    switch(PlayerInfo[playerid][pRank])
+			    {
+			        case 1: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay1];
+			        case 2: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay2];
+			        case 3: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay3];
+			        case 4: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay4];
+			        case 5: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay5];
+			        case 6: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay6];
+			        case 7: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay7];
+			        case 8: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay8];
+			        case 9: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay9];
+			        case 10: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay10];
+			    }
 			}
         }
         
