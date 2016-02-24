@@ -1314,11 +1314,11 @@ CMD:motor(playerid, params[])
 	{
 		startingEngine[playerid] = true;
 		SetTimerEx("StartEngineTimer", 2000, false, "ii", playerid, vehicleid);
-		PlayerActionMessage(playerid, 15.0, "gira la llave y le da arranque al vehículo.");
+		PlayerActionMessage(playerid, 15.0, "coloca la lalve en la ranura, la gira y le da arranque al vehículo.");
 		GameTextForPlayer(playerid, "~r~Encendiendo motor", 2000, 4);
 	} else
 	{
-		PlayerActionMessage(playerid, 15.0, "apaga el motor del vehículo.");
+		PlayerActionMessage(playerid, 15.0, "apaga el motor del vehículo y retira la llave de la ranura.");
 		SetEngine(vehicleid, 0);
 	}
 	return 1;
