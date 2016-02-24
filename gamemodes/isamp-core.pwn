@@ -1530,6 +1530,8 @@ public OnPlayerSpawn(playerid)
 	LoadHandItem(playerid, HAND_LEFT);
 	AttachBackItem(playerid);
     LoadToysItems(playerid);
+    
+	if(AdminDuty[playerid]) SetPlayerColor(playerid, COLOR_ADMINDUTY);
 
 	return 1;
 }
