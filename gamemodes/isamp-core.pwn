@@ -2734,8 +2734,8 @@ public PayDay(playerid)
 	                case 6: PlayerInfo[playerid][pPayCheck] += 2000;
 	                case 7: PlayerInfo[playerid][pPayCheck] += 1800;
 	                case 8: PlayerInfo[playerid][pPayCheck] += 1600;
-	                case 9: PlayerInfo[playerid][pPayCheck] += 1400;
-	                case 10: PlayerInfo[playerid][pPayCheck] += 600;
+	                case 9: PlayerInfo[playerid][pPayCheck] += 1000;
+	                case 10: PlayerInfo[playerid][pPayCheck] += 1000;
 	            }
             }
             case FAC_HOSP:
@@ -11221,11 +11221,11 @@ CMD:propero(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]{C8C8C8} /propero [ID del equipo]");
 		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros PM _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete                   12: Comisionado General");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Cadete                   12: Comisario");
 		SendClientMessage(playerid, COLOR_GRAD1, "| 2-8: Oficial                13: Operaciones Especiales Metropolitanas (DOEM)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Oficial Mayor            14: División de Investigaciones Metropolitanas");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Comisionado             15: Civil");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Comisionado Mayor        ");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 9: Sargento                 14: División de Investigaciones Metropolitanas");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 10: Teniente                15: Civil");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 11: Sub-Comisario			");
 		return 1;
 	}
 
@@ -11233,43 +11233,43 @@ CMD:propero(playerid, params[])
 	{
 		case 1: // Cadete
 		{
-			if(PlayerInfo[playerid][pRank] > 9)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 71);
 		}
 		case 2: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 280); // Skin de oficial 1
 		}
 		case 3: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 265); // Tenpenny
 		}
 		case 4: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 266); // Pulaski
 		}
 		case 5: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 267); // Hernandez
 		}
 		case 6: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 281); // Skin de oficial 2
 		}
 		case 7: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
@@ -11277,31 +11277,31 @@ CMD:propero(playerid, params[])
 		}
 		case 8: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 7)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
 			SetPlayerSkin(playerid, 307); // Skin de oficial mujer 2
 		}
-		case 9: // Oficial Mayor
+		case 9: // Sargento
 		{
-			if(PlayerInfo[playerid][pRank] > 6)
+			if(PlayerInfo[playerid][pRank] > 5)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 284);
 		}
-		case 10: // Comisionado
+		case 10: // Teniente
 		{
 			if(PlayerInfo[playerid][pRank] > 3)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 283);
 		}
-		case 11: // Comisionado Mayor
+		case 11: // Sub Comisario
 		{
 			if(PlayerInfo[playerid][pRank] > 2)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 288);
 		}
-		case 12: // Comisionado General
+		case 12: // Comisario
 		{
 			if(PlayerInfo[playerid][pRank] > 1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
@@ -11315,7 +11315,7 @@ CMD:propero(playerid, params[])
 		}
 		case 14: // DIM
 		{
-			if(PlayerInfo[playerid][pRank] > 5)
+			if(PlayerInfo[playerid][pRank] > 4)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 286);
 		}
