@@ -9876,7 +9876,7 @@ CMD:comprar(playerid, params[])
 			if(sscanf(params, "ii", option, cant))
 			{
 				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /comprar [Item] [Cantidad]");
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d", GetItemPrice(ITEM_ID_BARRETA));
+				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d 2) Ganzúa - $%d", GetItemPrice(ITEM_ID_BARRETA), GetItemPrice(ITEM_ID_GANZUA));
 				return 1;
 			}
 			if(freehand == -1)
@@ -9886,6 +9886,7 @@ CMD:comprar(playerid, params[])
    			switch(option)
    			{
    			    case 1: item = ITEM_ID_BARRETA;
+   			    case 2: item = ITEM_ID_GANZUA;
    			    default: return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /comprar [Item] [Cantidad]");
 			}
 			if(GetPlayerCash(playerid) < GetItemPrice(item) * cant)
