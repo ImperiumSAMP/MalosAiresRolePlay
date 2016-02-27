@@ -1,9 +1,8 @@
-#if defined _isamp_animations_included
+#if defined _marp_animations_included
 	#endinput
 #endif
-#define _isamp_animations_included
+#define _marp_animations_included
 
-//--------------------------------ANIMACIONES-----------------------------------
 //--------------------------------ANIMACIONES-----------------------------------
 
 CMD:anim(playerid, params[]) {
@@ -75,7 +74,7 @@ CMD:levantarbrazos(playerid, params[])
 	{
 		case 1: ApplyAnimation(playerid, "GHANDS", "gsign2", 4.1, 0, 1, 1, 1, 1, 1);
 		case 2: ApplyAnimation(playerid, "GHANDS", "gsign2LH", 4.1, 0, 1, 1, 1, 1, 1);
-		case 3: ApplyAnimation(playerid, "GHANDS", "GSIGN1", 4.1, 1, 0, 0, 0, 0); // /levantarbrazos
+		case 3: ApplyAnimation(playerid, "GHANDS", "GSIGN1", 4.1, 1, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -91,8 +90,8 @@ CMD:hablar(playerid, params[])
 	{
 		case 1: ApplyAnimation(playerid, "GHANDS", "gsign5", 4.1, 0, 1, 1, 1, 1, 1);
 		case 2: ApplyAnimation(playerid, "GANGS", "prtial_gngtlkF", 4.1, 0, 1, 1, 1, 1, 1);
-		case 3: ApplyAnimation(playerid, "MISC", "Idle_Chat_02", 4.1, 1, 0, 0, 0, 0, 0); // PRUEBA
-		case 4: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 0, 0); // PRUEBA PARAMETROS
+		case 3: ApplyAnimation(playerid, "MISC", "Idle_Chat_02", 4.1, 1, 0, 0, 0, 0, 0);
+		case 4: ApplyAnimation(playerid, "PED", "IDLE_CHAT", 4.0, 1, 1, 1, 0, 0);
  	}
  	return 1;
 }
@@ -138,9 +137,9 @@ CMD:apoyarse(playerid, params[])
  	switch(anim)
  	{
     	case 1: ApplyAnimation(playerid, "MISC", "Plyrlean_loop", 4.1, 0, 0, 0, 1, 0);
-    	case 2: ApplyAnimation(playerid, "GANGS", "LEANIDLE", 4.0, 0, 0, 0, 1, 0); // /apoyarse
+    	case 2: ApplyAnimation(playerid, "GANGS", "LEANIDLE", 4.0, 0, 0, 0, 1, 0);
     	case 3: ApplyAnimation(playerid, "GANGS", "LEANIN", 4.0, 0, 0, 0, 1, 0); // /apoyarse3 ApplyAnimation(playerid, "GANGS", "LEANOUT", 4.0, 0, 0, 0, 1, 0); // /dejardeapoyarse
-    	case 4: ApplyAnimation(playerid, "LOWRIDER", "F_SMKLEAN_LOOP", 4.0, 1, 0, 0, 1, 0); // /apoyarse4
+    	case 4: ApplyAnimation(playerid, "LOWRIDER", "F_SMKLEAN_LOOP", 4.0, 1, 0, 0, 1, 0);
 	}
     return 1;
 }
@@ -154,11 +153,11 @@ CMD:cbrazos(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cbrazos [1-5]");
  	switch(anim)
  	{
-        case 1: ApplyAnimation(playerid, "OTB", "WTCHRACE_LOOP", 4.0, 1, 0, 0, 0, 0); // /cbrazos
-		case 2: ApplyAnimation(playerid, "COP_AMBIENT", "COPLOOK_IN", 4.0, 0, 0, 0, 1, 0); // nueva
+        case 1: ApplyAnimation(playerid, "OTB", "WTCHRACE_LOOP", 4.0, 1, 0, 0, 0, 0);
+		case 2: ApplyAnimation(playerid, "COP_AMBIENT", "COPLOOK_IN", 4.0, 0, 0, 0, 1, 0);
 		case 3: ApplyAnimation(playerid, "COP_AMBIENT", "COPLOOK_NOD", 4.0, 0, 0, 0, 1, 0); // nueva ApplyAnimation(playerid, "COP_AMBIENT", "COPLOOK_OUT", 4.0, 0, 0, 0, 1, 0); //salir de esta anim
-		case 4: ApplyAnimation(playerid, "GRAFFITI", "GRAFFITI_CHKOUT", 4.0, 0, 0, 0, 0, 0); // /cbrazos
-		case 5: ApplyAnimation(playerid, "GRAVEYARD", "PRST_LOOPA", 4.0, 0, 0, 0, 1, 0); // /cbrazos2
+		case 4: ApplyAnimation(playerid, "GRAFFITI", "GRAFFITI_CHKOUT", 4.0, 0, 0, 0, 0, 0);
+		case 5: ApplyAnimation(playerid, "GRAVEYARD", "PRST_LOOPA", 4.0, 0, 0, 0, 1, 0);
 	}
     return 1;
 }
@@ -195,7 +194,7 @@ CMD:caminar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /caminar [1-13]");
 	switch(animid)
 	{
-		case 1: ApplyAnimation(playerid, "WUZI", "WUZI_WALK", 4.1, 1, 1, 1, 1, 1, 1); // /caminar
+		case 1: ApplyAnimation(playerid, "WUZI", "WUZI_WALK", 4.1, 1, 1, 1, 1, 1, 1);
 		case 2: ApplyAnimation(playerid, "PED", "WALK_fat", 4.1, 1, 1, 1, 1, 1, 1);
 		case 3: ApplyAnimation(playerid, "PED", "WALK_fatold", 4.1, 1, 1, 1, 1, 1, 1);
 		case 4: ApplyAnimation(playerid, "PED", "WALK_gang1", 4.1, 1, 1, 1, 1, 1, 1);
@@ -207,7 +206,7 @@ CMD:caminar(playerid, params[])
 		case 10: ApplyAnimation(playerid, "PED", "WOMAN_walksexy", 4.1, 1, 1, 1, 1, 1, 1);
 		case 11: ApplyAnimation(playerid, "PED", "WOMAN_walkshop", 4.1, 1, 1, 1, 1, 1, 1);
 		case 12: ApplyAnimation(playerid, "PED", "WALK_shuffle", 4.1, 1, 1, 1, 1, 1, 1);
-		case 13: ApplyAnimation(playerid, "MUSCULAR", "MUSCLEWALK", 4.1, 1, 1, 1, 1, 1, 1); // /caminar
+		case 13: ApplyAnimation(playerid, "MUSCULAR", "MUSCLEWALK", 4.1, 1, 1, 1, 1, 1, 1);
 		default: SendClientMessage(playerid, 0xFFFFFFAA, "[Sintaxis]: /caminar [1-13]");
 	}
 	return 1;
@@ -233,7 +232,7 @@ CMD:bomba(playerid, params[])
 {
 	if(GetPlayerState(playerid) != 1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0); // nueva
+    ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
     return 1;
 }
 
@@ -241,7 +240,7 @@ CMD:bate(playerid, params[])
 {
     if(GetPlayerState(playerid) != 1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "CRACK", "BBALBAT_IDLE_02", 4.0, 1, 0, 0, 0, 0); // nuevo bate
+	ApplyAnimation(playerid, "CRACK", "BBALBAT_IDLE_02", 4.0, 1, 0, 0, 0, 0);
 	return 1;
 }
 
@@ -415,10 +414,10 @@ CMD:bailar(playerid, params[])
   		case 4:	ApplyAnimation(playerid, "DANCING", "dnce_M_d",  4.0, 1, 0, 0, 0, 0);
    		case 5:	ApplyAnimation(playerid, "DANCING", "dnce_M_e",  4.0, 1, 0, 0, 0, 0);
         case 6:	ApplyAnimation(playerid, "DANCING", "dance_loop",  4.0, 1, 0, 0, 0, 0);
-        case 7: ApplyAnimation(playerid, "DANCING", "DAN_DOWN_A", 4.0, 1, 1, 1, 0, 0); // /bailar7
-        case 8: ApplyAnimation(playerid, "DANCING", "DAN_LOOP_A", 4.0, 1, 1, 1, 0, 0); // bailar8
-        case 9: ApplyAnimation(playerid, "DANCING", "DAN_RIGHT_A", 4.0, 1, 1, 1, 0, 0); // bailar9
-        case 10: ApplyAnimation(playerid, "DANCING", "DAN_UP_A", 4.0, 1, 1, 1, 0, 0); // bailar10
+        case 7: ApplyAnimation(playerid, "DANCING", "DAN_DOWN_A", 4.0, 1, 1, 1, 0, 0);
+        case 8: ApplyAnimation(playerid, "DANCING", "DAN_LOOP_A", 4.0, 1, 1, 1, 0, 0);
+        case 9: ApplyAnimation(playerid, "DANCING", "DAN_RIGHT_A", 4.0, 1, 1, 1, 0, 0);
+        case 10: ApplyAnimation(playerid, "DANCING", "DAN_UP_A", 4.0, 1, 1, 1, 0, 0);
   		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /bailar [1-10]");
  	}
  	return 1;
@@ -450,7 +449,7 @@ CMD:apuntar(playerid, params[])
 	switch(anim)
 	{
 		case 1: ApplyAnimation(playerid, "SHOP", "ROB_Loop_Threat",4.1, 0, 1, 1, 1, 0);
-		case 2: ApplyAnimation(playerid, "PED", "ARRESTGUN", 4.0, 0, 0, 0, 1, 0); // /apuntar
+		case 2: ApplyAnimation(playerid, "PED", "ARRESTGUN", 4.0, 0, 0, 0, 1, 0);
 	}
 	return 1;
 }
@@ -464,11 +463,11 @@ CMD:crack(playerid, params[])
 		return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /crack [1-5]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "CRACK", "CRCKDETH1", 4.0, 0, 0, 0, 1, 0); // /crack1
-		case 2: ApplyAnimation(playerid, "CRACK", "CRCKDETH2", 4.0, 0, 0, 0, 1, 0); // /crack2
-		case 3: ApplyAnimation(playerid, "CRACK", "CRCKDETH3", 4.0, 0, 0, 0, 1, 0); // /crack3
-		case 4: ApplyAnimation(playerid, "CRACK", "CRCKDETH4", 4.0, 0, 0, 0, 1, 0); // /crack4
-		case 5: ApplyAnimation(playerid, "CRACK", "CRCKIDLE2", 4.0, 0, 0, 0, 1, 0); // /crack5
+		case 1: ApplyAnimation(playerid, "CRACK", "CRCKDETH1", 4.0, 0, 0, 0, 1, 0);
+		case 2: ApplyAnimation(playerid, "CRACK", "CRCKDETH2", 4.0, 0, 0, 0, 1, 0);
+		case 3: ApplyAnimation(playerid, "CRACK", "CRCKDETH3", 4.0, 0, 0, 0, 1, 0);
+		case 4: ApplyAnimation(playerid, "CRACK", "CRCKDETH4", 4.0, 0, 0, 0, 1, 0);
+		case 5: ApplyAnimation(playerid, "CRACK", "CRCKIDLE2", 4.0, 0, 0, 0, 1, 0);
 	}
 	return 1;
 }
@@ -482,8 +481,8 @@ CMD:sentarsenigga(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /sentarsenigga [1-2]");
 	switch(anim)
 	{
-	    case 1: ApplyAnimation(playerid, "CRACK", "CRCKIDLE1", 4.0, 0, 0, 0, 1, 0); // /sentarsenigga
-	    case 2: ApplyAnimation(playerid, "CRACK", "CRCKIDLE3", 4.0, 0, 0, 0, 1, 0); // /sentarsenigga
+	    case 1: ApplyAnimation(playerid, "CRACK", "CRCKIDLE1", 4.0, 0, 0, 0, 1, 0);
+	    case 2: ApplyAnimation(playerid, "CRACK", "CRCKIDLE3", 4.0, 0, 0, 0, 1, 0);
 	}
 	return 1;
 }
@@ -497,8 +496,8 @@ CMD:tirarse(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /tirarse [1-2]");
 	switch(anim)
 	{
-	    case 1:	ApplyAnimation(playerid, "CRACK", "CRCKIDLE4", 4.0, 0, 0, 0, 1, 0); // /tirarse
-	    case 2: ApplyAnimation(playerid, "PED", "EV_DIVE", 4.0, 0, 1, 1, 1, 0); // /tirarse
+	    case 1:	ApplyAnimation(playerid, "CRACK", "CRCKIDLE4", 4.0, 0, 0, 0, 1, 0);
+	    case 2: ApplyAnimation(playerid, "PED", "EV_DIVE", 4.0, 0, 1, 1, 1, 0);
 	}
 	return 1;
 }
@@ -512,10 +511,10 @@ CMD:dealer(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dealer [1-4]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE", 4.0, 0, 1, 1, 1, 0); // /dealer
-		case 2: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_01", 4.0, 0, 1, 1, 1, 0); // /dealer2
-		case 3: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_02", 4.0, 0, 1, 1, 1, 0); // /dealer3
-		case 4: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_03", 4.0, 0, 1, 1, 1, 0); // /dealer4
+		case 1: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE", 4.0, 0, 1, 1, 1, 0);
+		case 2: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_01", 4.0, 0, 1, 1, 1, 0);
+		case 3: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_02", 4.0, 0, 1, 1, 1, 0);
+		case 4: ApplyAnimation(playerid, "DEALER", "DEALER_IDLE_03", 4.0, 0, 1, 1, 1, 0);
 	}
 	return 1;
 }
@@ -537,9 +536,9 @@ CMD:acomer(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /acomer [1-3]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "FOOD", "EAT_BURGER", 4.0, 0, 1, 1, 0, 0); // /acomer1
-		case 2: ApplyAnimation(playerid, "FOOD", "EAT_CHICKEN", 4.0, 0, 1, 1, 0, 0); // /acomer2
-		case 3: ApplyAnimation(playerid, "FOOD", "EAT_PIZZA", 4.0, 0, 1, 1, 0, 0); // /acomer3
+		case 1: ApplyAnimation(playerid, "FOOD", "EAT_BURGER", 4.0, 0, 1, 1, 0, 0);
+		case 2: ApplyAnimation(playerid, "FOOD", "EAT_CHICKEN", 4.0, 0, 1, 1, 0, 0);
+		case 3: ApplyAnimation(playerid, "FOOD", "EAT_PIZZA", 4.0, 0, 1, 1, 0, 0);
 	}
 	return 1;
 }
@@ -548,7 +547,7 @@ CMD:orar(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "GRAVEYARD", "MRNM_LOOP", 4.0, 0, 0, 0, 1, 0); // /orar
+	ApplyAnimation(playerid, "GRAVEYARD", "MRNM_LOOP", 4.0, 0, 0, 0, 1, 0);
 	return 1;
 }
 
@@ -556,7 +555,7 @@ CMD:pasartarjeta(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    ApplyAnimation(playerid, "HEIST9", "USE_SWIPECARD", 4.0, 0, 0, 0, 0, 0); // /pasartarjeta
+    ApplyAnimation(playerid, "HEIST9", "USE_SWIPECARD", 4.0, 0, 0, 0, 0, 0);
     return 1;
 }
 
@@ -571,10 +570,10 @@ CMD:dormir(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /dormir [1-4]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "INT_HOUSE", "BED_IN_L", 4.0, 0, 0, 0, 1, 0); // /dormir1
-		case 2: ApplyAnimation(playerid, "INT_HOUSE", "BED_OUT_L", 4.0, 0, 0, 0, 0, 0); // /dejardedormir1
-		case 3: ApplyAnimation(playerid, "INT_HOUSE", "BED_IN_R", 4.0, 0, 0, 0, 1, 0); // /dormir2
-		case 4: ApplyAnimation(playerid, "INT_HOUSE", "BED_OUT_R", 4.0, 0, 0, 0, 0, 0); // /dejardedormir2
+		case 1: ApplyAnimation(playerid, "INT_HOUSE", "BED_IN_L", 4.0, 0, 0, 0, 1, 0);
+		case 2: ApplyAnimation(playerid, "INT_HOUSE", "BED_OUT_L", 4.0, 0, 0, 0, 0, 0);
+		case 3: ApplyAnimation(playerid, "INT_HOUSE", "BED_IN_R", 4.0, 0, 0, 0, 1, 0);
+		case 4: ApplyAnimation(playerid, "INT_HOUSE", "BED_OUT_R", 4.0, 0, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -588,9 +587,9 @@ CMD:mirar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mirar [1-3]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOKA", 4.0, 1, 0, 0, 0, 0); // /mirar
-		case 2: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOP", 4.0, 1, 0, 0, 0, 0); // /mirar2
-		case 3: ApplyAnimation(playerid, "INT_SHOP", "SHOP_OUT", 4.0, 0, 0, 0, 0, 0); // /dejardemirar
+		case 1: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOKA", 4.0, 1, 0, 0, 0, 0);
+		case 2: ApplyAnimation(playerid, "INT_SHOP", "SHOP_LOOP", 4.0, 1, 0, 0, 0, 0);
+		case 3: ApplyAnimation(playerid, "INT_SHOP", "SHOP_OUT", 4.0, 0, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -604,9 +603,9 @@ CMD:rapear(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /rapear [1-3]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "LOWRIDER", "RAP_A_LOOP", 4.0, 1, 0, 0, 1, 0); // /rap1
-		case 2: ApplyAnimation(playerid, "LOWRIDER", "RAP_B_LOOP", 4.0, 1, 0, 0, 1, 0); // /rap2
-		case 3: ApplyAnimation(playerid, "LOWRIDER", "RAP_C_LOOP", 4.0, 1, 0, 0, 1, 0); // /rap3
+		case 1: ApplyAnimation(playerid, "LOWRIDER", "RAP_A_LOOP", 4.0, 1, 0, 0, 1, 0);
+		case 2: ApplyAnimation(playerid, "LOWRIDER", "RAP_B_LOOP", 4.0, 1, 0, 0, 1, 0);
+		case 3: ApplyAnimation(playerid, "LOWRIDER", "RAP_C_LOOP", 4.0, 1, 0, 0, 1, 0);
 	}
 	return 1;
 }
@@ -628,8 +627,8 @@ CMD:taxi(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /taxi [1-2]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "MISC", "HIKER_POSE_L", 4.0, 1, 0, 0, 0, 0); // /taxi1
-		case 2: ApplyAnimation(playerid, "MISC", "HIKER_POSE", 4.0, 1, 0, 0, 0, 0); // /taxi2
+		case 1: ApplyAnimation(playerid, "MISC", "HIKER_POSE_L", 4.0, 1, 0, 0, 0, 0);
+		case 2: ApplyAnimation(playerid, "MISC", "HIKER_POSE", 4.0, 1, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -638,7 +637,7 @@ CMD:quebrar(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    ApplyAnimation(playerid, "MISC", "PLUNGER_01", 4.0, 0, 1, 1, 0, 0); // /quebrar
+    ApplyAnimation(playerid, "MISC", "PLUNGER_01", 4.0, 0, 1, 1, 0, 0);
     return 1;
 }
 
@@ -646,7 +645,7 @@ CMD:quepaso(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "MISC", "PLYR_SHKHEAD", 4.0, 0, 1, 1, 0, 0); // /quepaso
+	ApplyAnimation(playerid, "MISC", "PLYR_SHKHEAD", 4.0, 0, 1, 1, 0, 0);
 	return 1;
 }
 
@@ -654,7 +653,7 @@ CMD:chupala(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "MISC", "SCRATCHBALLS_01", 4.0, 0, 1, 1, 0, 0); // /chupala
+	ApplyAnimation(playerid, "MISC", "SCRATCHBALLS_01", 4.0, 0, 1, 1, 0, 0);
 	return 1;
 }
 
@@ -668,8 +667,8 @@ CMD:borracho(playerid, params[])
 	switch(anim)
 	{
 		case 1: ApplyAnimation(playerid, "PED", "WALK_drunk", 4.1, 1, 1, 1, 1, 1);
-		case 2: ApplyAnimation(playerid, "PAULNMAC", "PNM_LOOP_A", 4.0, 1, 0, 0, 0, 0); // /borracho
-		case 3: ApplyAnimation(playerid, "PAULNMAC", "PNM_LOOP_B", 4.0, 1, 0, 0, 0, 0); // /borracho2
+		case 2: ApplyAnimation(playerid, "PAULNMAC", "PNM_LOOP_A", 4.0, 1, 0, 0, 0, 0);
+		case 3: ApplyAnimation(playerid, "PAULNMAC", "PNM_LOOP_B", 4.0, 1, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -678,7 +677,7 @@ CMD:taichi(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    ApplyAnimation(playerid, "PARK", "TAI_CHI_LOOP", 4.0, 1, 0, 0, 0, 0); // /taichi
+    ApplyAnimation(playerid, "PARK", "TAI_CHI_LOOP", 4.0, 1, 0, 0, 0, 0);
     return 1;
 }
 
@@ -692,8 +691,8 @@ CMD:mear(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /mear [1-2]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "PAULNMAC", "PISS_LOOP", 4.0, 1, 0, 0, 0, 0); // /mear
-		case 2: ApplyAnimation(playerid, "PAULNMAC", "PISS_OUT", 4.0, 0, 0, 0, 0, 0); // /nomear
+		case 1: ApplyAnimation(playerid, "PAULNMAC", "PISS_LOOP", 4.0, 1, 0, 0, 0, 0);
+		case 2: ApplyAnimation(playerid, "PAULNMAC", "PISS_OUT", 4.0, 0, 0, 0, 0, 0);
 	}
 	return 1;
 }
@@ -702,7 +701,7 @@ CMD:reanimar(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-    ApplyAnimation(playerid, "MEDIC", "CPR", 4.0, 0, 0, 0, 0, 0); // /reanimar
+    ApplyAnimation(playerid, "MEDIC", "CPR", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
 
@@ -710,7 +709,7 @@ CMD:cubrirse(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "PED", "COWER", 4.0, 0, 0, 0, 1, 0); // /cubrirse
+	ApplyAnimation(playerid, "PED", "COWER", 4.0, 0, 0, 0, 1, 0);
 	return 1;
 }
 
@@ -718,7 +717,7 @@ CMD:nockeado(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "PED", "KO_SHOT_FACE", 4.0, 0, 1, 1, 1, 0); // /nockeado1
+	ApplyAnimation(playerid, "PED", "KO_SHOT_FACE", 4.0, 0, 1, 1, 1, 0);
 	return 1;
 }
 
@@ -726,7 +725,7 @@ CMD:aspirar(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "PED", "PASS_SMOKE_IN_CAR", 4.0, 0, 1, 1, 0, 0); // /aspirar
+	ApplyAnimation(playerid, "PED", "PASS_SMOKE_IN_CAR", 4.0, 0, 1, 1, 0, 0);
 	return 1;
 }
 
@@ -734,7 +733,7 @@ CMD:reir(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "RAPPING", "LAUGH_01", 4.0, 0, 1, 1, 0, 0); // /reir
+	ApplyAnimation(playerid, "RAPPING", "LAUGH_01", 4.0, 0, 1, 1, 0, 0);
 	return 1;
 }
 
@@ -747,8 +746,8 @@ CMD:enojado(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /enojado [1-2]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "RIOT", "RIOT_ANGRY", 4.0, 0, 1, 1, 0, 0); // /enojado
-		case 2:ApplyAnimation(playerid, "RIOT", "RIOT_CHANT", 4.0, 0, 1, 1, 0, 0); // /enojado2
+		case 1: ApplyAnimation(playerid, "RIOT", "RIOT_ANGRY", 4.0, 0, 1, 1, 0, 0);
+		case 2:ApplyAnimation(playerid, "RIOT", "RIOT_CHANT", 4.0, 0, 1, 1, 0, 0);
 	}
 	return 1;
 }
@@ -762,8 +761,8 @@ CMD:alentar(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /alentar [1-2]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "RIOT", "RIOT_PUNCHES", 4.0, 1, 1, 1, 0, 0); // /alentar
-		case 2: ApplyAnimation(playerid, "RIOT", "RIOT_SHOUT", 4.0, 0, 1, 1, 0, 0); // /alentar2
+		case 1: ApplyAnimation(playerid, "RIOT", "RIOT_PUNCHES", 4.0, 1, 1, 1, 0, 0);
+		case 2: ApplyAnimation(playerid, "RIOT", "RIOT_SHOUT", 4.0, 0, 1, 1, 0, 0);
 	}
 	return 1;
 }
@@ -772,7 +771,7 @@ CMD:tantear(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "SWEET", "SWEET_ASS_SLAP", 4.0, 0, 0, 0, 0, 0); // /tantear
+	ApplyAnimation(playerid, "SWEET", "SWEET_ASS_SLAP", 4.0, 0, 0, 0, 0, 0);
 	return 1;
 }
 
@@ -780,7 +779,7 @@ CMD:arrastrarse(playerid, params[])
 {
 	if(GetPlayerState(playerid) !=1) return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
 	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "WUZI", "CS_DEAD_GUY", 4.0, 1, 1, 1, 0, 0); // /arrastrarse
+	ApplyAnimation(playerid, "WUZI", "CS_DEAD_GUY", 4.0, 1, 1, 1, 0, 0);
 	return 1;
 }
 
@@ -792,8 +791,8 @@ CMD:cansado(playerid, params[]){
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cansado [1-2]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "PED", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado1
-		case 2: ApplyAnimation(playerid, "FAT", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1); // /cansado2
+		case 1: ApplyAnimation(playerid, "PED", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1);
+		case 2: ApplyAnimation(playerid, "FAT", "IDLE_tired", 4.0, 0, 0, 0, 1, 0, 1);
 		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /cnsado [1-2]");
 	}
 	return 1;
@@ -831,22 +830,23 @@ CMD:teclear(playerid, params[]){
 
 CMD:brazoventanilla(playerid, params[]){
 
-	new anim, new vehicleid;
-
-	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3 && )
+	new anim, vehicleid = GetPlayerVehicleID(playerid);
+	
+	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo dentro de un vehículo!");
     if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD || GetVehicleType(vehicleid) == VTYPE_HELI || GetVehicleType(vehicleid) == VTYPE_PLANE || GetVehicleType(vehicleid) == VTYPE_SEA)
-	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene ventanillas.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
 	if(sscanf(params, "d", anim))
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /brazoventanilla [1-5]");
+
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "CAR", "Sit_relaxed", 4, 0, 0, 0, 1, 0, 1); // /loeraider1
-		case 2: ApplyAnimation(playerid, "CAR", "Tap_hand", 4, 1, 0, 0, 1, 0, 1); // /loeraider2
-		case 3: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idle_to_l0", 4.0, 0, 0, 0, 1, 0, 1); // /loerider3
-		case 4: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idleloop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider4
-		case 5: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_l0_loop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider5
+		case 1: ApplyAnimation(playerid, "CAR", "Sit_relaxed", 4, 0, 0, 0, 1, 0, 1);
+		case 2: ApplyAnimation(playerid, "CAR", "Tap_hand", 4, 1, 0, 0, 1, 0, 1);
+		case 3: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idle_to_l0", 4.0, 0, 0, 0, 1, 0, 1);
+		case 4: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idleloop", 4.0, 0, 0, 0, 1, 0, 1);
+		case 5: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_l0_loop", 4.0, 0, 0, 0, 1, 0, 1);
 		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /brazoventanilla [1-5]");
 	}
 	return 1;
@@ -861,14 +861,14 @@ CMD:pesas(playerid, params[]){
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pesas [1-8]");
 	switch(anim)
 	{
-		case 1: ApplyAnimation(playerid, "benchpress", "gym_bp_geton", 4.5, 0, 1, 1, 1, 0, 1); // /pesas1
-		case 2: ApplyAnimation(playerid, "benchpress", "gym_bp_up_smooth", 4.5, 0, 1, 1, 1, 0, 1); // /pesas2
-		case 3: ApplyAnimation(playerid, "benchpress", "gym_bp_down", 4.5, 0, 1, 1, 1, 0, 1); // /pesas3
-		case 4: ApplyAnimation(playerid, "benchpress", "gym_bp_getoff", 4.5, 0, 1, 1, 0, 0, 1); // /pesas4
-		case 5: ApplyAnimation(playerid, "Freeweights", "gym_free_pickup", 4.5, 0, 1, 1, 1, 0, 1); // pesas5
-		case 6: ApplyAnimation(playerid, "Freeweights", "gym_free_up_smooth", 4.5, 0, 1, 1, 1, 0, 1); // pesas6
-        case 7: ApplyAnimation(playerid, "Freeweights", "gym_free_down", 4.5, 0, 1, 1, 1, 0, 1); // pesas7
-        case 8: ApplyAnimation(playerid, "Freeweights", "gym_free_putdown", 4.5, 0, 1, 1, 0, 0, 1); // pesas8
+		case 1: ApplyAnimation(playerid, "benchpress", "gym_bp_geton", 4.5, 0, 1, 1, 1, 0, 1);
+		case 2: ApplyAnimation(playerid, "benchpress", "gym_bp_up_smooth", 4.5, 0, 1, 1, 1, 0, 1);
+		case 3: ApplyAnimation(playerid, "benchpress", "gym_bp_down", 4.5, 0, 1, 1, 1, 0, 1);
+		case 4: ApplyAnimation(playerid, "benchpress", "gym_bp_getoff", 4.5, 0, 1, 1, 0, 0, 1);
+		case 5: ApplyAnimation(playerid, "Freeweights", "gym_free_pickup", 4.5, 0, 1, 1, 1, 0, 1);
+		case 6: ApplyAnimation(playerid, "Freeweights", "gym_free_up_smooth", 4.5, 0, 1, 1, 1, 0, 1);
+        case 7: ApplyAnimation(playerid, "Freeweights", "gym_free_down", 4.5, 0, 1, 1, 1, 0, 1);
+        case 8: ApplyAnimation(playerid, "Freeweights", "gym_free_putdown", 4.5, 0, 1, 1, 0, 0, 1);
         default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /pesas [1-8]");
 	}
 	return 1;
@@ -878,7 +878,7 @@ CMD:lavarmanos(playerid, params[]){
     if(GetPlayerState(playerid) != 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo de pie!");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.5, 0, 1, 1, 0, 0, 1); // /lavarmanos1
+	ApplyAnimation(playerid, "BD_FIRE", "wash_up", 4.5, 0, 1, 1, 0, 0, 1);
 	return 1;
 }
 

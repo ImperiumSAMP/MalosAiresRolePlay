@@ -61,7 +61,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-keychain.inc" 			//Sistema de llaveros
 #include "marp-thiefjob.inc"            //Sistema de trabajo de delincuente
 #include "marp-tazer.inc" 				//Sistema de tazer
-#include "isamp-animations.inc" 		//Sistema de animaciones
+#include "marp-animations.inc"			//Sistema de animaciones
 #include "marp-itemspma.inc"			//Sistema de items auxiliares para la pma (conos, barricadas, etc)
 #include "isamp-sprintrace.inc"			//Sistema de picadas (carreras)
 #include "isamp-gangzones.inc"  		//Sistema de control de barrios
