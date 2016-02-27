@@ -9312,7 +9312,7 @@ CMD:jetx(playerid,params[])
 CMD:ayuda(playerid,params[])
 {
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Administración]{C8C8C8} /reportar /duda");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda /desechar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /stats /hora (/anim)aciones /dar /dari /mano /comprar (/cla)sificado /pagar /admins /toy /dado /moneda /desechar(i)");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /mostrardoc /bidon /mostrarlic /mostrarced (/inv)entario (/bol)sillo (/esp)alda /llenar /changepass /quitarmascara");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[General]{C8C8C8} /yo /donar /dardroga /consumir /desafiarpicada /comprarmascara (/masc)ara /saludar /examinar /tomarobjeto");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
@@ -9876,7 +9876,7 @@ CMD:comprar(playerid, params[])
 			if(sscanf(params, "ii", option, cant))
 			{
 				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /comprar [Item] [Cantidad]");
-				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d", GetItemPrice(ITEM_ID_BARRETA));
+				SendFMessage(playerid, COLOR_LIGHTYELLOW2, " 1) Barreta - $%d 2) Ganzúa - $%d", GetItemPrice(ITEM_ID_BARRETA), GetItemPrice(ITEM_ID_GANZUA));
 				return 1;
 			}
 			if(freehand == -1)
@@ -9886,6 +9886,7 @@ CMD:comprar(playerid, params[])
    			switch(option)
    			{
    			    case 1: item = ITEM_ID_BARRETA;
+   			    case 2: item = ITEM_ID_GANZUA;
    			    default: return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /comprar [Item] [Cantidad]");
 			}
 			if(GetPlayerCash(playerid) < GetItemPrice(item) * cant)
@@ -13982,6 +13983,31 @@ CMD:desechar(playerid, params[])
 	PlayerActionMessage(playerid, 15.0, str);
 	
 	SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico de la mano.
+	return 1;
+}
+
+CMD:desechari(playerid, params[])
+{
+	new str[128];
+
+	if(!IsAtDrump(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un contenedor de basura.");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar a pie.");
+    if(PlayerCuffed[playerid] == 1)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacer esto estando esposado.");
+    if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+
+    new itemid = GetHandItem(playerid, HAND_LEFT);
+
+    if(itemid == 0)
+        return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún objeto que tirar.");
+
+	format(str, sizeof(str), "utilizando su mano derecha abre el contenedor y tira un/a %s dentro de este.", GetItemName(itemid));
+	PlayerActionMessage(playerid, 15.0, str);
+
+	SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico de la mano.
 	return 1;
 }
 	

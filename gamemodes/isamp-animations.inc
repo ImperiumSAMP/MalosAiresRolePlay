@@ -20,8 +20,8 @@ CMD:animaciones(playerid, params[])
 	SendClientMessage(playerid, COLOR_GREY, "/entregar - /geofanims - /hablar - /levantarbrazos - /manosarriba - /mear - /mirar - /muerte");
 	SendClientMessage(playerid, COLOR_GREY, "/nockeado - /oral - /orar - /pagando - /paja - /pasartarjeta - /pudrete - /quebrar - /quepaso");
 	SendClientMessage(playerid, COLOR_GREY, "/rapear - /reanimar - /reir - /saltar - /sentarse - /sentarsenigga - /taichi - /tantear - /taxi");
-	SendClientMessage(playerid, COLOR_GREY, "/tirarse - /vigilar - /abeber - /estirarse - /ponermascara - /codazo - /lavarmanos - /pesas - /lowrider");
-	SendClientMessage(playerid, COLOR_GREY, "/teclear - /rodar - /cansado - /noanim");
+	SendClientMessage(playerid, COLOR_GREY, "/tirarse - /vigilar - /abeber - /estirarse - /ponermascara - /codazo - /lavarmanos - /pesas");
+	SendClientMessage(playerid, COLOR_GREY, "/teclear - /rodar - /cansado - /brazoventanilla /noanim");
 	return 1;
 }
 
@@ -829,13 +829,17 @@ CMD:teclear(playerid, params[]){
 	return 1;
 }
 
-CMD:lowrider(playerid, params[]){
-	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3)
+CMD:brazoventanilla(playerid, params[]){
+
+	new anim, new vehicleid;
+
+	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3 && )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo dentro de un vehículo!");
+    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD || GetVehicleType(vehicleid) == VTYPE_HELI || GetVehicleType(vehicleid) == VTYPE_PLANE || GetVehicleType(vehicleid) == VTYPE_SEA)
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	new anim;
 	if(sscanf(params, "d", anim))
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lowrider [1-5]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /brazoventanilla [1-5]");
 	switch(anim)
 	{
 		case 1: ApplyAnimation(playerid, "CAR", "Sit_relaxed", 4, 0, 0, 0, 1, 0, 1); // /loeraider1
@@ -843,7 +847,7 @@ CMD:lowrider(playerid, params[]){
 		case 3: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idle_to_l0", 4.0, 0, 0, 0, 1, 0, 1); // /loerider3
 		case 4: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_idleloop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider4
 		case 5: ApplyAnimation(playerid, "LOWRIDER", "lrgirl_l0_loop", 4.0, 0, 0, 0, 1, 0, 1); // /loerider5
-		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /lowrider [1-5]");
+		default: SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /brazoventanilla [1-5]");
 	}
 	return 1;
 }

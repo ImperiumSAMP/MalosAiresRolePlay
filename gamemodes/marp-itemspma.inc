@@ -47,27 +47,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(1238, x-0.5, y, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(1238, x, y-0.5, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
      					PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 						}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1238, x+0.5, y, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					} else {
 					    pmaitems[i] = CreateDynamicObject(1238, x, y+0.5, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
@@ -87,27 +87,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(1459, x-0.5, y, z-0.7, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(1459, x, y-0.5, z-0.7, 0.0, 0.0, 180);
 						Streamer_Update(playerid);
     					PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1459, x+0.5, y, z-0.7, 0.0, 0.0, 270);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					} else {
 				    	pmaitems[i] = CreateDynamicObject(1459, x, y+0.5, z-0.7, 0.0, 0.0, 0.0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
@@ -127,27 +127,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(1282, x-0.8, y, z-0.5, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(1282, x, y-0.8, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
     					PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1282, x+0.8, y, z-0.5, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					} else {
 				    	pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
@@ -167,27 +167,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(1427, x-0.8, y, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(1427, x, y-0.8, z-0.5, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
     					PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1427, x+0.8, y, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
  						return 1;
 					} else {
 				    	pmaitems[i] = CreateDynamicObject(1427, x, y+0.8, z-0.5, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
@@ -207,27 +207,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(1425, x-0.8, y, z-0.5, 0.0, 0.0, 270);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(1425, x, y-0.8, z-0.5, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
    						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1425, x+0.8, y, z-0.5, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					} else { // 0 grados
 				    	pmaitems[i] = CreateDynamicObject(1425, x, y+0.8, z-0.5, 0.0, 0.0, 180);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
@@ -247,27 +247,27 @@ CMD:pponer(playerid, params[])
 						pmaitems[i] = CreateDynamicObject(19834, x-0.8, y, z, 0.0, 0.0, 270);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
 						pmaitems[i] = CreateDynamicObject(19834, x, y-0.8, z, 0.0, 0.0, 0);
 						Streamer_Update(playerid);
    						PlayerActionMessage(playerid, 15.0, "ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(19834, x+0.8, y, z, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					} else { // 0 grados
 				    	pmaitems[i] = CreateDynamicObject(19834, x, y+0.8, z, 0.0, 0.0, 180);
 						Streamer_Update(playerid);
 						PlayerActionMessage(playerid, 15.0, "ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
 						return 1;
 					}
 				}
