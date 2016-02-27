@@ -1,11 +1,7 @@
-#if defined _isamp_vehicles_included
+#if defined _marp_vehicles_included
 	#endinput
 #endif
-#define _isamp_vehicles_included
-
-/**
-* Isamp Vehicles functions and defines
-**/
+#define _marp_vehicles_included
 
 //Defines
 #define MAX_VEH                 1001
@@ -35,6 +31,7 @@
 #define VTYPE_BOAT 				VTYPE_SEA
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
+#define PRICE_LOJACK            2500
 #define PRICE_GPS   			100
 #define PRICE_VEHICLE_PAINTJOB  10000
 #define PRICE_VEHICLE_MODS      2000
@@ -673,6 +670,7 @@ ResetVehicle(id)
     VehicleInfo[id][VehLSD]			= 0;
     VehicleInfo[id][VehEcstasy]		= 0;
     VehicleInfo[id][VehCocaine]		= 0;
+    VehicleInfo[id][VehLojack]      = 0;
 	VehicleInfo[id][VehHP]			= 100;
 	VehicleInfo[id][VehPlate]		= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 	VehicleInfo[id][VehOwnerName]	= "XXXXXXXXXXXXXXXXXXXXXXX";
@@ -1249,8 +1247,8 @@ CMD:lojack(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no te pertenece.");
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Requieres de un telefono para utilizar el Lojack!");
-	if(GetPlayerCash(playerid) < PRICE_GPS)
-		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para rastrear el vehículo. ($100)");
+	if(VehicleInfo[vehicleid][VehLojack] == 0)
+	    return SendClientMessage (playerid, COLOR_YELLOW2, "El vehículo no tiene sistema de localización instalado.");
 
 	foreach(new i : Player)
 	{
