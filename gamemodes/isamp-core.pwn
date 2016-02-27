@@ -49,7 +49,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-toys.inc" 				//Sistema de toys
 #include "isamp-zones.inc"              //Informacion de las diferentes zonas y barrios
 #include "isamp-inventory.inc" 			//Sistema de inventario
-#include "isamp-vehicles.inc" 			//Sistema de vehiculos
+#include "marp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-business.inc" 			//Sistema de negocios
 #include "isamp-houses.inc" 			//Sistema de casas
@@ -9137,7 +9137,7 @@ CMD:faccion(playerid, params[])
 		    case FAC_HOSP: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
 		    case FAC_MECH:
 		    {
-				SendClientMessage(playerid, COLOR_WHITE, "{C8C8C8}/mecequipo /mecreparar /mecremolcar /mectaller /mecdestunear /mectunear /mectuning /meccerradura /meccomprar /mecguardar /mecdeposito");
+				SendClientMessage(playerid, COLOR_WHITE, "{C8C8C8}/mecequipo /mecreparar /mecremolcar /mectaller /mecdestunear /mectunear /mectuning /meccerradura /meccomprar /mecguardar /mecdeposito /meclojack");
 				if(PlayerInfo[playerid][pRank] < 6)
 					SendFMessage(playerid, COLOR_WHITE, "{FFDD00}[%s] {C8C8C8}/mecpuertadepo", GetRankName(FAC_MECH, 5));
 				if(PlayerInfo[playerid][pRank] == 1)

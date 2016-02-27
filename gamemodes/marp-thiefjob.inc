@@ -904,7 +904,7 @@ CMD:delincuenteayuda(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "[Ladron]: /hurtar /hurtartienda /asaltar /asaltartienda /hurtarcasa /asaltarcasa /verexp");
 		SendClientMessage(playerid, COLOR_WHITE, "[Ladron de bancos]: /grupoayuda");
-	    SendClientMessage(playerid, COLOR_WHITE, "[Ladron de vehículos]: /barreta /puente /desarmar");
+	    SendClientMessage(playerid, COLOR_WHITE, "[Ladron de vehículos]: /barreta /ganzua /puente /desarmar");
 		SendClientMessage(playerid, COLOR_WHITE, "Info: al robar con un comando de tu nivel obtendrás experiencia para subir de nivel y desbloquear nuevos comandos.");
 	}
 	return 1;
