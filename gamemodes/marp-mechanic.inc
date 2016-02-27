@@ -100,8 +100,8 @@ new RepairClient[MAX_PLAYERS],
 	RepairType[MAX_PLAYERS],
 	RepairOfferTimer[MAX_PLAYERS],
 	// GNC Variables
-	GNCOffer[MAX_PLAYERS] = 999,
-	GNCClient[MAX_PLAYERS] = 999,
+	GNCOffer[MAX_PLAYERS] = -1,
+	GNCClient[MAX_PLAYERS] = -1,
 	GNCTimer[MAX_PLAYERS];
 
 new TMTuneTimers[5];
@@ -161,7 +161,7 @@ public EndRepairOffer(playerid)
 
 public EndGNCOffer(playerid)
 {
-	GNCClient[GNCOffer[playerid]] = 999;
+	GNCClient[GNCOffer[playerid]] = -1;
 	ResetGNCOffer(playerid);
 	return 1;
 }
@@ -169,8 +169,8 @@ public EndGNCOffer(playerid)
 
 public ResetGNCOffer(playerid)
 {
-	GNCClient[playerid] = 999;
-	GNCOffer[playerid] = 999;
+	GNCClient[playerid] = -1;
+	GNCOffer[playerid] = -1;
 	return 1;
 }
 
@@ -671,7 +671,7 @@ CMD:mecaceptar(playerid, params[])
 		}
 		case MEC_OFFER_GNC:
 		{
-			if(GNCOffer[playerid] == 999)
+			if(GNCOffer[playerid] == -1)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ningún mecánico te ofreció instalar un tanque de GNC en tu vehículo.");
 			if(!IsPlayerConnected(GNCOffer[playerid]))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está conectado.");
@@ -1744,10 +1744,10 @@ CMD:mecgnc(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
 	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
-	if(GNCClient[playerid] < 999)
+	if(GNCClient[playerid] != -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
 	if(targetid == playerid)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalartelo a vos mismo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalártelo vos mismo.");
 	if(GetVehicleType(vehicleid) != VTYPE_CAR)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo es posible instalar un tanque de GNC en autos.");
 

@@ -197,6 +197,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 #define HEALTH_ASPIRIN          10
 
+#define MIN_PAYDAY              600
+#define MIN_DRUGD_PAYDAY        800
+#define MIN_TAXI_PAYDAY         1200
+
 #define PRICE_LIC_GUN           2000
 #define PRICE_LIC_DRIVING       400
 #define PRICE_LIC_BIKES         400
@@ -254,16 +258,13 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DIALOG_HEIGHT   	180.0
 #define SPRITE_DIM_X    	70.0
 #define SPRITE_DIM_Y    	70.0
-//==============================================================================
 
-//====[ETC]=====================================================================
+
 #define PRESSED(%0) 			(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
 #define HOLDING(%0) 			((newkeys & (%0)) == (%0))
 #define RELEASED(%0) 			(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
-//==============================================================================
 
-
-// ======== Log types ========
+// Log types
 #define LOG_LOCAL           1
 #define LOG_COMMANDS        2
 #define LOG_PHONE	        3
@@ -274,6 +275,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_ANTICHEAT       8
 #define LOG_AUTOS           9
 #define LOG_CHATOOC			10
+
 #define LOG_LOCALOOC        1
 #define LOG_ME              2
 #define LOG_CME             3
@@ -287,7 +289,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define LOG_ADMINCHAT       11
 #define LOG_ADMIN2			12
 #define LOG_ANTICHEAT2      13
-// ===========================
 
 new
     iGMXTick,
@@ -1008,6 +1009,9 @@ public ResetStats(playerid)
 	PlayerInfo[playerid][pFaction] = 0;
 	PlayerInfo[playerid][pRank] = 0;
 	PlayerInfo[playerid][pHouseKey] = 0;
+	PlayerInfo[playerid][pCurrentHouse] = 0;
+	PlayerInfo[playerid][pCurrentBiz] = 0;
+	PlayerInfo[playerid][pCurrentBuilding] = 0;
 	PlayerInfo[playerid][pHouseKeyIncome] = 0;
 	PlayerInfo[playerid][pBizKey] = 0;
 	PlayerInfo[playerid][pWarnings] = 0;
@@ -1996,6 +2000,9 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "BikeLic", result); 			PlayerInfo[playerid][pBikeLic] 			= strval(result);
 		cache_get_field_content(0, "FlyLic", result); 			PlayerInfo[playerid][pFlyLic] 			= strval(result);
 		cache_get_field_content(0, "WepLic", result); 			PlayerInfo[playerid][pWepLic] 			= strval(result);
+		cache_get_field_content(0, "pCurrentHouse", result);    PlayerInfo[playerid][pCurrentHouse]		= strval(result);
+		cache_get_field_content(0, "pCurrentBiz", result);    	PlayerInfo[playerid][pCurrentBiz]		= strval(result);
+		cache_get_field_content(0, "pCurrentBuilding", result);	PlayerInfo[playerid][pCurrentBuilding]	= strval(result);
 		cache_get_field_content(0, "PhoneNumber", result); 		PlayerInfo[playerid][pPhoneNumber] 		= strval(result);
 		cache_get_field_content(0, "PhoneCompany", result); 	PlayerInfo[playerid][pPhoneC] 			= strval(result);
 		cache_get_field_content(0, "Jailed", result); 			PlayerInfo[playerid][pJailed]			= strval(result);
@@ -2011,10 +2018,10 @@ public OnPlayerDataLoad(playerid)
 		cache_get_field_content(0, "pRentCarRID", result); 		PlayerInfo[playerid][pRentCarRID] 		= strval(result);
 		cache_get_field_content(0, "pMarijuana", result); 		PlayerInfo[playerid][pMarijuana] 		= strval(result);
 		cache_get_field_content(0, "pLSD", result); 			PlayerInfo[playerid][pLSD] 				= strval(result);
-		cache_get_field_content(0, "pEcstasy", result); 			PlayerInfo[playerid][pEcstasy] 			= strval(result);
+		cache_get_field_content(0, "pEcstasy", result);			PlayerInfo[playerid][pEcstasy] 			= strval(result);
 		cache_get_field_content(0, "pCocaine", result); 		PlayerInfo[playerid][pCocaine] 			= strval(result);
     	cache_get_field_content(0, "pMask", result); 			PlayerInfo[playerid][pMask] 			= strval(result);
-		cache_get_field_content(0, "pFightStyle", result); 		PlayerInfo[playerid][pFightStyle] 		= strval(result);
+		cache_get_field_content(0, "pFightStyle", result);		PlayerInfo[playerid][pFightStyle] 		= strval(result);
         cache_get_field_content(0, "pAdictionAbstinence", result); 		PlayerInfo[playerid][pAdictionAbstinence] 		= strval(result);
 		
 		cache_get_field_content(0, "Name", 						PlayerInfo[playerid][pName], 1, MAX_PLAYER_NAME);
@@ -2623,7 +2630,7 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pContainerSQLID]
 		);
 		
-		format(query,sizeof(query),"%s, `CarLic`='%d', `BikeLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pJobLimitCounter`='%d'",
+		format(query,sizeof(query),"%s, `CarLic`='%d', `BikeLic`='%d', `FlyLic`='%d', `WepLic`='%d', `PhoneNumber`='%d', `PhoneCompany`='%d', `Jailed`='%d', `JailedTime`='%d', `pThirst`='%d', `pInterior`='%d', `pWorld`='%d', `pHospitalized`='%d', `pWantedLevel`='%d', `pCantWork`='%d', `pCurrentHouse`='%d', `pCurrentBiz`='%d', `pCurrentBuilding`='%d', `pJobLimitCounter`='%d'",
 			query,
 			PlayerInfo[playerid][pCarLic],
 			PlayerInfo[playerid][pBikeLic],
@@ -2639,6 +2646,9 @@ public SaveAccount(playerid)
 			PlayerInfo[playerid][pHospitalized],
 			PlayerInfo[playerid][pWantedLevel],
    			PlayerInfo[playerid][pCantWork],
+   			PlayerInfo[playerid][pCurrentHouse],
+   			PlayerInfo[playerid][pCurrentBiz],
+   			PlayerInfo[playerid][pCurrentBuilding],
    			GetPVarInt(playerid, "pJobLimitCounter")
 		);
 		
@@ -2747,11 +2757,11 @@ public PayDay(playerid)
 			{
 			    switch(PlayerInfo[playerid][pJob])
 			    {
-			        case 0: PlayerInfo[playerid][pPayCheck] += 600;
-			        case JOB_FELON: PlayerInfo[playerid][pPayCheck] += 600;
-			        case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += 600;
-			        case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += 800; // Mínimo por si no hay ventas
-			        case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += 1200; // Mínimo por si no hay pasajeros disponibles
+			        case 0: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+			        case JOB_FELON: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+			        case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+			        case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += MIN_DRUGD_PAYDAY; // Mínimo por si no hay ventas
+			        case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += MIN_TAXI_PAYDAY; // Mínimo por si no hay pasajeros disponibles
 			    }
             }
             default:
@@ -2905,9 +2915,8 @@ public accountTimer()
 {
     foreach(new playerid : Player)
 	{
-	    if(gPlayerLogged[playerid]) {
+	    if(gPlayerLogged[playerid])
 			SaveAccount(playerid);
-		}
 	}
 }
 
@@ -8462,27 +8471,46 @@ CMD:resetabstinencia(playerid, params[])
 
 CMD:darobjeto(playerid, params[])
 {
-	new targetid, item, amount, targetfreehand, string[128];
+	new targetid, item, amount[2], targetfreehand, string[128], string2[12];
 
-    if(sscanf(params, "uii", targetid, item, amount))
+    if(sscanf(params, "uii", targetid, item, amount[0]))
     {
 		SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]{C8C8C8} /darobjeto [ID/Jugador] [ID de objeto] [cantidad]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "3(Palo de golf) 4(Cuchillo) 5(Bate) 6(Pala) 7(Macana) 8(Katana) 10-13(Dildo) 14(Flores) 16(Granada) 18(Molotov) 22(9mm) 23(9mm silenciada)");
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "24(Deagle) 25(Escopeta) 29(MP5) 30(AK47) 31(M4) 33(Rifle) 34(Sniper) 37(Lanzallamas) 41(Aerosol) 42(Extintor) 43(Cámara) 46(Paracaídas)");
 	}
+	targetfreehand = SearchFreeHand(targetid);
+	
     if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID inválida.");
 	if(item < 1 || item >= MAX_ITEMS)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de objeto inválida.");
-	targetfreehand = SearchFreeHand(targetid);
 	if(targetfreehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
+	if(amount[0] < 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Cantidad inválida.");
 
-	SetHandItemAndParam(targetid, targetfreehand, item, amount);
-	format(string, sizeof(string), "[STAFF] El administrador %s le dió %d objetos '%s' al jugador %s.", GetPlayerNameEx(playerid), amount, GetItemName(item), GetPlayerNameEx(targetid));
-    AdministratorMessage(COLOR_ADMINCMD, string, 2);
-	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió %d objetos '%s'.", GetPlayerNameEx(playerid), amount, GetItemName(item));
-	format(string, sizeof(string), "[ITEM] %d objetos %s al jugador %s (DBID: %d)", amount, GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
+	SetHandItemAndParam(targetid, targetfreehand, item, amount[0]);
+	if(GetItemType(item) == ITEM_FIREWEAPON)
+	{
+	    switch(amount[0])
+	    {
+	        case 0:
+			{
+			    format(string2, sizeof(string2), "descargada'");
+			    amount[1] = amount[0];
+			}
+	        default:
+			{
+			    format(string2, sizeof(string2), "cargada'");
+			    amount[1] = amount[0] - 1;
+			}
+	    }
+	}
+	format(string, sizeof(string), "[STAFF] El administrador %s le dió al jugador %s el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
+	AdministratorMessage(COLOR_ADMINCMD, string, 2);
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
+	format(string, sizeof(string), "[ITEM] %d objetos %s al jugador %s (DBID: %d)", amount[0], GetItemName(item), GetPlayerNameEx(targetid), PlayerInfo[targetid][pID]);
 	log(playerid, LOG_ADMIN, string);
     return 1;
 }
