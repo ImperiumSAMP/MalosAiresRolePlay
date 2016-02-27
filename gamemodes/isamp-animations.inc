@@ -830,10 +830,14 @@ CMD:teclear(playerid, params[]){
 }
 
 CMD:brazoventanilla(playerid, params[]){
-	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3)
+
+	new anim, new vehicleid;
+
+	if(GetPlayerState(playerid) != 2 && GetPlayerState(playerid) != 3 && )
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Solo puedes utilizarlo dentro de un vehículo!");
+    if(GetVehicleType(vehicleid) == VTYPE_BMX || GetVehicleType(vehicleid) == VTYPE_BIKE || GetVehicleType(vehicleid) == VTYPE_QUAD || GetVehicleType(vehicleid) == VTYPE_HELI || GetVehicleType(vehicleid) == VTYPE_PLANE || GetVehicleType(vehicleid) == VTYPE_SEA)
+	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Este vehículo no tiene puertas.");
     if(GetPVarInt(playerid, "disabled") != DISABLE_NONE) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
-	new anim;
 	if(sscanf(params, "d", anim))
 	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]:{C8C8C8} /brazoventanilla [1-5]");
 	switch(anim)
