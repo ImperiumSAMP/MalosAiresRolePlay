@@ -90,6 +90,7 @@ new CarLiftState[4] = 0,
 #define MEC_OFFER_TUNING        	3
 #define MEC_OFFER_DESTUNING     	4
 #define MEC_OFFER_GNC               5
+#define MEC_OFFER_LOJACK            6
 
 //==============================DATA STORAGE====================================
 
@@ -99,11 +100,15 @@ new RepairClient[MAX_PLAYERS],
 	RepairPrice[MAX_PLAYERS],
 	RepairType[MAX_PLAYERS],
 	RepairOfferTimer[MAX_PLAYERS],
-	// GNC Variables
+	
 	GNCOffer[MAX_PLAYERS] = -1,
 	GNCClient[MAX_PLAYERS] = -1,
-	GNCTimer[MAX_PLAYERS];
-
+	GNCTimer[MAX_PLAYERS],
+	
+	LojackOffer[MAX_PLAYERS] = -1,
+	LojackClient[MAX_PLAYERS] = -1,
+	LojackTimer[MAX_PLAYERS];
+	
 new TMTuneTimers[5];
 
 //==============================FUNCIONES=======================================
@@ -112,11 +117,14 @@ forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
 forward EndGNCOffer(playerid);
 forward ResetGNCOffer(playerid);
+forward EndLojackOffer(playerid);
+forward ResetLojackOffer(playerid);
 forward Cerrajeria(playerid);
 forward AutoReparacion(playerid, paynsprayid);
 forward Reparacion(playerid);
 forward Destuning(playerid);
 forward GncInstall(playerid);
+forward LojackInstall(playerid);
 forward GetRepairMaterialCost(vehicleid);
 
 forward CloseTuneGate(gate);
@@ -172,6 +180,18 @@ public ResetGNCOffer(playerid)
 	GNCClient[playerid] = -1;
 	GNCOffer[playerid] = -1;
 	return 1;
+}
+
+public EndLojackOffer(playerid)
+{
+	LojackClient[LojackOffer[playerid]] = -1;
+	ResetLojackOffer(playerid);
+}
+
+public ResetLojackOffer(playerid)
+{
+	LojackClient[playerid] = -1;
+	LojackOffer[playerid] = -1;
 }
 
 stock GetRepairMaterialCost(vehicleid)
@@ -305,6 +325,20 @@ public GncInstall(playerid)
 	SendFMessage(mecanico, -1, "Instalaste el tanque de GNC en el vehículo de %s", GetPlayerNameEx(playerid));
 	TogglePlayerControllable(playerid, true);
 	EndGNCOffer(playerid);
+	return 1;
+}
+
+public LojackInstall(playerid)
+{
+    new vehicleid = GetPlayerVehicleID(playerid);
+	new mecanico = LojackOffer[playerid];
+
+    VehicleInfo[vehicleid][VehLojack] = 1;
+	SaveVehicle(vehicleid);
+	SendFMessage(playerid, -1, "El sistema de localización fue instalado en tu vehículo por %s.", GetPlayerNameEx(GNCOffer[playerid]));
+	SendFMessage(mecanico, -1, "Instalaste el sistema de localización en el vehículo de %s", GetPlayerNameEx(playerid));
+	TogglePlayerControllable(playerid, true);
+	EndLojackOffer(playerid);
 	return 1;
 }
 
@@ -687,6 +721,25 @@ CMD:mecaceptar(playerid, params[])
            	KillTimer(GNCTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("GncInstall", 5000, false, "d", playerid);
+		}
+		case MEC_OFFER_LOJACK:
+		{
+		    if(LojackOffer[playerid] == -1)
+		        return SendClientMessage(playerid, COLOR_YELLOW2, "Ningún mecánico te ofreció instalar un sistema de localización en tu vehículo.");
+			if(!IsPlayerConnected(LojackOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está conectado.");
+			if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el area de reparaciones del taller Mercury.");
+			if(!ProxDetectorS(5.0, playerid, LojackOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Estas muy lejos del sujeto");
+			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de conductor");
+
+            GameTextForPlayer(playerid, "El mecanico esta instalando el sistema de localización en tu vehiculo", 4000, 1);
+			GameTextForPlayer(LojackOffer[playerid], "Instalando sistema de localización", 400, 1);
+           	KillTimer(LojackTimer[playerid]);
+			TogglePlayerControllable(playerid, false);
+			SetTimerEx("LojackInstall", 5000, false, "d", playerid);
 		}
 	}
 	return 1;
@@ -1752,9 +1805,37 @@ CMD:mecgnc(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo es posible instalar un tanque de GNC en autos.");
 
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar un tanque de GNC en su vehículo y tiene 15 segundos para responder.", GetPlayerNameEx(targetid));
-	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/aceptar).", GetPlayerNameEx(playerid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un tanque de GNC en tu vehículo y tienes 15 segundos para aceptarlo (/mecaceptar).", GetPlayerNameEx(playerid));
 	GNCOffer[targetid] = playerid;
 	GNCClient[playerid] = targetid;
 	GNCTimer[targetid] = SetTimerEx("EndGNCOffer", 10000, false, "d", targetid);
+	return 1;
+}
+
+CMD:meclojack(playerid, params[])
+{
+    new targetid,
+	    vehicleid = GetPlayerVehicleID(playerid);
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /meclojack [ID del jugador]");
+	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o no conectado.");
+	if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
+	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
+	if(GNCClient[playerid] < 999)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
+	if(targetid == playerid)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalartelo a vos mismo.");
+	if(GetVehicleType(vehicleid) != VTYPE_BMX)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podes instalar el sistema de localización en bicicletas.");
+
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar un sistema de localización en su vehículo y tiene 15 segundos para responder.", GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar un sistema de localización en tu vehículo y tienes 15 segundos para aceptarlo (/mecaceptar).", GetPlayerNameEx(playerid));
+	LojackOffer[targetid] = playerid;
+	LojackClient[playerid] = targetid;
+	LojackTimer[targetid] = SetTimerEx("EndLojackOffer", 10000, false, "d", targetid);
 	return 1;
 }
