@@ -8471,7 +8471,7 @@ CMD:resetabstinencia(playerid, params[])
 
 CMD:darobjeto(playerid, params[])
 {
-	new targetid, item, amount[2], targetfreehand, string[128], string2[12];
+	new targetid, item, amount[2], targetfreehand, string[128], string2[13];
 
     if(sscanf(params, "uii", targetid, item, amount[0]))
     {
@@ -8497,16 +8497,18 @@ CMD:darobjeto(playerid, params[])
 	    {
 	        case 0:
 			{
-			    format(string2, sizeof(string2), "descargada'");
+			    format(string2, sizeof(string2), " descargada'");
 			    amount[1] = amount[0];
 			}
 	        default:
 			{
-			    format(string2, sizeof(string2), "cargada'");
+			    format(string2, sizeof(string2), " cargada'");
 			    amount[1] = amount[0] - 1;
 			}
 	    }
 	}
+	else
+	    format(string2, sizeof(string2), "'");
 	format(string, sizeof(string), "[STAFF] El administrador %s le dió al jugador %s el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
@@ -13037,7 +13039,7 @@ CMD:vercinturon(playerid, params[])
 		vType = GetVehicleType(vehicleid);
 	if(!IsPlayerInAnyVehicle(targetid) || (vType != VTYPE_CAR && vType != VTYPE_HEAVY && vType != VTYPE_MONSTER))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡El jugador no esta en un vehículo / el vehículo no posee cinturón!");
-	/*--------------*/
+		
 	if(SeatBelt[targetid])
 		SendFMessage(playerid, COLOR_WHITE, "El cinturón de %s se encuentra abrochado.", GetPlayerNameEx(targetid));
 	else
