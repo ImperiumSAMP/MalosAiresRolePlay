@@ -19,7 +19,7 @@
 #define ITEM_INGREDIENT         9
 #define ITEM_SPECIALWEAPON      10
 
-#define MAX_ITEMS               174
+#define MAX_ITEMS               175
 
 #define ITEM_ID_9MM                     22
 #define ITEM_ID_9MM_SILENCED            23
@@ -127,7 +127,7 @@
 #define ITEM_ID_PAN                     141
 #define ITEM_ID_CARNE1		            142
 #define ITEM_ID_CARNE2                  143
-#define ITEM_ID_PIZZA1                  144
+#define ITEM_ID_PIZZA                   144
 #define ITEM_ID_CAJA_PIZZA	            145
 #define ITEM_ID_PESCADO                 146
 #define ITEM_ID_HELADO                  147
@@ -157,6 +157,7 @@
 #define ITEM_ID_PLACA_POLICIAL          171
 #define ITEM_ID_ESPOSAS                 172
 #define ITEM_ID_GANZUA                  173
+#define ITEM_ID_CAJON_DE_CERVEZA        174
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -224,9 +225,9 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*23*/	{"Pistola 9mm con silenciador", "Munición", ITEM_FIREWEAPON, 7500, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*24*/	{"Pistola Desert Eagle", "Munición", ITEM_FIREWEAPON, 17500, true, 348, 0.011, 0.058, 0.0, -178.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*25*/	{"Escopeta", "Munición", ITEM_WEAPON, 70, false, 349, 0.035, 0.081, 0.023, 154.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
-/*26*/	{"Escopeta recortada", Munición", ITEM_WEAPON, 120, false, 350, 0.026, 0.058, -0.023, 170.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
+/*26*/	{"Escopeta recortada", "Munición", ITEM_WEAPON, 120, false, 350, 0.026, 0.058, -0.023, 170.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
 /*27*/	{"Escopeta de combate", "Munición", ITEM_WEAPON, 200, false, 351, 0.024, 0.059, -0.01, 172.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35},
-/*28*/	{"Uzi", "MuniciÃ³n", ITEM_FIREWEAPON, 15000, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
+/*28*/	{"Uzi", "Munición", ITEM_FIREWEAPON, 15000, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
 /*29*/	{"Subfusil MP-5", "Munición", ITEM_FIREWEAPON, 20000, false, 353, 0.03, 0.065, 0.0, 163.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
 /*30*/	{"Fusil AK-47", "Munición", ITEM_FIREWEAPON, 35000, false, 355, 0.057, 0.076, 0.014, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
 /*31*/	{"Fusil M4", "Munición", ITEM_FIREWEAPON, 35000, false, 356, 0.031, 0.042, -0.021, 174.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
@@ -371,7 +372,8 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*170*/	{"Táser X26", "Cargas", ITEM_SPECIALWEAPON, 0, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*171*/ {"Placa policial", "Número", ITEM_OTHER, 5000, false, 19774, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
 /*172*/ {"Esposas", "Cantidad", ITEM_OTHER, 5000, false, 11750, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*173*/ {"Ganzua", "Cantidad", ITEM_OTHER, 30, true, 18644, 0.117999, 0.019, 0.006999, -6.999998, 2.9, 0.7, 0.090999, 0.013, 0.013, 3.399997, -179.000213, -6.199995, 0, 6}
+/*173*/ {"Ganzua", "Cantidad", ITEM_OTHER, 30, true, 18644, 0.117999, 0.019, 0.006999, -6.999998, 2.9, 0.7, 0.090999, 0.013, 0.013, 3.399997, -179.000213, -6.199995, 0, 6},
+/*174*/ {"Cajón de cerveza", "Cantidad", ITEM_OTHER, 100, false, 19572, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 45}
 };
 
 //==============================FUNCIONES=======================================
