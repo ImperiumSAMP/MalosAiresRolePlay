@@ -66,8 +66,8 @@ CMD:inventario(playerid, params[])
 
 			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lÃ³gico y grafico de la mano.
 			
-			format(str, sizeof(str), "utilizando su mano derecha, guarda un/a %s en su inventario.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Utilizando su mano derecha, guarda un/a %s en su inventario.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 			
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -81,7 +81,7 @@ CMD:inventario(playerid, params[])
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 			if(GetPVarInt(playerid, "cantSaveItems") == 1)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
 			new itemid = GetHandItem(playerid, HAND_LEFT),
 		    	itemparam = GetHandParam(playerid, HAND_LEFT);
@@ -100,8 +100,8 @@ CMD:inventario(playerid, params[])
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 			
-			format(str, sizeof(str), "utilizando su mano izquierda, guarda un/a %s en su inventario.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Utilizando su mano izquierda, guarda un/a %s en su inventario.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 	    }
 		else
 		{
@@ -143,12 +143,12 @@ Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "toma un/a %s de su inventario y lo sostiene en una de sus manos.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Toma un/a %s de su inventario y lo sostiene en una de sus manos.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 		}
 		else
 		{
-	        SendClientMessage(playerid, COLOR_YELLOW2, "Inventario vacÃ­o o el slot especificado es invÃ¡lido.");
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Inventario vacío o el slot especificado es inválido.");
 		}
 	}
 	return 1;

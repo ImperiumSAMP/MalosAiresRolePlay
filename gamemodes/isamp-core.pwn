@@ -6013,10 +6013,7 @@ PlayerCmeMessage(playerid, Float:drawdistance, timeexpire, str[])
 		HidePlayerDesc(playerid, timeexpire + 2000); // La descripcion es escondida 2 segundos más que la duracion del cme.
 
     SetPlayerChatBubble(playerid, str, COLOR_ACT1, drawdistance, timeexpire);
-	if(!usingMask[playerid])
-		format(string, sizeof(string), "* %s %s", GetPlayerNameEx(playerid), str);
-	else
-	    format(string, sizeof(string), "* Enmascarado %d %s", maskNumber[playerid], str);
+    format(string, sizeof(string), "* > %s", str);
 	SendClientMessage(playerid, COLOR_ACT1, string);
 	otherLog(playerid, -1, LOG_CME, str);
     return 1;

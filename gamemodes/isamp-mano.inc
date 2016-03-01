@@ -176,7 +176,7 @@ stock ReloadWeapon(playerid)
 		}
 		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
 		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
-		PlayerCmeMessage(playerid, 15.0, 5000, "calza el cargador en el arma, con la mano contraria.");
+		PlayerCmeMessage(playerid, 15.0, 5000, "Calza el cargador en el arma, con la mano contraria.");
 		return 1;
 	}
 
@@ -198,7 +198,7 @@ stock ReloadWeapon(playerid)
 		}
 		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, rightparam + 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "calza el cargador en el arma, con la mano contraria.");
+		PlayerCmeMessage(playerid, 15.0, 5000, "Calza el cargador en el arma, con la mano contraria.");
 		return 1;
 	}
 	return 1;
@@ -244,7 +244,7 @@ stock ReplenishClip(playerid)
 		}
 		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam + 1);
 		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
+		PlayerCmeMessage(playerid, 15.0, 5000, "Retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
 		return 1;
 	}
 
@@ -261,7 +261,7 @@ stock ReplenishClip(playerid)
 		}
 		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam - 1);
 		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam + 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
+		PlayerCmeMessage(playerid, 15.0, 5000, "Retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
 		return 1;
 	}
 	return 1;
@@ -427,12 +427,14 @@ CMD:mano(playerid, params[])
 			ReplenishClip(playerid);
 
 		} else if(strcmp(command, "separar", true) == 0) {
-			if(GetItemType(rightitem) != ITEM_FIREWEAPON)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas.");
+			if(GetItemType(rightitem) != ITEM_FIREWEAPON || GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_CAJON_DE_CERVEZA)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas o cajones de cerveza.");
 			if(SearchFreeHand(playerid) == -1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Para descargar el arma necesitas la mano izquierda libre.");
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Para separar un objeto necesitas la mano izquierda libre.");
 			if(rightparam == 0)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma está actualmente descargada.");
+			    if(GetItemType(rightitem) == ITEM_FIREWEAPON)
+					return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma está actualmente descargada.");
+				else return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cajón esta vacio.");
 				    
 			switch(rightitem)
 			{
@@ -444,11 +446,16 @@ CMD:mano(playerid, params[])
 				case ITEM_ID_MP5: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_MP5, rightparam - 1);
 				case ITEM_ID_M4: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_M4, rightparam - 1);
 				case ITEM_ID_AK47: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_AK47, rightparam - 1);
+				case ITEM_ID_CAJON_DE_CERVEZA: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CERVEZA, 5);
 			}
-			SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 0);
-			PlayerActionMessage(playerid, 15.0, "descalza el cargador del arma y lo sostiene con la mano izquierda.");
-
-
+			if(GetItemType(rightitem) == ITEM_FIREWEAPON){
+				SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 0);
+				PlayerCmeMessage(playerid, 15.0, 5000, "Descalza el cargador del arma y lo sostiene con la mano izquierda.");
+			} else {
+			    SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, -1);
+			    PlayerCmeMessage(playerid, 15.0, 5000, "Toma una cerveza del cajón.");
+			}
+			
 		} else if(strcmp(command, "tirar", true) == 0) {
 
 			DropObject(playerid, HAND_RIGHT);
