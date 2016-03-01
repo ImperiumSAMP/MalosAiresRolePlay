@@ -7226,10 +7226,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 						if(PlayerInfo[playerid][pAge] < 18)
                             return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
-                        new Hour, Minute, Second;
-                        gettime(Hour, Minute, Second);
-						if ((8 > Hour) || (Hour > 20))
-							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
                         new freehand = SearchFreeHand(playerid);
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
@@ -7243,6 +7239,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	saveBusiness(business);
 					}
 					case 9:
+					{
+					if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_CAJON_DE_CERVEZA, 6);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un cajón de cerveza.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de cerveza por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 10:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_RADIO))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
