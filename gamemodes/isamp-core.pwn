@@ -11199,43 +11199,43 @@ CMD:propero(playerid, params[])
 	{
 		case 1: // Cadete
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 9)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 71);
 		}
 		case 2: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 280); // Skin de oficial 1
 		}
 		case 3: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 265); // Tenpenny
 		}
 		case 4: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 266); // Pulaski
 		}
 		case 5: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 267); // Hernandez
 		}
 		case 6: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 281); // Skin de oficial 2
 		}
 		case 7: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
@@ -11243,7 +11243,7 @@ CMD:propero(playerid, params[])
 		}
 		case 8: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
@@ -11251,7 +11251,7 @@ CMD:propero(playerid, params[])
 		}
 		case 9: // Sargento
 		{
-			if(PlayerInfo[playerid][pRank] > 5)
+			if(PlayerInfo[playerid][pRank] > 6)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 284);
 		}
