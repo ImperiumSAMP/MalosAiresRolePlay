@@ -3508,7 +3508,7 @@ public globalUpdate()
 		            
 					SendFMessage(playerid, COLOR_YELLOW2, "Has sido dado de alta. Te cobraron $%d por tu tratamiento. Lo que te quede a pagar se descontará de tu cuenta bancaria.", PRICE_TREATMENT);
 		            if(GetPlayerCash(playerid) > PRICE_TREATMENT)
-						GivePlayerCash(playerid, -PRICE_TREATMENT); // se cobra 2 mil por el tratamiento
+						GivePlayerCash(playerid, -PRICE_TREATMENT); // se cobra 500 por el tratamiento
 					else
 						if(GetPlayerCash(playerid) > 0)
 						{
@@ -7240,7 +7240,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 					}
 					case 9:
 					{
-					if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA))
+						if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 						if(PlayerInfo[playerid][pAge] < 18)
                             return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
@@ -7273,7 +7273,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 10:
+					case 11:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_PARLANTE))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
