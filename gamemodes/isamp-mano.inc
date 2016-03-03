@@ -398,7 +398,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[32]", command))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - separar - ver - guardar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - agarraruno - agarrarunoi - cambiar - combinar - separar - ver - guardar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
@@ -472,6 +472,14 @@ CMD:mano(playerid, params[])
 
 			TakeObject(playerid, HAND_LEFT);
 			
+		} else if(strcmp(command, "agarraruno", true) == 0) {
+		
+		    TakeOneObject(playerid, HAND_RIGHT);
+		
+		} else if(strcmp(command, "agarrarunoi", true) == 0) {
+
+		    TakeOneObject(playerid, HAND_LEFT);
+
 		} else if(strcmp(command, "ver", true) == 0) {
 
 			new item = GetHandItem(playerid, HAND_RIGHT),

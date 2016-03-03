@@ -28,6 +28,7 @@ new ServerObject[MAX_SERVER_OBJECTS][ObjectsInfo];
 
 forward DropObject(playerid, playerhand); //Deposita un objeto en el suelo y devuelve 1. Si el jugador no esta de pie retorna 0, en caso de error retorna -1
 forward TakeObject(playerid, playerhand); //Toma un objecto del suelo y devuelve 1. Si el jugador no pudo tomarlo retorna 0.
+forward TakeOneObject(playerid, playerhand); //Toma un solo objeto del suelo.
 forward ResetObject(pos); //Resetea los valores del índice que se le indica.
 forward ServerObjectsCleaningTimer(); // Limpia los objetos con mucho tiempo de vida
 forward LookObject(playerid); // Permite al jugador examinar un objeto sin agarrarlo.
@@ -145,6 +146,34 @@ stock TakeObject(playerid, playerhand)
 	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[object][sItemID]));
 	ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
 	ResetObject(object);
+	return 1;
+}
+
+stock TakeOneObject(playerid, playerhand)
+{
+    if(PlayerInfo[playerid][pHealth] < 25.0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar un objeto agonizando.");
+	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes utilizar esto estando incapacitado/congelado!");
+	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
+	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras te encuentras jugando Paintball");
+	if(GetHandItem(playerid, playerhand) != 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar nada ya que tienes un item en esa mano.");
+
+    new object = GetClosestObject(playerid);
+	if(object == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
+	if(object == ITEM_ID_CAJON_DE_CERVEZA){
+		if(ServerObject[object][sAmount] != 0){
+			SetHandItemAndParam(playerid, playerhand, ITEM_ID_CERVEZA, 5);
+			SendClientMessage(playerid, COLOR_WHITE, "Has agarrado una botella de cerveza del cajón.");
+			ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 0, 0, 0, 0, 0);
+            PlayerCmeMessage(playerid, 15.0, 5000, "Toma una cerveza de un cajón.");
+  			ServerObject[object][sAmount] -= 1;
+		} else return SendClientMessage(playerid, COLOR_YELLOW2, "No hay mas cervezas en el cajón.");
+	} else return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de un cajón de cerveza.");
 	return 1;
 }
 
