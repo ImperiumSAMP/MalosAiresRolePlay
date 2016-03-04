@@ -10838,7 +10838,7 @@ CMD:megafono(playerid, params[])
 	if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar el megáfono, te encuentras silenciado.");
 
-	format(text, sizeof(text), "[Megáfono]: %s %s: ¡%s!", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	format(text, sizeof(text), "[Megáfono] %s: ¡%s!", GetPlayerNameEx(playerid), text);
 	ProxDetector(60.0, playerid, text, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA);
 	return 1;
 }
