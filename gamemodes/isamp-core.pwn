@@ -10705,16 +10705,17 @@ CMD:buscados(playerid, params[])
 
 CMD:esposar(playerid, params[])
 {
-	new targetID;
+	new targetID,
+		item = SearchHandsForItem(playerid, ITEM_ID_ESPOSAS);
 
+	if(item == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener las esposas en alguna de tus manos!");
  	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
  		return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /esposar [ID/Jugador]");
-  	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
-  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(targetID == INVALID_PLAYER_ID)
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
  	if(PlayerCuffed[targetID] == 1)
@@ -10730,6 +10731,12 @@ CMD:esposar(playerid, params[])
 	SetPlayerSpecialAction(targetID, SPECIAL_ACTION_CUFFED);
 	SetPlayerAttachedObject(targetID, 0, 19418, 6, -0.011000, 0.028000, -0.022000, -15.600012, -33.699977, -81.700035, 0.891999, 1.000000, 1.168000);
 	PlayerCuffed[targetID] = 1;
+	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_ESPOSAS){
+        SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
+	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_ESPOSAS){
+        SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+	}
 	return 1;
 }
 
@@ -10770,7 +10777,8 @@ CMD:arrastrar(playerid, params[])
 
 CMD:quitaresposas(playerid, params[])
 {
-	new targetID;
+	new targetID,
+		freehand = SearchFreeHand(playerid);
 
 	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
 		return 1;
@@ -10778,8 +10786,6 @@ CMD:quitaresposas(playerid, params[])
 		return 1;
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /quitaresposas [ID/Jugador]");
-	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(targetID == INVALID_PLAYER_ID)
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
 	if(PlayerCuffed[targetID] == 0)
@@ -10791,10 +10797,11 @@ CMD:quitaresposas(playerid, params[])
 
 	SendFMessage(targetID, COLOR_LIGHTBLUE, "¡%s te ha quitado las esposas!", GetPlayerNameEx(playerid));
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Le has quitado las esposas a %s!", GetPlayerNameEx(targetID));
-	PlayerPlayerActionMessage(playerid, targetID, 15.0, "le ha quitado las esposas a");
+	PlayerPlayerActionMessage(playerid, targetID, 15.0, "Le ha quitado las esposas a");
 	SetPlayerSpecialAction(targetID, SPECIAL_ACTION_NONE);
 	RemovePlayerAttachedObject(targetID, 0);
 	PlayerCuffed[targetID] = 0;
+	SetHandItemAndParam(playerid, freehand, ITEM_ID_ESPOSAS, 1);
 	return 1;
 }
 
