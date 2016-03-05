@@ -350,8 +350,8 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 
 	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0);
-	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
- 	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
+	format(str, sizeof(str), "Le entrega un/a %s a", GetItemName(itemid));
+ 	PlayerCmeMessage(playerid, 15.0, 5000, str);
 	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
@@ -398,7 +398,7 @@ CMD:mano(playerid, params[])
 	if(sscanf(params, "s[32]", command))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - separar - ver - guardar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - agarraruno - agarrarunoi - cambiar - combinar - separar - ver - guardar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
@@ -472,6 +472,14 @@ CMD:mano(playerid, params[])
 
 			TakeObject(playerid, HAND_LEFT);
 			
+		} else if(strcmp(command, "agarraruno", true) == 0) {
+		
+		    TakeOneObject(playerid, HAND_RIGHT);
+		
+		} else if(strcmp(command, "agarrarunoi", true) == 0) {
+
+		    TakeOneObject(playerid, HAND_LEFT);
+
 		} else if(strcmp(command, "ver", true) == 0) {
 
 			new item = GetHandItem(playerid, HAND_RIGHT),
@@ -515,7 +523,7 @@ CMD:mano(playerid, params[])
 			{
 			    case ITEM_ID_SANDWICH:
 			    {
-	            	PlayerActionMessage(playerid, 15.0, "come un pedazo de su sándwich de jamón y queso.");
+	            	PlayerCmeMessage(playerid, 15.0, 5000, "Come un pedazo de su sándwich de jamón y queso.");
 	            	PlayerEat(playerid, 10);
 	            	if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 	            		SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
@@ -526,7 +534,7 @@ CMD:mano(playerid, params[])
 			    
 			    case ITEM_ID_ALFAJOR:
 			    {
-					PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
+					PlayerCmeMessage(playerid, 15.0, 5000, "Comienza a comer un alfajor.");
 					PlayerEat(playerid, 15);
 					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
 						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_RIGHT) - 1);
@@ -538,7 +546,7 @@ CMD:mano(playerid, params[])
 			    case ITEM_ID_AGUAMINERAL:
 			    {
 					if(GetHandParam(playerid, HAND_RIGHT) > 0) {
-						PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua.");
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de agua.");
 						PlayerDrink(playerid, 10);
 						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
 					} else
@@ -548,7 +556,7 @@ CMD:mano(playerid, params[])
 			    
 			    case ITEM_ID_CERVEZA:
 			    {
-					PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de cerveza.");
+					PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de cerveza.");
 					PlayerDrink(playerid, 10);
 					PlayerDrinkAlcohol(playerid, 4);
 					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
@@ -602,8 +610,8 @@ Dialog:Dlg_Show_Item_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "toma un/a %s del contenedor de su mano derecha.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Toma un/a %s del contenedor de su mano derecha.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 		}
 		else
 		{

@@ -3508,7 +3508,7 @@ public globalUpdate()
 		            
 					SendFMessage(playerid, COLOR_YELLOW2, "Has sido dado de alta. Te cobraron $%d por tu tratamiento. Lo que te quede a pagar se descontará de tu cuenta bancaria.", PRICE_TREATMENT);
 		            if(GetPlayerCash(playerid) > PRICE_TREATMENT)
-						GivePlayerCash(playerid, -PRICE_TREATMENT); // se cobra 2 mil por el tratamiento
+						GivePlayerCash(playerid, -PRICE_TREATMENT); // se cobra 500 por el tratamiento
 					else
 						if(GetPlayerCash(playerid) > 0)
 						{
@@ -5810,6 +5810,33 @@ stock IsAtDrump(playerid) {
   	return 0;
 }
 
+stock IsAtPublicPhone(playerid) {
+	if(PlayerToPoint(1.0, playerid, 2069.4067, -1767.8048, 13.5623)
+		|| PlayerToPoint(1.0, playerid, 2069.4729, -1766.6636, 13.5627)
+		|| PlayerToPoint(1.0, playerid, 355.3718, -1365.1360, 14.4662)
+		|| PlayerToPoint(1.0, playerid, 356.8030, -1364.4698, 14.4848)
+		|| PlayerToPoint(1.0, playerid, 339.1753, -1398.0868, 16.0728)
+		|| PlayerToPoint(1.0, playerid, 523.1453, -1516.4115, 16.1900)
+		|| PlayerToPoint(1.0, playerid, 523.1840, -1525.5305, 16.1900)
+        || PlayerToPoint(1.0, playerid, 296.7054, -1573.7648, 33.4636)
+		|| PlayerToPoint(1.0, playerid, 295.0920, -1573.5259, 33.4432)
+		|| PlayerToPoint(1.0, playerid, 302.1675, -1592.7402, 32.8127)
+		|| PlayerToPoint(1.0, playerid, 303.1090, -1592.8499, 32.8497)
+		|| PlayerToPoint(1.0, playerid, 279.6530, -1630.8435, 33.3106)
+		|| PlayerToPoint(1.0, playerid, 278.0899, -1630.6064, 33.3104)
+		|| PlayerToPoint(1.0, playerid, 1805.7111, -1600.8192, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1806.7268, -1599.9480, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1807.6893, -1599.1371, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1808.7041, -1598.2600, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1809.6616, -1597.4344, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1723.0789, -1721.2704, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1723.0786, -1720.3054, 13.5390)
+		|| PlayerToPoint(1.0, playerid, 1721.2026, -1721.3439, 13.5454))	{
+		 return 1;
+  	}
+  	return 0;
+}
+
 IsAtGasStation(playerid)
 {
     if(IsPlayerConnected(playerid))
@@ -7226,10 +7253,6 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
 						if(PlayerInfo[playerid][pAge] < 18)
                             return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
-                        new Hour, Minute, Second;
-                        gettime(Hour, Minute, Second);
-						if ((8 > Hour) || (Hour > 20))
-							return PlayerDoMessage(playerid, 15.0, "El empleado dice: No podés comprar alcohol en este horario, ¿querés que me cierren el local?. Volvé de 9 a 21 horas.");
                         new freehand = SearchFreeHand(playerid);
 						if(freehand == -1)
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
@@ -7243,6 +7266,24 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	saveBusiness(business);
 					}
 					case 9:
+					{
+						if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA))
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
+						if(PlayerInfo[playerid][pAge] < 18)
+                            return PlayerDoMessage(playerid, 15.0, "El empleado dice: No te puedo vender alcohol siendo menor, vas a tener que comprar en otro lado.");
+                        new freehand = SearchFreeHand(playerid);
+						if(freehand == -1)
+							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+						SetHandItemAndParam(playerid, freehand, ITEM_ID_CAJON_DE_CERVEZA, 6);
+						GivePlayerCash(playerid, -GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA));
+						PlayerActionMessage(playerid, 15.0, "le paga al empleado por un cajón de cerveza.");
+						SendFMessage(playerid, COLOR_WHITE, "¡Has comprado una botella de cerveza por $%d. La tienes en tus manos!", GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA));
+		   				Business[business][bTill] += GetItemPrice(ITEM_ID_CAJON_DE_CERVEZA);
+			        	Business[business][bProducts]--;
+			        	saveBusiness(business);
+					}
+					case 10:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_RADIO))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -7259,7 +7300,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        	Business[business][bProducts]--;
 			        	saveBusiness(business);
 					}
-					case 10:
+					case 11:
 					{
 				        if(GetPlayerCash(playerid) < GetItemPrice(ITEM_ID_PARLANTE))
 							return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero necesario.");
@@ -9594,18 +9635,22 @@ CMD:llamar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /llamar [número de teléfono]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
-	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
-	if(!PhoneEnabled[playerid])
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
+	if(PhoneHand[playerid] == 0 || IsAtPublicPhone(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono o no estás cerca de un teléfono publico.");
+	if(!PhoneEnabled[playerid] || !IsAtPublicPhone(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo o no estás cerca de un teléfono publico.");
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
 	if(number == PlayerInfo[playerid][pPhoneNumber])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
 	if(number == 0)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} número inválido.");
-	
-	PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
+
+	if(!IsAtPublicPhone(playerid)){
+		PlayerActionMessage(playerid, 15.0, "levanta el teléfono publico y marca un numero.");
+	} else {
+	    PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
+	}
 	
 	switch(number)
 	{
@@ -10662,16 +10707,17 @@ CMD:buscados(playerid, params[])
 
 CMD:esposar(playerid, params[])
 {
-	new targetID;
+	new targetID,
+		item = SearchHandsForItem(playerid, ITEM_ID_ESPOSAS);
 
+	if(item == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes tener las esposas en alguna de tus manos!");
  	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
  		return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /esposar [ID/Jugador]");
-  	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
-  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(targetID == INVALID_PLAYER_ID)
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
  	if(PlayerCuffed[targetID] == 1)
@@ -10687,6 +10733,12 @@ CMD:esposar(playerid, params[])
 	SetPlayerSpecialAction(targetID, SPECIAL_ACTION_CUFFED);
 	SetPlayerAttachedObject(targetID, 0, 19418, 6, -0.011000, 0.028000, -0.022000, -15.600012, -33.699977, -81.700035, 0.891999, 1.000000, 1.168000);
 	PlayerCuffed[targetID] = 1;
+	if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_ESPOSAS){
+        SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
+	else if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_ESPOSAS){
+        SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+	}
 	return 1;
 }
 
@@ -10727,7 +10779,8 @@ CMD:arrastrar(playerid, params[])
 
 CMD:quitaresposas(playerid, params[])
 {
-	new targetID;
+	new targetID,
+		freehand = SearchFreeHand(playerid);
 
 	if(PlayerInfo[playerid][pFaction] != FAC_SIDE && PlayerInfo[playerid][pFaction] != FAC_PMA)
 		return 1;
@@ -10735,8 +10788,6 @@ CMD:quitaresposas(playerid, params[])
 		return 1;
 	if(sscanf(params, "u", targetID))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /quitaresposas [ID/Jugador]");
-	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(targetID == INVALID_PLAYER_ID)
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de jugador incorrecta.");
 	if(PlayerCuffed[targetID] == 0)
@@ -10748,10 +10799,11 @@ CMD:quitaresposas(playerid, params[])
 
 	SendFMessage(targetID, COLOR_LIGHTBLUE, "¡%s te ha quitado las esposas!", GetPlayerNameEx(playerid));
 	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Le has quitado las esposas a %s!", GetPlayerNameEx(targetID));
-	PlayerPlayerActionMessage(playerid, targetID, 15.0, "le ha quitado las esposas a");
+	PlayerPlayerActionMessage(playerid, targetID, 15.0, "Le ha quitado las esposas a");
 	SetPlayerSpecialAction(targetID, SPECIAL_ACTION_NONE);
 	RemovePlayerAttachedObject(targetID, 0);
 	PlayerCuffed[targetID] = 0;
+	SetHandItemAndParam(playerid, freehand, ITEM_ID_ESPOSAS, 1);
 	return 1;
 }
 
@@ -10826,7 +10878,7 @@ CMD:megafono(playerid, params[])
 	if(Muted[playerid])
 		return SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]:{C8C8C8} no puedes usar el megáfono, te encuentras silenciado.");
 
-	format(text, sizeof(text), "[Megáfono]: %s %s: ¡%s!", GetRankName(PlayerInfo[playerid][pFaction], PlayerInfo[playerid][pRank]), GetPlayerNameEx(playerid), text);
+	format(text, sizeof(text), "[Megáfono] %s: ¡%s!", GetPlayerNameEx(playerid), text);
 	ProxDetector(60.0, playerid, text, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA, COLOR_PMA);
 	return 1;
 }
@@ -11201,43 +11253,43 @@ CMD:propero(playerid, params[])
 	{
 		case 1: // Cadete
 		{
-			if(PlayerInfo[playerid][pRank] > 8)
+			if(PlayerInfo[playerid][pRank] > 9)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 71);
 		}
 		case 2: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 280); // Skin de oficial 1
 		}
 		case 3: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 265); // Tenpenny
 		}
 		case 4: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 266); // Pulaski
 		}
 		case 5: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 267); // Hernandez
 		}
 		case 6: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 281); // Skin de oficial 2
 		}
 		case 7: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
@@ -11245,7 +11297,7 @@ CMD:propero(playerid, params[])
 		}
 		case 8: // Oficial
 		{
-			if(PlayerInfo[playerid][pRank] > 7)
+			if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			if(PlayerInfo[playerid][pSex] != 0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener sexo femenino para usar esa vestimenta.");
@@ -11253,7 +11305,7 @@ CMD:propero(playerid, params[])
 		}
 		case 9: // Sargento
 		{
-			if(PlayerInfo[playerid][pRank] > 5)
+			if(PlayerInfo[playerid][pRank] > 6)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a esa vestimenta.");
 			SetPlayerSkin(playerid, 284);
 		}
@@ -14254,7 +14306,7 @@ CMD:llenar(playerid, params[])
   			return SendClientMessage(playerid, COLOR_YELLOW2, "El tanque se encuentra lleno.");
 		refilltype = 1;
         PlayerActionMessage(playerid, 15.0, "le indica al empleado el tipo de nafta, precio a llenar y le entrega el dinero.");
-   		PlayerDoMessage(playerid, 15.0, "El empleado toma una manguera del surtidor y comienza a llenar el vehiculo.");
+   		PlayerDoMessage(playerid, 15.0, "El empleado toma una manguera del surtidor y comienza a llenar el vehículo.");
 	} else
 		{
 			if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_BIDON)

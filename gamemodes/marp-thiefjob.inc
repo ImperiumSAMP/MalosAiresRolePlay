@@ -909,3 +909,37 @@ CMD:delincuenteayuda(playerid, params[])
 	}
 	return 1;
 }
+
+CMD:setthieflevel(playerid, params[])
+{
+	new targetid, level, string[128];
+	
+	if(sscanf(params, "ui", targetid, level))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /setthieflevel [ID/Jugador] [Nivel]");
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El jugador no posee el job de delincuente.");
+		
+    ThiefJobInfo[targetid][pFelonLevel] = level;
+    format(string, sizeof(string), "{878EE7}[INFO]{C8C8C8} %s te ha hecho ladron nivel %d.", GetPlayerNameEx(playerid), level);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "{878EE7}[INFO]{C8C8C8} Asignaste el nivel de ladron: %d a %s.", level, GetPlayerNameEx(targetid));
+	SendClientMessage(playerid, COLOR_WHITE, string);
+    return 1;
+}
+
+CMD:setthiefexp(playerid, params[])
+{
+	new targetid, exp, string[128];
+
+	if(sscanf(params, "ui", targetid, exp))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /setthiefexp [ID/Jugador] [Experiencia]");
+	if(PlayerInfo[playerid][pJob] != JOB_FELON)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El jugador no posee el job de delincuente.");
+
+    GiveJobExp(targetid, PlayerInfo[targetid][pJob], exp);
+    format(string, sizeof(string), "{878EE7}[INFO]{C8C8C8} %s te ha dado %d experiencia de ladron.", GetPlayerNameEx(playerid), exp);
+	SendClientMessage(targetid, COLOR_WHITE, string);
+	format(string, sizeof(string), "{878EE7}[INFO]{C8C8C8} Asignaste experiencia de ladron: %d a %s.", exp, GetPlayerNameEx(targetid));
+	SendClientMessage(playerid, COLOR_WHITE, string);
+    return 1;
+}

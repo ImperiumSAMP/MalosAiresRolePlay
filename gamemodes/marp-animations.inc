@@ -450,6 +450,7 @@ CMD:apuntar(playerid, params[])
 	{
 		case 1: ApplyAnimation(playerid, "SHOP", "ROB_Loop_Threat",4.1, 0, 1, 1, 1, 0);
 		case 2: ApplyAnimation(playerid, "PED", "ARRESTGUN", 4.0, 0, 0, 0, 1, 0);
+		case 3: ApplyAnimation(playerid, "SWORD", "sword_IDLE", 4.0, 0, 1, 1, 1, 0, 1);
 	}
 	return 1;
 }
