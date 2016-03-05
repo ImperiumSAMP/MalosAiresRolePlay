@@ -5810,6 +5810,33 @@ stock IsAtDrump(playerid) {
   	return 0;
 }
 
+stock IsAtPublicPhone(playerid) {
+	if(PlayerToPoint(1.0, playerid, 2069.4067, -1767.8048, 13.5623)
+		|| PlayerToPoint(1.0, playerid, 2069.4729, -1766.6636, 13.5627)
+		|| PlayerToPoint(1.0, playerid, 355.3718, -1365.1360, 14.4662)
+		|| PlayerToPoint(1.0, playerid, 356.8030, -1364.4698, 14.4848)
+		|| PlayerToPoint(1.0, playerid, 339.1753, -1398.0868, 16.0728)
+		|| PlayerToPoint(1.0, playerid, 523.1453, -1516.4115, 16.1900)
+		|| PlayerToPoint(1.0, playerid, 523.1840, -1525.5305, 16.1900)
+        || PlayerToPoint(1.0, playerid, 296.7054, -1573.7648, 33.4636)
+		|| PlayerToPoint(1.0, playerid, 295.0920, -1573.5259, 33.4432)
+		|| PlayerToPoint(1.0, playerid, 302.1675, -1592.7402, 32.8127)
+		|| PlayerToPoint(1.0, playerid, 303.1090, -1592.8499, 32.8497)
+		|| PlayerToPoint(1.0, playerid, 279.6530, -1630.8435, 33.3106)
+		|| PlayerToPoint(1.0, playerid, 278.0899, -1630.6064, 33.3104)
+		|| PlayerToPoint(1.0, playerid, 1805.7111, -1600.8192, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1806.7268, -1599.9480, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1807.6893, -1599.1371, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1808.7041, -1598.2600, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1809.6616, -1597.4344, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1723.0789, -1721.2704, 13.5469)
+		|| PlayerToPoint(1.0, playerid, 1723.0786, -1720.3054, 13.5390)
+		|| PlayerToPoint(1.0, playerid, 1721.2026, -1721.3439, 13.5454))	{
+		 return 1;
+  	}
+  	return 0;
+}
+
 IsAtGasStation(playerid)
 {
     if(IsPlayerConnected(playerid))
@@ -9606,18 +9633,22 @@ CMD:llamar(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /llamar [número de teléfono]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes realizar una llamada si no tienes un teléfono!");
-	if(PhoneHand[playerid] == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono.");
-	if(!PhoneEnabled[playerid])
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo.");
+	if(PhoneHand[playerid] == 0 || IsAtPublicPhone(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes tu celular en la mano. Usa el comando (/tel)efono o no estás cerca de un teléfono publico.");
+	if(!PhoneEnabled[playerid] || !IsAtPublicPhone(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes el teléfono apagado. Utiliza '/toggle telefono' para encenderlo o no estás cerca de un teléfono publico.");
 	if(Mobile[playerid] != 255)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ya te encuentras en una llamada.");
 	if(number == PlayerInfo[playerid][pPhoneNumber])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} la línea está siendo utilizada.");
 	if(number == 0)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} número inválido.");
-	
-	PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
+
+	if(!IsAtPublicPhone(playerid)){
+		PlayerActionMessage(playerid, 15.0, "levanta el teléfono publico y marca un numero.");
+	} else {
+	    PlayerActionMessage(playerid, 15.0, "toma un teléfono celular de su bolsillo y marca un número.");
+	}
 	
 	switch(number)
 	{
