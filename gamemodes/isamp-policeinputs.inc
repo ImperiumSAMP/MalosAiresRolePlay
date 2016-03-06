@@ -388,8 +388,9 @@ CMD:ptazer(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
+    if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo si tienes el tazer.");
 	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
-	ResetPlayerWeapons(playerid);
 	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
@@ -400,8 +401,9 @@ CMD:stazer(playerid, params[])
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
+	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo si tienes el tazer.");
 	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
-	ResetPlayerWeapons(playerid);
 	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
