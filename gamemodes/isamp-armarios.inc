@@ -56,10 +56,10 @@ CMD:armario(playerid, params[])
 		    SendFMessage(playerid, COLOR_WHITE, " - LSD: %d dosis.", House[houseid][LSD]);
 		}
 		if(House[houseid][Ecstasy] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - Ã‰xtasis: %d dosis.", House[houseid][Ecstasy]);
+		    SendFMessage(playerid, COLOR_WHITE, " - Éxtasis: %d dosis.", House[houseid][Ecstasy]);
 		}
 		if(House[houseid][Cocaine] > 0) {
-		    SendFMessage(playerid, COLOR_WHITE, " - CocaÃ­na: %d gramos.", House[houseid][Cocaine]);
+		    SendFMessage(playerid, COLOR_WHITE, " - Cocaína: %d gramos.", House[houseid][Cocaine]);
 		}
         SendClientMessage(playerid, COLOR_WHITE, "=====================================================");
 		return 1;
@@ -72,11 +72,11 @@ CMD:armario(playerid, params[])
 		{
 		    if(LockerStatus[houseid] != 1)
 			{
-			    PlayerActionMessage(playerid, 15.0, "coloca unas llaves en la cerradura de la puerta y abre el armario.");
+			    PlayerCmeMessage(playerid, 15.0, 5000, "Coloca unas llaves en la cerradura de la puerta y abre el armario.");
 			    LockerStatus[houseid] = 1;
 			} else
 				{
-			    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario y quita las llaves de la cerradura.");
+			    	PlayerCmeMessage(playerid, 15.0, 5000, "Cierra las puertas del armario y quita las llaves de la cerradura.");
 			    	LockerStatus[houseid] = 0;
 				}
 		}
@@ -84,15 +84,15 @@ CMD:armario(playerid, params[])
 		{
 		    if(LockerStatus[houseid] != 1)
 			{
-			    PlayerActionMessage(playerid, 15.0, "coloca unas llaves en la cerradura de la puerta y abre el armario.");
+			    PlayerCmeMessage(playerid, 15.0, 5000, "Coloca unas llaves en la cerradura de la puerta y abre el armario.");
 			    LockerStatus[houseid] = 1;
 			} else
 				{
-			    	PlayerActionMessage(playerid, 15.0, "cierra las puertas del armario y quita las llaves de la cerradura.");
+			    	PPlayerCmeMessage(playerid, 15.0, 5000, "Cierra las puertas del armario y quita las llaves de la cerradura.");
 			    	LockerStatus[houseid] = 0;
 				}
 		} else
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No tienes las llaves de este armario!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este armario!");
 			
 	} else if(strcmp(cmd, "tomardinero", true) == 0) {
 	
@@ -106,42 +106,42 @@ CMD:armario(playerid, params[])
         House[houseid][Money] -= param1;
         GivePlayerCash(playerid, param1);
         SaveHouse(houseid);
-		PlayerActionMessage(playerid, 15.0, "toma algo de dinero del interior del armario.");
+		PlayerCmeMessage(playerid, 15.0, 5000, "Toma algo de dinero del interior del armario.");
 
 	} else if(strcmp(cmd, "guardardinero", true) == 0) {
 
  		if(LockerStatus[houseid] == 0)
       		return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
  		if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes usar Ã©ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar Ã©ste comando estando agonizando!");
         if(PlayerInfo[playerid][pLevel] < 3)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes ser al menos nivel 3 para utilizar Ã©ste comando!");
+            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar éste comando!");
 		if(param1 < 1 || param1 > 200000)
- 			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes guardar menos de $1 o mas de $200.000!");
+ 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes guardar menos de $1 o mas de $200.000!");
 		if((House[houseid][Money] + param1) > 10000000)
-   			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡El armario sÃ³lo puede contener hasta $10.000.000!");
+   			return SendClientMessage(playerid, COLOR_YELLOW2, "¡El armario sÃ³lo puede contener hasta $10.000.000!");
 		if(GetPlayerCash(playerid) < param1)
  			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad de dinero.");
 
 		House[houseid][Money] += param1;
         GivePlayerCash(playerid, -param1);
         SaveHouse(houseid);
-        PlayerActionMessage(playerid, 15.0, "guarda algo de dinero en el interior del armario.");
+        PlayerCmeMessage(playerid, 15.0, 5000, "Guarda algo de dinero en el interior del armario.");
 
 	} else if(strcmp(cmd, "guardar", true) == 0) {
 
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
 		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	  		return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes hacerlo en Ã©ste momento!");
+	  		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en éste momento!");
 	 	if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes usar Ã©ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar éste comando estando agonizando!");
 		if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes hacerlo con el tazer!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo con el tazer!");
 		if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_TELEFONO_CELULAR)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes hacerlo con el telÃ©fono!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo con el telÃ©fono!");
 		if(GetPVarInt(playerid, "cantSaveItems") == 1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
 		new itemid = GetHandItem(playerid, HAND_RIGHT),
 			itemparam = GetHandParam(playerid, HAND_RIGHT),
@@ -150,15 +150,15 @@ CMD:armario(playerid, params[])
 		if(itemid == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 		if(!Container_AddItemAndParam(House[houseid][ContainerID], itemid, itemparam))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El Ã­tem es demasiado chico para guardarse en un armario.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El ítem es demasiado chico para guardarse en un armario.");
 
 		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lÃ³gico y grafico.
 		
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 		
-		format(str, sizeof(str), "guarda un/a %s en el armario.", GetItemName(itemid));
-		PlayerActionMessage(playerid, 15.0, str);
+		format(str, sizeof(str), "Guarda un/a %s en el armario.", GetItemName(itemid));
+		PlayerCmeMessage(playerid, 15.0, 5000, str);
 
 	} else if(strcmp(cmd, "guardari", true) == 0) {
 
@@ -167,13 +167,13 @@ CMD:armario(playerid, params[])
 		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	 	if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes usar Ã©ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar éste comando estando agonizando!");
 		if(GetHandItem(playerid, HAND_LEFT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes hacerlo con el tazer!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo con el tazer!");
 		if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_TELEFONO_CELULAR)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes hacerlo con el telefono!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo con el telefono!");
 		if(GetPVarInt(playerid, "cantSaveItems") == 1)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
 		new itemid = GetHandItem(playerid, HAND_LEFT),
 			itemparam = GetHandParam(playerid, HAND_LEFT),
@@ -182,22 +182,22 @@ CMD:armario(playerid, params[])
 		if(itemid == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 		if(!Container_AddItemAndParam(House[houseid][ContainerID], itemid, itemparam))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El Ã­tem es demasiado chico para guardarse en un armario.");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El ítem es demasiado chico para guardarse en un armario.");
 
 		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lÃ³gico y grafico.
 
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-		format(str, sizeof(str), "guarda un/a %s en el interior del armario.", GetItemName(itemid));
-		PlayerActionMessage(playerid, 15.0, str);
+		format(str, sizeof(str), "Guarda un/a %s en el interior del armario.", GetItemName(itemid));
+		PlayerCmeMessage(playerid, 15.0, 5000, str);
 
 	} else if(strcmp(cmd, "tomardroga", true) == 0) {
 
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
 		if(param1 < 1 || param1 > 10000)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes retirar menos de 1 o mas de 10.000!");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes retirar menos de 1 o mas de 10.000!");
 
 		if(strcmp(param2, "marihuana", true) == 0) {
 		    if(param1 > House[houseid][Marijuana])
@@ -238,18 +238,18 @@ CMD:armario(playerid, params[])
             PlayerActionMessage(playerid, 15.0, "toma un paquete desconocido del interior del armario.");
 
         } else
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingrese un tÃ­po de droga vÃ¡lido.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingrese un típo de droga válido.");
 
 	} else if(strcmp(cmd, "guardardroga", true) == 0) {
 
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
  		if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes usar Ã©ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar éste comando estando agonizando!");
         if(PlayerInfo[playerid][pLevel] < 3)
-            return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes ser al menos nivel 3 para utilizar este comando!");
+            return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes ser al menos nivel 3 para utilizar este comando!");
 		if(param1 < 1 || param1 > 10000)
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes guardar menos de 1 o mas de 10.000!");
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes guardar menos de 1 o mas de 10.000!");
 
 		if(strcmp(param2, "marihuana", true) == 0) {
 
@@ -300,7 +300,7 @@ CMD:armario(playerid, params[])
             PlayerActionMessage(playerid, 15.0, "guarda un paquete desconocido en el interior del armario.");
 
         } else
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingrese un tÃ­po de droga vÃ¡lido.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ingrese un típo de droga válido.");
 	}
 	return 1;
 }
@@ -320,13 +320,13 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 			free_hand = SearchFreeHand(playerid);
 
 		if(GetPlayerHouse(playerid) != houseid)
-    		return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡Debes estar en la casa!");
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en la casa!");
 		if(LockerStatus[houseid] == 0)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
 		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	 	if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Â¡No puedes usar Ã©ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar Ã©ste comando estando agonizando!");
 		if(free_hand == -1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
 
@@ -337,12 +337,12 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "toma un/a %s del interior del armario.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Toma un/a %s del interior del armario.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 		}
 		else
 		{
-	        SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra vacÃ­o o el slot especificado es invÃ¡lido.");
+	        SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra vacío o el slot especificado es inválido.");
 		}
 	}
 	return 1;
