@@ -406,6 +406,7 @@ new Float:GUIDE_POS[][3] = {
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 /*new TakeHeadShot[MAX_PLAYERS] = 0;*/
+new TakeLegShot[MAX_PLAYERS] = 0;
 
 // Pickups
 new
@@ -812,6 +813,7 @@ public ResetStats(playerid)
     MedDuty[playerid] = 0;
     
     /*TakeHeadShot[playerid] = 0;*/
+    TakeLegShot[playerid] = 0;
     
 	/* Vehiculos */
     OfferingVehicle[playerid] = false;
@@ -1533,6 +1535,7 @@ public OnPlayerSpawn(playerid)
 	}
 	
 	/*TakeHeadShot[playerid] = 0;*/
+	TakeLegShot[playerid] = 0;
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
@@ -3043,6 +3046,14 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
             return 1;
 		}*/
 
+		//=========================DISPARO EN PIERNAS===========================
+		
+		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGT_LEG && TakeLegShot[playerid] == 0)
+		{
+            SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en una de tus piernas al intentar correr te caeras. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
+			TakeLegShot[playerid] = 1;
+   			return 1;
+		}
 		//==========================HERIDAS DE BALA=============================
 
 		if(amount > 4.0)
@@ -3520,6 +3531,7 @@ public globalUpdate()
 					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
+					TakeLegShot[playerid] = 0;
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);
@@ -6424,8 +6436,16 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
-		
-	if(newkeys == 16 && InEnforcer[playerid])
+	// Si corre cuando recivio un tiro en la pierna se cae.
+	if(newkeys == KEY_JUMP || newkeys == KEY_SPRINT && TakeLegShot[playerid] == 1)
+	{
+	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+	    {
+	        ApplyAnimation(playerid, "PED", "FALL_collapse", 4.0, 0, 1, 1, 0, 0, 1);
+		}
+	}
+	
+	if(newkeys == KEY_SECONDARY_ATTACK && InEnforcer[playerid])
 	{
 		new Float:X, Float:Y, Float:Z;
 		GetVehiclePos(InEnforcer[playerid], X, Y, Z);
@@ -6434,7 +6454,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		InEnforcer[playerid] = 0;
 	}
 	
-	if(newkeys == 16 && InAmbulance[playerid])
+	if(newkeys == KEY_SECONDARY_ATTACK && InAmbulance[playerid])
 	{
 		new Float:X, Float:Y, Float:Z;
 		GetVehiclePos(InAmbulance[playerid], X, Y, Z);
@@ -12109,6 +12129,7 @@ CMD:aceptar(playerid,params[])
 				
 			SetPlayerHealthEx(playerid, 100.00);
 			/*TakeHeadShot[playerid] = 0;*/
+            TakeLegShot[playerid] = 0;
 			TogglePlayerControllable(playerid, true);
 			PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 			PlayerPlaySound(medic, 1150, 0.0, 0.0, 0.0);
@@ -13401,6 +13422,7 @@ CMD:sethp(playerid, params[])
 
     SetPlayerHealthEx(targetid, health);
     /*TakeHeadShot[targetid] = 0;*/
+    TakeLegShot[playerid] = 0;
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;
