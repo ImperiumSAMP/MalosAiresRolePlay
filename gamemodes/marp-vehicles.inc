@@ -1127,9 +1127,45 @@ CMD:maletero(playerid, params[])
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 		
-		format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
-		PlayerActionMessage(playerid, 15.0, str);
+		format(str, sizeof(str), "Guarda un/a %s en el maletero.", GetItemName(itemid));
+		PlayerCmeMessage(playerid, 15.0, 5000, str);
 		
+		format(str, sizeof(str), "guardar %d %s", itemparam, GetItemName(itemid));
+		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
+    }
+	else if(strcmp(cmd, "guardari", true) == 0)
+	{
+
+		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
+	    if(PlayerInfo[playerid][pHealth] < 25)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
+		if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+		if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+		if(GetPVarInt(playerid, "cantSaveItems") == 1)
+	 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
+		if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_TELEFONO_CELULAR)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el teléfono.");
+
+		new itemid = GetHandItem(playerid, HAND_LEFT),
+		    itemparam = GetHandParam(playerid, HAND_LEFT),
+			str[128];
+
+		if(itemid == 0)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
+		if(!Container_AddItemAndParam(VehicleInfo[vehicleid][VehContainerID], itemid, itemparam))
+		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el maletero / El ítem es demasiado chico para guardarse en un maletero.");
+
+    	SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico.
+
+		SetPVarInt(playerid, "cantSaveItems", 1);
+		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+
+		format(str, sizeof(str), "Guarda un/a %s en el maletero.", GetItemName(itemid));
+		PlayerCmeMessage(playerid, 15.0, 5000, str);
+
 		format(str, sizeof(str), "guardar %d %s", itemparam, GetItemName(itemid));
 		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
     }
@@ -1172,8 +1208,8 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 			
-			format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Toma un/a %s del maletero.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 
 			format(str, sizeof(str), "tomar %d %s", itemparam, GetItemName(itemid));
 			VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
