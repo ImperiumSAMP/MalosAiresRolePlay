@@ -52,7 +52,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
 #include "isamp-business.inc" 			//Sistema de negocios
-#include "isamp-houses.inc" 			//Sistema de casas
+#include "marp-houses.inc"				//Sistema de casas
 #include "isamp-buildings.inc"          //Sistema de edificios
 #include "isamp-factions.inc" 			//Sistema de facciones
 #include "marp-jobs.inc" 				//Definiciones y funciones para los JOBS
@@ -2745,57 +2745,78 @@ GetBusinessTaxes(bizID)
 	return Business[bizID][bPrice] / 400; // 0.25 porciento del valor de compra
 }
 
+CalculatePlayerPayDay(playerid)
+{
+	
+	switch(PlayerInfo[playerid][pFaction])
+	{
+		case 0:
+		{
+			switch(PlayerInfo[playerid][pJob])
+			{
+				case 0: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+				case JOB_FELON: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+				case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
+				case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += MIN_DRUGD_PAYDAY; // Mínimo por si no hay ventas
+				case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += MIN_TAXI_PAYDAY; // Mínimo por si no hay pasajeros disponibles
+			}
+		}
+		default:
+		{
+			switch(PlayerInfo[playerid][pRank])
+			{
+				case 1: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay1];
+				case 2: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay2];
+				case 3: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay3];
+				case 4: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay4];
+				case 5: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay5];
+				case 6: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay6];
+				case 7: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay7];
+				case 8: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay8];
+				case 9: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay9];
+				case 10: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay10];
+			}
+		}
+	}
+	
+	
+	
+	// AGREGAR COBRO DE IMPUESTOS
+}
+
 //===================================PAYDAY=====================================
 
 public PayDay(playerid)
 {
+	CalculatePlayerPayDay(playerid);
     if(gPlayerLogged[playerid])
 	{
-        switch(PlayerInfo[playerid][pFaction])
-		{
-            case 0:
-			{
-			    switch(PlayerInfo[playerid][pJob])
-			    {
-			        case 0: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-			        case JOB_FELON: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-			        case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-			        case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += MIN_DRUGD_PAYDAY; // Mínimo por si no hay ventas
-			        case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += MIN_TAXI_PAYDAY; // Mínimo por si no hay pasajeros disponibles
-			    }
-            }
-            default:
-			{
-			    switch(PlayerInfo[playerid][pRank])
-			    {
-			        case 1: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay1];
-			        case 2: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay2];
-			        case 3: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay3];
-			        case 4: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay4];
-			        case 5: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay5];
-			        case 6: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay6];
-			        case 7: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay7];
-			        case 8: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay8];
-			        case 9: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay9];
-			        case 10: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay10];
-			    }
-			}
-        }
-        
 		//===========================IMPUESTOS==================================
 
-		new tax = calculateVehiclesTaxes(playerid);
-		
-		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Income] != 0)
+		new tax = calculateVehiclesTaxes(playerid), houseid[2];
+
+
+		// Para las casas que está alquilando.
+		for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
 		{
-			tax += (House[PlayerInfo[playerid][pHouseKeyIncome]][HousePrice] / 100) / 7; //0.15 porciendo del precio aprox.
+		    if(House[houseid[0]][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
+			tax += (House[houseid[0]][HousePrice] / 100) / 7;
+			
+			if(House[houseid[0]][OwnerSQLID] != PlayerInfo[playerid][pID] || (PlayerInfo[playerid][pID] == House[houseid[0]][OwnerSQLID] && House[houseid[0]][TenantSQLID] != 0)) continue;
+			tax += (House[houseid[0]][HousePrice] / 100) / 7;
 		}
-		if(PlayerInfo[playerid][pHouseKey] != 0 && House[PlayerInfo[playerid][pHouseKey]][Income] == 0)
-		{
-  			tax += (House[PlayerInfo[playerid][pHouseKey]][HousePrice] / 100) / 7; //0.15 porciendo del precio aprox.
-  		}
+
 		    
 		//============================NEGOCIOS==================================
+		
+		
+		for(bizID = 1; bizID < MAX_BUSINESS; bizID++)
+		{
+		    if(Business[bizID][bOwnerSQLID] != PlayerInfo[playerid][pID]) continue;
+		    
+		    bizTax += GetBusinessTaxes(bizID);
+		}
+		// FALTA TERMINAR - REESCRIBIR INCLUDE MARP-BUSINESS
 		
 		new bizID = PlayerInfo[playerid][pBizKey], bizPay = 0, bizTax = 0;
 		if(bizID != 0)
@@ -2831,32 +2852,26 @@ public PayDay(playerid)
 		    
 		//========================ALQUILER DE VIVIENDAS=========================
 		
-		new pago = House[PlayerInfo[playerid][pHouseKeyIncome]][IncomePrice];
-		new pago2 = House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd];
-		new alquiler = 0;
-		new alquileradd = 0;
+		new rentmoney;
 		
-		if(PlayerInfo[playerid][pHouseKeyIncome] != 0)
+		// Para las casas que está alquilando.
+		for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
 		{
-			alquiler = pago;
-	 		if(House[PlayerInfo[playerid][pHouseKeyIncome]][Owned] != 0)
-		 	{
-				new h = PlayerInfo[playerid][pHouseKeyIncome];
-		        House[h][IncomePriceAdd] += pago;
-		        SaveHouse(h);
-			}
+		    if(House[houseid[0]][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
+			rentmoney += House[houseid[0]][IncomePrice];
+			House[houseid[0]][IncomeAmount] += House[houseid[0]][IncomePrice];
 		}
-		if(House[PlayerInfo[playerid][pHouseKey]][IncomePriceAdd] != 0)
+		GivePlayerCash(playerid, -rentmoney);
+		
+		// Para las casas propias que tiene en alquiler.
+		for(houseid[1] = 1; houseid[1] < MAX_HOUSES; houseid[1]++)
 		{
-			alquileradd = pago2;
-			new h = PlayerInfo[playerid][pHouseKey];
-	        House[h][IncomePriceAdd] -= pago2;
-	        SaveHouse(h);
+		    if(House[houseid[1]][OwnerSQLID] != PlayerInfo[playerid][pID]) continue;
+			if(House[houseid[1]][TenantSQLID] == 0) continue;
+			GivePlayerCash(playerid, House[houseid[1]][IncomePrice]);
 		}
         
         //============================INGRESOS==================================
-
-	    new newbank = PlayerInfo[playerid][pBank] + PlayerInfo[playerid][pPayCheck] - tax - alquiler + alquileradd - banktax;
 	    
 		GiveFactionMoney(FAC_GOB, tax);
 		GiveFactionMoney(FAC_GOB, bizTax);
@@ -2870,18 +2885,17 @@ public PayDay(playerid)
 		//======================================================================
 		
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
-	    SendFMessage(playerid, COLOR_WHITE, "- Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
-	    SendFMessage(playerid, COLOR_WHITE, "- Balance anterior: $%d - Nuevo balance: $%d", PlayerInfo[playerid][pBank], newbank);
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
-		if(bizID != 0)
+	    SendFMessage(playerid, COLOR_WHITE, "{F5A120}[TRABAJO]{FFFFFF} Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
+		if(IsOwnerOfAnyBiz)
 		{
-  			SendFMessage(playerid, COLOR_WHITE, "[Negocio %s] Ingresos: $%d - Impuestos: $%d - Balance de caja: $%d - Productos: %d", Business[bizID][bName], bizPay, bizTax, Business[bizID][bTill], Business[bizID][bProducts]);
+  			SendFMessage(playerid, COLOR_WHITE, "{F5A120}[NEGOCIOS]{FFFFFF} Ingresos: $%d - Impuestos: $%d", bizPay, bizTax);
 	        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
 		}
 		if(gangProfits > 0)
 		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-		if(alquiler > 0 || alquileradd > 0)
+		if(alquiler > 0 || alquileradd > 0) // EDITAR
 		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
 		
 		PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
