@@ -97,6 +97,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-actors.inc"              //Sistema de actores
 #include "marp-parlantes.inc"           //Sistema de parlantes
 #include "marp-horseraces.inc"          //Sistema de carreras de caballos.
+#include "marp-wounds.inc"              //Sistema de heridas.
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.5"
@@ -406,6 +407,7 @@ new Float:GUIDE_POS[][3] = {
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 /*new TakeHeadShot[MAX_PLAYERS] = 0;*/
+new TakeLegShot[MAX_PLAYERS] = 0;
 
 // Pickups
 new
@@ -812,6 +814,7 @@ public ResetStats(playerid)
     MedDuty[playerid] = 0;
     
     /*TakeHeadShot[playerid] = 0;*/
+    TakeLegShot[playerid] = 0;
     
 	/* Vehiculos */
     OfferingVehicle[playerid] = false;
@@ -1533,6 +1536,7 @@ public OnPlayerSpawn(playerid)
 	}
 	
 	/*TakeHeadShot[playerid] = 0;*/
+	TakeLegShot[playerid] = 0;
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
@@ -3018,169 +3022,6 @@ stock chargeTaxis()
 	}
 }
 
-/*stock isWeaponForHeadshot(weaponid)
-{
-	if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_SILENCED || weaponid == WEAPON_DEAGLE ||
-		weaponid == WEAPON_SHOTGUN ||weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 ||
-		weaponid == WEAPON_AK47 || weaponid == WEAPON_M4 || weaponid == WEAPON_TEC9 ||
-		weaponid == WEAPON_RIFLE || weaponid == WEAPON_SNIPER )
-	    return 1;
-
-	return 0;
-}*/
-
-public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
-{
-	new Float:armour;
-
-    GetPlayerArmour(playerid, armour);
-
-    if(issuerid != INVALID_PLAYER_ID)
-	{
-		//==========================SPRAY NO SACA VIDA==========================
-
- 		if(weaponid == WEAPON_SPRAYCAN)
-            return 1;
-            
-	    //===============================TAZER==================================
-
-		if(checkTazer(playerid, issuerid, amount, weaponid))
-		    return 1;
-
-		//==============================HEADSHOT================================
-
-		/*if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
-		{
-			SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
-		    SetPlayerHealthEx(playerid, 24);
-            TakeHeadShot[playerid] = 1;
-            return 1;
-		}*/
-
-		//==========================HERIDAS DE BALA=============================
-
-		if(amount > 4.0)
-			CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
-
-		//========================EFECTOS DE LA DROGA===========================
-
-		if(weaponid == 0)
-		{
-		    amount = amount/2; // Bajamos el daño base por puño para hacer mas duraderas las peleas y para darle utilidad a las armas melee.
-		    
-		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
-		    {
-			    if(DrugEffectEcstasy[issuerid] == true)
-			    {
-			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
-	    			if(armour > 0)
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
-					else
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					return 1;
-				}
-				if(DrugEffectMarijuana[playerid] == true)
-				{
-	                amount = (amount / 2); // reducimos 50 porciento el daño a trompadas que recibe si esta drogado con marihuana
-					if(armour > 0)
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-					else
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					return 1;
-				}
-			}
-		}
-	}
-
-	if(armour > 0.0)
-	{
-	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
-            SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-		else
-			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-	}
-	else
- 		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-
-    return 1;
-}
-
-stock AccurateShot(playerid)
-{
-	new weathers[4] = {234, 22, 401, -234};
-	SetPlayerWeather(playerid, weathers[random(4)]);
-    SetPlayerDrunkLevel (playerid, 10500);
-    GameTextForPlayer(playerid, "Te dieron un disparo certero", 5000, 1);
-    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-        ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
-    SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
-    return 1;
-}
-
-stock CrossArmour(playerid)
-{
-	new weathers[4] = {234, 22, 401, -234};
-	SetPlayerWeather(playerid, weathers[random(4)]);
-	SetPlayerDrunkLevel (playerid, 10500);
-	GameTextForPlayer(playerid, "Un disparo te ha atravesado el chaleco", 5000, 1);
-	if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-			ApplyAnimation(playerid, "SWEET", "SWEET_INJUREDLOOP", 4.0, 0, 0, 1, 0, 0);
-	SetTimerEx("RecoverLastShot", 5000, false, "i", playerid);
-	return 1;
-}
-
-public RecoverLastShot(playerid)
-{
-	SyncPlayerTimeAndWeather(playerid);
-	SetPlayerDrunkLevel(playerid, 0);
-	return 1;
-}
-
-stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
-{
-	new wepProbability = 0,
-	    bodyProbability = 0,
-	    option = random(100);
-
-	switch(weaponid)
-	{
-	    case WEAPON_DEAGLE: wepProbability = 10;
-	    case WEAPON_SHOTGUN: wepProbability = 15;
-	    case WEAPON_UZI: wepProbability = 5;
- 	    case WEAPON_MP5: wepProbability = 8;
-	    case WEAPON_AK47: wepProbability = 10;
-	    case WEAPON_M4: wepProbability = 10;
-	    case WEAPON_TEC9: wepProbability = 8;
-	    case WEAPON_RIFLE: wepProbability = 15;
-	    case WEAPON_SNIPER: wepProbability = 20;
-	    default: return 0;
-	}
-
-	switch(bodypart)
-	{
-	    case BODY_PART_TORSO: bodyProbability = 29;
-	    case BODY_PART_GROIN: bodyProbability = 29;
-	    case BODY_PART_LEFT_ARM: bodyProbability = 14;
-	    case BODY_PART_RIGHT_ARM: bodyProbability = 14;
-	    case BODY_PART_LEFT_LEG: bodyProbability = 24;
-	    case BODY_PART_RIGHT_LEG: bodyProbability = 24;
-	    default: return 0;
-	}
-
-	if((bodypart == BODY_PART_TORSO || bodypart == BODY_PART_GROIN) && armour > 0.0)
-	{
-	    if(option <= wepProbability)
-	        CrossArmour(playerid);
-	}
-	else
-	{
-	    if(option <= wepProbability + bodyProbability)
-	        AccurateShot(playerid);
-	}
-	return 1;
-}
-
-
 stock SetPlayerHealthEx(playerid, Float:health)
 {
 	PlayerInfo[playerid][pHealth] = health;
@@ -3534,6 +3375,7 @@ public globalUpdate()
 					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
+					TakeLegShot[playerid] = 0;
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);
@@ -6438,8 +6280,16 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
-		
-	if(newkeys == 16 && InEnforcer[playerid])
+	// Si corre cuando recivio un tiro en la pierna se cae.
+	if(newkeys == KEY_JUMP || newkeys == KEY_SPRINT && TakeLegShot[playerid] == 1)
+	{
+	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
+	    {
+	        ApplyAnimation(playerid, "PED", "FALL_collapse", 4.0, 0, 1, 1, 0, 0, 1);
+		}
+	}
+	
+	if(newkeys == KEY_SECONDARY_ATTACK && InEnforcer[playerid])
 	{
 		new Float:X, Float:Y, Float:Z;
 		GetVehiclePos(InEnforcer[playerid], X, Y, Z);
@@ -6448,7 +6298,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		InEnforcer[playerid] = 0;
 	}
 	
-	if(newkeys == 16 && InAmbulance[playerid])
+	if(newkeys == KEY_SECONDARY_ATTACK && InAmbulance[playerid])
 	{
 		new Float:X, Float:Y, Float:Z;
 		GetVehiclePos(InAmbulance[playerid], X, Y, Z);
@@ -12123,6 +11973,7 @@ CMD:aceptar(playerid,params[])
 				
 			SetPlayerHealthEx(playerid, 100.00);
 			/*TakeHeadShot[playerid] = 0;*/
+            TakeLegShot[playerid] = 0;
 			TogglePlayerControllable(playerid, true);
 			PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 			PlayerPlaySound(medic, 1150, 0.0, 0.0, 0.0);
@@ -13415,6 +13266,7 @@ CMD:sethp(playerid, params[])
 
     SetPlayerHealthEx(targetid, health);
     /*TakeHeadShot[targetid] = 0;*/
+    TakeLegShot[playerid] = 0;
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;
