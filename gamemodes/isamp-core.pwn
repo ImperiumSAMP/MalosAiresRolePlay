@@ -9250,7 +9250,7 @@ CMD:ayuda(playerid,params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} /motor (/veh)iculo (/mal)etero /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Facción]{C8C8C8} /f /faccion /fdepositar");
 
@@ -9359,12 +9359,6 @@ CMD:atender(playerid, params[])
 
 CMD:sms(playerid, params[])
 {
-	cmd_msg(playerid, params);
-	return 1;
-}
-
-CMD:msg(playerid, params[])
-{
 	new phonenumber,
 		string[256],
 		string2[256],
@@ -9372,7 +9366,7 @@ CMD:msg(playerid, params[])
 		contact;
 
 	if(sscanf(params, "ds[256]", phonenumber, text))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /msg [número telefónico] [texto]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /sms [número telefónico] [texto]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(PhoneHand[playerid] == 0)
