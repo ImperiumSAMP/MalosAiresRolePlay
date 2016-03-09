@@ -31,7 +31,7 @@ CMD:armario(playerid, params[])
 		houseid = GetPlayerHouse(playerid);
 
 	if(houseid == 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Debes estar dentro de una casa!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ebes estar dentro de una casa!");
 
 	if(sscanf(params, "s[32]I(-1)S(-1)[32]", cmd, param1, param2))
 	{
@@ -113,13 +113,13 @@ CMD:armario(playerid, params[])
  		if(LockerStatus[houseid] == 0)
       		return SendClientMessage(playerid, COLOR_YELLOW2, "El armario se encuentra cerrado con llave.");
  		if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes usar 茅ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes usar 閟te comando estando agonizando!");
         if(PlayerInfo[playerid][pLevel] < 3)
             return SendClientMessage(playerid, COLOR_YELLOW2, "ebes ser al menos nivel 3 para utilizar 閟te comando!");
 		if(param1 < 1 || param1 > 200000)
  			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes guardar menos de $1 o mas de $200.000!");
 		if((House[houseid][Money] + param1) > 10000000)
-   			return SendClientMessage(playerid, COLOR_YELLOW2, "l armario s贸lo puede contener hasta $10.000.000!");
+   			return SendClientMessage(playerid, COLOR_YELLOW2, "l armario s髄o puede contener hasta $10.000.000!");
 		if(GetPlayerCash(playerid) < param1)
  			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad de dinero.");
 
@@ -139,7 +139,7 @@ CMD:armario(playerid, params[])
 		if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el tazer!");
 		if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_TELEFONO_CELULAR)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el tel茅fono!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el tel閒ono!");
 		if(GetPVarInt(playerid, "cantSaveItems") == 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "ebes esperar un tiempo antes de volver a interactuar con otro item!");
 
@@ -152,7 +152,7 @@ CMD:armario(playerid, params[])
 		if(!Container_AddItemAndParam(House[houseid][ContainerID], itemid, itemparam))
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El 韙em es demasiado chico para guardarse en un armario.");
 
-		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado l贸gico y grafico.
+		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado l髄gico y grafico.
 		
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -171,7 +171,7 @@ CMD:armario(playerid, params[])
 		if(GetHandItem(playerid, HAND_LEFT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el tazer!");
 		if(GetHandItem(playerid, HAND_LEFT) == ITEM_ID_TELEFONO_CELULAR)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el telefono!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo con el tel閒ono!");
 		if(GetPVarInt(playerid, "cantSaveItems") == 1)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "ebes esperar un tiempo antes de volver a interactuar con otro item!");
 
@@ -184,7 +184,7 @@ CMD:armario(playerid, params[])
 		if(!Container_AddItemAndParam(House[houseid][ContainerID], itemid, itemparam))
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el armario / El 韙em es demasiado chico para guardarse en un armario.");
 
-		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado l贸gico y grafico.
+		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado l骻ico y grafico.
 
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -326,13 +326,13 @@ Dialog:Dlg_Show_House_Container(playerid, response, listitem, inputtext[])
 		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
 	  		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	 	if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes usar 茅ste comando estando agonizando!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes usar 閟te comando estando agonizando!");
 		if(free_hand == -1)
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar el item ya que tienes ambas manos ocupadas.");
 
 		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
-			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creaci贸n l贸gica y grafica en la mano.
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creaci髇 l骻ica y grafica en la mano.
 
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
