@@ -8379,7 +8379,9 @@ CMD:darobjeto(playerid, params[])
     {
 		SendClientMessage(playerid, COLOR_GRAD2, "{5CCAF1}[Sintaxis]{C8C8C8} /darobjeto [ID/Jugador] [ID de objeto] [cantidad]");
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "3(Palo de golf) 4(Cuchillo) 5(Bate) 6(Pala) 7(Macana) 8(Katana) 10-13(Dildo) 14(Flores) 16(Granada) 18(Molotov) 22(9mm) 23(9mm silenciada)");
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "24(Deagle) 25(Escopeta) 29(MP5) 30(AK47) 31(M4) 33(Rifle) 34(Sniper) 37(Lanzallamas) 41(Aerosol) 42(Extintor) 43(Cámara) 46(Paracaídas)");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "24(Deagle) 25(Escopeta) 29(MP5) 30(AK47) 31(M4) 33(Rifle) 34(Sniper) 37(Lanzallamas) 41(Aerosol) 42(Extintor) 43(Cámara) 46(Paracaídas)");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "119(Cargador de 9mm) 120(Cargador de Deagle) 121(Cargador de Uzi/Tec) 122(Cargador de MP5) 123(Cargador de M4) 124(Cargador de AK-47)");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "125(Balas de 9mm) 126(Balas de Deagle) 127(Balas de Uzi/Tec) 128(Balas de PM5) 129(Balas de M4) 130(Balas de AK-47) 170(Tazer(No funciona))");
 	}
 	targetfreehand = SearchFreeHand(targetid);
 	
