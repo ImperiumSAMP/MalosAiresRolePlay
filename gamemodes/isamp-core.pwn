@@ -233,15 +233,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MATS_CRIFLE            	45
 #define MATS_SRIFLE            	75
 
-// Bodyparts
-#define BODY_PART_TORSO         3
-#define BODY_PART_GROIN         4
-#define BODY_PART_LEFT_ARM      5
-#define BODY_PART_RIGHT_ARM     6
-#define BODY_PART_LEFT_LEG      7
-#define BODY_PART_RIGHT_LEG     8
-#define BODY_PART_HEAD          9
-
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
 #define UpdateMoneyBar 			GivePlayerMoney
@@ -405,9 +396,6 @@ new Float:GUIDE_POS[][3] = {
 };
 
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
-
-/*new TakeHeadShot[MAX_PLAYERS] = 0;*/
-new TakeLegShot[MAX_PLAYERS] = 0;
 
 // Pickups
 new
@@ -3375,7 +3363,6 @@ public globalUpdate()
 					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
-					TakeLegShot[playerid] = 0;
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);

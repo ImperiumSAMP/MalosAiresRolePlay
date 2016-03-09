@@ -2,13 +2,30 @@
 	#endinput
 #endif
 #define _marp_wounds
-
 /*
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 |||||||||||||   		     Sistema de heridas   				  ||||||||||||||
+|||||||||||||        	 Pheek Gaming Latinoamárica               ||||||||||||||
 |||||||||||||           			2016              			  ||||||||||||||
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 */
+
+//==================================DEFINES=====================================
+
+#define BODY_PART_TORSO         3
+#define BODY_PART_GROIN         4
+#define BODY_PART_LEFT_ARM      5
+#define BODY_PART_RIGHT_ARM     6
+#define BODY_PART_LEFT_LEG      7
+#define BODY_PART_RIGHT_LEG     8
+#define BODY_PART_HEAD          9
+
+//===================================NEW'S======================================
+
+/*new TakeHeadShot[MAX_PLAYERS] = 0;*/
+new TakeLegShot[MAX_PLAYERS] = 0;
+
+//=================================FUNCIONES====================================
 
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
@@ -40,7 +57,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 		//=========================DISPARO EN PIERNAS===========================
 
-		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGT_LEG && TakeLegShot[playerid] == 0)
+		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG && TakeLegShot[playerid] == 0)
 		{
             SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en una de tus piernas al intentar correr te caeras. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 			TakeLegShot[playerid] = 1;
