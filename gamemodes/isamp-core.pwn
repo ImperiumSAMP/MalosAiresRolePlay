@@ -6269,7 +6269,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
 		
 	// Si corre cuando recivio un tiro en la pierna se cae.
-	if(newkeys & KEY_JUMP || newkeys & KEY_SPRINT && TakeLegShot[playerid] == 1)
+	if(newkeys & KEY_JUMP && TakeLegShot[playerid] == 1 || newkeys & KEY_SPRINT && TakeLegShot[playerid] == 1)
 	{
 	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	    {
