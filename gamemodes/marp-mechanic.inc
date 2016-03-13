@@ -91,6 +91,7 @@ new CarLiftState[4] = 0,
 #define MEC_OFFER_DESTUNING     	4
 #define MEC_OFFER_GNC               5
 #define MEC_OFFER_LOJACK            6
+#define MEC_OFFER_ALARM				7
 
 //==============================DATA STORAGE====================================
 
@@ -176,8 +177,8 @@ public ResetGNCOffer(playerid)
 
 public ResetAlarmOffer(playerid)
 {	
-	AlarmClient[playerid] = 999;
-	AlarmOffer[playerid] = 999;
+	AlarmClient[playerid] = -1;
+	AlarmOffer[playerid] = -1;
 	return 1;
 }
 
@@ -197,7 +198,7 @@ public EndGNCOffer(playerid)
 
 public EndAlarmOffer(playerid)
 {
-	AlarmClient[AlarmOffer[playerid]] = 999;
+	AlarmClient[AlarmOffer[playerid]] = -1;
 	ResetAlarmOffer(playerid);
 	return 1;
 }
@@ -774,6 +775,24 @@ CMD:mecaceptar(playerid, params[])
            	KillTimer(LojackTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("LojackInstall", 5000, false, "d", playerid);
+		case MEC_OFFER_ALARM:
+		{
+			if(AlarmOffer[playerid] == -1)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Ningún mecánico te ofreció instalar una alarma en tu vehículo.");
+			if(!IsPlayerConnected(AlarmOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "El mecánico no está conectado.");
+			if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el area de reparaciones del taller Mercury.");
+			if(!ProxDetectorS(5.0, playerid, AlarmOffer[playerid]))
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Estas muy lejos del sujeto");
+			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar de conductor");
+
+			GameTextForPlayer(playerid, "El mecanico esta instalando la alarma en tu vehiculo", 4000, 1);
+			GameTextForPlayer(GNCOffer[playerid], "Instalando alarma", 400, 1);
+           	KillTimer(AlarmTimer[playerid]);
+			TogglePlayerControllable(playerid, false);
+			SetTimerEx("AlarmInstall", 5000, false, "d", playerid);
 		}
 	}
 	return 1;
@@ -1859,7 +1878,7 @@ CMD:meclojack(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
 	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
-	if(GNCClient[playerid] < 999)
+	if(LojackClient[playerid] != -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
 	if(targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalartelo a vos mismo.");
@@ -1887,7 +1906,7 @@ CMD:mecalarm(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
 	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
-	if(AlarmClient[playerid] != 999)
+	if(AlarmClient[playerid] != -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
 	if(targetid == playerid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalártelo vos mismo.");
