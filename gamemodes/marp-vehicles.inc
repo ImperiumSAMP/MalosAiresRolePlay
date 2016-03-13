@@ -81,6 +81,7 @@ enum Cars {
 	VehEcstasy,
 	VehCocaine,
 	VehRadio,
+	VehHaveAlarm
 
 	VehContainerSQLID,
 	VehContainerID
@@ -663,6 +664,7 @@ ResetVehicle(id)
     VehicleInfo[id][VehBonnet]		= -1;
     VehicleInfo[id][VehBoot]		= -1;
     VehicleInfo[id][VehLights]		= -1;
+	VehicleInfo[id][VehHaveAlarm]   = 0;
     VehicleInfo[id][VehFuel]		= 0;
     VehicleInfo[id][VehGNCTank]     = 0;
     VehicleInfo[id][VehGNC]         = 0;
@@ -730,6 +732,7 @@ SaveVehicle(id)
 	    VehicleInfo[id][VehBonnet],
 	    VehicleInfo[id][VehBoot],
 	    VehicleInfo[id][VehLights],
+		VehicleInfo[id][VehHaveAlarm],
 	    VehicleInfo[id][VehFuel],
 	    VehicleInfo[id][VehGNC],
 	    VehicleInfo[id][VehGNCTank],

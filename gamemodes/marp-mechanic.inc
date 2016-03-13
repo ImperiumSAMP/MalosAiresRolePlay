@@ -107,7 +107,11 @@ new RepairClient[MAX_PLAYERS],
 	
 	LojackOffer[MAX_PLAYERS] = -1,
 	LojackClient[MAX_PLAYERS] = -1,
-	LojackTimer[MAX_PLAYERS];
+	LojackTimer[MAX_PLAYERS],
+	
+	AlarmOffer[MAX_PLAYERS] = -1,
+	AlarmClient[MAX_PLAYERS] = -1,
+	AlarmTimer[MAX_PLAYERS];
 	
 new TMTuneTimers[5];
 
@@ -117,12 +121,15 @@ forward ResetRepairOffer(playerid);
 forward EndRepairOffer(playerid);
 forward EndGNCOffer(playerid);
 forward ResetGNCOffer(playerid);
+forward ResetAlarmOffer(playerid);
+forward EndAlarmOffer(playerid);
 forward EndLojackOffer(playerid);
 forward ResetLojackOffer(playerid);
 forward Cerrajeria(playerid);
 forward AutoReparacion(playerid, paynsprayid);
 forward Reparacion(playerid);
 forward Destuning(playerid);
+forward AlarmInstall(playerid);
 forward GncInstall(playerid);
 forward LojackInstall(playerid);
 forward GetRepairMaterialCost(vehicleid);
@@ -160,6 +167,20 @@ public ResetRepairOffer(playerid)
 	return 1;
 }
 
+public ResetGNCOffer(playerid)
+{
+	GNCClient[playerid] = -1;
+	GNCOffer[playerid] = -1;
+	return 1;
+}
+
+public ResetAlarmOffer(playerid)
+{	
+	AlarmClient[playerid] = 999;
+	AlarmOffer[playerid] = 999;
+	return 1;
+}
+
 public EndRepairOffer(playerid)
 {
 	RepairClient[RepairOffer[playerid]] = 999;
@@ -174,11 +195,10 @@ public EndGNCOffer(playerid)
 	return 1;
 }
 
-
-public ResetGNCOffer(playerid)
+public EndAlarmOffer(playerid)
 {
-	GNCClient[playerid] = -1;
-	GNCOffer[playerid] = -1;
+	AlarmClient[AlarmOffer[playerid]] = 999;
+	ResetAlarmOffer(playerid);
 	return 1;
 }
 
@@ -339,6 +359,20 @@ public LojackInstall(playerid)
 	SendFMessage(mecanico, -1, "Instalaste el sistema de localización en el vehículo de %s", GetPlayerNameEx(playerid));
 	TogglePlayerControllable(playerid, true);
 	EndLojackOffer(playerid);
+	return 1;
+}
+
+public AlarmInstall(playerid)
+{	
+	new vehicleid = GetPlayerVehicleID(playerid),
+		mecanico = AlarmOffer[playerid];
+		
+	VehicleInfo[vehicleid][VehHaveAlarm] = 1;
+	SaveVehicle(vehicleid);
+	SendFMessage(playerid, -1, "El sistema de alarma fue instalado en tu vehículo por %s.", GetPlayerNameEx(AlarmOffer[playerid]));
+	SendFMessage(mecanico, -1, "Instalaste el sistema de alarma en el vehiculo de $s.", GetPlayerNameEx(playerid));
+	TogglePlayerControllable(playerid, true);
+	EndAlarmOffer(playerid);
 	return 1;
 }
 
@@ -1837,5 +1871,33 @@ CMD:meclojack(playerid, params[])
 	LojackOffer[targetid] = playerid;
 	LojackClient[playerid] = targetid;
 	LojackTimer[targetid] = SetTimerEx("EndLojackOffer", 10000, false, "d", targetid);
+	return 1;
+}
+
+CMD:mecalarm(playerid, params[])
+{
+	new targetid,
+	    vehicleid = GetPlayerVehicleID(playerid);
+
+	if(sscanf(params, "u", targetid))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /mecalarm[ID del jugador]");
+	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Jugador inválido o no conectado.");
+	if(!IsPlayerInRangeOfPoint(playerid, MEC_REPAIR_RANGE, MEC_REPAIR_PLACE_X, MEC_REPAIR_PLACE_Y, MEC_REPAIR_PLACE_Z))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo puedes usar éste comando en el taller mecánico.");
+	if(GetPlayerState(targetid) != PLAYER_STATE_DRIVER)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador debe estar de conductor en un vehículo.");
+	if(AlarmClient[playerid] != 999)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes una oferta de trabajo con otro cliente.");
+	if(targetid == playerid)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No podés instalártelo vos mismo.");
+	if(GetVehicleType(vehicleid) != VTYPE_CAR)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Sólo es posible instalar la alarma en autos.");
+
+	SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreciste a %s instalar una alarma en su vehículo y tiene 15 segundos para responder.", GetPlayerNameEx(targetid));
+	SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te ofreció instalar una alarma en tu vehículo y tienes 15 segundos para aceptarlo (/mecaceptar).", GetPlayerNameEx(playerid));
+	AlarmOffer[targetid] = playerid;
+	AlarmClient[playerid] = targetid;
+	AlarmTimer[targetid] = SetTimerEx("EndAlarmOffer", 10000, false, "d", targetid);
 	return 1;
 }
