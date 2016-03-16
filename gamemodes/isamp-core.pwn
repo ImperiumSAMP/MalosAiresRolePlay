@@ -3434,6 +3434,13 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 		SetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 		GameTextForPlayer(playerid, "~w~Vehiculo cerrado", 1000, 4);
+		
+		if(VehicleInfo[vehicleid][VehHaveAlarm] == 1)
+		{
+			VehicleInfo[vehicleid][VehAlarm] = 1;
+			SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+			SetTimerEx(shutdownAlarm, 25000, false, "i", vehicleid);
+		}
 	}
 
 	return 1;
@@ -4704,6 +4711,13 @@ stock otherLog(playerid, secondplayer, logType, text[])
 	hFile = fopen(filename, io_append);
 	fwrite(hFile, string);
 	fclose(hFile);
+}
+
+stock shutdownAlarm(vehicleid)
+{
+	VehicleInfo[vehicleid][VehAlarm] = 0;
+	SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+	return 1;
 }
 
 stock CKLog(adminid, playerid, newname[], newage, newsex)
@@ -9069,7 +9083,7 @@ CMD:faccion(playerid, params[])
 		    case FAC_HOSP: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{C8C8C8} /mservicio /gobierno /departamento /ultimallamada /curar /rehabilitar");
 		    case FAC_MECH:
 		    {
-				SendClientMessage(playerid, COLOR_WHITE, "{C8C8C8}/mecequipo /mecreparar /mecremolcar /mectaller /mecdestunear /mectunear /mectuning /meccerradura /meccomprar /mecguardar /mecdeposito /meclojack");
+				SendClientMessage(playerid, COLOR_WHITE, "{C8C8C8}/mecequipo /mecreparar /mecremolcar /mectaller /mecdestunear /mectunear /mectuning /meccerradura /meccomprar /mecguardar /mecdeposito /meclojack /mecalarm");
 				if(PlayerInfo[playerid][pRank] < 6)
 					SendFMessage(playerid, COLOR_WHITE, "{FFDD00}[%s] {C8C8C8}/mecpuertadepo", GetRankName(FAC_MECH, 5));
 				if(PlayerInfo[playerid][pRank] == 1)
