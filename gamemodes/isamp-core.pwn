@@ -597,7 +597,7 @@ public OnGameModeInit()
 	format(price, sizeof(price), "$%d", PRICE_LIC_FLYING);
 	AddMenuItem(licenseMenu, 1, price);
 	//==========================================================================
-	SetNameTagDrawDistance(30.0);
+	SetNameTagDrawDistance(15.0);
 	ResetServerRacesVariables();
 	Lift_CreateAll();
 	InitializeServerSpeakers();
@@ -1530,9 +1530,7 @@ public OnPlayerSpawn(playerid)
 	    SetPVarInt(playerid, "died", 0);
 	    
 		if(PlayerInfo[playerid][pHospitalized] >= 1)
-		{
 		    initiateHospital(playerid);
-		}
 	}
 	
 	/*TakeHeadShot[playerid] = 0;*/
@@ -1544,7 +1542,6 @@ public OnPlayerSpawn(playerid)
     LoadToysItems(playerid);
     
 	if(AdminDuty[playerid]) SetPlayerColor(playerid, COLOR_ADMINDUTY);
-
 	return 1;
 }
 
@@ -1928,10 +1925,6 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 			return 1;
 		}
 	}
-	else
-	{
-		return 1;
-	}
 	return 1;
 }
 
@@ -2113,9 +2106,7 @@ public OnPlayerDataLoad(playerid)
 		}
 
 		if(!PlayerInfo[playerid][pTutorial])
-		{
 			PlayerStartTutorial(playerid);
-		}
 		else if(PlayerInfo[playerid][pRegStep] > 0)
 		{
 			TextDrawShowForPlayer(playerid, RegTDBorder1);
@@ -2318,9 +2309,8 @@ public OnBusinessDataLoad(id) {
 		cache_get_field_content(0, "bInsideZ", result); 			Business[id][bInsideZ] 			= floatstr(result);
 		cache_get_field_content(0, "bInsideAngle", result); 		Business[id][bInsideAngle] 		= floatstr(result);
 		Business[id][bLoaded] = true;
-	} else {
+	} else
 	    Business[id][bLoaded] = false;
-	}
 	ReloadBizIcon(id);
 	openBizPermission[id] = true;
 	return 1;
@@ -2357,9 +2347,8 @@ public OnBuildingDataLoad(id) {
 		cache_get_field_content(0, "blInsideZ", result);			Building[id][blInsideZ] 			= floatstr(result);
 		cache_get_field_content(0, "blInsideAngle", result);		Building[id][blInsideAngle] 		= floatstr(result);
         Building[id][blLoaded] = true;
-	} else {
+	} else
 	    Building[id][blLoaded] = false;
-	}
 	ReloadBlIcon(id);
 	return 1;
 }
@@ -2499,10 +2488,8 @@ public OnVehicleDataLoad(id)
 
 		//======================================================================
 		
-		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611) {
+		if(VehicleInfo[id][VehType] == VEH_NONE || VehicleInfo[id][VehModel] < 400 || VehicleInfo[id][VehModel] > 611)
  			CreateVehicle(411, 9999.0, 9999.0, 0.0, 0.0, 1, 1, -1);
-
-		}
 		else
 		{
 			if(VehicleInfo[id][VehType] == VEH_RENT)
@@ -2524,22 +2511,14 @@ public OnVehicleDataLoad(id)
 				VehicleInfo[id][VehColor2] = random(255);
                 CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
 
-			} else if(VehicleInfo[id][VehType] == VEH_JOB) {
-			    // Vehículos de empleo.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_SCHOOL) {
-			    // Vehículos de licencia.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
-
-			} else if(VehicleInfo[id][VehType] == VEH_FACTION) {
-			    // Vehículos de facción.
-                CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
-
-			} else {
-			    // Otros.
+			else if(VehicleInfo[id][VehType] == VEH_JOB) // Vehículos de empleo.
+				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+			else if(VehicleInfo[id][VehType] == VEH_SCHOOL) // Vehículos de licencia.
+				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 1800);
+			else if(VehicleInfo[id][VehType] == VEH_FACTION) // Vehículos de facción.
+				CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], 3600);
+			else // Otros.
 			    CreateVehicle(VehicleInfo[id][VehModel], VehicleInfo[id][VehPosX], VehicleInfo[id][VehPosY], VehicleInfo[id][VehPosZ], VehicleInfo[id][VehAngle], VehicleInfo[id][VehColor1], VehicleInfo[id][VehColor2], -1);
-			}
 
 			SetVehicleParamsEx(id, 0, VehicleInfo[id][VehLights], VehicleInfo[id][VehAlarm], 0, VehicleInfo[id][VehBonnet], VehicleInfo[id][VehBoot], VehicleInfo[id][VehObjective]);
 		}
@@ -2563,16 +2542,9 @@ public SaveAccount(playerid)
 		mysql_real_escape_string(name, name, 1, sizeof(name));
 		
         if(AdminDuty[playerid])
-		{
 			PlayerInfo[playerid][pHealth] = GetPVarFloat(playerid, "tempHealth");
-		}
-		else if(CopDuty[playerid] || SIDEDuty[playerid])
-		{
-		}
 		else
-		{
 		    GetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
-		}
 
 		if(PlayerInfo[playerid][pSpectating] == INVALID_PLAYER_ID)
 		{
@@ -2705,11 +2677,10 @@ stock GetPlayerSpeed(playerid, bool:kmh) {
 		Float:Vz,
 		Float:rtn;
 
-    if(IsPlayerInAnyVehicle(playerid)) {
+    if(IsPlayerInAnyVehicle(playerid))
 		GetVehicleVelocity(GetPlayerVehicleID(playerid),Vx,Vy,Vz);
-	} else {
+	else
 		GetPlayerVelocity(playerid,Vx,Vy,Vz);
-	}
     rtn = floatsqroot(floatabs(floatpower(Vx + Vy + Vz,2)));
     return kmh?floatround(rtn * 100 * 1.61):floatround(rtn * 100);
 }
@@ -2751,7 +2722,6 @@ GetBusinessTaxes(bizID)
 
 CalculatePlayerPayDay(playerid)
 {
-	
 	switch(PlayerInfo[playerid][pFaction])
 	{
 		case 0:
@@ -2783,9 +2753,74 @@ CalculatePlayerPayDay(playerid)
 		}
 	}
 	
+	/*
+	Agregar enum PayDayInfo. Se puede hacer:
+	- Como un enum aparte del PlayerInfo.
+	- Como un param list más del PlayerInfo (PlayerInfo[playerid][pInfo][PDInfo])
 	
+	De la segunda forma quedaría así:
 	
-	// AGREGAR COBRO DE IMPUESTOS
+	PlayerInfo[playerid][PayDayInfo][housetax]
+	y demases...
+	*/
+	
+	PlayerInfo[playerid][PayDayInfo][vehicletax] = calculateVehiclesTaxes(playerid);
+	//===========================CASAS==================================
+	
+	new houseid[2];
+	// Para las casas que está alquilando.
+	for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
+	{
+	    if(House[houseid[0]][TenantSQLID] == PlayerInfo[playerid][pID])
+			PlayerInfo[playerid][PayDayInfo][housetax] += ((House[houseid[0]][HousePrice] / 100) / 7);
+
+		if(House[houseid[0]][OwnerSQLID] == PlayerInfo[playerid][pID] && House[houseid[0]][TenantSQLID] == 0)
+            PlayerInfo[playerid][PayDayInfo][housetax] += ((House[houseid[0]][HousePrice] / 100) / 7);
+	}
+
+
+	//============================NEGOCIOS==================================
+
+
+	for(bizID = 1; bizID < MAX_BUSINESS; bizID++)
+	{
+	    if(Business[bizID][bOwnerSQLID] != PlayerInfo[playerid][pID]) continue;
+
+		PlayerInfo[playerid][PayDayInfo][biztax] += GetBusinessTaxes(bizID);
+		PlayerInfo[playerid][PayDayInfo][biztheoricalgain] += GetBusinessPayCheck(bizID);
+		
+		if(Business[bizID][bLocked] == 0 && Business[bizID][bProducts] >= 50)
+		    PlayerInfo[playerid][PayDayInfo][bizrealgain] += GetBusinessPayCheck(bizID);
+	}
+	// FALTA TERMINAR - REESCRIBIR INCLUDE MARP-BUSINESS
+	// OPENBIZPERMISSION ADAPTAR
+
+        //========================COSTOS BANCARIOS==============================
+
+	PlayerInfo[playerid][PayDayInfo][banktax] = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
+	if(PlayerInfo[playerid][PayDayInfo][banktax] < 50)
+	    PlayerInfo[playerid][PayDayInfo][banktax] = 50; // Mínimo de 50 pesos por tener la cuenta abierta
+
+	//========================ALQUILER DE VIVIENDAS=========================
+
+	new rentmoney;
+
+	// Para las casas que está alquilando.
+	for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
+	{
+	    if(House[houseid[0]][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
+		rentmoney += House[houseid[0]][IncomePrice];
+		House[houseid[0]][IncomeAmount] += House[houseid[0]][IncomePrice];
+	}
+	GivePlayerCash(playerid, -rentmoney);
+
+	// Para las casas propias que tiene en alquiler.
+	for(houseid[1] = 1; houseid[1] < MAX_HOUSES; houseid[1]++)
+	{
+	    if(House[houseid[1]][OwnerSQLID] != PlayerInfo[playerid][pID]) continue;
+		if(House[houseid[1]][TenantSQLID] == 0) continue;
+		GivePlayerCash(playerid, House[houseid[1]][IncomePrice]);
+	}
 }
 
 //===================================PAYDAY=====================================
@@ -2817,7 +2852,6 @@ public PayDay(playerid)
 		for(bizID = 1; bizID < MAX_BUSINESS; bizID++)
 		{
 		    if(Business[bizID][bOwnerSQLID] != PlayerInfo[playerid][pID]) continue;
-		    
 		    bizTax += GetBusinessTaxes(bizID);
 		}
 		// FALTA TERMINAR - REESCRIBIR INCLUDE MARP-BUSINESS
@@ -2891,32 +2925,32 @@ public PayDay(playerid)
 		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
 	    SendFMessage(playerid, COLOR_WHITE, "{F5A120}[TRABAJO]{FFFFFF} Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
 		if(IsOwnerOfAnyBiz)
-		{
   			SendFMessage(playerid, COLOR_WHITE, "{F5A120}[NEGOCIOS]{FFFFFF} Ingresos: $%d - Impuestos: $%d", bizPay, bizTax);
-	        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
+		switch(IsOwnerOrTenantOfAnyRentedHouse)
+		{
+		    case 1: SendFMessage(playerid, COLOR_WHITE, "{F5A120}[CASAS]{FFFFFF} Alquileres $%d - Impuestos: $%d", pago2, pago);
+		    case 2: SendFMessage(playerid, COLOR_WHITE, "{F5A120}[CASAS]{FFFFFF} Ingresos $%d - Alquileres $%d - Impuestos: $%d", pago2, pago);
+		    case 3: SendFMessage(playerid, COLOR_WHITE, "{F5A120}[CASAS]{FFFFFF} Ingresos $%d - Impuestos: $%d", pago2, pago);
 		}
-		if(gangProfits > 0)
-		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-		if(alquiler > 0 || alquileradd > 0) // EDITAR
-		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
+		switch(IsOwnerOfAnyBiz)
+		{
+		    case false: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
+		    case true: SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Los ingresos de negocios han sido depositados en las respectivas cajas. El resto ha sido depositado en su cuenta bancaria.");
+		}
 		
 		PlayerInfo[playerid][pBank] = newbank;
 		PlayerInfo[playerid][pPayCheck] = 0;
 		PlayerInfo[playerid][pExp]++;
 		PlayerInfo[playerid][pPlayingHours] += 1;
-		if(PlayerInfo[playerid][pJobTime] > 0)	{
+		if(PlayerInfo[playerid][pJobTime] > 0)
 			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
-		}
 		
 		ResetPlayerInputs(playerid);
 
 		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
 
 		if(PlayerInfo[playerid][pExp] < expamount)
-		{
 			SendFMessage(playerid, COLOR_WHITE, "(( Tienes %d/%d puntos de respeto. ))", PlayerInfo[playerid][pExp], expamount);
-		}
 		else
 		{
 		    PlayerInfo[playerid][pExp] = 0;
@@ -2925,8 +2959,8 @@ public PayDay(playerid)
 		    SendFMessage(playerid, COLOR_WHITE, "(( ¡Su cuenta es ahora nivel %d! ¡Acumula %d puntos de experiencia para el próximo nivel! ))", PlayerInfo[playerid][pLevel],expamount);
 		}
 		SendClientMessage(playerid, COLOR_YELLOW, "===================================================================");
-		RentalExpiration(playerid);
 	}
+	CheckHousesForRentalExpirationAdvises(playerid);
 }
 
 public accountTimer()
@@ -3197,9 +3231,7 @@ public globalUpdate()
 	gettime(gTime[0], gTime[1], gTime[2]);
 
 	if(gTime[1] >= 59 && gTime[2] >= 59)
-	{
 		if(UpdateTOD) SetWorldTime(gTime[0]); // Set the world time to keep the worldtime variable updated (and ensure it syncs instantly for connecting players).
-	}
 	
     //==========================================================================
     
@@ -3419,9 +3451,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 
 	if(AdminDuty[playerid])
-	{
 	    return 1;
-	}
 
 	if(VehicleInfo[vehicleid][VehLocked] == 1)
 	{
@@ -3443,11 +3473,6 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		}
 	}
 
-	return 1;
-}
-
-public OnPlayerExitVehicle(playerid, vehicleid)
-{
 	return 1;
 }
 
@@ -3523,9 +3548,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		
 		//===============================RADIO EN AUTO==========================
 		if(Radio_IsOnType(playerid, RADIO_TYPE_VEH))
-		{
 			Radio_Stop(playerid);
-		}
+
         //======================================================================
 	}
 	else if(newstate == PLAYER_STATE_ONFOOT && oldstate == PLAYER_STATE_DRIVER)
@@ -3554,9 +3578,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		
 		//===============================RADIO EN AUTO==========================
 		if(Radio_IsOnType(playerid, RADIO_TYPE_VEH))
-		{
 			Radio_Stop(playerid);
-		}
 		//======================================================================
 	}
 	
@@ -3751,25 +3773,15 @@ public OnPlayerEnterCheckpoint(playerid)
 		else CheckMissionEvent(playerid, 5);
 	
     if(FarmJob_IsPlayerWorking(playerid, vehicleID))
-	{
     	FarmJob_PlayerEnterCheckpoint(playerid);
-    }
 	else if(DrugfJob_IsPlayerWorking(playerid, vehicleID))
-	{
     	DrugfJob_PlayerEnterCheckpoint(playerid);
-    }
 	else if(TranJob_IsPlayerWorking(playerid, vehicleID))
-	{
     	TranJob_PlayerEnterCheckpoint(playerid);
-	}
 	else if(GarbJob_IsPlayerWorking(playerid, vehicleID))
-	{
 	    GarbJob_PlayerEnterCheckpoint(playerid);
-    }
 	else if(DeliJob_IsPlayerWorking(playerid, vehicleID))
-	{
 	    DeliJob_PlayerEnterCheckpoint(playerid);
-    }
 	else if(playerLicense[playerid][lDStep] >= 1 && VehicleInfo[vehicleID][VehType] == VEH_SCHOOL) {
 
 		if(PlayerToPoint(5.0, playerid, 1109.8116, -1743.4208, 13.1255) && playerLicense[playerid][lDStep] == 1) {
@@ -3819,18 +3831,14 @@ public OnPlayerEnterCheckpoint(playerid)
 			PlayerTextDrawHide(playerid, PTD_Timer[playerid]);
 
 		    if(vehicleHP < 1000.0)
-			{
 				SendClientMessage(playerid, COLOR_LIGHTRED, "¡Has fallado la prueba!, el vehículo se encuentra dañado.");
-		    }
 			else if(playerLicense[playerid][lDMaxSpeed] >= 76)
-			{
 		    	SendFMessage(playerid, COLOR_LIGHTRED, "¡Has fallado la prueba!, has conducido muy rápido (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
-			}
 			else
 			{
 		        SendFMessage(playerid, COLOR_LIGHTGREEN, "¡Has superado la prueba!, ahora tienes una licencia de conducir (velocidad máxima: %f KM/H).", playerLicense[playerid][lDMaxSpeed]);
 				PlayerInfo[playerid][pCarLic] = 1;
-		    }
+			}
 		    SetVehicleToRespawn(vehicleID);
 		    PutPlayerInVehicle(playerid, vehicleID, 0);
 			RemovePlayerFromVehicle(playerid);
@@ -3889,47 +3897,54 @@ public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
 
 	new curpage = GetPVarInt(playerid, "skinc_page");
 
-	if(Business[GetPlayerBusiness(playerid)][bType] == BIZ_CLOT) {
-		if(PlayerInfo[playerid][pSex] == 1) {
+	if(Business[GetPlayerBusiness(playerid)][bType] == BIZ_CLOT)
+	{
+		if(PlayerInfo[playerid][pSex] == 1)
 		    skintype = 1;
-		} else {
+		else
 			skintype = 3;
-		}
-	} else if(Business[GetPlayerBusiness(playerid)][bType] == BIZ_CLOT2) {
-		if(PlayerInfo[playerid][pSex] == 1) {
+	}
+	else if(Business[GetPlayerBusiness(playerid)][bType] == BIZ_CLOT2)
+	{
+		if(PlayerInfo[playerid][pSex] == 1)
 		    skintype = 2;
-		} else {
+		else
 			skintype = 4;
-		}
 	}
 	
-	if(playertextid == gNextButtonTextDrawId[playerid]) {
-	    if(curpage < (GetNumberOfPages(skintype) - 1)) {
+	if(playertextid == gNextButtonTextDrawId[playerid])
+	{
+	    if(curpage < (GetNumberOfPages(skintype) - 1))
+		{
 	        SetPVarInt(playerid, "skinc_page", curpage + 1);
 	        ShowPlayerModelPreviews(playerid, skintype);
          	UpdatePageTextDraw(playerid, skintype);
          	PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
-		} else {
-		    PlayerPlaySound(playerid, 1085, 0.0, 0.0, 0.0);
 		}
+		else
+		    PlayerPlaySound(playerid, 1085, 0.0, 0.0, 0.0);
 		return 1;
 	}
 
-	if(playertextid == gPrevButtonTextDrawId[playerid]) {
-	    if(curpage > 0) {
+	if(playertextid == gPrevButtonTextDrawId[playerid])
+	{
+	    if(curpage > 0)
+		{
 	    	SetPVarInt(playerid, "skinc_page", curpage - 1);
 	    	ShowPlayerModelPreviews(playerid, skintype);
 	    	UpdatePageTextDraw(playerid, skintype);
 	    	PlayerPlaySound(playerid, 1084, 0.0, 0.0, 0.0);
-		} else {
-		    PlayerPlaySound(playerid, 1085, 0.0, 0.0, 0.0);
 		}
+		else
+		    PlayerPlaySound(playerid, 1085, 0.0, 0.0, 0.0);
 		return 1;
 	}
 
 	new x=0;
-	while(x != SELECTION_ITEMS) {
-	    if(playertextid == gSelectionItems[playerid][x]) {
+	while(x != SELECTION_ITEMS)
+	{
+	    if(playertextid == gSelectionItems[playerid][x])
+		{
 	        HandlePlayerItemSelection(playerid, x, skintype);
 	        PlayerPlaySound(playerid, 1083, 0.0, 0.0, 0.0);
 	        DestroySelectionMenu(playerid);
@@ -4083,13 +4098,14 @@ stock LoadPickups() {
 
 public OnPlayerPickUpDynamicPickup(playerid, pickupid)
 {
-	for(new i = 0; i < 5; i++) {
-	    if(pickupid == P_TUNE[i]) {
-	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3) {
+	for(new i = 0; i < 5; i++)
+	{
+	    if(pickupid == P_TUNE[i])
+		{
+	        if(PlayerInfo[playerid][pFaction] == FAC_MECH && PlayerInfo[playerid][pRank] <= 3)
 	            GameTextForPlayer(playerid, "~w~Escribe /mectaller para abrir o cerrar el taller", 2000, 4);
-	        } else {
+	        else
 	        	GameTextForPlayer(playerid, "~w~Para personalizar tu vehiculo llama al 555", 2000, 4);
-	        }
 			return 1;
 		}
 	}
@@ -4252,36 +4268,36 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		{
 	   		case 0:
   			{
-	   		    if(playerLicense[playerid][lDTaking] == 1) {
+	   		    if(playerLicense[playerid][lDTaking] == 1)
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya estás tomando una licencia!");
-	   		    } else if(GetPlayerCash(playerid) >= PRICE_LIC_DRIVING) {
-			    	if(PlayerInfo[playerid][pCarLic] == 0) {
+	   		    else if(GetPlayerCash(playerid) >= PRICE_LIC_DRIVING)
+			    	if(PlayerInfo[playerid][pCarLic] == 0)
+					{
 						SendClientMessage(playerid, COLOR_WHITE, "¡La prueba ha comenzado!, sal del edificio e ingresa a uno de los autos blancos situados en el estacionamiento.");
 						playerLicense[playerid][lDTaking] = 1;
-					} else {
-						SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de una licencia de conducción!");
 					}
-	   		    } else {
+					else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes tener más de una licencia de conducción!");
+	   		    else
 	   		        SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
-	   		    }
+
 	   		}
-	   		case 1:
-	   		{
-                SendClientMessage(playerid, COLOR_YELLOW2, "Esta licencia no se encuentra disponible actualmente.");
-	   		}
+	   		case 1: SendClientMessage(playerid, COLOR_YELLOW2, "Esta licencia no se encuentra disponible actualmente.");
 	   		case 2:
 			{
-	   		    if(PlayerInfo[playerid][pFlyLic] == 0) {
-		   		    if(GetPlayerCash(playerid) >= PRICE_LIC_FLYING) {
+	   		    if(PlayerInfo[playerid][pFlyLic] == 0)
+				{
+		   		    if(GetPlayerCash(playerid) >= PRICE_LIC_FLYING)
+					{
 			   			PlayerInfo[playerid][pFlyLic] = 1;
 			    	 	GivePlayerCash(playerid, -PRICE_LIC_FLYING);
 		                SendFMessage(playerid, COLOR_LIGHTGREEN, "¡Felicidades, has conseguido la licencia de vuelo por $%d!", PRICE_LIC_FLYING);
-		           	} else {
-		           	    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
 		           	}
-		        } else {
+					else
+		           	    SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+				}
+		        else
 		            SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes una licencia de vuelo!");
-		        }
 	   		}
 		}
 	}
@@ -4408,9 +4424,7 @@ public ProxDetectorS(Float:radi, playerid, targetid)
 		if (((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
 		{
 		    if(GetPlayerVirtualWorld(playerid) == GetPlayerVirtualWorld(targetid))
-		    {
 				return 1;
-			}
 		}
 	}
 	return 0;
@@ -4429,9 +4443,7 @@ stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5,
 	    if(i == playerid)
 		{
 		    if(show_self)
-			{
 			    SendClientLongMessage(i, col1, string);
-			}
 		}
 		else if(GetPlayerVirtualWorld(i) == GetPlayerVirtualWorld(playerid))
   		{
@@ -4441,25 +4453,15 @@ stock ProxDetector(Float:radi, playerid, string[], col1, col2, col3, col4, col5,
 			tempposz = (oldposz -posz);
 
 			if(((tempposx < radi/16) && (tempposx > -radi/16)) && ((tempposy < radi/16) && (tempposy > -radi/16)) && ((tempposz < radi/16) && (tempposz > -radi/16)))
-			{
 				SendClientLongMessage(i, col1, string);
-			}
 			else if(((tempposx < radi/8) && (tempposx > -radi/8)) && ((tempposy < radi/8) && (tempposy > -radi/8)) && ((tempposz < radi/8) && (tempposz > -radi/8)))
-			{
 				SendClientLongMessage(i, col2, string);
-			}
 			else if(((tempposx < radi/4) && (tempposx > -radi/4)) && ((tempposy < radi/4) && (tempposy > -radi/4)) && ((tempposz < radi/4) && (tempposz > -radi/4)))
-			{
 				SendClientLongMessage(i, col3, string);
-			}
 			else if(((tempposx < radi/2) && (tempposx > -radi/2)) && ((tempposy < radi/2) && (tempposy > -radi/2)) && ((tempposz < radi/2) && (tempposz > -radi/2)))
-			{
 				SendClientLongMessage(i, col4, string);
-			}
 			else if(((tempposx < radi) && (tempposx > -radi)) && ((tempposy < radi) && (tempposy > -radi)) && ((tempposz < radi) && (tempposz > -radi)))
-			{
 				SendClientLongMessage(i, col5, string);
-			}
 		}
 	}
 	return 1;
@@ -4794,11 +4796,12 @@ stock initiateHospital(playerid)
 }
 
 //===[SISTEMA DE NEGOCIOS]======================================================
-SaveAllBusiness() {
-	new
-		id = 1;
+SaveAllBusiness()
+{
+	new id = 1;
 
-	while(id < MAX_BUSINESS) {
+	while(id < MAX_BUSINESS)
+	{
 		saveBusiness(id);
 		id++;
 	}
@@ -4906,13 +4909,9 @@ stock ReloadBlIcon(blid)
 	    return 1;
 
 	if(Building[blid][blEntranceFee] == 0)
-	{
 		format(string, sizeof(string), "{A9E2F3}%s\nPresiona ENTER para entrar", Building[blid][blText]);
-	}
 	else
-	{
 		format(string, sizeof(string), "{A9E2F3}%s\nCosto de entrada: $%d\nPresiona ENTER para entrar", Building[blid][blText], Building[blid][blEntranceFee]);
-	}
 
 	Building[blid][blOutsideLabel] = CreateDynamic3DTextLabel(string, COLOR_WHITE, Building[blid][blOutsideX], Building[blid][blOutsideY], Building[blid][blOutsideZ] + 0.65, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, 0, -1, 100.0);
 
@@ -4932,7 +4931,8 @@ stock ReloadBizIcon(bizid)
     if(!Business[bizid][bLoaded])
 	    return 1;
 
-	switch(Business[bizid][bType]) {
+	switch(Business[bizid][bType])
+	{
 	    case BIZ_REST: bizType = "Restaurant";
 	    case BIZ_PHON: bizType = "Compañía telefonica";
 	    case BIZ_247: bizType = "Tienda 24-7";
