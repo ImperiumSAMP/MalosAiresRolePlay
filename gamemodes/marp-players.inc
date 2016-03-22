@@ -6,17 +6,6 @@
 
 //====[ENUMS AND PLAYERS ARRAY]=====================================
 
-enum PDInfo
-{
-	housetax,
-	houserent,
-	biztax,
-	bizpdgain,
-	biztheoreticalgain,
-	banktax,
-	vehicletax
-};
-
 enum pInfo {
 	pID,
 	pName[24],
@@ -78,8 +67,6 @@ enum pInfo {
 	pFightStyle,
 	pMask,
 	
-	PayDayInfo[PDInfo],
-	
 	pThirst,
 	pHunger,
 	
@@ -104,5 +91,6 @@ new PlayerInfo[MAX_PLAYERS][pInfo];
 // Inmunidad al anticheat
 new bool:antiCheatDisabled[MAX_PLAYERS];
 
-stock getPlayerMysqlId(playerid)
+stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];
+}

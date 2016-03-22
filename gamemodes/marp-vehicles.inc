@@ -93,7 +93,7 @@ enum RCars {
 	rVehicleID,
 	rRented,
 	rTime,
-	rOwnerSQLID
+	rOwnerSQLID,
 };
 
 new RentCarInfo[MAX_RENTCAR][RCars];
