@@ -88,15 +88,6 @@ stock DetachBackItem(playerid)
 	RemovePlayerAttachedObject(playerid, INDEX_ID_BACK);
 }
 
-stock PrintBackForPlayer(playerid, targetid)
-{
-	SendClientMessage(targetid, COLOR_WHITE, "======================[En la espalda]=====================");
- 	if(GetBackItem(playerid) > 0)
- 	    SendFMessage(targetid, COLOR_WHITE,"- Item: %s - %s: %d", GetItemName(GetBackItem(playerid)), GetItemParamName(GetBackItem(playerid)), GetBackParam(playerid));
-	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
-	return 1;
-}
-
 //=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
 
 ResetBackWeapon(playerid)
@@ -131,24 +122,24 @@ CMD:esp(playerid, params[])
 stock SaveItemOnBack(playerid, playerhand)
 {
  	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en 茅ste momento.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en 閟te momento.");
 	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "隆No puedes hacerlo mientras estas agonizando!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "o puedes hacerlo mientras estas agonizando!");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ebes esperar un tiempo antes de volver a interactuar con otro item!");
 
 	new itemid = GetHandItem(playerid, playerhand),
 		str[128];
 
 	if(GetBackItem(playerid) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Ya tienes algo colgado en ese lado de tu hombro!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "a tienes algo colgado en ese lado de tu hombro!");
 	if(itemid == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 	if(!HasBackPermission(itemid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede colgar en el hombro.");
 
 	SetBackItemAndParam(playerid, itemid, GetHandParam(playerid, playerhand));
-	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado l贸gico y grafico de la mano.
+	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado l骻ico y grafico de la mano.
 	format(str, sizeof(str), "pasa la cuerda de el/la %s por su brazo y cuello, para posteriormente colgarlo en el hombro.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
   	SetPVarInt(playerid, "cantSaveItems", 1);
@@ -167,8 +158,8 @@ stock TakeItemFromBack(playerid, playerhand)
 	if(GetHandItem(playerid, playerhand) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
 
-	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creaci贸n l贸gica y grafica en la mano.
-	SetBackItemAndParam(playerid, 0, 0); // Borrado l贸gico del item del hombro.
+	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creaci髇 l骻ica y grafica en la mano.
+	SetBackItemAndParam(playerid, 0, 0); // Borrado logico del item del hombro.
 	format(str, sizeof(str), "descuelga de su hombro el/la %s y lo/a sostiene con una de sus manos.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
 	return 1;
@@ -176,31 +167,14 @@ stock TakeItemFromBack(playerid, playerhand)
 
 CMD:espalda(playerid, params[])
 {
-	new cmd[32];
-
-    if(sscanf(params, "s[32]", cmd))
-	{
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/esp)alda [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} tomar/tomari - guardar/guardari");
-		PrintBackForPlayer(playerid, playerid);
-		return 1;
-    }
-    
-	if(strcmp(cmd, "tomar", true) == 0)
+	if(GetBackItem(playerid) != 0)
 	{
 		TakeItemFromBack(playerid, HAND_RIGHT);
+		
+	} else {
+	
+	    SaveItemOnBack(playerid, HAND_RIGHT);
 
-    } else if(strcmp(cmd, "tomari", true) == 0)
-	{
-		TakeItemFromBack(playerid, HAND_LEFT);
-
-    } else if(strcmp(cmd, "guardar", true) == 0)
-	{
-		SaveItemOnBack(playerid, HAND_RIGHT);
-
-    } else if(strcmp(cmd, "guardari", true) == 0)
-	{
-		SaveItemOnBack(playerid, HAND_LEFT);
 	}
 	return 1;
 }

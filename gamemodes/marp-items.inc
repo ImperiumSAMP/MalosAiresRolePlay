@@ -193,7 +193,7 @@ enum ItemInfo {
 	Float:RightRxPos,
 	Float:RightRyPos,
 	Float:RightRzPos,
-	AttachBone, // Hueso donde se attachea si est√° equipado (no en la mano)
+	AttachBone, // Hueso donde se attachea si est· equipado (no en la mano)
 	OccupiedSpace
 };
 

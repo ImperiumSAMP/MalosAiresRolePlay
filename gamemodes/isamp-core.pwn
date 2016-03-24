@@ -233,15 +233,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MATS_CRIFLE            	45
 #define MATS_SRIFLE            	75
 
-// Bodyparts
-#define BODY_PART_TORSO         3
-#define BODY_PART_GROIN         4
-#define BODY_PART_LEFT_ARM      5
-#define BODY_PART_RIGHT_ARM     6
-#define BODY_PART_LEFT_LEG      7
-#define BODY_PART_RIGHT_LEG     8
-#define BODY_PART_HEAD          9
-
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
 #define UpdateMoneyBar 			GivePlayerMoney
@@ -405,9 +396,6 @@ new Float:GUIDE_POS[][3] = {
 };
 
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
-
-/*new TakeHeadShot[MAX_PLAYERS] = 0;*/
-new TakeLegShot[MAX_PLAYERS] = 0;
 
 // Pickups
 new
@@ -3375,7 +3363,6 @@ public globalUpdate()
 					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
-					TakeLegShot[playerid] = 0;
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);
@@ -3442,7 +3429,6 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 			SetTimerEx(shutdownAlarm, 25000, false, "i", vehicleid);
 		}
 	}
-
 	return 1;
 }
 
@@ -6294,8 +6280,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
+		
 	// Si corre cuando recivio un tiro en la pierna se cae.
-	if(newkeys == KEY_JUMP || newkeys == KEY_SPRINT && TakeLegShot[playerid] == 1)
+	if((newkeys & KEY_JUMP) && TakeLegShot[playerid] == 1 || (newkeys & KEY_SPRINT) && TakeLegShot[playerid] == 1 || (HOLDING(KEY_SPRINT)) && TakeLegShot[playerid] == 1)
 	{
 	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
 	    {
@@ -9264,7 +9251,7 @@ CMD:ayuda(playerid,params[])
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Chat]{C8C8C8} /mp /vb /local (/g)ritar /(sus)urrar /me /do /cme /gooc /toggle /animhablar");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Teléfono]{C8C8C8} /llamar /servicios /atender /colgar /sms (/tel)efono");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Propiedades]{C8C8C8} /ayudacasa /ayudanegocio /ayudabanco /ayudacajero");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} /motor (/veh)iculo (/mal)etero (/cas)co /emisora /sacar /ventanillas /llavero /lojack");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} /motor (/veh)iculo (/mal)etero /emisora /sacar /ventanillas /llavero /lojack");
     SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Vehículo]{C8C8C8} (/cint)uron (/vercint)uron /carreraayuda");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FFDD00}[Facción]{C8C8C8} /f /faccion /fdepositar");
 
@@ -9373,12 +9360,6 @@ CMD:atender(playerid, params[])
 
 CMD:sms(playerid, params[])
 {
-	cmd_msg(playerid, params);
-	return 1;
-}
-
-CMD:msg(playerid, params[])
-{
 	new phonenumber,
 		string[256],
 		string2[256],
@@ -9386,7 +9367,7 @@ CMD:msg(playerid, params[])
 		contact;
 
 	if(sscanf(params, "ds[256]", phonenumber, text))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /msg [número telefónico] [texto]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /sms [número telefónico] [texto]");
 	if(PlayerInfo[playerid][pPhoneNumber] == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes un teléfono celular! consigue uno en un 24/7.");
 	if(PhoneHand[playerid] == 0)

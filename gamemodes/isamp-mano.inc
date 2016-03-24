@@ -525,9 +525,10 @@ CMD:mano(playerid, params[])
 			    {
 	            	PlayerCmeMessage(playerid, 15.0, 5000, "Come un pedazo de su sándwich de jamón y queso.");
 	            	PlayerEat(playerid, 10);
-	            	if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+	            	if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0){
 	            		SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
-					else
+	            		ApplyAnimation(playerid, "FOOD", "EAT_CHICKEN", 4.0, 0, 1, 1, 0, 0);
+					} else
 						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 					return 1;
 				}
@@ -549,6 +550,7 @@ CMD:mano(playerid, params[])
 						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de agua.");
 						PlayerDrink(playerid, 10);
 						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
+						cmd_abeber(playerid, params);
 					} else
 						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
 					return 1;
@@ -556,13 +558,14 @@ CMD:mano(playerid, params[])
 			    
 			    case ITEM_ID_CERVEZA:
 			    {
-					PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de cerveza.");
-					PlayerDrink(playerid, 10);
-					PlayerDrinkAlcohol(playerid, 4);
-					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+			    	if(GetHandParam(playerid, HAND_RIGHT) > 0){
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de cerveza.");
+						PlayerDrink(playerid, 10);
+						PlayerDrinkAlcohol(playerid, 4);
 						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CERVEZA, GetHandParam(playerid, HAND_RIGHT) - 1);
-					else
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+						cmd_abeber(playerid, params);
+					} else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
 					return 1;
 			    }
 
