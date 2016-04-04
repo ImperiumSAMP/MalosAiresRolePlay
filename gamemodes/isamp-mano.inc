@@ -565,7 +565,59 @@ CMD:mano(playerid, params[])
 						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CERVEZA, GetHandParam(playerid, HAND_RIGHT) - 1);
 						cmd_abeber(playerid, params);
 					} else
-						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Busca un contenedor donde tirarla.");
+					return 1;
+			    }
+
+				case ITEM_ID_VINO:
+				{
+				    if(GetHandParam(playerid, HAND_RIGHT) > 0){
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de vino.");
+						PlayerDrink(playerid, 15);
+						PlayerDrinkAlcohol(playerid, 4);
+						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VINO, GetHandParam(playerid, HAND_RIGHT) - 1);
+						cmd_abeber(playerid, params);
+					} else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Busca un contenedor donde tirarla.");
+					return 1;
+				}
+				
+				case ITEM_ID_WHISKY:
+				{
+				    if(GetHandParam(playerid, HAND_RIGHT) > 0){
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de whisky.");
+						PlayerDrink(playerid, 25);
+						PlayerDrinkAlcohol(playerid, 4);
+						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_WHISKY, GetHandParam(playerid, HAND_RIGHT) - 1);
+						cmd_abeber(playerid, params);
+					} else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Busca un contenedor donde tirarla.");
+					return 1;
+			    }
+			    
+			    case ITEM_ID_VODKA:
+				{
+				    if(GetHandParam(playerid, HAND_RIGHT) > 0){
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de whisky.");
+						PlayerDrink(playerid, 30);
+						PlayerDrinkAlcohol(playerid, 4);
+						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_VODKA, GetHandParam(playerid, HAND_RIGHT) - 1);
+						cmd_abeber(playerid, params);
+					} else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Busca un contenedor donde tirarla.");
+					return 1;
+			    }
+			    
+			    case ITEM_ID_RON:
+				{
+				    if(GetHandParam(playerid, HAND_RIGHT) > 0){
+						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de ron.");
+						PlayerDrink(playerid, 25);
+						PlayerDrinkAlcohol(playerid, 4);
+						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_RON, GetHandParam(playerid, HAND_RIGHT) - 1);
+						cmd_abeber(playerid, params);
+					} else
+						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Busca un contenedor donde tirarla.");
 					return 1;
 			    }
 
