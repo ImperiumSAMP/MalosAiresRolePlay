@@ -81,7 +81,7 @@ enum Cars {
 	VehEcstasy,
 	VehCocaine,
 	VehRadio,
-	VehHaveAlarm
+	VehHaveAlarm,
 
 	VehContainerSQLID,
 	VehContainerID

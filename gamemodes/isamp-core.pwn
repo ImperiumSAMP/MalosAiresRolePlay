@@ -96,8 +96,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-lifts.inc"               //Sistema/Funciones para ascensores
 #include "marp-actors.inc"              //Sistema de actores
 #include "marp-parlantes.inc"           //Sistema de parlantes
-#include "marp-horseraces.inc"          //Sistema de carreras de caballos.
-#include "marp-wounds.inc"              //Sistema de heridas.
+#include "marp-horseraces.inc"          //Sistema de carreras de caballos
+#include "marp-wounds.inc"              //Sistema de heridas
+#include "marp-economy.pinc"			//Economía (funciones relativas y precios en general)
+// #include "marp-dataload.inc"			//Carga de datos
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.5"
@@ -178,37 +180,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300					// 5 minutos
-
-// Precios.
-#define PRICE_ADVERTISE         80
-#define PRICE_FIGHTSTYLE        3000
-#define PRICE_TEXT              1
-#define PRICE_CALL              20					// Maximo de precio random TODO: Implementar costeo de llamadas segun tiempo
-#define PRICE_TAXI              1
-#define PRICE_TAXI_INTERVAL		15					// Intervalo de tiempo de la bajada de taximetro (en segundos)
-#define PRICE_TAXI_PERPASSENGER 390					// Dinero por pasajero.
-#define PRICE_UNLISTEDPHONE     4500
-#define PRICE_TREATMENT         500
-
-// Combustible.
-#define PRICE_FULLTANK          300
-// 24-7
-#define PRICE_PHONE             500
-#define PRICE_ASPIRIN           15
-
-#define HEALTH_ASPIRIN          10
-
-#define MIN_PAYDAY              600
-#define MIN_DRUGD_PAYDAY        800
-#define MIN_TAXI_PAYDAY         1200
-
-#define PRICE_LIC_GUN           2000
-#define PRICE_LIC_DRIVING       400
-#define PRICE_LIC_BIKES         400
-#define PRICE_LIC_SAILING       4400
-#define PRICE_LIC_FLYING        15400
-#define PRICE_CLOTHES1          100
-#define PRICE_CLOTHES2          1750
 
 // Materiales por unidad.
 #define MATS_KNUCKLES           1
@@ -2712,221 +2683,6 @@ stock GetPlayerSpeed(playerid, bool:kmh) {
 	}
     rtn = floatsqroot(floatabs(floatpower(Vx + Vy + Vz,2)));
     return kmh?floatround(rtn * 100 * 1.61):floatround(rtn * 100);
-}
-
-//=========================INGRESOS POR ENTORNO A NEGOCIOS======================
-
-GetBusinessPayCheck(bizID)
-{
-	new payDayMoney;
-	switch(Business[bizID][bType])
-	{
-		case BIZ_REST: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLUB: 		payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_CLUB2:		payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
-		case BIZ_CASINO: 	payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_HARD:  	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_AMMU: 		payDayMoney = Business[bizID][bPrice] / 357; // 0.28 porciento
-		case BIZ_247: 		payDayMoney = Business[bizID][bPrice] / 333; // 0.30 porciento
-		case BIZ_PHON: 		payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
-		case BIZ_ADVE: 		payDayMoney = Business[bizID][bPrice] / 434; // 0.23 porciento
-		case BIZ_CLOT2:		payDayMoney = Business[bizID][bPrice] / 454; // 0.22 porciento
-		case BIZ_CLOT:	 	payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		case BIZ_PIZZERIA: 	payDayMoney = Business[bizID][bPrice] / 434; //0.23 porciento
-		case BIZ_BURGER1: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
-		case BIZ_BURGER2: 	payDayMoney = Business[bizID][bPrice] / 384; // 0.26 porciento
-		case BIZ_BELL:      payDayMoney = Business[bizID][bPrice] / 400; // 0.25 porciento
-		case BIZ_ACCESS:    payDayMoney = Business[bizID][bPrice] / 500; // 0.20 porciento
-		default: 			payDayMoney = 0;
-	}
-	payDayMoney += GetBusinessTaxes(bizID); // 0.25 porciento adicional que nos va a cobrar de impuestos
-	payDayMoney += 50 * GetItemPrice(ITEM_ID_PRODUCTOS); // lo que nos saca de productos el entorno
-	return payDayMoney;
-}
-
-GetBusinessTaxes(bizID)
-{
-	return Business[bizID][bPrice] / 400; // 0.25 porciento del valor de compra
-}
-
-CalculatePlayerPayDay(playerid)
-{
-	
-	switch(PlayerInfo[playerid][pFaction])
-	{
-		case 0:
-		{
-			switch(PlayerInfo[playerid][pJob])
-			{
-				case 0: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-				case JOB_FELON: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-				case JOB_DRUGF: PlayerInfo[playerid][pPayCheck] += MIN_PAYDAY;
-				case JOB_DRUGD: PlayerInfo[playerid][pPayCheck] += MIN_DRUGD_PAYDAY; // Mínimo por si no hay ventas
-				case JOB_TAXI: PlayerInfo[playerid][pPayCheck] += MIN_TAXI_PAYDAY; // Mínimo por si no hay pasajeros disponibles
-			}
-		}
-		default:
-		{
-			switch(PlayerInfo[playerid][pRank])
-			{
-				case 1: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay1];
-				case 2: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay2];
-				case 3: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay3];
-				case 4: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay4];
-				case 5: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay5];
-				case 6: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay6];
-				case 7: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay7];
-				case 8: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay8];
-				case 9: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay9];
-				case 10: PlayerInfo[playerid][pPayCheck] += FactionInfo[PlayerInfo[playerid][pFaction]][fPayDay10];
-			}
-		}
-	}
-	
-	
-	
-	// AGREGAR COBRO DE IMPUESTOS
-}
-
-//===================================PAYDAY=====================================
-
-public PayDay(playerid)
-{
-	CalculatePlayerPayDay(playerid);
-    if(gPlayerLogged[playerid])
-	{
-		//===========================IMPUESTOS==================================
-
-		new tax = calculateVehiclesTaxes(playerid), houseid[2];
-
-
-		// Para las casas que está alquilando.
-		for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
-		{
-		    if(House[houseid[0]][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
-			tax += (House[houseid[0]][HousePrice] / 100) / 7;
-			
-			if(House[houseid[0]][OwnerSQLID] != PlayerInfo[playerid][pID] || (PlayerInfo[playerid][pID] == House[houseid[0]][OwnerSQLID] && House[houseid[0]][TenantSQLID] != 0)) continue;
-			tax += (House[houseid[0]][HousePrice] / 100) / 7;
-		}
-
-		    
-		//============================NEGOCIOS==================================
-		
-		
-		for(bizID = 1; bizID < MAX_BUSINESS; bizID++)
-		{
-		    if(Business[bizID][bOwnerSQLID] != PlayerInfo[playerid][pID]) continue;
-		    
-		    bizTax += GetBusinessTaxes(bizID);
-		}
-		// FALTA TERMINAR - REESCRIBIR INCLUDE MARP-BUSINESS
-		
-		new bizID = PlayerInfo[playerid][pBizKey], bizPay = 0, bizTax = 0;
-		if(bizID != 0)
-		{
-		    bizTax = GetBusinessTaxes(bizID);
-  			Business[bizID][bTill] -= bizTax;
-		    openBizPermission[bizID] = true;
-		    if(Business[bizID][bLocked] == 0 && Business[bizID][bProducts] >= 50)
-		    {
-		        bizPay = GetBusinessPayCheck(bizID);
-			    Business[bizID][bTill] += bizPay;
-		     	Business[bizID][bProducts] -= 50; // minimo que se descuenta para obtener ganancias del entorno
-			}
-		}
-		
-		//========================CONTROL DE BARRIOS============================
-		
-		new gangProfits = 0;
-		if(PlayerInfo[playerid][pFaction] != 0)
-		{
-		    if(FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_GANG && PlayerInfo[playerid][pRank] == 1)
-			{
-			    gangProfits = GetGangZoneLiderIncome(playerid);
-				GiveFactionMoney(PlayerInfo[playerid][pFaction], gangProfits);
-			}
-		}
-        
-        //========================COSTOS BANCARIOS==============================
-
-		new banktax = (PlayerInfo[playerid][pBank] / 100) / 34; // 0.030% del dinero en la cuenta
-		if(banktax < 50)
-		    banktax = 50; // Mínimo de 50 pesos por tener la cuenta abierta
-		    
-		//========================ALQUILER DE VIVIENDAS=========================
-		
-		new rentmoney;
-		
-		// Para las casas que está alquilando.
-		for(houseid[0] = 1; houseid[0] < MAX_HOUSES; houseid[0]++)
-		{
-		    if(House[houseid[0]][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
-			rentmoney += House[houseid[0]][IncomePrice];
-			House[houseid[0]][IncomeAmount] += House[houseid[0]][IncomePrice];
-		}
-		GivePlayerCash(playerid, -rentmoney);
-		
-		// Para las casas propias que tiene en alquiler.
-		for(houseid[1] = 1; houseid[1] < MAX_HOUSES; houseid[1]++)
-		{
-		    if(House[houseid[1]][OwnerSQLID] != PlayerInfo[playerid][pID]) continue;
-			if(House[houseid[1]][TenantSQLID] == 0) continue;
-			GivePlayerCash(playerid, House[houseid[1]][IncomePrice]);
-		}
-        
-        //============================INGRESOS==================================
-	    
-		GiveFactionMoney(FAC_GOB, tax);
-		GiveFactionMoney(FAC_GOB, bizTax);
-
-		//=============================EMPLEO===================================
-		
-		if(PlayerInfo[playerid][pCantWork] > 0 && PlayerInfo[playerid][pJailed] == JAIL_NONE)
-		    PlayerInfo[playerid][pCantWork] = 0;
-		SetPVarInt(playerid, "pJobLimitCounter", 0);
-		
-		//======================================================================
-		
-		SendClientMessage(playerid, COLOR_YELLOW, "============================[DIA DE PAGO]============================");
-	    SendFMessage(playerid, COLOR_WHITE, "{F5A120}[TRABAJO]{FFFFFF} Salario: $%d - Impuestos: $%d - Servicios bancarios: $%d", PlayerInfo[playerid][pPayCheck], tax, banktax);
-		if(IsOwnerOfAnyBiz)
-		{
-  			SendFMessage(playerid, COLOR_WHITE, "{F5A120}[NEGOCIOS]{FFFFFF} Ingresos: $%d - Impuestos: $%d", bizPay, bizTax);
-	        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Si tu negocio está cerrado o con falta de stock (mín 50 prod), no dejará ganancias en la caja.");
-		}
-		if(gangProfits > 0)
-		    SendFMessage(playerid, COLOR_WHITE, "[Facción %s] Los barrios nos han generado ingresos por $%d a la cuenta de la facción.", FactionInfo[PlayerInfo[playerid][pFaction]][fName], gangProfits);
-		if(alquiler > 0 || alquileradd > 0) // EDITAR
-		    SendFMessage(playerid, COLOR_WHITE, "[Alquiler] Ingresos $%d - Impuestos: $%d", pago2, pago);
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El dinero ha sido depositado en su cuenta bancaria.");
-		
-		PlayerInfo[playerid][pBank] = newbank;
-		PlayerInfo[playerid][pPayCheck] = 0;
-		PlayerInfo[playerid][pExp]++;
-		PlayerInfo[playerid][pPlayingHours] += 1;
-		if(PlayerInfo[playerid][pJobTime] > 0)	{
-			PlayerInfo[playerid][pJobTime]--; // Reducimos la cantidad de tiempo que tiene que esperar para poder tomar otro empleo.
-		}
-		
-		ResetPlayerInputs(playerid);
-
-		new expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
-
-		if(PlayerInfo[playerid][pExp] < expamount)
-		{
-			SendFMessage(playerid, COLOR_WHITE, "(( Tienes %d/%d puntos de respeto. ))", PlayerInfo[playerid][pExp], expamount);
-		}
-		else
-		{
-		    PlayerInfo[playerid][pExp] = 0;
-		    PlayerInfo[playerid][pLevel]++;
-		    expamount = (PlayerInfo[playerid][pLevel] + 1) * ServerInfo[svLevelExp];
-		    SendFMessage(playerid, COLOR_WHITE, "(( ¡Su cuenta es ahora nivel %d! ¡Acumula %d puntos de experiencia para el próximo nivel! ))", PlayerInfo[playerid][pLevel],expamount);
-		}
-		SendClientMessage(playerid, COLOR_YELLOW, "===================================================================");
-		RentalExpiration(playerid);
-	}
 }
 
 public accountTimer()
@@ -10801,7 +10557,7 @@ CMD:sospechoso(playerid, params[])
 {
 	new string[128], reason[64], targetID;
 
-  	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+  	if(PlayerInfo[playerid][pFaction] != FAC_PMA || PlayerInfo[playerid][pFaction] != FAC_SIDE)
 	  	return 1;
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
@@ -10859,6 +10615,7 @@ CMD:localizar(playerid,params[])
 	SetTimerEx("CopTraceAvailable", 30000, false, "i", playerid);
 	return 1;
 }
+
 public CopTraceAvailable(playerid)
 {
 	CopTrace[playerid] = 0;
@@ -14633,7 +14390,7 @@ CMD:ckearplayer(playerid,params[])
 		SetHandItemAndParam(targetid, HAND_RIGHT, 0, 0);
 		SetHandItemAndParam(targetid, HAND_LEFT, 0, 0);
 		SetBackItemAndParam(targetid, 0, 0);
-		Container_Empty(PlayerInfo[playerid][pContainerID]);
+		Container_Empty(PlayerInfo[targetid][pContainerID]);
 
 		PlayerInfo[targetid][pJailed] = JAIL_NONE;
 		PlayerInfo[targetid][pJailTime] = 0;
