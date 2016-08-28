@@ -1,7 +1,11 @@
-#if defined _marp_vehicles_included
+#if defined _isamp_vehicles_included
 	#endinput
 #endif
-#define _marp_vehicles_included
+#define _isamp_vehicles_included
+
+/**
+* Isamp Vehicles functions and defines
+**/
 
 //Defines
 #define MAX_VEH                 1001
@@ -31,8 +35,7 @@
 #define VTYPE_BOAT 				VTYPE_SEA
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
-#define PRICE_LOJACK            2500
-#define PRICE_GPS   			100
+#define PRICE_GPS   			1000
 #define PRICE_VEHICLE_PAINTJOB  10000
 #define PRICE_VEHICLE_MODS      2000
 
@@ -58,9 +61,6 @@ enum Cars {
 	VehType,
 	VehOwnerSQLID,
 	VehFuel,
-	VehGNC,
-	VehGNCTank,
-	VehLojack,
 	VehEngine,
 	VehLights,
 	VehAlarm,
@@ -81,7 +81,6 @@ enum Cars {
 	VehEcstasy,
 	VehCocaine,
 	VehRadio,
-	VehHaveAlarm,
 
 	VehContainerSQLID,
 	VehContainerID
@@ -664,15 +663,11 @@ ResetVehicle(id)
     VehicleInfo[id][VehBonnet]		= -1;
     VehicleInfo[id][VehBoot]		= -1;
     VehicleInfo[id][VehLights]		= -1;
-	VehicleInfo[id][VehHaveAlarm]   = 0;
     VehicleInfo[id][VehFuel]		= 0;
-    VehicleInfo[id][VehGNCTank]     = 0;
-    VehicleInfo[id][VehGNC]         = 0;
     VehicleInfo[id][VehMarijuana]	= 0;
     VehicleInfo[id][VehLSD]			= 0;
     VehicleInfo[id][VehEcstasy]		= 0;
     VehicleInfo[id][VehCocaine]		= 0;
-    VehicleInfo[id][VehLojack]      = 0;
 	VehicleInfo[id][VehHP]			= 100;
 	VehicleInfo[id][VehPlate]		= "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 	VehicleInfo[id][VehOwnerName]	= "XXXXXXXXXXXXXXXXXXXXXXX";
@@ -710,7 +705,7 @@ SaveVehicle(id)
  	}
  	VehicleInfo[id][VehEngine] = 0;
 
-	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehPaintjob=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d, VehGNC=%d, VehGNCTank=%d, VehLojack=%d, VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
+	format(query,sizeof(query),"UPDATE vehicles SET VehModel=%d,VehPosX=%f,VehPosY=%f,VehPosZ=%f,VehAngle=%f,VehColor1=%d,VehColor2=%d,VehPaintjob=%d,VehFaction=%d,VehJob=%d,VehDamage1=%d,VehDamage2=%d,VehDamage3=%d,VehDamage4=%d,VehType=%d,VehOwnerID=%d,VehLocked=%d,VehEngine=%d,VehBonnet=%d,VehBoot=%d,VehLights=%d,VehFuel=%d,VehHP=%f,VehPlate='%s',VehOwnerName='%s'",
 		VehicleInfo[id][VehModel],
 	    VehicleInfo[id][VehPosX],
 	    VehicleInfo[id][VehPosY],
@@ -732,11 +727,7 @@ SaveVehicle(id)
 	    VehicleInfo[id][VehBonnet],
 	    VehicleInfo[id][VehBoot],
 	    VehicleInfo[id][VehLights],
-		VehicleInfo[id][VehHaveAlarm],
 	    VehicleInfo[id][VehFuel],
-	    VehicleInfo[id][VehGNC],
-	    VehicleInfo[id][VehGNCTank],
-	    VehicleInfo[id][VehLojack],
 		VehicleInfo[id][VehHP],
 		VehicleInfo[id][VehPlate],
 		VehicleInfo[id][VehOwnerName]
@@ -776,7 +767,7 @@ SaveVehicles() {
         SaveVehicle(id);
         id++;
 	}
-	printf("[INFO] vehículos guardados.");
+	printf("[INFO]: vehículos guardados.");
 	return 1;
 }
 
@@ -1130,45 +1121,9 @@ CMD:maletero(playerid, params[])
 		SetPVarInt(playerid, "cantSaveItems", 1);
 		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 		
-		format(str, sizeof(str), "Guarda un/a %s en el maletero.", GetItemName(itemid));
-		PlayerCmeMessage(playerid, 15.0, 5000, str);
+		format(str, sizeof(str), "guarda un/a %s en el maletero.", GetItemName(itemid));
+		PlayerActionMessage(playerid, 15.0, str);
 		
-		format(str, sizeof(str), "guardar %d %s", itemparam, GetItemName(itemid));
-		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
-    }
-	else if(strcmp(cmd, "guardari", true) == 0)
-	{
-
-		if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
-	    if(PlayerInfo[playerid][pHealth] < 25)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando agonizando");
-		if(GetHandItem(playerid, HAND_RIGHT) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
-		if(GetPVarInt(playerid, "GrupoPaintball") != 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
-		if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro item!");
-		if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_TELEFONO_CELULAR)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el teléfono.");
-
-		new itemid = GetHandItem(playerid, HAND_LEFT),
-		    itemparam = GetHandParam(playerid, HAND_LEFT),
-			str[128];
-
-		if(itemid == 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
-		if(!Container_AddItemAndParam(VehicleInfo[vehicleid][VehContainerID], itemid, itemparam))
-		    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en el maletero / El ítem es demasiado chico para guardarse en un maletero.");
-
-    	SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado lógico y grafico.
-
-		SetPVarInt(playerid, "cantSaveItems", 1);
-		SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
-
-		format(str, sizeof(str), "Guarda un/a %s en el maletero.", GetItemName(itemid));
-		PlayerCmeMessage(playerid, 15.0, 5000, str);
-
 		format(str, sizeof(str), "guardar %d %s", itemparam, GetItemName(itemid));
 		VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
     }
@@ -1211,8 +1166,8 @@ Dialog:Dlg_Show_Trunk_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 			
-			format(str, sizeof(str), "Toma un/a %s del maletero.", GetItemName(itemid));
-			PlayerCmeMessage(playerid, 15.0, 5000, str);
+			format(str, sizeof(str), "toma un/a %s del maletero.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
 
 			format(str, sizeof(str), "tomar %d %s", itemparam, GetItemName(itemid));
 			VehicleLog(vehicleid, playerid, INVALID_PLAYER_ID, "/mal", str);
@@ -1286,8 +1241,8 @@ CMD:lojack(playerid, params[])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El vehículo no te pertenece.");
     if(PlayerInfo[playerid][pPhoneNumber] == 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Requieres de un telefono para utilizar el Lojack!");
-	if(VehicleInfo[vehicleid][VehLojack] == 0)
-	    return SendClientMessage (playerid, COLOR_YELLOW2, "El vehículo no tiene sistema de localización instalado.");
+	if(GetPlayerCash(playerid) < PRICE_GPS)
+		return SendClientMessage (playerid, COLOR_YELLOW2, "No tienes dinero suficiente para rastrear el vehículo. ($100)");
 
 	foreach(new i : Player)
 	{
@@ -1402,7 +1357,8 @@ CMD:veh(playerid, params[])
 CMD:vehiculo(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "===========================[COMANDOS DE VEHÍCULOS]===========================");
-    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehvender - /vehvendera - /vehestacionar - /vehpuertas - /vehluces - /vehmal - /vehcapot");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehvender - /vehvendera [ID/Jugador] [ID vehículo] [precio] - /vehestacionar");
+    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "/vehpuertas - /vehluces - /vehmal - /vehcapot");
 	return 1;
 }
 

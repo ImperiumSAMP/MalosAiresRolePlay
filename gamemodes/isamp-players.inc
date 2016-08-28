@@ -1,7 +1,7 @@
-#if defined _marp_players_included
+#if defined _isamp_players_included
 	#endinput
 #endif
-#define _marp_players_included
+#define _isamp_players_included
 
 
 //====[ENUMS AND PLAYERS ARRAY]=====================================
@@ -31,17 +31,13 @@ enum pInfo {
 	pFaction,
 	pRank,
 	pHouseKey,
-	pCurrentHouse,
-	pCurrentBiz,
-	pCurrentBuilding,
 	pBizKey,
 	pWarnings,
 	pCarLic,
-	pBikeLic,
 	pFlyLic,
 	pWepLic,
 	pPhoneNumber,
-	pPhoneC,
+	pPhoneC,//Phone Company (Business ID)
 	pPhoneBook,
 	pJailed,
 	pJailTime,
@@ -89,7 +85,7 @@ enum pInfo {
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
 // Inmunidad al anticheat
-new bool:antiCheatDisabled[MAX_PLAYERS];
+new antiCheatImmunity[MAX_PLAYERS];
 
 stock getPlayerMysqlId(playerid){
 	return PlayerInfo[playerid][pID];

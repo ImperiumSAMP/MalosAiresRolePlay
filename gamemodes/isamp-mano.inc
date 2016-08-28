@@ -43,7 +43,6 @@ stock SetHandItemAndParam(playerid, hand, itemid, param)
 		HandInfo[playerid][hand][Item] = 0;
 		HandInfo[playerid][hand][Amount] = 0;
 	}
-	
 	if(itemid > 0)
 	{
 	    HandInfo[playerid][hand][Item] = itemid;
@@ -81,221 +80,22 @@ stock ResetHands(playerid)
 	return 1;
 }
 
-stock PrintRightHandForPlayer(playerid, targetid)
-{
-	new rightitem = GetHandItem(playerid, HAND_RIGHT),
-		rightparam = GetHandParam(playerid, HAND_RIGHT),
-		itemname[64],
-		itemparam[64],
-		itemtype = GetItemType(rightitem);
-	
-	format(itemname, sizeof(itemname), "%s", GetItemName(rightitem));
-	format(itemparam, sizeof(itemparam), "%s", GetItemParamName(rightitem));
-	
-	if(rightitem == 0)
-		return SendClientMessage(targetid, COLOR_WHITE, "[Mano derecha] - Nada");
-		
-	if(itemtype == ITEM_FIREWEAPON)
-	{
-		if(rightparam == 0)
-		    format(itemname, sizeof(itemname), "%s descargada", GetItemName(rightitem));
-		else if(rightparam > 0)
-		{
-		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(rightitem));
-			rightparam -= 1;
-		}
-	}
-		
-	SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", itemname, itemparam, rightparam);
-	return 1;
-}
-
-stock PrintLeftHandForPlayer(playerid, targetid)
-{
-	new leftitem = GetHandItem(playerid, HAND_LEFT),
-		leftparam = GetHandParam(playerid, HAND_LEFT),
-		itemname[64],
-		itemparam[64],
-		itemtype = GetItemType(leftitem);
-
-	format(itemname, sizeof(itemname), "%s", GetItemName(leftitem));
-	format(itemparam, sizeof(itemparam), "%s", GetItemParamName(leftitem));
-
-	if(leftitem == 0)
-		return SendClientMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Nada");
-
-	if(itemtype == ITEM_FIREWEAPON)
-	{
-		if(leftparam == 0)
-			format(itemname, sizeof(itemname), "%s descargada", GetItemName(leftitem));
-		else if(leftparam > 0)
-		{
-		    format(itemname, sizeof(itemname), "%s cargada", GetItemName(leftitem));
-		    leftparam -= 1;
-		}
-	}
-
-	SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", itemname, itemparam, leftparam);
-	return 1;
-}
-
 stock PrintHandsForPlayer(playerid, targetid)
 {
+	new rightitem = GetHandItem(playerid, HAND_RIGHT),
+	    leftitem = GetHandItem(playerid, HAND_LEFT);
 
 	SendClientMessage(targetid, COLOR_WHITE, "======================[En la mano]=====================");
-	PrintRightHandForPlayer(playerid, targetid);
-	PrintLeftHandForPlayer(playerid, targetid);
+ 	if(rightitem > 0)
+		SendFMessage(targetid, COLOR_WHITE, "[Mano derecha] - Item: %s - %s: %d", GetItemName(rightitem), GetItemParamName(rightitem), GetHandParam(playerid, HAND_RIGHT));
+	else
+	    SendClientMessage(targetid, COLOR_WHITE, "[Mano derecha] - Nada");
+	if(leftitem > 0)
+		SendFMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Item: %s - %s: %d", GetItemName(leftitem), GetItemParamName(leftitem), GetHandParam(playerid, HAND_LEFT));
+	else
+	    SendClientMessage(targetid, COLOR_WHITE, "[Mano izquierda] - Nada");
 	SendClientMessage(targetid, COLOR_WHITE, "=====================================================");
 	return 1;
-}
-
-//=================SISTEMA DE CARGADORES===================
-
-stock ReloadWeapon(playerid)
-{
-	new rightitem = GetHandItem(playerid, HAND_RIGHT),
-		leftitem = GetHandItem(playerid, HAND_LEFT),
-		rightparam = GetHandParam(playerid, HAND_RIGHT),
-		leftparam = GetHandParam(playerid, HAND_LEFT);
-
-	if(GetItemType(rightitem) == ITEM_FIREWEAPON)
-	{
-		if(rightparam > 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada. Usa /mano separar para retirar el cargador");
-			
-		switch(rightitem)
-		{
-		    case ITEM_ID_9MM: if(leftitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		    case ITEM_ID_9MM_SILENCED: if(leftitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		    case ITEM_ID_DEAGLE: if(leftitem != ITEM_ID_CARGADOR_DEAGLE) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_UZI: if(leftitem != ITEM_ID_CARGADOR_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_TEC9: if(leftitem != ITEM_ID_CARGADOR_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_MP5: if(leftitem != ITEM_ID_CARGADOR_MP5) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_M4: if(leftitem != ITEM_ID_CARGADOR_M4) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_AK47: if(leftitem != ITEM_ID_CARGADOR_AK47) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		}
-		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, leftparam + 1);
-		SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
-		PlayerCmeMessage(playerid, 15.0, 5000, "Calza el cargador en el arma, con la mano contraria.");
-		return 1;
-	}
-
-	else if(GetItemType(leftitem) == ITEM_FIREWEAPON)
-	{
-		if(leftparam > 0)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada. Usa /mano separar para retirar el cargador");
-			
-	 	switch(leftitem)
-		{
-		    case ITEM_ID_9MM: if(rightitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		    case ITEM_ID_9MM_SILENCED: if(rightitem != ITEM_ID_CARGADOR_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		    case ITEM_ID_DEAGLE: if(rightitem != ITEM_ID_CARGADOR_DEAGLE) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto");
-			case ITEM_ID_UZI: if(rightitem != ITEM_ID_CARGADOR_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_TEC9: if(rightitem != ITEM_ID_CARGADOR_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_MP5: if(rightitem != ITEM_ID_CARGADOR_MP5) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto");
-			case ITEM_ID_M4: if(rightitem != ITEM_ID_CARGADOR_M4) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-			case ITEM_ID_AK47: if(rightitem != ITEM_ID_CARGADOR_AK47) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar tu arma con este objeto.");
-		}
-		SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, rightparam + 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "Calza el cargador en el arma, con la mano contraria.");
-		return 1;
-	}
-	return 1;
-}
-
-stock ReplenishClip(playerid)
-{
-	new rightitem = GetHandItem(playerid, HAND_RIGHT),
-		leftitem = GetHandItem(playerid, HAND_LEFT),
-		rightparam = GetHandParam(playerid, HAND_RIGHT),
-		leftparam = GetHandParam(playerid, HAND_LEFT);
-
-	switch(rightitem)
-	{
-		case ITEM_ID_CARGADOR_9MM: if(rightparam == 17) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_DEAGLE: if(rightparam == 7) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_UZI: if(rightparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_MP5: if(rightparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_M4: if(rightparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_AK47: if(rightparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-	}
-	
-	switch(leftitem)
-	{
-		case ITEM_ID_CARGADOR_9MM: if(leftparam == 17) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_DEAGLE: if(leftparam == 7) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_UZI: if(leftparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_MP5: if(leftparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_M4: if(leftparam == 50) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-		case ITEM_ID_CARGADOR_AK47: if(leftparam == 30) return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cargador ya está lleno.");
-	}
-
-	if(GetItemType(rightitem) == ITEM_WEAPONMAG)
-	{
-		switch(rightitem)
-		{
-		    case ITEM_ID_CARGADOR_9MM: if(leftitem != ITEM_ID_CAJA_BALAS_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		    case ITEM_ID_CARGADOR_DEAGLE: if(leftitem != ITEM_ID_CAJA_BALAS_DEAGLE) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		    case ITEM_ID_CARGADOR_UZI: if(leftitem != ITEM_ID_CAJA_BALAS_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_MP5: if(leftitem != ITEM_ID_CAJA_BALAS_MP5) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_M4: if(leftitem != ITEM_ID_CAJA_BALAS_M4) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_AK47: if(leftitem != ITEM_ID_CAJA_BALAS_AK47) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		}
-		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam + 1);
-		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam - 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "Retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
-		return 1;
-	}
-
-	else if(GetItemType(leftitem) == ITEM_WEAPONMAG)
-	{
-	 	switch(leftitem)
-		{
-		    case ITEM_ID_CARGADOR_9MM: if(rightitem != ITEM_ID_CAJA_BALAS_9MM) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		    case ITEM_ID_CARGADOR_DEAGLE: if(rightitem != ITEM_ID_CAJA_BALAS_DEAGLE) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		    case ITEM_ID_CARGADOR_UZI: if(rightitem != ITEM_ID_CAJA_BALAS_UZI) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_MP5: if(rightitem != ITEM_ID_CAJA_BALAS_MP5) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_M4: if(rightitem != ITEM_ID_CAJA_BALAS_M4) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-			case ITEM_ID_CARGADOR_AK47: if(rightitem != ITEM_ID_CAJA_BALAS_AK47) return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes rellenar tu cargador con este objeto.");
-		}
-		SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam - 1);
-		SetHandItemAndParam(playerid, HAND_LEFT, leftitem, leftparam + 1);
-		PlayerCmeMessage(playerid, 15.0, 5000, "Retira un proyectil de la caja y lo inserta en el cargador, haciendo presión.");
-		return 1;
-	}
-	return 1;
-}
-
-//==========[Sincronizacion del arma en mano con las balas gastadas]============
-
-SynchronizeWeaponAmmo(playerid, ammo)
-{
-	new rightitem = GetHandItem(playerid, HAND_RIGHT),	
-	    itemtype = GetItemType(rightitem);
-		
-
-	switch(itemtype)
-	{
-	    case ITEM_WEAPON:
-		{
-		    if(ammo <= 0)
-				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-			else
-			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
-		}
-		
-	    case ITEM_FIREWEAPON:
-	    {
-		    if(ammo <= 0)
-			{
-				SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-				SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 1);
-			}
-			else
-			    HandInfo[playerid][HAND_RIGHT][Amount] = ammo + 1;
-	    }
-	}
 }
 
 //=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
@@ -324,6 +124,18 @@ DestroyPlayerHands(playerid)
 	return 1;
 }
 
+//==========[Sincronizacion del arma en mano con las balas gastadas]============
+
+SynchronizeWeaponAmmo(playerid, ammo)
+{
+	HandInfo[playerid][HAND_RIGHT][Amount] = ammo;
+	if(ammo <= 0) // Se le terminó el arma
+	{
+	    SendFMessage(playerid, COLOR_WHITE, "[OOC] Se te ha borrado el arma ya que llegaste a las %d municiones, y se te han acabado.", ammo);
+	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
+	}
+}
+
 //==================================COMANDOS====================================
 
 stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
@@ -350,8 +162,8 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 
 	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0);
-	format(str, sizeof(str), "Le entrega un/a %s a", GetItemName(itemid));
- 	PlayerCmeMessage(playerid, 15.0, 5000, str);
+	format(str, sizeof(str), "le entrega un/a %s a", GetItemName(itemid));
+ 	PlayerPlayerActionMessage(playerid, targetid, 15.0, str);
 	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
@@ -387,21 +199,20 @@ CMD:mc(playerid, params[])
 
 CMD:mano(playerid, params[])
 {
-	new command[32],
-		newskin,
-		rightitem = GetHandItem(playerid, HAND_RIGHT),
-		rightparam = GetHandParam(playerid, HAND_RIGHT),
-		leftitem = GetHandItem(playerid, HAND_LEFT),
-		leftparam = GetHandParam(playerid, HAND_LEFT),
-		itemtype = GetItemType(rightitem);
+	new command[32];
 	    
 	if(sscanf(params, "s[32]", command))
 	{
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /mano [comando]");
-        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - agarraruno - agarrarunoi - cambiar - combinar - separar - ver - guardar");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} usar - tirar - tirari - agarrar - agarrari - cambiar - combinar - ver - guardar");
 		PrintHandsForPlayer(playerid, playerid);
     } else {
 		if(strcmp(command, "cambiar", true) == 0) {
+		
+		    new rightitem = GetHandItem(playerid, HAND_RIGHT),
+		        rightparam = GetHandParam(playerid, HAND_RIGHT),
+		        leftitem = GetHandItem(playerid, HAND_LEFT),
+		        leftparam = GetHandParam(playerid, HAND_LEFT);
 		        
             if(rightitem == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
@@ -419,43 +230,28 @@ CMD:mano(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
-		
-			if(rightparam > 0 && itemtype == ITEM_FIREWEAPON)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada, usa /mano separar para descargarla.");
 
-			ReloadWeapon(playerid);
-			ReplenishClip(playerid);
+		    new rightitem = GetHandItem(playerid, HAND_RIGHT),
+		        rightparam = GetHandParam(playerid, HAND_RIGHT),
+		        leftitem = GetHandItem(playerid, HAND_LEFT),
+		        leftparam = GetHandParam(playerid, HAND_LEFT);
 
-		} else if(strcmp(command, "separar", true) == 0) {
-			if(GetItemType(rightitem) != ITEM_FIREWEAPON || GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_CAJON_DE_CERVEZA)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas o cajones de cerveza.");
-			if(SearchFreeHand(playerid) == -1)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Para separar un objeto necesitas la mano izquierda libre.");
-			if(rightparam == 0)
-			    if(GetItemType(rightitem) == ITEM_FIREWEAPON)
-					return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma está actualmente descargada.");
-				else return SendClientMessage(playerid, COLOR_YELLOW2, "Tu cajón esta vacio.");
-				    
-			switch(rightitem)
-			{
-				case ITEM_ID_9MM: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_9MM, rightparam - 1);
-				case ITEM_ID_9MM_SILENCED: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_9MM, rightparam - 1);
-				case ITEM_ID_DEAGLE: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_DEAGLE, rightparam - 1);
-				case ITEM_ID_UZI: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_UZI, rightparam - 1);
-				case ITEM_ID_TEC9: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_UZI, rightparam - 1);
-				case ITEM_ID_MP5: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_MP5, rightparam - 1);
-				case ITEM_ID_M4: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_M4, rightparam - 1);
-				case ITEM_ID_AK47: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CARGADOR_AK47, rightparam - 1);
-				case ITEM_ID_CAJON_DE_CERVEZA: SetHandItemAndParam(playerid, HAND_LEFT, ITEM_ID_CERVEZA, 5);
-			}
-			if(GetItemType(rightitem) == ITEM_FIREWEAPON){
-				SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, 0);
-				PlayerCmeMessage(playerid, 15.0, 5000, "Descalza el cargador del arma y lo sostiene con la mano izquierda.");
-			} else {
-			    SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, -1);
-			    PlayerCmeMessage(playerid, 15.0, 5000, "Toma una cerveza del cajón.");
-			}
-			
+			if(rightitem == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
+			if(rightitem == 0 || leftitem == 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
+	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+			if(GetItemType(rightitem) != ITEM_WEAPON || GetItemType(leftitem) != ITEM_WEAPON)
+            	return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(rightitem != leftitem)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Para usar este comando debes tener la misma arma en ambas manos.");
+			if(rightparam + leftparam > 400)
+            	return SendClientMessage(playerid, COLOR_YELLOW2, "La cantidad conjunta de balas no puede superar las 400.");
+
+			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0);
+			SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, rightparam + leftparam);
+
 		} else if(strcmp(command, "tirar", true) == 0) {
 
 			DropObject(playerid, HAND_RIGHT);
@@ -472,14 +268,6 @@ CMD:mano(playerid, params[])
 
 			TakeObject(playerid, HAND_LEFT);
 			
-		} else if(strcmp(command, "agarraruno", true) == 0) {
-		
-		    TakeOneObject(playerid, HAND_RIGHT);
-		
-		} else if(strcmp(command, "agarrarunoi", true) == 0) {
-
-		    TakeOneObject(playerid, HAND_LEFT);
-
 		} else if(strcmp(command, "ver", true) == 0) {
 
 			new item = GetHandItem(playerid, HAND_RIGHT),
@@ -519,70 +307,37 @@ CMD:mano(playerid, params[])
 				
 		} else if(strcmp(command, "usar", true) == 0) {
 
-			switch(rightitem)
-			{
-			    case ITEM_ID_SANDWICH:
-			    {
-	            	PlayerCmeMessage(playerid, 15.0, 5000, "Come un pedazo de su sándwich de jamón y queso.");
-	            	PlayerEat(playerid, 10);
-	            	if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-	            		SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
+			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_SANDWICH) {
+	            PlayerActionMessage(playerid, 15.0, "come un pedazo de su sándwich de jamón y queso.");
+	            PlayerEat(playerid, 10);
+	            if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+	            	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_SANDWICH, GetHandParam(playerid, HAND_RIGHT) - 1);
 					else
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
-					return 1;
-				}
-			    
-			    case ITEM_ID_ALFAJOR:
-			    {
-					PlayerCmeMessage(playerid, 15.0, 5000, "Comienza a comer un alfajor.");
-					PlayerEat(playerid, 15);
-					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_RIGHT) - 1);
+					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+	        } else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_ALFAJOR) {
+         		PlayerActionMessage(playerid, 15.0, "comienza a comer un alfajor.");
+		        PlayerEat(playerid, 15);
+		        if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+		       	   	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_ALFAJOR, GetHandParam(playerid, HAND_RIGHT) - 1);
 					else
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
-					return 1;
-				}
-			    
-			    case ITEM_ID_AGUAMINERAL:
-			    {
-					if(GetHandParam(playerid, HAND_RIGHT) > 0) {
-						PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de agua.");
-						PlayerDrink(playerid, 10);
-						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
-					} else
-						SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
-					return 1;
-				}
-			    
-			    case ITEM_ID_CERVEZA:
-			    {
-					PlayerCmeMessage(playerid, 15.0, 5000, "Toma un trago de su botella de cerveza.");
-					PlayerDrink(playerid, 10);
-					PlayerDrinkAlcohol(playerid, 4);
-					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
-						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CERVEZA, GetHandParam(playerid, HAND_RIGHT) - 1);
-					else
-						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
-					return 1;
-			    }
-
-				case ITEM_ID_VESTIMENTA:
-				{
-				    if(PlayerInfo[playerid][pSex] == 0 && GetPlayerSkin(playerid) != 138)
-				        return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes ropa puesta, usa /desvestirse para quitártela!");
-					if(PlayerInfo[playerid][pSex] == 1 && GetPlayerSkin(playerid) != 252)
-						return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya tienes ropa puesta, usa /desvestirse para quitártela!");
-					PlayerActionMessage(playerid, 15.0, "se viste con la ropa que tiene en mano.");
-					newskin = GetHandParam(playerid, HAND_RIGHT);
-					GameTextForPlayer(playerid, "~w~Vistiendose...", 3000, 4);
-					ApplyAnimation(playerid, "BOMBER", "BOM_PLANT", 4.0, 1, 0, 0, 0, 0);
-					SetTimerEx("GetDressed", 4000, false, "ii", playerid, newskin);
-					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
-					return 1;
-				}
-				
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
+					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+			} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_AGUAMINERAL) {
+                if(GetHandParam(playerid, HAND_RIGHT) > 0) {
+				  PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de agua.");
+			      PlayerDrink(playerid, 10);
+        	      SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_AGUAMINERAL, GetHandParam(playerid, HAND_RIGHT) - 1);
+			      } else
+	              SendClientMessage(playerid, COLOR_YELLOW2, "¡La botella esta vacia! Necesitas llenar tu botella para usarla.");
+           	} else if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_CERVEZA) {
+				PlayerActionMessage(playerid, 15.0, "toma un trago de su botella de cerveza.");
+			    PlayerDrink(playerid, 10);
+			    PlayerDrinkAlcohol(playerid, 4);
+			    if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+			      	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CERVEZA, GetHandParam(playerid, HAND_RIGHT) - 1);
+				  else
+					SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
+				} else
+  				SendClientMessage(playerid, COLOR_YELLOW2, "¡Item inválido o inexistente!");
 		}
 	}
 	return 1;
@@ -610,8 +365,8 @@ Dialog:Dlg_Show_Item_Container(playerid, response, listitem, inputtext[])
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "Toma un/a %s del contenedor de su mano derecha.", GetItemName(itemid));
-			PlayerCmeMessage(playerid, 15.0, 5000, str);
+			format(str, sizeof(str), "toma un/a %s del contenedor de su mano derecha.", GetItemName(itemid));
+			PlayerActionMessage(playerid, 15.0, str);
 		}
 		else
 		{

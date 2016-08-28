@@ -23,9 +23,9 @@
 #define POS_POLICE_DUTY_Y       186.2766
 #define POS_POLICE_DUTY_Z       1003.0000
 
-#define POS_SIDE_DUTY_X         261.8023
-#define POS_SIDE_DUTY_Y			109.7926
-#define POS_SIDE_DUTY_Z			1004.6172
+#define POS_SIDE_DUTY_X         -556.2717
+#define POS_SIDE_DUTY_Y			-521.2658
+#define POS_SIDE_DUTY_Z			5544.5742
 
 // SIDE DEFINES
 #define INPUTS_SIDE_CASE1					178
@@ -100,7 +100,7 @@ stock bool:CheckTakeInputs(playerid)
 
 //===================================COMANDOS===================================
 
-CMD:schaleco(playerid, params[])
+CMD:gchaleco(playerid, params[])
 {
 	new Float:armour;
 
@@ -124,7 +124,7 @@ CMD:schaleco(playerid, params[])
 	return 1;
 }
 
-CMD:sequipo(playerid, params[])
+CMD:gequipo(playerid, params[])
 {
 	new equipo;
 
@@ -134,19 +134,19 @@ CMD:sequipo(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes usar este comando en cualquier lado.");
 	if(sscanf(params, "i", equipo))
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /sequipo [equipo]");
-		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros SIDE _______|");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Externo");
-		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Agente");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Alpha (S.T.A.R.S.)");
-		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Bravo (S.T.A.R.S.)");
-		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Staff Profesional");
+		SendClientMessage(playerid, COLOR_WHITE, "{5CCAF1}[Sintaxis]:{C8C8C8} /gequipo [equipo]");
+		SendClientMessage(playerid, COLOR_GREEN, "|_______ Casilleros GENDARMERÍA _______|");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 1: Rifle");
+		SendClientMessage(playerid, COLOR_GRAD1, "| 2: Escopeta");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 3: Equipo de asalto 1 (ALACRÁN)");
+		SendClientMessage(playerid, COLOR_GRAD2, "| 4: Equipo de asalto 2 (ALACRÁN)");
+		SendClientMessage(playerid, COLOR_GRAD3, "| 5: Desert Eagle");
 		return 1;
 	}
 	if(!CheckTakeInputs(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "ARMERO: Ya has tomado demasiadas armas y municiones, pídele autorización a un superior para retirar nuevamente.");
 	if(!CheckFreeSpaceForDuty(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener 10u de espacio en inventario, y la espalda y ambas manos libres para guardar el equipo.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener 10u de espacio en inventario, la espalda y ambas manos libres para guardar el equipo.");
 	switch(equipo)
 	{
 		case 1:
@@ -157,63 +157,53 @@ CMD:sequipo(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 
 		    ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-		    Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_SILENCED, 100);
+		    SetHandItemAndParam(playerid, HAND_LEFT, 33, 25);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE1, "EQUIPO 1");
 		}
 		case 2:
 		{
-  			if(PlayerInfo[playerid][pRank] > 7)
+  			if(PlayerInfo[playerid][pRank] > 8)
             	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] < INPUTS_SIDE_CASE2)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 
 			ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-		    Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
+		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_SHOTGUN, 20);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE2, "EQUIPO 2");
 		}
 		case 3:
 		{
-        	if(PlayerInfo[playerid][pRank] > 4 || STARS != 1)
+        	if(PlayerInfo[playerid][pRank] > 8 || STARS != 1)
             	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] < INPUTS_SIDE_CASE3)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 				
          	ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
-            SetBackItemAndParam(playerid, WEAPON_SNIPER, 40);
-			SetPlayerSkin(playerid, 285); // STARS
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 25);
+            SetBackItemAndParam(playerid, WEAPON_M4, 100);
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE3, "EQUIPO 3");
 		}
 		case 4:
 		{
-        	if(PlayerInfo[playerid][pRank] > 4 || STARS != 1)
+        	if(PlayerInfo[playerid][pRank] > 8 || STARS != 1)
             	return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] < INPUTS_SIDE_CASE4)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 				
          	ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
-            SetBackItemAndParam(playerid, WEAPON_M4, 250);
-			SetPlayerSkin(playerid, 285); // STARS
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 35);
+            SetBackItemAndParam(playerid, WEAPON_SNIPER, 20);
 			PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE4, "EQUIPO 4");
 		}
 		case 5:
 		{
-  			if(PlayerInfo[playerid][pRank] > 3)
+  			if(PlayerInfo[playerid][pRank] > 8)
      			return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] < INPUTS_SIDE_CASE5)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
 
   			ResetPlayerWeapons(playerid);
-		    SetHandItemAndParam(playerid, HAND_LEFT, WEAPON_CAMERA, 20);
-		    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_KNIFE, 1);
-            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 60);
+            Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], WEAPON_DEAGLE, 30);
             PlayerTakeInput(playerid, FAC_SIDE, INPUTS_SIDE_CASE5, "EQUIPO 5");
 		}
 	}
@@ -249,7 +239,7 @@ CMD:pequipo(playerid, params[])
 	{
 		case 1:
 		{
-  			if(PlayerInfo[playerid][pRank] > 8)
+  			if(PlayerInfo[playerid][pRank] > 9)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
 			if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
@@ -260,7 +250,7 @@ CMD:pequipo(playerid, params[])
       	}
        	case 2:
 		{
-    		if(PlayerInfo[playerid][pRank] > 7)
+    		if(PlayerInfo[playerid][pRank] > 8)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu rango no tiene acceso a ese equipo.");
             if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] <= INPUTS_POLICE_CASE2)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No hay insumos suficientes en el depósito.");
@@ -388,22 +378,20 @@ CMD:ptazer(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_POLICE_DUTY_X, POS_POLICE_DUTY_Y, POS_POLICE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el vestuario.");
-    if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo si tienes el tazer.");
 	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
+	ResetPlayerWeapons(playerid);
 	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
 
-CMD:stazer(playerid, params[])
+CMD:gtazer(playerid, params[])
 {
 	if(!isPlayerSideOnDuty(playerid))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
-	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo si tienes el tazer.");
 	PlayerActionMessage(playerid, 15.0, "toma un tazer de los casilleros.");
+	ResetPlayerWeapons(playerid);
 	tazerStatus[playerid] = TAZER_EQUIPPED;
 	return 1;
 }
@@ -417,20 +405,6 @@ CMD:pmacana(playerid, params[])
 	if(GetHandItem(playerid, HAND_RIGHT) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
 	ResetPlayerWeapons(playerid);
-    SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
-	PlayerActionMessage(playerid, 15.0, "toma una macana de los casilleros.");
-	return 1;
-}
-
-CMD:smacana(playerid, params[])
-{
-	if(!isPlayerSideOnDuty(playerid))
-        return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
-	if(!PlayerToPoint(3.0, playerid, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar junto a los casilleros!");
-	if(GetHandItem(playerid, HAND_RIGHT) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener la mano derecha libre para tomar la macana.");
-    ResetPlayerWeapons(playerid);
     SetHandItemAndParam(playerid, HAND_RIGHT, WEAPON_NITESTICK, 1);
 	PlayerActionMessage(playerid, 15.0, "toma una macana de los casilleros.");
 	return 1;
@@ -516,7 +490,7 @@ CMD:pautorizar(playerid, params[])
     return 1;
 }
 
-CMD:sautorizar(playerid, params[])
+CMD:gautorizar(playerid, params[])
 {
 	new targetid, string[128];
 

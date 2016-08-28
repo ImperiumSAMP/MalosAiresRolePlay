@@ -5,335 +5,314 @@
 
 //=================================DEFINES======================================
 
-#define MAX_PMAITEMS 100
+#define MAX_PLAYER_CONE 		10
+#define MAX_PLAYER_BARRICATE  	5
+#define MAX_PLAYER_BARRICATE2  	5
+#define PMA_CONE_ITEM      		1
+#define PMA_BARRICATE_ITEM    	2
+#define PMA_BARRICATE2_ITEM     3
 
 //==================================NEWS========================================
 
-new pmaitems[MAX_PMAITEMS];
+new PlayerCantConos[MAX_PLAYERS];
+new Conos[MAX_PLAYERS][MAX_PLAYER_CONE];
+new PlayerCantBarricadas[MAX_PLAYERS];
+new Barricadas[MAX_PLAYERS][MAX_PLAYER_BARRICATE];
+new PlayerCantBarricadas2[MAX_PLAYERS];
+new Barricadas2[MAX_PLAYERS][MAX_PLAYER_BARRICATE];
 
-//======================SISTEMA DE PERIMETROS PARA LA PMA=======================
-CMD:pponer(playerid, params[])
+//=============================RESET VARIABLES==================================
+
+resetAuxiliarItemsPMA(playerid)
 {
-	new objetos;
-	
+	PlayerCantConos[playerid] = 0;
+	PlayerCantBarricadas[playerid] = 0;
+	PlayerCantBarricadas2[playerid] = 0;
+}
+
+deleteAuxiliarItemsPMA(playerid, item)
+{
+	new cant;
+	switch (item)
+	{
+	    case PMA_CONE_ITEM:
+	    {
+	        cant = PlayerCantConos[playerid];
+			if(cant > 0)
+			{
+				for(new b = 0; b < cant; b++)
+				{
+					DestroyDynamicObject(Conos[playerid][b]);
+				}
+				PlayerCantConos[playerid] = 0;
+			}
+		}
+		case PMA_BARRICATE_ITEM:
+		{
+		    cant = PlayerCantBarricadas[playerid];
+			if(cant > 0)
+			{
+				for(new b = 0; b < cant; b++)
+				{
+					DestroyDynamicObject(Barricadas[playerid][b]);
+				}
+				PlayerCantBarricadas[playerid] = 0;
+			}
+		}
+		case PMA_BARRICATE2_ITEM:
+		{
+		    cant = PlayerCantBarricadas2[playerid];
+			if(cant > 0)
+			{
+				for(new b = 0; b < cant; b++)
+				{
+					DestroyDynamicObject(Barricadas2[playerid][b]);
+				}
+				PlayerCantBarricadas2[playerid] = 0;
+			}
+		}
+	}
+}
+
+//=======================SISTEMA DE CONOS PARA LA PMA===========================
+
+CMD:cono(playerid,params[])
+{
     if(PlayerInfo[playerid][pFaction] != FAC_PMA)
         return 1;
-    if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
+
+	SendClientMessage(playerid, COLOR_YELLOW2, "Menú de conos policiales: /cponer /cquitar /cquitartodo.");
+	return 1;
+}
+
+
+CMD:cponer(playerid,params[])
+{
+	if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+        return 1;
+
+	if(CopDuty[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+    if(PlayerInfo[playerid][pRank] > 7)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-   	if(sscanf(params, "i", objetos)){
-   	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /pponer [N° de objeto]");
-   	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "1 Cono - 2 Barricada - 3 Baliza - 4 Baliza inrompible - 5 Baliza con flecha - 6 Cinta policial - 7 Barricada de metal");
-   	    return 1;
-	}
-    
-    new Float:x, Float:y, Float:z, Float:fAngle;
-    
-    switch(objetos)
+
+    new cant;
+	cant = PlayerCantConos[playerid];
+	if( cant >= MAX_PLAYER_CONE)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes conos [MAX 10], quita algunos! (/cquitar) (cquitartodo).");
+	new Float:x, Float:y, Float:z;
+	GetPlayerPos(playerid, x, y, z);
+	cant++;
+	Conos[playerid][cant-1] = CreateDynamicObject(1238, x, y, z-0.7, 0.0, 0.0, 0.0);
+	SetPlayerPosFindZ(playerid, x, y-0.7, z);
+	PlayerActionMessage(playerid, 15.0, "ubica un cono policial.");
+	PlayerCantConos[playerid] = cant;
+
+	return 1;
+}
+
+CMD:cquitar(playerid,params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+        return 1;
+
+	if(CopDuty[playerid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+    if(PlayerInfo[playerid][pRank] > 7)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+
+    new cant = PlayerCantConos[playerid];
+	if(cant > 0)
     {
-        case 1: // Cono
-        {
-            for(new i; i < MAX_PMAITEMS; i++)
-			{
-                if(pmaitems[i] == 0)
-				{
-                	GetPlayerPos(playerid, x, y, z);
-                	GetPlayerFacingAngle(playerid, fAngle);
+    	DestroyDynamicObject(Conos[playerid][cant-1]);
+		PlayerCantConos[playerid] = cant - 1;
+        PlayerActionMessage(playerid, 15.0, "retira un cono policial del lugar.");
+	}
+	else
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has puesto ningún cono!");
 
-                	if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1238, x-0.5, y, z-0.7, 0.0, 0.0, 0.0);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1238, x, y-0.5, z-0.7, 0.0, 0.0, 0.0);
-						Streamer_Update(playerid);
-     					PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-						}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1238, x+0.5, y, z-0.7, 0.0, 0.0, 0.0);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					} else {
-					    pmaitems[i] = CreateDynamicObject(1238, x, y+0.5, z-0.7, 0.0, 0.0, 0.0);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una cono policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
-		}
-		case 2: // Barricada
-        {
- 			for(new i; i < MAX_PMAITEMS; i++)
-			{
-            	if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
+	return 1;
+}
 
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1459, x-0.5, y, z-0.7, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1459, x, y-0.5, z-0.7, 0.0, 0.0, 180);
-						Streamer_Update(playerid);
-    					PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1459, x+0.5, y, z-0.7, 0.0, 0.0, 270);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					} else {
-				    	pmaitems[i] = CreateDynamicObject(1459, x, y+0.5, z-0.7, 0.0, 0.0, 0.0);
-						Streamer_Update(playerid);
-						PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
-		}
-		case 3: // Baliza 1
+CMD:cquitartodo(playerid, params[])
+{
+    if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
+    {
+		if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
 		{
-           	for(new i; i < MAX_PMAITEMS; i++)
-			{
-           		if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
-
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1282, x-0.8, y, z-0.5, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1282, x, y-0.8, z-0.5, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-    					PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1282, x+0.8, y, z-0.5, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					} else {
-				    	pmaitems[i] = CreateDynamicObject(1282, x, y+0.8, z-0.5, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
+		    for(new i = 0; i < MAX_PLAYERS; i++)
+		    {
+		        deleteAuxiliarItemsPMA(i, PMA_CONE_ITEM);
 			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
-		}
-		case 4:  // Baliza inrompible
+			SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todos los conos puestos por la facción. ))");
+		} else
+		    {
+				deleteAuxiliarItemsPMA(playerid, PMA_CONE_ITEM);
+				SendClientMessage(playerid, COLOR_WHITE, "Retiras cualquier cono que hayas puesto.");
+			}
+	} else
+		if (PlayerInfo[playerid][pFaction] == FAC_PMA)
+			SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
+	return 1;
+}
+
+//=====================SISTEMA DE BARRICADAS DE LA PMA==========================
+CMD:bar(playerid, params[])
+{
+	cmd_barricada(playerid, params);
+	return 1;
+}
+CMD:barricada(playerid,params[])
+{
+    if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+    return 1;
+    
+    new command[7];
+
+	if(sscanf(params, "s[7]", command))
+	{
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} (/bar)ricada [comando]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Comandos]:{C8C8C8} poner(1-2) - quitar(1-2) - quitartodo");
+    } else {
+		if(sscanf(params, "poner1", true)== 0)
 		{
-           	for(new i; i < MAX_PMAITEMS; i++)
-			{
-           		if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
+			if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+       		return 1;
 
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1427, x-0.8, y, z-0.5, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1427, x, y-0.8, z-0.5, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-    					PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1427, x+0.8, y, z-0.5, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
- 						return 1;
-					} else {
-				    	pmaitems[i] = CreateDynamicObject(1427, x, y+0.8, z-0.5, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
+			if(CopDuty[playerid] == 0)
+	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+		    if(PlayerInfo[playerid][pRank] > 7)
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+		   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+
+    		new cant;
+			cant = PlayerCantBarricadas[playerid];
+			if( cant >= MAX_PLAYER_BARRICATE)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes barricadas [MAX 5], quita algunas! (/bar quitar1) (/bar quitartodo).");
+			new Float:x, Float:y, Float:z, Float:facingAngle;
+			GetPlayerPos(playerid, x, y, z);
+			GetPlayerFacingAngle(playerid, facingAngle);
+			cant++;
+			Barricadas[playerid][cant-1] = CreateDynamicObject(1459, x, y, z-0.7, 0.0, 0.0, facingAngle);
+			SetPlayerPosFindZ(playerid, x, y-0.7, z);
+			PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
+			PlayerCantBarricadas[playerid] = cant;
+			return 1;
 		}
-		case 5: // Baliza con flecha
+		else if(sscanf(params, "poner2", true)== 0)
 		{
-		    for(new i; i < MAX_PMAITEMS; i++)
-			{
-           		if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
+			if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+       		return 1;
 
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1425, x-0.8, y, z-0.5, 0.0, 0.0, 270);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(1425, x, y-0.8, z-0.5, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-   						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1425, x+0.8, y, z-0.5, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					} else { // 0 grados
-				    	pmaitems[i] = CreateDynamicObject(1425, x, y+0.8, z-0.5, 0.0, 0.0, 180);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una baliza policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
-			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
+			if(CopDuty[playerid] == 0)
+	   		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+		    if(PlayerInfo[playerid][pRank] > 7)
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+		   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    		return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+
+    		new cant;
+			cant = PlayerCantBarricadas2[playerid];
+			if( cant >= MAX_PLAYER_BARRICATE2)
+			return SendClientMessage(playerid, COLOR_YELLOW2, "Ya pusiste suficientes barricadas [MAX 5], quita algunas! (/bar quitar2) (/bar quitartodo).");
+			new Float:x, Float:y, Float:z, Float:facingAngle;
+			GetPlayerPos(playerid, x, y, z);
+			GetPlayerFacingAngle(playerid, facingAngle);
+			cant++;
+			Barricadas2[playerid][cant-1] = CreateDynamicObject(1282, x, y, z-0.7, 0.0, 0.0, facingAngle);
+			SetPlayerPosFindZ(playerid, x, y-0.7, z);
+			PlayerActionMessage(playerid, 15.0, "ubica una barricada policial.");
+			PlayerCantBarricadas2[playerid] = cant;
+			return 1;
 		}
-		case 6: // Cinta de la policia
+        else if(sscanf(params, "quitar1", true)== 0)
 		{
-		    for(new i; i < MAX_PMAITEMS; i++)
-			{
-           		if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
+    		if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+        		return 1;
 
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(19834, x-0.8, y, z, 0.0, 0.0, 270);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-						pmaitems[i] = CreateDynamicObject(19834, x, y-0.8, z, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-   						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(19834, x+0.8, y, z, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					} else { // 0 grados
-				    	pmaitems[i] = CreateDynamicObject(19834, x, y+0.8, z, 0.0, 0.0, 180);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una cinta policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este.");
-						return 1;
-					}
-				}
+			if(CopDuty[playerid] == 0)
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+    		if(PlayerInfo[playerid][pRank] > 7)
+    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+   			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    			return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+
+			new cant = PlayerCantBarricadas[playerid];
+			if(cant > 0)
+    		{
+    			DestroyDynamicObject(Barricadas[playerid][cant-1]);
+				PlayerCantBarricadas[playerid] = cant - 1;
+        		PlayerActionMessage(playerid, 15.0, "retira una barricada policial del lugar.");
 			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
+			else
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has puesto ninguna barricada!");
+
+			return 1;
 		}
-		case 7: // Barricada de metal
+		else if(sscanf(params, "quitar2", true)== 0)
 		{
-		    for(new i; i < MAX_PMAITEMS; i++)
-			{
-           		if(pmaitems[i] == 0)
-				{
-               		GetPlayerPos(playerid, x, y, z);
-               		GetPlayerFacingAngle(playerid, fAngle);
+    		if(PlayerInfo[playerid][pFaction] != FAC_PMA)
+        		return 1;
 
-               		if(fAngle <= 135 && fAngle >= 45){ // 90 grados
-						pmaitems[i] = CreateDynamicObject(1424, x-0.8, y, z-0.4, 0.0, 0.0, 270);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
-						return 1;
-					}
-					if(fAngle <= 225 && fAngle >= 135){ // 180 grados
-      					pmaitems[i] = CreateDynamicObject(1424, x, y-0.8, z-0.4, 0.0, 0.0, 0);
-						Streamer_Update(playerid);
-   						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
-						return 1;
-					}
-					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
-						pmaitems[i] = CreateDynamicObject(1424, x+0.8, y, z-0.4, 0.0, 0.0, 90);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, Ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
-						return 1;
-					} else { // 0 grados
-				    	pmaitems[i] = CreateDynamicObject(1424, x, y+0.8, z-0.4, 0.0, 0.0, 180);
-						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una barricada policial.");
-						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
-						return 1;
-					}
-				}
+			if(CopDuty[playerid] == 0)
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No estás en servicio.");
+
+    		if(PlayerInfo[playerid][pRank] > 7)
+    			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+
+   			if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
+    			return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+
+			new cant = PlayerCantBarricadas2[playerid];
+			if(cant > 0)
+    		{
+    			DestroyDynamicObject(Barricadas2[playerid][cant-1]);
+				PlayerCantBarricadas[playerid] = cant - 1;
+        		PlayerActionMessage(playerid, 15.0, "retira una barricada policial del lugar.");
 			}
-			SendClientMessage(playerid, COLOR_YELLOW2, "No hay más objetos disponibles.");
+			else
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No has puesto ninguna barricada!");
+
+			return 1;
+		}
+        else if(sscanf(params, "quitartodo", true)== 0)
+		{
+    		if( (PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid] == 1 && PlayerInfo[playerid][pRank] < 8 && GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) || AdminDuty[playerid] )
+    		{
+				if( (PlayerInfo[playerid][pRank] == 1) || AdminDuty[playerid] )
+				{
+				    for(new i = 0; i < MAX_PLAYERS; i++)
+		    		{
+      					deleteAuxiliarItemsPMA(i, PMA_BARRICATE_ITEM);
+      					deleteAuxiliarItemsPMA(i, PMA_BARRICATE2_ITEM);
+					}
+					SendFactionMessage(FAC_PMA, COLOR_FACTIONCHAT, "(( [AVISO OOC]: El comisario/admin ha quitado todas las barricadas puestas por la facción. ))");
+				} else
+		    	{
+					deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE_ITEM);
+					deleteAuxiliarItemsPMA(playerid, PMA_BARRICATE2_ITEM);
+					SendClientMessage(playerid, COLOR_YELLOW2, "Retiras cualquier barricada que hayas puesto.");
+				}
+			} else
+				if (PlayerInfo[playerid][pFaction] == FAC_PMA)
+				SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener al menos rango de oficial, estar en servicio y de pie.");
+			return 1;
 		}
 	}
 	return 0;
 }
-
-CMD:pquitar(playerid, params[])
-{
-   	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
-
-    new Float:x, Float:y, Float:z;
-
-	for(new i; i < MAX_PMAITEMS; i++)
-	{
-	    GetDynamicObjectPos(pmaitems[i], x, y, z);
-	    if(IsPlayerInRangeOfPoint(playerid, 1.5, x, y, z)){
-	        DestroyDynamicObject(pmaitems[i]);
-	        pmaitems[i] = 0;
-	        PlayerCmeMessage(playerid, 15.0, 5000, "Quita el objeto que tiene frente a el.");
-	        return 1;
-		}
-	}
-	SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningún objeto.");
-	return 1;
-}
-	

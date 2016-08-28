@@ -13,7 +13,7 @@ new BackInfo[MAX_PLAYERS][SlotInfo];
 
 forward OnBackDataLoad(playerid);
 
-//=======================IMPLEMENTACI脫N DE FUNCIONES============================
+//=======================IMPLEMENTACI覰 DE FUNCIONES============================
 
 static const BackWeapons[] =
 {
@@ -131,26 +131,24 @@ CMD:esp(playerid, params[])
 stock SaveItemOnBack(playerid, playerhand)
 {
  	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en 茅ste momento.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	if(PlayerInfo[playerid][pHealth] < 25.0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "隆No puedes hacerlo mientras estas agonizando!");
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras agonizas.");
 	if(GetPVarInt(playerid, "cantSaveItems") == 1)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Debes esperar un tiempo antes de volver a interactuar con otro item!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "ebes esperar un tiempo antes de volver a interactuar con otro item!");
 
-	new itemid = GetHandItem(playerid, playerhand),
-		str[128];
+	new itemid = GetHandItem(playerid, playerhand);
 
 	if(GetBackItem(playerid) != 0)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Ya tienes algo colgado en ese lado de tu hombro!");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya tienes algo colgado en tu hombro.");
 	if(itemid == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 	if(!HasBackPermission(itemid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede colgar en el hombro.");
 
 	SetBackItemAndParam(playerid, itemid, GetHandParam(playerid, playerhand));
-	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado l贸gico y grafico de la mano.
-	format(str, sizeof(str), "pasa la cuerda de el/la %s por su brazo y cuello, para posteriormente colgarlo en el hombro.", GetItemName(itemid));
-	PlayerActionMessage(playerid, 15.0, str);
+	SetHandItemAndParam(playerid, playerhand, 0, 0); // Borrado l骻ico y grafico de la mano.
+	SendFMessage(playerid, COLOR_WHITE, "Has colgado un/a %s en tu espalda.", GetItemName(itemid));
   	SetPVarInt(playerid, "cantSaveItems", 1);
 	SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 	return 1;
@@ -167,9 +165,9 @@ stock TakeItemFromBack(playerid, playerhand)
 	if(GetHandItem(playerid, playerhand) != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes tomar el item ya que tienes la mano ocupada.");
 
-	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creaci贸n l贸gica y grafica en la mano.
-	SetBackItemAndParam(playerid, 0, 0); // Borrado l贸gico del item del hombro.
-	format(str, sizeof(str), "descuelga de su hombro el/la %s y lo/a sostiene con una de sus manos.", GetItemName(itemid));
+	SetHandItemAndParam(playerid, playerhand, itemid, itemparam); // Creaci髇 l骻ica y grafica en la mano.
+	SetBackItemAndParam(playerid, 0, 0); // Borrado l骻ico del item del hombro.
+	format(str, sizeof(str), "toma un/a %s de su hombro.", GetItemName(itemid));
 	PlayerActionMessage(playerid, 15.0, str);
 	return 1;
 }

@@ -213,7 +213,7 @@ CMD:mascara(playerid, params[])
 		    if(GetPVarInt(playerid, "disabled") == DISABLE_STEALING)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 			RemovePlayerAttachedObject(playerid, INDEX_ID_MASK);
-			PlayerCmeMessage(playerid, 15.0, 5000, "Se quita el pañuelo que ocultaba su rostro y lo guarda en su bolsillo.");
+			PlayerActionMessage(playerid, 15.0, "se quita el pañuelo que ocultaba su rostro y lo guarda en su bolsillo.");
 			usingMask[playerid] = false;
 			DestroyDynamic3DTextLabel(maskLabel[playerid]);
 			ResetMaskVariables(playerid);
