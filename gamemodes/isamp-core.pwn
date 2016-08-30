@@ -3020,10 +3020,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
-		//==========================SPRAY NO SACA VIDA==========================
+		//==========================SPRAY, FLORES Y EXTINTOR NO BAJAN VIDA NI CHALECO==========================
 
- 		if(weaponid == WEAPON_SPRAYCAN)
+ 		if(weaponid == WEAPON_SPRAYCAN || weaponid == WEAPON_FLOWER || weaponid == WEAPON_FIREEXTINGUISHER){
+            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
             return 1;
+		} else if(weaponid == 1 || weaponid == 2 || weaponid == 3 || weaponid == 4 || weaponid == 5 || weaponid == 6 || weaponid == 7 || weaponid == 8 || weaponid == 10 || weaponid == 11 || weaponid == 12 || weaponid == 13  || weaponid == 15)
+		    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 
 		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1 && GetPVarInt(playerid, "GrupoPaintball") != GetPVarInt(issuerid, "GrupoPaintball"))
 		{
@@ -3089,20 +3092,31 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 			    if(DrugEffectEcstasy[issuerid] == true)
 			    {
 			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
-	    			if(armour > 0)
+	    			if(armour > 0){
+                        SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
-					else
+					} else {
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+					}
 					return 1;
 				}
 				if(DrugEffectMarijuana[playerid] == true)
 				{
 	                amount = (amount / 2); // reducimos 50 porciento el daño a trompadas que recibe si esta drogado con marihuana
-					if(armour > 0)
+					if(armour > 0){
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-					else
+					} else {
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+					}
 					return 1;
+				}
+			} else {
+			    if(armour > 0){
+			    	SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+					SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
 				}
 			}
 		}
@@ -3110,10 +3124,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 	if(armour > 0.0)
 	{
-	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
+	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG || bodypart == BODY_PART_HEAD){
             SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-		else
+            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+		} else {
 			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
+			SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+		}
 	}
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
@@ -3145,13 +3162,6 @@ stock CrossArmour(playerid)
 	return 1;
 }
 
-public RecoverLastShot(playerid)
-{
-	SyncPlayerTimeAndWeather(playerid);
-	SetPlayerDrunkLevel(playerid, 0);
-	return 1;
-}
-
 stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 {
 	new wepProbability = 0,
@@ -3174,6 +3184,7 @@ stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 
 	switch(bodypart)
 	{
+	    case BODY_PART_HEAD: bodyProbability = 14;
 	    case BODY_PART_TORSO: bodyProbability = 29;
 	    case BODY_PART_GROIN: bodyProbability = 29;
 	    case BODY_PART_LEFT_ARM: bodyProbability = 14;
