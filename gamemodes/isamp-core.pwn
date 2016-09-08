@@ -172,6 +172,26 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define DLG_CAMARAS_POLICIA     10024
 #define DLG_DYING		    	10030
 #define DLG_POLICE_FINE	    	10039
+// DLG de /ainfo
+#define DLG_AINFO1              10040
+#define DLG_AINFO2              10041
+#define DLG_AINFO3              10042
+#define DLG_AINFO4              10043
+#define DLG_AINFO5              10044
+#define DLG_AINFO6              10045
+#define DLG_AINFO7              10046
+#define DLG_AINFO8              10047
+#define DLG_AINFO9              10048
+#define DLG_AINFO10             10049
+#define DLG_AINFO11             10050
+#define DLG_AINFO12             10051
+#define DLG_AINFO13             10052
+#define DLG_AINFO14             10053
+#define DLG_AINFO15             10054
+#define DLG_AINFO16             10055
+#define DLG_AINFO17             10056
+#define DLG_AINFO18             10057
+#define DLG_AINFO19             10059
 
 // Tiempos de jail.
 #define DM_JAILTIME 			300 	// 5 minutos
@@ -3000,10 +3020,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
-		//==========================SPRAY NO SACA VIDA==========================
+		//==========================SPRAY, FLORES Y EXTINTOR NO BAJAN VIDA NI CHALECO==========================
 
- 		if(weaponid == WEAPON_SPRAYCAN)
+ 		if(weaponid == WEAPON_SPRAYCAN || weaponid == WEAPON_FLOWER || weaponid == WEAPON_FIREEXTINGUISHER){
+            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
             return 1;
+		} else if(weaponid == 1 || weaponid == 2 || weaponid == 3 || weaponid == 4 || weaponid == 5 || weaponid == 6 || weaponid == 7 || weaponid == 8 || weaponid == 10 || weaponid == 11 || weaponid == 12 || weaponid == 13  || weaponid == 15)
+		    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 
 		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1 && GetPVarInt(playerid, "GrupoPaintball") != GetPVarInt(issuerid, "GrupoPaintball"))
 		{
@@ -3069,20 +3092,31 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 			    if(DrugEffectEcstasy[issuerid] == true)
 			    {
 			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
-	    			if(armour > 0)
+	    			if(armour > 0){
+                        SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
-					else
+					} else {
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+					}
 					return 1;
 				}
 				if(DrugEffectMarijuana[playerid] == true)
 				{
 	                amount = (amount / 2); // reducimos 50 porciento el daño a trompadas que recibe si esta drogado con marihuana
-					if(armour > 0)
+					if(armour > 0){
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-					else
+					} else {
+					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+					}
 					return 1;
+				}
+			} else {
+			    if(armour > 0){
+			    	SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+					SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
 				}
 			}
 		}
@@ -3090,10 +3124,13 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 	if(armour > 0.0)
 	{
-	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
+	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG || bodypart == BODY_PART_HEAD){
             SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-		else
+            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+		} else {
 			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
+			SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+		}
 	}
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
@@ -3125,13 +3162,6 @@ stock CrossArmour(playerid)
 	return 1;
 }
 
-public RecoverLastShot(playerid)
-{
-	SyncPlayerTimeAndWeather(playerid);
-	SetPlayerDrunkLevel(playerid, 0);
-	return 1;
-}
-
 stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 {
 	new wepProbability = 0,
@@ -3154,6 +3184,7 @@ stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 
 	switch(bodypart)
 	{
+	    case BODY_PART_HEAD: bodyProbability = 14;
 	    case BODY_PART_TORSO: bodyProbability = 29;
 	    case BODY_PART_GROIN: bodyProbability = 29;
 	    case BODY_PART_LEFT_ARM: bodyProbability = 14;
@@ -14707,4 +14738,113 @@ CMD:playertimeout(playerid, params[])
 	SendFMessage(playerid, COLOR_YELLOW2, "{FF4600}[DEBUG]:{C8C8C8} Nuevo playertimeout %s.", param);
 
 	return 1;
+}
+
+CMD:ainfo(playerid, params[])
+{
+    new string[512],
+        faction[128],
+        param[16];
+
+    if(sscanf(params, "s[16]", param))
+    {
+        SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} /ainfo [categoría]");
+        if(PlayerInfo[playerid][pAdmin] > 1){
+            SendClientMessage(playerid, COLOR_WHITE, "Categorías: weaponids | itemsids | factionids | jobids | weatherids");
+/*        	SendClientMessage(playerid, COLOR_WHITE, "Categorías de objetos: muebles | hogar | negocio | paredes | puertas/escaleras | comida");
+        	SendClientMessage(playerid, COLOR_WHITE, "Categorías de objetos: decoexterior | eventosic | eventosooc | pickups | basura | granja");
+        	SendClientMessage(playerid, COLOR_WHITE, "Categorías de otros objetos SA-MP: herramientas | transito | ");
+*/        	return 1;
+		}
+    }
+    else if(strcmp(param, "weaponids", true) == 0)
+    {
+        strcat(string, "{00FF00}[Armas de mano]{0094FF} 1(Manopla) 2(Palo de Golf) 3(Macana) 4(Cuchillo) 5(Bate) 6(Pala) 7(Taco de pool) 8(Katana) 9(Motosierra) 10-13(Dildo)\n");
+        strcat(string, "{00FF00}[Armas de mano]{0094FF} 14(Flores) 15(Bastón) 16(Granada) 18(Molotov) 39(Carga C4) 40(Detonador) 41(Aerosol) 42(Extintor) 43(Cámara)\n");
+        strcat(string, "{00FF00}[Pistolas y escopetas]{0094FF} 22(9mm) 23(9mm silenciada) 24(Deagle) 25(Escopeta) 26(Escopeta recortada) 27(Escopeta de combate)\n");
+        strcat(string, "{00FF00}[Automáticas y rifles]{0094FF} 28(UZI) 29(MP5) 30(AK47) 31(M4) 32(TEC-9) 33(Rifle de caza) 34(Rifle francotirador)\n");
+        strcat(string, "{00FF00}[Otros]{0094FF} 35(RPG-7) 36(Lanzamisiles térmico) 37(Lanzallamas) 38(Minigun) 46(Paracaídas)\n");
+        ShowPlayerDialog(playerid, DLG_AINFO1 , DIALOG_STYLE_MSGBOX, "{FF0000}IDs de armas", string, "Aceptar", "");
+        return 1;
+
+    }
+    else if(strcmp(param, "itemsids", true) == 0)
+    {
+        strcat(string, "{00FF00}[Cargadores]{0094FF} 119(Cargador de 9mm) 120(Cargador de Deagle) 121(Cargador de Uzi/Tec) 122(Cargador de MP5) 123(Cargador de M4) 124(Cargador de AK)\n");
+		strcat(string, "{00FF00}[Cajas de Munición]{0094FF} 125(Munición de 9mm) 126(Munición de Deagle) 127(Munición de Uzi/Tec) 128(Munición de MP5) 129(Munición de M4) 130(Munición de AK)\n");
+		strcat(string, "{00FF00}[Objetos policiales]{0094FF} 170(Tazer) 171(Placa de policía) 172(Esposas)\n");
+		strcat(string, "{00FF00}[Contenedores]{0094FF} 103(Valija) 105(Bolso deportivo) 106(Mochila grande) 107(Mochila chica) 108(Mochila mediana) 109(Maletín)\n");
+		strcat(string, "{00FF00}[Comidas/Bebidas]{0094FF} 52(Sándwich) 53(alfajor) 54(Agua mineral) 111(Cerveza) 114(Vino) 115(Whisky) 116(Vodka) 117(Ron) 174(Cajón de cerveza)\n");
+		strcat(string, "{00FF00}[Utilidades]{0094FF} 48(Bidón) 47(Caja de materiales) 49(Bolsa de materia prima) 50(Productos) 61(Repuesto de auto)\n");
+		strcat(string, "{00FF00}[Cascos]{0094FF} 56(Casco común) 57(Casco de motocross) 58(Casco rojo) 59(Casco blanco) 60(Casco rosa) 63(Casco obrero)\n");
+		strcat(string, "{00FF00}[Sombreros]{0094FF} 64(Sombrero de cowboy negro) 65(Sombrero de cowboy marron) 66(Sombrero de cowboy bordó) 72(Sombrero antiguo)\n");
+		strcat(string, "{00FF00}[Gorros]{0094FF} 76(Gorro rojo) 77(Gorro estampado) 78(Gorro negro) 79(Gorro playero negro) 80(Gorro playero a cuadros)\n");
+		strcat(string, "{00FF00}[Gorras]{0094FF} 81(Gorra militar) 82(Gorra gris estampada) 83(Gorra blanca estampada) 96(Gorra simple negra) 97(Gorra simple azul) 98(Gorra simple verde)\n");
+		strcat(string, "{00FF00}[Relojes]{0094FF} 67(Reloj Swatch) 68(Reloj Rolex) 69(Reloj Casio) 70(Reloj Swiss Army) 71(Reloj festina)\n");
+		strcat(string, "{00FF00}[Anteojos]{0094FF} 84(Anteojos de sol) 85(Anteojos deportivos negros) 86(Anteojos deportivos rojos) 87(Anteojos deportivos azules) 88(Anteojos Rayban negros)\n");
+		strcat(string, "{00FF00}[Anteojos]{0094FF} 89(Anteojos Rayban azules) 90(Anteojos Rayban violetas) 91(Anteojos Rayban rosa) 92(Anteojos Rayban rojos) 93(Anteojos Rayban naranjas)\n");
+		strcat(string, "{00FF00}[Anteojos]{0094FF} 94(Anteojos Rayban amarillos) 95(Anteojos Rayban verdes)\n");
+		strcat(string, "{00FF00}[Bigotes]{0094FF} 73(Bigote falso 1) 74(Bigote falso 2)\n");
+		strcat(string, "{00FF00}[Llaves]{0094FF} 131(Llave de casa) 132(Llave de negocio) 133(Llave de edificio) 134(Tarjeta)\n");
+		ShowPlayerDialog(playerid, DLG_AINFO2 , DIALOG_STYLE_MSGBOX, "{FF0000}IDs de ítems", string, "Aceptar", "");
+    }
+    else if(strcmp(param, "factionids", true) == 0)
+    {
+        format(faction, sizeof(faction), "{00FF00}[ID 1]{0094FF} %s\n", FactionInfo[1][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 2]{0094FF} %s\n", FactionInfo[2][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 3]{0094FF} %s\n", FactionInfo[3][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 4]{0094FF} %s\n", FactionInfo[4][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 5]{0094FF} 5 - %s\n", FactionInfo[5][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 6]{0094FF} 6 - %s\n", FactionInfo[6][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 7]{0094FF} 7 - %s\n", FactionInfo[7][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 8]{0094FF} 8 - %s\n", FactionInfo[8][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 9]{0094FF} %s\n", FactionInfo[9][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 10]{0094FF} %s\n", FactionInfo[10][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 11]{0094FF} %s\n", FactionInfo[11][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 12]{0094FF} %s\n", FactionInfo[12][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 13]{0094FF} %s\n", FactionInfo[13][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 14]{0094FF} %s\n", FactionInfo[14][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 15]{0094FF} %s\n", FactionInfo[15][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 16]{0094FF} %s\n", FactionInfo[16][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 17]{0094FF} %s\n", FactionInfo[17][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 18]{0094FF} %s\n", FactionInfo[18][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 19]{0094FF} %s\n", FactionInfo[1][fName]);
+        strcat(string, faction);
+        format(faction, sizeof(faction), "{00FF00}[ID 20]{0094FF} %s\n", FactionInfo[20][fName]);
+        strcat(string, faction);
+        ShowPlayerDialog(playerid, DLG_AINFO3 , DIALOG_STYLE_MSGBOX, "{FF0000}IDs de facciones", string, "Aceptar", "");
+    }
+    else if(strcmp(param, "jobids", true) == 0)
+    {
+        strcat(string, "{00FF00}[Trabajos]{0094FF} 1(Moto Delivery) 2(Taxista) 3(Granjero) 4(Transportista) 5(Basurero) 6(Delincuente) 7(Cosechador de materia prima) 8(Narcotraficante)\n");
+        ShowPlayerDialog(playerid, DLG_AINFO4 , DIALOG_STYLE_MSGBOX, "{FF0000}IDs de trabajos", string, "Aceptar", "");
+    }
+    else if(strcmp(param, "weatherids", true) == 0)
+    {
+    	strcat(string, "{00FF00}[Soleado]{0094FF} 0 - 1 - 2 - 3 -5 - 6 - 10 - 11 - 13 - 14 - 18 - 19\n");
+        strcat(string, "{00FF00}[Nublado]{0094FF} 4 - 7 - 12 - 15\n");
+        strcat(string, "{00FF00}[Lluvioso]{0094FF} 8 - 16\n");
+        strcat(string, "{00FF00}[Niebla]{0094FF} 9\n");
+        strcat(string, "{00FF00}[Tormenta de arena]{0094FF} 19\n");
+        ShowPlayerDialog(playerid, DLG_AINFO5 , DIALOG_STYLE_MSGBOX, "{FF0000}IDs de climas", string, "Aceptar", "");
+    }
+    return 1;
 }
