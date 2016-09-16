@@ -81,18 +81,25 @@ public OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y,
 
 CMD:aobjetoquitar(playerid, params[])
 {
+	if(PlayerInfo[playerid][pCustom] < 1)
+	    return 1;
     DeleteAdminObject(playerid);
 	return 1;
 }
 
 CMD:aobjetosquitartodo(playerid, params[])
 {
+	if(PlayerInfo[playerid][pCustom] < 1)
+	    return 1;
     DeleteAllAdminObject(playerid);
 	return 1;
 }
 
 CMD:aobjeto(playerid,params[])
 {
+	if(PlayerInfo[playerid][pCustom] < 1)
+	    return 1;
+
     new object, Float:x, Float:y, Float:z, Float:facingAngle;
 
 	if(adminServerObjectsCant >= MAX_ADMIN_OBJECTS)
@@ -109,12 +116,16 @@ CMD:aobjeto(playerid,params[])
 
 CMD:aeditobjeto(playerid,params[])
 {
+	if(PlayerInfo[playerid][pCustom] < 1)
+	    return 1;
 	EditAdminObject(playerid);
     return 1;
 }
 
 CMD:ainfoobjetos(playerid, params[])
 {
+	if(PlayerInfo[playerid][pCustom] < 1)
+	    return 1;
     SendClientMessage(playerid, COLOR_RED, "[ID objetos útiles]:");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "1280: banco para sentarse - 1223: poste de luz chico - 1840: parlante - 1839: equipo de mÃºsica - 16151: barra de tragos ");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "1551: botella de bebida - 1455 :vaso - 3027: porro - 2632: colchoneta de playa - 2290: sillones triples marrones - 2896,19339: ataud");
