@@ -13,6 +13,7 @@ enum pInfo {
 	pIP[16],
 	pLevel,
 	pAdmin,
+	pCustom,
 	pAccountBlocked,
 	pTutorial,
 	pRegStep,
@@ -62,6 +63,9 @@ enum pInfo {
 	pRentCarRID,
 	pFightStyle,
 	pMask,
+	
+	pQuestion[144],
+	pHaveQuestion,
 	
 	pThirst,
 	pHunger,

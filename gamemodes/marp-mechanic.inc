@@ -711,7 +711,7 @@ CMD:mectunear(playerid,params[])
 	tuningVehicleID = GetPlayerVehicleID(playerid);
 	if(!playerHasCarKey(target, tuningVehicleID))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no es dueño de este vehiculo.");
-    if(GetVehicleType(tuningVehicleID) != VTYPE_CAR && GetVehicleType(tuningVehicleID) != VTYPE_BIKE)
+    if(GetVehicleType(tuningVehicleID) != VTYPE_CAR && GetVehicleType(tuningVehicleID) != VTYPE_BIKE && GetVehicleType(tuningVehicleID) != VTYPE_HEAVY)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tipo de vehículo invalido.");
     if(!IsPlayerInRangeOfPoint(playerid, 15.0, MEC_TUNING_PLACE_X, MEC_TUNING_PLACE_Y, MEC_TUNING_PLACE_Z))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en el galpón de tuning del Taller Mercury.");
@@ -746,7 +746,7 @@ CMD:mectuning(playerid, params[])
 	new vID = GetPlayerVehicleID(playerid);
   	if(!playerHasCarKey(clientID, vID))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Este auto no es de tu cliente.");
-   	if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE)
+   	if(GetVehicleType(vID) != VTYPE_CAR && GetVehicleType(vID) != VTYPE_BIKE && GetVehicleType(vID) != VTYPE_HEAVY)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Vehiculo invalido.");
 
 	TogglePlayerControllable(playerid, false);

@@ -35,7 +35,7 @@
 #define VTYPE_BOAT 				VTYPE_SEA
 #define VTYPE_BICYCLE 			VTYPE_BMX
 
-#define PRICE_GPS   			100
+#define PRICE_GPS   			1000
 #define PRICE_VEHICLE_PAINTJOB  10000
 #define PRICE_VEHICLE_MODS      2000
 

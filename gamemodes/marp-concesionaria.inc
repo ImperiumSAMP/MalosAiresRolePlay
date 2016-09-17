@@ -456,6 +456,9 @@ Dialog:Car_Dealer_Step_5(playerid, response, listitem, inputtext[])
 	 	DestroyVehicle(newveh);
 		newveh = CreateVehicle(VehicleInfo[newveh][VehModel], VehicleInfo[newveh][VehPosX], VehicleInfo[newveh][VehPosY], VehicleInfo[newveh][VehPosZ], VehicleInfo[newveh][VehAngle], VehicleInfo[newveh][VehColor1], VehicleInfo[newveh][VehColor2], -1);
 
+		Container_Empty(VehicleInfo[newveh][VehContainerID]);
+		Container_SetTotalSpace(VehicleInfo[newveh][VehContainerID], GetVehicleModelTrunkSpace(VehicleInfo[newveh][VehModel]));
+		
 		addKeyToPlayer(playerid, newveh, playerid);
 		SaveVehicle(newveh);
 		SetVehicleNumberPlate(newveh, VehicleInfo[newveh][VehPlate]);
