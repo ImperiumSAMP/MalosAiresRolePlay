@@ -3034,13 +3034,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
-		//==========================SPRAY, FLORES Y EXTINTOR NO BAJAN VIDA NI CHALECO==========================
+		//==========================SPRAY NO SACA VIDA==========================
 
- 		if(weaponid == WEAPON_SPRAYCAN || weaponid == WEAPON_FLOWER || weaponid == WEAPON_FIREEXTINGUISHER){
-            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+ 		if(weaponid == WEAPON_SPRAYCAN)
             return 1;
-		} else if(weaponid == 1 || weaponid == 2 || weaponid == 3 || weaponid == 4 || weaponid == 5 || weaponid == 6 || weaponid == 7 || weaponid == 8 || weaponid == 10 || weaponid == 11 || weaponid == 12 || weaponid == 13  || weaponid == 15)
-		    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 
 		if(GetPVarInt(playerid, "GrupoPaintball") != 0 && GetPVarInt(issuerid, "GrupoPaintball") != 0 && GetPVarInt(playerid, "Descalificado") != 1 && GetPVarInt(issuerid, "Descalificado") != 1 && GetPVarInt(playerid, "GrupoPaintball") != GetPVarInt(issuerid, "GrupoPaintball"))
 		{
@@ -3100,37 +3097,26 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 		if(weaponid == 0)
 		{
 		    amount = amount/2; // Bajamos el daño base por puño para hacer mas duraderas las peleas y para darle utilidad a las armas melee.
-		    
+
 		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
 		    {
 			    if(DrugEffectEcstasy[issuerid] == true)
 			    {
 			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
-	    			if(armour > 0){
-                        SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+	    			if(armour > 0)
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
-					} else {
-					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+					else
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					}
 					return 1;
 				}
 				if(DrugEffectMarijuana[playerid] == true)
 				{
 	                amount = (amount / 2); // reducimos 50 porciento el daño a trompadas que recibe si esta drogado con marihuana
-					if(armour > 0){
-					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+					if(armour > 0)
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-					} else {
-					    SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
+					else
 						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					}
 					return 1;
-				}
-			} else {
-			    if(armour > 0){
-			    	SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
-					SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
 				}
 			}
 		}
@@ -3138,13 +3124,10 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 	if(armour > 0.0)
 	{
-	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG || bodypart == BODY_PART_HEAD){
+	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
             SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-            SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
-		} else {
+		else
 			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-			SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
-		}
 	}
 	else
  		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
@@ -13309,6 +13292,8 @@ CMD:banear(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]{C8C8C8} La cantidad de días de duración debe estar entre (0 - 300).");
     if(IsPlayerNPC(targetid))
         return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]{C8C8C8} la ID corresponde a un NPC.");
+	if(PlayerInfo[targetid][pAdmin] == 20 && !IsPlayerAdmin(playerid))
+	    return 1;
 	    
 	BanPlayer(targetid, playerid, reason, days);
 	return 1;
@@ -13397,6 +13382,7 @@ CMD:setarmour(playerid, params[])
  	if(!IsPlayerConnected(targetid) || targetid == INVALID_PLAYER_ID)
 	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]{C8C8C8} ID inválida.");
 
+	PlayerInfo[playerid][pArmour] = armour;
 	SetPlayerArmour(targetid, armour);
 	return 1;
 }
@@ -14955,13 +14941,13 @@ CMD:ainfo(playerid, params[])
         strcat(string, faction);
         format(faction, sizeof(faction), "{00FF00}[ID 4]{0094FF} %s\n", FactionInfo[4][fName]);
         strcat(string, faction);
-        format(faction, sizeof(faction), "{00FF00}[ID 5]{0094FF} 5 - %s\n", FactionInfo[5][fName]);
+        format(faction, sizeof(faction), "{00FF00}[ID 5]{0094FF} %s\n", FactionInfo[5][fName]);
         strcat(string, faction);
-        format(faction, sizeof(faction), "{00FF00}[ID 6]{0094FF} 6 - %s\n", FactionInfo[6][fName]);
+        format(faction, sizeof(faction), "{00FF00}[ID 6]{0094FF} %s\n", FactionInfo[6][fName]);
         strcat(string, faction);
-        format(faction, sizeof(faction), "{00FF00}[ID 7]{0094FF} 7 - %s\n", FactionInfo[7][fName]);
+        format(faction, sizeof(faction), "{00FF00}[ID 7]{0094FF} %s\n", FactionInfo[7][fName]);
         strcat(string, faction);
-        format(faction, sizeof(faction), "{00FF00}[ID 8]{0094FF} 8 - %s\n", FactionInfo[8][fName]);
+        format(faction, sizeof(faction), "{00FF00}[ID 8]{0094FF} %s\n", FactionInfo[8][fName]);
         strcat(string, faction);
         format(faction, sizeof(faction), "{00FF00}[ID 9]{0094FF} %s\n", FactionInfo[9][fName]);
         strcat(string, faction);
@@ -14983,7 +14969,7 @@ CMD:ainfo(playerid, params[])
         strcat(string, faction);
         format(faction, sizeof(faction), "{00FF00}[ID 18]{0094FF} %s\n", FactionInfo[18][fName]);
         strcat(string, faction);
-        format(faction, sizeof(faction), "{00FF00}[ID 19]{0094FF} %s\n", FactionInfo[1][fName]);
+        format(faction, sizeof(faction), "{00FF00}[ID 19]{0094FF} %s\n", FactionInfo[19][fName]);
         strcat(string, faction);
         format(faction, sizeof(faction), "{00FF00}[ID 20]{0094FF} %s\n", FactionInfo[20][fName]);
         strcat(string, faction);
