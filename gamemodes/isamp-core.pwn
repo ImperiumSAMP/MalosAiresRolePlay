@@ -1909,6 +1909,9 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
     new comm[256];
 	new idx;
     comm = strtok(cmdtext, idx);
+    
+    if(!gPlayerLogged[playerid])
+        return 0;
 
     if(checkCmdPermission(comm,PlayerInfo[playerid][pAdmin])==0)
     {
