@@ -7,13 +7,13 @@
 
 //================================CONSTANTES====================================
 
-#define BANK_ROBBERY_COOLDOWN   120 // En horas, tiempo para que el banco pueda volver a ser robado.
+#define BANK_ROBBERY_COOLDOWN   30 // En horas, tiempo para que el banco pueda volver a ser robado.
 
-#define MAX_DINERO_BOVEDA     	1000000
+#define MAX_DINERO_BOVEDA     	150000
 
 #define GROUP_MEMBERS 			3 // No incluye al lider
 
-#define MIN_DUTYCOPS_NEEDED     6
+#define MIN_DUTYCOPS_NEEDED  	3
 #define MIN_THIEFS_NEEDED 		4
 
 #define POS_BANK_MAIN_DOOR_X    1505.9563

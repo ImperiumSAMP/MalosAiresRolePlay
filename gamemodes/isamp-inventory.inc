@@ -30,7 +30,7 @@ CMD:inv(playerid, params[])
 
 CMD:inventario(playerid, params[])
 {
-	new cmd[24];
+	new cmd[24], str[128];
 
     if(sscanf(params, "s[24]", cmd))
 	{
@@ -50,7 +50,7 @@ CMD:inventario(playerid, params[])
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 			if(GetPVarInt(playerid, "cantSaveItems") == 1)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "ebes esperar un tiempo antes de volver a interactuar con otro item!");
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "隆Debes esperar un tiempo antes de volver a interactuar con otro item!");
 
 			new itemid = GetHandItem(playerid, HAND_RIGHT),
 		    	itemparam = GetHandParam(playerid, HAND_RIGHT);
@@ -64,9 +64,10 @@ CMD:inventario(playerid, params[])
 			if(!Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], itemid, itemparam))
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en tu inventario.");
 
-			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado l骻ico y grafico de la mano.
+			SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado l贸gico y grafico de la mano.
 			
-			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
+			format(str, sizeof(str), "Utilizando su mano derecha, guarda un/a %s en su inventario.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 			
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
@@ -94,12 +95,13 @@ CMD:inventario(playerid, params[])
 			if(!Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], itemid, itemparam))
 		    	return SendClientMessage(playerid, COLOR_YELLOW2, "No hay suficiente espacio libre en tu inventario.");
 
-			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado l骻ico y grafico de la mano.
-
-			SendFMessage(playerid, COLOR_WHITE, "Has guardado un/a %s en tu inventario.", GetItemName(itemid));
+			SetHandItemAndParam(playerid, HAND_LEFT, 0, 0); // Borrado l贸gico y grafico de la mano.
 
 			SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
+			
+			format(str, sizeof(str), "Utilizando su mano izquierda, guarda un/a %s en su inventario.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 	    }
 		else
 		{
@@ -136,17 +138,17 @@ Dialog:Dlg_Show_Inv_Container(playerid, response, listitem, inputtext[])
 
 		if(Container_TakeItem(container_id, listitem, itemid, itemparam))
 		{
-			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creaci髇 l骻ica y grafica en la mano.
+			SetHandItemAndParam(playerid, free_hand, itemid, itemparam); // Creaci贸n l贸gica y grafica en la mano.
 
             SetPVarInt(playerid, "cantSaveItems", 1);
 			SetTimerEx("cantSaveItems", 2000, false, "i", playerid);
 
-			format(str, sizeof(str), "toma un/a %s de su inventario.", GetItemName(itemid));
-			PlayerActionMessage(playerid, 15.0, str);
+			format(str, sizeof(str), "Toma un/a %s de su inventario y lo sostiene en una de sus manos.", GetItemName(itemid));
+			PlayerCmeMessage(playerid, 15.0, 5000, str);
 		}
 		else
 		{
-	        SendClientMessage(playerid, COLOR_YELLOW2, "Inventario vacio o el slot es inv醠ido.");
+	        SendClientMessage(playerid, COLOR_YELLOW2, "Inventario vac韔 o el slot especificado es inv醠ido.");
 		}
 	}
 	return 1;

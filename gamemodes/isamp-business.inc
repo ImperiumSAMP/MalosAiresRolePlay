@@ -120,10 +120,12 @@ static const AccessItems[] = {
 };
 
 static const AmmuItems[] = {
-	22, // 9mm
-	24, // Deagle
-	25, // Escopeta
-	33 //Rifle de caza
+	ITEM_ID_9MM,
+	ITEM_ID_DEAGLE,
+	ITEM_ID_CARGADOR_9MM,
+	ITEM_ID_CARGADOR_DEAGLE,
+	ITEM_ID_CAJA_BALAS_9MM,
+	ITEM_ID_CAJA_BALAS_DEAGLE
 };
 
 //Enums
@@ -1221,34 +1223,34 @@ OnPlayerBuyClot(biz, playerid)
 
 ShowAmmuCatalog(playerid)
 {
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número] [balas]");
+	new string[64];
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprar [número]");
  	for(new i = 0; i < sizeof(AmmuItems); i++)
  	{
- 	    if(GetItemType(AmmuItems[i]) == ITEM_WEAPON)
-			SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d por munición", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
+ 	    if(GetItemType(AmmuItems[i]) != ITEM_FIREWEAPON && GetItemType(AmmuItems[i]) != ITEM_WEAPONMAG)
+ 	        format(string, sizeof(string), "%s (100 municiones)", GetItemName(AmmuItems[i]));
 		else
-		    SendFMessage(playerid, COLOR_LIGHTYELLOW2, " %d) %s - $%d", i, GetItemName(AmmuItems[i]), GetItemPrice(AmmuItems[i]));
-	}
+		    format(string, sizeof(string), "%s", GetItemName(AmmuItems[i]));
+		SendFMessage(playerid, COLOR_LIGHTYELLOW2, "%d) %s - $%d", i, string, GetItemPrice(AmmuItems[i]));
+ 	}
 	return 1;
 }
 
 OnPlayerBuyAmmu(biz, playerid, params[])
 {
-	new option, param, itemid, itemprice, str[128], freehand;
+	new option, itemid, itemprice, str[128], freehand;
 	
 	if(Business[biz][bProducts] < 1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene stock de productos. Intenta volviendo más tarde.");
-    if(sscanf(params, "ii", option, param))
+    if(sscanf(params, "i", option))
         return ShowAmmuCatalog(playerid);
 	if(option < 0 || option >= sizeof(AmmuItems))
         return SendClientMessage(playerid, COLOR_YELLOW2, "Ingresa un número de opción válido.");
 	if(!PlayerInfo[playerid][pWepLic])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar si no tienes una licencia de portación de armas.");
-	if(param < 1 || param > 200)
- 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar menos de 1 bala ni más de 200.");
 
 	itemid = AmmuItems[option];
-	itemprice = GetItemPrice(itemid) * param;
+	itemprice = GetItemPrice(itemid);
 
 	if(GetPlayerCash(playerid) < itemprice)
 	{
@@ -1259,7 +1261,10 @@ OnPlayerBuyAmmu(biz, playerid, params[])
 	if(freehand == -1)
         return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes comprar el item ya que tienes ambas manos ocupadas.");
 
-	SetHandItemAndParam(playerid, freehand, itemid, param); // Creación lógica y grafica en la mano.
+	if(GetItemType(itemid) == ITEM_FIREWEAPON || GetItemType(itemid) == ITEM_WEAPONMAG)
+		SetHandItemAndParam(playerid, freehand, itemid, 0);
+	else
+	    SetHandItemAndParam(playerid, freehand, itemid, 100);
 	format(str, sizeof(str), "compra un/a %s y lo/a agarra con la mano.", GetItemName(itemid));
     GivePlayerCash(playerid, -itemprice);
     Business[biz][bTill] += itemprice / 2;

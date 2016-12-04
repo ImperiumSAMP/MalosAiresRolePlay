@@ -41,6 +41,16 @@ enum Factions {
 	fName[50],
 	fMaterials,
 	fBank,
+	fPayDay1,
+	fPayDay2,
+	fPayDay3,
+	fPayDay4,
+	fPayDay5,
+	fPayDay6,
+	fPayDay7,
+	fPayDay8,
+	fPayDay9,
+	fPayDay10,
 	fRank1[35],
 	fRank2[35],
 	fRank3[35],
@@ -52,7 +62,7 @@ enum Factions {
 	fRank9[35],
 	fRank10[35],
 	fJoinRank,
-	fType,//For Government factions etc
+	fType,
 	fRankAmount,
 	fAllowJob,
 	fMissionVeh,
@@ -118,7 +128,7 @@ CMD:afacciones(playerid, params[])
 {
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==============================[COMANDOS DE ADMIN PARA FACCIONES]==============================");
 	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afexpulsar /afvehiculos /afallowjob /afinfo - /aftipo - /afnombre - /afrangos");
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 10]{C8C8C8} /afrangoingreso - /afdinero - /afmats - /afrango - /afvehmision - /afpayday");
 	return 1;
 }
 
@@ -127,14 +137,14 @@ CMD:afinfo(playerid, params[])
 	new id, string[128];
 
 	if(sscanf(params, "i", id))
-		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afinfo [idfacciÛn]");
+		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afinfo [idfacci√≥n]");
 	if(id < 0 || id >= MAX_FACTIONS)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 
-	format(string, sizeof(string), "[ID:%d] Faction Name: %s - Materials: %d - Money: $%d - Join Rank: %d - Type: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],GetFactionMoney(id),FactionInfo[id][fJoinRank],FactionInfo[id][fType]);
-	SendClientMessage(playerid, COLOR_ADMINCMD, string);
-	format(string, sizeof(string), "[ID:%d] Rank Amount: %d - Permite Empleo: %d", id,FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
-	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	format(string, sizeof(string), "{878EE7}[ID %d]:{C8C8C8} Nombre de facci√≥n: %s - Materiales: %d - Dinero: $%d - Rango de ingreso: %d - Tipo: %d",id, FactionInfo[id][fName],FactionInfo[id][fMaterials],GetFactionMoney(id),FactionInfo[id][fJoinRank],FactionInfo[id][fType]);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+	format(string, sizeof(string), "{878EE7}[ID %d]:{C8C8C8} Cantidad de rangos: %d - Permiso de empleo: %d", id,FactionInfo[id][fRankAmount],FactionInfo[id][fAllowJob]);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	return 1;
 }
 
@@ -143,12 +153,12 @@ CMD:afallowjob(playerid, params[])
 	new factionID, option;
 
 	if(sscanf(params, "ii", factionID, option))
-		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afallowjob [idfacciÛn] [1=SI 0=NO]");
+		 return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afallowjob [idfacci√≥n] [1=SI 0=NO]");
 	if(factionID < 1 || factionID >= MAX_FACTIONS)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 
 	FactionInfo[factionID][fAllowJob] = option;
-	SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} El permiso para tener empleo de la facciÛn %d ha sido ajustado a %d.", factionID, option);
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} El permiso de empleo de la facci√≥n %d ha sido ajustado a %d.", factionID, option);
 	SaveFactions();
 	return 1;
 }
@@ -158,15 +168,15 @@ CMD:aftipo(playerid, params[])
 	new string[128], factionID, type;
 
 	if(sscanf(params, "dd", factionID, type)) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aftipo [idfacciÛn] [tipo]");
-        SendClientMessage(playerid, COLOR_WHITE, "Tipos: 0 ilegal | 1 gobierno | 2 legal | 3 pandilla");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aftipo [idfacci√≥n] [tipo]");
+        SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[TIPOS]:{C8C8C8} 0 - Ilegal | 1 - Gobierno | 2 - Legal | 3 - Pandilla");
 	} else if(factionID >= 0 && factionID < MAX_FACTIONS) {
     	FactionInfo[factionID][fType] = type;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} el tipo de la facciÛn %d ha sido ajustado a %d.", factionID, type);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} El tipo de la facci√≥n %d ha sido ajustado a %d.", factionID, type);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	    SaveFactions();
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 	}
 	return 1;
 }
@@ -175,14 +185,14 @@ CMD:afvehiculos(playerid, params[])
 {
 	new factionID;
 	if(sscanf(params, "dd", factionID))
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehiculos [idfacciÛn]");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehiculos [idfacci√≥n]");
     if(factionID < 1 && factionID >= MAX_FACTIONS)
-        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
-    SendFMessage(playerid, COLOR_YELLOW, "===============|Vehiculos de facciÛn: %s|===============", FactionInfo[factionID][fName]);
+        return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
+    SendFMessage(playerid, COLOR_LIGHTYELLOW2, "===============|Vehiculos de la facci√≥n: %s|===============", FactionInfo[factionID][fName]);
 	for(new i=0; i<MAX_VEH; i++)
 	{
 	    if(VehicleInfo[i][VehFaction] == factionID)
-	        SendFMessage(playerid, COLOR_ADMINCMD, "{878EE7}[INFO]:{C8C8C8} Vehiculo ID %d - Modelo %s", i, GetVehicleName(i));
+	        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} Veh√≠culo ID %d - Modelo %s", i, GetVehicleName(i));
 	}
 	SendClientMessage(playerid, COLOR_YELLOW, "====================================================================");
 	return 1;
@@ -195,7 +205,7 @@ CMD:afrango(playerid, params[]) {
 		rankID,
 		rankName[32];
 
-	if(sscanf(params, "dds[32]", factionID, rankID, rankName)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrango [idfacciÛn] [rango 1-10] [nombre 32 chars]");
+	if(sscanf(params, "dds[32]", factionID, rankID, rankName)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrango [idfacci√≥n] [rango 1-10] [nombre 32 chars]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && rankID >= 1 && rankID <= 10) {
 	   	mysql_real_escape_string(rankName, rankName);
 	    switch(rankID) {
@@ -210,8 +220,8 @@ CMD:afrango(playerid, params[]) {
 	        case 9: strmid(FactionInfo[factionID][fRank9], (rankName), 0, strlen((rankName)), 32);
 			case 10: strmid(FactionInfo[factionID][fRank10], (rankName), 0, strlen((rankName)), 32);
 	    }
-		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} el nombre del rango %d perteneciente a la facciÛn %d ha sido cambiado a %s.", rankID, factionID, rankName);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} El nombre del rango %d perteneciente a la facci√≥n %d ha sido cambiado a %s.", rankID, factionID, rankName);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 		SaveFactions();
 	}
 	return 1;
@@ -223,14 +233,14 @@ CMD:afmats(playerid, params[]) {
 	    factionID,
 		mats;
 
-	if(sscanf(params, "dd", factionID, mats)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdmats [idfacciÛn] [cantidad]");
+	if(sscanf(params, "dd", factionID, mats)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdmats [idfacci√≥n] [cantidad]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS) {
     	FactionInfo[factionID][fMaterials] = mats;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de materiales de la facciÛn %d ha sido ajustada a %d.", factionID, mats);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} La cantidad de materiales de la facci√≥n %d ha sido ajustada a %d.", factionID, mats);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	    SaveFactions();
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 	}
 	return 1;
 }
@@ -242,13 +252,13 @@ CMD:afdinero(playerid, params[])
 		money;
 		
 	if(sscanf(params, "dd", factionID, money))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdinero [idfacciÛn] [cantidad]");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afdinero [idfacci√≥n] [cantidad]");
 	if(factionID < 1 || factionID >= MAX_FACTIONS)
-	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 
 	SetFactionMoney(factionID, money);
-	format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de dinero de la facciÛn %d ha sido ajustada a %d.", factionID, money);
-	SendClientMessage(playerid, COLOR_ADMINCMD, string);
+	format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} La cantidad de dinero de la facci√≥n %d ha sido ajustada a %d.", factionID, money);
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
     SaveFactions();
 	return 1;
 }
@@ -260,14 +270,14 @@ CMD:afvehmision(playerid, params[]) {
 		faction;
 
 
-	if(sscanf(params, "dd", faction, vehicleid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehmision [idfacciÛn] [idvehiculo]");
+	if(sscanf(params, "dd", faction, vehicleid)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afvehmision [idfacci√≥n] [idvehiculo]");
 	else if(faction >= 0 && faction < MAX_FACTIONS) {
     	FactionInfo[faction][fMissionVeh] = vehicleid;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} el vehÌculo de misiÛn de la facciÛn %d ha sido ajustado a %d.", faction, vehicleid);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} El veh√≠culo de misi√≥n de la facci√≥n %d ha sido ajustado a %d.", faction, vehicleid);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	    SaveFactions();
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta.");
 	}
 	return 1;
 }
@@ -279,14 +289,14 @@ CMD:afrangoingreso(playerid, params[]) {
 		joinRank;
 
 
-	if(sscanf(params, "dd", factionID, joinRank)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangoingreso [idfacciÛn] [rango 2-10]");
+	if(sscanf(params, "dd", factionID, joinRank)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangoingreso [idfacci√≥n] [rango 2-10]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && joinRank >= 2 && joinRank <= 10) {
     	FactionInfo[factionID][fJoinRank] = joinRank;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} el rango de ingreso de la facciÛn %d ha sido ajustada a %d.", factionID, joinRank);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} El rango de ingreso de la facci√≥n %d ha sido ajustada a %d.", factionID, joinRank);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	    SaveFactions();
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta o el rango es mayor a 10 o menor a 2.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta o el rango es mayor a 10 o menor a 2.");
 	}
 	return 1;
 }
@@ -297,15 +307,48 @@ CMD:afrangos(playerid, params[]) {
 	    factionID,
 		rankNum;
 		
-	if(sscanf(params, "dd", factionID, rankNum)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangos [idfacciÛn] [cantidad de rangos 2-10]");
+	if(sscanf(params, "dd", factionID, rankNum)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afrangos [idfacci√≥n] [cantidad de rangos 2-10]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && rankNum >= 2 && rankNum <= 10) {
 	    FactionInfo[factionID][fRankAmount] = rankNum;
-		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} la cantidad de rangos de la facciÛn %d ha sido ajustada a %d.", factionID, rankNum);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof string, "{878EE7}[INFO]:{C8C8C8} La cantidad de rangos de la facci√≥n %d ha sido ajustada a %d.", factionID, rankNum);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 	    SaveFactions();
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} ID de facciÛn incorrecta o la cantidad de rangos es mayor a 10 o menor a 2.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de facci√≥n incorrecta o la cantidad de rangos es mayor a 10 o menor a 2.");
 	}
+	return 1;
+}
+
+CMD:afpayday(playerid, params[])
+{
+	new factionID,
+		rankNum,
+		PayDayAmount;
+
+	if(sscanf(params, "ddd", factionID, rankNum, PayDayAmount))
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afpayday [idfacciÛn] [rango] [payday]");
+	if(factionID > MAX_FACTIONS || factionID < 1)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} ID de facciÛn incorrecta.");
+	if(rankNum > 10 || rankNum < 1)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} Los rangos pueden ir del 1 al 10.");
+	if(PayDayAmount < 0)
+	    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]{C8C8C8} El payday no puede ser negativo.");
+
+	switch(rankNum)
+	{
+	    case 1: FactionInfo[factionID][fPayDay1] = PayDayAmount;
+	    case 2: FactionInfo[factionID][fPayDay2] = PayDayAmount;
+	    case 3: FactionInfo[factionID][fPayDay3] = PayDayAmount;
+	    case 4: FactionInfo[factionID][fPayDay4] = PayDayAmount;
+	    case 5: FactionInfo[factionID][fPayDay5] = PayDayAmount;
+	    case 6: FactionInfo[factionID][fPayDay6] = PayDayAmount;
+	    case 7: FactionInfo[factionID][fPayDay7] = PayDayAmount;
+	    case 8: FactionInfo[factionID][fPayDay8] = PayDayAmount;
+	    case 9: FactionInfo[factionID][fPayDay9] = PayDayAmount;
+	    case 10: FactionInfo[factionID][fPayDay10] = PayDayAmount;
+	}
+	SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El payday del rango %d en la facciÛn %d fue ajustado a $%d.", rankNum, factionID, PayDayAmount);
+	SaveFactions();
 	return 1;
 }
 
@@ -316,12 +359,12 @@ CMD:afnombre(playerid, params[]) {
 		name[32];
 
 
-	if(sscanf(params, "ds[32]", factionID, name)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afnombre [idfacciÛn] [nombre 32 chars]");
+	if(sscanf(params, "ds[32]", factionID, name)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afnombre [idfacci√≥n] [nombre 32 chars]");
 	else if(factionID >= 0 && factionID < MAX_FACTIONS && strlen(name) <= 32) {
 	 	mysql_real_escape_string(name, name);
 	 	strmid(FactionInfo[factionID][fName], (name), 0, strlen((name)), 32);
-		format(string, sizeof(string), "Has seteado el nombre de la facciÛn [%d] a '%s'.", factionID, name);
-		SendClientMessage(playerid, COLOR_ADMINCMD, string);
+		format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} El nombre de la facci√≥n %d a sido ajustado a %s.", factionID, name);
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
 		SaveFactions();
 	}
 	return 1;
@@ -333,14 +376,14 @@ CMD:afexpulsar(playerid, params[]) {
 		string[128],
 	    targetID;
 
-	if(sscanf(params, "uS(sin razon)[64]", targetID, reason)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afexpulsar [playerid/ParteDelNombre] [razÛn]");
+	if(sscanf(params, "uS(sin razon)[64]", targetID, reason)) SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /afexpulsar [playerid/ParteDelNombre] [raz√≥n]");
 	else if(IsPlayerConnected(targetID) && targetID != INVALID_PLAYER_ID) {
-		format(string, sizeof(string), "%s ha sido expulsado de su facciÛn por el administrador %s, razÛn: %s", GetPlayerNameEx(targetID), GetPlayerNameEx(playerid), reason);
+		format(string, sizeof(string), "%s ha sido expulsado de su facci√≥n por el administrador %s, raz√≥n: %s.", GetPlayerNameEx(targetID), GetPlayerNameEx(playerid), reason);
 		SendClientMessageToAll(COLOR_ADMINCMD, string);
 		SetPlayerFaction(targetID, 0, 0);
 		SpawnPlayer(targetID);
 	} else {
-	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[Error]:{C8C8C8} usuario inv·lido.");
+	    SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{FF4600}[ERROR]:{C8C8C8} ID de usuario inv√°lida.");
 	}
 	return 1;
 }
@@ -353,7 +396,7 @@ CMD:comprarmateriales(playerid, params[])
 	if(PlayerInfo[playerid][pFaction] != FAC_NONE && FactionInfo[PlayerInfo[playerid][pFaction]][fType] == FAC_TYPE_ILLEGAL)
     {	
 		if(!PlayerToPoint(4.0, playerid, 2349.8408, -1216.3939, 22.5000))
-	        return SendClientMessage(playerid, COLOR_YELLOW, "No puedes usar este comando en cualquier lado.");
+	        return SendClientMessage(playerid, COLOR_YELLOW, "¬°No puedes usar √©ste comando en cualquier lado!");
 	    if(sscanf(params, "i", amount))
 	    {
 	        SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /comprarmateriales [cantidad] | $%d cada material.", GetItemPrice(ITEM_ID_MATERIALES));
@@ -374,10 +417,10 @@ CMD:comprarmateriales(playerid, params[])
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_CARRY);
 	    SetHandItemAndParam(playerid, freehand, ITEM_ID_MATERIALES, amount);
 		GivePlayerCash(playerid, -amount * GetItemPrice(ITEM_ID_MATERIALES));
-		SendClientMessage(playerid, COLOR_WHITE, "VÈ al deposito y descarga los materiales con /guardarmateriales. Utiliza /nocargar para sacar la animaciÛn de carga.");
-		PlayerActionMessage(playerid, 15.0, "compra una caja de materiales");
+		SendClientMessage(playerid, COLOR_WHITE, "V√© al deposito y descarga los materiales con /guardarmateriales. Utiliza /nocargar para sacar la animaci√≥n de carga.");
+		PlayerActionMessage(playerid, 15.0, "compra una caja de materiales y la guarda en el maletero del veh√≠culo.");
 	} else {
-	    SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: øTe conozco?");
+	    SendClientMessage(playerid, COLOR_FADE1, "Desconocido dice: ¬øTe conozco?");
 	}
 	return 1;
 }
@@ -395,7 +438,7 @@ CMD:guardarmateriales(playerid, params[])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener una caja de materiales en tus manos para descargar.");
 		amount = GetHandParam(playerid, hand);
 		if(FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] + amount > 270000)
-			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar mas materiales al depÛsito ya que el mismo est· lleno.");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes cargar m√°s materiales al dep√≥sito ya que el mismo est√° lleno.");
 
 	    for(new i = 1; i < MAX_BUILDINGS; i++)
 		{
@@ -405,7 +448,7 @@ CMD:guardarmateriales(playerid, params[])
 				{
 	                FactionInfo[PlayerInfo[playerid][pFaction]][fMaterials] += amount;
 					SetHandItemAndParam(playerid, hand, 0, 0);
-					PlayerActionMessage(playerid, 15.0, "descarga una caja de insumos en el depÛsito.");
+					PlayerActionMessage(playerid, 15.0, "descarga una caja de insumos en el dep√≥sito.");
 				}
 				return 1;
 			}
