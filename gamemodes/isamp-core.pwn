@@ -1,7 +1,7 @@
 /*******************************************************************************
 ********************************************************************************
 ***********************                                 ************************
-*********************    MALOS AIRES ROLEPLAY GAMEMODE    **********************
+*********************    Los Santos RolePlay Lat GAMEMODE    *******************
 **********										 			         ***********
 ********    (C) Copyright 2010 - 2016 by Pheek Gaming Latinoamérica    *********
 **********                                            				 ***********
@@ -101,10 +101,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-dataload.pinc"			//Carga de datos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.5"
-#define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
-#define WEBSITE					"malosaires.com.ar"
+#define GAMEMODE				"LS:RP v1.1.5"
+#define MAP_NAME				"LSRP LAT"
+#define SERVER_NAME				"Los Santos RolePlay LAT [0.3.7]"
+#define WEBSITE					"LSRP.lat"
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
@@ -749,7 +749,7 @@ public OnPlayerNameCheck(playerid)
 
 	if(rows == 0)
 	{
-		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestra web: www.malosaires.com.ar");
+		SendClientMessage(playerid, COLOR_YELLOW2, "Tu cuenta no está registrada. Para poder jugar deberás registrarte en nuestra web: www.Lsrp.lat");
         SendClientMessage(playerid, COLOR_YELLOW2, "Dentro de la página haz click en el botón de 'Registrar Cuenta' y se te direccionará automáticamente a la página de registro.");
         SendClientMessage(playerid, COLOR_YELLOW2, "Tras completar tu petición de registro deberás esperar a que un administrador la revise y te responda, en un lapso de hasta 72 horas.");
 		KickPlayer(playerid, "el servidor", "cuenta no registrada");
@@ -760,7 +760,7 @@ public OnPlayerNameCheck(playerid)
 		{
 			format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
 			AdministratorMessage(COLOR_GREY, string, 2);
-			ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires!", "Ingresa tu contraseña a continuación:", "Ingresar", "");
+			ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Los Santos Roleplay Latinoamérica!", "Ingresa tu contraseña a continuación:", "Ingresar", "");
 		}
 	}
 	return 1;
@@ -2195,7 +2195,7 @@ public OnBanDataLoad(playerid)
 		{
 		    SendFMessage(playerid, COLOR_ADMINCMD, "Te encuentras baneado/a hasta el %s por %s, razón: %s", banEndDate, issuerName, banReason);
 		    SendClientMessage(playerid, COLOR_ADMINCMD, "Serás desbaneado automáticamente por el servidor en el momento de finalización del baneo.");
-		    SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.malosaires.com.ar");
+		    SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.Lsrp.lat");
 			SetTimerEx("kickTimer", 1000, false, "d", playerid);
 		}
 	}
@@ -3760,7 +3760,7 @@ stock LoadPickups() {
 		CreateDynamic3DTextLabel("/repararvehiculo (Min $250)\n El costo depende del daño de tu vehículo.", COLOR_WHITE, PayNSprayPos[i][0], PayNSprayPos[i][1], PayNSprayPos[i][2] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, -1, -1, -1, 100.0);
 	}
 	
-	/* Banco de Malos Aires */
+	/* Banco de Los Santos Roleplay Lat */
 	P_BANK = CreateDynamicPickup(1239, 1, POS_BANK_X, POS_BANK_Y, POS_BANK_Z, -1);
 
 	/* Elevadores del taller */
@@ -3786,10 +3786,10 @@ stock LoadPickups() {
 	/* Armarios de la S.I.D.E */
 	P_SIDE_DUTY = CreateDynamicPickup(1242, 1, POS_SIDE_DUTY_X, POS_SIDE_DUTY_Y, POS_SIDE_DUTY_Z, -1);
 
-	/* Centro de Licencias de Malos Aires */
+	/* Centro de Licencias de Los Santos Roleplay Lat */
 	P_LICENSE_CENTER = CreateDynamicPickup(1239, 1, -2033.2118, -117.4678, 1035.1719, -1);
 
-    /* Oficina del Empleo de Malos Aires */
+    /* Oficina del Empleo de Los Santos Roleplay Lat */
     P_JOB_CENTER = CreateDynamicPickup(1210, 1, 361.8299, 173.7898, 1008.3828, -1);
 
     /* Guía de la ciudad */
@@ -5306,7 +5306,7 @@ public BanPlayer(playerid, issuerid, reason[], days)
 	SendClientMessageToAll(COLOR_ADMINCMD, str);
 	TogglePlayerControllable(playerid, false);
 	SendClientMessage(playerid, COLOR_WHITE, "En el caso de ser un baneo temporal, serás desbaneado automaticamente por el servidor en la fecha límite.");
-	SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.malosaires.com.ar");
+	SendClientMessage(playerid, COLOR_WHITE, "Para más información o para realizar un reclamo/descargo, dirígete a nuestros foros en www.lsrp.lat");
 	SetTimerEx("kickTimer", 1000, false, "d", playerid);
 	return 1;
 }
@@ -7154,7 +7154,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		                SetPlayerCheckpoint(playerid, 1554.3136, -1675.6855, 16.1953, 5.0);
 		   			}
 		   			case 1: {
-		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el Hospital de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
+		   				SendClientMessage(playerid, COLOR_WHITE, "Guía: el Hospital de Los Santos se encuentra en la localización marcada con rojo en el mapa.");
 		                SetPlayerCheckpoint(playerid, 1184.5321, -1323.0847, 13.5741, 5.0);
 		   			}
 				   	case 2: {
@@ -7178,15 +7178,15 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		                SetPlayerCheckpoint(playerid, 461.3749, -1500.8853, 31.0594, 5.0);
 		   			}
 		   			case 7: {
-						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Mercado de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Mercado de Los Santos se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 1132.9373, -1410.2246, 13.4747, 5.0);
 					}
 		   			case 8: {
-						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Taller Mecánico de Malos Aires se encuentra en la localización marcada con rojo en el mapa.");
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: el Taller Mecánico de Los Santos se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 2502.7063, -1512.4921, 23.5759, 5.0);
 					}
 		   			case 9: {
-						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Central de Noticias CTR-MAN se encuentra en la localización marcada con rojo en el mapa.");
+						SendClientMessage(playerid, COLOR_WHITE, "Guía: la Central de Noticias de Los Santos se encuentra en la localización marcada con rojo en el mapa.");
 						SetPlayerCheckpoint(playerid, 777.4657, -1328.1189, 13.1172, 5.0);
 					}
 		   			case 10: {
@@ -7250,8 +7250,8 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 			        case 7: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - ZZ","ZigZag:\nMoverte de un lado al otro para esquivar las balas.\nEs considerado PowerGaming.\nSeras sancionado si lo haces.","Aceptar","Cancelar");
 			        case 8: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - HK","HeliKill:\nUsar las haspas del helicoptero para matar a alguien.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
 			        case 9: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - DB","DriveBy:\nDisparar estando como conductor de un auto o una moto.\nSi lo haces seras sancionado.","Aceptar","Cancelar");
-			        case 10: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - OOC","OutOfCharacter:\nSignifica afuera del personaje, cosas que no tienen nada que ver\ncon el rol de Malos Aires y de tu personaje.","Aceptar","Cancelar");
-			        case 11: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nMalos Aires y el de tu personaje.","Aceptar","Cancelar");
+			        case 10: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - OOC","OutOfCharacter:\nSignifica afuera del personaje, cosas que no tienen nada que ver\ncon el rol de LSRP Lat y de tu personaje.","Aceptar","Cancelar");
+			        case 11: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Terminos de RP - IC","InCharacter:\nSignifica dentro del personaje, cosas que tienen que ver con el rol de\nLSRP Lat y el de tu personaje.","Aceptar","Cancelar");
 			        case 12: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /ME","/ME:\nPara describir acciones de tu personaje. Por ejemplo:\n/me se rasca la cabeza.\n/me saca unos auriculares de su bolsillo.","Aceptar","Cancelar");
 			        case 13: ShowPlayerDialog(playerid,DLG_RULESMSG,DIALOG_STYLE_MSGBOX,"Comandos - /DO","/DO:\nPara describir acciones del ambiente, en tercera persona. Por ejemplo:\n/do Se escucha a un gallo cacarear.\n/do Hay una mancha de sangre en el piso.","Aceptar","Cancelar");
 				}
@@ -9303,7 +9303,7 @@ CMD:llamar(playerid, params[])
   				return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay mecánicos disponibles por el momento.");
 
 			Mobile[playerid] = 555;
-			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Malos Aires, ¿en qué le podemos ayudar?");
+			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: taller mecánico de Los Santos, ¿en qué le podemos ayudar?");
 		}
 		case 444:
 		{
@@ -9319,7 +9319,7 @@ CMD:llamar(playerid, params[])
 				return SendClientMessage(playerid, COLOR_WHITE, "Telefonista: lo sentimos, no hay vehículos disponibles por el momento.");
 
 			Mobile[playerid] = 444;
-			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Malos Aires, ¿en qué le podemos ayudar?");
+			SendClientMessage(playerid, COLOR_WHITE, "Telefonista: transporte urbano de Los Santos, ¿en qué le podemos ayudar?");
 		}
 		default:
 		{
@@ -9627,7 +9627,7 @@ CMD:empleos(playerid, params[])
 	if(PlayerToPoint(4.0, playerid, 361.8299, 173.4907, 1008.3828))
 	{
 		TogglePlayerControllable(playerid, false);
-		ShowPlayerDialog(playerid, DLG_JOBS, DIALOG_STYLE_LIST, "Empleos de Malos Aires", "Empleo de granjero\nEmpleo de transportista\nEmpleo de basurero\nEmpleo de Moto-Delivery", "Ver", "Cerrar");
+		ShowPlayerDialog(playerid, DLG_JOBS, DIALOG_STYLE_LIST, "Empleos de Los Santos", "Empleo de granjero\nEmpleo de transportista\nEmpleo de basurero\nEmpleo de Moto-Delivery", "Ver", "Cerrar");
 	}
 	return 1;
 }
@@ -9639,7 +9639,7 @@ CMD:guia(playerid, params[])
         if(PlayerToPoint(4.0, playerid, GUIDE_POS[i][0], GUIDE_POS[i][1], GUIDE_POS[i][2]))
 		{
 			TogglePlayerControllable(playerid, false);
-            ShowPlayerDialog(playerid, DLG_GUIDE, DIALOG_STYLE_LIST, "Guía de Malos Aires", "Comisaria\nHospital de Malos Aires\nAlquiler de vehiculos\nCentro de licencias\nCentro de empleos\nTienda de ropa urbana\nTienda de ropa fina\nMercado de Malos Aires\nTaller Mecánico\nCentral de noticias CTR-MAN\nGimnasio\nFerreteria\nTienda de Accesorios", "Ver", "Cerrar");
+            ShowPlayerDialog(playerid, DLG_GUIDE, DIALOG_STYLE_LIST, "Guía de Los Santos", "Comisaria\nHospital de Los Santos\nAlquiler de vehiculos\nCentro de licencias\nCentro de empleos\nTienda de ropa urbana\nTienda de ropa fina\nMercado de Los Santos\nTaller Mecánico\nCentral de noticias CTR-MAN\nGimnasio\nFerreteria\nTienda de Accesorios", "Ver", "Cerrar");
 		}
 	}
 	return 1;
@@ -9881,7 +9881,7 @@ CMD:apcarcel(playerid, params[])
 }
 CMD:apuerta(playerid,params[])
 {
-    // Policía de Malos Aires
+    // Policía de Los Santos
 	if((PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pRank] < 10) || AdminDuty[playerid])
 	{
 		if(IsPlayerInRangeOfPoint(playerid, 4.0, 228.1902, 151.2390, 1003.0037)) {
@@ -11051,7 +11051,7 @@ CMD:mequipo(playerid, params[])
 CMD:camaras(playerid, params[])
 {
 	if(IsPlayerInRangeOfPoint(playerid, 2.0, 219.36, 188.31, 1003.00))
-		ShowPlayerDialog(playerid, DLG_CAMARAS_POLICIA, DIALOG_STYLE_LIST, "Camaras disponibles", "24-7 Unity\nTaller Mercury\nHospital Central\nConsecionarios Grotti\nCentral CTR-MAN\n24-7 Norte\n24-7 Ayuntamiento\n24-7 Este\nBanco de Malos Aires\nAyuntamiento", "Ok", "Cerrar");
+		ShowPlayerDialog(playerid, DLG_CAMARAS_POLICIA, DIALOG_STYLE_LIST, "Camaras disponibles", "24-7 Unity\nTaller Mercury\nHospital Central\nConsecionarios Grotti\nCentral CTR-MAN\n24-7 Norte\n24-7 Ayuntamiento\n24-7 Este\nBanco de Los Santos\nAyuntamiento", "Ok", "Cerrar");
 	return 1;
 }
 
