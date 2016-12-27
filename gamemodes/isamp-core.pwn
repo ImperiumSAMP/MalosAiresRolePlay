@@ -1,7 +1,7 @@
 /*******************************************************************************
 ********************************************************************************
 ***********************                                 ************************
-*********************    MALOS AIRES ROLEPLAY GAMEMODE    **********************
+*********************    LOS SANTOS ROLEPLAY  LAT GAMEMODE    **********************
 **********										 			         ***********
 ********    (C) Copyright 2010 - 2016 by Pheek Gaming Latinoamérica    *********
 **********                                            				 ***********
@@ -101,10 +101,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-dataload.pinc"			//Carga de datos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.5"
-#define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
-#define WEBSITE					"malosaires.com.ar"
+#define GAMEMODE				"LS:RP v1.1.5"
+#define MAP_NAME				"LSRP LAT" 									
+#define SERVER_NAME				"Los Santos RolePlay LAT [0.3.7]"
+#define WEBSITE					"Lsrp.lat"
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
