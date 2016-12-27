@@ -218,7 +218,7 @@ stock PrintRobberyGroupInfo(playerid)
 {
 	new memberid, str[128];
 	
-	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==========[Grupo de robo al Banco Central de Malos Aires]==========");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "==========[Grupo de robo al Banco Central de Los Santos]==========");
 	SendFMessage(playerid, COLOR_WHITE, " Jefe: %s (ID %d)", GetPlayerNameEx(RobberyGroup[LeaderID]), RobberyGroup[LeaderID]);
 	for(new i = 0; i < GROUP_MEMBERS; i++)
 	{
@@ -358,7 +358,7 @@ CMD:grupocrear(playerid, params[])
 	if(!CreateRobberyGroup(playerid))
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya hay otro grupo de robo al banco en curso.");
 
-	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Malos Aires. Más info en /grupoayuda.");
+	SendClientMessage(playerid, COLOR_WHITE, "Has creado un grupo de robo para asaltar el Banco Central de Los Santos. Más info en /grupoayuda.");
   	return 1;
 }
 
@@ -475,7 +475,7 @@ CMD:robarbanco(playerid, params[])
 	if(bankRobberyCooldown > 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "Las bóvedas del banco están vacias, no tiene sentido. (OOC: El banco todavía no está disponible para asaltar)");
 	if(!IsPlayerInRangeOfPoint(playerid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Los Santos, cercanos a la puerta principal.");
 	if(!hasFireGun(playerid))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un arma de fuego en la mano para iniciar el asalto.");
 	for(new i = 0; i < GROUP_MEMBERS; i++)
@@ -484,7 +484,7 @@ CMD:robarbanco(playerid, params[])
 		if(memberid != INVALID_PLAYER_ID && IsPlayerConnected(memberid))
 		{
 			if(!IsPlayerInRangeOfPoint(memberid, 5.0, POS_BANK_MAIN_DOOR_X, POS_BANK_MAIN_DOOR_Y, POS_BANK_MAIN_DOOR_Z))
-	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Malos Aires, cercanos a la puerta principal.");
+	    		return SendClientMessage(playerid, COLOR_YELLOW2, "El grupo completo debe estar en el interior del Banco Central de Los Santos, cercanos a la puerta principal.");
 			if(!hasFireGun(memberid))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Todo tu equipo debe contar con algún arma de fuego en la mano.");
 		}
@@ -510,7 +510,7 @@ CMD:robarbanco(playerid, params[])
 	RobberyGroupMessage(COLOR_LIGHTBLUE, "El robo consiste en etapas: reduce a los rehenes y detona las bóvedas para llevate el dinero. Mas info en /grupoayuda.");
     PoliceBankRobberyAlarm();
     bankRobberyCooldown = BANK_ROBBERY_COOLDOWN * 60 * 60;
-    format(string, sizeof(string), "[ADMIN INFO]: %s (ID %d) ha iniciado un robo al Banco Central de Malos Aires.", GetPlayerNameEx(playerid), playerid);
+    format(string, sizeof(string), "[ADMIN INFO]: %s (ID %d) ha iniciado un robo al Banco Central de Los Santos.", GetPlayerNameEx(playerid), playerid);
 	AdministratorMessage(COLOR_LIGHTBLUE, string, 1);
 	return 1;
 }
@@ -519,7 +519,7 @@ public PoliceBankRobberyAlarm()
 {
 	new string[128];
 
-	format(string, sizeof(string), "[Dpto. de policía]: Ha sonado la alarma del Banco Central de Malos Aires. ¡Lo están robando!");
+	format(string, sizeof(string), "[Dpto. de policía]: Ha sonado la alarma del Banco Central de Los Santos. ¡Lo están robando!");
  	foreach(new i : Player)
  	{
 		if(isPlayerCopOnDuty(i))
