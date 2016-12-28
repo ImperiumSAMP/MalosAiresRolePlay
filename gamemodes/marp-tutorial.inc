@@ -37,7 +37,7 @@ public tutorial(playerid, step)
 
 	    	SetPlayerCameraPos(playerid, 1466.869506, -1575.771972, 109.123466);
 			SetPlayerCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196);
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Malos Aires RolePlay");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Bienvenido a Los Santos Roleplay Lat");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~El breve tutorial a continuacion te guiara por los conceptos basicos del RolePlay.");
             PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~Al finalizar deberas responder con verdadero o falso una serie de preguntas para asegurarnos que lo hayas entendido correctamente.");
 			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
@@ -47,7 +47,7 @@ public tutorial(playerid, step)
 			InterpolateCameraPos(playerid, 1466.869506, -1575.771972, 109.123466, 1481.400268, -1576.889038, 90.823272, 3000, 1);
 			InterpolateCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196, 1481.267700, -1580.246704, 88.653373, 3000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Concepto de RolePlay:~w~ MARP es un servidor basado en la ciudad ficticia de Malos Aires. Dentro");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~b~~h~~h~Concepto de RolePlay:~w~ LSRP Lat es un servidor basado en la ciudad ficticia de Los Santos. Dentro");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~w~de un juego de rol tu personaje debe actuar como lo haria un humano en la vida real, es decir, se debe");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~w~comportar como una persona comun y corriente que vive dentro de un mundo PARALELO.");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~w~Recuerda los siguientes terminos:");
@@ -71,7 +71,7 @@ public tutorial(playerid, step)
 	    }
 	    case 4:
 		{
-	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 	    	SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
 	    }
 	    case 5:
@@ -79,7 +79,7 @@ public tutorial(playerid, step)
 	    	InterpolateCameraPos(playerid, 1481.400268, -1576.889038, 90.823272, 1494.139770, -1643.703613, 60.716976, 3000, 1);
 			InterpolateCameraLookAt(playerid, 1481.267700, -1580.246704, 88.653373, 1497.297119, -1644.638916, 58.446140, 3000, 1);
 
-	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 	        PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 
 			SetPVarInt(playerid, "tutTimer", SetTimerEx("tutorial", 15000, false, "ii", playerid, step + 1));
@@ -91,7 +91,7 @@ public tutorial(playerid, step)
 			InterpolateCameraPos(playerid, 1288.580200, -1241.240356, 95.973281, 1211.487670, -1293.440307, 27.860240, 3000, 1);
 			InterpolateCameraLookAt(playerid, 1285.706665, -1243.337768, 94.144744, 1208.612304, -1295.868041, 26.504356, 3000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
 
@@ -104,7 +104,7 @@ public tutorial(playerid, step)
 			InterpolateCameraPos(playerid, 1892.619873, -1798.850219, 68.025955, 1830.553344, -1882.067016, 33.868297, 3000, 1);
 			InterpolateCameraLookAt(playerid, 1889.938354, -1801.596801, 66.900779, 1827.444335, -1883.833740, 32.075828, 3000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
@@ -118,7 +118,7 @@ public tutorial(playerid, step)
 			InterpolateCameraPos(playerid, 2217.920654, -2129.320312, 59.432971, 2246.860839, -2233.512207, 23.764274, 3000, 1);
 			InterpolateCameraLookAt(playerid, 2218.117675, -2133.008789, 57.897941, 2243.064697, -2232.351562, 23.272230, 3000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
@@ -133,7 +133,7 @@ public tutorial(playerid, step)
 	    	InterpolateCameraPos(playerid, 60.416469, -198.172134, 64.205131, -37.132026, 123.020172, 33.543777, 5000, 1);
 			InterpolateCameraLookAt(playerid, 58.964233, -194.497375, 63.582897, -37.137905, 119.544448, 31.564058, 5000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
@@ -149,7 +149,7 @@ public tutorial(playerid, step)
 			InterpolateCameraPos(playerid, 1466.869506, -1575.771972, 109.123466, 1481.400268, -1576.889038, 90.823272, 3000, 1);
 			InterpolateCameraLookAt(playerid, 1470.403442, -1574.002441, 109.740196, 1481.267700, -1580.246704, 88.653373, 3000, 1);
 
-			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Malos Aires, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
+			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][0], "~w~En la ciudad de Los Santos, hay una gran cantidad de empleos y roles disponibles. Como por ejemplo...");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][1], "~b~~h~~h~ - oficial de policia");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][2], "~b~~h~~h~ - paramedico");
 			PlayerTextDrawSetString(playerid, TutTD_Text[playerid][3], "~b~~h~~h~ - taxista");
