@@ -340,6 +340,8 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes esperar un tiempo antes de volver a interactuar con otro ítem!");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
+	if (isPlayerInTrainning(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 	if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
 	if(itemid == ITEM_ID_TELEFONO_CELULAR)
@@ -407,6 +409,8 @@ CMD:mano(playerid, params[])
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer. Utiliza /guardartazer.");
 			if(rightitem == ITEM_ID_TELEFONO_CELULAR)
 	    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el telefono celular.");
+			if (isPlayerInTrainning(playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	            return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
             if(GetPVarInt(playerid, "cantSaveItems") == 1)
@@ -419,7 +423,8 @@ CMD:mano(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "Has intercambiado de una mano a otra los ítems que estabas sosteniendo.");
 
 		} else if(strcmp(command, "combinar", true) == 0) {
-		
+			if (isPlayerInTrainning(playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 			if(rightparam > 0 && itemtype == ITEM_FIREWEAPON)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Tu arma ya está cargada, usa /mano separar para descargarla.");
 
@@ -429,6 +434,8 @@ CMD:mano(playerid, params[])
 		} else if(strcmp(command, "separar", true) == 0) {
 			if(GetItemType(rightitem) != ITEM_FIREWEAPON && GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_CAJON_DE_CERVEZA)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar este comando con este objeto!");
+			if (isPlayerInTrainning(playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 			if(SearchFreeHand(playerid) == -1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Para separar un objeto necesitas la mano izquierda libre.");
 			if(rightparam == 0)
@@ -455,7 +462,7 @@ CMD:mano(playerid, params[])
 			    SetHandItemAndParam(playerid, HAND_RIGHT, rightitem, -1);
 			    PlayerCmeMessage(playerid, 15.0, 5000, "Toma una cerveza del cajón.");
 			}
-			
+
 		} else if(strcmp(command, "tirar", true) == 0) {
 
 			DropObject(playerid, HAND_RIGHT);
@@ -501,6 +508,8 @@ CMD:mano(playerid, params[])
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes ningún ítem en la mano izquierda para guardar.");
 			if(left_item == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if (isPlayerInTrainning(playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 			if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 			if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)

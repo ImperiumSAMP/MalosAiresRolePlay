@@ -99,6 +99,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-parlantes.inc"           //Sistema de parlantes
 #include "marp-horseraces.inc"          //Sistema de carreras de caballos
 #include "marp-economy.pinc"			//Economía (funciones relativas y precios en general)
+#include "marp-skillguns.inc" 			//Sistema de skills de armas.
 // #include "marp-dataload.pinc"			//Carga de datos
 
 // Configuraciones.
@@ -751,12 +752,73 @@ public OnPlayerNameCheck(playerid)
 		{
 			format(string, sizeof(string), "** %s (%d) ha iniciado sesión. IP: %s. Registrado: si. **", name, playerid, PlayerIP);
 			AdministratorMessage(COLOR_GREY, string, 2);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 200, false, "ii", playerid, 1));
 			ShowPlayerDialog(playerid, DLG_LOGIN, DIALOG_STYLE_PASSWORD, "¡Bienvenido a Malos Aires!", "Ingresa tu contraseña a continuación:", "Ingresar", "");
 		}
 	}
 	return 1;
 }
-
+forward ShowTheCity(playerid, camera);
+public ShowTheCity(playerid, camera) {
+	
+	switch(camera) {
+	    case 1: {
+			TogglePlayerSpectating(playerid, 1);
+			InterpolateCameraPos(playerid, 1328.4172,-1733.1044,60.8510, 1823.1133,-1732.8247,60.8510, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 1362.3352,-1733.1547,50.3828,1821.8842,-1754.4629,50.3828, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 2: {
+			InterpolateCameraPos(playerid, 1823.1133,-1732.8247,60.8510, 1819.8988,-1928.9786,60.1024, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 1821.8842,-1754.4629,50.3828, 1840.6410,-1932.8486,50.3796, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+		case 3: {
+			InterpolateCameraPos(playerid, 1819.8988,-1928.9786,60.1024, 2077.6826,-1934.0247,60.5714, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid,1840.6410,-1932.8486,50.3796, 2082.1780,-1923.8573,50.3440, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 4: {
+			InterpolateCameraPos(playerid, 2077.6826,-1934.0247,60.8620, 2087.2947,-1753.8042,60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 2082.1780,-1923.8573,50.3440, 2107.1147,-1753.0139,50.3984, 10000, CAMERA_MOVE);
+	    	SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 5: {
+			InterpolateCameraPos(playerid, 2087.2947,-1753.8042,60.8620, 2184.4885,-1752.1493,60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid,2107.1147,-1753.0139,50.3984, 2185.4834,-1732.3271,50.3750, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 6: {
+			InterpolateCameraPos(playerid, 2184.4885,-1752.1493,60.8620, 2194.9424,-1642.3948,60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 2185.4834,-1732.3271,50.3750, 2177.0066,-1637.5819,50.7819, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 7: {
+			InterpolateCameraPos(playerid, 2194.9424,-1642.3948,60.8620, 2043.0549,-1608.5535, 60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 2177.0066,-1637.5819,50.7819, 2041.5376,-1591.7234,50.0652, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 8: {
+			InterpolateCameraPos(playerid, 2043.0549,-1608.5535, 60.8620, 1851.6371,-1549.1630,60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid,2041.5376,-1591.7234,50.0652, 1813.5974,-1612.5844,50.3847, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 9: {
+			InterpolateCameraPos(playerid, 1851.6371,-1549.1630,60.8620, 1311.3417,-1571.6394,60.8620, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 1813.5974,-1612.5844,50.3847, 1312.4087,-1601.7175,50.3828, 10000, CAMERA_MOVE);	
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 10: {
+			InterpolateCameraPos(playerid, 1311.3417,-1571.6394,60.8620, 1328.4172,-1733.1044,60.8510, 10000, CAMERA_MOVE);
+			InterpolateCameraLookAt(playerid, 1312.4087,-1601.7175,50.3828, 1362.3352,-1733.1547,50.3828, 10000, CAMERA_MOVE);
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, camera + 1));
+	    }
+	    case 11: {
+			SetPVarInt(playerid, "ShowCityTimer", SetTimerEx("ShowTheCity", 11000, false, "ii", playerid, 1));
+		}
+	}
+	return 1;
+}
 OnPlayerLogin(playerid, password[])
 {
 	new name[24],
@@ -932,6 +994,7 @@ public ResetStats(playerid)
 	gPlayerLogged[playerid] = 0;
 
 	ResetAfkVariables(playerid);
+	ResetSkillsGunsVariables(playerid);
 
 	playerLicense[playerid][lDStep] = 0;
 	playerLicense[playerid][lDTaking] = 0;
@@ -1064,11 +1127,13 @@ public OnPlayerDisconnect(playerid, reason)
 
 	ResetDescLabel(playerid);
  	ResetMaskLabel(playerid);
+	ResetSkillsGunsGlobalVariables(playerid);
 	
     KillTimer(timersID[10]);
     KillTimer(GetPVarInt(playerid, "CancelVehicleTransfer"));
     KillTimer(GetPVarInt(playerid, "CancelDrugTransfer"));
     KillTimer(GetPVarInt(playerid, "tutTimer"));
+	KillTimer(GetPVarInt(playerid, "ShowCityTimer"));
     KillTimer(GetPVarInt(playerid, "robberyCancel"));
     KillTimer(GetPVarInt(playerid, "fuelCar"));
 	KillTimer(GetPVarInt(playerid, "fuelCarWithCan"));
@@ -2037,6 +2102,7 @@ public OnPlayerDataLoad(playerid)
 		LoadPlayerJobData(playerid); // Info del job
 		
        	CreatePlayerBasicNeeds(playerid);
+		loadSkillsGunsData(playerid,PlayerInfo[playerid][pID]);
        	
        	if(PlayerInfo[playerid][pFaction] != 0)
        	{
@@ -2128,6 +2194,8 @@ public OnPlayerDataLoad(playerid)
 			}
 
 			PrintHouseRentAdvise(playerid);
+			KillTimer(GetPVarInt(playerid, "ShowCityTimer"));
+			TogglePlayerSpectating(playerid, 0);
 			
 			SendClientMessage(playerid, COLOR_YELLOW2, " ");
 			SpawnPlayer(playerid);
@@ -2654,6 +2722,8 @@ public SaveAccount(playerid)
 		mysql_function_query(dbHandle, query, false, "", "");
 
 		SavePlayerJobData(playerid); // Info del job
+		if(SkillsInfo[playerid][pFirstTraining] != 0) //Si ya realizo el entrenamiento por lo menos 1 vez
+			SkillsGuns(playerid,SKILLS_UPDATE);
 	}
 	return 1;
 }
@@ -3006,6 +3076,7 @@ public globalUpdate()
 				}
 				
 				UpdateThiefCounters(playerid);
+				updateSkillTimerCounters(playerid);
 				
 				if(PlayerInfo[playerid][pMuteB] > 0)
 				    PlayerInfo[playerid][pMuteB]--;
@@ -4052,7 +4123,7 @@ public OnPlayerExitedMenu(playerid) {
 
 SetNormalPlayerGunSkills(playerid)
 {
-    SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL, 600);
+    SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL, 20);
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL_SILENCED, 20);
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_DESERT_EAGLE, 20);
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_SHOTGUN, 20);
@@ -4061,6 +4132,18 @@ SetNormalPlayerGunSkills(playerid)
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_M4, 20);
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_MICRO_UZI, 20);
 }
+SetPlayerSkillsGuns(playerid)
+{
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL, SkillsInfo[playerid][pSkillLevel9mm]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_DESERT_EAGLE, SkillsInfo[playerid][pSkillLevelDeagle]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_SHOTGUN, SkillsInfo[playerid][pSkillLevelShotgun]);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_PISTOL_SILENCED, 20);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_MP5, 20);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_AK47, 20);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_M4, 20);
+	SetPlayerSkillLevel(playerid, WEAPONSKILL_MICRO_UZI, 20);
+}
+	
 
 public SetPlayerSpawn(playerid)
 {
@@ -4069,7 +4152,10 @@ public SetPlayerSpawn(playerid)
 	else
 		SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 
-    SetNormalPlayerGunSkills(playerid);
+	if(SkillsInfo[playerid][pFirstTraining] == 0) //Si no hizo el entrenamiento de tiro le setea los skills por default
+		SetNormalPlayerGunSkills(playerid);
+	else
+		SetPlayerSkillsGuns(playerid);
 
 	SyncPlayerTimeAndWeather(playerid);
 
@@ -4081,6 +4167,7 @@ public SetPlayerSpawn(playerid)
 	ResetMaskLabel(playerid);
     usingMask[playerid] = false; // Al spawnear, deja de estar con la mascara puesta
 
+	KillTimer(GetPVarInt(playerid, "ShowCityTimer"));
     HidePlayerSpeedo(playerid);
     KillTimer(pSpeedoTimer[playerid]); // Si murio arriba del auto, borramos el timer recursivo que muestra la gasolina
 

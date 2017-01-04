@@ -59,6 +59,8 @@ CMD:inventario(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes nada en esa mano para guardar.");
 			if(itemid == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
 			    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+			if(isPlayerInTrainning(playerid))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 			if(!HasItemInvPermission(itemid))
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Ese item no se puede guardar en el inventario.");
 			if(!Container_AddItemAndParam(PlayerInfo[playerid][pContainerID], itemid, itemparam))

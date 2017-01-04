@@ -74,6 +74,8 @@ stock DropObject(playerid, playerhand)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No ningún item para tirar en esa mano.");
 	if(GetHandItem(playerid, playerhand) == WEAPON_SILENCED && isPlayerUsingTazer(playerid))
    		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con el tazer.");
+	if (isPlayerInTrainning(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo con un arma de Paintball");
 	if(GetHandItem(playerid, playerhand) == ITEM_ID_TELEFONO_CELULAR)
@@ -135,6 +137,8 @@ stock TakeObject(playerid, playerhand)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras te encuentras jugando Paintball");
+	if (isPlayerInTrainning(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 	if(GetHandItem(playerid, playerhand) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar nada ya que tienes un item en esa mano.");
 
@@ -159,6 +163,8 @@ stock TakeOneObject(playerid, playerhand)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar a pie!");
 	if(GetPVarInt(playerid, "GrupoPaintball") != 0)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras te encuentras jugando Paintball");
+	if (isPlayerInTrainning(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras estas realizando el entrenamiento de tiro");
 	if(GetHandItem(playerid, playerhand) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar nada ya que tienes un item en esa mano.");
 
