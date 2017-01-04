@@ -298,7 +298,7 @@ CMD:pponer(playerid, params[])
 					if(fAngle <= 315 && fAngle >= 225){ // 270 grados
 						pmaitems[i] = CreateDynamicObject(1424, x+0.8, y, z-0.4, 0.0, 0.0, 90);
 						Streamer_Update(playerid);
-						PlayerCmeMessage(playerid, 15.0, 5000, Ubica una barricada policial.");
+						PlayerCmeMessage(playerid, 15.0, 5000, "Ubica una barricada policial.");
 						SendClientMessage(playerid, COLOR_YELLOW2, "Para quitar el objeto por /pquitar cerca de este o para eidtar por /peditar.");
 						return 1;
 					} else { // 0 grados

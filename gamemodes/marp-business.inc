@@ -1,4 +1,4 @@
-#if defined _marp_business_included
+﻿#if defined _marp_business_included
 	#endinput
 #endif
 #define _marp_business_included
@@ -57,7 +57,10 @@ enum BusinessSystem {
 	ContainerID
 };
 
-new Business[MAX_BUSINESS][BusinessSystem];
+new Business[MAX_BUSINESS][BusinessSystem],
+	OfferingBusiness[MAX_PLAYERS],
+	BusinessOfferPrice[MAX_PLAYERS],
+	BusinessOffer[MAX_PLAYERS];
 
 // =========================== MANEJO DE DATOS SQL =============================
 
@@ -149,15 +152,14 @@ stock SaveBusiness(ID)
 		Business[ID][ContainerSQLID]
 	);
 
-	format(query, sizeof(query), "%s, `Price`=%d, `Money`=%d, `Locked`=%d, `Radio`=%d, `IncomePrice`=%d, `IncomeAmount`=%d, `RentalExpiration`=%d",
+	format(query, sizeof(query), "%s, `Price`=%d, `Money`=%d, `Locked`=%d, `Radio`=%d, `Type`=%d, `Products`=%d",
 		query,
 		Business[ID][Price],
 		Business[ID][Money],
 		Business[ID][Locked],
 		Business[ID][Radio],
-		Business[ID][IncomePrice],
-		Business[ID][IncomeAmount],
-		Business[ID][HouseRentalExpiration]
+		Business[ID][Type],
+		Business[ID][Products]
 	);
 
 	format(query, sizeof(query), "WHERE `Id`=%d", ID);
@@ -166,42 +168,40 @@ stock SaveBusiness(ID)
 	return 1;
 }
 
-stock SaveHouses()
+stock SaveBusiness()
 {
   	new ID = 1;
 
-	while(ID < MAX_HOUSES)
+	while(ID < MAX_BUSINESS)
 	{
-	    SaveHouse(ID);
+	    SaveBusiness(ID);
 		ID++;
 	}
-    print("[INFO] casas guardadas.");
+    print("[INFO] negocios guardados.");
 	return 1;
 }
 
-stock CreateHouse(ID)
+stock CreateBusiness(ID)
 {
 	new query[128];
 
     if(dontsave)
 		return 1;
 
-    format(query, sizeof(query), "INSERT INTO `houses` (Id, HousePrice, Locked)");
-	format(query, sizeof(query), "%s VALUES (%d, %d, %d)",
+    format(query, sizeof(query), "INSERT INTO `business` (Id)");
+	format(query, sizeof(query), "%s VALUES (%d)",
 	    query,
 	    ID,
-		House[ID][HousePrice],
-		House[ID][Locked]
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
 
 	//=========================CREACION DE CONTENEDOR===========================
 
-    Container_Create(GetHouseLockerSpace(ID), 10, House[ID][ContainerID], House[ID][ContainerSQLID]);
+    Container_Create(GetBusinessLockerSpace(ID), 10, Business[ID][ContainerID], Business[ID][ContainerSQLID]);
 
 	//==========================================================================
 
-	House[ID][Created] = 1;
+	Business[ID][Created] = 1;
 	return 1;
 }
 
@@ -209,432 +209,342 @@ stock CreateHouse(ID)
 // ================== OTRAS FUNCIONES / DATOS EN VARIABLES =====================
 
 
-stock DeleteHouse(ID)
+stock DeleteBusiness(ID) /* !!!!! */
 {
-
- 	House[ID][Created] = 0;
-	House[ID][Owned] = 0;
-	House[ID][OwnerSQLID] = 0;
-	House[ID][IncomePrice] = 0;
-	House[ID][IncomeAmount] = 0;
-	House[ID][HousePrice] = 0;
-	House[ID][Money] = 0;
-	House[ID][Locked] = 0;
-	House[ID][Radio] = 0;
+	Business[ID][Price] = 0;
+	Business[ID][Money] = 0;
+	Business[ID][Locked] = 0;
+	Business[ID][Radio] = 0;
 
 
 	//==========================BORRADO DE CONTENEDOR===========================
-	if(HouseHasContainer(ID))
+	if(BusinessHasContainer(ID)) /* !!!!! */
 	{
-	    Container_Fully_Destroy(House[ID][ContainerID], House[ID][ContainerSQLID]);
-	    House[ID][ContainerID] = 0;
-	    House[ID][ContainerSQLID] = 0;
+	    Container_Fully_Destroy(Business[ID][ContainerID], Business[ID][ContainerSQLID]);
+	    Business[ID][ContainerID] = 0;
+	    Business[ID][ContainerSQLID] = 0;
 	}
 	//==========================================================================
 
 
 	// AGREGAR BORRADO DE TELEPORT
-	OnHouseDelete(ID);
+	OnBusinessDelete(ID);
 	return 1;
 }
 
-stock GetHouseLockerSpace(houseid)
+stock GetBusinessLockerSpace(biz)
 {
-	if(houseid <= 0 || houseid >= MAX_HOUSES)
-		return 0;
-
-	new hprice = House[houseid][HousePrice];
-
-	if(hprice < MIN_PRICE_LOCKER1) return LOCKER1_SPACE;
-	if(hprice < MIN_PRICE_LOCKER2) return LOCKER2_SPACE;
-	if(hprice < MIN_PRICE_LOCKER3) return LOCKER3_SPACE;
-	if(hprice < MIN_PRICE_LOCKER4) return LOCKER4_SPACE;
-	if(hprice < MIN_PRICE_LOCKER5) return LOCKER5_SPACE;
-	if(hprice < MIN_PRICE_LOCKER6) return LOCKER6_SPACE;
-	if(hprice < MIN_PRICE_LOCKER7) return LOCKER7_SPACE;
-	if(hprice < MIN_PRICE_LOCKER8) return LOCKER8_SPACE;
-	if(hprice < MIN_PRICE_LOCKER9) return LOCKER9_SPACE;
-	if(hprice < MIN_PRICE_LOCKER10) return LOCKER10_SPACE;
-	if(hprice >= MIN_PRICE_LOCKER11) return LOCKER11_SPACE;
-
-	return 0;
+	/* !!!!! */
 }
 
-stock GetPlayerHouse(playerid)
+stock GetPlayerBusiness(playerid)
 {
-	return PlayerInfo[playerid][pCurrentHouse];
+	return PlayerInfo[playerid][pCurrentBiz];
 }
 
-stock PrintHouseAdress(houseid)
+stock PrintBusinessAdress(biz)
 {
-	new tpid, houselocation[MAX_ZONE_NAME], string[MAX_ZONE_NAME + 5];
-	tpid = House[houseid][EntrancePickupSQLID];
+	new tpid, bizlocation[MAX_ZONE_NAME], string[MAX_ZONE_NAME + 5];
+	tpid = Business[biz][EntrancePickupSQLID];
 	
-	GetCoords2DZone(Teleport[tpid][FirstX], Teleport[tpid][FirstY], houselocation, MAX_ZONE_NAME);
-	format(string, sizeof(string), "%s %d", houselocation, houseid);
+	GetCoords2DZone(Teleport[tpid][FirstX], Teleport[tpid][FirstY], bizlocation, MAX_ZONE_NAME);
+	format(string, sizeof(string), "%s %d", bizlocation, biz);
 	return string;
 }
 
-stock PrintPlayerHouseAddress(playerid, targetid)
+stock BusinessHasContainer(bizid)
 {
-	return después vemos que hacemo con esto;
-}
-
-stock CheckHousesRentForRentalExpirationAdvises(playerid)
-{
-	for(new houseid = 1; houseid < MAX_HOUSES; houseid++)
-	{
-		if(House[houseid][TenantSQLID] != PlayerInfo[playerid][pID]) continue;
-		
-		switch(House[houseid][HouseRentalExpiration])
-		{
-			case 0:
-			{
-				House[houseid][TenantSQLID] = 0;
-				House[houseid][TenantName] = "";
-				House[houseid][Locked] = 1;
-				SendFMessage(playerid, COLOR_LIGHTGREEN, "El contrato de alquiler que mantenías para la vivienda en %s finalizó. Las cosas que no hayas retirado fueron perdidas.", PrintHouseAdress(houseid))
-			}
-			case 1: SendFMessage(playerid, COLOR_LIGHTGREEN, "Te queda 1 payday antes de que finalice el contrato de la vivienda que alquilas en %s, retira tus cosas antes o te desalojarán y las perderás.", PrintHouseAdress(houseid));
-			case 2 .. 4: SendFMessage(playerid, COLOR_LIGHTGREEN, "Te quedan %d paydays antes de que finalice el contrato de la vivienda que alquilas en %s, retira tus cosas antes o te desalojarán y las perderás.", House[houseid][HouseRentalExpiration], PrintHouseAdress(houseid));
-			case 5:
-			{
-				SendFMessage(playerid, COLOR_LIGHTGREEN, "SMS de Inmobiliaria: Señor, le queremos informar que el dueño de la vivienda que usted alquila en %s...", PrintHouseAdress(houseid));
-				SendClientMessage(playerid, COLOR_LIGHTGREEN, "SMS de Inmobiliaria: ...ha decidido rescindirle el contrato, tiene 5 dias (paydays) para retirar sus pertenencias.");
-			}						
-			default: continue;
-		}
-	}
-	return 1;
-}
-
-stock PlayerCantPayRent(playerid, houseid)
-{
-	if(PlayerInfo[playerid][pBank] < House[houseid][IncomePrice])
-	    return true;
-	else
-		return false;
-}
-
-stock HouseHasContainer(houseid)
-{
-	if(House[houseid][ContainerSQLID] > 0 && House[houseid][ContainerID] > 0)
+	if(Business[bizid][ContainerSQLID] > 0 && Business[bizid][ContainerID] > 0)
 	    return 1;
 	return 0;
 }
 
-stock IsPlayerOnOutsideHouseDoor(playerid, house)
+stock IsPlayerOnOutsideBusinessDoor(playerid, biz)
 {
-	new tpid = House[house][EntrancePickupSQLID];
+	new tpid = Business[biz][EntrancePickupSQLID];
 
 	if(PlayerToPoint(1.0, playerid, Teleport[tpid][FirstX], Teleport[tpid][FirstY], Teleport[tpid][FirstZ]) && Teleport[tpid][FirstVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][FirstInt] == GetPlayerInterior(playerid))
 		return true;
 	return false;
 }
 
-stock IsPlayerOnInsideHouseDoor(playerid, house)
+stock IsPlayerOnInsideBusinessDoor(playerid, biz)
 {
-	new tpid = House[house][EntrancePickupSQLID];
+	new tpid = Business[biz][EntrancePickupSQLID];
 
 	if(PlayerToPoint(1.0, playerid, Teleport[tpid][SecondX], Teleport[tpid][SecondY], Teleport[tpid][SecondZ]) && Teleport[tpid][SecondVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][SecondInt] == GetPlayerInterior(playerid))
 		return true;
 	return false;
 }
 
-stock GetPlayerNearestHouse(playerid)
+stock GetPlayerNearestBusiness(playerid)
 {
-	new tpid, house[2], housecount;
+	new tpid, biz[2], bizcount;
 
-	for(house[0] = 1;house[0] < MAX_HOUSES; house[0]++)
+	for(biz[0] = 1;biz[0] < MAX_BUSINESS; biz[0]++)
 	{
-	    tpid = House[house][EntrancePickupSQLID];
+	    tpid = Business[biz[0]][EntrancePickupSQLID];
 		if(PlayerToPoint(1.0, playerid, Teleport[tpid][FirstX], Teleport[tpid][FirstY], Teleport[tpid][FirstZ]) && Teleport[tpid][FirstVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][FirstInt] == GetPlayerInterior(playerid))
-			housecount++; house[1] = house[0];
+			bizcount++; biz[1] = biz[0];
 	}
 
-	switch(housecount)
+	switch(bizcount)
 	{
-		case 0: return 0; // No hay pickups de entrada a una casa en esa posición/interior/virtualworld.
-		case 1: return house[1]; // Hay un solo pickup de entrada a una casa en esa posición/interior/virtualworld.
+		case 0: return 0; // No hay pickups de entrada a un negocio en esa posición/interior/virtualworld.
+		case 1: return biz[1]; // Hay un solo pickup de entrada a un negocio en esa posición/interior/virtualworld.
 	}
-	return -1; // Hay más de un pickup de entrada a una casa en esa posición/interior/virtualworld.
+	return -1; // Hay más de un pickup de entrada a un negocio en esa posición/interior/virtualworld.
 }
 
-stock IsTenantOrOwnerOfTheHouse(playerid, house)
+stock IsOwnerOfTheBusiness(playerid, biz)
 {
-	if(House[house][OwnerSQLID] == PlayerInfo[playerid][pID] || House[house][TenantSQLID] == PlayerInfo[playerid][pID])
+	if(Business[biz][OwnerSQLID] == PlayerInfo[playerid][pID])
 	    return true;
 	else
 		return false;
 }
 
-//=============================COMANDOS DE CASA=================================
+//=============================COMANDOS DE NEGOCIOS=================================
 
-CMD:ayudacasa(playerid, params[])
+CMD:ayudanegocio(playerid, params[])
 {
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA] /casacomprar - /casavender - /casavendera - /casaalquilar - /casadesalquilar - /casaradio");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[CASA] /casaenalquiler - /casasinalquiler - /casacontrato - /puerta - /armario - /llenarbotella");
-	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"{878EE7}[INFO]{C8C8C8} Si alguien alquila tu casa y quieres rescindirle el contrato utiliza '/casacontrato'");
+	SendClientMessage(playerid,COLOR_LIGHTYELLOW2,"[NEGOCIO] /negociocomprar - /negociovender - /negociovendera - /negocioradio");
 	return 1;
 }
 
-CMD:casaradio(playerid, params[])
+CMD:negocioradio(playerid, params[])
 {
-	new radio, houseid, radioamount;
-	houseid = GetPlayerHouse(playerid);
+	new radio, bizid, radioamount;
+	bizid = GetPlayerBusiness(playerid);
 	radioamount = Radio_GetAmount();
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /casaradio [ID radio]");
-	if(House[houseid][TenantSQLID] != PlayerInfo[playerid][pID] && House[houseid][OwnerSQLID] != PlayerInfo[playerid][pID])
- 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No estás en tu casa.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintáxis]{C8C8C8} /negocioradio [ID radio]");
+	if(!IsOwnerOfTheBusiness(playerid, bizid))
+ 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Este negocio no te pertenece.");
 	if(radio < 0 || radio > radioamount)
-		return SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Debes ingresar una radio válida: del 1 al %d. Usa 0 para dejarla sin radio.", radioamount);
+		return SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Debes ingresar una radio válida: del 1 al %d. Usa 0 para dejarlo sin radio.", radioamount);
 
-    House[houseid][Radio] = radio;
-	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
-	if(House[houseid][Radio] > 0)
-	    Radio_Set(playerid, House[houseid][Radio], RADIO_TYPE_HOUSE);
-	SaveHouse(houseid);
+    Business[bizid][Radio] = radio;
+	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Has seteado la radio de tu negocio a %d.", Business[bizid][Radio]);
+	if(Business[bizid][Radio] > 0)
+	    Radio_Set(playerid, Business[bizid][Radio], RADIO_TYPE_BIZ);
+	SaveBusiness(bizid);
 	return 1;
 }
 
-CMD:casacomprar(playerid, params[])
+CMD:negociocomprar(playerid, params[])
 {
-	new nearesthouse = GetPlayerNearestHouse(playerid);
+	new nearestbiz = GetPlayerNearestBusiness(playerid);
 	
-	switch(nearesthouse)
+	switch(nearestbiz)
 	{
-		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de una casa en tu posición! Reportar a un administrador.");
-	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de una casa!");
+		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de un negocio en tu posición! Reportar a un administrador.");
+	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de un negocio!");
 	    default:
 	    {
-			if(House[nearesthouse][OwnerSQLID] != 0 || House[nearesthouse][TenantSQLID] != 0)
-			    return SendClientMessage(playerid, COLOR_YELLOW2, "Esta casa no está a la venta.");
-			if(GetPlayerCash(playerid) < House[nearesthouse][HousePrice])
+			if(Business[nearestbiz][OwnerSQLID] != 0)
+			    return SendClientMessage(playerid, COLOR_YELLOW2, "Este negocio no está a la venta.");
+			if(GetPlayerCash(playerid) < Business[nearestbiz][Price])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
 			    
-			House[nearesthouse][OwnerSQLID] = PlayerInfo[playerid][pID];
-			format(House[nearesthouse][OwnerName], MAX_PLAYER_NAME, "%s", name);
+			Business[nearestbiz][OwnerSQLID] = PlayerInfo[playerid][pID];
+			format(Business[nearestbiz][OwnerName], MAX_PLAYER_NAME, "%s", GetPlayerNameEx(playerid));
 				
-			GivePlayerCash(playerid, -House[nearesthouse][HousePrice]);
-			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has comprado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
+			GivePlayerCash(playerid, -Business[nearestbiz][BusinessPrice]);
+			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has comprado esta propiedad! Para ver los comandos disponibles utiliza /ayudanegocio.");
 			PlayerActionMessage(playerid, 15.0, "le da un paquete lleno de dinero al agente inmobiliario y éste le entrega un par de llaves.");
-			SaveHouse(nearesthouse);
+			SaveBusiness(nearestbiz);
 	    }
 	}
 	return 1;
 }
 
-CMD:casavender(playerid, params[])
+CMD:negociovender(playerid, params[])
 {
-	new nearesthouse = GetPlayerNearestHouse(playerid);
+	new nearestbiz = GetPlayerNearestBusiness(playerid);
 	
-	switch(nearesthouse)
+	switch(nearestbiz)
 	{
-		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de una casa en tu posición! Reportar a un administrador.");
-	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de una casa!");
+		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de un negocio en tu posición! Reportar a un administrador.");
+	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de un negocio!");
 	    default:
 	    {
-			if(House[nearesthouse][OwnerSQLID] != PlayerInfo[playerid][pID])
-				return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡No podés vender una casa que no es tuya!");
+			if(Business[nearestbiz][OwnerSQLID] != PlayerInfo[playerid][pID])
+				return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡No podés vender un negocio que no es tuyo!");
 			    
-			House[nearesthouse][OwnerSQLID] = 0;
-			House[nearesthouse][OwnerName] = "";
-			House[nearesthouse][Locked] = 1;
-			Container_Empty(House[nearesthouse][ContainerID]);
-			
-			if(House[nearesthouse][IncomePrice] != 0)
-			{
-				if(House[nearesthouse][IncomeAmount] != 0)
-				{
-					SendFMessage(playerid, COLOR_WHITE, "Cobraste $%d pendientes, del alquiler de tu inquilino.", House[nearesthouse][IncomeAmount]);
-					GivePlayerCash(playerid, House[nearesthouse][IncomeAmount]);
-					House[nearesthouse][IncomeAmount] = 0;
-				}
-				House[nearesthouse][IncomePrice] = 0;
-				House[nearesthouse][HouseRentalExpiration] = 0;
-			}
+			Business[nearestbiz][OwnerSQLID] = 0;
+			Business[nearestbiz][OwnerName] = "";
+			Business[nearestbiz][Locked] = 1;
+			Container_Empty(Business[nearestbiz][ContainerID]);
 	
-			GivePlayerCash(playerid, House[nearesthouse][HousePrice] / 3 * 2); // 66 % del valor original.
+			GivePlayerCash(playerid, Business[nearestbiz][BusinessPrice] / 3 * 2); // 66 % del valor original.
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-			SendFMessage(playerid, COLOR_WHITE, "¡Has vendido tu casa por $%d!", House[nearesthouse][HousePrice] / 3 * 2);
-			PlayerActionMessage(playerid, 15.0 , "toma las llaves de su casa y se las entrega al agente inmobiliario.");
-			SaveHouse(nearesthouse);
+			SendFMessage(playerid, COLOR_WHITE, "¡Has vendido tu negocio por $%d!", Business[nearestbiz][BusinessPrice] / 3 * 2);
+			PlayerActionMessage(playerid, 15.0 , "toma las llaves de su negocio y se las entrega al agente inmobiliario.");
+			SaveBusiness(nearestbiz);
 	    }
 	}
 	return 1;
 }
 
-CMD:casavendera(playerid, params[])
+CMD:negociovendera(playerid, params[])
 {
-	new nearesthouse = GetPlayerNearestHouse(playerid),
+	new nearestbiz = GetPlayerNearestBusiness(playerid),
 		targetid,
 		price;
 
-	switch(nearesthouse)
+	switch(nearestbiz)
 	{
-		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de una casa en tu posición! Reportar a un administrador.");
-	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de una casa!");
+		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de un negocio en tu posición! Reportar a un administrador.");
+	    case 0: return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de un negocio!");
 	    default:
 	    {
 			if(sscanf(params, "ui", targetid, price))
-				return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /casavendera [ID/Jugador] [Precio]");
-			if(House[nearesthouse][OwnerSQLID] != PlayerInfo[playerid][pID])
-				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta no es tu casa!");
+				return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /negociovendera [ID/Jugador] [Precio]");
+			if(Business[nearestbiz][OwnerSQLID] != PlayerInfo[playerid][pID])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡Esta no es tu negocio!");
 			if(GetDistanceBetweenPlayers(playerid, targetid) > 5.0)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "El jugador no está cerca tuyo.");
 			if(price < 1 || price > 10000000)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "El precio no puede ser menor a $1 ni mayor a $10,000,000.");
-			if(OfferingHouse[playerid])
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras vendiendo una casa.");
+			if(OfferingBusiness[playerid])
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras vendiendo un negocio.");
 			    
-			OfferingHouse[playerid] = true;
-			HouseOfferPrice[targetid] = price;
-			HouseOffer[targetid] = playerid;
-			SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreces las llaves y la escritura de tu casa a %s por $%d.", GetPlayerNameEx(targetid), price);
-			SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te esta ofreciendo venderte su casa por $%d.", GetPlayerNameEx(playerid), price);
-			SendClientMessage(targetid, COLOR_LIGHTBLUE, "Utiliza '/casaaceptar' para aceptar la oferta o '/casacancelar' para cancelar.");
-			SetPVarInt(targetid, "CancelHouseTransfer", SetTimerEx("CancelHouseTransfer", 10000, false, "ii", targetid, 1));
+			OfferingBusiness[playerid] = true;
+			BusinessOfferPrice[targetid] = price;
+			BusinessOffer[targetid] = playerid;
+			SendFMessage(playerid, COLOR_LIGHTBLUE, "Le ofreces las llaves y la escritura de tu negocio a %s por $%d.", GetPlayerNameEx(targetid), price);
+			SendFMessage(targetid, COLOR_LIGHTBLUE, "%s te esta ofreciendo venderte su negocio por $%d.", GetPlayerNameEx(playerid), price);
+			SendClientMessage(targetid, COLOR_LIGHTBLUE, "Utiliza '/negocioaceptar' para aceptar la oferta o '/negociocancelar' para cancelar.");
+			SetPVarInt(targetid, "CancelBusinessTransfer", SetTimerEx("CancelBusinessTransfer", 10000, false, "ii", targetid, 1));
 	    }
 	}
 	return 1;
 }
 
-CMD:casaaceptar(playerid, params[])
+CMD:negocioaceptar(playerid, params[])
 {
-	new sellerid = HouseOffer[playerid],
-	    price = HouseOfferPrice[playerid],
-	    houseid,
+	new sellerid = BusinessOffer[playerid],
+	    price = BusinessOfferPrice[playerid],
+	    bizid,
 	    name[MAX_PLAYER_NAME];
 
 	GetPlayerName(playerid, name, sizeof(name));
 	
 	if(sellerid == INVALID_PLAYER_ID)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
-	if(!IsPlayerConnected(sellerid) || !OfferingHouse[sellerid])
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo un negocio.");
+	if(!IsPlayerConnected(sellerid) || !OfferingBusiness[sellerid])
 	{
-	    KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
-	    CancelHouseTransfer(playerid, 2);
+	    KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
+	    CancelBusinessTransfer(playerid, 2);
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Hubo un error durante la venta, cancelando...");
 	}
 	if(!ProxDetectorS(3.0, playerid, sellerid))
  	   	return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no está cerca tuyo.");
 	if(GetPlayerCash(playerid) < price)
 	{
-	    KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
-	    CancelHouseTransfer(playerid, 2);
+	    KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
+	    CancelBusinessTransfer(playerid, 2);
 	    SendClientMessage(sellerid, COLOR_YELLOW2, "El jugador no tiene el dinero necesario, cancelando...");
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes el dinero suficiente, cancelando...");
 	}
 
-	houseid = PlayerInfo[sellerid][pHouseKey];
-	House[houseid][OwnerSQLID] = PlayerInfo[playerid][pID];
-	format(House[houseid][OwnerName], MAX_PLAYER_NAME, "%s", name);
-	House[houseid][Locked] = 1;
-	
-	if(House[houseid][IncomePrice] != 0)
-	{
-	    if(House[houseid][IncomeAmount] != 0)
-	    {
-	        SendFMessage(sellerid, COLOR_WHITE, "Cobraste $%d pendientes, del alquiler de tu inquilino.", House[houseid][IncomeAmount]);
-			GivePlayerCash(sellerid, House[houseid][IncomeAmount]);
-			House[houseid][IncomeAmount] = 0;
-		}
-		House[houseid][IncomePrice] = 0;
-		House[houseid][HouseRentalExpiration] = 0;
-	}
+	bizid = PlayerInfo[sellerid][pBusinessKey];
+	Business[bizid][OwnerSQLID] = PlayerInfo[playerid][pID];
+	format(Business[bizid][OwnerName], MAX_PLAYER_NAME, "%s", name);
+	Business[bizid][Locked] = 1;
 	
 	GivePlayerCash(playerid, -price);
     GivePlayerCash(sellerid, price);
     PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
     PlayerPlaySound(sellerid, 1052, 0.0, 0.0, 0.0);
-    PlayerInfo[playerid][pHouseKey] = houseid;
-    PlayerInfo[sellerid][pHouseKey] = 0;
-    SaveHouse(houseid);
-    PlayerPlayerActionMessage(sellerid, playerid, 15.0 , "toma las llaves y la escritura de su casa y se las entrega a");
-  	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado la casa por $%d! Usa /ayudacasa para ver los comandos disponibles.", price);
-  	SendFMessage(sellerid, COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido tu casa por $%d!", price);
-  	KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
-	CancelHouseTransfer(playerid, 2);
+    PlayerInfo[playerid][pBusinessKey] = bizid;
+    PlayerInfo[sellerid][pBusinessKey] = 0;
+    SaveBusiness(bizid);
+    PlayerPlayerActionMessage(sellerid, playerid, 15.0 , "toma las llaves y la escritura de su negocio y se las entrega a");
+  	SendFMessage(playerid, COLOR_LIGHTBLUE, "¡Felicidades, has comprado el negocio por $%d! Usa /ayudanegocio para ver los comandos disponibles.", price);
+  	SendFMessage(sellerid, COLOR_LIGHTBLUE, "¡Felicitaciones, has vendido tu negocio por $%d!", price);
+  	KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
+	CancelBusinessTransfer(playerid, 2);
 	return 1;
 }
 
-CMD:casacancelar(playerid, params[])
+CMD:negociocancelar(playerid, params[])
 {
-	if(HouseOffer[playerid] == INVALID_PLAYER_ID)
-    	return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo una casa.");
+	if(BusinessOffer[playerid] == INVALID_PLAYER_ID)
+    	return SendClientMessage(playerid, COLOR_YELLOW2, "Nadie te está vendiendo un negocio.");
 
- 	KillTimer(GetPVarInt(playerid, "CancelHouseTransfer"));
-	CancelHouseTransfer(playerid, 0);
+ 	KillTimer(GetPVarInt(playerid, "CancelBusinessTransfer"));
+	CancelBusinessTransfer(playerid, 0);
 	return 1;
 }
 
-TIMER:CancelHouseTransfer(playerid, reason)
+TIMER:CancelBusinessTransfer(playerid, reason)
 {
 	if(reason == 1)
 	{
 		SendClientMessage(playerid, COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que no has respondido en 10 segundos.");
-		SendClientMessage(HouseOffer[playerid], COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que el comprador no ha respondido en 10 segundos.");
+		SendClientMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "La venta ha sido cancelada ya que el comprador no ha respondido en 10 segundos.");
 	}
 	else
 		if(reason == 0)
 		{
 	    	SendClientMessage(playerid, COLOR_LIGHTBLUE, "Has rechazado la oferta.");
-			SendFMessage(HouseOffer[playerid], COLOR_LIGHTBLUE, "%s ha rechazado la oferta.", GetPlayerNameEx(playerid));
+			SendFMessage(BusinessOffer[playerid], COLOR_LIGHTBLUE, "%s ha rechazado la oferta.", GetPlayerNameEx(playerid));
 		}
 
- 	ResetHouseOffer(HouseOffer[playerid]);
- 	ResetHouseOffer(playerid);
+ 	ResetBusinessOffer(BusinessOffer[playerid]);
+ 	ResetBusinessOffer(playerid);
 	return 1;
 }
 
 CMD:puerta(playerid, params[])
 {
-	new nearesthouse = GetPlayerNearestHouse(playerid), tpid;
+	new nearestbiz = GetPlayerNearestBusiness(playerid), tpid;
 
-	switch(nearesthouse)
+	switch(nearestbiz)
 	{
-		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de una casa en tu posición! Reportar a un administrador.");
-	    case 0: if(GetPlayerHouse(playerid) == 0) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de una casa!");
+		case -1: return SendClientMessage(playerid, COLOR_YELLOW2, "¡Hay más de un negocio en tu posición! Reportar a un administrador.");
+	    case 0: if(GetPlayerBusiness(playerid) == 0) return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de un negocio!");
 	}
 	
-	if(GetPlayerHouse(playerid) == 0) // Del lado de afuera.
+	if(GetPlayerBusiness(playerid) == 0) // Del lado de afuera.
 	{
-		if(!IsTenantOrOwnerOfTheHouse(playerid, nearesthouse))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de esta casa!");
+		if(!IsTenantOrOwnerOfTheBusiness(playerid, nearestbiz))
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes las llaves de este negocio!");
 
-		switch(House[nearesthouse][Locked])
+		switch(Business[nearestbiz][Locked])
 		{
 			case 0:
 			{
-				PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
-				House[nearesthouse][Locked] = 1;
+				PlayerActionMessage(playerid, 15.0, "toma las llaves de su negocio y cierra la puerta.");
+				Business[nearestbiz][Locked] = 1;
 			}
 			case 1:
 			{
-				PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y abre la puerta.");
-				House[nearesthouse][Locked] = 0;
+				PlayerActionMessage(playerid, 15.0, "toma las llaves de su negocio y abre la puerta.");
+				Business[nearestbiz][Locked] = 0;
 			}
 		}
 	}
 	else // Del lado de adentro.
 	{
-		tpid = House[nearesthouse][EntrancePickupSQLID];
+		tpid = Business[nearestbiz][EntrancePickupSQLID];
 		if(PlayerToPoint(1.0, playerid, Teleport[tpid][SecondX], Teleport[tpid][SecondY], Teleport[tpid][SecondZ]) && Teleport[tpid][SecondVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][SecondInt] == GetPlayerInterior(playerid))
-			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la puerta de la casa!");
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la puerta del negocio!");
 
-		switch(House[nearesthouse][Locked])
+		switch(Business[nearestbiz][Locked])
 		{
 			case 0:
 			{
-				PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y cierra la puerta.");
-				House[nearesthouse][Locked] = 1;
+				PlayerActionMessage(playerid, 15.0, "toma las llaves de su negocio y cierra la puerta.");
+				Business[nearestbiz][Locked] = 1;
 			}
 			case 1:
 			{
-				PlayerActionMessage(playerid, 15.0, "toma las llaves de su casa y abre la puerta.");
-				House[nearesthouse][Locked] = 0;
+				PlayerActionMessage(playerid, 15.0, "toma las llaves de su negocio y abre la puerta.");
+				Business[nearestbiz][Locked] = 0;
 			}
 		}
 	}

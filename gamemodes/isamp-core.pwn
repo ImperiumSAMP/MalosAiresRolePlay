@@ -50,8 +50,10 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-inventory.inc" 			//Sistema de inventario
 #include "marp-vehicles.inc" 			//Sistema de vehiculos
 #include "isamp-drugs.inc" 				//Sistema de drogas
+// #include "marp-teleports.inc"
 #include "isamp-business.inc" 			//Sistema de negocios
-#include "marp-houses.inc"				//Sistema de casas
+#include "isamp-houses.inc"				//Sistema viejo de casas
+// #include "marp-houses.inc"				//Sistema de casas
 #include "isamp-buildings.inc"          //Sistema de edificios
 #include "isamp-factions.inc" 			//Sistema de facciones
 #include "marp-jobs.inc" 				//Definiciones y funciones para los JOBS
@@ -96,15 +98,14 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-actors.inc"              //Sistema de actores
 #include "marp-parlantes.inc"           //Sistema de parlantes
 #include "marp-horseraces.inc"          //Sistema de carreras de caballos
-#include "marp-wounds.inc"              //Sistema de heridas
 #include "marp-economy.pinc"			//Economía (funciones relativas y precios en general)
-#include "marp-dataload.pinc"			//Carga de datos
+// #include "marp-dataload.pinc"			//Carga de datos
 
 // Configuraciones.
-#define GAMEMODE				"MA:RP v1.1.5"
-#define MAP_NAME				"Malos Aires" 									
-#define SERVER_NAME				"Malos Aires RolePlay [0.3.7]"
-#define WEBSITE					"malosaires.com.ar"
+#define GAMEMODE				"LS:RP (LAT) v2.0.0 BETA"
+#define MAP_NAME				"Los Santos" 									
+#define SERVER_NAME				"Los Santos RolePlay - Latinoamérica [0.3.7]"
+#define WEBSITE					"lsrp.lat"
 #define PASSWORD				"" 												// Contraseña del servidor.
 #define TEST_SERVER             0                                               // Solo para el testserver, de lo contrario comentar.
 
@@ -202,15 +203,6 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #define MATS_TEC9            	45
 #define MATS_CRIFLE            	45
 #define MATS_SRIFLE            	75
-
-// Bodyparts
-#define BODY_PART_TORSO         3
-#define BODY_PART_GROIN         4
-#define BODY_PART_LEFT_ARM      5
-#define BODY_PART_RIGHT_ARM     6
-#define BODY_PART_LEFT_LEG      7
-#define BODY_PART_RIGHT_LEG     8
-#define BODY_PART_HEAD          9
 
 //[OTHER DEFINES]
 #define ResetMoneyBar 			ResetPlayerMoney
@@ -344,6 +336,7 @@ new
 	
 	//Cargando Nafta
 	bool:fillingFuel[MAX_PLAYERS],
+	bool:FirstStepOfGNC[MAX_PLAYERS],
 	
 	//Cinturón de seguridad
 	bool:SeatBelt[MAX_PLAYERS],
@@ -356,7 +349,6 @@ new
 	DeathSpam[MAX_PLAYERS char],
     AllowAdv[MAX_PLAYERS],
 	RegCounter[MAX_PLAYERS],
-	gPlayerLogged[MAX_PLAYERS],
 	gTime[3],
 	SpawnAttempts[MAX_PLAYERS],
 	FactionRequest[MAX_PLAYERS],
@@ -377,7 +369,6 @@ new Float:GUIDE_POS[][3] = {
 new TiempoEsperaMps[MAX_PLAYERS] = 0;
 
 /*new TakeHeadShot[MAX_PLAYERS] = 0;*/
-new TakeLegShot[MAX_PLAYERS] = 0;
 
 // Pickups
 new
@@ -428,7 +419,7 @@ new playerLicense[MAX_PLAYERS][pLicInfo];
 // Timers
 forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
 forward robberyCancel(playerid);
-forward fuelCar(playerid, refillprice, refillamount, refilltype);
+forward RefillFuel(playerid, refillamount, bool:IsAVehicle, bool:Petrol);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
 forward AntiCheatTimer();
 forward AntiCheatWeaponCheck(playerid);
@@ -784,7 +775,7 @@ public ResetStats(playerid)
     MedDuty[playerid] = 0;
     
     /*TakeHeadShot[playerid] = 0;*/
-    TakeLegShot[playerid] = 0;
+    /*TakeLegShot[playerid] = 0;*/
     
 	/* Vehiculos */
     OfferingVehicle[playerid] = false;
@@ -864,6 +855,7 @@ public ResetStats(playerid)
 	
 	/* Cargando Nafta */
 	fillingFuel[playerid] = false;
+	FirstStepOfGNC[playerid] = false;
 	
 	/* Sistema de casino */
 	isBetingRoulette[playerid] = false;
@@ -1500,20 +1492,19 @@ public OnPlayerSpawn(playerid)
 	    SetPVarInt(playerid, "died", 0);
 	    
 		if(PlayerInfo[playerid][pHospitalized] >= 1)
-		{
 		    initiateHospital(playerid);
-		}
 	}
 	
 	/*TakeHeadShot[playerid] = 0;*/
-	TakeLegShot[playerid] = 0;
+	/* TakeLegShot[playerid] = 0;*/
 	
 	LoadHandItem(playerid, HAND_RIGHT);
 	LoadHandItem(playerid, HAND_LEFT);
 	AttachBackItem(playerid);
     LoadToysItems(playerid);
     
-	if(AdminDuty[playerid]) SetPlayerColor(playerid, COLOR_ADMINDUTY);
+	if(AdminDuty[playerid])
+		SetPlayerColor(playerid, COLOR_ADMINDUTY);
 
 	return 1;
 }
@@ -2900,29 +2891,30 @@ public AntiCheatWeaponCheck(playerid)
 	return 1;
 }
 
-public fuelCar(playerid, refillprice, refillamount, refilltype)
+public RefillFuel(playerid, refillamount, bool:IsAVehicle, bool:Petrol)
 {
-	if(refilltype == 1)
+	if(IsAVehicle)
 	{
-    	VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
-		SendFMessage(playerid, COLOR_WHITE, "El tanque de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], refillprice);
-	} else
-		if(refilltype == 2)
+		if(Petrol)
 		{
-			if(GetHandItem(playerid, HAND_RIGHT) == ITEM_ID_BIDON)
-			{
-		    	SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
-		    	SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), refillprice);
-			}
-			else
-			{
-			    SendClientMessage(playerid, COLOR_WHITE, "{FF4600}[Error]:{C8C8C8} No tienes un bidón de combustible en tu mano derecha.");
-				TogglePlayerControllable(playerid, true);
-				fillingFuel[playerid] = false;
-				return 1;
-			}
-	    }
-	GivePlayerCash(playerid,-refillprice);
+			VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel] += refillamount;
+			SendFMessage(playerid, COLOR_WHITE, "El tanque de combustible de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehFuel], (refillamount * (PRICE_PETROL_FULLTANK / 100)));
+			GivePlayerCash(playerid, -(refillamount * (PRICE_PETROL_FULLTANK / 100)));
+		}
+		else
+		{
+			VehicleInfo[GetPlayerVehicleID(playerid)][VehGNC] += refillamount;
+			SendFMessage(playerid, COLOR_WHITE, "El tanque de GNC de su vehículo ha sido cargado al (%d %%) por $%d.", VehicleInfo[GetPlayerVehicleID(playerid)][VehGNC], (refillamount * (PRICE_GNC_FULLTANK / 100)));		
+			GivePlayerCash(playerid, -(refillamount * (PRICE_GNC_FULLTANK / 100)));
+		}
+	}
+	else
+	{
+			SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_BIDON, GetHandParam(playerid, HAND_RIGHT) + refillamount);
+			SendFMessage(playerid, COLOR_WHITE, "Has cargado nafta en tu bidón de combustible al (%d %%) por $%d.", GetHandParam(playerid, HAND_RIGHT), (refillamount * (PRICE_PETROL_FULLTANK / 100)));
+			GivePlayerCash(playerid, -(refillamount * (PRICE_PETROL_FULLTANK / 100)));
+	}
+	
 	PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 	TogglePlayerControllable(playerid, true);
 	fillingFuel[playerid] = false;
@@ -3130,7 +3122,7 @@ public globalUpdate()
 					GiveFactionMoney(FAC_HOSP, PRICE_TREATMENT / 8);
 					
 					RefillPlayerBasicNeeds(playerid);
-					TakeLegShot[playerid] = 0;
+					/* TakeLegShot[playerid] = 0; */
 		            ResetPlayerWeapons(playerid);
 		            DeletePVar(playerid, "hosp");
 		            SetPlayerHealthEx(playerid, 100);
@@ -3174,9 +3166,8 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
 
 	if(AdminDuty[playerid])
-	{
 	    return 1;
-	}
+
 
 	if(VehicleInfo[vehicleid][VehLocked] == 1)
 	{
@@ -3194,7 +3185,7 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 		{
 			VehicleInfo[vehicleid][VehAlarm] = 1;
 			SetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
-			SetTimerEx(shutdownAlarm, 25000, false, "i", vehicleid);
+			SetTimerEx("shutdownAlarm", 25000, false, "i", vehicleid);
 		}
 	}
 
@@ -3307,11 +3298,18 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 		
+		if(FirstStepOfGNC[playerid]) // Carga de GNC iniciada
+		{
+			PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio retira el tapón y coloca el pico de carga en la válvula de seguridad.");
+			GameTextForPlayer(playerid, "~w~Cargando combustible", 30000, 4);
+			fillingFuel[playerid] = true;
+			SetPVarInt(playerid, "RefillFuel", SetTimerEx("RefillFuel", 30000, false, "iill", playerid, GetPVarInt(playerid, "GNCAmount"), true, false));
+			SetPVarInt(playerid, "GNCAmount", 0);
+		}
+		
 		//===============================RADIO EN AUTO==========================
 		if(Radio_IsOnType(playerid, RADIO_TYPE_VEH))
-		{
 			Radio_Stop(playerid);
-		}
 		//======================================================================
 	}
 	
@@ -6049,14 +6047,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	// Si está esposado, cae al piso al intentar saltar.
 	if(newkeys & KEY_JUMP && !(oldkeys & KEY_JUMP) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CUFFED)
 		ApplyAnimation(playerid, "GYMNASIUM", "gym_jog_falloff",4.1,0,1,1,0,0);
-	// Si corre cuando recivio un tiro en la pierna se cae.
-	if(newkeys == KEY_JUMP || newkeys == KEY_SPRINT && TakeLegShot[playerid] == 1)
-	{
-	    if(GetPlayerState(playerid) == PLAYER_STATE_ONFOOT)
-	    {
-	        ApplyAnimation(playerid, "PED", "FALL_collapse", 4.0, 0, 1, 1, 0, 0, 1);
-		}
-	}
 	
 	if(newkeys == KEY_SECONDARY_ATTACK && InEnforcer[playerid])
 	{
@@ -6395,46 +6385,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    return 1;
     }
 	
-	if(newkeys == KEY_SECONDARY_ATTACK && oldkeys != KEY_SECONDARY_ATTACK) {
-		
-		
-		/* Entrada y salida de edificios. */
-		if(PlayerInfo[playerid][pFaction] == FAC_SIDE) {
-		    if(PlayerToPoint(3.5, playerid, 266.6, 112.5830078125, 1003.6171875)) {
-				if(SIDEDoor[0][0] <= 0) {
-				    SIDEDoor[0][0] = 1;
-		    		MoveObject(SIDEDoor[0][1], 266.6, 112.5830078125, 1003.6171875, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[1][1], 263.5, 112.55754852295, 1003.6171875, 3.5000, 0, 0, 0);
-				} else {
-					SIDEDoor[0][0] = 0;
-					MoveObject(SIDEDoor[0][1], 265.7763671875, 112.5830078125, 1003.6171875, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[1][1], 264.30032348633, 112.55754852295, 1003.6171875, 3.5000, 0, 0, 0);
-				}
-		    } else if(PlayerToPoint(3.5, playerid, 253.20094299316, 110.82429504395, 1004.8625488281)) {
-				if(SIDEDoor[2][0] <= 0) {
-				    SIDEDoor[2][0] = 1;
-		    		MoveObject(SIDEDoor[2][1], 253.20094299316, 111.82429504395, 1004.8625488281, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[3][1], 253.23199462891, 108.0904083252, 1004.8625488281, 3.5000, 0, 0, 0);
-				} else {
-					SIDEDoor[2][0] = 0;
-					MoveObject(SIDEDoor[2][1], 253.20094299316, 110.82429504395, 1004.8625488281, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[3][1], 253.23199462891, 109.0904083252, 1004.8625488281, 3.5000, 0, 0, 0);
-				}
-		    } else if(PlayerToPoint(3.5, playerid, 239.59048461914, 117.59116363525, 1004.8555908203)) {
-				if(SIDEDoor[4][0] <= 0) {
-                    SIDEDoor[4][0] = 1;
-		    		MoveObject(SIDEDoor[4][1], 239.73849487305,116.5859375,1004.8555908203, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[5][1], 239.828125,120.27496337891,1005.0729980469, 3.5000, 0, 0, 0);
-				} else {
-					SIDEDoor[4][0] = 0;
-					MoveObject(SIDEDoor[4][1], 239.59048461914, 117.59116363525, 1004.8555908203, 3.5000, 0, 0, 0);
-					MoveObject(SIDEDoor[5][1], 239.5966796875, 119.25390625, 1004.8555908203, 3.5000, 0, 0, 0);
-				}
-		    }
-	    }
-		
-	    if(GetPVarInt(playerid, "disabled") == DISABLE_NONE) {
-
+	if(newkeys == KEY_SECONDARY_ATTACK && oldkeys != KEY_SECONDARY_ATTACK)
+	{
+	    if(GetPVarInt(playerid, "disabled") == DISABLE_NONE)
+		{
 			/*  Entrada a casas. */
 			if(EnterHouse(playerid))
 			    return 1;
@@ -6458,20 +6412,21 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			/* Salida de negocios. */
 			if(LeaveBusiness(playerid))
 			    return 1;
-			    
-		} else {
-		    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 		}
+		else
+		    SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento.");
 	}
 	return 1;
 }
 
-public Unfreeze(playerid) {
+public Unfreeze(playerid)
+{
 	TogglePlayerControllable(playerid, 1);
     return 1;
 }
 
-stock LoadTDs() {
+stock LoadTDs()
+{
 
 	textdrawVariables[0] = TextDrawCreate(149.000000, 420.000000, "Presiona ~r~~k~~SNEAK_ABOUT~~w~ para cerrar el modo espectador.");
 	TextDrawBackgroundColor(textdrawVariables[0], 255);
@@ -8179,7 +8134,10 @@ CMD:darobjeto(playerid, params[])
 	    }
 	}
 	else
+	{
 	    format(string2, sizeof(string2), "'");
+		amount[1] = amount[0];
+	}
 	format(string, sizeof(string), "[STAFF] El administrador %s le dió al jugador %s el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
 	AdministratorMessage(COLOR_ADMINCMD, string, 2);
 	SendFMessage(targetid, COLOR_LIGHTBLUE, "El administrador %s te dió el objeto '%s%s (%s: %d)", GetPlayerNameEx(playerid), GetItemName(item), string2, GetItemParamName(item), amount[1]);
@@ -11742,8 +11700,8 @@ CMD:aceptar(playerid,params[])
 				victimcash = GetPlayerCash(playerid);
 				
 			SetPlayerHealthEx(playerid, 100.00);
-			/*TakeHeadShot[playerid] = 0;*/
-            TakeLegShot[playerid] = 0;
+			/* TakeHeadShot[playerid] = 0; */
+            /* TakeLegShot[playerid] = 0; */
 			TogglePlayerControllable(playerid, true);
 			PlayerPlaySound(playerid, 1150, 0.0, 0.0, 0.0);
 			PlayerPlaySound(medic, 1150, 0.0, 0.0, 0.0);
@@ -13036,7 +12994,7 @@ CMD:sethp(playerid, params[])
 
     SetPlayerHealthEx(targetid, health);
     /*TakeHeadShot[targetid] = 0;*/
-    TakeLegShot[playerid] = 0;
+    /* TakeLegShot[playerid] = 0; */
     if(GetPVarInt(targetid, "disabled") == DISABLE_DEATHBED)
         SetPVarInt(targetid, "disabled", DISABLE_NONE);
 	return 1;
@@ -13924,47 +13882,83 @@ CMD:exp10de(playerid, params[])
 
 CMD:llenar(playerid, params[])
 {
-	new refillprice, refillamount, refilltype, preamount, vehicleid;
-
-	if(!IsAtGasStation(playerid))
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar cerca de un dispenser de combustible en alguna estación de servicio.");
-	if(GetPlayerCash(playerid) < (PRICE_FULLTANK / 100)) // Lo mínimo para llenar
-	   	return SendClientMessage(playerid, COLOR_YELLOW2, "Vuelve cuando tengas el dinero suficiente.");
-	if(fillingFuel[playerid])
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras cargando nafta.");
-    if(IsPlayerInAnyVehicle(playerid))
+	new amount, vehicleid = GetPlayerVehicleID(playerid), fuel[6];
+	
+	if(sscanf(params, "s[6]i", fuel, amount))
 	{
-		if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
-	    	return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar como conductor del vehículo.");
-		vehicleid = GetPlayerVehicleID(playerid);
-		preamount = VehicleInfo[vehicleid][VehFuel];
-		if(preamount > 99)
-  			return SendClientMessage(playerid, COLOR_YELLOW2, "El tanque se encuentra lleno.");
-		refilltype = 1;
-        PlayerActionMessage(playerid, 15.0, "le indica al empleado el tipo de nafta, precio a llenar y le entrega el dinero.");
-   		PlayerDoMessage(playerid, 15.0, "El empleado toma una manguera del surtidor y comienza a llenar el vehículo.");
-	} else
+		SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} /llenar [tipo de combustible] [porcentaje del tanque a llenar]");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Combustibles: nafta - gnc");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} En caso de querer llenar el tanque, el porcentaje ingresado lógicamente deberá ser '100'.");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} En todos los demás casos, el porcentaje ingresado será el que se sumará a la cantidad de combustible actual");
+		return 1;
+	}
+	if(!IsAtGasStation(playerid))
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en alguna estación de servicio.");
+	if(fillingFuel[playerid])
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ya te encuentras cargando combustible.");
+	if(amount < 1 || amount > 100)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El porcentaje de combustible ingresado no es válido. Debe ser un valor comprendido entre 0 y 100%%.");
+
+	
+	else if(strcmp(fuel, "gnc", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar como conductor del vehículo.");
+			if(VehicleInfo[vehicleid][VehBonnet] == 0)
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe tener el capot abierto para la carga de GNC.");
+			if(IsPlayerInAnyVehicle(playerid))
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe descender del vehículo para la carga de GNC.");
+			if(amount * (PRICE_GNC_FULLTANK / 100))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes suficiente dinero.");
+			GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+			if(amount != 100 && (VehicleInfo[vehicleid][VehFuel] + amount) > 100)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "El porcentaje de combustible ingresado no es válido. La suma del mismo con el actual del tanque excede el 100%%.");
+			if(VehicleInfo[vehicleid][VehEngine] == 1)
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe tener el motor apagado para la carga de combustible.");
+			if(VehicleInfo[vehicleid][VehLights] == 1)
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe tener las luces apagadas para la carga de combustible.");
+		
+			PlayerActionMessage(playerid, 15.0, "le indica al empleado la carga de GNC, con la cantidad correspondiente.");
+			PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio asiente, se acerca e indica que debe descender del vehículo para continuar con la carga de combustible.");
+			
+			SetPVarInt(playerid, "GNCAmount", amount);
+		}
+		else
+			return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en un vehículo!");	
+	}
+	else if(strcmp(fuel, "nafta", true) == 0)
+	{
+		if(IsPlayerInAnyVehicle(playerid))
+		{
+			if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar como conductor del vehículo.");
+			if(amount * (PRICE_PETROL_FULLTANK / 100))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes suficiente dinero.");
+			GetVehicleParamsEx(vehicleid, VehicleInfo[vehicleid][VehEngine], VehicleInfo[vehicleid][VehLights], VehicleInfo[vehicleid][VehAlarm], vlocked, VehicleInfo[vehicleid][VehBonnet], VehicleInfo[vehicleid][VehBoot], VehicleInfo[vehicleid][VehObjective]);
+			if(amount != 100 && (VehicleInfo[vehicleid][VehFuel] + amount) > 100)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "El porcentaje de combustible ingresado no es válido. La suma del mismo con el actual del tanque excede el 100%%.");
+			if(VehicleInfo[vehicleid][VehEngine] == 1)
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe tener el motor apagado para la carga de combustible.");
+			if(VehicleInfo[vehicleid][VehLights] == 1)
+				return PlayerDoMessage(playerid, 15.0, "El empleado de la estación de servicio se acerca a la ventanilla del vehículo e indica que debe tener las luces apagadas para la carga de combustible.");
+
+			PlayerActionMessage(playerid, 15.0, "le indica al empleado el tipo de combustible y cantidad a llenar.");
+			PlayerDoMessage(playerid, 15.0, "El empleado toma una manguera del surtidor y, tras retirar el tapón del vehículo, la coloca en el correspondiente conducto de llenado.");
+			fillingFuel[playerid] = true;
+			SetPVarInt(playerid, "RefillFuel", SetTimerEx("RefillFuel", 20000, false, "iill", playerid, amount, true, true));
+		}
+		else
 		{
 			if(GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_BIDON)
-   				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar dentro de un vehículo o tener un bidón con nafta en la mano derecha.");
-			else
-			{
-			    preamount = GetHandParam(playerid, HAND_RIGHT);
-				refilltype = 2;
-				PlayerActionMessage(playerid, 15.0, "comienza a cargar nafta en el bidón de combustible.");
-			}
+				return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener un bidón de combustible en la mano derecha.");
+			if(amount * (PRICE_PETROL_FULLTANK / 100))
+				return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes suficiente dinero.");
+			fillingFuel[playerid] = true;
+			SetPVarInt(playerid, "RefillFuel", SetTimerEx("RefillFuel", 20000, false, "iill", playerid, amount, false, true));
 		}
-	refillprice = PRICE_FULLTANK / 100 * (100 - preamount); // precio para llenar el tanque
-	if(GetPlayerCash(playerid) < refillprice)
-	{
-        refillamount = GetPlayerCash(playerid) / (PRICE_FULLTANK / 100); // en porcentaje
-    	refillprice = GetPlayerCash(playerid);
-	} else
-		refillamount = 100 - preamount; // le llenamos lo que le falta, en porcentaje
- 	TogglePlayerControllable(playerid, false);
-	GameTextForPlayer(playerid, "~w~Cargando nafta", 6000, 4);
-	fillingFuel[playerid] = true;
-	SetPVarInt(playerid, "fuelCar", SetTimerEx("fuelCar", 6000, false, "iiii", playerid, refillprice, refillamount, refilltype));
+	}
 	return 1;
 }
 

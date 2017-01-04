@@ -10,6 +10,17 @@
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 */
 
+// Bodyparts
+#define BODY_PART_TORSO         3
+#define BODY_PART_GROIN         4
+#define BODY_PART_LEFT_ARM      5
+#define BODY_PART_RIGHT_ARM     6
+#define BODY_PART_LEFT_LEG      7
+#define BODY_PART_RIGHT_LEG     8
+#define BODY_PART_HEAD          9
+
+new TakeLegShot[MAX_PLAYERS];
+
 public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 {
 	new Float:armour;
@@ -40,7 +51,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 		//=========================DISPARO EN PIERNAS===========================
 
-		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGT_LEG && TakeLegShot[playerid] == 0)
+		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG && TakeLegShot[playerid] == 0)
 		{
             SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en una de tus piernas al intentar correr te caeras. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 			TakeLegShot[playerid] = 1;
@@ -159,7 +170,6 @@ stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 	switch(bodypart)
 	{
 	    case BODY_PART_TORSO: bodyProbability = 29;
-	    case BODY_PART_GROIN: bodyProbability = 29;
 	    case BODY_PART_LEFT_ARM: bodyProbability = 14;
 	    case BODY_PART_RIGHT_ARM: bodyProbability = 14;
 	    case BODY_PART_LEFT_LEG: bodyProbability = 24;
@@ -167,7 +177,7 @@ stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 	    default: return 0;
 	}
 
-	if((bodypart == BODY_PART_TORSO || bodypart == BODY_PART_GROIN) && armour > 0.0)
+	if((bodypart == BODY_PART_TORSO) && armour > 0.0)
 	{
 	    if(option <= wepProbability)
 	        CrossArmour(playerid);

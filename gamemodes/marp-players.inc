@@ -86,7 +86,8 @@ enum pInfo {
 	pContainerID,
 };
 
-new PlayerInfo[MAX_PLAYERS][pInfo];
+new PlayerInfo[MAX_PLAYERS][pInfo],
+	gPlayerLogged[MAX_PLAYERS];
 
 // Inmunidad al anticheat
 new bool:antiCheatDisabled[MAX_PLAYERS];

@@ -427,8 +427,8 @@ CMD:mano(playerid, params[])
 			ReplenishClip(playerid);
 
 		} else if(strcmp(command, "separar", true) == 0) {
-			if(GetItemType(rightitem) != ITEM_FIREWEAPON || GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_CAJON_DE_CERVEZA)
-				return SendClientMessage(playerid, COLOR_YELLOW2, "Únicamente puedes usar este comando con armas o cajones de cerveza.");
+			if(GetItemType(rightitem) != ITEM_FIREWEAPON && GetHandItem(playerid, HAND_RIGHT) != ITEM_ID_CAJON_DE_CERVEZA)
+				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes usar este comando con este objeto!");
 			if(SearchFreeHand(playerid) == -1)
 				return SendClientMessage(playerid, COLOR_YELLOW2, "Para separar un objeto necesitas la mano izquierda libre.");
 			if(rightparam == 0)

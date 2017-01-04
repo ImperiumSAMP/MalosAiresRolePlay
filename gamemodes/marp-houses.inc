@@ -51,14 +51,15 @@ forward CreateHouse(ID);
 forward DeleteHouse(ID);
 forward GetHouseLockerSpace(houseid);
 forward GetPlayerHouse(playerid);
-forward RentalExpiration(houseid);
-forward PrintHouseRentAdvise(houseid);
-forward PrintPlayerHouseAddress(houseid);
+forward PrintHouseAddress(houseid);
+forward CheckRentalExpirationAdvises(playerid);
+forward PlayerCantPayRent(playerid, houseid);
 forward HouseHasContainer(houseid);
 forward IsPlayerOnOutsideHouseDoor(playerid, house);
 forward IsPlayerOnInsideHouseDoor(playerid, house);
 forward GetPlayerNearestHouse(playerid);
 forward IsTenantOrOwnerOfTheHouse(playerid, house);
+forward ResetHouseOffer(playerid);
 
 // =========================== VARIABLES INTERNAS ==============================
 
@@ -85,7 +86,10 @@ enum HouseSystem {
 	ContainerID
 };
 
-new House[MAX_HOUSES][HouseSystem];
+new House[MAX_HOUSES][HouseSystem],
+	bool:OfferingHouse[MAX_PLAYERS],
+	HouseOfferPrice[MAX_PLAYERS],
+	HouseOffer[MAX_PLAYERS];
 
 // =========================== MANEJO DE DATOS SQL =============================
 
@@ -246,7 +250,6 @@ stock DeleteHouse(ID)
 {
 
  	House[ID][Created] = 0;
-	House[ID][Owned] = 0;
 	House[ID][OwnerSQLID] = 0;
 	House[ID][IncomePrice] = 0;
 	House[ID][IncomeAmount] = 0;
@@ -308,12 +311,7 @@ stock PrintHouseAdress(houseid)
 	return string;
 }
 
-stock PrintPlayerHouseAddress(playerid, targetid)
-{
-	return después vemos que hacemo con esto;
-}
-
-stock CheckHousesRentForRentalExpirationAdvises(playerid)
+stock CheckRentalExpirationAdvises(playerid)
 {
 	for(new houseid = 1; houseid < MAX_HOUSES; houseid++)
 	{
@@ -380,9 +378,12 @@ stock GetPlayerNearestHouse(playerid)
 
 	for(house[0] = 1;house[0] < MAX_HOUSES; house[0]++)
 	{
-	    tpid = House[house][EntrancePickupSQLID];
+	    tpid = House[house[0]][EntrancePickupSQLID];
 		if(PlayerToPoint(1.0, playerid, Teleport[tpid][FirstX], Teleport[tpid][FirstY], Teleport[tpid][FirstZ]) && Teleport[tpid][FirstVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][FirstInt] == GetPlayerInterior(playerid))
-			housecount++; house[1] = house[0];
+		{
+			housecount++;
+			house[1] = house[0];
+		}
 	}
 
 	switch(housecount)
@@ -401,6 +402,13 @@ stock IsTenantOrOwnerOfTheHouse(playerid, house)
 		return false;
 }
 
+stock ResetHouseOffer(playerid)
+{
+    OfferingHouse[playerid] = false;
+	HouseOfferPrice[playerid] = -1;
+	HouseOffer[playerid] = INVALID_PLAYER_ID;
+}
+
 //=============================COMANDOS DE CASA=================================
 
 CMD:ayudacasa(playerid, params[])
@@ -413,7 +421,7 @@ CMD:ayudacasa(playerid, params[])
 
 CMD:casaradio(playerid, params[])
 {
-	new radio, houseid, radioamount;
+	new radio, houseid, radioamount, string[128];
 	houseid = GetPlayerHouse(playerid);
 	radioamount = Radio_GetAmount();
 
@@ -422,7 +430,12 @@ CMD:casaradio(playerid, params[])
 	if(House[houseid][TenantSQLID] != PlayerInfo[playerid][pID] && House[houseid][OwnerSQLID] != PlayerInfo[playerid][pID])
  		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No estás en tu casa.");
 	if(radio < 0 || radio > radioamount)
-		return SendFMessage(playerid, COLOR_LIGHTYELLOW2, "Debes ingresar una radio válida: del 1 al %d. Usa 0 para dejarla sin radio.", radioamount);
+			{
+				format(string, sizeof(string), "Debes ingresar una emisora de radio válida: del 0 al %d.", radioamount);
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+				return 1;
+			}
+
 
     House[houseid][Radio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "{878EE7}[INFO]{C8C8C8} Has seteado la radio de tu casa a %d.", House[houseid][Radio]);
@@ -448,7 +461,7 @@ CMD:casacomprar(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
 			    
 			House[nearesthouse][OwnerSQLID] = PlayerInfo[playerid][pID];
-			format(House[nearesthouse][OwnerName], MAX_PLAYER_NAME, "%s", name);
+			format(House[nearesthouse][OwnerName], MAX_PLAYER_NAME, "%s", GetPlayerNameEx(playerid));
 				
 			GivePlayerCash(playerid, -House[nearesthouse][HousePrice]);
 			SendClientMessage(playerid, COLOR_WHITE, "¡Felicidades, has comprado esta propiedad! Para ver los comandos disponibles utiliza /ayudacasa.");
@@ -473,7 +486,7 @@ CMD:casavender(playerid, params[])
 				return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "¡No podés vender una casa que no es tuya!");
 			    
 			House[nearesthouse][OwnerSQLID] = 0;
-			House[nearesthouse][OwnerName] = "";
+			format(House[nearesthouse][OwnerName], 25, "");
 			House[nearesthouse][Locked] = 1;
 			Container_Empty(House[nearesthouse][ContainerID]);
 			
@@ -724,8 +737,8 @@ CMD:casadesalquilar(playerid, params[])
 				return SendClientMessage(playerid, COLOR_YELLOW2, "¡No estás en la entrada de una casa que alquilas!");
 
 			House[nearesthouse][TenantSQLID] = 0;
-			House[nearesthouse][TenantName] = "";
-			House[house][Locked] = 1;
+			format(House[nearesthouse][TenantName], 24, "");
+			House[nearesthouse][Locked] = 1;
 			
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 			SendClientMessage(playerid, COLOR_WHITE, "¡Has dejado de alquilar la casa!");
@@ -739,7 +752,7 @@ CMD:casadesalquilar(playerid, params[])
 CMD:casaenalquiler(playerid, params[])
 {
 
-	new nearesthouse = GetPlayerNearestHouse(playerid), price;
+	new nearesthouse = GetPlayerNearestHouse(playerid), price, string[128];
 
 	switch(nearesthouse)
 	{
@@ -754,8 +767,11 @@ CMD:casaenalquiler(playerid, params[])
 			if(House[nearesthouse][TenantSQLID] != 0)
 			    return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "La casa actualmente tiene un inquilino. Puedes rescindirle el contrato con '/casacontrato'.");
 			if(price > (House[nearesthouse][HousePrice] / 100))
-			    return SendFMessage(playerid, COLOR_LIGHTYELLOW2, "El monto máximo de alquiler que puedes pedir para esta casa es de $%d.", House[nearesthouse][HousePrice] / 100);
-
+			{
+				format(string, sizeof(string), "El monto máximo de alquiler que puedes pedir para esta casa es de $%d.", (House[nearesthouse][HousePrice] / 100));
+				SendClientMessage(playerid, COLOR_LIGHTYELLOW2, string);
+				return 1;
+			}
 
 			SendFMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} Colocaste tu casa en alquiler por $%d, si alguien la alquila no podras utilizar el armario.", price);
 			SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]{C8C8C8} El pago del alquiler se realiza por cada payday del inquilino y lo recibirás al cobrar tu payday.");

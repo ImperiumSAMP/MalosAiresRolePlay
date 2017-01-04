@@ -27,7 +27,7 @@ forward OnTeleportDataLoad(ID);
 forward SaveTeleport(ID);
 forward InsertTeleportData(ID);
 forward DeleteTeleport(ID);
-forward CreateTeleport(Float:FX, Float:FY, Float:FZ, Float:FA, FInt, FVW, Float:SX, Float:SY, Float:SZ, Float:SA, SInt, SVW, FHouse, FBiz, FBuilding, FPM, SPM, Type);
+forward CreateTeleport(Float:FX, Float:FY, Float:FZ, Float:FA, FInt, FVW, FHouse, FBiz, FBuilding, Float:SX, Float:SY, Float:SZ, Float:SA, SInt, SVW, SHouse, SBiz, SBuilding, FPM, SPM, TType);
 forward ResetTeleport(ID);
 forward GetTeleportID(ID, type);
 forward GetFirstNonCreatedTeleport();
@@ -225,12 +225,12 @@ stock DeleteTeleport(ID)
 
 // ================== OTRAS FUNCIONES / DATOS EN VARIABLES =====================
 
-stock CreateTeleport(Float:FX, Float:FY, Float:FZ, Float:FA, FInt, FVW, Float:SX, Float:SY, Float:SZ, Float:SA, SInt, SVW, FHouse, FBiz, FBuilding, FPM, SPM, Type)
+stock CreateTeleport(Float:FX, Float:FY, Float:FZ, Float:FA, FInt, FVW, FHouse, FBiz, FBuilding, Float:SX, Float:SY, Float:SZ, Float:SA, SInt, SVW, SHouse, SBiz, SBuilding, FPM, SPM, TType)
 {
 	new tID = GetFirstNonCreatedTeleport();
 	
 	if(tID == 0)
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No hay más espacio para teleports. REPORTAR BUG.");
+		return -1; // No hay más espacio para teleports.
 		
 	Teleport[tID][FirstX] = FX;
 	Teleport[tID][FirstY] = FY;
@@ -252,9 +252,10 @@ stock CreateTeleport(Float:FX, Float:FY, Float:FZ, Float:FA, FInt, FVW, Float:SX
 	Teleport[tID][SecondBuilding] = SBuilding;
 	Teleport[tID][FirstPickupModel] = FPM;
 	Teleport[tID][SecondPickupModel] = SPM;
-	Teleport[tID][Type] = Type;
+	Teleport[tID][Type] = TType;
 	InsertTeleportData(tID);
-	LoadTeleportPickup(ID);
+	LoadTeleportPickup(tID);
+	return 1;
 }
 
 stock ResetTeleport(ID)
@@ -323,6 +324,16 @@ stock LoadTeleportPickup(ID)
 	return 1;
 }
 
+stock bool:EnterTeleport(playerid)
+{
+	new tpcount;
+	
+	for(new tpid; tpid < MAX_TELEPORTS; tpid++)
+	{
+		if(PlayerToPoint(1.0, playerid, Teleport[tpid][FirstX], Teleport[tpid][FirstY], Teleport[tpid][FirstZ]) && Teleport[tpid][FirstVW] == GetPlayerVirtualWorld(playerid) && Teleport[tpid][FirstInt] == GetPlayerInterior(playerid))
+			tpcount++;
+	}
+}
 stock EnterTeleport(playerid, tpid)
 {
 	switch(TeleportInfo[tpid][Type])
@@ -367,7 +378,7 @@ CMD:atcrear(playerid, params[])
 	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
 	GetPlayerFacingAngle(playerid, Angle);
 
-	CreateTeleport(pos[0], pos[1], pos[2], Angle+180, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), pos[0], pos[1], pos[2], Angle+180,
+	CreateTeleport(pos[0], pos[1], pos[2], Angle+180, GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 0, 0, 0, pos[0], pos[1], pos[2], Angle+180,
 	GetPlayerInterior(playerid), GetPlayerVirtualWorld(playerid), 0, 0, 0, pickup[0], pickup[1], TYPE_NORMAL);
 	return 1;
 }

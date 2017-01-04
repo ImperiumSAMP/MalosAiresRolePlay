@@ -775,6 +775,7 @@ CMD:mecaceptar(playerid, params[])
            	KillTimer(LojackTimer[playerid]);
 			TogglePlayerControllable(playerid, false);
 			SetTimerEx("LojackInstall", 5000, false, "d", playerid);
+		}
 		case MEC_OFFER_ALARM:
 		{
 			if(AlarmOffer[playerid] == -1)
