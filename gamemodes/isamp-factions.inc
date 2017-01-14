@@ -80,7 +80,7 @@ new MedDuty[MAX_PLAYERS],
 
 stock isPlayerCopOnDuty(playerid)
 {
-	if(PlayerInfo[playerid][pFaction] == FAC_PMA && CopDuty[playerid])
+	if(PlayerInfo[playerid][pFaction] == FAC_PMA && PlayerInfo[playerid][pDuty] == 1)
 	    return true;
 	else
 	    return false;

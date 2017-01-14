@@ -22,6 +22,7 @@ enum pInfo {
 	pCash,
 	pBank,
 	pSkin,
+	pDutySkin,
 	pJob,
 	pJobTime,
 	pJobAllowed, // Si tiene job de facción no lo puede dejar.
@@ -30,7 +31,6 @@ enum pInfo {
 	pPayCheck,
 	pFaction,
 	pRank,
-	pHouseKey,
 	pCurrentHouse,
 	pCurrentBiz,
 	pCurrentBuilding,
@@ -66,6 +66,7 @@ enum pInfo {
 	pRentCarRID,
 	pFightStyle,
 	pMask,
+	pDuty,
 	
 	pThirst,
 	pHunger,
@@ -79,7 +80,6 @@ enum pInfo {
 	
 	pTakeInputs,
 	
-	pHouseKeyIncome,
 	pRolePoints,
 	
 	pContainerSQLID,

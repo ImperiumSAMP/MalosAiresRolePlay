@@ -27,7 +27,7 @@ new SERVER_RADIOS[][128] = {
 /*8*/	"http://s_mobile.cienradios.com/AC_DC_y_Artistas_Relacionados_48.mp3",
 /*9*/	"http://s_mobile.cienradios.com/Bachata_48.mp3",
 /*10*/	"http://stream.electroradio.ch:26630",
-/*11*/	"http://s_mobile.cienradios.com/Bailando_Electro_48.mp3",
+/*11*/	"http://s_mobile.cienradios.com/779_Cumbia_48.mp3",
 /*12*/	"http://s_mobile.cienradios.com/Fiesta_Dance_48.mp3",
 /*13*/	"http://s_mobile.cienradios.com/Hot_100_Reggaeton_48.mp3",
 /*14*/	"http://streaming.radionomy.com/MIXLA128KB",

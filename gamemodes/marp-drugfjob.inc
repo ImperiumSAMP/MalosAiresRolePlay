@@ -4,7 +4,7 @@
 #define _marp_drugfjob_included
 
 #define JOB_DRUGF_MAXPRODS      30
-#define JOB_DRUGF_PRODVALUE     55
+#define JOB_DRUGF_PRODVALUE     15
 
 new Float:JOB_DRUGF_POS[][3] = {
  	/* Puntos de recolección */

@@ -698,6 +698,8 @@ CMD:entrenamientodetiro(playerid, params[]){
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "No tienes el dinero suficiente para realizar el entrenamiento ($500)");
 	if(skillvalue == 1)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Alguien está realizando el entrenamiento, debes aguardar a que termine para poder realizarlo tu");
+	if(!PlayerToPoint(5.0, playerid, 302, -126, 1004))
+        return 1;
 	if(selectid != 22 && selectid != 24 && selectid != 25)
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, " Tienes que ingresar un id de arma válido (22 para la 9mm, 24 para la Deagle o 25 para la Escopeta");
 	if(GetHandItem(playerid, HAND_RIGHT) != 0)

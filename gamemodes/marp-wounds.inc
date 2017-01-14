@@ -10,48 +10,45 @@
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 */
 
-// Bodyparts
-#define BODY_PART_TORSO         3
-#define BODY_PART_GROIN         4
-#define BODY_PART_LEFT_ARM      5
-#define BODY_PART_RIGHT_ARM     6
-#define BODY_PART_LEFT_LEG      7
-#define BODY_PART_RIGHT_LEG     8
-#define BODY_PART_HEAD          9
-
 new TakeLegShot[MAX_PLAYERS];
+new TakeHeadShot[MAX_PLAYERS];
 
-public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
+{
+	return OnPlayerTakeDamage(damagedid, playerid, amount, weaponid, bodypart);
+}
+
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
 {
 	new Float:armour;
-
-    GetPlayerArmour(playerid, armour);
+	
+	GetPlayerArmour(playerid, armour);
 
     if(issuerid != INVALID_PLAYER_ID)
 	{
 		//==========================SPRAY NO SACA VIDA==========================
-
- 		if(weaponid == WEAPON_SPRAYCAN)
+		
+ 		if(weaponid == WEAPON_SPRAYCAN || weaponid == WEAPON_FIREEXTINGUISHER)
             return 1;
 
 	    //===============================TAZER==================================
 
-		if(checkTazer(playerid, issuerid, amount, weaponid))
+		if(checkTaser(playerid, issuerid, amount, weaponid))
 		    return 1;
 
 		//==============================HEADSHOT================================
 
-		/*if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid))
+		if(bodypart == BODY_PART_HEAD && TakeHeadShot[playerid] == 0 && isWeaponForHeadshot(weaponid) && DistanceForHeadshot(playerid, issuerid, weaponid))
 		{
 			SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en la cabeza y entras en estado de agonia. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 		    SetPlayerHealthEx(playerid, 24);
             TakeHeadShot[playerid] = 1;
             return 1;
-		}*/
+		}
 
 		//=========================DISPARO EN PIERNAS===========================
 
-		if(bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG && TakeLegShot[playerid] == 0)
+		if((bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG) && TakeLegShot[playerid] == 0)
 		{
             SendFMessage(playerid, COLOR_WHITE, "Has recibido un disparo en una de tus piernas al intentar correr te caeras. Dicho disparo lo realizo %s", GetPlayerNameEx(issuerid));
 			TakeLegShot[playerid] = 1;
@@ -61,51 +58,43 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 
 		if(amount > 4.0)
 			CheckDamageWound(playerid, weaponid, bodypart, Float:armour);
-
-		//========================EFECTOS DE LA DROGA===========================
-
-		if(weaponid == 0)
+		
+		if(armour > 0.0)
 		{
-		    amount = amount/2; // Bajamos el daño base por puño para hacer mas duraderas las peleas y para darle utilidad a las armas melee.
-
-		    if(DrugEffectEcstasy[issuerid] == false || DrugEffectMarijuana[playerid] == false)  // Si no tienen los 2 la droga contraria
-		    {
-			    if(DrugEffectEcstasy[issuerid] == true)
-			    {
-			    	amount = (amount / 10) * 17; // subimos 70 porciento el daño a trompadas que inflige si esta drogado con LSD
-	    			if(armour > 0)
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)) );
-					else
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					return 1;
-				}
-				if(DrugEffectMarijuana[playerid] == true)
-				{
-	                amount = (amount / 2); // reducimos 50 porciento el daño a trompadas que recibe si esta drogado con marihuana
-					if(armour > 0)
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
-					else
-						SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-					return 1;
-				}
+			if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
+				SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
+			else
+			{
+				PlayerInfo[playerid][pArmour] = armour - amount;
+				SetPlayerArmour(playerid, PlayerInfo[playerid][pArmour]);
 			}
 		}
-	}
-
-	if(armour > 0.0)
-	{
-	    if(bodypart == BODY_PART_LEFT_ARM || bodypart == BODY_PART_RIGHT_ARM || bodypart == BODY_PART_LEFT_LEG || bodypart == BODY_PART_RIGHT_LEG)
-            SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
 		else
-			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - (amount / (armour / 2)));
+			SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
 	}
-	else
- 		SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] - amount);
-
     return 1;
 }
 
-/*stock isWeaponForHeadshot(weaponid)
+stock DistanceForHeadshot(playerid, issuerid, weaponid)
+{
+	switch(weaponid)
+	{
+		case WEAPON_COLT45: if(GetDistanceBetweenPlayers(playerid, issuerid) < 15.0) return 1;
+		case WEAPON_SILENCED: if(GetDistanceBetweenPlayers(playerid, issuerid) < 15.0) return 1;
+		case WEAPON_DEAGLE: if(GetDistanceBetweenPlayers(playerid, issuerid) < 20.0) return 1;
+		case WEAPON_SHOTGUN: if(GetDistanceBetweenPlayers(playerid, issuerid) < 5.0) return 1;
+		case WEAPON_UZI: if(GetDistanceBetweenPlayers(playerid, issuerid) < 10.0) return 1;
+		case WEAPON_MP5: if(GetDistanceBetweenPlayers(playerid, issuerid) < 20.0) return 1;
+		case WEAPON_AK47: if(GetDistanceBetweenPlayers(playerid, issuerid) < 35.0) return 1;
+		case WEAPON_M4: if(GetDistanceBetweenPlayers(playerid, issuerid) < 35.0) return 1;
+		case WEAPON_TEC9: if(GetDistanceBetweenPlayers(playerid, issuerid) < 10.0) return 1;
+		case WEAPON_RIFLE: if(GetDistanceBetweenPlayers(playerid, issuerid) < 35.0) return 1;
+		case WEAPON_SNIPER: if(GetDistanceBetweenPlayers(playerid, issuerid) < 100.0) return 1;
+	}
+	return 0;
+}
+
+stock isWeaponForHeadshot(weaponid)
 {
 	if(weaponid == WEAPON_COLT45 || weaponid == WEAPON_SILENCED || weaponid == WEAPON_DEAGLE ||
 		weaponid == WEAPON_SHOTGUN ||weaponid == WEAPON_UZI || weaponid == WEAPON_MP5 ||
@@ -114,7 +103,7 @@ public OnPlayerTakeDamage(playerid, issuerid, Float: amount, weaponid, bodypart)
 	    return 1;
 
 	return 0;
-}*/
+}
 
 stock AccurateShot(playerid)
 {
@@ -149,8 +138,8 @@ public RecoverLastShot(playerid)
 
 stock CheckDamageWound(playerid, weaponid, bodypart, Float: armour)
 {
-	new wepProbability = 0,
-	    bodyProbability = 0,
+	new wepProbability ,
+	    bodyProbability,
 	    option = random(100);
 
 	switch(weaponid)

@@ -20,6 +20,8 @@ CMD:pponer(playerid, params[])
         return 1;
     if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes el rango suficiente!");
+	if(!isPlayerCopOnDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
    	if(sscanf(params, "i", objetos)){
@@ -320,6 +322,8 @@ CMD:pquitar(playerid, params[])
 {
    	if(GetPlayerState(playerid) != PLAYER_STATE_ONFOOT)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "Tienes que estar a pie.");
+	if(!isPlayerCopOnDuty(playerid))
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en servicio para usar este comando.");
 
     new Float:x, Float:y, Float:z;
 

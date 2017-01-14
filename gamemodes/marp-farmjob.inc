@@ -4,7 +4,7 @@
 #define _marp_farmjob_included
 
 #define JOB_FARM_MAXPRODS       20
-#define JOB_FARM_PRODVALUE      90
+#define JOB_FARM_PRODVALUE      30
 #define JOB_FARM_TRAVEL_TIME    9 // En minutos
 
 new Float:JOB_FARM_POS[][3] = {
@@ -43,7 +43,7 @@ FarmJob_StartWork(playerid)
 
 
 	SendClientMessage(playerid, COLOR_WHITE, "Dirígete a los puntos rojos para cosechar, al finalizar deberás traer la cosecha y tipear /terminar para descargarla.");
-    SendClientMessage(playerid, COLOR_WHITE, "Puedes descargar los materiales cuando quieras, pero te pagarán acorde a la cantidad y no podras volver a trabajar durante este día de pago.");
+    SendClientMessage(playerid, COLOR_WHITE, "Puedes descargar los materiales cuando quieras, pero te pagarán acorde a la cantidad.");
     SendFMessage(playerid, COLOR_WHITE, "Tienes %d minutos para terminar el recorrido. Si llegas más tarde, o con la cosechadora rota, tu imagen laboral empeorará.", JOB_FARM_TRAVEL_TIME);
 	new rCP = -1;
 	while(rCP == 16 || rCP == -1 || rCP == LastCP[playerid])
@@ -116,8 +116,8 @@ FarmJob_Payment(playerid, vehicleid)
 	else
 	    Job_GiveReputation(playerid, 1);
 
-	seniorityBonus = PlayerJobInfo[playerid][pWorkingHours] / 2; // Extra por antiguedad
-	chargeBonus = (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
+	seniorityBonus = 0; // PlayerJobInfo[playerid][pWorkingHours] / 5; // Extra por antiguedad
+	chargeBonus = 0; // (PlayerJobInfo[playerid][pCharge] - 1) * 100; // Extra por cargo
 
 	paycheck = CollectedProds[playerid] * JOB_FARM_PRODVALUE + seniorityBonus + chargeBonus - injuriesCost;
 	PlayerInfo[playerid][pPayCheck] += paycheck;

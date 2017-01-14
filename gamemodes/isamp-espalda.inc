@@ -97,18 +97,6 @@ stock PrintBackForPlayer(playerid, targetid)
 	return 1;
 }
 
-//=================BORRADO DE ARMAS AL MORIR SI NO ES COPDUTY===================
-
-ResetBackWeapon(playerid)
-{
-	if(BackInfo[playerid][Item] > 0 && GetItemType(BackInfo[playerid][Item]) == ITEM_WEAPON)
-	{
-     	DetachBackItem(playerid);
-		ResetBackInfo(playerid);
-	}
-	return 1;
-}
-
 //=======DESTRUCTOR DE LOS CONTENEDORES EN MEMORIA ASOCIADOS A LA ESPALDA=======
 
 DestroyPlayerBack(playerid)
