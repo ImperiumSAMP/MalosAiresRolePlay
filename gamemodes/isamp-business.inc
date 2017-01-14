@@ -821,8 +821,8 @@ CMD:anradio(playerid,params[])
 
 	if(sscanf(params, "ii", bizID, radio))
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /anradio [ID negocio] [ID radio]");
-	if(radio < 0 || radio > 16)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 16. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 40)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 40. Usa 0 para dejarlo sin radio.");
 	if(bizID >= 0 && bizID < MAX_BUSINESS)
 	{
 		Business[bizID][bRadio] = radio;

@@ -13017,7 +13017,7 @@ CMD:emisora(playerid, params[])
 		veh_type = GetVehicleType(vehicleid);
 
 	if(sscanf(params, "i", radio))
-		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /emisora [1-18]. Para apagarla utiliza /emisoraoff.");
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]{C8C8C8} /emisora [1-40]. Para apagarla utiliza /emisoraoff.");
 	if(!IsPlayerInAnyVehicle(playerid) || (veh_type != VTYPE_CAR && veh_type != VTYPE_HELI && veh_type != VTYPE_PLANE && veh_type != VTYPE_HEAVY))
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en un auto!");
     if(GetPlayerState(playerid) != PLAYER_STATE_DRIVER && GetPlayerVehicleSeat(playerid) != 1)
