@@ -520,6 +520,7 @@ public OnGameModeInit()
 	LoadHouses();
 	LoadBusiness();
 	loadBuildings();
+	loadObjects();
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
 	LoadServerActors();
@@ -1296,6 +1297,9 @@ public OnPlayerDisconnect(playerid, reason)
 	    SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0);
 		PhoneHand[playerid] = 0;
 	}
+	
+	if(ShowIdObjects[playerid] == 1)
+		ShowIdObjects[playerid] = 0;
 	
 	if(InEnforcer[playerid] == 1)
 	{
@@ -7824,11 +7828,12 @@ CMD:acmds(playerid, params[]) {
 CMD:admincmds(playerid, params[]) {
 
 	if(PlayerInfo[playerid][pAdmin] >= 1) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aeditobjeto /ainfoobjetos");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[CERTIFICADOR]{C8C8C8} /crearcuenta /aobjeto /aobjetoquitar /aeditobjeto /ainfoobjetos /aomostrarid /aoocultarid");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 2) {
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /gooc /congelar /descongelar /fly /getpos /goto /traer /muteb /setcoord /setint /setvw /kick");
-		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /vermascara /vermascaras /avehiculo /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /a /aservicio /gooc /congelar /descongelar /fly /getpos /goto /traer  /muteb");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /setcoord /setint /setvw /kick /aobjetotele /vermascara /vermascaras /avehiculo");
+		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 2]{C8C8C8} /teleayuda /darpuntoderol /quitarpuntoderol /verpuntosderol /aobjetosquitartodo");
 	}
 	if(PlayerInfo[playerid][pAdmin] >= 3) {
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{878EE7}[LVL 3]{C8C8C8} /ajail /ao /ban /check /checkinv /vercanal /verip /vertlf /mute /slap /skin");
