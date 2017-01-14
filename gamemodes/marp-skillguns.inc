@@ -659,6 +659,7 @@ public OnPlayerShootDynamicObject(playerid, weaponid, objectid, Float:x, Float:y
 			SkillCount[playerid] ++;
 		}
 	}
+	return 1;
 }
 
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ){
@@ -672,6 +673,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 			}
 		}
 	}
+	return 1;
 }
 
 stock updateSkillTimerCounters(playerid){
