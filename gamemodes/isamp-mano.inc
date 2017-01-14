@@ -589,7 +589,11 @@ CMD:mano(playerid, params[])
 						return 1;
 					ApplyAnimation(playerid, "PED", "PASS_SMOKE_IN_CAR", 4.0, 0, 1, 1, 0, 0);
 					PlayerActionMessage(playerid, 15.0, "retira una aspirina de la caja y la ingiere.");
-					SetPlayerHealth(playerid, PlayerInfo[playerid][pHealth] + 3);
+					SetPlayerHealthEx(playerid, PlayerInfo[playerid][pHealth] + 3);
+					if(GetHandParam(playerid, HAND_RIGHT) - 1 > 0)
+						SetHandItemAndParam(playerid, HAND_RIGHT, ITEM_ID_CAJA_ASPIRINAS, GetHandParam(playerid, HAND_RIGHT) - 1);
+					else
+						SetHandItemAndParam(playerid, HAND_RIGHT, 0, 0); // Borrado lógico y grafico
 					return 1;
 				}
 			}
