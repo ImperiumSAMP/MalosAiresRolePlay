@@ -81,8 +81,6 @@ enum Cars {
 	VehEcstasy,
 	VehCocaine,
 	VehRadio,
-	VehGNC,
-	VehGNCTank
 
 	VehContainerSQLID,
 	VehContainerID
@@ -666,8 +664,6 @@ ResetVehicle(id)
     VehicleInfo[id][VehBoot]		= -1;
     VehicleInfo[id][VehLights]		= -1;
     VehicleInfo[id][VehFuel]		= 0;
-    VehicleInfo[id][VehGNC]			= 0;
-    VehicleInfo[id][VehGNCTank]		= 0;
     VehicleInfo[id][VehMarijuana]	= 0;
     VehicleInfo[id][VehLSD]			= 0;
     VehicleInfo[id][VehEcstasy]		= 0;
@@ -737,7 +733,7 @@ SaveVehicle(id)
 		VehicleInfo[id][VehOwnerName]
 	);
 	
-	format(query,sizeof(query),"%s,VehCompSlot0=%d,VehCompSlot1=%d,VehCompSlot2=%d,VehCompSlot3=%d,VehCompSlot4=%d,VehCompSlot5=%d,VehCompSlot6=%d,VehCompSlot7=%d,VehCompSlot8=%d,VehCompSlot9=%d,VehCompSlot10=%d,VehCompSlot11=%d,VehCompSlot12=%d,VehCompSlot13=%d,VehMarijuana=%d,VehLSD=%d,VehEcstasy=%d,VehCocaine=%d, VehContainerSQLID=%d, VehGNC=%d, VehGNCTank=%d WHERE `VehSQLID` = %d",
+	format(query,sizeof(query),"%s,VehCompSlot0=%d,VehCompSlot1=%d,VehCompSlot2=%d,VehCompSlot3=%d,VehCompSlot4=%d,VehCompSlot5=%d,VehCompSlot6=%d,VehCompSlot7=%d,VehCompSlot8=%d,VehCompSlot9=%d,VehCompSlot10=%d,VehCompSlot11=%d,VehCompSlot12=%d,VehCompSlot13=%d,VehMarijuana=%d,VehLSD=%d,VehEcstasy=%d,VehCocaine=%d, VehContainerSQLID=%d WHERE `VehSQLID` = %d",
 		query,
 		VehicleInfo[id][VehCompSlot][0],
 		VehicleInfo[id][VehCompSlot][1],
@@ -758,9 +754,7 @@ SaveVehicle(id)
 		VehicleInfo[id][VehEcstasy],
 		VehicleInfo[id][VehCocaine],
 		VehicleInfo[id][VehContainerSQLID],
-		VehicleInfo[id][VehSQLID],
-		VehicleInfo[id][VehGNC],
-		VehicleInfo[id][VehGNCTank]
+		VehicleInfo[id][VehSQLID]
 	);
 	mysql_function_query(dbHandle, query, false, "", "");
 	return 1;

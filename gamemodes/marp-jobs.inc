@@ -62,11 +62,11 @@ enum e_job_info {
 new JobInfo[][e_job_info] = {
 
 /*0*/	{"NONE", 0,	0, 0, 0, 0.0, 0.0, 0.0, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
-/*1*/   {"Moto Delivery", 1, 650, 0, 0, 1739.45, -1583.3, 14.15, 0, 0, "job_deli", "Aprendiz", "Cadete", "Mensajero", "Mensajero experimentado", "Supervisor"},
+/*1*/   {"Moto Delivery", 1, 375, 0, 0, 1739.45, -1583.3, 14.15, 0, 0, "job_deli", "Aprendiz", "Cadete", "Mensajero", "Mensajero experimentado", "Supervisor"},
 /*2*/   {"Taxista", 1, 0, 0, 0, 1813.68, -1896.36, 13.5781, 0, 0, "job_taxi", "Chofer", "Chofer", "Chofer", "Chofer", "Chofer"},
-/*3*/   {"Granjero", 1, 600, 32, 0, -31.0715, 54.5695, 3.1172, 0, 0, "job_farm", "Aprendiz", "Ayudante de maquinas", "Chofer de maquina", "Evaluador de cosecha", "Supervisor"},
-/*4*/   {"Transportista", 1, 600, 206, 0, 2229.23, -2208.34, 13.5469, 0, 0, "job_tran", "Aprendiz", "Carguero", "Chofer de camión", "Encargado de logística", "Supervisor"},
-/*5*/   {"Basurero", 1, 600, 236, 0, 2405.58, -2060.67, 13.5469, 0, 0, "job_garb", "Aprendiz", "Recolector", "Compactador", "Chofer de camión", "Supervisor"},
+/*3*/   {"Granjero", 1, 1800, 32, 0, -31.0715, 54.5695, 3.1172, 0, 0, "job_farm", "Aprendiz", "Ayudante de maquinas", "Chofer de maquina", "Evaluador de cosecha", "Supervisor"},
+/*4*/   {"Transportista", 1, 1800, 206, 0, 2229.23, -2208.34, 13.5469, 0, 0, "job_tran", "Aprendiz", "Carguero", "Chofer de camión", "Encargado de logística", "Supervisor"},
+/*5*/   {"Basurero", 1, 1800, 236, 0, 2405.58, -2060.67, 13.5469, 0, 0, "job_garb", "Aprendiz", "Recolector", "Compactador", "Chofer de camión", "Supervisor"},
 /*6*/   {"Delincuente", 2, 0, 0, 1, 2614.12, -1393.15, 34.8954, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
 /*7*/   {"Cosechador de Materia Prima", 2, 0, 0, 0, -1060.79, -1205.49, 129.322, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
 /*8*/   {"Narcotraficante", 2, 0, 0, 1, 2548.96, -1331.56, 34.2638, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"}
@@ -199,9 +199,7 @@ CMD:trabajar(playerid,params[])
 		{
 			SendClientMessageToAll(COLOR_LIGHTGREEN, "Anuncio: un mecánico se encuentra en servicio (Tel: 555).");
 			jobDuty[playerid] = true;
-		} 
-		else 
-		{
+		} else {
 			SendClientMessage(playerid, COLOR_YELLOW2, "¡Has dejado el servicio como mecánico!");
 			jobDuty[playerid] = false;
 		}
@@ -212,10 +210,8 @@ CMD:trabajar(playerid,params[])
 		    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No tienes ningún empleo!");
 		if(jobDuty[playerid])
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya te encuentras trabajando!");
-		/*
         if(PlayerInfo[playerid][pCantWork] != 0 && job != JOB_DELI)
 			return SendClientMessage(playerid, COLOR_YELLOW2, "¡Ya has trabajado lo suficiente! vé, y espera hasta el próximo día de pago.");
-		*/
 
 		switch(job)
 		{
@@ -258,10 +254,8 @@ CMD:trabajar(playerid,params[])
 			default:
 				return 1;
 		}
-		/*
 		if(PlayerInfo[playerid][pJobAllowed] == 1 && JobInfo[job][jSkin] > 0)
 			SetPlayerSkin(playerid, JobInfo[job][jSkin]);
-		*/
 	}
 	return 1;
 }
@@ -598,11 +592,12 @@ CMD:verempleo(playerid, params[])
 	{
 	    new content[300];
 
-		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nTrabajos realizados: %d\nUltimo día de trabajo: %s\nImagen laboral: %s\nEstado laboral: %s",
+		format(content, sizeof(content), "Empleo: %s\nCargo: %s\nTrabajos realizados: %d\nUltimo día de trabajo: %s\nIngresos totales: $%d\nImagen laboral: %s\nEstado laboral: %s",
 		    JobInfo[PlayerInfo[playerid][pJob]][jName],
 		    GetJobChargeName(PlayerInfo[playerid][pJob], PlayerJobInfo[playerid][pCharge]),
 		    PlayerJobInfo[playerid][pWorkingHours],
 		    PlayerJobInfo[playerid][pLastWorked],
+		    PlayerJobInfo[playerid][pTotalEarnings],
 			GetJobReputationString(PlayerJobInfo[playerid][pReputation]),
    			GetJobStateString(PlayerJobInfo[playerid][pState])
 		);

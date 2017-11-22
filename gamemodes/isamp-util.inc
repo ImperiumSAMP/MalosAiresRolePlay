@@ -106,14 +106,13 @@
 #define COLOR_ADVERTISMENT      0xEEBC00FF
 #define COLOR_ADMINREAD         0x00B400DC
 
+//SKINS
 #define SKINS_M_1    129
 #define SKINS_M_2    69
 #define SKINS_F_1    55
 #define SKINS_F_2    25
 
-#define MAX_TELEPORTS               1000
-#define MAX_HOUSES                  500
-
+// Disables.
 #define DISABLE_NONE            0
 #define DISABLE_FREEZE          1
 #define DISABLE_TAZER           2
@@ -122,13 +121,17 @@
 #define DISABLE_DEATHBED        5
 #define DISABLE_HEALING         6
 
+// Jails
 #define JAIL_NONE           	0
 #define JAIL_IC_PMA         	1
 #define JAIL_OOC            	2
 #define JAIL_IC_PRISON     		3
 #define JAIL_IC_GOB         	4
 
-
+//====[TIPOS DE LOGS]===========================================================
+#define LOG_ADMIN            	1
+#define LOG_MONEY            	2
+#define LOG_CHAT                3
 
 new SkinRegMale[18][1] = {
 	{3},{6},{4},{7},{15},{19},{20},{22},{23},{26},{30},{32},{35},{36},{37},{38},{43},{44}
@@ -173,6 +176,7 @@ new femaleSkins2[SKINS_F_2] = {
 	219,224,225,233,263
 };
 
+//Enums
 enum sInfo {
 	sVehiclePricePercent,
 	sPlayersRecord,
@@ -190,6 +194,7 @@ new Choice[MAX_PLAYERS],
 	bool:AdminSMSEnabled[MAX_PLAYERS],
 	bool:Admin911Enabled[MAX_PLAYERS];
 	
+// Sistema de toggle
 new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:PMsEnabled[MAX_PLAYERS],
 	bool:NewsEnabled[MAX_PLAYERS],
@@ -200,32 +205,5 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 	bool:HudEnabled[MAX_PLAYERS],
 	bool:AdminEnabled[MAX_PLAYERS];
 
+// sistema de mascaras
 new bool:usingMask[MAX_PLAYERS];
-
-
-
-// Variables internas de sistemas
-
-enum HouseSystem {
-	Created,
-	OwnerName[MAX_PLAYER_NAME],
-	OwnerSQLID,
-	TenantName[MAX_PLAYER_NAME],
-	TenantSQLID,
-	IncomePrice,
-	IncomeAmount,
-	RentalExpiration,
-	HousePrice,
-	Money,
-	Locked,
-	Radio,
-
-	EntrancePickupSQLID,
-	ContainerSQLID,
-	ContainerID
-};
-
-new House[MAX_HOUSES][HouseSystem],
-	bool:OfferingHouse[MAX_PLAYERS],
-	HouseOfferPrice[MAX_PLAYERS],
-	HouseOffer[MAX_PLAYERS][2];

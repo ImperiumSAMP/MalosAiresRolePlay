@@ -42,7 +42,7 @@ stock calculateVehiclesTaxes(playerid)
 	for(new i = 0; i < playerKeyCount[playerid]; i++)
 	{
 		if(playerKeys[playerid][i][ckOwner] == getPlayerMysqlId(playerid)) // Dueño
-			tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 3;
+			tax += GetVehiclePrice(playerKeys[playerid][i][ckCarSqlId], 1) / 7; //0.15 porciendo del precio aprox.
    	}
 	return tax;
 }
@@ -219,11 +219,9 @@ stock playerGiveKeyToPlayer(playerid,keyid,user){
 	return 1;
 }
 
-stock printCarKeys(playerid,target)
-{
+stock printCarKeys(playerid,target) {
 	new i;
-	if(playerKeyCount[target]>0)
-	{
+	if(playerKeyCount[target]>0){
 		SendClientMessage(playerid, COLOR_LIGHTYELLOW, "============================[Llaves]===========================");
 		for(i=0;i<playerKeyCount[target];i++)
 			SendFMessage(playerid, COLOR_WHITE,	"[%d] %s", playerKeys[target][i][ckCarSqlId],getVehicleDescription(playerKeys[target][i][ckCarSqlId]));		

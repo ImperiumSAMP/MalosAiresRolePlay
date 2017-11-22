@@ -17,46 +17,24 @@
 new SERVER_RADIOS[][128] = {
 
 /*0*/	"NONE",
-/*1*/	"http://radio.revoltparty.org:9000/dnb",
-/*2*/	"http://82.163.78.59:8066/",
-/*3*/	"http://camon01.dehost24.eu:9990/",
-/*4*/	"http://buecrplb01.cienradios.com.ar/la100_mdq.mp3",
-/*5*/	"http://camon01.dehost24.eu:9996/",
-/*6*/	"http://listen.shoutcast.com/hot977fm.m3u",
-/*7*/	"http://hemnos.cdnstream.com/1442_128",
-/*8*/	"https://stream.radio.co/s1b65fa6d5/listen",
-/*9*/	"http://radio.ohmylatino.com/bachata.mp3",
-/*10*/	"http://107.182.234.82:8300/",
-/*11*/	"http://s_mobile.cienradios.com/779_Cumbia_48.mp3",
-/*12*/	"http://107.182.234.82:8218/",
-/*13*/	"http://hestia2.cdnstream.com/1249_128",
-/*14*/	"http://listen.radionomy.com/flameonradioclassichiphopnow.m3u",
-/*15*/	"http://www.wohradio.com:27015/listen.pls",
-/*16*/	"http://212.83.150.15:8022/",
-/*17*/	"http://streaming.radio.co/s258f7b690/listen",
-/*18*/	"http://s_mobile.cienradios.com/675_Hot_100_Reggaeton_48.mp3",
-/*19*/  "http://s1.streamaudio.de:8000/destroy-society-radio",
-/*20*/	"http://centova.orsradio.com:8052/",
-/*21*/	"http://yp.shoutcast.com/sbin/tunein-station.pls?id=192203",
-/*22*/	"http://cc.net2streams.com:8557/",
-/*23*/	"http://usa14.fastcast4u.com:5072/",
-/*24*/	"http://s_mobile.cienradios.com/575_80_Nacional_48.mp3",
-/*25*/	"http://s_mobile.cienradios.com/784_Viejitos_Piolas_48.mp3",
-/*26*/	"http://s_mobile.cienradios.com/1124_Trending_Topic_48.mp3",
-/*27*/	"http://listen.radionomy.com/RadioOlympia-dot-org.m3u",
-/*28*/	"http://vpr.net/vpr_files/stream_playlists/vprclassicalhigh.pls",
-/*29*/	"http://184.173.142.117:7128/stream",
-/*30*/	"http://107.182.234.82:8194/",
-/*31*/	"http://djboyradio.streamguys1.com/alligator-records.mp3",
-/*32*/	"http://37.251.146.169:7800/stream?1465938594190.mp3",
-/*33*/	"http://listen.radionomy.com/canazed",
-/*34*/	"http://192.99.8.192:2762/stream/;*.mp3",
-/*35*/	"http://yp.shoutcast.com/sbin/tunein-station.pls?id=143365",
-/*36*/	"http://yp.shoutcast.com/sbin/tunein-station.pls?id=1034744",
-/*37*/	"http://streams.bigfm.de/bigfm-reggaevibes-128-mp3",
-/*38*/  "http://live3.istoikona.net:8152/live",
-/*39*/	"http://50.7.77.115:8199/stream",
-/*40*/  "http://streaming.radionomy.com/ChicanoRap-TalkBox-FunkRadio"
+/*1*/	"http://mp3.metroaudio1.stream.avstreaming.net:7200/metro", // METRO FM 95.1
+/*2*/	"http://provisioning.streamtheworld.com/pls/LOS40_ARGENTINA.pls", // 40 Principales FM 105.5
+/*3*/	"http://buecrplb01.cienradios.com.ar/Mitre790.mp3",
+/*4*/	"http://buecrplb01.cienradios.com.ar/Palermo_2.mp3",
+/*5*/	"http://buecrplb01.cienradios.com.ar/fm979.mp3",
+/*6*/	"http://buecrplb01.cienradios.com.ar/la100_mdq.mp3",
+/*7*/	"http://200.58.112.154:9055/listen.pls", // Radio FOLKLORE Rosario 128 kbps
+/*8*/	"http://188.165.236.90:8314/listen.pls", // Radio CHAMAMÉ 64 kbps
+/*9*/	"http://50.22.218.101:21480/listen.pls", // Radio ROCK NACIONAL 128 kbps
+/*10*/	"http://stream.electroradio.ch:26630",
+/*11*/	"http://streaming.radionomy.com/MIXLA128KB",
+/*12*/	"http://radio.ksolucoes.com.br:9944/listen.pls", // Radio RAP Brasil 128 kbps
+/*13*/	"http://uk3.internet-radio.com:8136/listen.pls", // Easy Hits FLORIDA 192kbps
+/*14*/	"http://us1.internet-radio.com:11094/listen.pls", // Smooth Jazz FLORIDA 128kbps
+/*15*/	"http://us2.internet-radio.com:8443/listen.pls", // Radio BLUES 128 kbps
+/*16*/	"http://109.123.116.202:8022/listen.pls", // Radio MÚSICA CLÁSICA 128 kbps
+/*17*/	"http://200.58.116.222:11910", // FUTURO FM 106.3
+/*18*/	"http://50.7.56.2:8040/listen.pls" // Radio TROPICALÍSIMA CUMBIA 128 kbps
 
 };
 

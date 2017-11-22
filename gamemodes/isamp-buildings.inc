@@ -288,8 +288,8 @@ CMD:aeradio(playerid, params[])
 		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "{5CCAF1}[Sintaxis]:{C8C8C8} /aeradio [ID edificio] [ID radio]");
 	if(blid < 1 || blid >= MAX_BUILDINGS)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "ID de edificio inválida.");
-	if(radio < 0 || radio > 40)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 40. Usa 0 para dejarlo sin radio.");
+	if(radio < 0 || radio > 15)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes ingresar una radio válida: del 1 al 15. Usa 0 para dejarlo sin radio.");
 
 	Building[blid][blRadio] = radio;
 	SendFMessage(playerid, COLOR_WHITE, "[INFO]: Has seteado la radio del edificio %d a %d.", blid, Building[blid][blRadio]);

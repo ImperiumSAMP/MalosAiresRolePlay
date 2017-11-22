@@ -13,22 +13,9 @@
 #define ITEM_TOY                3
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
-#define ITEM_FIREWEAPON         6
-#define ITEM_WEAPONMAG          7
-#define ITEM_FOOD               8
-#define ITEM_INGREDIENT         9
-#define ITEM_SPECIALWEAPON      10
 
-#define MAX_ITEMS               177
+#define MAX_ITEMS               118
 
-#define ITEM_ID_9MM                     22
-#define ITEM_ID_9MM_SILENCED            23
-#define ITEM_ID_DEAGLE                  24
-#define ITEM_ID_UZI                     28
-#define ITEM_ID_TEC9                    32
-#define ITEM_ID_MP5                     29
-#define ITEM_ID_M4                      31
-#define ITEM_ID_AK47                    30
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
 #define ITEM_ID_BIDON		    		48
@@ -101,65 +88,6 @@
 #define ITEM_ID_WHISKY					115
 #define ITEM_ID_VODKA					116
 #define ITEM_ID_RON						117
-#define ITEM_ID_VESTIMENTA				118
-#define ITEM_ID_CARGADOR_9MM			119
-#define ITEM_ID_CARGADOR_DEAGLE			120
-#define ITEM_ID_CARGADOR_UZI			121
-#define ITEM_ID_CARGADOR_MP5			122
-#define ITEM_ID_CARGADOR_M4				123
-#define ITEM_ID_CARGADOR_AK47           124
-#define ITEM_ID_CAJA_BALAS_9MM			125
-#define ITEM_ID_CAJA_BALAS_DEAGLE		126
-#define ITEM_ID_CAJA_BALAS_UZI			127
-#define ITEM_ID_CAJA_BALAS_MP5			128
-#define ITEM_ID_CAJA_BALAS_M4			129
-#define ITEM_ID_CAJA_BALAS_AK47         130
-#define ITEM_ID_LLAVE_CASA              131
-#define ITEM_ID_LLAVE_NEGOCIO           132
-#define ITEM_ID_LLAVE_EDIFICIO          133
-#define ITEM_ID_TARJETA                 134
-#define ITEM_ID_JAMON                   135
-#define ITEM_ID_MANZANA_ROJA            136
-#define ITEM_ID_MANZANA_VERDE           137
-#define ITEM_ID_NARANJA                 138
-#define ITEM_ID_TOMATE                  139
-#define ITEM_ID_BANANA                  140
-#define ITEM_ID_PAN                     141
-#define ITEM_ID_CARNE1		            142
-#define ITEM_ID_CARNE2                  143
-#define ITEM_ID_PIZZA                   144
-#define ITEM_ID_CAJA_PIZZA	            145
-#define ITEM_ID_PESCADO                 146
-#define ITEM_ID_HELADO                  147
-#define ITEM_ID_CEREALES1               148
-#define ITEM_ID_CEREALES2               149
-#define ITEM_ID_PORCION_PIZZA           150
-#define ITEM_ID_BANDEJA1                151
-#define ITEM_ID_BANDEJA2                152
-#define ITEM_ID_BANDEJA3                153
-#define ITEM_ID_BANDEJA4                154
-#define ITEM_ID_BANDEJA5                155
-#define ITEM_ID_BANDEJA6                156
-#define ITEM_ID_BANDEJA7                157
-#define ITEM_ID_BANDEJA8                158
-#define ITEM_ID_BANDEJA9                159
-#define ITEM_ID_BANDEJA10               160
-#define ITEM_ID_BANDEJA11               161
-#define ITEM_ID_BANDEJA12               162
-#define ITEM_ID_BANDEJA13               163
-#define ITEM_ID_BANDEJA14               164
-#define ITEM_ID_BANDEJA15               165
-#define ITEM_ID_TORTA1                  166
-#define ITEM_ID_TORTA2                  167
-#define ITEM_ID_TORTA3                  168
-#define ITEM_ID_HAMBURGUESA             169
-#define ITEM_ID_TASER                   170
-#define ITEM_ID_PLACA_POLICIAL          171
-#define ITEM_ID_ESPOSAS                 172
-#define ITEM_ID_GANZUA                  173
-#define ITEM_ID_CAJON_DE_CERVEZA        174
-#define ITEM_ID_CAJA_ASPIRINAS			175
-#define ITEM_ID_CAJA_RECARGAS_TASER		176
 
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
@@ -177,7 +105,7 @@
 //==============================DATA STORAGE====================================
 
 enum ItemInfo {
-	Name[70],
+	Name[40],
 	ParamName[20],
 	Type,
 	BasePrice,
@@ -195,7 +123,7 @@ enum ItemInfo {
 	Float:RightRxPos,
 	Float:RightRyPos,
 	Float:RightRzPos,
-	AttachBone, // Hueso donde se attachea si estÃ¡ equipado (no en la mano)
+	AttachBone, // Hueso donde se attachea si está equipado (no en la mano)
 	OccupiedSpace
 };
 
@@ -223,17 +151,17 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*19*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*20*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*21*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
-/*22*/	{"Pistola 9mm", "Munición", ITEM_FIREWEAPON, 6500, true, 346, 0.009, 0.061, -0.025, 150.9, 8.6, -11.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
-/*23*/	{"Pistola 9mm con silenciador", "Munición", ITEM_FIREWEAPON, 7500, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
-/*24*/	{"Pistola Desert Eagle", "Munición", ITEM_FIREWEAPON, 17500, true, 348, 0.011, 0.058, 0.0, -178.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*22*/	{"Pistola 9mm", "Munición", ITEM_WEAPON, 35, true, 346, 0.009, 0.061, -0.025, 150.9, 8.6, -11.7, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
+/*23*/	{"Pistola 9mm con silenciador", "Munición", ITEM_WEAPON, 75, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*24*/	{"Pistola Desert Eagle", "Munición", ITEM_WEAPON, 150, true, 348, 0.011, 0.058, 0.0, -178.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*25*/	{"Escopeta", "Munición", ITEM_WEAPON, 70, false, 349, 0.035, 0.081, 0.023, 154.4, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
 /*26*/	{"Escopeta recortada", "Munición", ITEM_WEAPON, 120, false, 350, 0.026, 0.058, -0.023, 170.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
 /*27*/	{"Escopeta de combate", "Munición", ITEM_WEAPON, 200, false, 351, 0.024, 0.059, -0.01, 172.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 35},
-/*28*/	{"Uzi", "Munición", ITEM_FIREWEAPON, 15000, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
-/*29*/	{"Subfusil MP-5", "Munición", ITEM_FIREWEAPON, 20000, false, 353, 0.03, 0.065, 0.0, 163.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
-/*30*/	{"Fusil AK-47", "Munición", ITEM_FIREWEAPON, 35000, false, 355, 0.057, 0.076, 0.014, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
-/*31*/	{"Fusil M4", "Munición", ITEM_FIREWEAPON, 35000, false, 356, 0.031, 0.042, -0.021, 174.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
-/*32*/	{"Pistola semiautomatica TEC-9", "Munición", ITEM_FIREWEAPON, 15000, true, 372, 0.022, 0.067, 0.0, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
+/*28*/	{"Uzi", "Munición", ITEM_WEAPON, 50, true, 352, 0.024, 0.051, -0.022, 167.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 15},
+/*29*/	{"Subfusil MP-5", "Munición", ITEM_WEAPON, 95, false, 353, 0.03, 0.065, 0.0, 163.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
+/*30*/	{"Fusil AK-47", "Munición", ITEM_WEAPON, 170, false, 355, 0.057, 0.076, 0.014, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
+/*31*/	{"Fusil M4", "Munición", ITEM_WEAPON, 170, false, 356, 0.031, 0.042, -0.021, 174.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
+/*32*/	{"Pistola semiautomatica TEC-9", "Munición", ITEM_WEAPON, 50, true, 372, 0.022, 0.067, 0.0, 168.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*33*/	{"Rifle de caza", "Munición", ITEM_WEAPON, 60, false, 357, 0.057, 0.083, -0.007, 168.1, 19.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 30},
 /*34*/	{"Rifle de francotirador", "Munición", ITEM_WEAPON, 550, false, 358, 0.052, 0.086, 0.007, 150.1, 8.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 40},
 /*35*/	{"RPG-7", "Munición", ITEM_WEAPON, 25000, false, 359, 0.004, 0.046, 0.0, 158.8, 9.5, -4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
@@ -244,30 +172,30 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*40*/	{"Detonador", "Cantidad", ITEM_WEAPON, 1000, true, 364, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4},
 /*41*/	{"Aerosol", "Contenido", ITEM_WEAPON, 50, true, 365, 0.029, 0.059, -0.109, -177.1, -0.9, -21.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 6},
 /*42*/	{"Matafuegos", "Contenido", ITEM_WEAPON, 250, false, 366, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
-/*43*/	{"Cámara Fotográfica", "Fotos", ITEM_WEAPON, 10, true, 367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
+/*43*/	{"Cámara fotográfica", "Fotos", ITEM_WEAPON, 10, true, 367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
 /*44*/	{"Visión nocturna", "Cantidad", ITEM_WEAPON, 0, false, 368, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, 0, false, 369, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*46*/	{"Paracaídas", "Cantidad", ITEM_WEAPON, 0, false, 371, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
 /*47*/	{"Caja de materiales", "Cantidad", ITEM_OTHER, 45, false, 2040, 0.0, 0.074, 0.016, -85.2, 0.0, 0.0, 0.0, 0.074, 0.016, -85.2, 0.0, 0.0, 0, 100},
-/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 350, false, 1650, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0, 70},
+/*48*/	{"Bidón de combustible", "Contenido", ITEM_OTHER, 50, false, 1650, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0.154, 0.028, -0.049, 0.0, -97.3, -156.3, 0, 70},
 /*49*/	{"Bolsa de materia prima", "Cantidad", ITEM_OTHER, 10, false, 2060, 0.0, 0.086, 0.155, 93.6, 0.0, 75.1, 0.0, 0.086, 0.155, 93.6, 0.0, 75.1, 0, 60},
 /*50*/	{"Productos", "Cantidad", ITEM_OTHER, 50, false, 2694, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0.0, 0.063, 0.182, -75.89, -0.6, 23.1, 0, 65},
 /*51*/	{"Dinero", "Cantidad", ITEM_OTHER, 1, false, 1212, 0.115, 0.039, 0.0, 1.9, -102.40, 10.8, 0.115, 0.039, 0.0, 1.9, -102.40, 10.8, 0, 4},
-/*52*/	{"Sándwich", "Cantidad", ITEM_OTHER, 40, true, 2769, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*52*/	{"Sándwich", "Cantidad", ITEM_OTHER, 20, true, 2769, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
 /*53*/	{"Alfajor", "Cantidad", ITEM_OTHER, 10, true, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 2},
-/*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, 30, true, 1484, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
+/*54*/	{"Agua mineral", "Cantidad", ITEM_OTHER, 15, true, 1484, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*55*/	{"Maletín de dinero", "$", ITEM_OTHER, 300, false, 1210, 0.302, 0.083, -0.012, 0.0, -90.599, -0.99, 0.302, 0.083, -0.012, 0.0, -90.599, -0.99, 0, 55},
 /*56*/  {"Casco Común", "Cantidad", ITEM_TOY, 350, false, 18645, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 30},
 /*57*/  {"Casco de Motocross", "Cantidad", ITEM_TOY, 400, false, 18976, 0.194, -0.032, -0.024, 68.8, 0.0, 174.1, 0.194, -0.032, -0.024, 68.8, 0.0, 174.1, 2, 35},
 /*58*/  {"Casco Rojo", "Cantidad", ITEM_TOY, 250, false, 18977, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 30},
 /*59*/  {"Casco Blanco", "Cantidad", ITEM_TOY, 250, false, 18978, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 30},
 /*60*/  {"Casco Rosa", "Cantidad", ITEM_TOY, 250, false, 18979, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 30},
-/*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 70, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0, 15},
+/*61*/  {"Repuesto de auto", "Cantidad", ITEM_OTHER, 35, false, 1135, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0, 0.109, 0.072, 0.184, 98.6, 0.0, 0.0, 15},
 /*62*/  {"Barreta", "Cantidad", ITEM_OTHER, 50, false, 18634, 0.108, 0.012, -0.109, -102.7, -135.4, 0.0, 0.08, 0.043, 0.206, 85.5, -5.5, 0.6, 0, 20},
 /*63*/  {"Casco de obrero", "Cantidad", ITEM_TOY, 30, false, 18638, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 20},
 /*64*/  {"Sombrero de cowboy negro", "Cantidad", ITEM_TOY, 200, false, 19096, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 25},
 /*65*/  {"Sombrero de cowboy marron", "Cantidad", ITEM_TOY, 200, false, 19095, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 25},
-/*66*/  {"Sombrero de cowboy bordó³", "Cantidad", ITEM_TOY, 200, false, 19097, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 25},
+/*66*/  {"Sombrero de cowboy bordó", "Cantidad", ITEM_TOY, 200, false, 19097, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 25},
 /*67*/  {"Reloj Swatch", "Cantidad", ITEM_TOY, 350, false, 19040, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6, 2},
 /*68*/  {"Reloj Rolex", "Cantidad", ITEM_TOY, 2500, false, 19042, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6, 2},
 /*69*/  {"Reloj Casio", "Cantidad", ITEM_TOY, 70, false, 19041, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6, 2},
@@ -304,13 +232,13 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*100*/ {"Encendedor", "Usos", ITEM_OTHER, 15, true, 19998, 0.094, 0.039, -0.025, 0.000, -175.400, 0.000, 0.052, 0.031, 0.029, 0.000, 0.000, 0.000, 0, 1},
 /*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.108, 0.037, -0.046, 95.599, 17.200, 175.400, 0.057, 0.051, 0.035, -82.700, 0.000, -10.799, 0, 2},
 /*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.087, 0.047, -0.054, -14.599, -171.099, 0.000, 0.068, 0.033, 0.053, 0.000, 0.000, 0.000, 0, 4},
-/*103*/ {"Valija", "Espacio", ITEM_CONTAINER, 800, false, 19624, 0.085, 0.000, -0.018, -2.199, -98.699, 37.400, 0.074, 0.013, 0.000, 0.000, -98.100, 0.000, 0, 75},
+/*103*/ {"Valija", "Espacio", ITEM_CONTAINER, 400, false, 19624, 0.085, 0.000, -0.018, -2.199, -98.699, 37.400, 0.074, 0.013, 0.000, 0.000, -98.100, 0.000, 0, 75},
 /*104*/ {"Botiquín médico", "Usos restantes", ITEM_OTHER, 400, false, 11738, 0.268, 0.022, -0.007, 0.000, -94.700, 12.699, 0.270, 0.022, 0.036, 0.000, -97.899, 0.000, 0, 45},
 /*105*/ {"Bolso deportivo", "Espacio", ITEM_CONTAINER, 300, false, 11745, 0.198, -0.056, 0.055, 0.000, -99.399, -46.499, 0.214, -0.066, 0.014, 0.000, -99.799, 87.300, 0, 65},
-/*106*/ {"Mochila grande", "Espacio", ITEM_CONTAINER, 900, false, 19559, 0.412, 0.066, 0.000, 0.000, -97.000, 24.599, 0.400, 0.049, 0.066, 0.000, -96.600, 0.000, 0, 55},
-/*107*/ {"Mochila chica", "Espacio", ITEM_CONTAINER, 500, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 35},
-/*108*/ {"Mochila mediana", "Espacio", ITEM_CONTAINER, 700, false, 371, 0.377, 0.022, 0.049, 0.000, -104.999, 26.500, 0.340, -0.004, 0.074, 0.000, -99.700, 0.000, 0, 45},
-/*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 700, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45},
+/*106*/ {"Mochila grande", "Espacio", ITEM_CONTAINER, 550, false, 19559, 0.412, 0.066, 0.000, 0.000, -97.000, 24.599, 0.400, 0.049, 0.066, 0.000, -96.600, 0.000, 0, 55},
+/*107*/ {"Mochila chica", "Espacio", ITEM_CONTAINER, 300, false, 3026, 0.504, 0.000, 0.000, 146.999, 0.000, -173.799, 0.473, -0.040, 0.000, -169.700, 0.000, -171.399, 0, 35},
+/*108*/ {"Mochila mediana", "Espacio", ITEM_CONTAINER, 425, false, 371, 0.377, 0.022, 0.049, 0.000, -104.999, 26.500, 0.340, -0.004, 0.074, 0.000, -99.700, 0.000, 0, 45},
+/*109*/ {"Maletín", "Espacio", ITEM_CONTAINER, 400, false, 1210, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 45},
 /*110*/ {"Reproductor de música", "Cantidad", ITEM_SPEAKER, 550, false, 2102, 0.396, 0.000, 0.020, 0.000, -93.600, 8.399, 0.369, 0.021, 0.058, 0.000, -99.599, 0.000, 0, 50},
 /*111*/ {"Cerveza", "Cantidad", ITEM_OTHER, 35, true, 1486, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*112*/ {"Rueda de repuesto", "Cantidad", ITEM_OTHER, 800, false, 1079, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0.3019, 0.0829, -0.012, 0.0, -90.5999, -0.9999, 0, 50},
@@ -318,71 +246,12 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*114*/ {"Vino", "Cantidad", ITEM_OTHER, 45, true, 1669, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*115*/ {"Whisky", "Cantidad", ITEM_OTHER, 150, true, 19823, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*116*/ {"Vodka", "Cantidad", ITEM_OTHER, 100, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
-/*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
-/*118*/ {"Vestimenta", "Tipo", ITEM_OTHER, 125, false, 1575, 0.235, 0.088, 0.0, 53.8, -14.09, 104.2, 0.165, -0.103, 0.0, -81.5, 19.1, 79.19, 0, 15},
-/*119*/ {"Cargador de 9mm", "Municiones", ITEM_WEAPONMAG, 1000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 5},
-/*120*/ {"Cargador de Deagle", "Municiones", ITEM_WEAPONMAG, 1500, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 5},
-/*121*/ {"Cargador de UZI/TEC9", "Municiones", ITEM_WEAPONMAG, 1750, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*122*/ {"Cargador de MP5", "Municiones", ITEM_WEAPONMAG, 2000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*123*/ {"Cargador de M4", "Municiones", ITEM_WEAPONMAG, 6500, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*124*/ {"Cargador de AK47", "Municiones", ITEM_WEAPONMAG, 5000, true, 19995, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*125*/ {"Caja de municiones 9mm", "Municiones", ITEM_OTHER, 7000, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*126*/ {"Caja de municiones Deagle", "Municiones", ITEM_OTHER, 20500, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*127*/ {"Caja de municiones UZI/TEC9", "Municiones", ITEM_OTHER, 10000, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*128*/ {"Caja de municiones MP5", "Municiones", ITEM_OTHER, 12000, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*129*/ {"Caja de municiones M4", "Municiones", ITEM_OTHER, 20500, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*130*/ {"Caja de municiones AK47", "Municiones", ITEM_OTHER, 20500, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15},
-/*131*/ {"Llave de casa", "ID", ITEM_OTHER, 750, true, 11746, 0.107, 0.017, -0.016, -1.399, 93.199, 0.0, 0.067, 0.017, -0.016, -1.399, 93.199, 0.0, 0, 1},
-/*132*/ {"Llave de negocio", "ID", ITEM_OTHER, 750, true, 11746, 0.107, 0.017, -0.016, -1.399, 93.199, 0.0, 0.067, 0.017, -0.016, -1.399, 93.199, 0.0, 0, 1},
-/*133*/ {"Llave de edificio", "ID", ITEM_OTHER, 750, true, 11746, 0.107, 0.017, -0.016, -1.399, 93.199, 0.0, 0.067, 0.017, -0.016, -1.399, 93.199, 0.0, 0, 1},
-/*134*/ {"Tarjeta", "Número", ITEM_OTHER, 1, true, 19792, 0.093999, 0.023, -0.013, 101.100013, -162.299880, -91.600006, 0.093999, 0.035999, -0.012, 101.100013, -162.299880, -78.500053, 0, 1},
-/*135*/ {"Jamon", "Cantidad", ITEM_INGREDIENT, 5000, false, 19847, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*136*/ {"Manzana roja", "Cantidad", ITEM_INGREDIENT, 5000, false, 19575, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*137*/ {"Manzana verde", "Cantidad", ITEM_INGREDIENT, 5000, false, 19576, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*138*/ {"Naranja", "Cantidad", ITEM_INGREDIENT, 5000, false, 19574, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*139*/ {"Tomate", "Cantidad", ITEM_INGREDIENT, 5000, false, 19577, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*140*/ {"Banana", "Cantidad", ITEM_INGREDIENT, 5000, false, 19578, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*141*/ {"Pan", "Cantidad", ITEM_INGREDIENT, 5000, false, 19579, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*142*/ {"Carne cruda", "Cantidad", ITEM_INGREDIENT, 5000, false, 19582, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*143*/ {"Carne cocida", "Cantidad", ITEM_FOOD, 5000, false, 19882, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*144*/ {"Pizza", "Cantidad", ITEM_FOOD, 5000, false, 19580, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*145*/ {"Caja de pizza", "Cantidad", ITEM_FOOD, 5000, false, 19571, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*146*/ {"Pescado", "Cantidad", ITEM_INGREDIENT, 5000, false, 19630, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*147*/ {"Helado", "Cantidad", ITEM_FOOD, 5000, false, 19568, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*148*/ {"Cereales Crispy Flakes", "Cantidad", ITEM_FOOD, 5000, false, 19561, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*149*/ {"Cereales Cok O Pops", "Cantidad", ITEM_FOOD, 5000, false, 19562, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*150*/ {"Porción de pizza", "Cantidad", ITEM_FOOD, 5000, false, 2702, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*151*/ {"Ensalada César, Sandwich y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2353, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*152*/ {"Hamburguesa con Papas, Sandwich y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2216, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*153*/ {"Ensalada con Albondigas, Helado y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2354, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*154*/ {"Hamburguesa triple con Papas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2212, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*155*/ {"Menu infantil y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2213, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*156*/ {"Hamburguesa doble con Papas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2214, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*157*/ {"Ensalada con Albondigas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2355, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*158*/ {"Porción de pizza con Papas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2218, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*159*/ {"Pizza con Papas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2220, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*160*/ {"Menu infantil, Helado y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2215, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*161*/ {"Hamburguesa Grande con Papas, Patas de pollo y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2217, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*162*/ {"9 Donas con Cafe", "Cantidad", ITEM_FOOD, 5000, false, 2222, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*163*/ {"5 Donas con Cafe", "Cantidad", ITEM_FOOD, 5000, false, 2223, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*164*/ {"Muffin y Dona con Cafe", "Cantidad", ITEM_FOOD, 5000, false, 2221, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*165*/ {"Porcion de pizza con Papas, Ensalada con Albondigas y Sprunk", "Cantidad", ITEM_FOOD, 5000, false, 2219, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*166*/ {"Torta de crema y frutillas", "Cantidad", ITEM_FOOD, 5000, false, 11739, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*167*/ {"Bizcochuelo", "Cantidad", ITEM_FOOD, 5000, false, 11740, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*168*/ {"Torta de chocolate", "Cantidad", ITEM_FOOD, 5000, false, 11741, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*169*/ {"Hamburguesa", "Cantidad", ITEM_FOOD, 5000, false, 2703, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*170*/	{"Táser X26", "Cargas", ITEM_SPECIALWEAPON, 1, true, 347, 0.043, 0.06, -0.022, 160.0, -0.1, -9.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 1},
-/*171*/ {"Placa policial", "Número", ITEM_OTHER, 5000, false, 19774, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 8},
-/*172*/ {"Esposas", "Cantidad", ITEM_OTHER, 5000, true, 11750, 0.084, 0.05, 0.011, 164.3, 2.9, -97.0, 0.051, 0.043, -0.012, 1.6, -14.5, 88.4, 0, 1},
-/*173*/ {"Ganzua", "Cantidad", ITEM_OTHER, 30, true, 18644, 0.117999, 0.019, 0.006999, -6.999998, 2.9, 0.7, 0.090999, 0.013, 0.013, 3.399997, -179.000213, -6.199995, 0, 6},
-/*174*/ {"Cajón de cerveza", "Cantidad", ITEM_OTHER, 100, false, 19572, 0.414, -0.024, 0.0, 0.0, -90.0, 0.0, 0.369, -0.007999, 0.0, 0.0, -90.0, 0.0, 0, 45},
-/*175*/ {"Caja de aspirinas", "Cantidad", ITEM_OTHER, 300, true, 19572, 0.414, -0.024, 0.0, 0.0, -90.0, 0.0, 0.369, -0.007999, 0.0, 0.0, -90.0, 0.0, 0, 3},
-/*176*/ {"Caja de recargas Táser", "Recargas", ITEM_OTHER, 1, false, 2039, 0.079999, 0.022, -0.050999, -15.699996, 91.099967, 3.299985, 0.048999, 0.030999, 0.037999, 7.900006, -88.099990, -11.699999, 0, 15}
+/*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8}
 };
 
 //==============================FUNCIONES=======================================
 
-forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo estÃ¡.
+forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.
 forward GetItemType(itemid); // Devuelve el tipo del item.
 forward GetItemObjectModel(itemid); // Devuelve la id del modelo de objeto (visible) del item.
 forward GetItemName(itemid); // Devuelve un string con el nombre del item.
@@ -407,7 +276,7 @@ forward Float:GetItemRightRzPos(itemid);
 forward LoadHandItem(playerid, hand); // Crea el objeto visible en la mano del jugador (en INDEX_ID_HAND).
 forward DeleteHandItem(playerid, hand); // Borra visualmente el objeto que tenga en la mano (de INDEX_ID_HAND).
 
-//=======================IMPLEMENTACIÃ“N DE FUNCIONES============================
+//=======================IMPLEMENTACIÓN DE FUNCIONES============================
 
 stock Float:GetItemLeftXPos(itemid)
 {
@@ -513,104 +382,52 @@ stock GetItemPrice(itemid)
 	return ServerItems[itemid][BasePrice];
 }
 
-// =============================================================================
-
 stock LoadHandItem(playerid, hand)
 {
 	new itemid = GetHandItem(playerid, hand);
 
-	if(GetItemObjectModel(itemid) == 0)
-	    return 1;
-	    
-	    
-	switch(hand)
+	if(GetItemObjectModel(itemid) != 0)
 	{
-	    case HAND_RIGHT:
-	    {
-			switch(GetItemType(itemid))
+	    if(hand == HAND_RIGHT)
+		{
+			if(GetItemType(itemid) != ITEM_WEAPON)
+				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
+			else
 			{
-			    case ITEM_WEAPON:
-			    {
-					GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
-					SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
-			    }
-			    case ITEM_FIREWEAPON:
-				{
-				    if(GetHandParam(playerid, HAND_RIGHT) > 1)
-				    {
-						GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT) - 1);
-						SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT) - 1);
-				    }
-				    else
-						SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
-			    }
-				case ITEM_SPECIALWEAPON:
-				{
-					switch(itemid)
-					{
-						case ITEM_ID_TASER:
-						{
-							switch(GetHandParam(playerid, HAND_RIGHT))
-							{
-								case 0: SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
-								default:
-								{
-									GivePlayerWeapon(playerid, WEAPON_SILENCED, GetHandParam(playerid, HAND_RIGHT));
-									SetPlayerAmmo(playerid, WEAPON_SILENCED, GetHandParam(playerid, HAND_RIGHT));
-								}
-							}
-						}
-					}
-				}
-			    default: SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
+   				//======================[Inmunidad anticheat]=======================
+			    if(antiCheatImmunity[playerid] != 0)
+			        KillTimer(antiCheatImmunity[playerid]);
+	      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
+	      		//==================================================================
+			    GivePlayerWeapon(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
+			    SetPlayerAmmo(playerid, itemid, GetHandParam(playerid, HAND_RIGHT));
 			}
-	    }
-		case HAND_LEFT: SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemLeftXPos(itemid), GetItemLeftYPos(itemid), GetItemLeftZPos(itemid), GetItemLeftRxPos(itemid), GetItemLeftRyPos(itemid), GetItemLeftRzPos(itemid), 1.0, 1.0, 1.0);
+		}
+		else
+ 			SetPlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT, GetItemObjectModel(itemid), BONE_ID_LEFTHAND, GetItemLeftXPos(itemid), GetItemLeftYPos(itemid), GetItemLeftZPos(itemid), GetItemLeftRxPos(itemid), GetItemLeftRyPos(itemid), GetItemLeftRzPos(itemid), 1.0, 1.0, 1.0);
 	}
 	return 1;
 }
 
 stock DeleteHandItem(playerid, hand)
 {
-	switch(hand)
+	if(hand == HAND_RIGHT)
 	{
-	    case HAND_RIGHT:
-	    {
-	        switch(GetItemType(GetHandItem(playerid, hand)))
-	        {
-	            case ITEM_WEAPON: ResetPlayerWeapons(playerid);
-	            case ITEM_FIREWEAPON:
-	            {
-					if(GetHandParam(playerid, HAND_RIGHT) > 1)
-					    ResetPlayerWeapons(playerid);
-					else
-					    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
-	            }
-				case ITEM_SPECIALWEAPON:
-				{
-					switch(GetHandItem(playerid, hand))
-					{
-						case ITEM_ID_TASER:
-						{
-							if(GetHandParam(playerid, HAND_RIGHT) > 0)
-								ResetPlayerWeapons(playerid);
-							else
-								RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
-						}
-					}
-				}
-				default: RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
-	        }
-	    }
-	    case HAND_LEFT: RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
+	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
+			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+		else
+		{
+		    //======================[Inmunidad anticheat]=======================
+		    if(antiCheatImmunity[playerid] != 0)
+		        KillTimer(antiCheatImmunity[playerid]);
+      		antiCheatImmunity[playerid] = SetTimerEx("AntiCheatImmunityTimer", 2000, false, "i", playerid);
+      		//==================================================================
+		    ResetPlayerWeapons(playerid);
+		}
 	}
+	else
+	    RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_LEFT);
 	return 1;
 }
 
-// =============================================================================
-
-
-stock PlayerShouldHaveAGun(playerid)
-{
-	return 1;
-}
+//================================COMANDOS======================================

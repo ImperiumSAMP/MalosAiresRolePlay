@@ -14,7 +14,6 @@
 #define STOLEN_CAR_MISSING_TIME 60 // En minutos, tiempo hasta que vuelva a aparecer una vez desarmado.
 
 #define CMD_BARRETA_COOLDOWN    50 // En minutos
-#define CMD_GANZUA_COOLDOWN     40 // En minutos
 #define CMD_PUENTE_COOLDOWN     50 // En minutos
 #define CMD_DESARMAR_COOLDOWN   60 // En minutos
 	
@@ -25,7 +24,6 @@ forward HideStolenCar(vehicleid); // Hace desaparecer el auto durante STOLEN_CAR
 //============================FUNCIONES INTERNAS================================
 
 forward UsarBarreta(playerid, vehicleid);
-forward UsarGanzua(playerid, vehicleid);
 forward PuenteMotor(playerid, vehicleid);
 
 //=========================IMPLEMENTACIÓN DE FUNCIONES==========================
@@ -56,36 +54,6 @@ public UsarBarreta(playerid, vehicleid)
 		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
  			GiveJobExp(playerid, JOB_FELON, 2);
         ThiefJobInfo[playerid][pForceDoorLimit] = CMD_BARRETA_COOLDOWN * 60;
- 	}
-	return 1;
-}
-
-public UsarGanzua(playerid, vehicleid)
-{
-    new hand;
-
-    TogglePlayerControllable(playerid, true);
-    SetPVarInt(playerid, "disabled", DISABLE_NONE);
-
-    hand = SearchHandsForItem(playerid, ITEM_ID_GANZUA);
-    if(hand == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una ganzúa en alguna de tus manos.");
-
-	if(random(10) > 7)
-	{
-		if(GetHandParam(playerid, hand) == 1)
-			SetHandItemAndParam(playerid, hand, 0, 0);
-		else
-			SetHandItemAndParam(playerid, hand, ITEM_ID_GANZUA, GetHandParam(playerid, hand) - 1);
-	    SendClientMessage(playerid, COLOR_WHITE, "La ganzúa cedió y se rompió.");
-	}
-	else
-	{
- 		VehicleInfo[vehicleid][VehLocked] = 0;
- 		SendClientMessage(playerid, COLOR_WHITE, "Forzaste con éxito la cerradura.");
-		if(ThiefJobInfo[playerid][pFelonLevel] == 7)
- 			GiveJobExp(playerid, JOB_FELON, 2);
-        ThiefJobInfo[playerid][pForceDoorLimit] = CMD_GANZUA_COOLDOWN * 60;
  	}
 	return 1;
 }
@@ -150,56 +118,6 @@ CMD:barreta(playerid, params[])
     SetTimerEx("UsarBarreta", 20 * 1000, 0, "ii", playerid, vehicleid);
     
     if(random(10) > 4)
-    {
-		SendClientMessage(playerid, COLOR_WHITE, "Un civil te vió forzando la cerradura y alertó a la policía. ¡Apúrate o te atraparán!");
-		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
-		GetPlayer2DZone(playerid, location, MAX_ZONE_NAME);
-		foreach(new i : Player)
-		{
-		    if(isPlayerCopOnDuty(i))
-		    {
-		        SendClientMessage(i, COLOR_PMA, "[Dpto. de policía]: Un civil ha reportado un robo de auto en curso. Hemos marcado la ubicación en el radar.");
-                SendFMessage(i, COLOR_PMA, "[Dpto. de policía]: El modelo del vehículo es un %s y la zona es %s.", GetVehicleName(vehicleid), location);
-                SetPlayerCheckpoint(i, pos[0], pos[1], pos[2], 3.0);
-			}
-		}
-	}
-	return 1;
-}
-
-CMD:ganzua(playerid, params[])
-{
-    new vehicleid = GetClosestVehicle(playerid, 4.0),
-   	    Float:pos[3],
-	    location[MAX_ZONE_NAME];
-
-	if(PlayerInfo[playerid][pJob] != JOB_FELON)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes tener el trabajo de delincuente para utilizar este comando.");
-	if(ThiefJobInfo[playerid][pFelonLevel] < 7)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes la experiencia necesaria para utilizar este comando.");
-	if(ThiefJobInfo[playerid][pForceDoorLimit] != 0)
-	{
-	    SendFMessage(playerid, COLOR_YELLOW2, "Debes esperar %d minutos antes de volver a forzar una cerradura.", ThiefJobInfo[playerid][pForceDoorLimit] / 60);
-	    return 1;
-	}
-	if(GetPVarInt(playerid, "disabled") != DISABLE_NONE)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes hacerlo en este momento!");
-	if(IsPlayerInAnyVehicle(playerid))
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes forzar una cerradura estando arriba del vehiculo!");
-	if(SearchHandsForItem(playerid, ITEM_ID_GANZUA) == -1)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes una ganzúa en alguna de tus manos.");
-	if(vehicleid == INVALID_VEHICLE_ID)
-	    return SendClientMessage(playerid, COLOR_YELLOW2, "No estas cerca de ningún vehículo.");
-	if(VehicleInfo[vehicleid][VehLocked] == 0)
-		return SendClientMessage(playerid, COLOR_YELLOW2, "Las puertas están abiertas.");
-
-  	TogglePlayerControllable(playerid, false);
-  	SetPVarInt(playerid, "disabled", DISABLE_STEALING);
-  	PlayerActionMessage(playerid, 15.0, "toma una herramienta y comienza a realizar unas maniobras sobre la manija de la puerta del vehículo.");
-    GameTextForPlayer(playerid, "Forzando cerradura, aguarda...", 40 * 1000, 4);
-    SetTimerEx("UsarBarreta", 40 * 1000, 0, "ii", playerid, vehicleid);
-
-    if(random(10) > 2)
     {
 		SendClientMessage(playerid, COLOR_WHITE, "Un civil te vió forzando la cerradura y alertó a la policía. ¡Apúrate o te atraparán!");
 		GetPlayerPos(playerid, pos[0], pos[1], pos[2]);

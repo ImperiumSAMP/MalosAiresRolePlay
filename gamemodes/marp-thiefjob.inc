@@ -340,9 +340,7 @@ public Thief_Countdown(playerid)
 
 RobberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 {
-	new string[144], tpid;
-	
-	tpid = House[houseId][EntrancePickupSQLID];
+	new string[144];
 
  	if(!usingMask[playerid]) // Si roba sin mascara le damos sosp automático
  	{
@@ -352,13 +350,15 @@ RobberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 	}
 	if(houseId)
 	{
-	    format(string, sizeof(string), "[Dpto. de policía]: se ha reportado una intrusión en la casa ubicada en %s. Lo marcamos en el GPS.", PrintHouseAdress(houseId));
+	    new area[MAX_ZONE_NAME];
+		GetCoords2DZone(House[houseId][OutsideX], House[houseId][OutsideY], area, MAX_ZONE_NAME);
+	    format(string, sizeof(string), "[Dpto. de policía]: se ha reportado una intrusión en la casa nro %d, en el barrio de %s. Lo marcamos en el GPS.", houseId, area);
 		foreach(new play : Player)
 		{
-			if(PlayerInfo[play][pFaction] == FAC_PMA && PlayerInfo[playerid][pDuty])
+			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
 			{
 			    SendClientLongMessage(play, COLOR_PMA, string);
-				SetPlayerCheckpoint(play, Teleport[tpid][FirstX], Teleport[tpid][FirstX], Teleport[tpid][FirstX], 2.0);
+				SetPlayerCheckpoint(play, House[houseId][OutsideX], House[houseId][OutsideY], House[houseId][OutsideZ], 2.0);
 			}
 		}
 	}
@@ -368,7 +368,9 @@ RobberyAlert(playerid, accusedOf[], accusedBy[], propName[], houseId = 0)
 		foreach(new play : Player)
 		{
 			if(PlayerInfo[play][pFaction] == FAC_PMA && CopDuty[play])
+			{
 			    SendClientMessage(play, COLOR_PMA, string);
+			}
 		}
 	}
 }
@@ -392,7 +394,7 @@ CMD:hurtarcasa(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento ya que te encuentras ocupado en otro robo.");
 	if(house_id == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
- 	if(House[house_id][OwnerSQLID] == PlayerInfo[playerid][pID] || House[house_id][TenantSQLID] == PlayerInfo[playerid][pID])
+ 	if(house_id == PlayerInfo[playerid][pHouseKey] || house_id == PlayerInfo[playerid][pHouseKeyIncome])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
@@ -427,7 +429,7 @@ CMD:asaltarcasa(playerid, params[])
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo en este momento ya que te encuentras ocupado en otro robo.");
 	if(house_id == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "Debes estar en una casa.");
- 	if(House[house_id][OwnerSQLID] == PlayerInfo[playerid][pID] || House[house_id][TenantSQLID] == PlayerInfo[playerid][pID])
+ 	if(house_id == PlayerInfo[playerid][pHouseKey] || house_id == PlayerInfo[playerid][pHouseKeyIncome])
 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes robar tu propia casa!");
 
 	thief_stealing[playerid] = 1;
