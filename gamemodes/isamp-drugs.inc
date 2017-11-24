@@ -82,7 +82,7 @@ CMD:dardroga(playerid, params[])
 		{
 	       	if(PlayerInfo[playerid][pLSD] < amount)
 	           	return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes esa cantidad.");
-	        SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido %d gramos de LSD a %s. La oferta termina en 15 segundos.", amount, GetPlayerNameEx(targetid));
+	        SendFMessage(playerid, COLOR_LIGHTBLUE, "Le has ofrecido %d cartones de LSD a %s. La oferta termina en 15 segundos.", amount, GetPlayerNameEx(targetid));
         	format(string, sizeof(string), "%s quiere darte %d dosis de LSD. Escribe '/aceptar droga' para aceptar. La oferta termina en 15 segundos.",GetPlayerNameEx(playerid), amount);
 			DrugOfferType[targetid] = 2;
 	    } else

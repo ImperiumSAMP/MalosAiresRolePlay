@@ -51,6 +51,9 @@ enum HouseSystem {
 };
 
 new House[MAX_HOUSES][HouseSystem];
+	/*Sistema de mirilla */
+new Mirillaid[MAX_PLAYERS];  //guarda la la id de la casa donde se encuentra mirando
+new bool:usingPeephole[MAX_PLAYERS];
 
 // Venta de casas
 new bool:OfferingHouse[MAX_PLAYERS],
@@ -537,7 +540,59 @@ stock HouseHasContainer(houseid)
 	return 0;
 }
 
+stock LookAtPeephole(playerid, houseid)
+{
+    TogglePlayerControllable(playerid, false);
+    usingPeephole[playerid] = true;
+    SendClientMessage(playerid, COLOR_WHITE, "Observas a través de la mirilla de la puerta. Para salir utiliza /salirmirilla.");
+    new Float:xf,
+        Float:yf;
+    GetXYInFrontOfDot(House[houseid][OutsideX], House[houseid][OutsideY], House[houseid][OutsideAngle], 1.0, Float:xf, Float:yf);
+    SetPlayerInterior(playerid, House[houseid][OutsideInterior]);
+	SetPlayerVirtualWorld(playerid, House[houseid][OutsideWorld]);
+	SetPlayerCameraPos(playerid, House[houseid][OutsideX], House[houseid][OutsideY], House[houseid][OutsideZ] + 0.7);
+	SetPlayerCameraLookAt(playerid, xf, yf, House[houseid][OutsideZ] + 0.7);
+	SetPlayerPos(playerid, House[houseid][OutsideX], House[houseid][OutsideY], House[houseid][OutsideZ] - 15.0);
+	return 1;
+}
+
 //=============================COMANDOS DE CASA=================================
+
+CMD:casamirilla(playerid, params[])
+{
+    for(new i = 1; i < MAX_HOUSES; i++)
+	{
+		if(House[i][Created] == 1)
+	    {
+	    	if(IsPlayerOnInsideHouseDoor(playerid, i))
+			{
+			    Mirillaid[playerid] = i;
+	    	    LookAtPeephole(playerid, i);
+	    	    return 1;
+			}
+		}
+	}
+	SendClientMessage(playerid, COLOR_WHITE, "No estás frente a ninguna mirilla!");
+	return 1;
+}
+CMD:salirmirilla(playerid, params[])
+{
+    if(usingPeephole[playerid] == false)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No te encuentras mirando a través de ninguna mirilla");
+	SetPlayerInterior(playerid, House[Mirillaid[playerid]][InsideInterior]);
+	SetPlayerVirtualWorld(playerid, House[Mirillaid[playerid]][InsideWorld]);
+	SetPlayerPos(playerid, House[Mirillaid[playerid]][InsideX], House[Mirillaid[playerid]][InsideY], House[Mirillaid[playerid]][InsideZ]);
+	SetPlayerFacingAngle(playerid, House[Mirillaid[playerid]][InsideAngle]);
+	SetCameraBehindPlayer(playerid);
+	TogglePlayerControllable(playerid, true);
+	usingPeephole[playerid] = false;
+	SetCameraBehindPlayer(playerid);
+	Mirillaid[playerid] = -1;
+	return 1;
+}
+
+
+		
 
 CMD:ayudacasa(playerid, params[])
 {

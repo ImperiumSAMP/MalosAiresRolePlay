@@ -339,7 +339,7 @@ new
 
 	//Sistema camaras policia
 	bool:usingCamera[MAX_PLAYERS],
-	
+
 	// Mecánico.
 	MechanicCall = 999,
 	MechanicCallTime[MAX_PLAYERS],
@@ -518,9 +518,10 @@ public OnGameModeInit()
     }
     
 	print("HELP");
-    loadMySQLcfg();
+    loadMySQLcfg(); //comentar para trabajar en serverhost propio
 	print("HELP");
-	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
+	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS); //comentar para trabajar en serverhost propio
+    //mysql_connect("localhost","root","isamp_test",""); //comentar para subir al github
     LoadTDs();
     LoadMap();
 	LoadPickups();
@@ -855,6 +856,9 @@ public ResetStats(playerid)
 	
 	/* Sistema de camaras */
 	usingCamera[playerid] = false;
+	
+	/* Sistema de mirilla */
+	usingPeephole[playerid] = false;
 	
 	/* Sistema de máscaras */
 	usingMask[playerid] = false;
@@ -1629,7 +1633,10 @@ public OnPlayerText(playerid, text[])
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]{C8C8C8} No puedes hablar mientras estas viendo una cámara.");
 		return 0;
 	}
-
+	if(usingPeephole[playerid]) {
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]{C8C8C8} No puedes hablar mientras estas viendo a través de una mirilla.");
+		return 0;
+	}
 	new name[24]; // Para ver si mandar mensajes desde la mascara
 	if(usingMask[playerid])
 	    format(name, sizeof(name), "Enmascarado %d", maskNumber[playerid]);
@@ -1922,6 +1929,11 @@ public OnPlayerCommandReceived(playerid, cmdtext[]) {
 	if(usingCamera[playerid] && strcmp(cmdtext,"/salircam")!=0)
 	{
 		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]{C8C8C8} Para utilizar un comando antes debes salir de la cámara.");
+	    return 0;
+	}
+	if(usingPeephole[playerid] && strcmp(cmdtext,"/salirmirilla")!=0)
+	{
+		SendClientMessage(playerid, COLOR_RED, "{FF4600}[Error]{C8C8C8} Para utilizar un comando antes debes dejar de mirar por la mirilla.");
 	    return 0;
 	}
     return 1;

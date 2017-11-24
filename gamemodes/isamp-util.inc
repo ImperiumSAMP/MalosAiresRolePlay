@@ -207,3 +207,12 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 
 // sistema de mascaras
 new bool:usingMask[MAX_PLAYERS];
+
+stock GetXYInFrontOfDot(Float:xi, Float:yi, Float:ai, Float:distance, &Float:xf, &Float:yf)
+{
+    //xi,yi,ai Condiciones iniciales del punto de partida
+
+    xf = xi + (distance * floatsin(-ai, degrees));
+    yf = yi + (distance * floatcos(-ai, degrees));
+
+}
