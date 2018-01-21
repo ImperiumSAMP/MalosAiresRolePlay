@@ -13,8 +13,9 @@
 #define ITEM_TOY                3
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
+#define ITEM_BOTH               6
 
-#define MAX_ITEMS               118
+#define MAX_ITEMS               156
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -88,7 +89,54 @@
 #define ITEM_ID_WHISKY					115
 #define ITEM_ID_VODKA					116
 #define ITEM_ID_RON						117
+#define ITEM_ID_FURNITURE_BOX           118
+#define ITEM_ID_HAMBURGUESA             119
+#define ITEM_ID_JUGO_NARANJA_CAJA       120
+#define ITEM_ID_JUGO_MANZANA_CAJA       121
+#define ITEM_ID_POTE_HELADO             122
+#define ITEM_ID_CAJA_LECHE              123
+#define ITEM_ID_BOTELLA_LECHE           124
+#define ITEM_ID_PACK_CERVEZA            125
+#define ITEM_ID_NARANJA                 126
+#define ITEM_ID_MANZANA_ROJA            127
+#define ITEM_ID_MANZANA_VERDE           128
+#define ITEM_ID_TOMATE                  129
+#define ITEM_ID_BANANA                  130
+#define ITEM_ID_PAN                     131
+#define ITEM_ID_CAFE                    132
+#define ITEM_ID_TOSTADA                 133
+#define ITEM_ID_CEREALES_CRISPY         134
+#define ITEM_ID_CEREALES_POPS           135
+#define ITEM_ID_PECHUGA_POLLO           136
+#define ITEM_ID_MILANESA_Y_ENSALADA     137
+#define ITEM_ID_CROQUETAS_RELLENAS      138
+#define ITEM_ID_LANGOSTINOS_EMPANADOS   139
+#define ITEM_ID_WANTAN_SALMON           140
+#define ITEM_ID_POLLO_VERDEO            141
+#define ITEM_ID_ENSALADA_CESAR          142
+#define ITEM_ID_ENSALADA_WALDORF        143
+#define ITEM_ID_MUFFINS                 144
+#define ITEM_ID_DONAS_SURTIDAS          145
+#define ITEM_ID_DONAS_BLANCAS           146
+#define ITEM_ID_PIZZA_LEGENDARIA        147
+#define ITEM_ID_PIZZA_CANTIMPALO        148
+#define ITEM_ID_PIZZA_MUZZARELLA        149
+#define ITEM_ID_PIZZA_ESPECIAL          150
+#define ITEM_ID_P_PIZZA_HUEVO_ENS_PAPAS 151
+#define ITEM_ID_P_PIZZA_MUZZA_ENS_PAPAS 152
+#define ITEM_ID_P_PIZZA_ESPECIAL_PAPAS  153
+#define ITEM_ID_P_PIZZA_ROQUE_PAPAS 	154
+#define ITEM_ID_P_PIZZA_MUZZA_PAPAS 	155
 
+
+
+
+
+
+
+
+
+//==============================================================================
 #define BONE_ID_SPINE           1
 #define BONE_ID_HEAD         	2
 #define BONE_ID_LEFTHAND        5
@@ -128,7 +176,6 @@ enum ItemInfo {
 };
 
 static const ServerItems[MAX_ITEMS][ItemInfo] = {
-
 /*0*/	{"NULO", "NULO", ITEM_NONE, 0, false, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 0},
 /*1*/	{"Manopla", "Cantidad", ITEM_WEAPON, 40, true, 331, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 5},
 /*2*/	{"Palo de Golf", "Cantidad", ITEM_WEAPON, 60, false, 333, 0.035, 0.074, 0.0, 153.8, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 20},
@@ -172,7 +219,7 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*40*/	{"Detonador", "Cantidad", ITEM_WEAPON, 1000, true, 364, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 4},
 /*41*/	{"Aerosol", "Contenido", ITEM_WEAPON, 50, true, 365, 0.029, 0.059, -0.109, -177.1, -0.9, -21.9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 6},
 /*42*/	{"Matafuegos", "Contenido", ITEM_WEAPON, 250, false, 366, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 25},
-/*43*/	{"Cámara fotográfica", "Fotos", ITEM_WEAPON, 10, true, 367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
+/*43*/	{"Cámara fotográfica", "Fotos", ITEM_WEAPON, 350, true, 367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 8},
 /*44*/	{"Visión nocturna", "Cantidad", ITEM_WEAPON, 0, false, 368, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*45*/	{"Visión térmica", "Cantidad", ITEM_WEAPON, 0, false, 369, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 10},
 /*46*/	{"Paracaídas", "Cantidad", ITEM_WEAPON, 0, false, 371, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50},
@@ -228,7 +275,7 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*96*/  {"Gorra simple negra", "Cantidad", ITEM_TOY, 150, false, 18941, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 15},
 /*97*/  {"Gorra simple azul", "Cantidad", ITEM_TOY, 150, false, 18942, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 15},
 /*98*/  {"Gorra simple verde", "Cantidad", ITEM_TOY, 150, false, 18943, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 0.214, 0.063, 0.0, -93.4, 0.0, 0.0, 2, 15},
-/*99*/  {"Telefono celular", "Cantidad", ITEM_OTHER, 1, false, 18868, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.097,0.031,-0.017,87.8,-177.3,-3.5, 0, 4},
+/*99*/  {"Telefono celular", "Cantidad", ITEM_OTHER, 500, false, 18868, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.097,0.031,-0.017,87.8,-177.3,-3.5, 0, 4},
 /*100*/ {"Encendedor", "Usos", ITEM_OTHER, 15, true, 19998, 0.094, 0.039, -0.025, 0.000, -175.400, 0.000, 0.052, 0.031, 0.029, 0.000, 0.000, 0.000, 0, 1},
 /*101*/ {"Cigarrillos", "Cantidad", ITEM_OTHER, 20, true, 19896, 0.108, 0.037, -0.046, 95.599, 17.200, 175.400, 0.057, 0.051, 0.035, -82.700, 0.000, -10.799, 0, 2},
 /*102*/ {"Radio Walkie Talkie", "Cantidad", ITEM_OTHER, 400, true, 19942, 0.087, 0.047, -0.054, -14.599, -171.099, 0.000, 0.068, 0.033, 0.053, 0.000, 0.000, 0.000, 0, 4},
@@ -246,9 +293,47 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*114*/ {"Vino", "Cantidad", ITEM_OTHER, 45, true, 1669, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*115*/ {"Whisky", "Cantidad", ITEM_OTHER, 150, true, 19823, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
 /*116*/ {"Vodka", "Cantidad", ITEM_OTHER, 100, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
-/*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8}
+/*117*/ {"Ron", "Cantidad", ITEM_OTHER, 125, true, 1668, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 8},
+/*118*/ {"Mueble", "Modelo", ITEM_BOTH, 99999, false, 1271, 0.125, 0.0, -0.125, 0.0, -114.299, 0.0, 0.04, 0.0, -0.047, 0.0, 0.0, 0.0, 0, 100},
+/*119*/	{"Hamburguesa", "Cantidad", ITEM_OTHER, 50, true, 2703, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*120*/	{"Jugo de naranja", "Cantidad", ITEM_OTHER, 30, true, 19563, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*121*/	{"Jugo de manzana", "Cantidad", ITEM_OTHER, 30, true, 19564, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*122*/	{"Pote de helado", "Cantidad", ITEM_OTHER, 60, true, 19567, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*123*/	{"Caja de leche", "Cantidad", ITEM_OTHER, 25, true, 19569, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*124*/	{"Botella de leche", "Cantidad", ITEM_OTHER, 35, true, 19570, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*125*/	{"Pack de cerveza", "Cantidad", ITEM_OTHER, 200, false, 19572, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 20},
+/*126*/	{"Naranja", "Cantidad", ITEM_OTHER, 10, true, 19574, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*127*/	{"Manzana roja", "Cantidad", ITEM_OTHER, 15, true, 19575, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*128*/	{"Manzana verde", "Cantidad", ITEM_OTHER, 15, true, 19576, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*129*/	{"Tomate", "Cantidad", ITEM_OTHER, 10, true, 19577, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*130*/	{"Banana", "Cantidad", ITEM_OTHER, 15, true, 19578, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*131*/	{"Pan", "Cantidad", ITEM_OTHER, 20, true, 19579, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*132*/	{"Cafe", "Cantidad", ITEM_OTHER, 30, true, 19835, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*133*/	{"Tostada", "Cantidad", ITEM_OTHER, 5, true, 19883, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*134*/	{"Cereales Crispy", "Cantidad", ITEM_OTHER, 50, true, 19561, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*135*/	{"Cereales Pops", "Cantidad", ITEM_OTHER, 50, true, 19562, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*136*/	{"Pechuga de pollo", "Cantidad", ITEM_OTHER, 110, true, 2355, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*137*/	{"Milanesa y ensalada", "Cantidad", ITEM_OTHER, 150, true, 2355, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*138*/	{"Croquetas rellenas", "Cantidad", ITEM_OTHER, 130, true, 2355, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*139*/	{"Langostinos empanados", "Cantidad", ITEM_OTHER, 170, true, 2354, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*140*/	{"Wantan de salmon", "Cantidad", ITEM_OTHER, 200, true, 2354, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*141*/	{"Pollo al verdeo", "Cantidad", ITEM_OTHER, 170, true, 2354, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*142*/	{"Ensalada cesar", "Cantidad", ITEM_OTHER, 90, true, 2353, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*143*/	{"Ensalada waldorf", "Cantidad", ITEM_OTHER, 120, true, 2353, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*144*/	{"Muffins", "Cantidad", ITEM_OTHER, 80, true, 2221, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*145*/	{"Donas surtidas", "Cantidad", ITEM_OTHER, 90, true, 2222, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*146*/	{"Donas blancas", "Cantidad", ITEM_OTHER, 60, true, 2223, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*147*/	{"Pizza Legendaria", "Cantidad", ITEM_OTHER, 130, true, 2220, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*148*/	{"Pizza Cantimpalo", "Cantidad", ITEM_OTHER, 120, true, 2220, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*149*/	{"Pizza Muzzarella", "Cantidad", ITEM_OTHER, 100, true, 2220, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*150*/	{"Pizza Especial", "Cantidad", ITEM_OTHER, 110, true, 2220, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*151*/	{"Pizza huevo con ensalada y papas", "Cantidad", ITEM_OTHER, 80, true, 2219, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*152*/	{"Pizza muzza con ensalada y papas ", "Cantidad", ITEM_OTHER, 80, true, 2219, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*153*/	{"Pizza especial con papas", "Cantidad", ITEM_OTHER, 60, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*154*/	{"Pizza roquefort con papas", "Cantidad", ITEM_OTHER, 70, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*155*/	{"Pizza muzza con papas", "Cantidad", ITEM_OTHER, 50, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6}
 };
-
+/*{"Nombre", "Parámetro", ITEM_TYPE, BasePrice, InvAvailable, ObjModel, x0.095, y0.047, z-0.038, rx0.0, ry-98.199, rz0.0, x0.095, y0.047, z-0.038, rx0.0, ry-98.199, rz0.0, AttachedBone, OccupiedSpace}*/
 //==============================FUNCIONES=======================================
 
 forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.
@@ -391,7 +476,12 @@ stock LoadHandItem(playerid, hand)
 	    if(hand == HAND_RIGHT)
 		{
 			if(GetItemType(itemid) != ITEM_WEAPON)
+			{
 				SetPlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT, GetItemObjectModel(itemid), BONE_ID_RIGHTHAND, GetItemRightXPos(itemid), GetItemRightYPos(itemid), GetItemRightZPos(itemid), GetItemRightRxPos(itemid), GetItemRightRyPos(itemid), GetItemRightRzPos(itemid), 1.0, 1.0, 1.0);
+				//Special anim de mueble
+				if(GetItemType(itemid) == ITEM_BOTH) //OBJETOS QUE SE AGARRAN CON DOS MANOS
+				     SetPlayerSpecialAction(playerid, 25); //animacion de llevar una caja con ambas manos
+			}
 			else
 			{
    				//======================[Inmunidad anticheat]=======================
@@ -414,7 +504,11 @@ stock DeleteHandItem(playerid, hand)
 	if(hand == HAND_RIGHT)
 	{
 	    if(GetItemType(GetHandItem(playerid, hand)) != ITEM_WEAPON)
+		{
 			RemovePlayerAttachedObject(playerid, INDEX_ID_HAND_RIGHT);
+			if(GetItemType(GetHandItem(playerid, hand)) == ITEM_BOTH)
+			    SetPlayerSpecialAction(playerid, SPECIAL_ACTION_NONE);
+		}
 		else
 		{
 		    //======================[Inmunidad anticheat]=======================

@@ -96,6 +96,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "marp-lifts.inc"
 #include "marp-actors.inc"
 #include "marp-parlantes.inc"
+#include "marp-furnitures.inc" /*descomentar cuando se termine el sistema*/
 
 // Configuraciones.
 #define GAMEMODE				"MA:RP v1.1.8"
@@ -518,10 +519,10 @@ public OnGameModeInit()
     }
     
 	print("HELP");
-    loadMySQLcfg(); //comentar para trabajar en serverhost propio
+    loadMySQLcfg();
 	print("HELP");
-	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS); //comentar para trabajar en serverhost propio
-    //mysql_connect("localhost","root","isamp_test",""); //comentar para subir al github
+	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
+    //mysql_connect("localhost","root","isamp_test","");
     LoadTDs();
     LoadMap();
 	LoadPickups();
@@ -556,6 +557,7 @@ public OnGameModeInit()
 	LoadTrunksSlotsInfo();
 	Dealerships_LoadData();
 	LoadServerActors();
+	LoadFurnitures();
 
 	//===================================[TIMERS]===============================
 	
@@ -676,6 +678,7 @@ public OnPlayerConnectEx(playerid)
 	SetPlayerMapIcon(playerid, 99, 1470.79, -1177.43, 23.9241, 52, 0, MAPICON_LOCAL); 	// Banco.
 	
 	removeBuildings(playerid);
+	loadFurn(playerid);
 	
 	// Creamos los textdraws
 	for(new i = 0; i < 7; i++) {
@@ -4044,11 +4047,18 @@ public OnPlayerObjectMoved(playerid, objectid)
 	return 1;
 }
 
-public OnPlayerClickTextDraw(playerid, Text:clickedid) {
-   	if(GetPVarInt(playerid, "skinc_active") == 0) return 0;
-	if(clickedid == Text:INVALID_TEXT_DRAW) {
-        DestroySelectionMenu(playerid);
-        SetPVarInt(playerid, "skinc_active", 0);
+public OnPlayerClickTextDraw(playerid, Text:clickedid)
+{
+	if(clickedid == Text:INVALID_TEXT_DRAW)
+	{
+		if(GetPVarInt(playerid, "skinc_active") == 1)
+		{
+			DestroySelectionMenu(playerid);
+        	SetPVarInt(playerid, "skinc_active", 0);
+        	return 1;
+		}
+		/*====FURNITURE - MUEBLES=======*/
+        Catalogo_HideForPlayer(playerid);
         PlayerPlaySound(playerid, 1085, 0.0, 0.0, 0.0);
         return 1;
 	}
@@ -4056,6 +4066,239 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid) {
 }
 
 public OnPlayerClickPlayerTextDraw(playerid, PlayerText:playertextid) {
+	for(new i = 0; i < 10; i++)
+	{
+	    if(playertextid == Catalogo_Box[playerid][i][bBoxTD])
+	    {
+ 			switch(Catalogo_GetID(playerid))
+			{
+			    case CATALOG_MESAS_SILLAS:
+			    {
+					new string[128];
+					new furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Mesas_Sillas[furnitureArrayPos][fName], M_Mesas_Sillas[furnitureArrayPos][Price]);
+			        furnitureObjectSelection[playerid] = M_Mesas_Sillas[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Mesas_Sillas[furnitureArrayPos][Price];
+                    Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+				}
+				case CATALOG_CAMAS_MESAS_ARM:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Camas_Mesas_Arm[furnitureArrayPos][fName], M_Camas_Mesas_Arm[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Camas_Mesas_Arm[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Camas_Mesas_Arm[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+				}
+				case CATALOG_ILUMINACION:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Iluminacion[furnitureArrayPos][fName], M_Iluminacion[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Iluminacion[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Iluminacion[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_FRAMES:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Frames[furnitureArrayPos][fName], M_Frames[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Frames[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Frames[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_BATH:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Bath[furnitureArrayPos][fName], M_Bath[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Bath[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Bath[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_CONSTRUCTION:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Construction[furnitureArrayPos][fName], M_Construction[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Construction[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Construction[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_KITCHEN:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Kitchen[furnitureArrayPos][fName], M_Kitchen[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Kitchen[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Kitchen[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_ELECTRONICS:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Electronics[furnitureArrayPos][fName], M_Electronics[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Electronics[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Electronics[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_ENTERTAINMENT:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Entertainment[furnitureArrayPos][fName], M_Entertainment[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Entertainment[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Entertainment[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_MISC:
+			    {
+					new string[128],
+					    furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+			        format(string, sizeof(string), "%s - Precio: $%d", M_Misc[furnitureArrayPos][fName], M_Misc[furnitureArrayPos][Price]);
+                    furnitureObjectSelection[playerid] = M_Misc[furnitureArrayPos][ObjectModel];
+					furniturePriceObjectSelection[playerid] = M_Misc[furnitureArrayPos][Price];
+					Dialog_Show(playerid, Dlg_Furniture_Buy, DIALOG_STYLE_MSGBOX, "USTED VA A COMPRAR:", string, "Comprar", "Cancelar");
+			    }
+			    case CATALOG_OWN_FURN:
+			    {
+					new //string[128],
+						  furnitureArrayPos = Catalogo_GetCurrentPage(playerid) * 10 - 10 + i;
+					OwnFurnitureSelected[playerid] = furnitureArrayPos;
+                    furnitureObjectSelection[playerid] = HouseFurnitures[GetPlayerHouse(playerid)][furnitureArrayPos][fObjectID];
+					//ShowPlayerDialog(playerid, DLG_FURNITURE_OWN_OPTION, DIALOG_STYLE_MSGBOX, "MUEBLE SELECCIONADO", "¿Qué quiere hacer con este mueble?", "Borrar", "Editar");
+                    Dialog_Show(playerid, Dlg_Furniture_Own_Option, DIALOG_STYLE_LIST, "MUEBLE SELECCIONADO", "Editar\nBorrar\nEmpaquetar", "Aceptar", "Cancelar");
+			    }
+			}
+	        CancelSelectTextDraw(playerid);
+	        Catalogo_HideForPlayer(playerid);
+	        return 1;
+		}
+	}
+	if(playertextid == Catalogo[playerid][cPreviousTD])
+	{
+	    if(Catalogo_GetCurrentPage(playerid) > 1)
+	    {
+	        Catalogo_HideForPlayer(playerid);
+			switch(Catalogo_GetID(playerid))
+			{
+			    case CATALOG_MESAS_SILLAS:
+			    {
+					Mesas_Sillas_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_CAMAS_MESAS_ARM:
+			    {
+					Camas_Mesas_Arm_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_ILUMINACION:
+			    {
+					Iluminacion_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_FRAMES:
+			    {
+					Frames_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_BATH:
+			    {
+					Bath_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_CONSTRUCTION:
+			    {
+					Construction_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_KITCHEN:
+			    {
+					Kitchen_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_ELECTRONICS:
+			    {
+					Electronics_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_ENTERTAINMENT:
+			    {
+					Entertainment_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_MISC:
+			    {
+					Misc_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) - 1);
+				}
+				case CATALOG_OWN_FURN:
+			    {
+					Furniture_ShowListPage(playerid, GetPlayerHouse(playerid), Catalogo_GetCurrentPage(playerid) - 1);
+				}
+			}
+		    Catalogo_ShowForPlayer(playerid);
+		    SelectTextDraw(playerid, 0xFFE501FF);
+		}
+		return 1;
+	}
+	else if(playertextid == Catalogo[playerid][cNextTD])
+	{
+ 		if(Catalogo_GetCurrentPage(playerid) < Catalogo_GetTotalPages(playerid))
+	    {
+	        Catalogo_HideForPlayer(playerid);
+			switch(Catalogo_GetID(playerid))
+			{
+			    case CATALOG_MESAS_SILLAS:
+			    {
+					Mesas_Sillas_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_CAMAS_MESAS_ARM:
+			    {
+					Camas_Mesas_Arm_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_ILUMINACION:
+			    {
+					Iluminacion_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_FRAMES:
+			    {
+					Frames_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_BATH:
+			    {
+					Bath_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_CONSTRUCTION:
+			    {
+					Construction_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_KITCHEN:
+			    {
+					Kitchen_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_ELECTRONICS:
+			    {
+					Electronics_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_ENTERTAINMENT:
+			    {
+					Entertainment_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_MISC:
+			    {
+					Misc_ShowCatalogPage(playerid, Catalogo_GetCurrentPage(playerid) + 1);
+				}
+				case CATALOG_OWN_FURN:
+			    {
+					//modificar el GetPlayerHouse para que sea funcional en el oficial y test
+					Furniture_ShowListPage(playerid, GetPlayerHouse(playerid), Catalogo_GetCurrentPage(playerid) + 1);
+				}
+			}
+		    Catalogo_ShowForPlayer(playerid);
+		    SelectTextDraw(playerid, 0xFFE501FF);
+		}
+		return 1;
+	}
+	else if(playertextid == Catalogo[playerid][cCloseTD])
+	{
+	    CancelSelectTextDraw(playerid);
+		Catalogo_HideForPlayer(playerid);
+		return 1;
+	}
+/*---------------------FIN SISTEMA DE MUEBLES/FURNITURE-----------------------*/
 	new skintype;
 	if(GetPVarInt(playerid, "skinc_active") == 0) return 0;
 
@@ -7708,7 +7951,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 		    Lift_OnDialogResponse(playerid, response, listitem);
   		}
 	}
-    return 0;
+	return 0;
 }
 
 public licenseTimer(playerid, lic) {
@@ -10996,11 +11239,11 @@ CMD:refuerzos(playerid, params[])
 	if(PlayerInfo[playerid][pRank] == 10 && PlayerInfo[playerid][pFaction] == FAC_PMA)
 		return 1;
     if(sscanf(params, "d", cmde))
-        return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} (/ref)uerzos [GENDARMERÍA = 1 , PMA = 2, HMA = 3, TODOS = 4]");
+        return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} (/ref)uerzos PMA = 1, HMA = 3, TODOS = 4]");
 	if(CopDuty[playerid] == 0 && SIDEDuty[playerid] == 0 && MedDuty[playerid] == 0)
     	return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en servicio!");
 	if(cmde < 1 || cmde > 4)
-	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} (/ref)uerzos [GENDARMERÍA = 1, PMA = 2, HMA = 3, TODOS = 4]");
+	    return SendClientMessage(playerid, COLOR_GREY, "{5CCAF1}[Sintaxis]{C8C8C8} (/ref)uerzos PMA = 1, HMA = 3, TODOS = 4]");
 
 	new Float:x, Float:y, Float:z, area[MAX_ZONE_NAME];
 	GetPlayerPos(playerid, x, y ,z);
@@ -11011,14 +11254,6 @@ CMD:refuerzos(playerid, params[])
 		switch(cmde)
 		{
 			case 1: {
-				foreach(Player, i) {
-					if(PlayerInfo[i][pFaction] == FAC_SIDE && SIDEDuty[i]) {
-						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
-						SendFMessage(i, COLOR_GREY, "[CENTRAL] %s requiere asistencia inmediata en la zona de %s, lo marcamos en azul en el mapa.", GetPlayerNameEx(playerid), area);
-					}
-				}
-			}
-			case 2: {
 				foreach(Player, i) {
 					if(PlayerInfo[i][pFaction] == FAC_PMA && CopDuty[i]) {
 						SetPlayerMarkerForPlayer(i, playerid, COLOR_DBLUE);
@@ -13182,6 +13417,46 @@ public OnPlayerEditAttachedObject(playerid, response, index, modelid, boneid, Fl
    		RemovePlayerAttachedObject(playerid, index);
    		SetPlayerAttachedObject(playerid, index, modelid, boneid, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
    		OnPlayerEditToy(playerid, index, fOffsetX, fOffsetY, fOffsetZ, fRotX, fRotY, fRotZ);
+	}
+	return 1;
+}
+
+public OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz)
+{
+    if(response == EDIT_RESPONSE_FINAL)
+    {
+	    /*============================MUEBLES=================================*/
+	    
+	    if(currentFurnitureEdit[playerid] != -1)
+		{
+            new houseid = GetPlayerHouse(playerid);
+			if(objectid == HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fObjectID])
+			{
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fX] = x;
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fY] = y;
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fZ] = z;
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRX] = rx;
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRY] = ry;
+			    HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRZ] = rz;
+			    SetDynamicObjectPos(HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fObjectID], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fX], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fY], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fZ]);
+			    SetDynamicObjectRot(HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fObjectID], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRX], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRY], HouseFurnitures[houseid][currentFurnitureEdit[playerid]][fRZ]);
+                SaveFurniture(houseid, currentFurnitureEdit[playerid], DB_FURNITURE_UPDATE);
+				currentFurnitureEdit[playerid] = -1;
+				return 1;
+			}
+        }
+		
+		/*=========================MAPEO ADMINS===============================*/
+		
+	    ObjectsAdminsInfo[playerid][objectadmin] = objectid;
+	    ObjectsAdminsInfo[playerid][PosX] = x;
+	    ObjectsAdminsInfo[playerid][PosY] = y;
+	    ObjectsAdminsInfo[playerid][PosZ] = z;
+	    ObjectsAdminsInfo[playerid][RotX] = rx;
+	    ObjectsAdminsInfo[playerid][RotY] = ry;
+	    ObjectsAdminsInfo[playerid][RotZ] = rz;
+		SetDynamicObjectPos(ObjectsAdminsInfo[playerid][objectadmin], ObjectsAdminsInfo[playerid][PosX], ObjectsAdminsInfo[playerid][PosY], ObjectsAdminsInfo[playerid][PosZ]);
+	    SetDynamicObjectRot(ObjectsAdminsInfo[playerid][objectadmin],ObjectsAdminsInfo[playerid][RotX], ObjectsAdminsInfo[playerid][RotY], ObjectsAdminsInfo[playerid][RotZ]);
 	}
 	return 1;
 }

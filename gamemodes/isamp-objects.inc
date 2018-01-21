@@ -136,10 +136,11 @@ stock TakeObject(playerid, playerhand)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes hacerlo mientras te encuentras jugando Paintball");
 	if(GetHandItem(playerid, playerhand) != 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "No puedes agarrar nada ya que tienes un item en esa mano.");
-
 	new object = GetClosestObject(playerid);
 	if(object == -1)
 	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto cerca tuyo.");
+    if( (GetItemType(object) == ITEM_BOTH) && !BothFreeHands(playerid) )
+        return SendClientMessage(playerid, COLOR_YELLOW2, "Necesitas ambas manos libres para agarrar este objeto");
 
 	SetHandItemAndParam(playerid, playerhand, ServerObject[object][sItemID], ServerObject[object][sAmount]);
 	SendFMessage(playerid, COLOR_WHITE, "Has agarrado un/a %s del suelo.", GetItemName(ServerObject[object][sItemID]));

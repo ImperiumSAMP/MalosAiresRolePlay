@@ -8,7 +8,11 @@
 // Mensajes del sistema.
 #define BUSINESS_TYPES 			"1: Restaurant - 2: Sucursal telefónica - 3: 24-7 - 4: Ammunation - 5: Publicidad - 6: Tienda de ropa urbana"
 #define BUSINESS_TYPES2 		"7: Bar/Club - 8: Tienda de ropa fina - 9: Casino - 10: Ferreteria - 11: Discoteca - 12: Pizzeria - 13: McDonals"
-#define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios"
+#define BUSINESS_TYPES3         "14: Burger King - 15: Comidas Rápidas - 16: Accesorios - 17: Electronica"
+
+#define MAX_BIZ_LISTITEM        10
+#define MAX_ITEM_STOCK          50
+#define MAX_DELI_ORDERS         100
 
 // Negocios.
 #define BIZ_REST          		1
@@ -27,6 +31,7 @@
 #define BIZ_BURGER2             14
 #define BIZ_BELL                15
 #define BIZ_ACCESS              16
+#define BIZ_ELECT               17
 
 enum RES_PRICELIST {
 		bplItemName[64],
@@ -102,7 +107,8 @@ static const HardItems[] = {
 	12, // Vibrador
 	13, // Vibrador Plateado
 	ITEM_ID_CASCOCOMUN, ITEM_ID_CASCOMOTOCROSS, ITEM_ID_CASCOROJO, ITEM_ID_CASCOBLANCO,
-	ITEM_ID_CASCOROSA, ITEM_ID_CASCO_OBRERO
+	ITEM_ID_CASCOROSA, ITEM_ID_CASCO_OBRERO, ITEM_ID_BARRETA, ITEM_ID_RUEDA_DE_REPUESTO,
+	ITEM_ID_LLAVE_DE_CRUZ
 };
 
 static const AccessItems[] = {
@@ -124,6 +130,101 @@ static const AmmuItems[] = {
 	24, // Deagle
 	25, // Escopeta
 	33 //Rifle de caza
+};
+
+/*static const TwoFourSevenItems[] = {
+	ITEM_ID_BIDON, ITEM_ID_SANDWICH, ITEM_ID_ALFAJOR, ITEM_ID_AGUAMINERAL,
+	ITEM_ID_ENCENDEDOR, ITEM_ID_CIGARRILLOS, ITEM_ID_VALIJA, ITEM_ID_MEDICCASE,
+	ITEM_ID_BOLSO, ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILACHICA, ITEM_ID_MOCHILAMEDIANA,
+	ITEM_ID_MALETIN, ITEM_ID_CERVEZA, ITEM_ID_VINO, ITEM_ID_WHISKY, ITEM_ID_VODKA,
+	ITEM_ID_RON, ITEM_ID_JUGO_NARANJA_CAJA, ITEM_ID_JUGO_MANZANA_CAJA, ITEM_ID_POTE_HELADO,
+	ITEM_ID_CAJA_LECHE, ITEM_ID_NARANJA, ITEM_ID_MANZANA_ROJA, ITEM_ID_MANZANA_VERDE,
+	ITEM_ID_TOMATE, ITEM_ID_BANANA, ITEM_ID_PAN, ITEM_ID_CAFE, ITEM_ID_TOSTADA,
+	ITEM_ID_CEREALES_CRISPY, ITEM_ID_CEREALES_POPS
+};*/
+
+/*static const RestItems[] = {
+	ITEM_ID_VINO, ITEM_ID_WHISKY, ITEM_ID_VODKA, ITEM_ID_RON, ITEM_ID_HAMBURGUESA,
+	ITEM_ID_PAN, ITEM_ID_CAFE, ITEM_ID_TOSTADA, ITEM_ID_PECHUGA_POLLO, ITEM_ID_MILANESA_Y_ENSALADA,
+	ITEM_ID_CROQUETAS_RELLENAS, ITEM_ID_LANGOSTINOS_EMPANADOS, ITEM_ID_WANTAN_SALMON,
+	ITEM_ID_POLLO_VERDEO, ITEM_ID_ENSALADA_CESAR, ITEM_ID_ENSALADA_WALDORF, ITEM_ID_MUFFINS,
+	ITEM_ID_DONAS_SURTIDAS, ITEM_ID_DONAS_BLANCAS, ITEM_ID_PIZZA_LEGENDARIA, ITEM_ID_PIZZA_CANTIMPALO,
+	ITEM_ID_PIZZA_MUZZARELLA, ITEM_ID_PIZZA_ESPECIAL, ITEM_ID_P_PIZZA_HUEVO_ENS_PAPAS,
+	ITEM_ID_P_PIZZA_MUZZA_ENS_PAPAS, ITEM_ID_P_PIZZA_ESPECIAL_PAPAS, ITEM_ID_P_PIZZA_ROQUE_PAPAS,
+	ITEM_ID_P_PIZZA_MUZZA_PAPAS
+};*/
+
+/*static const ElectItems[] = {
+	ITEM_ID_CAMARA, ITEM_ID_TELEFONO_CELULAR, ITEM_ID_RADIO, ITEM_ID_PARLANTE
+};*/
+
+/*static const ClubItems[] = {
+	ITEM_ID_CERVEZA
+};*/
+
+static const BizTypeAvailableItems[][] = {
+	{0},
+	//RESTAURANT
+	{ITEM_ID_VINO, ITEM_ID_WHISKY, ITEM_ID_VODKA, ITEM_ID_RON, ITEM_ID_HAMBURGUESA,
+	ITEM_ID_PAN, ITEM_ID_CAFE, ITEM_ID_TOSTADA, ITEM_ID_PECHUGA_POLLO, ITEM_ID_MILANESA_Y_ENSALADA,
+	ITEM_ID_CROQUETAS_RELLENAS, ITEM_ID_LANGOSTINOS_EMPANADOS, ITEM_ID_WANTAN_SALMON,
+	ITEM_ID_POLLO_VERDEO, ITEM_ID_ENSALADA_CESAR, ITEM_ID_ENSALADA_WALDORF, ITEM_ID_MUFFINS,
+	ITEM_ID_DONAS_SURTIDAS, ITEM_ID_DONAS_BLANCAS, ITEM_ID_PIZZA_LEGENDARIA, ITEM_ID_PIZZA_CANTIMPALO,
+	ITEM_ID_PIZZA_MUZZARELLA, ITEM_ID_PIZZA_ESPECIAL, ITEM_ID_P_PIZZA_HUEVO_ENS_PAPAS,
+	ITEM_ID_P_PIZZA_MUZZA_ENS_PAPAS, ITEM_ID_P_PIZZA_ESPECIAL_PAPAS, ITEM_ID_P_PIZZA_ROQUE_PAPAS,
+	ITEM_ID_P_PIZZA_MUZZA_PAPAS,0},
+	
+	{0},
+	//24-7
+	{ITEM_ID_BIDON, ITEM_ID_SANDWICH, ITEM_ID_ALFAJOR, ITEM_ID_AGUAMINERAL,
+	ITEM_ID_ENCENDEDOR, ITEM_ID_CIGARRILLOS, ITEM_ID_VALIJA, ITEM_ID_MEDICCASE,
+	ITEM_ID_BOLSO, ITEM_ID_MOCHILAGRANDE, ITEM_ID_MOCHILACHICA, ITEM_ID_MOCHILAMEDIANA,
+	ITEM_ID_MALETIN, ITEM_ID_CERVEZA, ITEM_ID_VINO, ITEM_ID_WHISKY, ITEM_ID_VODKA,
+	ITEM_ID_RON, ITEM_ID_JUGO_NARANJA_CAJA, ITEM_ID_JUGO_MANZANA_CAJA, ITEM_ID_POTE_HELADO,
+	ITEM_ID_CAJA_LECHE, ITEM_ID_NARANJA, ITEM_ID_MANZANA_ROJA, ITEM_ID_MANZANA_VERDE,
+	ITEM_ID_TOMATE, ITEM_ID_BANANA, ITEM_ID_PAN, ITEM_ID_CAFE, ITEM_ID_TOSTADA,
+	ITEM_ID_CEREALES_CRISPY, ITEM_ID_CEREALES_POPS,0},
+	//AMMUNATION
+	{WEAPON_COLT45, WEAPON_DEAGLE, WEAPON_SHOTGUN, WEAPON_RIFLE,0},
+	
+	{0},
+	
+	{0},
+	//CLUB
+	{ITEM_ID_CERVEZA,0},
+	
+	{0},
+	
+	{0},
+	//FERRETERIA
+	{WEAPON_BRASSKNUCKLE, WEAPON_SHOVEL, WEAPON_CANE, WEAPON_GOLFCLUB, WEAPON_BAT, WEAPON_POOLSTICK,
+	WEAPON_DILDO2, WEAPON_DILDO, WEAPON_VIBRATOR, WEAPON_VIBRATOR2, ITEM_ID_CASCOCOMUN,
+	ITEM_ID_CASCOMOTOCROSS, ITEM_ID_CASCOROJO, ITEM_ID_CASCOBLANCO,	ITEM_ID_CASCOROSA,
+	ITEM_ID_CASCO_OBRERO, ITEM_ID_BARRETA, ITEM_ID_RUEDA_DE_REPUESTO, ITEM_ID_LLAVE_DE_CRUZ,0},
+	
+	{0},
+	
+	{0},
+	
+	{0},
+	
+	{0},
+	
+	{0},
+	//ACCESORIOS
+	{ITEM_ID_SOMBRERO_COWBOY_NEGRO, ITEM_ID_SOMBRERO_COWBOY_MARRON, ITEM_ID_SOMBRERO_COWBOY_BORDO,
+	ITEM_ID_RELOJ_SWATCH, ITEM_ID_RELOJ_ROLEX, ITEM_ID_RELOJ_CASIO, ITEM_ID_RELOJ_SWISSARMY,
+	ITEM_ID_RELOJ_FESTINA, ITEM_ID_SOMBRERO_ANTIGUO, ITEM_ID_BIGOTE_FALSO1, ITEM_ID_BIGOTE_FALSO2,
+	ITEM_ID_SOMBRERO_BLANCO, ITEM_ID_GORRO_ROJO, ITEM_ID_GORRO_ESTAMPADO, ITEM_ID_GORRO_NEGRO,
+	ITEM_ID_GORRO_PLAYERO_NEGRO, ITEM_ID_GORRO_PLAYERO_CUADROS, ITEM_ID_GORRA_MILITAR,
+	ITEM_ID_GORRA_GRIS_ESTAMPADA, ITEM_ID_GORRA_BLANCA_ESTAMPADA, ITEM_ID_ANTEOJO_DE_SOL,
+	ITEM_ID_ANTEOJO_DEPORTIVO_NEGRO, ITEM_ID_ANTEOJO_DEPORTIVO_ROJO, ITEM_ID_ANTEOJO_DEPORTIVO_AZUL,
+	ITEM_ID_ANTEOJO_RAYBAN_NEGRO,ITEM_ID_ANTEOJO_RAYBAN_AZUL,ITEM_ID_ANTEOJO_RAYBAN_VIOLETA,
+	ITEM_ID_ANTEOJO_RAYBAN_ROSA,ITEM_ID_ANTEOJO_RAYBAN_ROJO,ITEM_ID_ANTEOJO_RAYBAN_NARANJA,
+	ITEM_ID_ANTEOJO_RAYBAN_AMARILLO,ITEM_ID_ANTEOJO_RAYBAN_VERDE,ITEM_ID_GORRA_SIMPLE_NEGRA,
+	ITEM_ID_GORRA_SIMPLE_AZUL, ITEM_ID_GORRA_SIMPLE_VERDE,0},
+	//ELECTRONICA
+	{ITEM_ID_CAMARA, ITEM_ID_TELEFONO_CELULAR, ITEM_ID_RADIO, ITEM_ID_PARLANTE,0}
 };
 
 //Enums
@@ -174,8 +275,13 @@ forward GetPlayerBusiness(playerid);
 forward ResetBusinessOffer(playerid);
 forward bool:EnterBusiness(playerid);
 forward bool:LeaveBusiness(playerid);
+forward GetBusinessType(biz);
 
 //==========================IMPLEMENTACION DE FUNCIONES=========================
+stock GetBusinessType(biz)
+{
+	return Business[biz][bType];
+}
 
 stock ResetBusinessOffer(playerid)
 {
@@ -1328,4 +1434,454 @@ CMD:guardarproductos(playerid, params[])
 		}
 	}
  	return 1;
+}
+
+/*----------------------------------------------------------------------------*/
+/*------------------           EXPERIMENTAL           ------------------------*/
+/*------------------ SISTEMA DE CATALOGO DE NEGOCIOS  ------------------------*/
+/*------------------   DINAMICO Y EDITABLE INGAME     ------------------------*/
+/*----------------------------------------------------------------------------*/
+
+enum bDeliInfo {
+	bBiz,
+	bItem,
+	bCant
+}
+
+new BizDeliPendingList[50][bDeliInfo];
+
+new BizItemOrderSelected[MAX_PLAYERS];
+
+enum bCatalogInfo {
+	bItemid, //id del item en la lista global de items, para referenciar
+	bPrice, //precio asignado de venta del objeto en el negocio
+	avstock //stock total del producto en el negoccio
+}
+new BusinessCatalog[MAX_BUSINESS][MAX_BIZ_LISTITEM][bCatalogInfo];
+
+forward GetBizItemPrice(biz, slot); //devuelve el precio asignado del item en el negocio indicado
+forward GetBizItemStock(biz, slot); //devuelve el stock disponible del item en el negocio indicado
+forward GetListItemid(type, index);
+forward GetBizItemIndex(biz, item); //devuelve la posición del objeto en la lista de productos. -1 si no existe
+
+stock GetBizItemIndex(biz, item)
+{
+	for(new i = 0; i < MAX_BIZ_LISTITEM; i++)
+	{
+	    if(item == BusinessCatalog[biz][i][bItemid])
+	        return i;
+	}
+	return -1;
+}
+
+stock GetBizItemPrice(biz, slot)
+{
+	return BusinessCatalog[biz][slot][bPrice];
+}
+
+stock GetBizItemStock(biz, slot)
+{
+	return BusinessCatalog[biz][slot][avstock];
+}
+
+stock GetListItemid(type, index)
+{
+ 	return BizTypeAvailableItems[type][index];
+}
+
+
+
+stock AddItemCatalog(playerid, bizID, item)
+{
+
+	new i = 0;
+	while ( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[bizID][i][bItemid] != 0) ) //buscamos un lugar vacío en la lista
+	    i++;
+	if ( (i > (MAX_BIZ_LISTITEM -1) ) || (BusinessCatalog[bizID][i][bItemid] != 0) )
+		return SendClientMessage(playerid, COLOR_YELLOW2, "La lista de productos en venta está completa, no puedes agregar nada más");
+
+	BusinessCatalog[bizID][i][bItemid] = item;
+	BusinessCatalog[bizID][i][bPrice] = GetItemPrice(item);
+	BusinessCatalog[bizID][i][avstock] = 5;
+	
+	return SendClientMessage(playerid, COLOR_YELLOW2, "El producto fue agregado correctamente a la venta");
+}
+
+stock DeleteItemCatalog(playerid, bizID, slot)
+{
+	if(BusinessCatalog[bizID][slot][bItemid] == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "No hay ningun objeto a la venta en ese slot");
+	//Borramos el objeto en la lista
+	BusinessCatalog[bizID][slot][bItemid] = 0;
+	BusinessCatalog[bizID][slot][bPrice] = 0;
+	BusinessCatalog[bizID][slot][avstock] = 0;
+	
+	//Desde el último elemento, buscamos un item para ordenar
+	for(new i = MAX_BIZ_LISTITEM -1; i >= 0; i--)
+	{
+	    if(BusinessCatalog[bizID][i][bItemid] != 0)
+		{
+			BusinessCatalog[bizID][slot][bItemid] = BusinessCatalog[bizID][i][bItemid];
+			BusinessCatalog[bizID][slot][bPrice] = BusinessCatalog[bizID][i][bPrice];
+			BusinessCatalog[bizID][slot][avstock] = BusinessCatalog[bizID][i][avstock];
+			
+			BusinessCatalog[bizID][i][bItemid] = 0;
+			BusinessCatalog[bizID][i][bPrice] = 0;
+			BusinessCatalog[bizID][i][avstock] = 0;
+			return 1;
+		}
+	}
+	return 1;
+}
+
+ShowDialogBizCatalog(playerid, bizID)
+{
+    new string[500] = "";
+	new i = 0;
+
+	if(BusinessCatalog[bizID][i][bItemid] == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "El negocio no tiene ningún producto a la venta");
+		
+	while( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[bizID][i][bItemid] != 0) )
+	{
+	    format(string, sizeof(string), "%s%s\t$%d\n", string, GetItemName(BusinessCatalog[bizID][i][bItemid]), BusinessCatalog[bizID][i][bPrice]);
+	    i++;
+	}
+	Dialog_Show(playerid, Business_Shop, DIALOG_STYLE_TABLIST, Business[bizID][bName], string, "Comprar", "Cerrar");
+	return 1;
+}
+
+ShowDialogPutBizAvailableItems(playerid, bizType)
+{
+	new string[1500];
+	new i = 0;
+	while(BizTypeAvailableItems[bizType][i] != 0)
+	{
+		format(string, sizeof(string), "%s%s\t$%d\n", string, GetItemName(BizTypeAvailableItems[bizType][i]), GetItemPrice(BizTypeAvailableItems[bizType][i]));
+		i++;
+	}
+	Dialog_Show(playerid, Put_Biz_Item, DIALOG_STYLE_TABLIST, "Elige el producto que quieres agregar a tu negocio", string, "Aceptar", "Cerrar");
+}
+
+CMD:negocioagregaritem(playerid, params[])
+{
+	new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+ 	new bizType = GetBusinessType(bizID);
+ 	ShowDialogPutBizAvailableItems(playerid, bizType);
+	return 1;
+}
+
+Dialog:Put_Biz_Item(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return 1;
+	new bizID = PlayerInfo[playerid][pBizKey];
+	new bizType = GetBusinessType(bizID);
+	AddItemCatalog(playerid, bizID, GetListItemid(bizType, listitem));
+	return 1;
+}
+
+Dialog:Delete_Biz_Item(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return 1;
+	new biz = PlayerInfo[playerid][pBizKey];
+	DeleteItemCatalog(playerid, biz, listitem);
+	SendClientMessage(playerid, COLOR_YELLOW2, "El item fue borrado correctamente");
+	return 1;
+}
+	
+ShowDialogDeleteBizItem(playerid, biz)
+{
+    new string[500] = "";
+	new i = 0;
+
+	if(BusinessCatalog[biz][i][bItemid] == 0)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El negocio no tiene ningún producto a la venta");
+
+	while( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[biz][i][bItemid] != 0) )
+	{
+	    format(string, sizeof(string), "%s%s\tStock:%d\n", string, GetItemName(BusinessCatalog[biz][i][bItemid]), GetBizItemStock(biz, i));
+	    i++;
+	}
+	Dialog_Show(playerid, Delete_Biz_Item, DIALOG_STYLE_TABLIST, "Elige el producto que quieres borrar de tu negocio", string, "Borrar", "Cerrar");
+	SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "Recuerda que al borrar un item a la venta, perderás todo el stock disponible");
+	return 1;
+}
+
+CMD:negocioborraritem(playerid, params[])
+{
+	new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+    ShowDialogDeleteBizItem(playerid, bizID);
+	return 1;
+}
+
+CMD:comprartest(playerid, params[])
+{
+	new biz = GetPlayerBusiness(playerid);
+	if(biz == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No te encuentras en ningún negocio!");
+	ShowDialogBizCatalog(playerid, biz);
+	return 1;
+}
+
+Dialog:Business_Shop(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return 1;
+	    
+	new biz = GetPlayerBusiness(playerid);
+	new item = BusinessCatalog[biz][listitem][bItemid];
+
+	if( (item == 0) || (biz == 0) )
+		return 1;
+	if(GetBizItemStock(biz, listitem) == 0)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "VENDEDOR: No hay más stock de este producto, lo siento.");
+	if( GetPlayerCash(playerid) < GetBizItemPrice(biz, listitem) )
+	    return SendClientMessage(playerid,COLOR_YELLOW2, "¡No tienes el dinero suficiente!");
+    new freehand = SearchFreeHand(playerid);
+	if(freehand == -1)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "No tienes cómo agarrar el item ya que tienes ambas manos ocupadas.");
+
+    SetHandItemAndParam(playerid, freehand, item, 1);
+	GivePlayerCash(playerid, -GetBizItemPrice(biz, listitem));
+	Business[biz][bTill] += GetBizItemPrice(biz, listitem);
+	BusinessCatalog[biz][listitem][avstock]--;
+	saveBusiness(biz);
+	SendFMessage(playerid, COLOR_WHITE, "¡Has comprado un/a %s por $%d!", GetItemName(item), GetBizItemPrice(biz, listitem));
+	return 1;
+}
+
+ShowDialogBizStock(playerid, biz)
+{
+
+    new string[500] = "";
+	new i = 0;
+
+	if(BusinessCatalog[biz][i][bItemid] == 0)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El negocio no tiene ningún producto.");
+
+	while( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[biz][i][bItemid] != 0) )
+	{
+	    format(string, sizeof(string), "%s%s:%d\n", string, GetItemName(BusinessCatalog[biz][i][bItemid]), GetBizItemStock(biz, i));
+	    i++;
+	}
+	Dialog_Show(playerid, GetStock_Biz_Items, DIALOG_STYLE_MSGBOX, "Stock actual", string, "Regresar", "");
+	return 1;
+}
+
+ShowDialogBizOrderStock(playerid, biz)
+{
+	new string[500] = "";
+	new i = 0;
+
+	if(BusinessCatalog[biz][i][bItemid] == 0)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El negocio no tiene ningún producto.");
+
+	while( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[biz][i][bItemid] != 0) )
+	{
+	    format(string, sizeof(string), "%s%s\tStock:%d\n", string, GetItemName(BusinessCatalog[biz][i][bItemid]), GetBizItemStock(biz, i));
+	    i++;
+	}
+	Dialog_Show(playerid, Order_Stock_Item_Step1, DIALOG_STYLE_TABLIST, "Seleccione el item", string, "Aceptar", "Regresar");
+	return 1;
+}
+
+Dialog:Order_Stock_Item_Step1(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return cmd_negociogestionar(playerid, "");
+	new bizID = PlayerInfo[playerid][pBizKey];
+	new item = BusinessCatalog[bizID][listitem][bItemid];
+	
+	if(GetBizItemStock(bizID, listitem) >= MAX_ITEM_STOCK)
+	{
+		SendClientMessage(playerid, COLOR_YELLOW2, "El producto seleccionado ya tiene suficiente stock");
+		return cmd_negociogestionar(playerid, "");
+	}
+	new str[128];
+	new stockUnitValue = floatround(float(GetItemPrice(item)) * 0.6, floatround_ceil);
+	
+	format(str, sizeof(str), "Producto: %s\nStock Actual: %d\nPrecio de stock por unidad: $%d\nMáximo que puede pedir: %d",
+	GetItemName(item), GetBizItemStock(bizID, listitem), stockUnitValue, MAX_ITEM_STOCK - GetBizItemStock(bizID, listitem) );
+    BizItemOrderSelected[playerid] = item;
+	Dialog_Show(playerid, Order_Stock_Item_Step2, DIALOG_STYLE_INPUT, "¿Cuánto stock quiere pedir?", str, "Continuar", "Regresar");
+	return 1;
+}
+
+Dialog:Order_Stock_Item_Step2(playerid, response, listitem, inputtext[])
+{
+	new item = BizItemOrderSelected[playerid];
+	BizItemOrderSelected[playerid] = -1;
+    if(!response)
+	    return cmd_negociogestionar(playerid, "");
+	if(strval(inputtext) < 1)
+	{
+		SendClientMessage(playerid, COLOR_YELLOW2, "Ingresaste un número/carácter inválido");
+		return cmd_negociogestionar(playerid, "");
+	}
+	new cant = strval(inputtext);
+	new biz = PlayerInfo[playerid][pBizKey];
+	new index = GetBizItemIndex(biz, item);
+
+	if(index == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ha ocurrido un error al pedir los productos");
+
+	if( (cant + GetBizItemStock(biz, index) ) > MAX_ITEM_STOCK)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "La sumatoria de tu pedido mas lo que ya tienes en stock no puede superar las 50 unidades");
+	
+	for(new i = 0; i < MAX_DELI_ORDERS; i++)
+	{
+	    if(BizDeliPendingList[i][bItem] == 0)
+	    {
+    		BizDeliPendingList[i][bBiz] = biz;
+    		BizDeliPendingList[i][bItem] = item;
+			BizDeliPendingList[i][bCant] = cant;
+			
+			SendClientMessage(playerid, COLOR_YELLOW2, "Realizaste tu pedido correctamente, ten en cuenta que el mismo llegará cuando algún transportista");
+			SendClientMessage(playerid, COLOR_YELLOW2, "realice la entrega, esto puede tardar algunas horas. Cuando el pedido llegue se cobrará automáticamente");
+			SendClientMessage(playerid, COLOR_YELLOW2, "de la caja. Si no tienes el dinero al momento de la entrega puedes tener problemas.");
+			return 1;
+	    }
+	}
+	SendClientMessage(playerid, COLOR_YELLOW2, "Operadora: Hay muchos pedidos pendientes, intente más tarde");
+	return 1;
+}
+
+ShowDialogBizEditPriceItem(playerid, biz)
+{
+    new string[500] = "";
+	new i = 0;
+
+	if(BusinessCatalog[biz][i][bItemid] == 0)
+		return SendClientMessage(playerid, COLOR_LIGHTYELLOW2, "El negocio no tiene ningún producto.");
+
+	while( (i <= (MAX_BIZ_LISTITEM -1) ) && (BusinessCatalog[biz][i][bItemid] != 0) )
+	{
+	    format(string, sizeof(string), "%s%s\n", string, GetItemName(BusinessCatalog[biz][i][bItemid]) );
+	    i++;
+	}
+	Dialog_Show(playerid, Edit_Price_Step1, DIALOG_STYLE_LIST, "Seleccione el producto", string, "Aceptar", "Regresar");
+	return 1;
+}
+
+Dialog:Edit_Price_Step1(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return cmd_negociogestionar(playerid,"");
+
+	new bizID = PlayerInfo[playerid][pBizKey];
+	new item = BusinessCatalog[bizID][listitem][bItemid];
+	new str[128];
+	BizItemOrderSelected[playerid] = item;
+	format(str, sizeof(str), "Producto: %s\nPrecio Actual: %d\nMáximo Permitido: %d\nMínimo Permitido: %d", GetItemName(item), GetBizItemPrice(bizID, listitem), GetItemPrice(item) + floatround(float(GetItemPrice(item)) * 0.3, floatround_ceil), GetItemPrice(item) - floatround(float(GetItemPrice(item)) * 0.5, floatround_ceil));
+	Dialog_Show(playerid, Edit_Price_Step2, DIALOG_STYLE_INPUT, "Escriba el nuevo precio", str, "Aceptar", "Regresar");
+	return 1;
+}
+Dialog:Edit_Price_Step2(playerid, response, listitem, inputtext[])
+{
+	new item = BizItemOrderSelected[playerid];
+	BizItemOrderSelected[playerid] = -1;
+	if(!response)
+	    return cmd_negociogestionar(playerid, "");
+    if(strval(inputtext) < 1)
+	{
+		SendClientMessage(playerid, COLOR_YELLOW2, "Ingresaste un número/carácter inválido");
+		return cmd_negociogestionar(playerid, "");
+	}
+	new price = strval(inputtext);
+	new biz = PlayerInfo[playerid][pBizKey];
+	new index = GetBizItemIndex(biz, item);
+	if(index == -1)
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "Ha ocurrido un error al editar el precio");
+
+	new maxPrice = GetItemPrice(item) + floatround(float(GetItemPrice(item)) * 0.3, floatround_ceil);
+	new minPrice = GetItemPrice(item) - floatround(float(GetItemPrice(item)) * 0.5, floatround_ceil);
+
+	if( (price > maxPrice) || (price < minPrice) )
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No puedes superar el mínimo o máximo permitido!");
+	BusinessCatalog[biz][index][bPrice] = price;
+	SendClientMessage(playerid, COLOR_YELLOW2, "¡Precio modificado!");
+	return 1;
+}
+	
+
+
+Dialog:GetStock_Biz_Items(playerid, response, listitem, inputtext[])
+{
+	return cmd_negociogestionar(playerid, "");
+}
+
+CMD:negocioconsultarstock(playerid, params[])
+{
+    new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+	ShowDialogBizStock(playerid, bizID);
+	return 1;
+}
+
+CMD:negociopedirstock(playerid, params[])
+{
+    new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+	ShowDialogBizOrderStock(playerid, bizID);
+	return 1;
+}
+
+CMD:negocioeditarprecio(playerid, params[])
+{
+	new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+	ShowDialogBizEditPriceItem(playerid, bizID);
+	return 1;
+}
+
+CMD:negociogestionar(playerid, params[])
+{
+    new bizID = PlayerInfo[playerid][pBizKey];
+	if(bizID == 0)
+		return SendClientMessage(playerid, COLOR_YELLOW2, "¡No eres propietario de ningún negocio!");
+	if(!PlayerToPoint(20.0, playerid, Business[bizID][bInsideX], Business[bizID][bInsideY], Business[bizID][bInsideZ]) || GetPlayerVirtualWorld(playerid) != Business[bizID][bInsideWorld] || GetPlayerInterior(playerid) != Business[bizID][bInsideInt])
+ 		return SendClientMessage(playerid, COLOR_YELLOW2, "¡Debes estar en tu negocio!");
+
+	Dialog_Show(playerid, Gestion_Biz, DIALOG_STYLE_LIST, "¿Qué quieres hacer con tu negocio?",
+	"Agregar item a la venta\n\
+	Borrar item en venta\n\
+	Consultar stock\n\
+	Pedir mercaderia\n\
+	Editar precio de item",
+	"Aceptar", "Cerrar");
+	return 1;
+}
+
+Dialog:Gestion_Biz(playerid, response, listitem, inputtext[])
+{
+	if(!response)
+	    return 1;
+	switch(listitem)
+	{
+	    case 0: cmd_negocioagregaritem(playerid, "");
+	    case 1: cmd_negocioborraritem(playerid, "");
+	    case 2: cmd_negocioconsultarstock(playerid, "");
+	    case 3: cmd_negociopedirstock(playerid, "");
+	    case 4: cmd_negocioeditarprecio(playerid, "");
+	}
+	return 1;
 }

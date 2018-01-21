@@ -59,21 +59,7 @@ EditAdminObject(playerid)
 	}
 }
 
-public OnPlayerEditDynamicObject(playerid, objectid, response, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz)
-{
-	if(response)
-	{
-	    ObjectsAdminsInfo[playerid][objectadmin] = objectid;
-	    ObjectsAdminsInfo[playerid][PosX] = x;
-	    ObjectsAdminsInfo[playerid][PosY] = y;
-	    ObjectsAdminsInfo[playerid][PosZ] = z;
-	    ObjectsAdminsInfo[playerid][RotX] = rx;
-	    ObjectsAdminsInfo[playerid][RotY] = ry;
-	    ObjectsAdminsInfo[playerid][RotZ] = rz;
-		SetDynamicObjectPos(ObjectsAdminsInfo[playerid][objectadmin], ObjectsAdminsInfo[playerid][PosX], ObjectsAdminsInfo[playerid][PosY], ObjectsAdminsInfo[playerid][PosZ]);
-	    SetDynamicObjectRot(ObjectsAdminsInfo[playerid][objectadmin],ObjectsAdminsInfo[playerid][RotX], ObjectsAdminsInfo[playerid][RotY], ObjectsAdminsInfo[playerid][RotZ]);
-	}
-}
+//movida la funcion OnPlayerEditDynamicObject a isamp-core
 
 
 //================================COMANDOS======================================

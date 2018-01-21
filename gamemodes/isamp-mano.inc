@@ -7,8 +7,6 @@
 
 //================================CONSTANTES====================================
 
-// #define HAND_LEFT             	0
-// #define HAND_RIGHT              1
 
 #define SAVE_UPDATE             1
 #define SAVE_CREATE             2
@@ -61,8 +59,18 @@ stock SearchHandsForItem(playerid, itemid)
 	    return -1;
 }
 
+stock BothFreeHands(playerid)
+{
+    if((HandInfo[playerid][HAND_RIGHT][Item] == 0) && (HandInfo[playerid][HAND_LEFT][Item] == 0))
+	    return 1;
+	else return 0;
+}
+
+
 stock SearchFreeHand(playerid)
 {
+    if( (GetItemType(HandInfo[playerid][HAND_RIGHT][Item]) == ITEM_BOTH) || (GetItemType(HandInfo[playerid][HAND_LEFT][Item]) == ITEM_BOTH) )
+	    return -1;
 	if(HandInfo[playerid][HAND_RIGHT][Item] == 0)
 	    return HAND_RIGHT;
 	else if(HandInfo[playerid][HAND_LEFT][Item] == 0)
@@ -159,6 +167,8 @@ stock GiveItemFromPlayerToPlayer(playerid, playerhand, targetid)
 	targetfreehand = SearchFreeHand(targetid);
 	if(targetfreehand == -1)
 		return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto tiene ambas manos ocupadas y no puede agarrar nada más.");
+	if( (!BothFreeHands(targetid)) && (GetItemType(itemid) == ITEM_BOTH) )
+	    return SendClientMessage(playerid, COLOR_YELLOW2, "El sujeto no puede recibir este objeto teniendo alguna mano ocupada.");
 
 	SetHandItemAndParam(targetid, targetfreehand, itemid, GetHandParam(playerid, playerhand));
 	SetHandItemAndParam(playerid, playerhand, 0, 0);

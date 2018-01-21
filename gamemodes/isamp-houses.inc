@@ -1664,6 +1664,7 @@ CMD:acsalida(playerid, params[])
 	GetPlayerFacingAngle(playerid, angle);
 	GetPlayerPos(playerid, House[houseid][InsideX], House[houseid][InsideY], House[houseid][InsideZ]);
 	House[houseid][InsideInterior] = GetPlayerInterior(playerid);
+	House[houseid][InsideWorld] = GetPlayerVirtualWorld(playerid);
 	House[houseid][InsideAngle] = angle + 180;
 	SaveHouse(houseid);
 	format(string, sizeof(string), "{878EE7}[INFO]:{C8C8C8} la salida de la casa %d ha sido cambiada a tu posición y a tu interior.", houseid);
