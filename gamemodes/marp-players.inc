@@ -1,8 +1,11 @@
-#if defined _isamp_players_included
+#if defined _marp_players_included
 	#endinput
 #endif
-#define _isamp_players_included
+#define _marp_players_included
 
+//============================GETTERS CON DEFINE================================
+
+#define GetPlayerJob(%0)                PlayerInfo[%0][pJob]
 
 //====[ENUMS AND PLAYERS ARRAY]=====================================
 

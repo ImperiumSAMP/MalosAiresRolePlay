@@ -3,7 +3,7 @@
 ***********************                                 ************************
 *********************    MALOS AIRES ROLEPLAY GAMEMODE    **********************
 **********										 			         ***********
-********    (C) Copyright 2010 - 2016 by Pheek Gaming Latinoamérica    *********
+********    (C) Copyright 2010 - 2018 by Pheek Gaming Latinoamérica    *********
 **********                                            				 ***********
 ***********************    @Do not remove this label    ************************
 ***********************    @No remueva esta etiqueta    ************************
@@ -20,10 +20,6 @@
 #define MAX_PLAYERS 75  // Redefinimos MAX_PLAYERS DE 500 A 75
 
 #include <a_mysql>
-#include <core>
-#include <float>
-#include <time>
-#include <file>
 #include <sscanf2>
 #include <foreach>
 #include <zcmd>
@@ -35,12 +31,13 @@
 #include <easyDialog>
 
 forward Float:GetDistanceBetweenPlayers(p1,p2);
+forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
 
 //#include <mapandreas>
 //Includes  moudulos isamp
-#include "isamp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
+#include "marp-util.inc" 				//Contiene defines básicos utilizados en todo el GM
 #include "isamp-database.inc" 			//Funciones varias para acceso a datos
-#include "isamp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
+#include "marp-players.inc" 			//Contiene definiciones y lógica de negocio para todo lo que involucre a los jugadores (Debe ser incluido antes de cualquier include que dependa de playerInfo)
 #include "marp-items.inc" 				//Sistema de items
 #include "marp-container.inc"
 #include "marp-streamings.inc"
@@ -82,7 +79,7 @@ forward Float:GetDistanceBetweenPlayers(p1,p2);
 #include "isamp-afk.inc"          		//Sistema de AFK
 #include "isamp-cmdpermissions.inc"     //Permisos dinámicos para comandos
 #include "marp-concesionaria.inc"
-#include "marp-garbjob.inc"
+#include "marp-jobgarb.inc"
 #include "marp-tranjob.inc"
 #include "marp-farmjob.inc"
 #include "marp-drugfjob.inc"
@@ -443,7 +440,7 @@ enum pLicInfo {
 new playerLicense[MAX_PLAYERS][pLicInfo];
 
 // Timers
-forward Float:GetDistance(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2);
+
 forward robberyCancel(playerid);
 forward fuelCar(playerid, refillprice, refillamount, refilltype);
 forward fuelCarWithCan(playerid, vehicleid, totalfuel);
@@ -523,28 +520,36 @@ public OnGameModeInit()
 	print("HELP");
 	mysql_connect(MYSQL_HOST, MYSQL_USER, MYSQL_DB, MYSQL_PASS);
     //mysql_connect("localhost","root","isamp_test","");
+    
     LoadTDs();
     LoadMap();
 	LoadPickups();
 	LoadGangZones();
 	loadCmdPermissions();
-	
-	//MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
 
 	EnableStuntBonusForAll(0);
     DisableInteriorEnterExits();
     AllowInteriorWeapons(1);
 	ManualVehicleEngineAndLights();
-	new sendcmd[128];
 
 	SetGameModeText(GAMEMODE);
+
+    new sendcmd[128];
+    
 	format(sendcmd, sizeof(sendcmd), "hostname %s", SERVER_NAME);
 	SendRconCommand(sendcmd);
+	
 	format(sendcmd, sizeof(sendcmd), "mapname %s", MAP_NAME);
 	SendRconCommand(sendcmd);
+	
 	format(sendcmd, sizeof(sendcmd), "weburl %s", WEBSITE);
 	SendRconCommand(sendcmd);
-	if (strlen(PASSWORD) != 0) { format(sendcmd, sizeof(sendcmd), "password %s", PASSWORD); SendRconCommand(sendcmd); }
+	
+	if (strlen(PASSWORD) != 0)
+	{
+		format(sendcmd, sizeof(sendcmd), "password %s", PASSWORD);
+		SendRconCommand(sendcmd);
+	}
 
 	AddPlayerClass(0,1958.3783,1343.1572,1100.3746,269.1425,-1,-1,-1,-1,-1,-1);
 
@@ -1049,6 +1054,10 @@ public ResetStats(playerid)
 	}
 
 	gItemAt[playerid] = 0;
+	
+	J_Garb_ResetVars(playerid);
+	J_Garb_ResetInfo(playerid);
+	
 	return 0;
 }
 
@@ -1187,9 +1196,7 @@ public OnPlayerDisconnect(playerid, reason)
 	HideGangZonesToPlayer(playerid);
 	
 	Cronometro_Borrar(playerid);
-	
-	Job_WorkingPlayerDisconnect(playerid);
-	
+
 	DestroyPlayerInventory(playerid);
 	DestroyPlayerHands(playerid);
 	DestroyPlayerBack(playerid);
@@ -1201,8 +1208,16 @@ public OnPlayerDisconnect(playerid, reason)
 	        case 0,2: PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: crash).");
 			case 1: PlayerLocalMessage(playerid, 30.0, "se ha desconectado (razón: a voluntad).");
 	    }
+	    
 		SaveAccount(playerid);
 	}
+	
+	Job_WorkingPlayerDisconnect(playerid);
+
+	J_Garb_OnPlayerDisconnect(playerid);
+
+	ResetJobVariables(playerid);
+	
 	return 1;
 }
 
@@ -1458,6 +1473,7 @@ public OnPlayerSpawn(playerid)
 	ApplyAnimation(playerid, "ATTRACTORS", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BLOWJOBZ", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "BOMBER", "null", 0.0, 0, 0, 0, 0, 0);
+	ApplyAnimation(playerid, "CASINO", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "COP_AMBIENT", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "CRACK", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "DANCING", "null", 0.0, 0, 0, 0, 0, 0);
@@ -1485,6 +1501,7 @@ public OnPlayerSpawn(playerid)
 	ApplyAnimation(playerid, "POLICE", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "RAPPING", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "RIOT", "null", 0.0, 0, 0, 0, 0, 0);
+	ApplyAnimation(playerid, "RYDER", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "SHOP", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "SMOKING", "null", 0.0, 0, 0, 0, 0, 0);
 	ApplyAnimation(playerid, "SWAT", "null", 0.0, 0, 0, 0, 0, 0);
@@ -3902,7 +3919,6 @@ stock hasFireGun(playerid) {
 
 public OnPlayerEnterCheckpoint(playerid)
 {
-	PlayerPlaySound(playerid, 1139, 0.0, 0.0, 0.0);
 	DisablePlayerCheckpoint(playerid);
 	
     if(TaxiCallTime[playerid] > 0 && TaxiAccepted[playerid] < 999)
@@ -3936,9 +3952,9 @@ public OnPlayerEnterCheckpoint(playerid)
 	{
     	TranJob_PlayerEnterCheckpoint(playerid);
 	}
-	else if(GarbJob_IsPlayerWorking(playerid, vehicleID))
+	else if(J_Garb_OnPlayerEnterCheckpoint(playerid))
 	{
-	    GarbJob_PlayerEnterCheckpoint(playerid);
+	    return 1;
     }
 	else if(DeliJob_IsPlayerWorking(playerid, vehicleID))
 	{
@@ -4015,6 +4031,9 @@ public OnPlayerEnterCheckpoint(playerid)
             playerLicense[playerid][lDMaxSpeed] = 0;
 		}
 	}
+	
+	PlayerPlaySound(playerid, 1139, 0.0, 0.0, 0.0);
+	
 	return 1;
 }
 
@@ -6667,8 +6686,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		InEnforcer[playerid] = 0;
 	}
 
-	if(PRESSED(KEY_WALK)) {
-		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 2) {
+	if(PRESSED(KEY_WALK))
+	{
+		if(PlayerInfo[playerid][pSpectating] != INVALID_PLAYER_ID && PlayerInfo[playerid][pAdmin] >= 2)
+		{
 			PlayerInfo[playerid][pSpectating] = INVALID_PLAYER_ID;
 		    TogglePlayerSpectating(playerid, false);
 			SetCameraBehindPlayer(playerid);
@@ -6678,6 +6699,9 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 		    TextDrawHideForPlayer(playerid, textdrawVariables[0]);
 			return 1;
 		}
+		
+ 		if(J_Garb_OnPlayerPressKeyWalk(playerid))
+		    return 1;
     }
 
 	if((newkeys & KEY_ACTION) && !(oldkeys & KEY_ACTION))

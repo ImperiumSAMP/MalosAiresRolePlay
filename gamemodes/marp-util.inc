@@ -1,25 +1,17 @@
-#if defined _isamp_util_included
+#if defined _marp_util_included
 	#endinput
 #endif
-#define _isamp_util_included
+#define _marp_util_included
 
 
 //====[FUNCTION ALIASES AND SHORTCUTS DEFINITION]=====================================
 
 #define TIMER:%1(%2) forward %1(%2); public %1(%2)
 
-//COMIENZO lime de Never
-#define ALIASFOR:%1(%2,%3);\
-	forward cmd_%2(%3); \
-	public cmd_%2(%3) \
-	{ \
-		return cmd_%1(%3); \
-	}
+new FMsgStr[160];
 
-//FIN lime de Never
-
-#define SendFMessage(%0,%1,%2,%3)                               do{new _str[150]; format(_str,150,%2,%3); SendClientMessage(%0,%1,_str);}while(FALSE)
-#define SendFMessageToAll(%1,%2,%3)                             do{new _str[190]; format(_str,150,%2,%3); SendClientMessageToAll(%1,_str);}while(FALSE)
+#define SendFMessage(%0,%1,%2,%3)                               do{format(FMsgStr,160,%2,%3); SendClientMessage(%0,%1,FMsgStr);}while(FALSE)
+#define SendFMessageToAll(%1,%2,%3)                             do{format(FMsgStr,160,%2,%3); SendClientMessageToAll(%1,FMsgStr);}while(FALSE)
 
 
 //====[COLOR DEFINES]=================================================================
@@ -208,11 +200,8 @@ new bool:PhoneEnabled[MAX_PLAYERS],
 // sistema de mascaras
 new bool:usingMask[MAX_PLAYERS];
 
-stock GetXYInFrontOfDot(Float:xi, Float:yi, Float:ai, Float:distance, &Float:xf, &Float:yf)
+stock GetXYInFrontOfDot(Float:xi, Float:yi, Float:ai, Float:distance, &Float:xf, &Float:yf) //xi,yi,ai Condiciones iniciales del punto de partida
 {
-    //xi,yi,ai Condiciones iniciales del punto de partida
-
     xf = xi + (distance * floatsin(-ai, degrees));
     yf = yi + (distance * floatcos(-ai, degrees));
-
 }

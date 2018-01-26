@@ -14,8 +14,9 @@
 #define ITEM_CONTAINER          4
 #define ITEM_SPEAKER	        5
 #define ITEM_BOTH               6
+#define ITEM_JOB                7
 
-#define MAX_ITEMS               156
+#define MAX_ITEMS               157
 
 #define ITEM_ID_CAMARA		    		43
 #define ITEM_ID_MATERIALES      		47
@@ -127,14 +128,7 @@
 #define ITEM_ID_P_PIZZA_ESPECIAL_PAPAS  153
 #define ITEM_ID_P_PIZZA_ROQUE_PAPAS 	154
 #define ITEM_ID_P_PIZZA_MUZZA_PAPAS 	155
-
-
-
-
-
-
-
-
+#define ITEM_ID_GARBAGE_BAG			 	156
 
 //==============================================================================
 #define BONE_ID_SPINE           1
@@ -331,9 +325,12 @@ static const ServerItems[MAX_ITEMS][ItemInfo] = {
 /*152*/	{"Pizza muzza con ensalada y papas ", "Cantidad", ITEM_OTHER, 80, true, 2219, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
 /*153*/	{"Pizza especial con papas", "Cantidad", ITEM_OTHER, 60, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
 /*154*/	{"Pizza roquefort con papas", "Cantidad", ITEM_OTHER, 70, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
-/*155*/	{"Pizza muzza con papas", "Cantidad", ITEM_OTHER, 50, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6}
+/*155*/	{"Pizza muzza con papas", "Cantidad", ITEM_OTHER, 50, true, 2218, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0.095, 0.047, -0.038, 0.0, -98.199, 0.0, 0, 6},
+/*156*/ {"Bolsa de basura", "Cantidad", ITEM_JOB, 0, false, 1265, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, 50}
 };
+
 /*{"Nombre", "Parámetro", ITEM_TYPE, BasePrice, InvAvailable, ObjModel, x0.095, y0.047, z-0.038, rx0.0, ry-98.199, rz0.0, x0.095, y0.047, z-0.038, rx0.0, ry-98.199, rz0.0, AttachedBone, OccupiedSpace}*/
+
 //==============================FUNCIONES=======================================
 
 forward bool:HasItemInvPermission(itemid); // Devuelve verdadero si el objeto entra en un inventario (si esta permitido). Falso si no lo está.

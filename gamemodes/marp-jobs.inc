@@ -38,6 +38,8 @@
 #define JOB_TYPE_LEGAL        	1
 #define JOB_TYPE_ILLEGAL        2
 
+#define UpdatePlayerJobLastWorked(%0)       (PlayerJobInfo[%0][pLastWorked] = GetDateString())
+
 //===============================DATA STORAGE===================================
 
 enum e_job_info {
@@ -66,7 +68,7 @@ new JobInfo[][e_job_info] = {
 /*2*/   {"Taxista", 1, 0, 0, 0, 1813.68, -1896.36, 13.5781, 0, 0, "job_taxi", "Chofer", "Chofer", "Chofer", "Chofer", "Chofer"},
 /*3*/   {"Granjero", 1, 1800, 32, 0, -31.0715, 54.5695, 3.1172, 0, 0, "job_farm", "Aprendiz", "Ayudante de maquinas", "Chofer de maquina", "Evaluador de cosecha", "Supervisor"},
 /*4*/   {"Transportista", 1, 1800, 206, 0, 2229.23, -2208.34, 13.5469, 0, 0, "job_tran", "Aprendiz", "Carguero", "Chofer de camión", "Encargado de logística", "Supervisor"},
-/*5*/   {"Basurero", 1, 1800, 236, 0, 2405.58, -2060.67, 13.5469, 0, 0, "job_garb", "Aprendiz", "Recolector", "Compactador", "Chofer de camión", "Supervisor"},
+/*5*/   {"Basurero", 1, 0, 236, 0, 9999.9, 9999.9, 9999.9, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
 /*6*/   {"Delincuente", 2, 0, 0, 1, 2614.12, -1393.15, 34.8954, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
 /*7*/   {"Cosechador de Materia Prima", 2, 0, 0, 0, -1060.79, -1205.49, 129.322, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"},
 /*8*/   {"Narcotraficante", 2, 0, 0, 1, 2548.96, -1331.56, 34.2638, 0, 0, "NONE", "NONE", "NONE", "NONE", "NONE", "NONE"}
@@ -75,7 +77,7 @@ new JobInfo[][e_job_info] = {
 
 enum pPlayerJob {
 	pWorkingHours, // Cantidad de horas efectivas que trabajó (antiguedad)
-	pLastWorked[64], // Ultimo día que trabajó
+	pLastWorked[32], // Ultimo día que trabajó
 	pTotalEarnings,
 	pCharge, // El cargo que ocupa (número)
 	pState, // Estado laboral (despedido, renunció, activo, etc)
@@ -167,10 +169,12 @@ Jobs_LoadPickups()
 	
 	for(new i = 1; i < jsize; i++)
 	{
-		CreateDynamicPickup(1274, 1, JobInfo[i][jTakeX], JobInfo[i][jTakeY], JobInfo[i][jTakeZ], JobInfo[i][jTakeW], JobInfo[i][jTakeI], -1);
+		CreateDynamicPickup(1274, 1, JobInfo[i][jTakeX], JobInfo[i][jTakeY], JobInfo[i][jTakeZ], JobInfo[i][jTakeW]);
         format(string, sizeof(string), "Escribe /tomarempleo para tomar el empleo de %s\nUsa /consultarempleo para más información.", JobInfo[i][jName]);
         CreateDynamic3DTextLabel(string, COLOR_WHITE, JobInfo[i][jTakeX], JobInfo[i][jTakeY], JobInfo[i][jTakeZ] + 0.75, 20.0, INVALID_PLAYER_ID, INVALID_VEHICLE_ID, 1, 0, 0, -1, 100.0);
 	}
+	
+	J_Garb_LoadPickup();
 }
 
 //==============================================================================
@@ -180,7 +184,7 @@ ResetJobVariables(playerid)
     ResetThiefVariables(playerid);
     
 	PlayerJobInfo[playerid][pWorkingHours] = 0;
-	strmid(PlayerJobInfo[playerid][pLastWorked], " ", 0, strlen(" "), 255);
+	strcat(PlayerJobInfo[playerid][pLastWorked], "", 32);
 	PlayerJobInfo[playerid][pTotalEarnings] = 0;
 	PlayerJobInfo[playerid][pCharge] = 0;
 	PlayerJobInfo[playerid][pState] = 0;
@@ -242,10 +246,6 @@ CMD:trabajar(playerid,params[])
 			case JOB_TRAN:
 			{
 				TranJob_StartWork(playerid);
-		    }
-			case JOB_GARB:
-			{
-				GarbJob_StartWork(playerid);
 		    }
 		    case JOB_DELI:
 		    {
@@ -333,6 +333,9 @@ CMD:dejarempleo(playerid,params[])
 {
 	new job = PlayerInfo[playerid][pJob];
 	
+	if(GetPlayerJob(playerid) == JOB_GARB)
+		return 1;
+		
     if(job == 0)
 		return SendClientMessage(playerid, COLOR_YELLOW2,"No tienes ningún empleo.");
   	if(jobDuty[playerid])
@@ -351,9 +354,13 @@ CMD:dejarempleo(playerid,params[])
 
 LoadPlayerJobData(playerid)
 {
+    J_Garb_LoadData(playerid);
+    
 	if(PlayerInfo[playerid][pJob])
 	{
-	    if(PlayerInfo[playerid][pJob] == JOB_FELON)
+	    if(GetPlayerJob(playerid) == JOB_GARB)
+	        return 1;
+	    else if(PlayerInfo[playerid][pJob] == JOB_FELON)
 	    {
      		LoadThiefJobData(playerid);
 		}
@@ -365,6 +372,8 @@ LoadPlayerJobData(playerid)
 			mysql_function_query(dbHandle, query, true, "OnLegalJobDataLoad", "i", playerid);
 		}
 	}
+	
+	return 1;
 }
 
 //==============================================================================
@@ -372,20 +381,16 @@ LoadPlayerJobData(playerid)
 forward OnLegalJobDataLoad(playerid);
 public OnLegalJobDataLoad(playerid)
 {
-	new rows,
-		fields,
-		result[32];
-
-	cache_get_data(rows, fields);
+	new rows = cache_get_row_count();
 
 	if(rows)
 	{
-		cache_get_field_content(0, "pWorkingHours", result); 	PlayerJobInfo[playerid][pWorkingHours] = strval(result);
-		cache_get_field_content(0, "pCharge", result); 			PlayerJobInfo[playerid][pCharge] = strval(result);
-		cache_get_field_content(0, "pState", result);		 	PlayerJobInfo[playerid][pState] = strval(result);
-		cache_get_field_content(0, "pReputation", result); 		PlayerJobInfo[playerid][pReputation] = strval(result);
-		cache_get_field_content(0, "pTotalEarnings", result); 	PlayerJobInfo[playerid][pTotalEarnings] = strval(result);
-		cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 64);
+		PlayerJobInfo[playerid][pWorkingHours] = cache_get_field_content_int(0, "pWorkingHours");
+		PlayerJobInfo[playerid][pCharge] = cache_get_field_content_int(0, "pCharge");
+		PlayerJobInfo[playerid][pState] = cache_get_field_content_int(0, "pState");
+		PlayerJobInfo[playerid][pReputation] = cache_get_field_content_int(0, "pReputation");
+		PlayerJobInfo[playerid][pTotalEarnings] = cache_get_field_content_int(0, "pTotalEarnings");
+		cache_get_field_content(0, "pLastWorked", PlayerJobInfo[playerid][pLastWorked], 1, 32);
 
 		if(PlayerJobInfo[playerid][pState] == JOB_STATE_FIRED_MISSING)
 		{
@@ -407,7 +412,9 @@ SavePlayerJobData(playerid, resigned=0, leftjob=0)
 {
 	if(PlayerInfo[playerid][pJob])
 	{
-		if(PlayerInfo[playerid][pJob] == JOB_FELON)
+        if(GetPlayerJob(playerid) == JOB_GARB)
+			J_Garb_SaveData(playerid);
+		else if(PlayerInfo[playerid][pJob] == JOB_FELON)
 	    {
 			SaveThiefJobData(playerid);
 		}
@@ -440,7 +447,11 @@ SavePlayerJobData(playerid, resigned=0, leftjob=0)
 
 SetPlayerJob(playerid, job, admincmd=0)
 {
-	if(job == JOB_FELON)
+	if(job == JOB_GARB)
+	{
+	    J_Garb_SetJob(playerid);
+    }
+	else if(job == JOB_FELON)
  	{
 		SetThiefJobForPlayer(playerid);
     }
@@ -453,6 +464,9 @@ SetPlayerJob(playerid, job, admincmd=0)
 	}
 	else if(job == 0)
 	{
+		if(GetPlayerJob(playerid) == JOB_GARB) // Si el anterior es garb
+		    J_Garb_SetJob(playerid, 1);
+		
 	    PlayerInfo[playerid][pJob] = 0;
 	}
 	else
@@ -463,6 +477,8 @@ SetPlayerJob(playerid, job, admincmd=0)
 		SendFMessage(playerid, COLOR_YELLOW3, "¡Felicidades!, ahora eres un %s, para ver los comandos disponibles, escribe /ayuda.", JobInfo[job][jName]);
 		SendFMessage(playerid, COLOR_YELLOW3, "Debes esperar %d PayDay/s antes de volver a tomar un empleo.", PlayerInfo[playerid][pJobTime]);
 	}
+	
+	return 1;
 }
 
 //==============================================================================
@@ -482,14 +498,16 @@ CMD:setjob(playerid, params[])
 
 	SavePlayerJobData(targetid, 1); // Guardamos el viejo
 	ResetJobVariables(targetid); // Reseteamos todo a cero
+	SetPlayerJob(targetid, job, 1); // Seteamos el nuevo
 
 	SendFMessage(targetid, COLOR_LIGHTYELLOW2, "{878EE7}[INFO]:{C8C8C8} %s te ha seteado el empleo a %d (%s).", GetPlayerNameEx(playerid), job, JobInfo[job][jName]);
 	if(PlayerInfo[targetid][pRolePoints] < Job_GetRpPointsNeeded(job))
+	{
 	    SendFMessage(playerid, COLOR_RED, "[RECORDATORIO]: %s no cumplía con los puntos de rol necesarios para el empleo (%d).", GetPlayerNameEx(targetid), Job_GetRpPointsNeeded(job));
+	}
 	format(string, sizeof(string), "[Staff]: %s ha seteado el empleo de %s a %d (%s).", GetPlayerNameEx(playerid), GetPlayerNameEx(targetid), job, JobInfo[job][jName]);
 	AdministratorMessage(COLOR_ADMINCMD, string, 1);
-
-	SetPlayerJob(targetid, job, 1); // Seteamos el nuevo
+	
 	return 1;
 }
 
@@ -565,29 +583,23 @@ public OnLegalJobDataCheck(playerid, job, admincmd)
 
 GetDateString()
 {
-	new year, month, day, hour, minute, second, str[64];
+	new year, month, day, hour, minute, second, str[32];
 
 	getdate(year, month, day);
 	gettime(hour, minute, second);
 
-	format(str, sizeof(str), "%02d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
+	format(str, 32, "%02d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second);
 
 	return str;
 }
 
 //==============================================================================
 
-UpdatePlayerJobLastWorked(playerid)
-{
-	new str[64];
-	format(str, sizeof(str), "%s", GetDateString());
-	strmid(PlayerJobInfo[playerid][pLastWorked], str, 0, strlen(str), 255);
-}
-
-//==============================================================================
-
 CMD:verempleo(playerid, params[])
 {
+	if(GetPlayerJob(playerid) == JOB_GARB)
+		return 1;
+	
 	if(GetJobType(PlayerInfo[playerid][pJob]) == JOB_TYPE_LEGAL)
 	{
 	    new content[300];
@@ -688,7 +700,7 @@ public OnPlayerInvestJob(playerid, job)
 		chargeResult,
 		reputationResult,
 		totalEarningsResult,
-		lastWorkedResult[64],
+		lastWorkedResult[32],
 		content[400],
 		auxInformation[200] = "";
 
@@ -701,7 +713,7 @@ public OnPlayerInvestJob(playerid, job)
 		cache_get_field_content(0, "pCharge", result); 				chargeResult = strval(result);
 		cache_get_field_content(0, "pReputation", result); 			reputationResult = strval(result);
 		cache_get_field_content(0, "pTotalEarnings", result); 		totalEarningsResult = strval(result);
-		cache_get_field_content(0, "pLastWorked", lastWorkedResult, 1 ,64);
+		cache_get_field_content(0, "pLastWorked", lastWorkedResult, 1 ,32);
 
 		switch(stateResult)
 		{
