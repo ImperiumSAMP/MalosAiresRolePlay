@@ -363,7 +363,7 @@ stock J_Garb_GiveRep(playerid, rep)
 {
 	j_garb_p_info[playerid][jgRep] += rep;
 	
-	if( (j_garb_p_info[playerid][jgWorkedHours] <= GARB_FIRED_CALC_HOURS && j_garb_p_info[playerid][jgRep] <= GARB_FIRED_CALC_LIMIT) || (j_garb_p_info[playerid][jgWorkedHours] > GARB_FIRED_CALC_HOURS && j_garb_p_info[playerid][jgRep] <= GARB_AVRG_REP_FIRED) )
+	if( (j_garb_p_info[playerid][jgWorkedHours] <= GARB_FIRED_CALC_HOURS && j_garb_p_info[playerid][jgRep] <= GARB_FIRED_CALC_LIMIT) || (j_garb_p_info[playerid][jgWorkedHours] > GARB_FIRED_CALC_HOURS && (float(j_garb_p_info[playerid][jgRep]) / float(j_garb_p_info[playerid][jgWorkedHours])) <= GARB_AVRG_REP_FIRED) )
 	{
 	    SendClientMessage(playerid, COLOR_WHITE, "{FF0000}=============================================================================================");
 	    SendClientMessage(playerid, COLOR_WHITE, "[TELEGRAMA DEL EMPLEADOR]: Has sido {FF0000}despedido{FFFFFF} por tu pésima performance y reputación dentro de la empresa.");
